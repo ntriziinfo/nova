@@ -1,0 +1,57 @@
+{
+  "version": 2,
+  "redirects": [
+    {
+      "source": "/admin.html",
+      "destination": "https://vertex-inky-ten.vercel.app/admin.html",
+      "permanent": true
+    },
+    {
+      "source": "/machines.html",
+      "destination": "https://vertex-inky-ten.vercel.app/machines.html",
+      "permanent": true
+    },
+    {
+      "source": "/play.html",
+      "destination": "https://vertex-inky-ten.vercel.app/play.html",
+      "permanent": true
+    },
+    {
+      "source": "/jag/",
+      "destination": "/jag",
+      "permanent": false
+    },
+    {
+      "source": "/nova/",
+      "destination": "/nova",
+      "permanent": false
+    },
+    {
+      "source": "/gorai",
+      "destination": "/jag",
+      "permanent": false
+    },
+    {
+      "source": "/gourai",
+      "destination": "/jag",
+      "permanent": false
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/jag.html"
+    },
+    {
+      "source": "/jag",
+      "destination": "/jag.html"
+    },
+    {
+      "source": "/nova",
+      "destination": "/jag.html"
+    }
+  ],
+  "framework": null,
+  "buildCommand": null,
+  "outputDirectory": "."
+}
