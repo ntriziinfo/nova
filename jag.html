@@ -7267,17 +7267,12 @@ body{
   const KOATARI_SOUND_SRC = "";
   const PAYOUT_SOUND_SRC = "assets/media/jag/bell.wav";
   const PAYOUT_3PT_BELL_SOUND_SRC = "assets/media/jag/bell.wav";
-  const REPLAY_SOUND_SRC = "assets/media/jag/replay.wav";
+  const REPLAY_SOUND_SRC = "assets/media/nova/replay.wav";
   const CHERRY_SOUND_SRC = "assets/media/jag/cherry.wav";
   const SPECIAL_SYMBOL_SOUND_SRC = "assets/media/jag/special_symbol.wav";
   const PREMIUM_PIERO_SYMBOL_SOUND_SRC = "assets/media/jag/premium_piero_symbol.wav";
   const SPIN_SOUND_SRC = "assets/media/jag/start.wav";
-  const STOP_SOUND_SRC = "assets/media/jag/stop.wav";
-  const BONUS_STOP_SOUND_SRCS = Object.freeze([
-    "assets/media/jag/bonus_stop_1.wav",
-    "assets/media/jag/bonus_stop_2.wav",
-    "assets/media/jag/bonus_stop_3.wav"
-  ]);
+  const STOP_SOUND_SRC = "assets/media/nova/reel-stop.wav";
   const PEKA_SOUND_SRC = "assets/media/jag/peka_1.wav";
   const PEKA_SOUND_SRCS = Object.freeze([
     PEKA_SOUND_SRC,
@@ -7561,9 +7556,6 @@ body{
     [PREMIUM_PIERO_SYMBOL_SOUND_SRC]: dbToGain(-2),
     [SPIN_SOUND_SRC]: dbToGain(-1),
     [STOP_SOUND_SRC]: dbToGain(-1),
-    [BONUS_STOP_SOUND_SRCS[0]]: dbToGain(2),
-    [BONUS_STOP_SOUND_SRCS[1]]: dbToGain(2.5),
-    [BONUS_STOP_SOUND_SRCS[2]]: dbToGain(2.5),
     [PEKA_SOUND_SRC]: dbToGain(-1),
     ["assets/media/jag/peka_kyuin.wav"]: dbToGain(1),
     ["assets/media/jag/peka_atari.wav"]: dbToGain(3),
@@ -15829,15 +15821,8 @@ body{
   }
 
   function playSpinSound(){ playOneShotSound(SPIN_SOUND_SRC); }
-  function isBonusStopSoundSpin(spin=currentSpin){
-    return !!(spin && spin.result === "BAR3");
-  }
   function playStopSound(i, stopOrder=null){
-    const order = Math.max(1, Math.min(3, Math.round(Number(stopOrder) || 0)));
-    const src = isBonusStopSoundSpin(currentSpin) && BONUS_STOP_SOUND_SRCS[order - 1]
-      ? BONUS_STOP_SOUND_SRCS[order - 1]
-      : STOP_SOUND_SRC;
-    playOneShotSound(src);
+    playOneShotSound(STOP_SOUND_SRC);
   }
   function playWinSound(big){
     if(debugFastSpinActive || speedToBonusActive) return;
