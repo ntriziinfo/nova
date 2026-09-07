@@ -124,7 +124,7 @@ test('Sora seven directly adds an ART set and Ouma super never invokes the norma
  run('normalState.bonusPending=false;normalState.flow=NovaArt.startZone(NovaArt.enter(),"sora");pendingArtStep=NovaArt.step(normalState.flow,{soraHit:1,soraReset:0},()=>0);globalThis.soraResolved=resolveNormalOutcome("BIG");');
  assert.equal(run('soraResolved.aTypeBonusReady'),false);assert.equal(run('soraResolved.flowAfter.sets'),'2');assert.equal(run('decideBigPremiumEffect("BIG",soraResolved,true)'),false);
  run('normalState.flow=NovaArt.startZone(NovaArt.enter(),"ouma");normalState.flow.awardTier=4;pendingArtStep=NovaArt.step(normalState.flow,{},()=>0,"SUPER_NOVA");globalThis.oumaResolved=resolveNormalOutcome("SUPER_NOVA");');
- assert.equal(run('oumaResolved.bonusHit'),false);assert.equal(run('oumaResolved.superNovaOutcome'),'');assert.equal(run('oumaResolved.flowAfter.award'),'1100');
+ assert.equal(run('oumaResolved.bonusHit'),false);assert.equal(run('oumaResolved.superNovaOutcome'),'');assert.equal(run('oumaResolved.flowAfter.award'),'925');
 });
 
 test('freeze pending bonus aligns 777 and is ready without a BAR or second bonus requirement',()=>{

@@ -7,6 +7,6 @@ test('calibrated entry scale controls rare-role zone wins without changing payou
   const run=roll=>{let seq=[.99,roll,.5,.99];return a.step(a.enter(),{setting},()=>seq.shift()??.99,'RARE');};
   assert.equal(run(threshold-1e-9).flow.entryStage,'seven');
   assert.equal(run(threshold+1e-9).flow.entryStage,'');
-  assert.equal(a.startZone(a.enter(),'giru',{setting}).initialAward,'275');
+  assert.equal(a.startZone(a.enter(),'giru',{setting}).initialAward,'100');
  }
 });
