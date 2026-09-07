@@ -16,7 +16,7 @@ globalThis.NovaArt=(()=>{
 
  function drawPaidRole(zeroChance=0,bellPay=8,rng=Math.random){const bell=(5.5/(1-zeroChance)-3)/(bellPay-3);return rng()<Math.max(0,Math.min(1,bell))?'BELL':'REPLAY';}
  function drawBonus(rng=Math.random,setting){const p=setting===undefined?bonusSpecial:bonusSpecialFor(setting);return rng()<p?'NEBULA':drawPaidRole(p,8,rng);}
- const zoneEntryScale=[0.7290687711696987,0.7309815147854967,0.6366181841436438,0.7072043524617079,0.688,0.667];
+ const zoneEntryScale=[1.06,0.9730677499999998,0.9063,0.8878,0.87109375,0.825];
  const direct=[1400,1320,1240,1160,1080,1000];
  const giruRates=Object.freeze({normal:[.7702549139553321,.55,.2],ura:[.8732025744756524,.65,.2]});
  function giruChance(award,setting=1,ura=false){const g=integer(award)*2n/11n,rates=ura?giruRates.ura:giruRates.normal;return rates[g<(ura?160n:80n)?0:g<(ura?640n:320n)?1:2];}
