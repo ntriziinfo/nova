@@ -7,7 +7,7 @@ export function simulate(setting,scale,games=1000000,seed=1234567){
  function bonus(kind,freeze=false){count++;const claim=n.claim(state,freeze,rng);if(state.impurity===100)release++;state=flow.phase==='art'?claim.state:n.afterBonus(claim.state,rng);let sets=claim.sets;for(let g=0;g<(kind==='MID'?15:30);g++){const r=a.drawBonus(rng,setting),pay=n.pay(r);paid+=pay;count++;bonusG++;bonusP+=pay;track();if(r==='NEBULA')sets++;}flow=a.afterBonus(flow,c,sets);if(flow.phase==='art'&&claim.zones.length){flow.queuedZones.push(...claim.zones);if(!flow.zone)flow=a.startZone(flow,flow.queuedZones.shift(),{...c,allowUra:true},rng);}}
  while(count<games){
   track();if(flow.phase==='art'&&artStart===null)artStart=paid-count*3;else if(flow.phase!=='art')artStart=null;
-  if(flow.phase==='art'){if(!flow.zero)count++;const s=a.step(flow,c,rng);paid+=n.pay(s.result);flow=s.flow;if(s.internalBonus)bonus('BIG');continue;}
+  if(flow.phase==='art'){flow=a.prepareBet(flow,c,rng);if(!flow.zero)count++;const s=a.step(flow,c,rng);paid+=n.pay(s.result);flow=s.flow;if(s.internalBonus)bonus('BIG');continue;}
   count++;const t=n.spin(state,flow,setting,{scale},rng);state=t.state;maxNormalGames=Math.max(maxNormalGames,state.games);paid+=n.pay(t.result);
   if(t.result==='SUPER_NOVA'){const freeze=rng()<.5;if(freeze)freezes++;flow={phase:'normal'};bonus('BIG',freeze);}
   else if(t.internalBonus){if(t.internalBonus.source.includes('天井'))ceilings++;flow={phase:'normal'};bonus(t.internalBonus.kind);}
