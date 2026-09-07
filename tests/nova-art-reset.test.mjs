@@ -6,7 +6,7 @@ for(const file of ['nova-art.js','nova-flow.js','nova-normal.js'])vm.runInContex
 const a=ctx.NovaArt,n=ctx.NovaNormal;
 const normal={mode:'通常B',games:245,impurity:78,level:'high'};
 test('ART final game resets normal ceiling count and next normal game is 1G',()=>{
- const before={...a.enter(),remaining:'1'},after=a.step(before,{},()=>.99,'MISS').flow;
+ const before={...a.enter(),remaining:'1'},after=a.step(before,{},()=>.99,'BELL').flow;
  const state=n.afterArt(normal,before,after);
  assert.equal(state.games,0);assert.equal(state.mode,'通常B');assert.equal(state.impurity,78);assert.equal(state.level,'high');
  assert.equal(n.spin(state,after,1,{scale:0},()=>.99,'MISS').state.games,1);
@@ -14,7 +14,7 @@ test('ART final game resets normal ceiling count and next normal game is 1G',()=
 });
 test('set continuation, zones, and CZ failure do not reset the count',()=>{
  const before={...a.enter(),remaining:'1',sets:'1'};
- const next=a.step(before,{},()=>.99,'MISS').flow;
+ const next=a.step(before,{},()=>.99,'BELL').flow;
  assert.equal(next.phase,'art');assert.equal(n.afterArt(normal,before,next).games,245);
  assert.equal(n.afterArt(normal,before,a.startZone(before,'sosuke')).games,245);
  assert.equal(n.afterArt(normal,{phase:'cz'},{phase:'normal'}).games,245);

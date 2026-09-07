@@ -21,12 +21,15 @@ test('CZ consumes its selected number of subsequent games and persists success a
  assert.equal(state.remaining,1);assert.equal(state.success,true);
  state=flow.advance(state);assert.equal(state.phase,'normal');
 });
-test('ART starts at 50 and returns to normal only after the 50th game',()=>{
+test('ART starts at 275pt and ends after actual payouts reach the target',()=>{
  let state=flow.afterBonus(null,undefined,1);
- for(let n=50;n>0;n--){assert.equal(state.phase,'art');assert.equal(state.remaining,String(n));state=context.NovaArt.step(state,{rare:0},()=>0).flow;}
+ assert.equal(state.remaining,'275');
+ for(let i=0;i<34;i++)state=context.NovaArt.step(state,{rare:0},()=>.99,'BELL').flow;
+ assert.equal(state.remaining,'3');
+ state=context.NovaArt.step(state,{rare:0},()=>.99,'BELL').flow;
  assert.equal(state.phase,'normal');assert.equal(state.remaining,0);
- assert.equal(flow.normalize({phase:'rising',remaining:32}).phase,'normal');
 });
+
 test('Base replay/bell distribution yields expected net 1.2pt with 3pt BET',()=>{
  const counts={REPLAY:0,BELL:0,MISS:0};
  for(let i=0;i<10000;i++)counts[flow.drawRT(()=> (i+.5)/10000)]++;

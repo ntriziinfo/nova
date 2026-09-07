@@ -24,7 +24,7 @@ const isNovaGrid=grid=>[0,1,2].every(r=>[0,1,2].every(c=>grid[r][c]===novaSymbol
 'drawSuperNovaBonus','resolveNormalOutcome','decideBigPremiumEffect','drawNormalResult'
 ].map(fn).join('\n')+`
 const aTypeBonusRemainingNet=()=>remaining;
-let remaining=1;const session={bonusGamesRemaining:30};
+let remaining=1;const session={paid:0,bonusKind:"BIG"};const isATypeBonusComplete=()=>session.paid>=NovaArt.bonusTarget(session.bonusKind);
 let pendingATypeInternalBonus=null;let pendingArtStep=null;
 let pendingForceResult='';const isChanceLampLit=()=>true;
 const normalState={sinceBonus:20,bonusPending:false,risingRemain:0};
@@ -50,17 +50,17 @@ test('actual stop grids match every supported outcome using real consecutive str
 test('bell pays 8 normally and throughout bonus including final game',()=>{
  assert.equal(run('normalRewardFor("BELL")'),8);
  assert.equal(run('resolveATypeBonusOutcome("BELL").reward'),8);
- assert.equal(run('session.bonusGamesRemaining=1; resolveATypeBonusOutcome("BELL").reward'),8);
- assert.equal(run('session.bonusGamesRemaining=0; resolveATypeBonusOutcome("BELL").reward'),0);
+ assert.equal(run('session.paid=160; resolveATypeBonusOutcome("BELL").reward'),8);
+ assert.equal(run('session.paid=165; resolveATypeBonusOutcome("BELL").reward'),0);
 });
 
 test('nebula alone awards a bonus ART set, and NOVA strengths no longer substitute for it',()=>{
- run('session.bonusGamesRemaining=30;');
+ run('session.paid=0;');
  assert.equal(run('resolveATypeBonusOutcome("NEBULA").artSetWon'),1);
  assert.equal(run('resolveATypeBonusOutcome("NEBULA").reward'),0);
  for(const role of ['WEAK_NOVA','STRONG_NOVA','SUPER_NOVA'])assert.equal(run(`resolveATypeBonusOutcome('${role}').artSetWon`),0);
- run('session.bonusGamesRemaining=0;');assert.equal(run('resolveATypeBonusOutcome("NEBULA").artSetWon'),0);
- run('session.bonusGamesRemaining=30;');
+ run('session.paid=165;');assert.equal(run('resolveATypeBonusOutcome("NEBULA").artSetWon'),0);
+ run('session.paid=0;');
 });
 test('retired forced outcomes cannot enter active play',()=>{
  assert.equal(run('normalizeATypeResult("GRAPE")'),'BELL');
@@ -115,21 +115,16 @@ test('game resolver carries CZ entry and final success into the bonus pipeline',
  assert.equal(run('czLast.bonusSource'),'CZ成功');
  assert.equal(run('czLast.flowAfter.phase'),'normal');
 });
-test('game resolver expires ART on its fiftieth game with no automatic bonus',()=>{
- run('normalState.flow=NovaFlow.afterBonus(null,undefined,1);');
- for(let i=0;i<50;i++){
-  run('pendingArtStep=NovaArt.step(normalState.flow,{rare:0},()=>0);globalThis.rtSpin=resolveNormalOutcome("REPLAY");normalState.flow=rtSpin.flowAfter;');
-  assert.equal(run('rtSpin.flowAfter.phase'),i===49?'normal':'art');
-  assert.equal(run('rtSpin.reward'),3);
-  assert.equal(run('rtSpin.bonusHit'),false);
- }
- assert.equal(run('normalState.flow.phase'),'normal');
+test('game resolver expires ART when final payout exhausts the quota',()=>{
+ run('normalState.bonusPending=false;normalState.flow={...NovaArt.enter(),remaining:"3"};pendingArtStep=NovaArt.step(normalState.flow,{rare:0},()=>.99,"BELL");globalThis.endArt=resolveNormalOutcome("BELL");');
+ assert.equal(run('endArt.flowAfter.phase'),'normal');assert.equal(run('endArt.bonusHit'),false);
 });
+
 test('Sora seven directly adds an ART set and Ouma super never invokes the normal freeze',()=>{
  run('normalState.bonusPending=false;normalState.flow=NovaArt.startZone(NovaArt.enter(),"sora");pendingArtStep=NovaArt.step(normalState.flow,{soraHit:1,soraReset:0},()=>0);globalThis.soraResolved=resolveNormalOutcome("BIG");');
  assert.equal(run('soraResolved.aTypeBonusReady'),false);assert.equal(run('soraResolved.flowAfter.sets'),'2');assert.equal(run('decideBigPremiumEffect("BIG",soraResolved,true)'),false);
  run('normalState.flow=NovaArt.startZone(NovaArt.enter(),"ouma");normalState.flow.awardTier=4;pendingArtStep=NovaArt.step(normalState.flow,{},()=>0,"SUPER_NOVA");globalThis.oumaResolved=resolveNormalOutcome("SUPER_NOVA");');
- assert.equal(run('oumaResolved.bonusHit'),false);assert.equal(run('oumaResolved.superNovaOutcome'),'');assert.equal(run('oumaResolved.flowAfter.award'),'200');
+ assert.equal(run('oumaResolved.bonusHit'),false);assert.equal(run('oumaResolved.superNovaOutcome'),'');assert.equal(run('oumaResolved.flowAfter.award'),'1100');
 });
 
 test('freeze pending bonus aligns 777 and is ready without a BAR or second bonus requirement',()=>{
