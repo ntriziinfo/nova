@@ -43,12 +43,15 @@
   const machine=document.getElementById('machine');
   const chance=document.getElementById('stLamp');
   function syncLamp(){
-    const automatic=machine.classList.contains('active')?'rainbow':chance?.classList.contains('on')?'blink':'dim';
+    const stage=Number(machine.dataset.czLamp)||0;
+    const order=['sosuke','toto','urapi','giru1','sora1','ouma1'];
+    for(const [id,item] of items)item.dataset.czLit=String(order.indexOf(id)<stage);
+    const automatic=machine.dataset.czRainbow==='true'?'rainbow':stage?'cz':machine.classList.contains('active')?'rainbow':chance?.classList.contains('on')?'blink':'dim';
     layer.dataset.lamp=lampMode.value==='auto'?automatic:lampMode.value;
   }
   lampMode.addEventListener('change',syncLamp);
   const lampObserver=new MutationObserver(syncLamp);
-  lampObserver.observe(machine,{attributes:true,attributeFilter:['class']});
+  lampObserver.observe(machine,{attributes:true,attributeFilter:['class','data-cz-lamp','data-cz-rainbow']});
   if(chance)lampObserver.observe(chance,{attributes:true,attributeFilter:['class']});
   syncLamp();
   const status=panel.querySelector('#novaArtStatus');

@@ -13,7 +13,7 @@ export function simulate(setting,scale,games=1000000,seed=1234567){
   else if(t.internalBonus){if(t.internalBonus.source.includes('天井'))ceilings++;flow={phase:'normal'};bonus(t.internalBonus.kind);}
   else if(t.direct)flow=a.enter(c);
   else if(t.entry)flow=NovaFlow.enterCZ(t.entry==='STRONG_CZ',undefined,rng);
-  else flow=NovaFlow.advance(flow);
+  else flow=NovaFlow.advance(t.czFlow);
  }
  track();return {maxDrawdown,maxNormalGames,maxArtNet,net:paid-count*3,setting,scale,bias:NovaArt.biasFor(setting),bonusSpecial:NovaArt.bonusSpecialFor(setting),games:count,rtp:paid/(count*3),freezes,ceilings,release,bonusNet:bonusP/bonusG-3};
 }

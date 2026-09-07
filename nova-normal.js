@@ -18,7 +18,9 @@ globalThis.NovaNormal=(()=>{
  function drawRole(setting,rng=Math.random){let r=rng();for(const [role,p]of roleEntries[Math.max(0,Math.min(5,Math.round(Number(setting)||3)-1))]){r-=p;if(r<0)return role;}return 'MISS';}
  function advance(value,role,flow,options={},rng=Math.random){const s=normalize(value),c=config(options);s.games++;if(rare[role]){s.impurity=Math.min(100,s.impurity+rare[role].gain);if(rng()<rare[role].up)s.level='high';}else if(role==='MISS'||role==='REPLAY'){if(rng()<(role==='MISS'?c.downMiss:c.downReplay))s.level='low';}if(s.games%100===0)s.impurity=Math.min(100,s.impurity+c.hundredGain);if(['cz','strong_cz'].includes(flow?.phase)&&flow.remaining===1&&!flow.success)s.impurity=Math.min(100,s.impurity+c.czFailureGain);return s;}
  function spin(value,flow,setting=1,options={},rng=Math.random,forced=''){
-  const before=normalize(value),c=config(options.normal),result=forced||drawRole(setting,rng),state=advance(before,result,flow,c,rng),token={result,state,internalBonus:null,entry:'',direct:false};
+  const before=normalize(value),c=config(options.normal),result=forced||drawRole(setting,rng);
+  flow=NovaFlow.rewrite(flow,result,options.cz,rng);
+  const state=advance(before,result,flow,c,rng),token={result,state,czFlow:flow,internalBonus:null,entry:'',direct:false};
   const bonus=source=>({kind:'BIG',source,internalResult:'BIG'});
   if(forced==='FREEZE'){token.result='MISS';token.internalBonus={...bonus('フリーズ'),premiumBonus:true};return token;}
   if(before.games+1>=ceiling(before)){token.internalBonus=bonus(before.mode+' 天井'+ceiling(before)+'G');return token;}

@@ -6532,12 +6532,12 @@ body{
   .vertexConnectionBadge.legacy{color:#d4a6ff;border-color:rgba(185,109,255,.6)}
 </style>
 <link rel="stylesheet" href="nova-cabinet.css?v=20260907-art1">
-<link rel="stylesheet" href="nova-artwork.css?v=20260907-5">
-<script src="nova-artwork.js?v=20260907-initial8" defer></script>
-<script src="nova-art.js?v=20260907-initial8"></script>
-<script src="nova-balance.js?v=20260907-initial8"></script>
-<script src="nova-normal.js?v=20260907-initial8"></script>
-<script src="nova-flow.js?v=20260907-initial8"></script>
+<link rel="stylesheet" href="nova-artwork.css?v=20260907-cz-lamps9">
+<script src="nova-artwork.js?v=20260907-cz-lamps9" defer></script>
+<script src="nova-art.js?v=20260907-cz-lamps9"></script>
+<script src="nova-balance.js?v=20260907-cz-lamps9"></script>
+<script src="nova-normal.js?v=20260907-cz-lamps9"></script>
+<script src="nova-flow.js?v=20260907-cz-lamps9"></script>
 <style>.cell img[src*="/gang-v3/"]{width:100% !important;height:100% !important;max-width:100% !important;max-height:100% !important;object-fit:contain !important;filter:none !important;}</style>
 </head>
 <body>
@@ -7109,11 +7109,11 @@ body{
       <div class="card secret" id="secretPanel">
         <h2>非公開デバッグ</h2>
         <details><summary>CZ仮設定</summary>
-        <p>通常 → CZ／強CZ → ボーナス → RT 50G → 通常。CZ失敗時は通常へ。</p>
+        <p>CZは突入時抽選＋レア小役で当選へ書き換え。成功でボーナスまたはART、失敗で通常へ。最終Gの停止でキャラクター告知。</p>
         <label>CZ 継続G<input type="number" min="1" max="100" data-flow-config="czGames"></label>
         <label>強CZ 継続G<input type="number" min="1" max="100" data-flow-config="strongGames"></label>
-        <label>CZ 期待度 (%)<input type="number" min="0" max="100" data-flow-config="czChance"></label>
-        <label>強CZ 期待度 (%)<input type="number" min="0" max="100" data-flow-config="strongChance"></label>
+        <label>CZ 突入時当選率 (%)<input type="number" min="0" max="100" data-flow-config="czChance"></label>
+        <label>強CZ 突入時当選率 (%)<input type="number" min="0" max="100" data-flow-config="strongChance"></label>
         <label>CZ 突入率 1/<input type="number" min="2" max="100000" data-flow-config="czDenom"></label>
         <label>強CZ 突入率 1/<input type="number" min="2" max="100000" data-flow-config="strongDenom"></label>
         <button type="button" id="saveFlowConfig">CZ設定を保存</button><output id="flowConfigStatus"></output>
@@ -11027,7 +11027,16 @@ body{
       return {result:pendingArtStep.result,internalBonus:pendingArtStep.internalBonus};
     }
     const token=NovaNormal.spin(normalState.internal,flow,Number(settings.setting)||1,{normal:settings.novaNormal,art:settings.novaArt,cz:settings.novaFlow,scale:NovaBalance.profile(settings.setting).scale},Math.random,pendingForceResult);
-    pendingArtStep={result:token.result,normalInternal:token.state,flow:token.direct?NovaArt.enter(settings.novaArt):token.entry?NovaFlow.enterCZ(token.entry==='STRONG_CZ',settings.novaFlow):token.internalBonus?NovaFlow.normalize(null):NovaFlow.advance(flow),message:token.direct?'ART突入':token.entry?token.entry+'突入':''};
+    const finalCz=token.czFlow.remaining===1&&['cz','strong_cz'].includes(token.czFlow.phase);
+    const ceilingHit=token.internalBonus?.source?.includes('天井');
+    pendingArtStep={
+      result:token.result,normalInternal:token.state,
+      flow:token.direct?NovaArt.enter(settings.novaArt):token.entry?NovaFlow.enterCZ(token.entry==='STRONG_CZ',settings.novaFlow):token.internalBonus?NovaFlow.normalize(null):NovaFlow.advance(token.czFlow),
+      czLamp:finalCz?NovaFlow.drawLamp({...token.czFlow,
+        success:token.czFlow.success||!!token.internalBonus||token.direct,
+        winProbability:ceilingHit?1:token.czFlow.winProbability}):null,
+      message:token.direct?'ART突入':token.entry?token.entry+'突入':''
+    };
     return {result:token.result,internalBonus:token.internalBonus};
   }
 
@@ -11131,6 +11140,7 @@ body{
               : "";
       return {
         normalInternal:artStep?.normalInternal,
+        czLamp:artStep?.czLamp,
         flowBefore,
         flowAfter:artStep?.flow || (czEntry ? NovaFlow.enterCZ(result === "STRONG_CZ",settings.novaFlow) : flowBefore.phase==='art' ? flowBefore : (isNewBonusHit || isReadyBonus) ? NovaFlow.normalize(null) : bonusPendingAtStart ? flowBefore : NovaFlow.advance(flowBefore)),
         artMessage:artStep?.message || '',
@@ -11248,7 +11258,7 @@ body{
       if(data?.settings){
         const previousAudioBalance = data.settings.audioBalanceVersion || 0;
         settings = {...settings, ...data.settings};
-        if(settings.balanceVersion!=='initial8'){settings.novaArt={...settings.novaArt,...Object.fromEntries([1,2,3,4,5,6].map(i=>['direct'+i,NovaArt.defaults['direct'+i]])),soraHit:NovaArt.defaults.soraHit,oumaHit:NovaArt.defaults.oumaHit,uraChance:NovaArt.defaults.uraChance};settings.balanceVersion='initial8';}
+        if(settings.balanceVersion!=='cz-lamps9'){settings.novaArt={...settings.novaArt,...Object.fromEntries([1,2,3,4,5,6].map(i=>['direct'+i,NovaArt.defaults['direct'+i]])),soraHit:NovaArt.defaults.soraHit,oumaHit:NovaArt.defaults.oumaHit,uraChance:NovaArt.defaults.uraChance};settings.balanceVersion='cz-lamps9';}
         if(previousAudioBalance < AUDIO_BALANCE_VERSION){
           const savedBgmVolume = Number(settings.bgmVolume);
           const savedSfxVolume = Number(settings.sfxVolume);
@@ -12844,6 +12854,7 @@ body{
 
   function applyResult(result, resolved, lineRow=1){
     const info = RESULT[result];
+    showCzLamp(3,resolved);
     const reward = resolved.reward;
     jagLastGamePayout = Number(reward) || 0;
     const baseSets = resolved.sets || 0;
@@ -14642,6 +14653,7 @@ body{
       : "";
 
 
+    showCzLamp(0,null);
     currentSpin = {
       artReverse:!!resolved.artReverse,
       result,
@@ -14814,6 +14826,7 @@ body{
     stopReel(i, col, label, spec.cls, currentSpin.manualBonusStop || result === "MISS" ? null : lineRow, stopOrder);
     currentSpin.stopped[i] = true;
     syncCabinetControlState();
+    showCzLamp(stopOrder,currentSpin.resolved);
     maybePlayPremiumBigLineupVoice(stopOrder, currentSpin);
     maybeLightBonusAnnouncementForStop(stopOrder, currentSpin);
     if(stopOrder === 1 && currentSpin.reversePushGuide){
@@ -14902,6 +14915,21 @@ body{
     playStopSound(i, stopOrder);
   }
 
+  let czLampTimers=[];
+  function showCzLamp(stopOrder,resolved){
+    czLampTimers.forEach(clearTimeout);czLampTimers=[];
+    const lamp=resolved?.czLamp,machine=document.getElementById('machine');
+    if(!lamp){machine.dataset.czLamp='0';machine.dataset.czRainbow='false';return;}
+    const target=Math.min(lamp.stage,Math.ceil(lamp.stage*stopOrder/3));
+    const previous=Number(machine.dataset.czLamp)||0;
+    for(let stage=previous+1;stage<=target;stage++){
+      czLampTimers.push(setTimeout(()=>{machine.dataset.czLamp=String(stage);},(stage-previous-1)*100));
+    }
+    if(lamp.rainbow&&stopOrder===3){
+      czLampTimers.push(setTimeout(()=>{machine.dataset.czRainbow='true';},Math.max(0,target-previous)*100));
+    }
+  }
+
   function finishSpin(result, resolved, lineRow=1){
     if(!isSpinning || (currentSpin && currentSpin.finishing)) return;
     if(spinWaitTimer){
@@ -14916,6 +14944,7 @@ body{
     stopBtns.forEach(b=>b.disabled=true);
     syncCabinetControlState();
 
+    showCzLamp(3,resolved);
     const reward = resolved.reward;
     const stGameAdd = (resolved.add || 0) + (resolved.zoneStGames || 0);
     const stockAdd = (resolved.sets || 0) + (resolved.zoneSets || 0);

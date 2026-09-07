@@ -33,3 +33,6 @@ body.debugOpen #novaArtToggle{display:none}
 #novaArtPanel .novaArtActions{display:flex;gap:6px;flex-wrap:wrap}
 #novaArtPanel button{font:13px system-ui;color:#fff;background:#45314f;border:1px solid #9b7bae;border-radius:6px;padding:8px;box-shadow:none;transform:none}
 #novaArtPanel [role=status]{display:block;min-height:20px;margin-top:10px;font-size:12px;color:#efc9ff}
+
+.novaArtLayer[data-lamp="cz"] .novaArtItem img{animation:none;filter:brightness(.24) saturate(.7)}
+.novaArtLayer[data-lamp="cz"] .novaArtItem[data-cz-lit="true"] img{filter:brightness(1.35) saturate(1.2) drop-shadow(0 0 8px #fff4ac)}
