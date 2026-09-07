@@ -10,7 +10,7 @@ globalThis.NovaArt=(()=>{
  const bonusSpecialFor=setting=>.013*(1+.15*biasFor(setting));
  function advanceBonus(state,special=false){const remaining=Math.max(0,Number(state.bonusGamesRemaining)||0);return {bonusGamesRemaining:Math.max(0,remaining-1),bonusArtSets:(Number(state.bonusArtSets)||0)+(remaining>0&&special?1:0)};}
  function drawPaidRole(zeroChance=0,bellPay=8,rng=Math.random){const bell=(5.5/(1-zeroChance)-3)/(bellPay-3);return rng()<Math.max(0,Math.min(1,bell))?'BELL':'REPLAY';}
- function drawBonus(rng=Math.random,setting){const p=setting===undefined?bonusSpecial:bonusSpecialFor(setting);return rng()<p?'STRONG_NOVA':drawPaidRole(p,8,rng);}
+ function drawBonus(rng=Math.random,setting){const p=setting===undefined?bonusSpecial:bonusSpecialFor(setting);return rng()<p?'NEBULA':drawPaidRole(p,8,rng);}
  const direct=[1320,1300,1280,1260,1240,1220];
  const giruRates=Object.freeze([[.48,.28,.13],[.485,.285,.135],[.49,.29,.14],[.495,.295,.145],[.50,.30,.15],[.505,.305,.155]].map(Object.freeze));
  const validSetting=x=>Math.max(1,Math.min(6,Math.round(Number(x)||1)));
@@ -30,7 +30,7 @@ globalThis.NovaArt=(()=>{
   if(!s.zone&&integer(s.stock)>0n){s.stock=(integer(s.stock)-1n).toString();return {result:'MISS',flow:s,internalBonus:{kind:'BIG',source:'空ゾーンストック',internalResult:'BIG'}};}
   if(!s.zone&&integer(s.remaining)===0n)return {result,flow:{phase:'normal',remaining:0,success:false},message:'ART終了'};
   const roll=rng();result=s.zone?(roll<.6?'REPLAY':roll<.9?'BELL':'MISS'):(roll<((5.5-c.rare*(globalThis.NovaNormal?.rareMean||0))/(1-c.rare)-3)/5?'BELL':'REPLAY');
-  if(['MISS','BELL','REPLAY','WEAK_NOVA','STRONG_NOVA','SUPER_NOVA'].includes(forced))result=forced;
+  if(['NEBULA','MISS','BELL','REPLAY','WEAK_NOVA','STRONG_NOVA','SUPER_NOVA'].includes(forced))result=forced;
   if(s.zone){
    const z=s.zone;s.zoneLeft=Math.max(0,s.zoneLeft-1);
    if(z==='giru'){result='MISS';if(rng()<giruChance(s.award,s.giruSetting)){s.award=(integer(s.award)*2n).toString();s.zero=true;reverse=true;message='逆回転成功！ '+s.award+'G / 次BET継続率'+Math.round(giruChance(s.award,s.giruSetting)*100)+'%';}else finish();}
@@ -40,7 +40,7 @@ globalThis.NovaArt=(()=>{
     s.award=(integer(s.award)+BigInt(n)).toString();const a=integer(s.award);s.color=a>=50n?'rainbow':a>=40n?'red':a>=30n?'green':a>=20n?'yellow':a>=10n?'blue':'white';
     message=z==='toto'?'ととゾーン / 最終Gで告知':`宗介ゾーン ＋${n}G`;if(!s.zoneLeft)finish();
    }
-   if(z==='urapi'){if(rng()<c.urapiHit){result='STRONG_NOVA';s.award=(integer(s.award)+20n).toString();message='うらぴ仮図柄揃い ＋20G';}if(!s.zoneLeft)finish();}
+   if(z==='urapi'){if(forced==='NEBULA'||rng()<c.urapiHit){result='NEBULA';s.award=(integer(s.award)+20n).toString();message='うらぴ nebula揃い ＋20G';}if(!s.zoneLeft)finish();}
    if(z==='sora'){if(forced==='BIG'||rng()<c.soraHit){result='BIG';s.stock=(integer(s.stock)+1n).toString();message='7揃い！ BIGストック';}else{result='MISS';message='7を狙え';}if(!s.zoneLeft)finish();}
    if(z==='ouma'){if(!['WEAK_NOVA','STRONG_NOVA','SUPER_NOVA'].includes(forced)&&rng()<c.oumaHit){const r=rng();result=r<.7?'WEAK_NOVA':r<.95?'STRONG_NOVA':'SUPER_NOVA';}const n={WEAK_NOVA:20,STRONG_NOVA:50,SUPER_NOVA:200}[result]||0;s.award=(integer(s.award)+BigInt(n)).toString();message=n?`逢魔 ${result} ＋${n}G`:'ノヴァを狙え';if(!s.zoneLeft)finish();}
   }else{

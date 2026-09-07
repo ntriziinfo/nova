@@ -6533,11 +6533,11 @@ body{
 </style>
 <link rel="stylesheet" href="nova-cabinet.css?v=20260907-art1">
 <link rel="stylesheet" href="nova-artwork.css?v=20260907-5">
-<script src="nova-artwork.js?v=20260907-soft2" defer></script>
-<script src="nova-art.js?v=20260907-soft2"></script>
-<script src="nova-balance.js?v=20260907-soft2"></script>
-<script src="nova-normal.js?v=20260907-soft2"></script>
-<script src="nova-flow.js?v=20260907-soft2"></script>
+<script src="nova-artwork.js?v=20260907-nebula1" defer></script>
+<script src="nova-art.js?v=20260907-nebula1"></script>
+<script src="nova-balance.js?v=20260907-nebula1"></script>
+<script src="nova-normal.js?v=20260907-nebula1"></script>
+<script src="nova-flow.js?v=20260907-nebula1"></script>
 </head>
 <body>
 <div class="confetti" id="confetti"></div>
@@ -7101,7 +7101,7 @@ body{
           <input id="bigAddInput" type="number" min="0" max="1000" step="1" value="30" readonly />
         </div>
         <div class="help">
-          BIGは30G、REGは15G。特殊図柄揃い1回でART＋1SET（仮図柄は強ノヴァ目）、初当たりのART保証なし。ベルは通常・ボーナス共通8pt、リプレイは3pt。通常時のスーパーノヴァ目はBIG・フリーズ各50%。弱・強ノヴァ目はレア役です。
+          BIGは30G、REGは15G。特殊図柄揃い1回でART＋1SET（専用図柄はnebula）、初当たりのART保証なし。ベルは通常・ボーナス共通8pt、リプレイは3pt。通常時のスーパーノヴァ目はBIG・フリーズ各50%。弱・強ノヴァ目はレア役です。
         </div>
       </div>
 
@@ -7135,7 +7135,7 @@ body{
             <option value="BAR3">BAR</option>
             <option value="WEAK_NOVA">弱ノヴァ目（左3連）</option>
             <option value="STRONG_NOVA">強ノヴァ目（左＋中または右3連）</option>
-            <option value="BONUS_SPECIAL">ボーナス特殊図柄（ART＋1SET）</option>
+            <option value="BONUS_SPECIAL">nebula特殊図柄（ボーナスART＋1SET）</option>
             <option value="SUPER_NOVA">スーパーノヴァ目（全リール3連）</option>
 
           </select>
@@ -7420,6 +7420,8 @@ body{
   const BELL_SYMBOL = "🔔";
   const BLANK_SYMBOL = "__BLANK__";
   const SUICA_SYMBOL = "🍋";
+  const NEBULA_SYMBOL = 'NEBULA';
+  const NEBULA_IMAGE_SRC = 'assets/symbols/nebula-original.png';
   const SUICA_IMAGE_SRC = "assets/symbols/sym_suika.png";
   const CHERRY_IMAGE_SRC = "assets/symbols/sym_cherry.png";
   const BELL_IMAGE_SRC = "assets/symbols/sym_bell.png";
@@ -7432,6 +7434,7 @@ body{
   const REPLAY_IMAGE_SRC = "assets/symbols/sym_replay.png";
   const SYMBOL_IMAGE_SRCS = Object.freeze([
     SUICA_IMAGE_SRC,
+    NEBULA_IMAGE_SRC,
     CHERRY_IMAGE_SRC,
     BELL_IMAGE_SRC,
     SEVEN_IMAGE_SRC,
@@ -7459,6 +7462,7 @@ body{
   preloadSymbolImages();
 
   const RESULT = {
+    NEBULA:{name:'nebula特殊図柄揃い',label:'NEBULA',reel:[NEBULA_SYMBOL,NEBULA_SYMBOL,NEBULA_SYMBOL],cls:'purple',kind:'miss'},
     WEAK_SUICA:{name:'弱スイカ',label:'弱スイカ',reel:[SUICA_SYMBOL,SUICA_SYMBOL,SUICA_SYMBOL],cls:'green',kind:'rare'},
     STRONG_SUICA:{name:'強スイカ',label:'強スイカ',reel:[SUICA_SYMBOL,SUICA_SYMBOL,SUICA_SYMBOL],cls:'green',kind:'rare'},
     STRONG_BELL:{name:'強ベル',label:'強ベル',reel:[BELL_SYMBOL,BELL_SYMBOL,BELL_SYMBOL],cls:'gold',kind:'rare'},
@@ -9881,13 +9885,13 @@ body{
 
   function normalizeATypeResult(result){
     if(isNovaResult(result) || result === "CZ" || result === "STRONG_CZ") return result;
-    if(NovaNormal.rare[result])return result;
+    if(result === "NEBULA" || NovaNormal.rare[result])return result;
     if(result === "GRAPE") return "BELL";
     return ["MISS","BIG","MID","BELL","REPLAY","BAR3"].includes(result) ? result : "MISS";
   }
 
   function normalizeForceResult(result){
-    if(result === "BONUS_SPECIAL")return "STRONG_NOVA";
+    if(result === "BONUS_SPECIAL")return "NEBULA";
     if(result==='FREEZE'||result==='ART'||result==='RARE'||result.startsWith('ZONE_'))return result;
     if(result === "REACH_ME") return "REACH_ME";
     return A_TYPE_MODE && result ? normalizeATypeResult(result) : result;
@@ -9931,13 +9935,14 @@ body{
   }
 
   function drawATypeBonusResult(){
+    if(pendingForceResult === "NEBULA")return "NEBULA";
     if(isNovaResult(pendingForceResult)) return pendingForceResult;
     if(NovaNormal.rare[pendingForceResult]||['BELL','REPLAY','MISS'].includes(pendingForceResult))return pendingForceResult;
     return NovaArt.drawBonus(Math.random,settings.setting);
   }
 
   function resolveATypeBonusOutcome(result){
-    const special=isNovaResult(result);
+    const special=result === "NEBULA";
     const reward = Number(session.bonusGamesRemaining)>0 ? (NovaNormal.pay(result)) : 0;
     return {
       reward,
@@ -13628,6 +13633,7 @@ body{
   }
   const NOVA_PATTERN_NAMES = {WEAK_NOVA:"弱ノヴァ目",STRONG_NOVA:"強ノヴァ目",SUPER_NOVA:"スーパーノヴァ目"};
   function cellHtml(symbol, label, cls){
+    if(symbol===NEBULA_SYMBOL)return '<img class="symImg nebulaSymImg" src="'+NEBULA_IMAGE_SRC+'" alt="nebula特殊図柄" draggable="false" style="width:100%;height:100%;object-fit:contain;filter:none;transform:none">';
     const tile = /^NOVA_([0-2])_([0-2])$/.exec(symbol);
     if(tile) return '<span class="novaLogoTile" aria-label="ノヴァ目 '+tile[1]+' '+tile[2]+'"><img src="'+NOVA_LOGO_SRC+'" draggable="false" alt="" style="left:-'+Number(tile[1])*100+'%;top:-'+Number(tile[2])*100+'%"></span>';
     // Legacy saved visual states must not reintroduce retired artwork.
@@ -13672,7 +13678,7 @@ body{
     document.getElementById('saveFlowConfig').closest('details').after(normalPanel);
     document.getElementById('novaApplyInternal').onclick=()=>{if(isSpinning||session.active)return;normalState.internal=NovaNormal.normalize({mode:$('novaMode').value,games:$('novaModeGames').value,level:$('novaLevel').value,impurity:$('novaImpurity').value});persistState();updateDisplay();};
     const artPanel=document.createElement('details');artPanel.id='novaArtConfig';
-    artPanel.innerHTML='<summary>ART・上乗せゾーン仮設定</summary><p>ART中もスイカ・強ベル・チャンス目・ノヴァ目を抽選。うらぴは強ノヴァ目を仮図柄として使用。ギルは最終到達G数を加算・0G連BET無料・上限なし。</p>';
+    artPanel.innerHTML='<summary>ART・上乗せゾーン仮設定</summary><p>ART中もスイカ・強ベル・チャンス目・ノヴァ目を抽選。うらぴはnebula揃いで上乗せ。ギルは最終到達G数を加算・0G連BET無料・上限なし。</p>';
     const artLabels={initial:'ART初期G数',rare:'ARTレア役確率',big:'レア役からBIG確率',zone:'レア役からゾーン確率',czArt:'CZ成功時ART振分',urapiGames:'うらぴ継続G数',urapiHit:'うらぴ図柄揃い確率',oumaGames:'逢魔継続G数',soraHit:'空7揃い確率',oumaHit:'逢魔ノヴァ揃い確率'};
     for(let i=1;i<=6;i++)artLabels['direct'+i]='設定'+i+' ART直撃分母';
     const giruTable=document.createElement('div');giruTable.innerHTML='<p>ギル継続率（仮）：現在の上乗せG数で判定。上限なし。</p><table><tr><th>設定</th><th>80G未満</th><th>80〜319G</th><th>320G以上</th></tr>'+NovaArt.giruRates.map((row,i)=>'<tr><td>'+(i+1)+'</td>'+row.map(p=>'<td>'+Math.round(p*100)+'%</td>').join('')+'</tr>').join('')+'</table>';artPanel.append(giruTable);
@@ -13754,7 +13760,7 @@ body{
     novaSymbol(column,0),novaSymbol(column,1),novaSymbol(column,2),
     BELL_SYMBOL,column===1?SUICA_SYMBOL:ELEPHANT_SYMBOL,column===2?SUICA_SYMBOL:"7",BELL_SYMBOL,"BAR",ELEPHANT_SYMBOL,
     SUICA_SYMBOL,ELEPHANT_SYMBOL,"BAR",column===0?SUICA_SYMBOL:BELL_SYMBOL,ELEPHANT_SYMBOL,BELL_SYMBOL
-  ]);
+  ].map((symbol,index)=>index===[3,12,20][column]?NEBULA_SYMBOL:symbol));
 
   function mod(n, m){
     return ((n % m) + m) % m;
@@ -14055,6 +14061,7 @@ body{
 
   function displayedResultFromGrid(grid){
     if(A_TYPE_MODE){
+      if(grid?.[1]?.every(x=>x===NEBULA_SYMBOL))return "NEBULA";
       const novaPattern=novaPatternFromGrid(grid);if(novaPattern)return novaPattern;
       const m=grid?.[1]||[],d=[grid?.[0]?.[0],m[1],grid?.[2]?.[2]],same=(a,s)=>a.length===3&&a.every(x=>x===s),nova=x=>String(x).startsWith('NOVA_');
       if(same(m,SUICA_SYMBOL))return 'STRONG_SUICA';
@@ -14104,7 +14111,7 @@ body{
 
   function displayedResultFromRow(row){
     if(!Array.isArray(row) || row.length < 3) return "MISS";
-    const exactResults = ["BIG","MID","BAR3","SMALL","BELL","REPLAY","GRAPE","SUICA","CHERRY_TRIPLE"];
+    const exactResults = ["NEBULA","BIG","MID","BAR3","SMALL","BELL","REPLAY","GRAPE","SUICA","CHERRY_TRIPLE"];
 
     for(const result of exactResults){
       const reel = RESULT[result].reel;
@@ -14204,7 +14211,7 @@ body{
 
   function isMiddleLineOnlyResult(result){
     const display = displayResultFor(result);
-    return display === "BIG" || display === "MID" || display === "BAR3";
+    return display === "NEBULA" || display === "BIG" || display === "MID" || display === "BAR3";
   }
 
   function hasOnlyTargetPayline(grid, result, winRow=1){
@@ -14677,7 +14684,7 @@ body{
     currentSpin.manualBonusStop = false; // Fixed-G prototype: bonus starts on the next confirmed spin.
     if(normalState.flow?.zone==='sora')showOverlay('7を狙え');
     if(normalState.flow?.zone==='ouma')showOverlay('ノヴァを狙え');
-    if(normalState.flow?.zone==='urapi')showOverlay('仮図柄を狙え');
+    if(normalState.flow?.zone==='urapi')showOverlay('nebulaを狙え');
     if(resolved.artReverse)showOverlay('逆回転！ '+resolved.flowAfter.award+'G');
     if(currentSpin.bonusConfirmWaitSpin){
       showBonusConfirmScreen("solid");

@@ -3,7 +3,7 @@ for(const f of ['nova-art.js','nova-balance.js','nova-flow.js','nova-normal.js']
 export function simulate(setting,scale,games=1000000,seed=1234567){
  const a=NovaArt,n=NovaNormal,c={...a.defaults,setting},rng=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};
  let flow={phase:'normal'},state=n.normalize(),paid=0,count=0,freezes=0,ceilings=0,release=0,bonusG=0,bonusP=0;
- function bonus(kind,freeze=false){count++;const claim=n.claim(state,freeze,rng);if(state.impurity===100)release++;state=flow.phase==='art'?claim.state:n.afterBonus(claim.state,rng);let sets=claim.sets;for(let g=0;g<(kind==='MID'?15:30);g++){const r=a.drawBonus(rng,setting),pay=n.pay(r);paid+=pay;count++;bonusG++;bonusP+=pay;if(r==='STRONG_NOVA')sets++;}flow=a.afterBonus(flow,c,sets);if(flow.phase==='art'&&claim.zones.length){flow.queuedZones.push(...claim.zones);if(!flow.zone)flow=a.startZone(flow,flow.queuedZones.shift(),c);}}
+ function bonus(kind,freeze=false){count++;const claim=n.claim(state,freeze,rng);if(state.impurity===100)release++;state=flow.phase==='art'?claim.state:n.afterBonus(claim.state,rng);let sets=claim.sets;for(let g=0;g<(kind==='MID'?15:30);g++){const r=a.drawBonus(rng,setting),pay=n.pay(r);paid+=pay;count++;bonusG++;bonusP+=pay;if(r==='NEBULA')sets++;}flow=a.afterBonus(flow,c,sets);if(flow.phase==='art'&&claim.zones.length){flow.queuedZones.push(...claim.zones);if(!flow.zone)flow=a.startZone(flow,flow.queuedZones.shift(),c);}}
  while(count<games){
   if(flow.phase==='art'){if(!flow.zero)count++;const s=a.step(flow,c,rng);paid+=n.pay(s.result);flow=s.flow;if(s.internalBonus)bonus('BIG');continue;}
   count++;const t=n.spin(state,flow,setting,{scale},rng);state=t.state;paid+=n.pay(t.result);
