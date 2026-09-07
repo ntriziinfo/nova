@@ -6531,12 +6531,12 @@ body{
   .vertexConnectionBadge.offline{color:#ff8f9c;border-color:rgba(255,91,113,.65);background:rgba(52,9,17,.9)}
   .vertexConnectionBadge.legacy{color:#d4a6ff;border-color:rgba(185,109,255,.6)}
 </style>
-<link rel="stylesheet" href="nova-cabinet.css?v=20260907-toto-lamp15">
+<link rel="stylesheet" href="nova-cabinet.css?v=20260907-flow16">
 <link rel="stylesheet" href="nova-artwork.css?v=20260907-cz-lamps10">
 <script src="nova-artwork.js?v=20260907-cz-lamps10" defer></script>
-<script src="nova-art.js?v=20260907-toto-lamp15"></script>
+<script src="nova-art.js?v=20260907-flow16"></script>
 <script src="nova-balance.js?v=20260907-payout14"></script>
-<script src="nova-normal.js?v=20260907-cz-bonus13"></script>
+<script src="nova-normal.js?v=flow16-20260907-cz-bonus13"></script>
 <script src="nova-flow.js?v=20260907-cz-third12"></script>
 <style>
 /* Fit the original nebula art to reel width; its transparent vertical margins
@@ -7081,19 +7081,19 @@ body{
           <button class="dangerBtn" id="resetBtn">初期化</button>
         </div>
         <div class="help" style="margin-top:10px">
-          1Gは3pt。通常からCZ・強CZを抽選し、成功するとボーナスへ。ボーナス後は特殊図柄で獲得したARTへ（獲得なしは通常）。ART中はレア役でBIG・6種類の上乗せゾーンを抽選します。
+          1Gは3pt。通常からCZ・強CZを抽選し、成功するとボーナスへ。ボーナス後は特殊図柄で獲得したARTへ（獲得なしは通常）。ART中はレア役で特化ゾーンを抽選し、赤7揃いからルーレットへ進みます。
         </div>
       </div>
 
       <div class="card">
         <h2>ボーナス規定払い出しpt</h2>
         <div class="field">
-          <label>REG規定払い出し（83pt）</label>
-          <input id="midMulInput" type="number" min="0" max="1000" step="1" value="83" readonly />
+          <label>REG規定払い出し（75pt）</label>
+          <input id="midMulInput" type="number" min="0" max="1000" step="1" value="75" readonly />
         </div>
         <div class="field">
-          <label>BIG規定払い出し（165pt）</label>
-          <input id="bigMulInput" type="number" min="0" max="1000" step="1" value="165" readonly />
+          <label>BIG規定払い出し（150pt）</label>
+          <input id="bigMulInput" type="number" min="0" max="1000" step="1" value="150" readonly />
         </div>
         <div class="help">
           BB/RBは当選ゲームで確定告知し、規定ptを払い出し、獲得セット・既存ARTがあればARTへ、それ以外は通常へ戻ります。ベルは設定別確率で通常払い出しします。
@@ -7104,14 +7104,14 @@ body{
         <h2>Aタイプ当選役</h2>
         <div class="field">
           <label>RB 77BAR</label>
-          <input type="text" value="83pt固定" readonly />
+          <input type="text" value="75pt固定" readonly />
         </div>
         <div class="field">
           <label>BIG規定払い出しpt</label>
-          <input id="bigAddInput" type="number" min="0" max="1000" step="1" value="165" readonly />
+          <input id="bigAddInput" type="number" min="0" max="1000" step="1" value="150" readonly />
         </div>
         <div class="help">
-          BIGは165pt、REGは83pt。特殊図柄揃い1回でART＋275pt相当の1SET（専用図柄はnebula）、初当たりのART保証なし。ベルは通常・ボーナス共通8pt、リプレイは3pt。通常時のスーパーノヴァ目はBIG・フリーズ各50%。弱・強ノヴァ目はレア役です。
+          BIGは150pt、REGは75pt。特殊図柄揃い1回でART＋275pt相当の1SET（専用図柄はnebula）、初当たりのART保証なし。ベルは通常・ボーナス共通8pt、リプレイは3pt。通常時のスーパーノヴァ目はBIG・フリーズ各50%。弱・強ノヴァ目はレア役です。
         </div>
       </div>
 
@@ -7141,9 +7141,9 @@ body{
             <option value="BELL">ベル（右肩下がり8pt）</option>
 
 
-            <option value="MID">REG（77BAR/83pt）</option>
+            <option value="MID">REG（77BAR/75pt）</option>
 
-            <option value="BIG">BIG（777/165pt）</option>
+            <option value="BIG">BIG（777/150pt）</option>
             <option value="BAR3">BAR</option>
             <option value="WEAK_NOVA">弱ノヴァ目（左3連）</option>
             <option value="STRONG_NOVA">強ノヴァ目（左＋中または右3連）</option>
@@ -9437,7 +9437,7 @@ body{
   }
 
   function playPremiumBigConfirmMovie(){
-    if(A_TYPE_MODE){showOverlay('FREEZE — BIG165pt ＋ ART ＋ 特化ゾーン');showMessage('FREEZE','BIG165pt・ART確定／ギル・空・逢魔を各1/3');return true;}
+    if(A_TYPE_MODE){showOverlay('FREEZE — BIG150pt ＋ ART ＋ 特化ゾーン');showMessage('FREEZE','BIG150pt・ART確定／ギル・空・逢魔を各1/3');return true;}
     const layer = $("premiumBigReelMovie");
     if(!layer) return false;
     const video = layer.querySelector("video");
@@ -11088,7 +11088,7 @@ body{
         pendingArtStep=pendingForceResult==='ART'?{result:'MISS',flow:NovaArt.enter(settings.novaArt),message:'ART突入'}:NovaArt.step(base,{...settings.novaArt,setting:settings.setting},Math.random,pendingForceResult);
         return pendingArtStep.result;
       }
-      if(!normalState.bonusPending && normalState.flow?.phase==='art' && !['MID','BAR3'].includes(pendingForceResult) && !(pendingForceResult==='BIG'&&!normalState.flow.zone)){
+      if(!normalState.bonusPending && normalState.flow?.phase==='art' && !['MID','BAR3'].includes(pendingForceResult)){
         const token=drawIndependentATypeOutcome();pendingATypeInternalBonus=token.internalBonus;return token.result;
       }
       if(!normalState.bonusPending && (NovaNormal.rare[pendingForceResult]||['BELL','REPLAY','MISS','FREEZE'].includes(pendingForceResult))){
@@ -11871,13 +11871,13 @@ body{
     $("stSpinsInput").readOnly = !!A_TYPE_MODE;
     $("oddsMultiplierInput").value = settings.oddsMultiplier;
     if($("smallMulInput")) $("smallMulInput").value = (A_TYPE_MODE ? A_TYPE_PAYOUTS.SMALL : ROLE_PAYOUTS.SMALL) / PAYOUT_BASE;
-    if($("midMulInput")) $("midMulInput").value = A_TYPE_MODE ? 83 : ROLE_PAYOUTS.MID / PAYOUT_BASE;
+    if($("midMulInput")) $("midMulInput").value = A_TYPE_MODE ? 75 : ROLE_PAYOUTS.MID / PAYOUT_BASE;
     if($("crownMulInput")) $("crownMulInput").value = 0;
     if($("cherryMulInput")) $("cherryMulInput").value = (A_TYPE_MODE ? 2 : ROLE_PAYOUTS.CHERRY_ANY) / PAYOUT_BASE;
     if($("bellMulInput")) $("bellMulInput").value = (A_TYPE_MODE ? A_TYPE_PAYOUTS.BELL : ROLE_PAYOUTS.BELL) / PAYOUT_BASE;
     if($("suikaMulInput")) $("suikaMulInput").value = ROLE_PAYOUTS.SUICA / PAYOUT_BASE;
-    if($("bigMulInput")) $("bigMulInput").value = A_TYPE_MODE ? 165 : ROLE_PAYOUTS.BIG / PAYOUT_BASE;
-    if($("bigAddInput")) $("bigAddInput").value = A_TYPE_MODE ? 165 : 5;
+    if($("bigMulInput")) $("bigMulInput").value = A_TYPE_MODE ? 150 : ROLE_PAYOUTS.BIG / PAYOUT_BASE;
+    if($("bigAddInput")) $("bigAddInput").value = A_TYPE_MODE ? 150 : 5;
     $("autoDelayInput").value = settings.autoDelay;
     if($("masterVolume")) $("masterVolume").value = settings.masterVolume;
     if($("bgmVolume")) $("bgmVolume").value = settings.bgmVolume;
@@ -12762,8 +12762,8 @@ body{
       const bonusLabel = isRegBonus ? "RB" : aTypeBonusLabel("BIG", premiumBonus);
       const bonusTarget = aTypeBonusTarget(isRegBonus ? "MID" : "BIG", premiumBonus);
       const sourceText = resolved.bonusSource || "単独当選";
-      showMessage(`${bonusLabel}確定`, `${sourceText} / ${isRegBonus?83:165}pt / 特殊図柄揃いでARTセット獲得`);
-      log(`${bonusLabel}確定：${sourceText} / ${isRegBonus?83:165}pt`);
+      showMessage(`${bonusLabel}確定`, `${sourceText} / ${isRegBonus?75:150}pt / 特殊図柄揃いでARTセット獲得`);
+      log(`${bonusLabel}確定：${sourceText} / ${isRegBonus?75:150}pt`);
       flashReelLight("rainbow", result === "BIG" ? 2200 : 1800);
       showOverlay(`${bonusLabel} BONUS`);
       if(isRegBonus){
@@ -13094,6 +13094,7 @@ body{
   }
 
   function updateDisplay(){
+    if(!isSpinning)showZoneRoulette(session.active?null:normalState.flow);
     const active = session.active;
     const profit = stats.totalPaid - stats.totalFee;
 
@@ -13139,7 +13140,7 @@ body{
     if($("stInfoViewLegacy")) $("stInfoViewLegacy").textContent = stInfoText;
     if($("adminStInfoView")) $("adminStInfoView").textContent = stInfoText;
     const payoutScaleText = A_TYPE_MODE
-      ? `BIG165pt/REG83pt/純増2.5pt/G/ベル共通8pt/リプレイ3pt`
+      ? `BIG150pt/REG75pt/純増2.5pt/G/ベル共通8pt/リプレイ3pt`
       : `通常:ベル${NORMAL_ROLE_PAYOUTS.BELL}pt/スイカ${NORMAL_ROLE_PAYOUTS.SUICA}pt/チェリー${NORMAL_ROLE_PAYOUTS.CHERRY_ANY}pt/リプレイ${NORMAL_ROLE_PAYOUTS.REPLAY}pt/REG${NORMAL_ROLE_PAYOUTS.MID}pt / 通常小役${Math.round(NORMAL_ROLE_RATE * 100)}% / 高確小役${Math.round(HIGH_ROLE_RATE * 100)}% / ATベル${ROLE_PAYOUTS.BELL}pt/斜めベル${ROLE_PAYOUTS.BELL3}pt / 平均継続${formatRate(averageContinuationRate(settings.setting))}`;
     if($("payoutScaleView")) $("payoutScaleView").textContent = payoutScaleText;
     if($("payoutScaleViewLegacy")) $("payoutScaleViewLegacy").textContent = payoutScaleText;
@@ -13755,8 +13756,7 @@ body{
     document.getElementById('novaApplyInternal').onclick=()=>{if(isSpinning||session.active)return;normalState.internal=NovaNormal.normalize({mode:$('novaMode').value,games:$('novaModeGames').value,level:$('novaLevel').value,impurity:$('novaImpurity').value});persistState();updateDisplay();};
     const artPanel=document.createElement('details');artPanel.id='novaArtConfig';
     artPanel.innerHTML='<summary>ART・上乗せゾーン仮設定</summary><p>ART中もスイカ・強ベル・チャンス目・ノヴァ目を抽選。うらぴはnebula揃いで上乗せ。ギルは最終到達G数を加算・0G連BET無料・上限なし。</p>';
-    const artLabels={initial:'ART初期pt',rare:'ARTレア役確率',big:'レア役からBIG確率',zone:'レア役からゾーン確率',czArt:'CZ成功時ART振分',urapiGames:'うらぴ継続G数',urapiHit:'うらぴ図柄揃い確率',oumaGames:'逢魔継続G数',soraHit:'空7揃い基準率（リセット補正前）',oumaHit:'逢魔ノヴァ揃い確率',uraChance:'裏ゾーン昇格確率',soraReset:'空nebulaリセット率',soraUraReset:'裏空nebulaリセット率',oumaFreeze:'逢魔フリーズ継続率',oumaUraFreeze:'裏逢魔フリーズ継続率'};
-    for(let i=1;i<=6;i++)artLabels['direct'+i]='設定'+i+' ART直撃分母';
+    const artLabels={initial:'ART初期pt',rare:'ARTレア役確率',big:'レア役から特化当選確率A',zone:'レア役から特化当選確率B',urapiGames:'うらぴ継続G数',urapiHit:'うらぴ図柄揃い確率',oumaGames:'逢魔継続G数',soraHit:'空7揃い基準率（リセット補正前）',oumaHit:'逢魔ノヴァ揃い確率',uraChance:'裏ゾーン昇格確率',soraReset:'空nebulaリセット率',soraUraReset:'裏空nebulaリセット率',oumaFreeze:'逢魔フリーズ継続率',oumaUraFreeze:'裏逢魔フリーズ継続率'};
     const giruTable=document.createElement('div');giruTable.innerHTML='<p>ギルは1G目で基準6〜28pt、2G目から継続抽選。以降0G連で成功ごとに倍増。初期上乗せは通常275pt／裏825pt。</p>';artPanel.append(giruTable);
     const zoneTable=document.createElement('div');zoneTable.innerHTML='<p>特化ゾーン選択率（設定順）</p><table><tr><th>設定</th>'+Object.values(NovaArt.names).map(x=>'<th>'+x+'</th>').join('')+'</tr>'+NovaArt.zoneWeights.map((row,i)=>'<tr><td>'+(i+1)+'</td>'+row.map(p=>'<td>'+p+'%</td>').join('')+'</tr>').join('')+'</table><p>入口分母は従来係数を維持。初期加算への変更により、以前の目標機械割への適合は未調整です。通常小役は偶奇差なしの緩やかな設定差、ART直撃の設定差は小幅。上乗せは小さい結果を中心に、まれに大きく伸びる振分。ボーナス特殊図柄は設定別の低頻度抽選、ART1セット275pt。通常ART・ボーナス純増2.5pt/G。</p>';artPanel.append(zoneTable);const uraTable=document.createElement('div');uraTable.innerHTML='<p>各ゾーン突入時に裏へ昇格（標準3%・全設定共通）。突入時に初期値を加算。消化中に獲得した上乗せを追加。</p><table><tr><th>ゾーン</th><th>通常の初期値</th><th>裏の初期値</th></tr>'+Object.entries(NovaArt.names).map(([key,name])=>'<tr><td>'+name+'</td>'+['normal','ura'].map(type=>'<td>'+(key==='sora'?NovaArt.guarantees[type][key]:NovaArt.points(NovaArt.guarantees[type][key]))+(key==='sora'?'SET':'pt')+'</td>').join('')+'</tr>').join('')+'</table>';artPanel.append(uraTable);
     const artCfg=NovaArt.config(settings.novaArt);
@@ -14717,6 +14717,7 @@ body{
 
 
     if(!resolved.czLamp)showCzLamp(0,null);
+    if(normalState.flow?.entryStage!=='roulette')showZoneRoulette(null);
     currentSpin = {
       artReverse:!!resolved.artReverse,
       result,
@@ -14891,6 +14892,7 @@ body{
     currentSpin.stopped[i] = true;
     syncCabinetControlState();
     showCzLamp(stopOrder,currentSpin.resolved);
+    if(stopOrder===3)showZoneRoulette(currentSpin.resolved?.flowAfter);
     maybePlayPremiumBigLineupVoice(stopOrder, currentSpin);
     maybeLightBonusAnnouncementForStop(stopOrder, currentSpin);
     if(stopOrder === 1 && currentSpin.reversePushGuide){
@@ -14985,6 +14987,18 @@ body{
     playOneShotSound('assets/media/jag/cz_patrol_confirm.wav',sfxOutputVolume());
   }
 
+  var zoneRouletteTimer=null;
+  function showZoneRoulette(flow){
+    let panel=document.getElementById('zoneRoulette');
+    if(!panel){panel=document.createElement('div');panel.id='zoneRoulette';panel.setAttribute('role','status');document.querySelector('.reelArea').append(panel);}
+    clearInterval(zoneRouletteTimer);zoneRouletteTimer=null;
+    panel.hidden=!['roulette','confirmed'].includes(flow?.entryStage);
+    if(panel.hidden)return;
+    if(flow.entryStage==='confirmed'){panel.textContent=NovaArt.zoneName(flow.pendingZone)+'ゾーン確定！';return;}
+    let index=0;const names=Object.values(NovaArt.names);
+    panel.textContent='特化ゾーン抽選中… '+names[0];
+    zoneRouletteTimer=setInterval(()=>{panel.textContent='特化ゾーン抽選中… '+names[++index%names.length];},110);
+  }
   let czLampTimers=[];
   function showCzLamp(stopOrder,resolved){
     if(resolved?.czLamp&&stopOrder!==3)return;

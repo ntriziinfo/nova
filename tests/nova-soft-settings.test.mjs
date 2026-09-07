@@ -7,7 +7,7 @@ test('bonus paid-role correction preserves 2.5pt across all setting-specific spe
 test('freeze bonus uses BIG payout target, no setting hint, no old PBB sound',()=>{
  const h=fs.readFileSync('jag.html','utf8'),fn=name=>h.match(new RegExp('  function '+name+'\\([^]*?\\n  }'))[0];
  vm.runInContext('const normalizeATypeBonusKind=k=>k;const A_TYPE_MODE=true;const session={bonusKind:"BIG",premiumBonus:true};const settings={setting:6};'+['aTypeBonusTarget','pickSettingBonusEndVoiceSrc','premiumBonusEndImmediateVoiceSrc','playPremiumBigThirdStopVoice','isPremiumBigConfirmSoundContext'].map(fn).join('\n')+'\nconst currentSpin={};',ctx);
- assert.equal(vm.runInContext('aTypeBonusTarget()',ctx),165);assert.equal(vm.runInContext('pickSettingBonusEndVoiceSrc()',ctx),'');assert.equal(vm.runInContext('premiumBonusEndImmediateVoiceSrc()',ctx),'');assert.equal(vm.runInContext('playPremiumBigThirdStopVoice()',ctx),false);assert.equal(vm.runInContext('isPremiumBigConfirmSoundContext()',ctx),false);
+ assert.equal(vm.runInContext('aTypeBonusTarget()',ctx),150);assert.equal(vm.runInContext('pickSettingBonusEndVoiceSrc()',ctx),'');assert.equal(vm.runInContext('premiumBonusEndImmediateVoiceSrc()',ctx),'');assert.equal(vm.runInContext('playPremiumBigThirdStopVoice()',ctx),false);assert.equal(vm.runInContext('isPremiumBigConfirmSoundContext()',ctx),false);
  assert.match(h,/premiumChainEligible:false/);assert.doesNotMatch(h,/A_TYPE_PREMIUM_BIG_PAYOUT = 500/);
 });
 

@@ -27,7 +27,6 @@ globalThis.NovaNormal=(()=>{
   if(flow.phase==='normal'){
    if(!forced&&rng()<1/c.superDenom){token.result='SUPER_NOVA';return token;}
    const scale=options.scale??1,art=NovaArt.config(options.art),cz=NovaFlow.config(options.cz),mult=multiplier(before,c);
-   if(!forced&&rng()<scale/art['direct'+setting]){token.direct=true;return token;}
    const rareEntry=(rare[result]?.cz||0)*scale*mult;
    if(rng()<rareEntry){token.entry=rng()<.2?'STRONG_CZ':'CZ';return token;}
    if(!forced){token.entry=NovaFlow.drawEntry({...cz,czDenom:Math.max(2,cz.czDenom/(scale*mult)),strongDenom:Math.max(2,cz.strongDenom/(scale*mult))},rng);}
@@ -37,8 +36,7 @@ globalThis.NovaNormal=(()=>{
    const display=NovaFlow.lampAtStop(token.czLamp,3);
    const allLit=flow.success&&(display.stage===6||display.rainbow);
    if(flow.remaining===1&&flow.success||allLit){
-    if(!allLit&&rng()<NovaArt.config(options.art).czArt)token.direct=true;
-    else {const row=NovaBalance.normal[2];token.internalBonus={kind:rng()<row[1]/(row[0]+row[1])?'BIG':'MID',source:allLit?'CZ全員点灯':flow.phase==='cz'?'CZ成功':'強CZ成功'};}
+    {const row=NovaBalance.normal[2];token.internalBonus={kind:rng()<row[1]/(row[0]+row[1])?'BIG':'MID',source:allLit?'CZ全員点灯':flow.phase==='cz'?'CZ成功':'強CZ成功'};}
    }
   }
   return token;

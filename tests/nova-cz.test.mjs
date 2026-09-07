@@ -19,7 +19,7 @@ test('only rare roles rewrite losses; wins are absorbing and reload retains prob
 test('last game rewrite awards success and does not add CZ failure impurity',()=>{
  const loss={phase:'cz',remaining:1,success:false,winProbability:.4};
  const t=n.spin({games:0},loss,1,{},()=>0,'STRONG_NOVA');
- assert.equal(t.czFlow.success,true);assert.equal(t.direct,true);
+ assert.equal(t.czFlow.success,true);assert.equal(t.direct,false);assert.ok(t.internalBonus);
  assert.equal(t.state.impurity,n.rare.STRONG_NOVA.gain);
  const fail=n.spin({games:0},loss,1,{},()=>.99,'MISS');
  assert.equal(fail.direct,false);assert.equal(fail.internalBonus,null);assert.equal(fail.state.impurity,10);

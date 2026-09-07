@@ -50,8 +50,8 @@ test('actual stop grids match every supported outcome using real consecutive str
 test('bell pays 8 normally and throughout bonus including final game',()=>{
  assert.equal(run('normalRewardFor("BELL")'),8);
  assert.equal(run('resolveATypeBonusOutcome("BELL").reward'),8);
- assert.equal(run('session.paid=160; resolveATypeBonusOutcome("BELL").reward'),8);
- assert.equal(run('session.paid=165; resolveATypeBonusOutcome("BELL").reward'),0);
+ assert.equal(run('session.paid=145; resolveATypeBonusOutcome("BELL").reward'),8);
+ assert.equal(run('session.paid=150; resolveATypeBonusOutcome("BELL").reward'),0);
 });
 
 test('nebula alone awards a bonus ART set, and NOVA strengths no longer substitute for it',()=>{
@@ -59,7 +59,7 @@ test('nebula alone awards a bonus ART set, and NOVA strengths no longer substitu
  assert.equal(run('resolveATypeBonusOutcome("NEBULA").artSetWon'),1);
  assert.equal(run('resolveATypeBonusOutcome("NEBULA").reward'),0);
  for(const role of ['WEAK_NOVA','STRONG_NOVA','SUPER_NOVA'])assert.equal(run(`resolveATypeBonusOutcome('${role}').artSetWon`),0);
- run('session.paid=165;');assert.equal(run('resolveATypeBonusOutcome("NEBULA").artSetWon'),0);
+ run('session.paid=150;');assert.equal(run('resolveATypeBonusOutcome("NEBULA").artSetWon'),0);
  run('session.paid=0;');
 });
 test('retired forced outcomes cannot enter active play',()=>{
