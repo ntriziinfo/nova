@@ -17,7 +17,7 @@ const isNovaGrid=grid=>[0,1,2].every(r=>[0,1,2].every(c=>grid[r][c]===novaSymbol
 'mod','reelWindowFromTopIndex','normalizeATypeResult','displayResultFor','isMiddleLineOnlyResult',
 'hasBellDiagonal','cherryResultFromRow','cherryResultFromRows','displayedResultFromGrid',
 'displayedResultFromRow','gridPaylineRows','gridHasOnlyAllowedPaylines','buildNovaReelGrid',
-'normalRewardFor','resolveATypeBonusOutcome','isCherryResult','novaPatternFromGrid'
+'normalRewardFor','resolveATypeBonusOutcome','isCherryResult','novaPatternFromGrid','isNovaResult','buildForcedNovaGrid'
 ].map(fn).join('\n')+`
 const aTypeBonusRemainingNet=()=>remaining;
 let remaining=1;
@@ -52,4 +52,16 @@ test('NOVA patterns require left triple and use super then strong then weak prec
  }
  assert.equal(run('novaPatternFromGrid(null)'),'');
  assert.equal(run('novaPatternFromGrid([[novaSymbol(0,1)],[novaSymbol(0,0)],[novaSymbol(0,2)]])'),'');
+});
+test('forced NOVA outcomes survive normalization and stop at the exact requested strength without payout',()=>{
+ for(const result of ['WEAK_NOVA','STRONG_NOVA','SUPER_NOVA']){
+  assert.equal(run(`normalizeATypeResult('${result}')`),result);
+  for(let i=0;i<40;i++){
+   run(`globalThis.forcedGrid=buildNovaReelGrid('${result}');`);
+   assert.equal(run('novaPatternFromGrid(forcedGrid)'),result);
+   assert.equal(run('REEL_STRIPS.every((s,c)=>s.some((_,top)=>[0,1,2].every(r=>forcedGrid[r][c]===s[(top+r)%21])))'),true);
+  }
+  assert.equal(run(`normalRewardFor('${result}')`),0);
+  assert.equal(run(`remaining=96;resolveATypeBonusOutcome('${result}').reward`),0);
+ }
 });

@@ -7131,6 +7131,9 @@ body{
 
             <option value="BIG">BB（777/252pt）</option>
             <option value="BAR3">BAR</option>
+            <option value="WEAK_NOVA">弱ノヴァ目（左3連）</option>
+            <option value="STRONG_NOVA">強ノヴァ目（左＋中または右3連）</option>
+            <option value="SUPER_NOVA">スーパーノヴァ目（全リール3連）</option>
 
           </select>
         </div>
@@ -7457,6 +7460,9 @@ body{
   preloadSymbolImages();
 
   const RESULT = {
+    WEAK_NOVA:{name:"弱ノヴァ目",reel:["NOVA_0_1","NOVA_1_1","NOVA_2_1"],label:"弱ノヴァ目",cls:"purple",kind:"miss"},
+    STRONG_NOVA:{name:"強ノヴァ目",reel:["NOVA_0_1","NOVA_1_1","NOVA_2_1"],label:"強ノヴァ目",cls:"purple",kind:"miss"},
+    SUPER_NOVA:{name:"スーパーノヴァ目",reel:["NOVA_0_1","NOVA_1_1","NOVA_2_1"],label:"スーパーノヴァ目",cls:"gold",kind:"miss"},
     MISS:{name:"ハズレ", reel:[ELEPHANT_SYMBOL,PIERROT_SYMBOL,GRAPE_SYMBOL], label:"MISS", cls:"", kind:"miss"},
     SMALL:{name:"特殊役", reel:[PIERROT_SYMBOL,PIERROT_SYMBOL,PIERROT_SYMBOL], label:"SPECIAL", cls:"blue", kind:"payadd"},
     MID:{name:"RB", reel:["7","7","BAR"], label:"RB", cls:"purple", kind:"payadd"},
@@ -9853,6 +9859,7 @@ body{
   }
 
   function normalRewardFor(result, lineRow=1){
+    if(isNovaResult(result)) return 0;
     if(A_TYPE_MODE && (result === "BIG" || result === "MID")) return 0;
     if(A_TYPE_MODE && isCherryResult(result)) return aTypeCherryPayoutForLine(lineRow);
     if(A_TYPE_MODE && A_TYPE_PAYOUTS[result]) return A_TYPE_PAYOUTS[result];
@@ -9860,6 +9867,7 @@ body{
   }
 
   function normalizeATypeResult(result){
+    if(isNovaResult(result)) return result;
     if(result === "GRAPE") return "BELL";
     return ["MISS","BIG","MID","BELL","REPLAY","BAR3"].includes(result) ? result : "MISS";
   }
@@ -9905,12 +9913,13 @@ body{
   }
 
   function drawATypeBonusResult(){
+    if(isNovaResult(pendingForceResult)) return pendingForceResult;
     return A_TYPE_BONUS_MAIN_RESULT;
   }
 
   function resolveATypeBonusOutcome(result){
     const remainingNet = aTypeBonusRemainingNet();
-    const reward = remainingNet > 0 ? A_TYPE_BONUS_PAY_PER_GAME : 0;
+    const reward = remainingNet > 0 && !isNovaResult(result) ? A_TYPE_BONUS_PAY_PER_GAME : 0;
     return {
       reward,
       add:0,
@@ -11012,6 +11021,7 @@ body{
   function drawNormalResult(){
     if(A_TYPE_MODE){
       pendingATypeInternalBonus = null;
+      if(isNovaResult(pendingForceResult)) return pendingForceResult;
       if(normalState.bonusPending){
         if(!isChanceLampLit()) return "MISS";
         if(normalState.premiumBonus || normalState.oneGameRenBonus) return "BAR3";
@@ -13511,6 +13521,19 @@ body{
     if(triple[1] || triple[2]) return "STRONG_NOVA";
     return "WEAK_NOVA";
   }
+  function isNovaResult(result){
+    return ["WEAK_NOVA","STRONG_NOVA","SUPER_NOVA"].includes(result);
+  }
+  function buildForcedNovaGrid(result){
+    const tripleColumns = result === "SUPER_NOVA" ? [0,1,2] : result === "STRONG_NOVA" ? [0,Math.random()<0.5?1:2] : [0];
+    const columns = [0,1,2].map(column => {
+      if(tripleColumns.includes(column)) return [0,1,2].map(row=>novaSymbol(column,row));
+      const choices = REEL_STRIPS[column].map((_,top)=>reelWindowFromTopIndex(column,top))
+        .filter(items=>!items.every((symbol,row)=>symbol===novaSymbol(column,row)));
+      return choices[Math.floor(Math.random()*choices.length)];
+    });
+    return [0,1,2].map(row=>columns.map(column=>column[row]));
+  }
   const NOVA_PATTERN_NAMES = {WEAK_NOVA:"弱ノヴァ目",STRONG_NOVA:"強ノヴァ目",SUPER_NOVA:"スーパーノヴァ目"};
   function cellHtml(symbol, label, cls){
     const tile = /^NOVA_([0-2])_([0-2])$/.exec(symbol);
@@ -13805,6 +13828,7 @@ body{
   }
 
   function resultLineRow(result){
+    if(isNovaResult(result)) return 1;
     if(isMiddleLineOnlyResult(result)) return 1;
     if(result === "CHERRY_ANY" || result === "MID_CHERRY") return A_TYPE_MODE ? aTypeCherryLineRow(result) : randomLineRow();
     if(result === "BELL3") return Math.random() < 0.5 ? [0,1,2] : [2,1,0];
@@ -14089,6 +14113,7 @@ body{
   const novaStopGridCache = new Map();
   function buildNovaReelGrid(result, winRow=1){
     result = normalizeATypeResult(result);
+    if(isNovaResult(result)) return buildForcedNovaGrid(result);
     const spec = RESULT[result] || RESULT.MISS;
     if(isMiddleLineOnlyResult(result)) winRow = 1;
     const cacheKey = result + ":" + winRow;
