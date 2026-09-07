@@ -62,6 +62,6 @@ body[data-toto-color=blue]{--toto-lamp:#248aff}
 body[data-toto-color=yellow]{--toto-lamp:#ffff00}
 body[data-toto-color=green]{--toto-lamp:#38ff45}
 body[data-toto-color=red]{--toto-lamp:#ff2424}
-body[data-toto-color=rainbow] .novaArtItem[data-artwork=toto] img{animation:novaTotoRainbow 1s linear infinite!important}
+body[data-art-zone=toto][data-toto-color=rainbow] .novaArtItem[data-artwork=toto] img{animation:novaTotoRainbow 1s linear infinite!important}
 @keyframes novaTotoRainbow{from{filter:brightness(1.4) drop-shadow(0 0 12px red) hue-rotate(0deg)}to{filter:brightness(1.4) drop-shadow(0 0 12px red) hue-rotate(360deg)}}
-@media(prefers-reduced-motion:reduce){body[data-toto-color=rainbow] .novaArtItem[data-artwork=toto] img{animation:none!important;filter:brightness(1.4) drop-shadow(0 0 12px violet)!important}}
+@media(prefers-reduced-motion:reduce){body[data-art-zone=toto][data-toto-color=rainbow] .novaArtItem[data-artwork=toto] img{animation:none!important;filter:brightness(1.4) drop-shadow(0 0 12px violet)!important}}

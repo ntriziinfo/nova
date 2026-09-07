@@ -6531,10 +6531,10 @@ body{
   .vertexConnectionBadge.offline{color:#ff8f9c;border-color:rgba(255,91,113,.65);background:rgba(52,9,17,.9)}
   .vertexConnectionBadge.legacy{color:#d4a6ff;border-color:rgba(185,109,255,.6)}
 </style>
-<link rel="stylesheet" href="nova-cabinet.css?v=20260907-art1">
+<link rel="stylesheet" href="nova-cabinet.css?v=20260907-toto-lamp15">
 <link rel="stylesheet" href="nova-artwork.css?v=20260907-cz-lamps10">
 <script src="nova-artwork.js?v=20260907-cz-lamps10" defer></script>
-<script src="nova-art.js?v=20260907-payout14"></script>
+<script src="nova-art.js?v=20260907-toto-lamp15"></script>
 <script src="nova-balance.js?v=20260907-payout14"></script>
 <script src="nova-normal.js?v=20260907-cz-bonus13"></script>
 <script src="nova-flow.js?v=20260907-cz-third12"></script>
@@ -13113,7 +13113,7 @@ body{
       flowStatus.textContent=session.active ? aTypeBonusLabel(session.bonusKind)+" 残り"+aTypeBonusRemainingNet()+"pt / ART獲得"+(session.bonusArtSets||0)+"SET" : normalModeLabel();
       flowStatus.dataset.phase=session.active?"bonus":NovaFlow.normalize(normalState.flow).phase;
       document.body.dataset.artZone=session.active?'':normalState.flow?.zone||'';
-      document.body.dataset.totoColor=normalState.flow?.color||'white';
+      document.body.dataset.totoColor=document.body.dataset.artZone==='toto'?(normalState.flow?.color||'white'):'white';
     }
     $("modeTag").className = "modeTag " + ((active || isNovaRisingMode()) ? "active" : "");
     $("modeTag").textContent = A_TYPE_MODE ? (active ? `${aTypeBonusLabel(session.bonusKind)} BONUS` : normalModeLabel()) : active ? (isContinuationBattleActive() ? "継続BATTLE" : "BATTLE") : normalModeLabel();
