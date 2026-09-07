@@ -1,0 +1,15 @@
+.novaArtLayer{position:absolute;inset:0 auto auto 0;width:100%;height:var(--jag-cabinet-height);z-index:48;pointer-events:none}
+.novaArtItem{position:absolute;margin:0;padding:0;pointer-events:none}
+.novaArtItem img{display:block;width:100%;height:auto;max-width:none;pointer-events:none;user-select:none}
+.novaArtLayer.editing .novaArtItem{pointer-events:auto;cursor:move;touch-action:none;outline:1px dashed #aaa}
+.novaArtLayer.editing .novaArtItem.selected{outline:2px solid #ef89ff}
+#novaArtToggle{position:fixed;right:12px;bottom:16px;z-index:10050;font-size:12px;width:70px;height:44px;padding:4px;background:#21182c;color:#fff;border:1px solid #b18dc3;border-radius:8px}
+#novaArtPanel{position:fixed;right:12px;top:82px;z-index:10100;width:min(300px,calc(100vw - 24px));max-height:calc(100vh - 100px);overflow:auto;box-sizing:border-box;padding:16px;background:#17131e;color:#fff;border:1px solid #aa80bc;border-radius:12px;font:14px/1.5 system-ui;text-align:left;box-shadow:0 12px 40px #0009}
+#novaArtPanel[hidden]{display:none}
+#novaArtPanel h2{font:700 17px system-ui;margin:0 0 10px}
+#novaArtPanel p{font-size:12px;color:#d5ccdc}
+#novaArtPanel select,#novaArtPanel input{color:#fff;background:#302739;border:1px solid #887592;border-radius:4px;padding:6px;box-sizing:border-box;width:100%;font:14px system-ui}
+#novaArtPanel label{display:block;margin:10px 0}
+#novaArtPanel .novaArtActions{display:flex;gap:6px;flex-wrap:wrap}
+#novaArtPanel button{font:13px system-ui;color:#fff;background:#45314f;border:1px solid #9b7bae;border-radius:6px;padding:8px;box-shadow:none;transform:none}
+#novaArtPanel [role=status]{display:block;min-height:20px;margin-top:10px;font-size:12px;color:#efc9ff}
