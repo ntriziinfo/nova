@@ -6533,11 +6533,11 @@ body{
 </style>
 <link rel="stylesheet" href="nova-cabinet.css?v=20260907-art1">
 <link rel="stylesheet" href="nova-artwork.css?v=20260907-5">
-<script src="nova-artwork.js?v=20260907-normal1" defer></script>
-<script src="nova-art.js?v=20260907-normal1"></script>
-<script src="nova-balance.js?v=20260907-normal1"></script>
-<script src="nova-normal.js?v=20260907-normal1"></script>
-<script src="nova-flow.js?v=20260907-normal1"></script>
+<script src="nova-artwork.js?v=20260907-soft2" defer></script>
+<script src="nova-art.js?v=20260907-soft2"></script>
+<script src="nova-balance.js?v=20260907-soft2"></script>
+<script src="nova-normal.js?v=20260907-soft2"></script>
+<script src="nova-flow.js?v=20260907-soft2"></script>
 </head>
 <body>
 <div class="confetti" id="confetti"></div>
@@ -6732,7 +6732,7 @@ body{
             <table class="oddsTable roleCounterTable">
               <tr><td>役</td><td>回数</td><td>実践値</td></tr>
               <tr><td>BB</td><td id="roleCounterBigCount">0</td><td id="roleCounterBigOdds">-</td></tr>
-              <tr><td>PBB</td><td id="roleCounterPremiumBigCount">0</td><td id="roleCounterPremiumBigOdds">-</td></tr>
+              <tr><td>フリーズBIG</td><td id="roleCounterPremiumBigCount">0</td><td id="roleCounterPremiumBigOdds">-</td></tr>
               <tr><td>RB</td><td id="roleCounterRegCount">0</td><td id="roleCounterRegOdds">-</td></tr>
 
               <tr><td>リプレイ</td><td id="roleCounterReplayCount">0</td><td id="roleCounterReplayOdds">-</td></tr>
@@ -7398,7 +7398,7 @@ body{
     6:{solo:394.815591, cherry:922.946104}
   });
   const A_TYPE_REACH_ME_ANNOUNCE_RATE = 0;
-  const A_TYPE_PREMIUM_BIG_PAYOUT = 500;
+  const A_TYPE_PREMIUM_BIG_PAYOUT = 0;
   const A_TYPE_PAYOUTS = Object.freeze({
     BIG:252,
     MID:96,
@@ -8547,6 +8547,7 @@ body{
   }
 
   function pickSettingBonusEndVoiceSrc(settingNo = settings.setting){
+    if(A_TYPE_MODE)return ""; // No setting-identifying voice in ordinary play.
     const setting = clamp(Number(settingNo) || 1, 1, 6);
     const hits = [];
     if(setting >= 2 && Math.random() < 0.05) hits.push(2);
@@ -8564,6 +8565,7 @@ body{
   }
 
   function premiumBonusEndImmediateVoiceSrc(){
+    if(A_TYPE_MODE)return "";
     if(!isATypeBonusActive()) return "";
     if(normalizeATypeBonusKind(session.bonusKind) !== "BIG") return "";
     if(session.premiumBonus) return PREMIUM_BIG_FIRST_END_VOICE_SRC;
@@ -9346,7 +9348,7 @@ body{
     if(!premiumBigConfirmStopLock) return;
     premiumBigConfirmStopLock = false;
     if(isSpinning && spinCanStop && currentSpin && Array.isArray(currentSpin.stopped) && !currentSpin.stopped.every(Boolean)){
-      if($("resultText")) $("resultText").textContent = "PBB確定動画終了 / 停止できます";
+      if($("resultText")) $("resultText").textContent = "フリーズ告知終了 / 停止できます";
     }
     syncCabinetControlState();
     updateAutoUi();
@@ -9364,6 +9366,7 @@ body{
   }
 
   function updatePremiumBigReelMovie(){
+    if(A_TYPE_MODE){const layer=$('premiumBigReelMovie');if(layer){layer.classList.remove('show');layer.setAttribute('aria-hidden','true');const video=layer.querySelector('video');if(video){video.pause();video.removeAttribute('src');}}return;}
     const layer = $("premiumBigReelMovie");
     if(!layer) return;
     const video = layer.querySelector("video");
@@ -9398,6 +9401,7 @@ body{
   }
 
   function playPremiumBigConfirmMovie(){
+    if(A_TYPE_MODE){showOverlay('FREEZE — BIG30G ＋ ART ＋ 特化ゾーン');showMessage('FREEZE','BIG30G・ART確定／ギル・空・逢魔を各1/3');return true;}
     const layer = $("premiumBigReelMovie");
     if(!layer) return false;
     const video = layer.querySelector("video");
@@ -9890,6 +9894,7 @@ body{
   }
 
   function forceResultName(result){
+    if(result === "FREEZE")return "フリーズ";
     if(result === "REACH_ME") return "リーチ目";
     return RESULT[result]?.name || "";
   }
@@ -9899,11 +9904,12 @@ body{
   }
 
   function aTypeBonusLabel(kind=session.bonusKind, premium=(session.premiumBonus || session.oneGameRenBonus)){
-    if(normalizeATypeBonusKind(kind) !== "MID" && premium) return "PREMIUM BB";
+    if(normalizeATypeBonusKind(kind) !== "MID" && premium) return "FREEZE BIG";
     return normalizeATypeBonusKind(kind) === "MID" ? "RB" : "BB";
   }
 
   function aTypeBonusTarget(kind=session.bonusKind, premium=(session.premiumBonus || session.oneGameRenBonus)){
+    if(A_TYPE_MODE)return 0; // Fixed-game bonuses have no coin target.
     if(normalizeATypeBonusKind(kind) !== "MID" && premium) return A_TYPE_PREMIUM_BIG_PAYOUT;
     return normalizeATypeBonusKind(kind) === "MID" ? A_TYPE_PAYOUTS.MID : A_TYPE_PAYOUTS.BIG;
   }
@@ -9927,7 +9933,7 @@ body{
   function drawATypeBonusResult(){
     if(isNovaResult(pendingForceResult)) return pendingForceResult;
     if(NovaNormal.rare[pendingForceResult]||['BELL','REPLAY','MISS'].includes(pendingForceResult))return pendingForceResult;
-    return NovaArt.drawBonus();
+    return NovaArt.drawBonus(Math.random,settings.setting);
   }
 
   function resolveATypeBonusOutcome(result){
@@ -10182,7 +10188,7 @@ body{
   function pendingBonusLabel(){
     if(normalState.bonusKind === "MID") return "REG";
     if(normalState.bonusKind === "BAR3") return "BAR";
-    if(normalState.premiumBonus || normalState.oneGameRenBonus) return "BAR";
+    if(!A_TYPE_MODE && (normalState.premiumBonus || normalState.oneGameRenBonus)) return "BAR";
     return "777";
   }
 
@@ -11036,7 +11042,7 @@ body{
       if(isNovaResult(pendingForceResult)) return pendingForceResult;
       if(normalState.bonusPending){
         if(!isChanceLampLit()) return "MISS";
-        if(normalState.premiumBonus || normalState.oneGameRenBonus) return "BAR3";
+        if(!A_TYPE_MODE && (normalState.premiumBonus || normalState.oneGameRenBonus)) return "BAR3";
         return normalState.bonusKind === "MID" ? "MID" : "BIG";
       }
 
@@ -11090,7 +11096,7 @@ body{
         : normalizeNovaRisingRemain(normalState.risingRemain);
       const pendingReady = bonusPendingAtStart && (
         result === "MID" ||
-        ((normalState.premiumBonus || normalState.oneGameRenBonus) ? result === "BAR3" : result === "BIG")
+        (result === "BIG")
       );
       const directReady = !zoneSpin && !bonusPendingAtStart && !internalBonus && (result === "BIG" || result === "MID" || result === "MID_CHERRY" || result === "BAR3");
       const isNewBonusHit = !!internalBonus;
@@ -11235,6 +11241,7 @@ body{
       if(data?.settings){
         const previousAudioBalance = data.settings.audioBalanceVersion || 0;
         settings = {...settings, ...data.settings};
+        if(settings.balanceVersion!=='soft2'){settings.novaArt={...settings.novaArt,...Object.fromEntries([1,2,3,4,5,6].map(i=>['direct'+i,NovaArt.defaults['direct'+i]]))};settings.balanceVersion='soft2';}
         if(previousAudioBalance < AUDIO_BALANCE_VERSION){
           const savedBgmVolume = Number(settings.bgmVolume);
           const savedSfxVolume = Number(settings.sfxVolume);
@@ -11293,15 +11300,15 @@ body{
           bonusKind:String(data.normalState.bonusKind || ""),
           bonusSource:String(data.normalState.bonusSource || ""),
           premiumBonus:!!data.normalState.premiumBonus,
-          oneGameRenBonus:!!data.normalState.oneGameRenBonus,
+          oneGameRenBonus:false,
           bonusWaitGames:Math.max(0, Number(data.normalState.bonusWaitGames) || 0),
           bonusHitGamesSince:normalizeBonusAfterGames(data.normalState.bonusHitGamesSince),
           reachMePending:!!data.normalState.reachMePending,
           reachMeBonusKind:String(data.normalState.reachMeBonusKind || ""),
           reachMeBonusSource:String(data.normalState.reachMeBonusSource || ""),
           reachMeHitGamesSince:normalizeBonusAfterGames(data.normalState.reachMeHitGamesSince),
-          pendingSettingVoiceSrc:String(data.normalState.pendingSettingVoiceSrc || ""),
-          pendingPremiumVoiceSrc:String(data.normalState.pendingPremiumVoiceSrc || ""),
+          pendingSettingVoiceSrc:A_TYPE_MODE?"":String(data.normalState.pendingSettingVoiceSrc || ""),
+          pendingPremiumVoiceSrc:A_TYPE_MODE?"":String(data.normalState.pendingPremiumVoiceSrc || ""),
           morningCeilingActive:!!data.normalState.morningCeilingActive
         };
         if(!normalState.bonusPending){
@@ -11358,8 +11365,8 @@ body{
           risingResumeRemain:normalizeNovaRisingRemain(runtime.session.risingResumeRemain),
           risingBonusOrigin:!!runtime.session.risingBonusOrigin,
           premiumBonus:!!runtime.session.premiumBonus,
-          oneGameRenBonus:!!runtime.session.oneGameRenBonus,
-          premiumChainEligible:!!runtime.session.premiumChainEligible,
+          oneGameRenBonus:false,
+          premiumChainEligible:false,
           bonusBgmSrc:String(runtime.session.bonusBgmSrc || ""),
           battleRemain:Math.max(0, Number(runtime.session.battleRemain) || 0),
           battleWin:!!runtime.session.battleWin,
@@ -12039,7 +12046,7 @@ body{
     const endedSets = session.setNo || 0;
     const bonusLabel = aTypeEnd ? aTypeBonusLabel(session.bonusKind) : "";
     const premiumOneGameRen = !!(
-      aTypeEnd &&
+      !A_TYPE_MODE && aTypeEnd &&
       session.premiumChainEligible &&
       !session.oneGameRenBonus &&
       normalizeATypeBonusKind(session.bonusKind) === "BIG"
@@ -12450,10 +12457,10 @@ body{
     if(normalized === "MID"){
       return {src:REG_BONUS_BGM_SRC, label:"REG BGM"};
     }
-    if(options.oneGameRenBonus){
+    if(!A_TYPE_MODE && options.oneGameRenBonus){
       return {src:PREMIUM_BIG_SECOND_BGM_SRC, label:"PREMIUM BIG 1G REN BGM"};
     }
-    if(options.premiumBonus){
+    if(!A_TYPE_MODE && options.premiumBonus){
       return {src:PREMIUM_BIG_FIRST_BGM_SRC, label:"PREMIUM BIG BGM"};
     }
     if(within50){
@@ -13669,7 +13676,7 @@ body{
     const artLabels={initial:'ART初期G数',rare:'ARTレア役確率',big:'レア役からBIG確率',zone:'レア役からゾーン確率',czArt:'CZ成功時ART振分',urapiGames:'うらぴ継続G数',urapiHit:'うらぴ図柄揃い確率',oumaGames:'逢魔継続G数',soraHit:'空7揃い確率',oumaHit:'逢魔ノヴァ揃い確率'};
     for(let i=1;i<=6;i++)artLabels['direct'+i]='設定'+i+' ART直撃分母';
     const giruTable=document.createElement('div');giruTable.innerHTML='<p>ギル継続率（仮）：現在の上乗せG数で判定。上限なし。</p><table><tr><th>設定</th><th>80G未満</th><th>80〜319G</th><th>320G以上</th></tr>'+NovaArt.giruRates.map((row,i)=>'<tr><td>'+(i+1)+'</td>'+row.map(p=>'<td>'+Math.round(p*100)+'%</td>').join('')+'</tr>').join('')+'</table>';artPanel.append(giruTable);
-    const zoneTable=document.createElement('div');zoneTable.innerHTML='<p>特化ゾーン選択率（設定順）</p><table><tr><th>設定</th>'+Object.values(NovaArt.names).map(x=>'<th>'+x+'</th>').join('')+'</tr>'+NovaArt.zoneWeights.map((row,i)=>'<tr><td>'+(i+1)+'</td>'+row.map(p=>'<td>'+p+'%</td>').join('')+'</tr>').join('')+'</table><p>入口分母は標準機械割に合わせた係数を適用。確率を変更すると標準機械割の対象外です。ボーナス特殊図柄は仮に1/80、ART1セット50G。通常ART・ボーナス純増2.5pt/G。</p>';artPanel.append(zoneTable);
+    const zoneTable=document.createElement('div');zoneTable.innerHTML='<p>特化ゾーン選択率（設定順）</p><table><tr><th>設定</th>'+Object.values(NovaArt.names).map(x=>'<th>'+x+'</th>').join('')+'</tr>'+NovaArt.zoneWeights.map((row,i)=>'<tr><td>'+(i+1)+'</td>'+row.map(p=>'<td>'+p+'%</td>').join('')+'</tr>').join('')+'</table><p>入口分母は標準機械割に合わせた係数を適用。確率を変更すると標準機械割の対象外です。通常小役は共通、CZ入口の設定差は小幅。ボーナス特殊図柄は設定別の低頻度抽選、ART1セット50G。通常ART・ボーナス純増2.5pt/G。</p>';artPanel.append(zoneTable);
     const artCfg=NovaArt.config(settings.novaArt);
     for(const [key,label]of Object.entries(artLabels)){const row=document.createElement('label');row.className='field';row.textContent=label;const input=document.createElement('input');input.type='number';input.dataset.artConfig=key;input.setAttribute('aria-label',label);input.min=key.startsWith('direct')?'2':key==='initial'||key.endsWith('Games')?'1':'0';input.max=key.startsWith('direct')?'100000':key==='initial'||key.endsWith('Games')?'1000':'1';input.step=key.startsWith('direct')?'1':key==='initial'||key.endsWith('Games')?'1':'0.01';input.value=artCfg[key];row.append(input);artPanel.append(row);}
     const artSave=document.createElement('button');artSave.type='button';artSave.textContent='ART設定を保存';artSave.onclick=()=>{const value={};artPanel.querySelectorAll('input').forEach(x=>value[x.dataset.artConfig]=x.valueAsNumber);settings.novaArt=NovaArt.config(value);persistState();artSave.textContent='ART設定を保存しました';};artPanel.append(artSave);
@@ -14542,7 +14549,7 @@ body{
           : battleActiveAtSpinStart
             ? `${battleRemainText()} / 停止できます`
             : stopLocked
-              ? "PBB確定動画中... 動画終了まで停止できません"
+              ? "フリーズ告知中..."
               : "停止できます";
       }
     }, spinWaitMs);
@@ -14613,7 +14620,7 @@ body{
         (!resolved.bonusPendingAtStart && result === "BAR3")
       )
     );
-    const premiumMovieEffect = bigPremiumEffect && (!A_TYPE_MODE || !resolved.bonusHit);
+    const premiumMovieEffect = !A_TYPE_MODE && bigPremiumEffect;
     const speedModeBonusRogiEffect = speedModeSpinAtStart && !premiumMovieEffect && shouldPlaySpeedModeBonusRogi(result, resolved);
     const gekiatsuChance = premiumMovieEffect;
     const zakoEffect = decideZakoEffect(result, resolved, normalActiveAtSpinStart);
@@ -14768,7 +14775,7 @@ body{
       currentSpin.keyboardTurboStop = true;
     }
     if(isPremiumBigConfirmStopLocked()){
-      $("resultText").textContent = "PBB確定動画中... 動画終了まで停止できません";
+      $("resultText").textContent = "フリーズ告知中...";
       syncCabinetControlState();
       return;
     }
@@ -14858,7 +14865,7 @@ body{
   function stopAllReels(){
     if(!isSpinning || !currentSpin) return;
     if(isPremiumBigConfirmStopLocked()){
-      $("resultText").textContent = "PBB確定動画中... 動画終了まで停止できません";
+      $("resultText").textContent = "フリーズ告知中...";
       syncCabinetControlState();
       return;
     }
@@ -15714,6 +15721,7 @@ body{
   }
 
   function playPremiumBigConfirmVoice(label="PBB確定ボイス", src=PREMIUM_BIG_SECOND_THIRD_STOP_VOICE_SRC){
+    if(A_TYPE_MODE)return false;
     stopBigConfirmSoundNow();
     playLockedBonusConfirmSound(src, voiceOutputVolume(PREMIUM_VOICE_OUTPUT_SCALE));
     log(`${label}再生：${src.split("/").pop()}`);
@@ -15724,6 +15732,7 @@ body{
   }
 
   function playPremiumBigThirdStopVoice(spin=currentSpin){
+    if(A_TYPE_MODE)return false;
     if(spin && spin.premiumBigThirdStopVoicePlayed) return false;
     if(spin) spin.premiumBigThirdStopVoicePlayed = true;
     // PBBは通常のBIG確定音を止め、専用ボイスを確定音扱いでロック再生する。
@@ -15744,6 +15753,7 @@ body{
   }
 
   function isPremiumBigConfirmSoundContext(spin=currentSpin){
+    if(A_TYPE_MODE)return false;
     if(A_TYPE_MODE && (premiumBigConfirmMovieHold || premiumBigConfirmMovieTranslucent || premiumBigConfirmSilence)) return true;
     const resolved = spin && spin.resolved ? spin.resolved : null;
     if(A_TYPE_MODE && resolved){

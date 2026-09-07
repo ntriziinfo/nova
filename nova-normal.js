@@ -12,7 +12,7 @@ globalThis.NovaNormal=(()=>{
  function favored(v){const s=normalize(v),digit=Math.floor((s.games+1)/100)%10;return s.mode==='通常A'&&digit%2===0||s.mode==='通常B'&&digit%2===1;}
  function multiplier(v,c){c=config(c);return (normalize(v).level==='high'?c.highMultiplier:1)*(favored(v)?c.bandMultiplier:1);}
  function pay(role){return rare[role]?.pay??(role==='BELL'?8:role==='REPLAY'?3:0);}
- function drawRole(setting,rng=Math.random){let r=rng();for(const [role,spec]of Object.entries(rare)){r-=spec.p;if(r<0)return role;}const row=NovaBalance.normal[setting-1]||NovaBalance.normal[0];r-=1/row[2]+1/row[3];if(r<0)return 'BELL';return r<1/row[4]?'REPLAY':'MISS';}
+ function drawRole(setting,rng=Math.random){let r=rng();for(const [role,spec]of Object.entries(rare)){r-=spec.p;if(r<0)return role;}const row=NovaBalance.normal[2];r-=1/row[2]+1/row[3];if(r<0)return 'BELL';return r<1/row[4]?'REPLAY':'MISS';}
  function advance(value,role,flow,options={},rng=Math.random){const s=normalize(value),c=config(options);s.games++;if(rare[role]){s.impurity=Math.min(100,s.impurity+rare[role].gain);if(rng()<rare[role].up)s.level='high';}else if(role==='MISS'||role==='REPLAY'){if(rng()<(role==='MISS'?c.downMiss:c.downReplay))s.level='low';}if(s.games%100===0)s.impurity=Math.min(100,s.impurity+c.hundredGain);if(['cz','strong_cz'].includes(flow?.phase)&&flow.remaining===1&&!flow.success)s.impurity=Math.min(100,s.impurity+c.czFailureGain);return s;}
  function spin(value,flow,setting=1,options={},rng=Math.random,forced=''){
   const before=normalize(value),c=config(options.normal),result=forced||drawRole(setting,rng),state=advance(before,result,flow,c,rng),token={result,state,internalBonus:null,entry:'',direct:false};
@@ -28,7 +28,7 @@ globalThis.NovaNormal=(()=>{
    if(!forced){token.entry=NovaFlow.drawEntry({...cz,czDenom:Math.max(2,cz.czDenom/(scale*mult)),strongDenom:Math.max(2,cz.strongDenom/(scale*mult))},rng);}
   }else if(['cz','strong_cz'].includes(flow.phase)&&flow.remaining===1&&flow.success){
    if(rng()<NovaArt.config(options.art).czArt)token.direct=true;
-   else {const row=NovaBalance.normal[setting-1];token.internalBonus={kind:rng()<row[1]/(row[0]+row[1])?'BIG':'MID',source:flow.phase==='cz'?'CZ成功':'強CZ成功'};}
+   else {const row=NovaBalance.normal[2];token.internalBonus={kind:rng()<row[1]/(row[0]+row[1])?'BIG':'MID',source:flow.phase==='cz'?'CZ成功':'強CZ成功'};}
   }
   return token;
  }

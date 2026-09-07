@@ -21,11 +21,12 @@ const isNovaGrid=grid=>[0,1,2].every(r=>[0,1,2].every(c=>grid[r][c]===novaSymbol
 'hasBellDiagonal','cherryResultFromRow','cherryResultFromRows','displayedResultFromGrid',
 'displayedResultFromRow','gridPaylineRows','gridHasOnlyAllowedPaylines','buildNovaReelGrid',
 'normalRewardFor','resolveATypeBonusOutcome','isCherryResult','novaPatternFromGrid','isNovaResult','buildForcedNovaGrid',
-'drawSuperNovaBonus','resolveNormalOutcome','decideBigPremiumEffect'
+'drawSuperNovaBonus','resolveNormalOutcome','decideBigPremiumEffect','drawNormalResult'
 ].map(fn).join('\n')+`
 const aTypeBonusRemainingNet=()=>remaining;
 let remaining=1;const session={bonusGamesRemaining:30};
 let pendingATypeInternalBonus=null;let pendingArtStep=null;
+let pendingForceResult='';const isChanceLampLit=()=>true;
 const normalState={sinceBonus:20,bonusPending:false,risingRemain:0};
 const settings={};
 const NORMAL_ROLE_PAYOUTS={};
@@ -120,4 +121,13 @@ test('Sora seven is a stock only and Ouma super never invokes the normal freeze'
  assert.equal(run('soraResolved.aTypeBonusReady'),false);assert.equal(run('soraResolved.flowAfter.stock'),'1');assert.equal(run('decideBigPremiumEffect("BIG",soraResolved,true)'),false);
  run('normalState.flow=NovaArt.startZone(NovaArt.enter(),"ouma");pendingArtStep=NovaArt.step(normalState.flow,{},()=>0,"SUPER_NOVA");globalThis.oumaResolved=resolveNormalOutcome("SUPER_NOVA");');
  assert.equal(run('oumaResolved.bonusHit'),false);assert.equal(run('oumaResolved.superNovaOutcome'),'');assert.equal(run('oumaResolved.flowAfter.award'),'200');
+});
+
+test('freeze pending bonus aligns 777 and is ready without a BAR or second bonus requirement',()=>{
+ run('normalState.flow=NovaFlow.normalize(null);normalState.bonusPending=true;normalState.bonusKind="BIG";normalState.premiumBonus=true;normalState.oneGameRenBonus=false;pendingForceResult="";');
+ assert.equal(run('drawNormalResult()'),'BIG');
+ run('globalThis.freezeReady=resolveNormalOutcome("BIG");');
+ assert.equal(run('freezeReady.aTypeBonusReady'),true);
+ assert.equal(run('freezeReady.premiumBonus'),true);
+ assert.equal(run('freezeReady.oneGameRenBonus'),false);
 });

@@ -12,13 +12,13 @@ test('Giru changes continuation at 80 and 320G with setting differences',()=>{
   assert.ok(row[0]>row[1]&&row[1]>row[2]&&row[2]<.5);
  }
  let s=a.startZone(a.enter(),'giru',{setting:6});s.award='40';let t=a.step(s,{},()=>0);
- assert.equal(t.flow.award,'80');assert.match(t.message,/35%/);
+ assert.equal(t.flow.award,'80');assert.match(t.message,/31%/);
  s=a.normalize(JSON.parse(JSON.stringify(t.flow)));assert.equal(s.giruSetting,6);
  t=a.step(s,{},()=>.36);assert.equal(t.flow.zone,'');assert.equal(t.flow.remaining,'130');
 });
 test('ART natural and forced Giru entries preserve the selected setting',()=>{
  let forced=a.step(a.enter(),{setting:5},()=>0,'ZONE_giru');assert.equal(forced.flow.giruSetting,5);
- let sequence=[0,0,.2,.75];const natural=a.step(a.enter(),{setting:6},()=>sequence.shift());
+ let sequence=[0,0,.2,.82];const natural=a.step(a.enter(),{setting:6},()=>sequence.shift());
  assert.equal(natural.flow.zone,'giru');assert.equal(natural.flow.giruSetting,6);
 });
 test('all six zones preserve ART games and finish correctly',()=>{

@@ -1,15 +1,18 @@
 /* ART rules. G counts are decimal strings so unlimited doubling stays exact. */
 globalThis.NovaArt=(()=>{
  const names={sosuke:'宗介',toto:'とと',urapi:'うらぴ',giru:'ギル',sora:'空',ouma:'逢魔'};
- const defaults={initial:50,rare:.03,big:.12,zone:.4,czArt:.25,urapiGames:5,urapiHit:.4,oumaGames:5,soraHit:.25,oumaHit:.6,direct1:1800,direct2:1500,direct3:1200,direct4:900,direct5:600,direct6:400};
- const zoneWeights=Object.freeze([[40,30,15,8,5,2],[38,30,16,8,6,2],[36,29,17,9,6,3],[34,28,18,9,7,4],[31,27,19,10,8,5],[28,26,20,10,10,6]].map(Object.freeze));
+ const defaults={initial:50,rare:.03,big:.12,zone:.4,czArt:.25,urapiGames:5,urapiHit:.4,oumaGames:5,soraHit:.25,oumaHit:.6,direct1:1320,direct2:1300,direct3:1280,direct4:1260,direct5:1240,direct6:1220};
+ const zoneWeights=Object.freeze([[35,29,17,9,7,3],[34.5,29,17,9.5,7,3],[34,28.5,17.5,9.5,7.25,3.25],[33.5,28.5,17.5,9.5,7.5,3.5],[33,28,18,9.5,7.75,3.75],[32.5,27.5,18,10,8,4]].map(Object.freeze));
  function pickZone(setting=1,rng=Math.random){let roll=rng()*100;const weights=zoneWeights[validSetting(setting)-1];for(let i=0;i<6;i++){roll-=weights[i];if(roll<0)return Object.keys(names)[i];}return 'ouma';}
  const bonusSpecial=.0125;
+ const settingBias=[-.67,-.40,-.16,.19,.70,1.20];
+ const biasFor=setting=>settingBias[Math.max(0,Math.min(5,Math.round(Number(setting)||1)-1))];
+ const bonusSpecialFor=setting=>.013*(1+.15*biasFor(setting));
  function advanceBonus(state,special=false){const remaining=Math.max(0,Number(state.bonusGamesRemaining)||0);return {bonusGamesRemaining:Math.max(0,remaining-1),bonusArtSets:(Number(state.bonusArtSets)||0)+(remaining>0&&special?1:0)};}
  function drawPaidRole(zeroChance=0,bellPay=8,rng=Math.random){const bell=(5.5/(1-zeroChance)-3)/(bellPay-3);return rng()<Math.max(0,Math.min(1,bell))?'BELL':'REPLAY';}
- function drawBonus(rng=Math.random){return rng()<bonusSpecial?'STRONG_NOVA':drawPaidRole(bonusSpecial,8,rng);}
- const direct=[1800,1500,1200,900,600,400];
- const giruRates=Object.freeze([[.45,.25,.10],[.47,.27,.12],[.49,.29,.14],[.51,.31,.16],[.53,.33,.18],[.55,.35,.20]].map(Object.freeze));
+ function drawBonus(rng=Math.random,setting){const p=setting===undefined?bonusSpecial:bonusSpecialFor(setting);return rng()<p?'STRONG_NOVA':drawPaidRole(p,8,rng);}
+ const direct=[1320,1300,1280,1260,1240,1220];
+ const giruRates=Object.freeze([[.48,.28,.13],[.485,.285,.135],[.49,.29,.14],[.495,.295,.145],[.50,.30,.15],[.505,.305,.155]].map(Object.freeze));
  const validSetting=x=>Math.max(1,Math.min(6,Math.round(Number(x)||1)));
  function giruChance(award,setting=1){return giruRates[validSetting(setting)-1][integer(award)<80n?0:integer(award)<320n?1:2];}
  const integer=x=>{try{return BigInt(String(x??0))<0n?0n:BigInt(String(x??0));}catch{return 0n;}};
@@ -19,7 +22,7 @@ globalThis.NovaArt=(()=>{
  function startZone(s,z,c){s=normalize(s);const setting=validSetting(c?.setting);c=config(c);return {...s,giruSetting:setting,zone:z,zoneLeft:{sosuke:3,toto:5,urapi:c.urapiGames,giru:1,sora:10,ouma:c.oumaGames}[z],award:z==='giru'?'5':'0',zero:false,color:'white'};}
  function afterBonus(v,c,won=0){const s=v?.phase==='art'?normalize(v):normalize({});s.sets=(integer(s.sets)+integer(won)).toString();if(integer(s.remaining)===0n&&integer(s.sets)>0n){s.remaining=String(config(c).initial);s.sets=(integer(s.sets)-1n).toString();}return integer(s.remaining)>0n||integer(s.stock)>0n||s.zone?s:{phase:'normal',remaining:0,success:false};}
  function step(value,options={},rng=Math.random,forced=''){
-  const c=config(options);let s=normalize(value),result='MISS',message='',internalBonus=null,reverse=false,queuedEntered=false;
+  const c=config(options);if(options.setting){const factor=1+.2*biasFor(options.setting);c.big=Math.min(1,c.big*factor);c.zone=Math.min(1-c.big,c.zone*factor);}let s=normalize(value),result='MISS',message='',internalBonus=null,reverse=false,queuedEntered=false;
   const add=n=>{s.remaining=(integer(s.remaining)+integer(n)).toString();};
   const finish=()=>{const z=s.zone;if(z!=='sora')add(s.award);message=`${names[z]}ゾーン終了 / ${z==='sora'?s.stock+'個ストック':'＋'+s.award+'G'}`;s.zone='';s.zero=false;s.zoneLeft=0;};
   if(forced.startsWith('ZONE_')){s=startZone(s,forced.slice(5),{...c,setting:options.setting});return {result,flow:s,message:names[s.zone]+'ゾーン突入'};}
@@ -48,5 +51,5 @@ globalThis.NovaArt=(()=>{
   return {result,flow:s,message,internalBonus,reverse,zoneSpin:!!value.zone||queuedEntered};
  }
  function label(v){const s=normalize(v);return `ART ${s.remaining}G / 待機${s.sets}SET${s.zone?' / '+names[s.zone]+' '+(s.zero?'0G連':s.zoneLeft+'G'):''}${integer(s.stock)>0n?' / BIGストック '+s.stock:''}${s.zone==='giru'?' / '+s.award+'G / 継続'+Math.round(giruChance(s.award,s.giruSetting)*100)+'%':''}`;}
- return {names,defaults,direct,zoneWeights,pickZone,bonusSpecial,advanceBonus,drawPaidRole,drawBonus,giruRates,giruChance,config,normalize,enter,startZone,afterBonus,step,label};
+ return {names,defaults,direct,zoneWeights,pickZone,bonusSpecial,settingBias,biasFor,bonusSpecialFor,advanceBonus,drawPaidRole,drawBonus,giruRates,giruChance,config,normalize,enter,startZone,afterBonus,step,label};
 })();
