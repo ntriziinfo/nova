@@ -35,4 +35,6 @@ html { background:#08070a !important; background-image:none !important; }
 .jagPayoutMeter { background:#080609 !important; }
 .reels { padding:0 !important; }
 .payline { left:var(--layout-reels-x) !important; right:auto !important;
-  width:var(--layout-reels-w) !important; top:41% !important; }
+  width:var(--layout-reels-w) !important;
+  top:calc(var(--layout-reels-y) + var(--layout-reels-h) / 2 - 3%) !important;
+  height:6% !important; }

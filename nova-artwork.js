@@ -1,10 +1,17 @@
-/* Licensed originals: never crop, recolor, filter, redraw or encode these images.
- * Only layout coordinates and proportional display width may be changed. */
+/* Licensed originals remain byte-identical. User permits display-only color and
+ * brightness for lamp effects; no cropping, redraw, generation or encoding. */
 (() => {
   'use strict';
   const originals = ['ouma1','sora1','sosuke','toto','urapi','giru1'];
-  const defaults = Object.fromEntries(originals.map((id,i)=>[id,{x:i%2?81:5,y:[34,47,77][Math.floor(i/2)],w:14}]));
-  const key = 'nova_licensed_artwork_layout_v1';
+  const defaults = {
+    ouma1:{x:39.3417,y:35.3043,w:15.5},
+    sora1:{x:47.925,y:35.118,w:15.7},
+    sosuke:{x:67.5542,y:35.9391,w:10.7},
+    toto:{x:59.5417,y:36.5652,w:9.1},
+    urapi:{x:19.7667,y:34.0807,w:17.6},
+    giru1:{x:30.1667,y:35.2609,w:15.5}
+  };
+  const key = 'nova_licensed_artwork_locked_20260907';
   const clone = value => JSON.parse(JSON.stringify(value));
   const clamp = (value,min,max) => Math.max(min,Math.min(max,value));
   let positions = clone(defaults), selected = originals[0], dragging = null;
@@ -29,6 +36,21 @@
   const panel=document.createElement('section'); panel.id='novaArtPanel'; panel.hidden=true; panel.setAttribute('aria-label','イラスト配置');
   panel.innerHTML=`<h2>イラスト配置</h2><label>画像<select id="novaArtSelect">${originals.map(id=>`<option value="${id}">${id}</option>`).join('')}</select></label><p>画像をドラッグして移動できます。大きさは縦横比を保って変更します。</p><label>横位置 (%)<input id="novaArtX" type="number" min="0" max="96" step="0.1"></label><label>縦位置 (%)<input id="novaArtY" type="number" min="0" max="96" step="0.1"></label><label>表示幅 (%)<input id="novaArtW" type="number" min="4" max="45" step="0.1"></label><div class="novaArtActions"><button type="button" id="novaArtSave">保存</button><button type="button" id="novaArtReset">選択画像を戻す</button><button type="button" id="novaArtClose">閉じる</button></div><output role="status" id="novaArtStatus"></output><p>保存先はこのブラウザーです。原本画像は変更しません。</p>`;
   document.body.append(panel);
+  const lampControls=document.createElement('label');
+  lampControls.innerHTML='ランプ表示<select id="novaLampMode"><option value="auto">自動（通常・告知・ボーナス）</option><option value="dim">通常・暗め</option><option value="blink">点滅</option><option value="rainbow">七色発光</option></select>';
+  panel.querySelector('h2').after(lampControls);
+  const lampMode=panel.querySelector('#novaLampMode');
+  const machine=document.getElementById('machine');
+  const chance=document.getElementById('jagGogoChance');
+  function syncLamp(){
+    const automatic=machine.classList.contains('active')?'rainbow':chance?.classList.contains('is-lit')?'blink':'dim';
+    layer.dataset.lamp=lampMode.value==='auto'?automatic:lampMode.value;
+  }
+  lampMode.addEventListener('change',syncLamp);
+  const lampObserver=new MutationObserver(syncLamp);
+  lampObserver.observe(machine,{attributes:true,attributeFilter:['class']});
+  if(chance)lampObserver.observe(chance,{attributes:true,attributeFilter:['class']});
+  syncLamp();
   const status=panel.querySelector('#novaArtStatus');
   const fields={x:panel.querySelector('#novaArtX'),y:panel.querySelector('#novaArtY'),w:panel.querySelector('#novaArtW')};
   function render(id){
@@ -44,7 +66,7 @@
     for(const [field,input] of Object.entries(fields)) input.value=positions[selected][field].toFixed(1);
     for(const [id,item] of items) item.classList.toggle('selected',id===selected);
   }
-  function setOpen(open){panel.hidden=!open;layer.classList.toggle('editing',open);toggle.setAttribute('aria-expanded',String(open));sync();}
+  function setOpen(open){panel.hidden=!open;layer.classList.toggle('editing',open);toggle.setAttribute('aria-expanded',String(open));if(!open){lampMode.value='auto';syncLamp();}sync();}
   toggle.addEventListener('click',event=>{event.stopPropagation();setOpen(panel.hidden)});
   panel.addEventListener('click',event=>event.stopPropagation());
   panel.querySelector('#novaArtSelect').addEventListener('change',event=>{selected=event.target.value;sync();status.textContent='';});
