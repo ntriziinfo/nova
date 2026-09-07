@@ -7292,7 +7292,7 @@ body{
   const SEVEN_CONFIRM_SOUND_SRC = "assets/media/jag/big_kakutei.wav";
   const REG_CONFIRM_SOUND_SRC = "assets/media/jag/reg_kakutei.wav";
   const BONUS_CONFIRM_SOUND_SRC = "assets/media/jag/big_confirm.mp3";
-  const BONUS_END_BGM_SRC = "assets/media/jag/bonus_end.wav" + BGM_ASSET_VERSION;
+  const BONUS_END_BGM_SRC = "assets/media/nova/bonus_art_end.wav";
   const PREMIUM_BONUS_END_VOICE_SRC = "assets/media/jag/premium_bonus_end_voice.wav";
   const PREMIUM_BIG_FIRST_THIRD_STOP_VOICE_SRC = "assets/media/jag/premium_bb2_bgm.mp3";
   const PREMIUM_BIG_SECOND_THIRD_STOP_VOICE_SRC = PREMIUM_BONUS_END_VOICE_SRC;
@@ -7564,7 +7564,7 @@ body{
     [REG_BONUS_BGM_SRC]: dbToGain(-2),
     [PREMIUM_BIG_FIRST_BGM_SRC]: dbToGain(-3.5),
     [PREMIUM_BIG_SECOND_BGM_SRC]: dbToGain(-7),
-    [BONUS_END_BGM_SRC]: dbToGain(-3),
+    [BONUS_END_BGM_SRC]: dbToGain(0),
     [PAYOUT_SOUND_SRC]: dbToGain(-0.5),
     [REPLAY_SOUND_SRC]: dbToGain(0),
     [CHERRY_SOUND_SRC]: dbToGain(1),
@@ -8621,6 +8621,12 @@ body{
       log("設定示唆ボイス：ボーナス後1G目レバーON");
     }
     return true;
+  }
+
+  function playArtEndSound(resolved){
+    if(resolved?.flowBefore?.phase!=='art'||resolved.flowAfter?.phase!=='normal'||resolved.bonusHit||resolved.artEndSoundPlayed)return;
+    resolved.artEndSoundPlayed=true;
+    playOneShotSound(BONUS_END_BGM_SRC,bgmOutputVolume(BGM_OUTPUT_SCALE));
   }
 
   function playBonusEndBgmThen(callback){
@@ -15044,6 +15050,7 @@ body{
     const stopAutoAtFirstHit = currentSpin && currentSpin.normalActiveAtStart && isAtFirstHitForAuto(resolved);
     if(currentSpin && currentSpin.normalActiveAtStart){
       applyNormalResult(result, resolved, lineRow);
+      playArtEndSound(resolved);
       if(resolved.flowBefore?.phase!==normalState.flow?.phase && (['cz','strong_cz','art'].includes(resolved.flowBefore?.phase)||['cz','strong_cz','art'].includes(normalState.flow?.phase))){
         pauseNormalBgm();
         playNormalBgm();
