@@ -1,11 +1,13 @@
 /* Pure game-flow rules. Licensed visual/audio assets are not processed here. */
 globalThis.NovaFlow = (() => {
-  const defaults = Object.freeze({czGames:10,strongGames:10,czChance:.4,strongChance:.7,czDenom:120,strongDenom:600});
+  const defaults = Object.freeze({czGames:15,strongGames:15,czMaxGames:20,strongMaxGames:20,czChance:.4,strongChance:.7,czDenom:120,strongDenom:600});
   const rt = Object.freeze({games:50,replay:.6,bell:.3,miss:.1,netPerGame:1.2});
   const bounded=(value,fallback,min,max)=>Number.isFinite(Number(value))?Math.min(max,Math.max(min,Number(value))):fallback;
   function config(value={}){
     value=value&&typeof value==='object'?value:{};
-    return {czGames:Math.round(bounded(value.czGames,10,1,100)),strongGames:Math.round(bounded(value.strongGames,10,1,100)),
+    const czGames=Math.round(bounded(value.czGames===10&&value.czMaxGames==null?15:value.czGames,15,1,100));
+    const strongGames=Math.round(bounded(value.strongGames===10&&value.strongMaxGames==null?15:value.strongGames,15,1,100));
+    return {czGames,strongGames,czMaxGames:Math.round(bounded(value.czMaxGames,Math.max(20,czGames),czGames,100)),strongMaxGames:Math.round(bounded(value.strongMaxGames,Math.max(20,strongGames),strongGames,100)),
       czChance:bounded(value.czChance,.4,0,1),strongChance:bounded(value.strongChance,.7,0,1),
       czDenom:bounded(value.czDenom,120,2,100000),strongDenom:bounded(value.strongDenom,600,2,100000)};
   }
@@ -41,7 +43,13 @@ globalThis.NovaFlow = (() => {
     let roll=rollValue*w.reduce((a,b)=>a+b,0),index=w.findIndex(v=>(roll-=v)<0);
     if(index<0)index=s.success?5:0;
     const rainbow=index===5&&s.success&&rainbowValue<.5;
-    return {stage:rainbow?5:index+1,rainbow};
+    return {stage:rainbow?5:index+1,rainbow,rainbowAt:1+Math.floor(rainbowValue*2*s.totalGames)};
+  }
+  function lampAtStop(lamp,stopOrder){
+    if(!lamp||stopOrder!==3)return null;
+    const elapsed=lamp.totalGames-lamp.remaining+1;
+    const rainbow=!!lamp.rainbow&&elapsed>=(lamp.rainbowAt||1);
+    return {stage:Math.min(lamp.stage,Math.ceil(6*elapsed/lamp.totalGames)),rainbow};
   }
   function normalize(value){
     if(value?.phase==='art')return NovaArt.normalize(value);
@@ -54,8 +62,10 @@ globalThis.NovaFlow = (() => {
       rainbowRoll:Number.isFinite(value?.rainbowRoll)?bounded(value.rainbowRoll,0,0,.999999999):null};
   }
   function enterCZ(strong,options=defaults,random=Math.random){
-    const cfg=config(options);
-    return {phase:strong?'strong_cz':'cz',remaining:strong?cfg.strongGames:cfg.czGames,success:random()<(strong?cfg.strongChance:cfg.czChance),winProbability:strong?cfg.strongChance:cfg.czChance,totalGames:strong?cfg.strongGames:cfg.czGames,lampRoll:random(),rainbowRoll:random()};
+    const cfg=config(options),success=random()<(strong?cfg.strongChance:cfg.czChance);
+    const min=strong?cfg.strongGames:cfg.czGames,max=strong?cfg.strongMaxGames:cfg.czMaxGames;
+    const games=min+Math.min(max-min,Math.floor(random()*(max-min+1)));
+    return {phase:strong?'strong_cz':'cz',remaining:games,success,winProbability:strong?cfg.strongChance:cfg.czChance,totalGames:games,lampRoll:random(),rainbowRoll:random()};
   }
   function afterBonus(value,options,sets=0){return NovaArt.afterBonus(value,options,sets);}
   function advance(value){
@@ -78,5 +88,5 @@ globalThis.NovaFlow = (() => {
     return s.phase==='rt'?`RT 残り${s.remaining}G / 純増1.2pt`:
       s.phase==='cz'?`CZ 残り${s.remaining}G`:s.phase==='strong_cz'?`強CZ 残り${s.remaining}G`:'通常';
   }
-  return Object.freeze({defaults,rewriteRates,lampConfidence,lampWeights,drawLamp,rewrite,rt,config,normalize,enterCZ,afterBonus,advance,drawEntry,drawRT,label});
+  return Object.freeze({defaults,rewriteRates,lampConfidence,lampWeights,drawLamp,lampAtStop,rewrite,rt,config,normalize,enterCZ,afterBonus,advance,drawEntry,drawRT,label});
 })();

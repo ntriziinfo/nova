@@ -11,13 +11,13 @@ test('CZ and strong CZ defaults and exact success thresholds',()=>{
  assert.equal(flow.enterCZ(false,undefined,()=>.4).success,false);
  assert.equal(flow.enterCZ(true,undefined,()=>.699999).success,true);
  assert.equal(flow.enterCZ(true,undefined,()=>.7).success,false);
- assert.equal(flow.enterCZ(false).remaining,10);
- assert.equal(flow.enterCZ(true).remaining,10);
+ assert.equal(flow.enterCZ(false,undefined,()=>0).remaining,15);
+ assert.equal(flow.enterCZ(true,undefined,()=>.999).remaining,20);
 });
-test('CZ consumes exactly ten subsequent games and persists success across reload',()=>{
+test('CZ consumes its selected number of subsequent games and persists success across reload',()=>{
  let state=flow.enterCZ(true,undefined,()=>0);
  state=flow.normalize(JSON.parse(JSON.stringify(state)));
- for(let i=0;i<9;i++){assert.equal(state.remaining,10-i);state=flow.advance(state);}
+ for(let i=0;i<14;i++){assert.equal(state.remaining,15-i);state=flow.advance(state);}
  assert.equal(state.remaining,1);assert.equal(state.success,true);
  state=flow.advance(state);assert.equal(state.phase,'normal');
 });

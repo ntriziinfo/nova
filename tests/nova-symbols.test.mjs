@@ -103,7 +103,7 @@ test('Super NOVA draws exactly one 50:50 BIG or freeze outcome without premium r
  assert.equal(run('bonusOutcome.reward'),0);
 });
 test('game resolver carries CZ entry and final success into the bonus pipeline',()=>{
- run('settings.novaFlow={czGames:2,czChance:1};normalState.flow=NovaFlow.normalize(null);globalThis.entry=resolveNormalOutcome("CZ");');
+ run('settings.novaFlow={czGames:2,czMaxGames:2,czChance:1};normalState.flow=NovaFlow.normalize(null);globalThis.entry=resolveNormalOutcome("CZ");');
  assert.equal(run('entry.flowAfter.phase'),'cz');
  assert.equal(run('entry.flowAfter.remaining'),2);
  assert.equal(run('entry.bonusHit'),false);

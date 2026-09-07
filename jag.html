@@ -6537,7 +6537,7 @@ body{
 <script src="nova-art.js?v=20260907-cz-lamps10"></script>
 <script src="nova-balance.js?v=20260907-cz-lamps10"></script>
 <script src="nova-normal.js?v=20260907-art-reset11"></script>
-<script src="nova-flow.js?v=20260907-cz-lamps10"></script>
+<script src="nova-flow.js?v=20260907-cz-third12"></script>
 <style>
 /* Fit the original nebula art to reel width; its transparent vertical margins
    no longer shrink the lettering to the cell height. Keep native proportions. */
@@ -7118,9 +7118,11 @@ body{
       <div class="card secret" id="secretPanel">
         <h2>非公開デバッグ</h2>
         <details><summary>CZ仮設定</summary>
-        <p>CZは突入時抽選＋レア小役で当選へ書き換え。成功でボーナスまたはART、失敗で通常へ。CZ中の停止でキャラクター告知。</p>
-        <label>CZ 継続G<input type="number" min="1" max="100" data-flow-config="czGames"></label>
-        <label>強CZ 継続G<input type="number" min="1" max="100" data-flow-config="strongGames"></label>
+        <p>CZは突入時抽選＋レア小役で当選へ書き換え。成功でボーナスまたはART、失敗で通常へ。CZ・強CZは15〜20G。第三停止で点灯・最終失敗を告知。突然の全員レインボーは当たり確定。</p>
+        <label>CZ 最短G<input type="number" min="1" max="100" data-flow-config="czGames"></label>
+        <label>強CZ 最短G<input type="number" min="1" max="100" data-flow-config="strongGames"></label>
+        <label>CZ 最長G<input type="number" min="1" max="100" data-flow-config="czMaxGames"></label>
+        <label>強CZ 最長G<input type="number" min="1" max="100" data-flow-config="strongMaxGames"></label>
         <label>CZ 突入時当選率 (%)<input type="number" min="0" max="100" data-flow-config="czChance"></label>
         <label>強CZ 突入時当選率 (%)<input type="number" min="0" max="100" data-flow-config="strongChance"></label>
         <label>CZ 突入率 1/<input type="number" min="2" max="100000" data-flow-config="czDenom"></label>
@@ -12688,7 +12690,7 @@ body{
 
     if(A_TYPE_MODE && (resolved.czEntry || resolved.rtCompleted || (resolved.czCompleted && !resolved.bonusHit))){
       if(resolved.artMessage){showMessage(resolved.artMessage,normalModeLabel());showOverlay(resolved.artMessage);log(resolved.artMessage);return;}
-      const message=resolved.czEntry ? (result === "STRONG_CZ" ? "強CZ突入" : "CZ突入") : resolved.rtCompleted ? "RT終了" : "CZ終了";
+      const message=resolved.czEntry ? (result === "STRONG_CZ" ? "強CZ突入" : "CZ突入") : resolved.rtCompleted ? "RT終了" : "CZ失敗";
       showMessage(message, normalModeLabel()+normalRewardText);
       log(message+" / "+normalModeLabel());
       showOverlay(message);
@@ -14665,7 +14667,7 @@ body{
     const gekiatsuChance = premiumMovieEffect;
     const zakoEffect = decideZakoEffect(result, resolved, normalActiveAtSpinStart);
     const bonusAnnouncementTiming = !reachMeLine && shouldScheduleBonusAnnouncement(normalActiveAtSpinStart, resolved)
-      ? (A_TYPE_MODE && resolved.premiumBonus
+      ? (resolved.czLamp ? "stop3" : A_TYPE_MODE && resolved.premiumBonus
         ? "lever"
         : (A_TYPE_MODE && resolved.bonusHit && resolved.bonusSource === "チェリー同時当選")
           ? "stop3"
@@ -14937,17 +14939,18 @@ body{
 
   let czLampTimers=[];
   function showCzLamp(stopOrder,resolved){
+    if(resolved?.czLamp&&stopOrder!==3)return;
     czLampTimers.forEach(clearTimeout);czLampTimers=[];
     const lamp=resolved?.czLamp,machine=document.getElementById('machine');
     if(!lamp){machine.dataset.czLamp='0';machine.dataset.czRainbow='false';return;}
-    const progress=(lamp.totalGames-lamp.remaining+stopOrder/3)/lamp.totalGames;
-    const target=Math.min(lamp.stage,Math.ceil(6*progress));
+    const display=NovaFlow.lampAtStop(lamp,stopOrder);
+    const target=display.stage;
     const previous=Number(machine.dataset.czLamp)||0;
     for(let stage=previous+1;stage<=target;stage++){
       czLampTimers.push(setTimeout(()=>{machine.dataset.czLamp=String(stage);},(stage-previous-1)*100));
     }
-    if(lamp.rainbow&&target>=5&&stopOrder===3){
-      czLampTimers.push(setTimeout(()=>{machine.dataset.czRainbow='true';},Math.max(0,target-previous)*100));
+    if(display.rainbow){
+      czLampTimers.push(setTimeout(()=>{machine.dataset.czRainbow='true';},0));
     }
   }
 

@@ -52,5 +52,31 @@ test('shared presentation quantile never lowers the target after probability inc
   }
  }
  const saved=f.normalize(JSON.parse(JSON.stringify(f.enterCZ(false,undefined,()=>.35))));
- assert.equal(saved.lampRoll,.35);assert.equal(saved.rainbowRoll,.35);assert.equal(saved.totalGames,10);
+ assert.equal(saved.lampRoll,.35);assert.equal(saved.rainbowRoll,.35);assert.equal(saved.totalGames,17);
+});
+
+test('duration draws all 15 through 20G evenly and migrates old 10G defaults',()=>{
+ for(const strong of [false,true])for(let i=0;i<6;i++){
+  let calls=0;const state=f.enterCZ(strong,{czGames:10,strongGames:10},()=>calls++===0?.9:(i+.5)/6);
+  assert.equal(state.remaining,15+i);assert.equal(state.totalGames,15+i);
+ }
+});
+test('only third stop advances lamps and surprise rainbow can appear from the first CZ game',()=>{
+ const lamp={stage:5,rainbow:true,rainbowAt:1,totalGames:20,remaining:20};
+ assert.equal(f.lampAtStop(lamp,1),null);assert.equal(f.lampAtStop(lamp,2),null);
+ const shown=f.lampAtStop(lamp,3);assert.equal(shown.stage,1);assert.equal(shown.rainbow,true);
+ assert.equal(f.lampAtStop({...lamp,rainbowAt:20},3).rainbow,false);
+ assert.equal(f.lampAtStop({...lamp,rainbowAt:20,remaining:1},3).rainbow,true);
+});
+
+test('live stop handler leaves first two stops dark and applies surprise rainbow on third',()=>{
+ const html=fs.readFileSync('jag.html','utf8'),handler=html.match(/  function showCzLamp\([^]*?\n  }/)[0];
+ const machine={dataset:{czLamp:'0',czRainbow:'false'}};
+ ctx.document={getElementById:()=>machine};ctx.setTimeout=fn=>{fn();return 1;};ctx.clearTimeout=()=>{};
+ vm.runInContext('let czLampTimers=[];'+handler,ctx);
+ ctx.showCzLamp(1,{czLamp:{stage:5,rainbow:true,rainbowAt:1,totalGames:20,remaining:20}});
+ ctx.showCzLamp(2,{czLamp:{stage:5,rainbow:true,rainbowAt:1,totalGames:20,remaining:20}});
+ assert.equal(machine.dataset.czLamp,'0');assert.equal(machine.dataset.czRainbow,'false');
+ ctx.showCzLamp(3,{czLamp:{stage:5,rainbow:true,rainbowAt:1,totalGames:20,remaining:20}});
+ assert.equal(machine.dataset.czLamp,'1');assert.equal(machine.dataset.czRainbow,'true');
 });
