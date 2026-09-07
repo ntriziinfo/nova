@@ -2,7 +2,7 @@ import fs from 'node:fs';import vm from 'node:vm';
 for(const f of ['nova-art.js','nova-balance.js','nova-flow.js','nova-normal.js'])vm.runInThisContext(fs.readFileSync(f,'utf8'));
 export function simulate(setting,scale,games=1000000,seed=1234567,options={}){
  const a=NovaArt,n=NovaNormal,c={...a.defaults,setting},rng=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};
- let flow={phase:'normal'},state=options.initialImpurity===undefined?n.reset(rng):n.normalize({impurity:options.initialImpurity}),paid=0,count=0,fee=0,replay=false,freezes=0,ceilings=0,release=0,bonusG=0,bonusP=0,bonusFee=0,peak=0,maxDrawdown=0,maxNormalGames=0,artStart=null,maxArtNet=0;
+ let flow={phase:'normal'},state=options.initialImpurity===undefined?n.reset(rng,setting):n.normalize({impurity:options.initialImpurity}),paid=0,count=0,fee=0,replay=false,freezes=0,ceilings=0,release=0,bonusG=0,bonusP=0,bonusFee=0,peak=0,maxDrawdown=0,maxNormalGames=0,artStart=null,maxArtNet=0;
  const sessionEnd=Symbol("session end");
  const bet=()=>{track();if(options.exactGames&&count>=games)throw sessionEnd;count++;if(!replay)fee+=3;replay=false;};
  const track=()=>{const net=paid-fee;peak=Math.max(peak,net);maxDrawdown=Math.max(maxDrawdown,peak-net);if(artStart!==null)maxArtNet=Math.max(maxArtNet,net-artStart);};
