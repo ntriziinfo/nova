@@ -56,3 +56,12 @@ html { background:#08070a !important; background-image:none !important; }
 #novaFlowStatus[data-phase=rt]{color:#8ff8ff;border-color:#469ba4}
 #novaFlowStatus[data-phase=cz]{color:#efa8ff;border-color:#ba63cd}
 #novaFlowStatus[data-phase=strong_cz]{color:#ffe087;border-color:#d1a035}
+#novaFlowStatus[data-phase=art]{color:#8ff8ff;border-color:#469ba4;font-size:12px;overflow-wrap:anywhere;line-height:17px;max-height:65px;overflow:auto}
+body[data-art-zone=toto] .novaArtItem[data-artwork=toto] img{animation:none!important;filter:brightness(1.25) drop-shadow(0 0 12px var(--toto-lamp,#fff))!important}
+body[data-toto-color=blue]{--toto-lamp:#248aff}
+body[data-toto-color=yellow]{--toto-lamp:#ffff00}
+body[data-toto-color=green]{--toto-lamp:#38ff45}
+body[data-toto-color=red]{--toto-lamp:#ff2424}
+body[data-toto-color=rainbow] .novaArtItem[data-artwork=toto] img{animation:novaTotoRainbow 1s linear infinite!important}
+@keyframes novaTotoRainbow{from{filter:brightness(1.4) drop-shadow(0 0 12px red) hue-rotate(0deg)}to{filter:brightness(1.4) drop-shadow(0 0 12px red) hue-rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){body[data-toto-color=rainbow] .novaArtItem[data-artwork=toto] img{animation:none!important;filter:brightness(1.4) drop-shadow(0 0 12px violet)!important}}

@@ -5,6 +5,7 @@ import vm from 'node:vm';
 const source=fs.readFileSync('jag.html','utf8');
 const fn=name=>source.match(new RegExp('  function '+name+'\\([^]*?\\n  }'))[0];
 const context=vm.createContext({});
+vm.runInContext(fs.readFileSync('nova-art.js','utf8'),context);
 vm.runInContext(fs.readFileSync('nova-flow.js','utf8'),context);
 const constants=source.slice(source.indexOf('  const A_TYPE_PAYOUTS'),source.indexOf('  const symbolImagePreloads'));
 const result=source.slice(source.indexOf('  const RESULT ='),source.indexOf('  const SETTING_PROFILE'));
@@ -23,7 +24,7 @@ const isNovaGrid=grid=>[0,1,2].every(r=>[0,1,2].every(c=>grid[r][c]===novaSymbol
 ].map(fn).join('\n')+`
 const aTypeBonusRemainingNet=()=>remaining;
 let remaining=1;
-let pendingATypeInternalBonus=null;
+let pendingATypeInternalBonus=null;let pendingArtStep=null;
 const normalState={sinceBonus:20,bonusPending:false,risingRemain:0};
 const settings={};
 const NORMAL_ROLE_PAYOUTS={};
@@ -103,13 +104,19 @@ test('game resolver carries CZ entry and final success into the bonus pipeline',
  assert.equal(run('czLast.bonusSource'),'CZ成功');
  assert.equal(run('czLast.flowAfter.phase'),'normal');
 });
-test('game resolver expires RT on its fiftieth game with no automatic bonus',()=>{
+test('game resolver expires ART on its fiftieth game with no automatic bonus',()=>{
  run('normalState.flow=NovaFlow.afterBonus();');
  for(let i=0;i<50;i++){
-  run('globalThis.rtSpin=resolveNormalOutcome("REPLAY");normalState.flow=rtSpin.flowAfter;');
-  assert.equal(run('rtSpin.rtCompleted'),i===49);
+  run('pendingArtStep=NovaArt.step(normalState.flow,{rare:0},()=>0);globalThis.rtSpin=resolveNormalOutcome("REPLAY");normalState.flow=rtSpin.flowAfter;');
+  assert.equal(run('rtSpin.flowAfter.phase'),i===49?'normal':'art');
   assert.equal(run('rtSpin.reward'),3);
   assert.equal(run('rtSpin.bonusHit'),false);
  }
  assert.equal(run('normalState.flow.phase'),'normal');
+});
+test('Sora seven is a stock only and Ouma super never invokes the normal freeze',()=>{
+ run('normalState.bonusPending=false;normalState.flow=NovaArt.startZone(NovaArt.enter(),"sora");pendingArtStep=NovaArt.step(normalState.flow,{soraHit:1},()=>0);globalThis.soraResolved=resolveNormalOutcome("BIG");');
+ assert.equal(run('soraResolved.aTypeBonusReady'),false);assert.equal(run('soraResolved.flowAfter.stock'),'1');assert.equal(run('decideBigPremiumEffect("BIG",soraResolved,true)'),false);
+ run('normalState.flow=NovaArt.startZone(NovaArt.enter(),"ouma");pendingArtStep=NovaArt.step(normalState.flow,{},()=>0,"SUPER_NOVA");globalThis.oumaResolved=resolveNormalOutcome("SUPER_NOVA");');
+ assert.equal(run('oumaResolved.bonusHit'),false);assert.equal(run('oumaResolved.superNovaOutcome'),'');assert.equal(run('oumaResolved.flowAfter.award'),'200');
 });

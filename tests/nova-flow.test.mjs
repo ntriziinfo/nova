@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
 const context=vm.createContext({});
+vm.runInContext(fs.readFileSync('nova-art.js','utf8'),context);
 vm.runInContext(fs.readFileSync('nova-flow.js','utf8'),context);
 const flow=context.NovaFlow;
 test('CZ and strong CZ defaults and exact success thresholds',()=>{
@@ -20,13 +21,13 @@ test('CZ consumes exactly ten subsequent games and persists success across reloa
  assert.equal(state.remaining,1);assert.equal(state.success,true);
  state=flow.advance(state);assert.equal(state.phase,'normal');
 });
-test('RT starts at 50 and returns to normal only after the 50th game',()=>{
+test('ART starts at 50 and returns to normal only after the 50th game',()=>{
  let state=flow.afterBonus();
- for(let n=50;n>0;n--){assert.equal(state.phase,'rt');assert.equal(state.remaining,n);state=flow.advance(state);}
+ for(let n=50;n>0;n--){assert.equal(state.phase,'art');assert.equal(state.remaining,String(n));state=context.NovaArt.step(state,{rare:0},()=>0).flow;}
  assert.equal(state.phase,'normal');assert.equal(state.remaining,0);
  assert.equal(flow.normalize({phase:'rising',remaining:32}).phase,'normal');
 });
-test('RT distribution yields expected net 1.2pt with 3pt BET',()=>{
+test('Base replay/bell distribution yields expected net 1.2pt with 3pt BET',()=>{
  const counts={REPLAY:0,BELL:0,MISS:0};
  for(let i=0;i<10000;i++)counts[flow.drawRT(()=> (i+.5)/10000)]++;
  assert.deepEqual(counts,{REPLAY:6000,BELL:3000,MISS:1000});
@@ -40,7 +41,7 @@ test('normal entry lottery has separate CZ and strong CZ rates',()=>{
 test('new flow and isolated state storage are wired into game',()=>{
  const game=fs.readFileSync('jag.html','utf8');
  assert.match(game,/nova-flow\.js/);
- assert.match(game,/normalState\.flow = premiumOneGameRen \? NovaFlow\.normalize\(null\) : NovaFlow\.afterBonus\(\)/);
+ assert.match(game,/normalState\.flow = premiumOneGameRen \? normalState\.flow : NovaFlow\.afterBonus/);
  assert.match(game,/flow:NovaFlow\.normalize\(data\.normalState\.flow\)/);
  assert.match(game,/nova_slot_state_v1_/);
  const draw=game.slice(game.indexOf('  function drawIndependentATypeOutcome(){'),game.indexOf('  function drawNormalResult(){'));

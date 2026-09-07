@@ -1,0 +1,24 @@
+import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
+const ctx=vm.createContext({});vm.runInContext(fs.readFileSync('nova-art.js','utf8'),ctx);const a=ctx.NovaArt;
+test('all six zones preserve ART games and finish correctly',()=>{
+ for(const zone of Object.keys(a.names)){let s=a.startZone(a.enter(),zone);let n=0;while(s.zone&&n++<20)s=a.step(s,{},()=>.99).flow;assert.equal(s.zone,'');assert.ok(BigInt(s.remaining)>=50n);assert.equal(n,{sosuke:3,toto:5,urapi:5,giru:1,sora:10,ouma:5}[zone]);}
+});
+test('Giru has exact unlimited doubling, survives JSON, and adds final value once',()=>{
+ let s=a.startZone(a.enter(),'giru');for(let i=0;i<1100;i++){const t=a.step(s,{},()=>0);assert.equal(t.reverse,true);s=a.normalize(JSON.parse(JSON.stringify(t.flow)));}
+ assert.equal(s.award,(5n*2n**1100n).toString());assert.equal(s.remaining,'50');assert.equal(s.zero,true);
+ s=a.step(s,{},()=>.5).flow;assert.equal(s.remaining,(50n+5n*2n**1100n).toString());assert.equal(s.zero,false);assert.equal(s.zone,'');
+});
+test('Sora stocks each seven without starting a bonus until zone ends',()=>{
+ let s=a.startZone(a.enter(),'sora');for(let i=0;i<10;i++){const t=a.step(s,{soraHit:1},()=>0);assert.equal(t.result,'BIG');assert.equal(t.internalBonus,null);s=t.flow;}assert.equal(s.stock,'10');
+ const t=a.step(s,{},()=>0);assert.equal(t.internalBonus.kind,'BIG');assert.equal(t.flow.stock,'9');assert.equal(a.afterBonus(t.flow).remaining,'50');
+});
+test('Ouma super adds 200G without normal freeze and Urapi yields 40G mean target',()=>{
+ let s=a.startZone(a.enter(),'ouma',{oumaGames:1});let seq=[.99,0,.99];const t=a.step(s,{},()=>seq.shift());assert.equal(t.result,'SUPER_NOVA');assert.equal(t.internalBonus,null);assert.equal(t.flow.remaining,'250');
+ assert.equal(a.defaults.urapiGames*a.defaults.urapiHit*20,40);
+ assert.ok(Math.abs(3*(.3*10+.6*(5+5/18)+.1*5)-20)<1e-10);assert.equal(5*(.3*10+.6*5),30);
+});
+test('ART bonus pauses games, exact rare branches, higher-setting direct rates',()=>{
+ let s=a.enter();let seq=[0,0,0];let t=a.step(s,{},()=>seq.shift());assert.equal(t.internalBonus.kind,'BIG');assert.equal(a.afterBonus(t.flow).remaining,'49');
+ seq=[0,0,.2,0];t=a.step(s,{},()=>seq.shift());assert.equal(t.flow.zone,'sosuke');
+ assert.ok(a.direct.every((n,i)=>i===0||n<a.direct[i-1]));
+});

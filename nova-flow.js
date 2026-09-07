@@ -10,6 +10,8 @@ globalThis.NovaFlow = (() => {
       czDenom:bounded(value.czDenom,120,2,100000),strongDenom:bounded(value.strongDenom,600,2,100000)};
   }
   function normalize(value){
+    if(value?.phase==='art')return NovaArt.normalize(value);
+    if(value?.phase==='rt')return NovaArt.normalize({...value,phase:'art'});
     const phase=['cz','strong_cz','rt'].includes(value?.phase)?value.phase:'normal';
     const remaining=Math.max(0,Math.min(phase==='rt'?50:100,Math.floor(Number(value?.remaining)||0)));
     return phase==='normal'||remaining===0?{phase:'normal',remaining:0,success:false}:{phase,remaining,success:!!value.success};
@@ -18,7 +20,7 @@ globalThis.NovaFlow = (() => {
     const cfg=config(options);
     return {phase:strong?'strong_cz':'cz',remaining:strong?cfg.strongGames:cfg.czGames,success:random()<(strong?cfg.strongChance:cfg.czChance)};
   }
-  function afterBonus(){return {phase:'rt',remaining:50,success:false};}
+  function afterBonus(value,options){return NovaArt.afterBonus(value,options);}
   function advance(value){
     const state=normalize(value);
     return normalize({...state,remaining:Math.max(0,state.remaining-1)});
@@ -34,6 +36,7 @@ globalThis.NovaFlow = (() => {
     return roll<rt.replay?'REPLAY':roll<rt.replay+rt.bell?'BELL':'MISS';
   }
   function label(value){
+    if(value?.phase==='art'||value?.phase==='rt')return NovaArt.label(value);
     const s=normalize(value);
     return s.phase==='rt'?`RT 残り${s.remaining}G / 純増1.2pt`:
       s.phase==='cz'?`CZ 残り${s.remaining}G`:s.phase==='strong_cz'?`強CZ 残り${s.remaining}G`:'通常';
