@@ -12,7 +12,10 @@ globalThis.NovaNormal=(()=>{
  function favored(v){const s=normalize(v),digit=Math.floor((s.games+1)/100)%10;return s.mode==='通常A'&&digit%2===0||s.mode==='通常B'&&digit%2===1;}
  function multiplier(v,c){c=config(c);return (normalize(v).level==='high'?c.highMultiplier:1)*(favored(v)?c.bandMultiplier:1);}
  function pay(role){return rare[role]?.pay??(role==='BELL'?8:role==='REPLAY'?3:0);}
- function drawRole(setting,rng=Math.random){let r=rng();for(const [role,spec]of Object.entries(rare)){r-=spec.p;if(r<0)return role;}const row=NovaBalance.normal[2];r-=1/row[2]+1/row[3];if(r<0)return 'BELL';return r<1/row[4]?'REPLAY':'MISS';}
+ function rareFactor(setting=3){return 1+.016*(Math.max(1,Math.min(6,Math.round(Number(setting)||3)))-3);}
+ function roleProbabilities(setting=3){const frequent=1+.004*(Math.max(1,Math.min(6,Math.round(Number(setting)||3)))-3),r=Object.fromEntries(Object.entries(rare).map(([k,v])=>[k,v.p*rareFactor(setting)]));r.BELL=(1/6.455407+1/124)*frequent;r.REPLAY=frequent/7.452119;r.MISS=1-Object.values(r).reduce((a,b)=>a+b,0);return r;}
+ const roleEntries=[1,2,3,4,5,6].map(s=>Object.entries(roleProbabilities(s)));
+ function drawRole(setting,rng=Math.random){let r=rng();for(const [role,p]of roleEntries[Math.max(0,Math.min(5,Math.round(Number(setting)||3)-1))]){r-=p;if(r<0)return role;}return 'MISS';}
  function advance(value,role,flow,options={},rng=Math.random){const s=normalize(value),c=config(options);s.games++;if(rare[role]){s.impurity=Math.min(100,s.impurity+rare[role].gain);if(rng()<rare[role].up)s.level='high';}else if(role==='MISS'||role==='REPLAY'){if(rng()<(role==='MISS'?c.downMiss:c.downReplay))s.level='low';}if(s.games%100===0)s.impurity=Math.min(100,s.impurity+c.hundredGain);if(['cz','strong_cz'].includes(flow?.phase)&&flow.remaining===1&&!flow.success)s.impurity=Math.min(100,s.impurity+c.czFailureGain);return s;}
  function spin(value,flow,setting=1,options={},rng=Math.random,forced=''){
   const before=normalize(value),c=config(options.normal),result=forced||drawRole(setting,rng),state=advance(before,result,flow,c,rng),token={result,state,internalBonus:null,entry:'',direct:false};
@@ -36,5 +39,5 @@ globalThis.NovaNormal=(()=>{
  function afterBonus(value,rng=Math.random){const s=normalize(value);return {...s,mode:modes[weighted(transitions[modes.indexOf(s.mode)],rng)],games:0,level:'low'};}
  function drawRare(rng=Math.random){const keys=Object.keys(rare);return keys[weighted(keys.map(k=>rare[k].p),rng)];}
  const rareMean=Object.values(rare).reduce((s,r)=>s+r.p*r.pay,0)/Object.values(rare).reduce((s,r)=>s+r.p,0);
- return {modes,ceilings,transitions,rare,rareMean,drawRare,defaults,config,normalize,ceiling,favored,multiplier,pay,drawRole,advance,spin,claim,afterBonus};
+ return {modes,ceilings,transitions,rare,rareMean,rareFactor,roleProbabilities,drawRare,defaults,config,normalize,ceiling,favored,multiplier,pay,drawRole,advance,spin,claim,afterBonus};
 })();
