@@ -17,7 +17,7 @@ const isNovaGrid=grid=>[0,1,2].every(r=>[0,1,2].every(c=>grid[r][c]===novaSymbol
 'mod','reelWindowFromTopIndex','normalizeATypeResult','displayResultFor','isMiddleLineOnlyResult',
 'hasBellDiagonal','cherryResultFromRow','cherryResultFromRows','displayedResultFromGrid',
 'displayedResultFromRow','gridPaylineRows','gridHasOnlyAllowedPaylines','buildNovaReelGrid',
-'normalRewardFor','resolveATypeBonusOutcome','isCherryResult'
+'normalRewardFor','resolveATypeBonusOutcome','isCherryResult','novaPatternFromGrid'
 ].map(fn).join('\n')+`
 const aTypeBonusRemainingNet=()=>remaining;
 let remaining=1;
@@ -43,4 +43,13 @@ test('bell pays 8 normally and 15 throughout bonus including final game',()=>{
 test('retired forced outcomes cannot enter active play',()=>{
  assert.equal(run('normalizeATypeResult("GRAPE")'),'BELL');
  for(const name of ['SMALL','CHERRY_ANY','CHERRY_DOUBLE','CHERRY_TRIPLE']) assert.equal(run(`normalizeATypeResult('${name}')`),'MISS');
+});
+test('NOVA patterns require left triple and use super then strong then weak precedence',()=>{
+ for(let mask=0;mask<8;mask++){
+  const expected=!(mask&1)?'':mask===7?'SUPER_NOVA':(mask&6)?'STRONG_NOVA':'WEAK_NOVA';
+  const actual=run(`novaPatternFromGrid([0,1,2].map(r=>[0,1,2].map(c=>(${mask}&(1<<c))?novaSymbol(c,r):'ANY')))`);
+  assert.equal(actual,expected,'triple mask '+mask);
+ }
+ assert.equal(run('novaPatternFromGrid(null)'),'');
+ assert.equal(run('novaPatternFromGrid([[novaSymbol(0,1)],[novaSymbol(0,0)],[novaSymbol(0,2)]])'),'');
 });

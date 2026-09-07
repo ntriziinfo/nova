@@ -6531,9 +6531,9 @@ body{
   .vertexConnectionBadge.offline{color:#ff8f9c;border-color:rgba(255,91,113,.65);background:rgba(52,9,17,.9)}
   .vertexConnectionBadge.legacy{color:#d4a6ff;border-color:rgba(185,109,255,.6)}
 </style>
-<link rel="stylesheet" href="nova-cabinet.css?v=20260907-3">
-<link rel="stylesheet" href="nova-artwork.css?v=20260907-3">
-<script src="nova-artwork.js?v=20260907-3" defer></script>
+<link rel="stylesheet" href="nova-cabinet.css?v=20260907-4">
+<link rel="stylesheet" href="nova-artwork.css?v=20260907-4">
+<script src="nova-artwork.js?v=20260907-4" defer></script>
 </head>
 <body>
 <div class="confetti" id="confetti"></div>
@@ -7117,6 +7117,7 @@ body{
 
       <div class="card secret" id="secretPanel">
         <h2>非公開デバッグ</h2>
+        <button class="subBtn" id="debugNovaPatternsBtn" type="button">ノヴァ目3段階を確認</button>
         <div class="field">
           <label>次回転の出目指定</label>
           <select id="forceResult">
@@ -13503,6 +13504,14 @@ body{
   function novaSymbol(column, row){ return "NOVA_" + column + "_" + row; }
   function novaGrid(){ return [0,1,2].map(row => [0,1,2].map(column => novaSymbol(column,row))); }
   function isNovaGrid(grid){ return [0,1,2].every(row => [0,1,2].every(column => grid?.[row]?.[column] === novaSymbol(column,row))); }
+  function novaPatternFromGrid(grid){
+    const triple = [0,1,2].map(column => [0,1,2].every(row => grid?.[row]?.[column] === novaSymbol(column,row)));
+    if(!triple[0]) return "";
+    if(triple[1] && triple[2]) return "SUPER_NOVA";
+    if(triple[1] || triple[2]) return "STRONG_NOVA";
+    return "WEAK_NOVA";
+  }
+  const NOVA_PATTERN_NAMES = {WEAK_NOVA:"弱ノヴァ目",STRONG_NOVA:"強ノヴァ目",SUPER_NOVA:"スーパーノヴァ目"};
   function cellHtml(symbol, label, cls){
     const tile = /^NOVA_([0-2])_([0-2])$/.exec(symbol);
     if(tile) return '<span class="novaLogoTile" aria-label="ノヴァ目 '+tile[1]+' '+tile[2]+'"><img src="'+NOVA_LOGO_SRC+'" draggable="false" alt="" style="left:-'+Number(tile[1])*100+'%;top:-'+Number(tile[2])*100+'%"></span>';
@@ -13540,16 +13549,26 @@ body{
 
   document.addEventListener("DOMContentLoaded", () => {
     const preview = document.getElementById("novaSymbolPreview");
+    const patternSelect = document.getElementById("novaPatternSelect");
+    const renderNovaPreview = () => {
+      const variant = patternSelect.value;
+      const columns = variant === "WEAK_NOVA" ? [0] : variant === "STRONG_MIDDLE" ? [0,1] : variant === "STRONG_RIGHT" ? [0,2] : [0,1,2];
+      const grid = novaGrid().map(row => row.map((symbol,column) => columns.includes(column) ? symbol : "ANY"));
+      document.getElementById("novaSymbolPreviewGrid").innerHTML = grid.flatMap(row => row.map(symbol => '<div>'+ (symbol === "ANY" ? '<span class="novaAnyCell">ANY</span>' : cellHtml(symbol)) + '</div>')).join('');
+      document.getElementById("novaPatternDescription").textContent = NOVA_PATTERN_NAMES[novaPatternFromGrid(grid)] + " — ANYは図柄不問。重複時はスーパー → 強 → 弱の順に判定。";
+    };
+    patternSelect.addEventListener("change",renderNovaPreview);
     document.getElementById("novaSymbolPreviewOpen").onclick = () => {
       const cell = document.querySelector('.reel .cell') || document.querySelector('.cell');
       if(cell){
         const rect = cell.getBoundingClientRect();
         if(rect.height > 0) document.getElementById("novaSymbolPreviewGrid").style.aspectRatio = String(rect.width / rect.height);
       }
-      document.getElementById("novaSymbolPreviewGrid").innerHTML = novaGrid().flatMap(row => row.map(symbol => '<div>'+cellHtml(symbol)+ '</div>')).join('');
+      renderNovaPreview();
       preview.showModal();
     };
     document.getElementById("novaSymbolPreviewClose").onclick = () => preview.close();
+    document.getElementById("debugNovaPatternsBtn").onclick = () => document.getElementById("novaSymbolPreviewOpen").click();
   });
 
   function ensureReelCells(index){
@@ -14729,6 +14748,9 @@ body{
         : "";
     const isNormalSpinResult = currentSpin && currentSpin.normalActiveAtStart;
     const resultParts = [];
+    const novaPattern = novaPatternFromGrid(currentSpin?.grid);
+    if(currentSpin) currentSpin.novaPattern = novaPattern;
+    if(novaPattern) resultParts.push(NOVA_PATTERN_NAMES[novaPattern]);
     if(reward > 0) resultParts.push("+" + reward + "pt");
     if(stockAdd > 0) resultParts.push("SET+" + stockAdd);
     if(stGameAdd > 0) resultParts.push("AT+" + stGameAdd + "G");
@@ -16244,6 +16266,6 @@ body{
 })();
 </script>
 <button type="button" id="novaSymbolPreviewOpen">ノヴァ目を確認</button>
-<dialog id="novaSymbolPreview"><h2>ノヴァ目</h2><p>左・中・右、各3コマでロゴが完成。配当・当選は未設定。</p><div id="novaSymbolPreviewGrid"></div><button type="button" id="novaSymbolPreviewClose">閉じる</button></dialog>
+<dialog id="novaSymbolPreview"><h2>ノヴァ目</h2><label>出目<select id="novaPatternSelect"><option value="WEAK_NOVA">弱ノヴァ目：左3連</option><option value="STRONG_MIDDLE">強ノヴァ目：左・中3連</option><option value="STRONG_RIGHT">強ノヴァ目：左・右3連</option><option value="SUPER_NOVA" selected>スーパーノヴァ目：全リール3連</option></select></label><p id="novaPatternDescription"></p><div id="novaSymbolPreviewGrid"></div><p>出目の確認用です。出現率・配当・ボーナス対応は未設定。</p><button type="button" id="novaSymbolPreviewClose">閉じる</button></dialog>
 </body>
 </html>
