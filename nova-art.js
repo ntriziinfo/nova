@@ -20,7 +20,7 @@ globalThis.NovaArt=(()=>{
  function paidBellChance(otherChance=0,bellPay=15,otherPay=0){return Math.max(0,Math.min(1,(4-otherChance*(otherPay-3))/((1-otherChance)*(bellPay-3))));}
  function drawPaidRole(zeroChance=0,bellPay=15,rng=Math.random){return rng()<paidBellChance(zeroChance,bellPay)?'BELL':'REPLAY';}
  function drawBonus(rng=Math.random,setting){const p=setting===undefined?bonusSpecial:bonusSpecialFor(setting);return rng()<p?'NEBULA':drawPaidRole(p,15,rng);}
- const zoneEntryScale=[0.49,0.47,0.45,0.46,0.495,0.505];
+ const zoneEntryScale=[0.405,0.475,0.415,0.5,0.485,0.485];
  // Normalize by actual rare-role frequency, preserving the average AT zone entry rate.
  const zoneRoleWeights=Object.freeze({WEAK_SUICA:1,STRONG_SUICA:10,STRONG_BELL:10,CHANCE_A:4,CHANCE_B:2,WEAK_NOVA:1,STRONG_NOVA:10});
  function zoneRoleMultiplier(role){const table=globalThis.NovaNormal?.rare;if(!table)return role==='CHANCE_A'?1.2:role==='CHANCE_B'?.9:1;let total=0,weighted=0;for(const [key,v]of Object.entries(table)){total+=v.p;weighted+=v.p*(zoneRoleWeights[key]||1);}return (zoneRoleWeights[role]||1)*total/weighted;}
