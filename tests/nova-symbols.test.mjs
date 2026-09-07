@@ -125,9 +125,9 @@ test('game resolver expires ART on its fiftieth game with no automatic bonus',()
  }
  assert.equal(run('normalState.flow.phase'),'normal');
 });
-test('Sora seven is a stock only and Ouma super never invokes the normal freeze',()=>{
+test('Sora seven directly adds an ART set and Ouma super never invokes the normal freeze',()=>{
  run('normalState.bonusPending=false;normalState.flow=NovaArt.startZone(NovaArt.enter(),"sora");pendingArtStep=NovaArt.step(normalState.flow,{soraHit:1},()=>0);globalThis.soraResolved=resolveNormalOutcome("BIG");');
- assert.equal(run('soraResolved.aTypeBonusReady'),false);assert.equal(run('soraResolved.flowAfter.stock'),'1');assert.equal(run('decideBigPremiumEffect("BIG",soraResolved,true)'),false);
+ assert.equal(run('soraResolved.aTypeBonusReady'),false);assert.equal(run('soraResolved.flowAfter.sets'),'1');assert.equal(run('decideBigPremiumEffect("BIG",soraResolved,true)'),false);
  run('normalState.flow=NovaArt.startZone(NovaArt.enter(),"ouma");normalState.flow.awardTier=4;pendingArtStep=NovaArt.step(normalState.flow,{},()=>0,"SUPER_NOVA");globalThis.oumaResolved=resolveNormalOutcome("SUPER_NOVA");');
  assert.equal(run('oumaResolved.bonusHit'),false);assert.equal(run('oumaResolved.superNovaOutcome'),'');assert.equal(run('oumaResolved.flowAfter.award'),'200');
 });

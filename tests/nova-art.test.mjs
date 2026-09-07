@@ -1,6 +1,6 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
 const ctx=vm.createContext({});vm.runInContext(fs.readFileSync('nova-art.js','utf8'),ctx);const a=ctx.NovaArt;
-test('Giru changes continuation at 80 and 320G with setting differences',()=>{
+test('Giru changes continuation at 80 and 320G with mean 80G across settings',()=>{
  for(let setting=1;setting<=6;setting++){
   const row=a.giruRates[setting-1];
   for(const [g,p]of [[5,row[0]],[79,row[0]],[80,row[1]],[319,row[1]],[320,row[2]],[640,row[2]]]){
@@ -12,9 +12,9 @@ test('Giru changes continuation at 80 and 320G with setting differences',()=>{
   assert.ok(row[0]>row[1]&&row[1]>row[2]&&row[2]<.5);
  }
  let s=a.startZone(a.enter(),'giru',{setting:6});s.award='40';let t=a.step(s,{},()=>0);
- assert.equal(t.flow.award,'80');assert.match(t.message,/30%/);
+ assert.equal(t.flow.award,'80');assert.match(t.message,/55%/);
  s=a.normalize(JSON.parse(JSON.stringify(t.flow)));assert.equal(s.giruSetting,6);
- t=a.step(s,{},()=>.36);assert.equal(t.flow.zone,'');assert.equal(t.flow.remaining,'130');
+ t=a.step(s,{},()=>.56);assert.equal(t.flow.zone,'');assert.equal(t.flow.remaining,'130');
 });
 test('ART natural and forced Giru entries preserve the selected setting',()=>{
  let forced=a.step(a.enter(),{setting:5},()=>0,'ZONE_giru');assert.equal(forced.flow.giruSetting,5);
@@ -29,9 +29,9 @@ test('Giru has exact unlimited doubling, survives JSON, and adds final value onc
  assert.equal(s.award,(5n*2n**1100n).toString());assert.equal(s.remaining,'50');assert.equal(s.zero,true);
  s=a.step(s,{},()=>.5).flow;assert.equal(s.remaining,(50n+5n*2n**1100n).toString());assert.equal(s.zero,false);assert.equal(s.zone,'');
 });
-test('Sora stocks each seven without starting a bonus until zone ends',()=>{
- let s=a.startZone(a.enter(),'sora');for(let i=0;i<10;i++){const t=a.step(s,{soraHit:1},()=>0);assert.equal(t.result,'BIG');assert.equal(t.internalBonus,null);s=t.flow;}assert.equal(s.stock,'10');
- const t=a.step(s,{},()=>0);assert.equal(t.internalBonus.kind,'BIG');assert.equal(t.flow.stock,'9');assert.equal(a.afterBonus(t.flow).remaining,'50');
+test('Sora adds ART sets directly without BIG stock or a bonus',()=>{
+ let s=a.startZone(a.enter(),'sora');for(let i=0;i<10;i++){const t=a.step(s,{soraHit:1},()=>0);assert.equal(t.result,'BIG');assert.equal(t.internalBonus,null);s=t.flow;}assert.equal(s.stock,'0');assert.equal(s.sets,'10');
+ const t=a.step(s,{rare:0},()=>.99);assert.equal(t.internalBonus,null);assert.equal(t.flow.stock,'0');assert.equal(t.flow.remaining,'49');
 });
 test('Ouma super adds 200G without normal freeze and Urapi yields 40G mean target',()=>{
  let s=a.startZone(a.enter(),'ouma',{oumaGames:1});s.awardTier=4;let seq=[.99,0,.99];const t=a.step(s,{},()=>seq.shift());assert.equal(t.result,'SUPER_NOVA');assert.equal(t.internalBonus,null);assert.equal(t.flow.remaining,'250');
