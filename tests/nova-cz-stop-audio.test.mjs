@@ -23,3 +23,10 @@ test('first two stops use supplied CZ sound, third replaces it exactly once rega
   assert.deepEqual([...black],['.reel[data-reel="0"]']);
   ctx.clearCzReelBlackout();assert.equal(black.size,0);
  });
+test('outside CZ all three stop orders retain the normal stop clip',()=>{
+ for(const phase of ['normal','art','bonus']){
+  ctx.currentSpin={resolved:{flowBefore:{phase}}};calls.length=0;
+  ctx.playStopSound(0,1);ctx.playStopSound(1,2);ctx.playStopSound(2,3);
+  assert.deepEqual(calls,['normal.wav','normal.wav','normal.wav']);
+ }
+});

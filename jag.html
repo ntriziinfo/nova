@@ -7277,7 +7277,7 @@ body{
   const CHERRY_SOUND_SRC = "assets/media/jag/cherry.wav";
   const SPECIAL_SYMBOL_SOUND_SRC = "assets/media/jag/special_symbol.wav";
   const PREMIUM_PIERO_SYMBOL_SOUND_SRC = "assets/media/jag/premium_piero_symbol.wav";
-  const SPIN_SOUND_SRC = "assets/media/jag/start.wav";
+  const SPIN_SOUND_SRC = "assets/media/nova/spin_start.wav";
   const STOP_SOUND_SRC = "assets/media/nova/reel-stop.wav";
   const PEKA_SOUND_SRC = "assets/media/jag/peka_1.wav";
   const PEKA_SOUND_SRCS = Object.freeze([
@@ -12680,6 +12680,7 @@ body{
   }
 
   function applyNormalResult(result, resolved, lineRow=1){
+    playStrongNovaSound(result,resolved);
     if(A_TYPE_MODE && result==="REPLAY")normalState.replayFree=true;
     if(A_TYPE_MODE && resolved.aTypeBonusReady)jagChainBonusHandoff=true;
     if(A_TYPE_MODE && resolved.normalInternal)normalState.internal=NovaNormal.normalize(resolved.normalInternal);
@@ -12927,6 +12928,7 @@ body{
   }
 
   function applyResult(result, resolved, lineRow=1){
+    playStrongNovaSound(result,resolved);
     if(A_TYPE_MODE && result==="REPLAY")normalState.replayFree=true;
     const info = RESULT[result];
     showCzLamp(3,resolved);
@@ -14841,7 +14843,7 @@ body{
         ? `${battleRemainText()} / ${waitText}`
         : waitText;
     if(!speedModeSpinAtStart && !premiumBigConfirmSilence) playNormalBgm();
-    if(!premiumBigConfirmSilence) playSpinSound();
+    playSpinSound();
     ensureBattleBgmContinuing();
     ensureBarBgmContinuing();
 
@@ -16079,7 +16081,12 @@ body{
     }catch(e){}
   }
 
-  function playSpinSound(){ playOneShotSound(SPIN_SOUND_SRC); }
+  function playSpinSound(){ playOneShotSound(SPIN_SOUND_SRC,sfxOutputVolume(),{allowDuringPremiumConfirm:true}); }
+  function playStrongNovaSound(result,resolved){
+    if(result!=='STRONG_NOVA' || resolved?.strongNovaSoundPlayed)return;
+    if(resolved)resolved.strongNovaSoundPlayed=true;
+    playOneShotSound('assets/media/nova/strong_nova.wav',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
+  }
   function czThirdStopSound(resolved,previousStage){
     if(!resolved?.czLamp)return '';
     const display=NovaFlow.lampAtStop(resolved.czLamp,3);
