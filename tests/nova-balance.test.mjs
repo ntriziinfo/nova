@@ -1,7 +1,7 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
 const ctx=vm.createContext({});for(const f of ['nova-art.js','nova-balance.js'])vm.runInContext(fs.readFileSync(f,'utf8'),ctx);const a=ctx.NovaArt,b=ctx.NovaBalance;
 test('new mode profiles retain the six targets with positive fitted entry scales',()=>{
- for(let i=0;i<6;i++){const p=b.profile(i+1);assert.equal(p.target,b.targets[i]);assert.equal(p.verifiedModel,"bell15-v23-monte-carlo");assert.ok(p.scale>0);if(i)assert.ok(p.directDenom<b.profile(i).directDenom);}
+ for(let i=0;i<6;i++){const p=b.profile(i+1);assert.equal(p.target,b.targets[i]);assert.equal(p.verifiedModel,"strong-rare-v24-frequency-verified");assert.ok(p.scale>0);if(i)assert.ok(p.directDenom<b.profile(i).directDenom);}
 });
 test('zone selection exactly follows each setting table with all six reachable',()=>{
  for(let i=1;i<=6;i++){const counts=Object.fromEntries(Object.keys(a.names).map(x=>[x,0]));for(let k=0;k<10000;k++)counts[a.pickZone(i,()=> (k+.5)/10000)]++;assert.deepEqual(Object.values(counts),Array.from(a.zoneWeights[i-1],p=>p*100));}
