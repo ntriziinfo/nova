@@ -6536,7 +6536,7 @@ body{
 <script src="nova-artwork.js?v=20260907-cz-lamps10" defer></script>
 <script src="nova-art.js?v=20260907-cz-lamps10"></script>
 <script src="nova-balance.js?v=20260907-cz-lamps10"></script>
-<script src="nova-normal.js?v=20260907-cz-lamps10"></script>
+<script src="nova-normal.js?v=20260907-art-reset11"></script>
 <script src="nova-flow.js?v=20260907-cz-lamps10"></script>
 <style>
 /* Fit the original nebula art to reel width; its transparent vertical margins
@@ -10461,6 +10461,12 @@ body{
     return Math.max(0, currentNormalCeilingGames() - normalizeBonusAfterGames(normalState.sinceBonus));
   }
 
+  function resetNormalCountersAfterArt(before,after){
+    if(before?.phase!=='art'||after?.phase!=='normal')return;
+    normalState.internal=NovaNormal.afterArt(normalState.internal,before,after);
+    normalState.sinceBonus=0;
+  }
+
   function resetNormalModeAfterBonus(){
     pendingATypeInternalBonus = null;
     bonusConfirmBgmHold = false;
@@ -12133,7 +12139,9 @@ body{
     resetBonusEndSpecialEffects(true);
     setSpeedFrameOffHold(false);
     if(aTypeEnd){
+      const beforeBonusResume=normalState.flow;
       normalState.flow = NovaFlow.afterBonus(normalState.flow,settings.novaArt,wonArtSets);
+      resetNormalCountersAfterArt(beforeBonusResume,normalState.flow);
       if(normalState.flow.phase==='art' && wonZones.length){
         normalState.flow.queuedZones.push(...wonZones);
         if(!normalState.flow.zone){const z=normalState.flow.queuedZones.shift();normalState.flow=NovaArt.startZone(normalState.flow,z,{...settings.novaArt,setting:settings.setting,allowUra:true});}
@@ -12659,6 +12667,7 @@ body{
       : clamp(Number(resolved.ceilingAfter) || 0, 0, currentNormalCeilingGames());
     if(A_TYPE_MODE){
       normalState.flow = NovaFlow.normalize(resolved.flowAfter);
+      resetNormalCountersAfterArt(resolved.flowBefore,normalState.flow);
       normalState.risingRemain = 0;
       normalState.mode = normalState.flow.phase;
       if(!resolved.bonusPendingAtStart && (resolved.bonusHit || resolved.aTypeBonusReady)){

@@ -38,8 +38,9 @@ globalThis.NovaNormal=(()=>{
   return token;
  }
  function claim(value,freeze=false,rng=Math.random){const state=normalize(value),zones=[];if(state.impurity>=100){state.impurity=0;zones.push(['urapi','giru','sora','ouma'][Math.min(3,Math.floor(rng()*4))]);}if(freeze)zones.push(['giru','sora','ouma'][Math.min(2,Math.floor(rng()*3))]);return {state,zones,sets:zones.length?1:0};}
+ function afterArt(value,before,after){const s=normalize(value);if(before?.phase==='art'&&after?.phase==='normal')s.games=0;return s;}
  function afterBonus(value,rng=Math.random){const s=normalize(value);return {...s,mode:modes[weighted(transitions[modes.indexOf(s.mode)],rng)],games:0,level:'low'};}
  function drawRare(rng=Math.random){const keys=Object.keys(rare);return keys[weighted(keys.map(k=>rare[k].p),rng)];}
  const rareMean=Object.values(rare).reduce((s,r)=>s+r.p*r.pay,0)/Object.values(rare).reduce((s,r)=>s+r.p,0);
- return {modes,ceilings,transitions,rare,rareMean,rareFactor,roleProbabilities,drawRare,defaults,config,normalize,ceiling,favored,multiplier,pay,drawRole,advance,spin,claim,afterBonus};
+ return {modes,ceilings,transitions,rare,rareMean,rareFactor,roleProbabilities,drawRare,defaults,config,normalize,ceiling,favored,multiplier,pay,drawRole,advance,spin,claim,afterArt,afterBonus};
 })();
