@@ -7249,6 +7249,7 @@ body{
   const STORAGE_RESUME_KEY = STORAGE_KEY + "_resume";
   const PREFERENCES_STORAGE_KEY = "nova_slot_preferences_v1_" + bootMachineId;
 
+  const NOVA_ART_BGM_SRC = "assets/media/nova/RUSH.wav";
   const NOVA_BIG_BGM_SRC = "assets/media/nova/BIG.wav";
   const NOVA_REG_BGM_SRC = "assets/media/nova/NovaREG.wav";
   const CZ_BGM_SRC = "assets/media/nova/audiostock_933855.wav";
@@ -12436,6 +12437,7 @@ body{
   }
 
   function normalBgmSrc(){
+    if(!session.active && normalState.flow?.phase==='art') return NOVA_ART_BGM_SRC;
     if(!session.active && ["cz","strong_cz"].includes(normalState.flow?.phase)) return CZ_BGM_SRC;
     if(speedToBonusActive && SPEED_BGM_SRC) return SPEED_BGM_SRC;
     if(!session.active && isHighMode() && HIGH_MODE_BGM_SRC) return HIGH_MODE_BGM_SRC;
@@ -15042,7 +15044,7 @@ body{
     const stopAutoAtFirstHit = currentSpin && currentSpin.normalActiveAtStart && isAtFirstHitForAuto(resolved);
     if(currentSpin && currentSpin.normalActiveAtStart){
       applyNormalResult(result, resolved, lineRow);
-      if(resolved.czEntry || (['cz','strong_cz'].includes(resolved.flowBefore?.phase) && !['cz','strong_cz'].includes(normalState.flow?.phase))){
+      if(resolved.flowBefore?.phase!==normalState.flow?.phase && (['cz','strong_cz','art'].includes(resolved.flowBefore?.phase)||['cz','strong_cz','art'].includes(normalState.flow?.phase))){
         pauseNormalBgm();
         playNormalBgm();
       }
