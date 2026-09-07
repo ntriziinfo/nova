@@ -6518,7 +6518,6 @@ body{
   .machine{min-height:1615px !important;}
 }
 
-  body:not(.debugMode) .debugToggleBtn{display:none!important}
   .vertexConnectionBadge{
     position:fixed;right:12px;top:12px;z-index:10020;
     min-width:148px;padding:7px 11px;border-radius:999px;
@@ -8073,7 +8072,7 @@ body{
   const ADMIN_COMMAND_LAST_ID_KEY = "nova_admin_command_last_id_" + machineId;
   let adminCommandLastId = Number(safeStorageGet(ADMIN_COMMAND_LAST_ID_KEY) || 0) || 0;
   const ADMIN_STATE_PUSH_INTERVAL_MS = 60000;
-  const SLOT_DEBUG_ENABLED = adminParams.get("debug") === "1";
+  const SLOT_DEBUG_ENABLED = true;
   const CREDIT_BASELINE_PROFIT = Number(adminParams.get("creditBaseline") || 0) || 0;
   const PLAY_SESSION_ID = bootPlaySessionId;
   const SLOT_PLAY_SESSION = adminParams.has("creditBaseline") || !!PLAY_SESSION_ID;
