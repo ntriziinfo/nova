@@ -6531,7 +6531,7 @@ body{
   .vertexConnectionBadge.offline{color:#ff8f9c;border-color:rgba(255,91,113,.65);background:rgba(52,9,17,.9)}
   .vertexConnectionBadge.legacy{color:#d4a6ff;border-color:rgba(185,109,255,.6)}
 </style>
-<link rel="stylesheet" href="nova-cabinet.css?v=20260907-urapi-lamp21">
+<link rel="stylesheet" href="nova-cabinet.css?v=20260907-roulette-lamps22">
 <link rel="stylesheet" href="nova-artwork.css?v=20260907-cz-lamps10">
 <script src="nova-artwork.js?v=20260907-cz-lamps10" defer></script>
 <script src="nova-art.js?v=20260907-replay-audio19"></script>
@@ -15022,12 +15022,15 @@ body{
     let panel=document.getElementById('zoneRoulette');
     if(!panel){panel=document.createElement('div');panel.id='zoneRoulette';panel.setAttribute('role','status');document.querySelector('.reelArea').append(panel);}
     clearInterval(zoneRouletteTimer);zoneRouletteTimer=null;
+    document.body.dataset.zoneRouletteLamp='';
     panel.hidden=!['roulette','confirmed'].includes(flow?.entryStage);
     if(panel.hidden)return;
-    if(flow.entryStage==='confirmed'){panel.textContent=NovaArt.zoneName(flow.pendingZone)+'ゾーン確定！';return;}
-    let index=0;const names=Object.values(NovaArt.names);
-    panel.textContent='特化ゾーン抽選中… '+names[0];
-    zoneRouletteTimer=setInterval(()=>{panel.textContent='特化ゾーン抽選中… '+names[++index%names.length];},110);
+    const artwork={sosuke:'sosuke',toto:'toto',urapi:'urapi',giru:'giru1',sora:'sora1',ouma:'ouma1'};
+    const show=(zone,text)=>{panel.textContent=text;document.body.dataset.zoneRouletteLamp=artwork[NovaArt.baseZone(zone)]||'';};
+    if(flow.entryStage==='confirmed'){show(flow.pendingZone,NovaArt.zoneName(flow.pendingZone)+'ゾーン確定！');return;}
+    let index=0;const zones=Object.keys(NovaArt.names);
+    const tick=()=>{const zone=zones[index++%zones.length];show(zone,'特化ゾーン抽選中… '+NovaArt.names[zone]);};
+    tick();zoneRouletteTimer=setInterval(tick,110);
   }
   let czLampTimers=[];
   function showCzLamp(stopOrder,resolved){
