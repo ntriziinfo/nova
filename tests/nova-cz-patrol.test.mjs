@@ -1,6 +1,6 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
 const html=fs.readFileSync('jag.html','utf8'),calls=[],machine={dataset:{czLamp:'0',czRainbow:'false'}};
-const ctx=vm.createContext({document:{getElementById:()=>machine},setTimeout:fn=>{fn();return 1;},clearTimeout:()=>{},sfxOutputVolume:()=>.6,playOneShotSound:(...args)=>calls.push(args)});
+const ctx=vm.createContext({document:{getElementById:()=>machine},setTimeout:fn=>{fn();return 1;},clearTimeout:()=>{},sfxOutputVolume:()=>.6,playLockedBonusConfirmSound:(...args)=>calls.push(args)});
 vm.runInContext(fs.readFileSync('nova-flow.js','utf8'),ctx);
 for(const name of ['playCzConfirmedSound','showCzLamp'])vm.runInContext(html.match(new RegExp('  function '+name+'\\([^]*?\\n  }'))[0],ctx);
 vm.runInContext('let czLampTimers=[];',ctx);
@@ -10,7 +10,7 @@ test('full and rainbow confirmation play exactly once despite repeated finish ca
   const resolved={bonusHit:true,czLamp:{stage:rainbow?5:6,rainbow,rainbowAt:1,totalGames:20,remaining:1}};
   ctx.showCzLamp(1,resolved);ctx.showCzLamp(2,resolved);assert.equal(calls.length,0);
   ctx.showCzLamp(3,resolved);ctx.showCzLamp(3,resolved);ctx.showCzLamp(3,resolved);
-  assert.deepEqual(calls,[['assets/media/jag/cz_patrol_confirm.wav',.6]]);
+  assert.deepEqual(calls,[['assets/media/jag/cz_patrol_confirm.wav?v=19',.6]]);
  }
 });
 test('partial lamps and unconfirmed outcomes stay silent',()=>{

@@ -11,7 +11,7 @@ globalThis.NovaNormal=(()=>{
  function ceiling(v){return ceilings[modes.indexOf(normalize(v).mode)];}
  function favored(v){const s=normalize(v),digit=Math.floor((s.games+1)/100)%10;return s.mode==='通常A'&&digit%2===0||s.mode==='通常B'&&digit%2===1;}
  function multiplier(v,c){c=config(c);return (normalize(v).level==='high'?c.highMultiplier:1)*(favored(v)?c.bandMultiplier:1);}
- function pay(role){return rare[role]?.pay??(role==='BELL'?8:role==='REPLAY'?3:0);}
+ function pay(role){return rare[role]?.pay??(role==='BELL'?8:role==='REPLAY'?0:0);}
  function rareFactor(setting=3){return 1+.016*(Math.max(1,Math.min(6,Math.round(Number(setting)||3)))-3);}
  function roleProbabilities(setting=3){const frequent=1+.004*(Math.max(1,Math.min(6,Math.round(Number(setting)||3)))-3),r=Object.fromEntries(Object.entries(rare).map(([k,v])=>[k,v.p*rareFactor(setting)]));r.BELL=.120877629551039*frequent;r.REPLAY=frequent/7.452119;r.MISS=1-Object.values(r).reduce((a,b)=>a+b,0);return r;}
  const roleEntries=[1,2,3,4,5,6].map(s=>Object.entries(roleProbabilities(s)));

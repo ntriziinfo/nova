@@ -7,7 +7,8 @@ globalThis.NovaArt=(()=>{
  const guarantees=Object.freeze({normal:Object.freeze({sosuke:10,toto:20,urapi:40,giru:50,sora:1,ouma:50}),ura:Object.freeze({sosuke:60,toto:80,urapi:100,giru:150,sora:3,ouma:150})});
  const points=g=>(integer(g)*11n+1n)/2n;
  const bonusTarget=kind=>kind==='MID'?75:150;
- const payout=role=>globalThis.NovaNormal?NovaNormal.pay(role):(role==='BELL'?8:role==='REPLAY'?3:0);
+ const payout=role=>globalThis.NovaNormal?NovaNormal.pay(role):(role==='BELL'?8:role==='REPLAY'?0:0);
+ function drawPreparation(role,setting=1,rng=Math.random){const rare=globalThis.NovaNormal?.rare[role];let sets=0,zones=[];if(rare){if(rng()<rare.cz)sets++;if(rng()<rare.cz*.5){zones.push(pickZone(setting,rng));sets=Math.max(1,sets);}}return {sets,zones};}
  const bonusSpecial=.0125;
  const settingBias=[-2.7,-2.55,-2.27,-2.13,-1.8,-1.46];
  const biasFor=setting=>settingBias[Math.max(0,Math.min(5,Math.round(Number(setting)||1)-1))];
@@ -71,5 +72,5 @@ globalThis.NovaArt=(()=>{
   return {result,flow:s,message,internalBonus,reverse,oumaFreeze:freeOumaSpin,zoneSpin:!!value.zone||queuedEntered};
  }
  function label(v){const s=normalize(v);return `ART ${s.remaining}pt / 待機${s.sets}SET${s.entryStage?' / '+({seven:'赤7を狙え・減算停止',roulette:'ルーレット・減算停止',confirmed:zoneName(s.pendingZone)+'ゾーン確定'}[s.entryStage]):''}${s.zone?' / '+zoneName(s)+' '+(s.zero?'0G連':s.oumaPending?'BETで継続抽選':s.zoneLeft+'G'):''}${integer(s.stock)>0n?' / BIGストック '+s.stock:''}${s.zone==='giru'?' / 基準'+(s.giruBase?points(s.giruBase):'未定')+'pt / '+s.award+'pt / '+s.giruContinues+'回継続':''}`;}
- return {zoneEntryScale,points,bonusTarget,payout,guarantees,settleZone,prepareBet,resetGamesMean,soraRates,oumaFreezeRate,baseZone,zoneName,zoneIds,pickAwardTier,swingAward,names,defaults,direct,zoneWeights,pickZone,bonusSpecial,settingBias,biasFor,bonusSpecialFor,advanceBonus,drawPaidRole,drawBonus,giruRates,giruChance,config,normalize,enter,startZone,afterBonus,step,label};
+ return {drawPreparation,zoneEntryScale,points,bonusTarget,payout,guarantees,settleZone,prepareBet,resetGamesMean,soraRates,oumaFreezeRate,baseZone,zoneName,zoneIds,pickAwardTier,swingAward,names,defaults,direct,zoneWeights,pickZone,bonusSpecial,settingBias,biasFor,bonusSpecialFor,advanceBonus,drawPaidRole,drawBonus,giruRates,giruChance,config,normalize,enter,startZone,afterBonus,step,label};
 })();

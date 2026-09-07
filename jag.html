@@ -6534,9 +6534,9 @@ body{
 <link rel="stylesheet" href="nova-cabinet.css?v=20260907-flow16">
 <link rel="stylesheet" href="nova-artwork.css?v=20260907-cz-lamps10">
 <script src="nova-artwork.js?v=20260907-cz-lamps10" defer></script>
-<script src="nova-art.js?v=20260907-base33-v18"></script>
-<script src="nova-balance.js?v=20260907-base33-v18"></script>
-<script src="nova-normal.js?v=20260907-base33-v18"></script>
+<script src="nova-art.js?v=20260907-replay-audio19"></script>
+<script src="nova-balance.js?v=20260907-replay-audio19"></script>
+<script src="nova-normal.js?v=20260907-replay-audio19"></script>
 <script src="nova-flow.js?v=20260907-cz-third12"></script>
 <style>
 /* Fit the original nebula art to reel width; its transparent vertical margins
@@ -7111,7 +7111,7 @@ body{
           <input id="bigAddInput" type="number" min="0" max="1000" step="1" value="150" readonly />
         </div>
         <div class="help">
-          BIGは150pt、REGは75pt。特殊図柄揃い1回でART＋275pt相当の1SET（専用図柄はnebula）、初当たりのART保証なし。ベルは通常・ボーナス共通8pt、リプレイは3pt。通常時のスーパーノヴァ目はBIG・フリーズ各50%。弱・強ノヴァ目はレア役です。
+          BIGは150pt、REGは75pt。特殊図柄揃い1回でART＋275pt相当の1SET（専用図柄はnebula）、初当たりのART保証なし。ベルは通常・ボーナス共通8pt、リプレイは次回BET無料。通常時のスーパーノヴァ目はBIG・フリーズ各50%。弱・強ノヴァ目はレア役です。
         </div>
       </div>
 
@@ -7137,7 +7137,7 @@ body{
             <option value="MISS">ハズレ</option>
             <option value="CZ">CZ突入</option>
             <option value="STRONG_CZ">強CZ突入</option>
-            <option value="REPLAY">リプレイ（3pt）</option>
+            <option value="REPLAY">リプレイ（次回BET無料）</option>
             <option value="BELL">ベル（右肩下がり8pt）</option>
 
 
@@ -7421,7 +7421,7 @@ body{
     SMALL:0,
     GRAPE:8,
     BELL:8,
-    REPLAY:3
+    REPLAY:0
   });
   const PREMIUM_BIG_CHAIN_PAYOUT = A_TYPE_PREMIUM_BIG_PAYOUT;
   const A_TYPE_BONUS_PAY_PER_GAME = 15;
@@ -8626,7 +8626,7 @@ body{
   function playArtEndSound(resolved){
     if(resolved?.flowBefore?.phase!=='art'||resolved.flowAfter?.phase!=='normal'||resolved.bonusHit||resolved.artEndSoundPlayed)return;
     resolved.artEndSoundPlayed=true;
-    playOneShotSound(BONUS_END_BGM_SRC,bgmOutputVolume(BGM_OUTPUT_SCALE));
+    playLockedBonusConfirmSound(BONUS_END_BGM_SRC,bgmOutputVolume(BGM_OUTPUT_SCALE));
   }
 
   function playBonusEndBgmThen(callback){
@@ -8668,7 +8668,7 @@ body{
     }
     audio.onended = finish;
     audio.onerror = finish;
-    bonusEndBgmTimer = setTimeout(finish, premiumEndVoiceSrc ? 12000 : 15000);
+    if(!A_TYPE_MODE)bonusEndBgmTimer = setTimeout(finish, premiumEndVoiceSrc ? 12000 : 15000);
     try{
       const p = audio.play();
       if(p && typeof p.catch === "function") p.catch(()=>setTimeout(finish, 500));
@@ -9907,6 +9907,7 @@ body{
   }
 
   function normalRewardFor(result, lineRow=1){
+    if(A_TYPE_MODE && result==="REPLAY")return 0;
     if(isNovaResult(result) || result === "CZ" || result === "STRONG_CZ") return 0;
     if(A_TYPE_MODE && NovaNormal.rare[result]) return NovaNormal.pay(result);
     if(A_TYPE_MODE && (result === "BIG" || result === "MID")) return 0;
@@ -10218,7 +10219,7 @@ body{
   }
 
   function normalModeLabel(){
-    if(normalState.bonusPending) return "BONUS確定";
+    if(normalState.bonusPending) return normalState.prepLeft>0?"ボーナス準備中 残り"+normalState.prepLeft+"G":"7を狙え";
     return NovaFlow.label(normalState.flow);
   }
 
@@ -10251,6 +10252,11 @@ body{
   }
 
   function triggerBonusConfirmBetSoundIfNeeded(){
+    if(A_TYPE_MODE && normalState.bonusPending){
+      if(!normalState.prepConfirmed){normalState.prepConfirmed=true;playOneShotSound('assets/media/nova/bonus_confirm.wav',voiceOutputVolume(),{allowDuringPremiumConfirm:true});}
+      else if(!(normalState.prepLeft>0))playOneShotSound('assets/media/nova/aim_seven_sosuke.wav',voiceOutputVolume(),{allowDuringPremiumConfirm:true});
+      return true;
+    }
     if(!isPendingSevenBonusBet()) return false;
     bonusConfirmBgmHold = true;
     pauseNormalBgm();
@@ -10512,6 +10518,7 @@ body{
 
   function chargeSpinCost(){
     if(!session.active && normalState.flow?.phase==='art' && normalState.flow.zero)return;
+    if(A_TYPE_MODE && normalState.replayFree){normalState.replayFree=false;return;}
     stats.totalFee = (Number(stats.totalFee) || 0) + SPIN_COST;
     if(session.active){
       session.cost = (Number(session.cost) || 0) + SPIN_COST;
@@ -10704,6 +10711,7 @@ body{
   }
 
   function canPlayCompleteTrial(){
+    if(bonusConfirmSoundPlaying || bonusEndBgmPlaying)return false;
     if(!isCompleteTrialLocked()) return true;
     stopAutoPlay("COMPLETE中のためAUTO停止");
     stopSpeedToBonus("COMPLETE中のためSPEED停止");
@@ -11096,6 +11104,7 @@ body{
       }
       if(isNovaResult(pendingForceResult)) return pendingForceResult;
       if(normalState.bonusPending){
+        if(normalState.prepLeft>0)return NovaNormal.rare[pendingForceResult]?pendingForceResult:NovaNormal.drawRole(settings.setting);
         if(!isChanceLampLit()) return "MISS";
         if(!A_TYPE_MODE && (normalState.premiumBonus || normalState.oneGameRenBonus)) return "BAR3";
         return normalState.bonusKind === "MID" ? "MID" : "BIG";
@@ -11922,6 +11931,9 @@ body{
         const initialNormalBonus=normalState.flow.phase!=='art';
         const impurityReleased=NovaNormal.normalize(normalState.internal).impurity>=100;
         const bonusGuarantee=NovaNormal.claim(normalState.internal,premiumBonus);
+        bonusGuarantee.sets+=Number(normalState.prepSets)||0;
+        bonusGuarantee.zones.push(...(normalState.prepZones||[]));
+        normalState.prepSets=0;normalState.prepZones=[];normalState.prepLeft=0;normalState.prepConfirmed=false;
         normalState.internal=initialNormalBonus?NovaNormal.afterBonus(bonusGuarantee.state):bonusGuarantee.state;
         const bonusTarget = aTypeBonusTarget(bonusKind, premiumTargetBonus);
         const bonusLabel = aTypeBonusLabel(bonusKind, premiumTargetBonus);
@@ -12667,6 +12679,7 @@ body{
   }
 
   function applyNormalResult(result, resolved, lineRow=1){
+    if(A_TYPE_MODE && result==="REPLAY")normalState.replayFree=true;
     if(A_TYPE_MODE && resolved.aTypeBonusReady)jagChainBonusHandoff=true;
     if(A_TYPE_MODE && resolved.normalInternal)normalState.internal=NovaNormal.normalize(resolved.normalInternal);
     const info = RESULT[result] || RESULT.MISS;
@@ -12740,6 +12753,16 @@ body{
       return;
     }
 
+    if(resolved.bonusWaitSpin && A_TYPE_MODE){
+      normalState.prepLeft=Math.max(0,(normalState.prepLeft||0)-1);
+      const won=NovaArt.drawPreparation(result,settings.setting);
+      normalState.prepSets=(normalState.prepSets||0)+won.sets;
+      (normalState.prepZones??=[]).push(...won.zones);
+      if(won.sets)log('ボーナス準備中 ART＋'+won.sets+'SET');
+      if(won.zones.length)log('ボーナス準備中 '+won.zones.map(NovaArt.zoneName).join('・')+'ゾーン獲得');
+      showMessage('ボーナス準備中',normalState.prepLeft?'残り'+normalState.prepLeft+'G':'次BETで7を狙え');
+      return;
+    }
     if(resolved.bonusWaitSpin){
       jagChanceHold = true;
       normalState.bonusWaitGames = Math.max(1, (Number(normalState.bonusWaitGames) || 0) + 1);
@@ -12841,6 +12864,7 @@ body{
         normalState.premiumBonus = (normalState.bonusKind === "BIG") && !!resolved.premiumBonus;
         normalState.oneGameRenBonus = false;
         normalState.bonusWaitGames = 1;
+        normalState.prepLeft=2+Math.floor(Math.random()*4);normalState.prepConfirmed=false;normalState.prepSets=0;normalState.prepZones=[];
         normalState.bonusHitGamesSince = normalizeBonusAfterGames(resolved.gamesSinceLastBonusAtStart);
         hideBonusConfirmScreen();
         if(isChanceLampLit()) $("stLamp").classList.add("on");
@@ -12883,14 +12907,14 @@ body{
 
     if(result === "REPLAY"){
       flashReelLight("blue", 1200);
-      showMessage(info.name, `${normalModeLabel()} / 天井まで${ceilingRemain()}G${lineText ? " / " + lineText : ""}${normalRewardText || " / +3pt"}`);
+      showMessage(info.name, `${normalModeLabel()} / 天井まで${ceilingRemain()}G${lineText ? " / " + lineText : ""}${normalRewardText || " / 次回BET無料"}`);
       showOverlay("REPLAY");
       return;
     }
 
     if(result === "BELL3"){
       flashReelLight("blue", 1200);
-      showMessage(info.name, `${normalModeLabel()} / 天井まで${ceilingRemain()}G${lineText ? " / " + lineText : ""}${normalRewardText || " / +3pt"}`);
+      showMessage(info.name, `${normalModeLabel()} / 天井まで${ceilingRemain()}G${lineText ? " / " + lineText : ""}${normalRewardText || " / 次回BET無料"}`);
       return;
     }
 
@@ -12902,6 +12926,7 @@ body{
   }
 
   function applyResult(result, resolved, lineRow=1){
+    if(A_TYPE_MODE && result==="REPLAY")normalState.replayFree=true;
     const info = RESULT[result];
     showCzLamp(3,resolved);
     const reward = resolved.reward;
@@ -13095,6 +13120,7 @@ body{
 
   function updateDisplay(){
     if(!isSpinning)showZoneRoulette(session.active?null:normalState.flow);
+    if(!isSpinning && $("spinBtn"))$("spinBtn").title=normalState.replayFree?"リプレイ：次回BET消費なし":"";
     const active = session.active;
     const profit = stats.totalPaid - stats.totalFee;
 
@@ -13140,7 +13166,7 @@ body{
     if($("stInfoViewLegacy")) $("stInfoViewLegacy").textContent = stInfoText;
     if($("adminStInfoView")) $("adminStInfoView").textContent = stInfoText;
     const payoutScaleText = A_TYPE_MODE
-      ? `BIG150pt/REG75pt/純増2.5pt/G/ベル共通8pt/リプレイ3pt`
+      ? `BIG150pt/REG75pt/純増2.5pt/G/ベル共通8pt/リプレイ再遊技`
       : `通常:ベル${NORMAL_ROLE_PAYOUTS.BELL}pt/スイカ${NORMAL_ROLE_PAYOUTS.SUICA}pt/チェリー${NORMAL_ROLE_PAYOUTS.CHERRY_ANY}pt/リプレイ${NORMAL_ROLE_PAYOUTS.REPLAY}pt/REG${NORMAL_ROLE_PAYOUTS.MID}pt / 通常小役${Math.round(NORMAL_ROLE_RATE * 100)}% / 高確小役${Math.round(HIGH_ROLE_RATE * 100)}% / ATベル${ROLE_PAYOUTS.BELL}pt/斜めベル${ROLE_PAYOUTS.BELL3}pt / 平均継続${formatRate(averageContinuationRate(settings.setting))}`;
     if($("payoutScaleView")) $("payoutScaleView").textContent = payoutScaleText;
     if($("payoutScaleViewLegacy")) $("payoutScaleViewLegacy").textContent = payoutScaleText;
@@ -14892,6 +14918,7 @@ body{
     currentSpin.stopped[i] = true;
     syncCabinetControlState();
     showCzLamp(stopOrder,currentSpin.resolved);
+    if(stopOrder===3 && currentSpin.resolved?.czLamp)playCzConfirmedSound(currentSpin.resolved);
     if(stopOrder===3)showZoneRoulette(currentSpin.resolved?.flowAfter);
     maybePlayPremiumBigLineupVoice(stopOrder, currentSpin);
     maybeLightBonusAnnouncementForStop(stopOrder, currentSpin);
@@ -14982,9 +15009,9 @@ body{
   }
 
   function playCzConfirmedSound(resolved){
-    if(!resolved?.bonusHit || resolved.czPatrolPlayed)return;
+    if(!(resolved?.bonusHit || resolved?.aTypeBonusReady || resolved?.flowAfter?.phase==='art') || resolved.czPatrolPlayed)return;
     resolved.czPatrolPlayed=true;
-    playOneShotSound('assets/media/jag/cz_patrol_confirm.wav',sfxOutputVolume());
+    playLockedBonusConfirmSound('assets/media/jag/cz_patrol_confirm.wav?v=19',sfxOutputVolume());
   }
 
   var zoneRouletteTimer=null;
@@ -15922,7 +15949,7 @@ body{
       volume = voiceOutputVolume(PREMIUM_VOICE_OUTPUT_SCALE);
       log(`PBB通常BIG確定音を差し替え：${src.split("/").pop()}`);
     }
-    if(premiumBigConfirmSilence && !isPremiumBigDedicatedVoiceSrc(src)) return;
+    if(!A_TYPE_MODE && premiumBigConfirmSilence && !isPremiumBigDedicatedVoiceSrc(src)) return;
     try{
       clearBonusConfirmSoundLock();
       let audio = oneShotSoundCache.get(src);
@@ -15947,7 +15974,7 @@ body{
       audio.volume = applyAudioSourceOutputScale(volume, src);
       audio.onended = finish;
       audio.onerror = finish;
-      bonusConfirmSoundTimer = setTimeout(finish, 8000);
+      if(!A_TYPE_MODE)bonusConfirmSoundTimer = setTimeout(finish, 8000);
       const p = audio.play();
       if(p && typeof p.catch === "function") p.catch(()=>setTimeout(finish, 250));
     }catch(e){
