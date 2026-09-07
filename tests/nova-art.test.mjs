@@ -12,7 +12,7 @@ test('Giru changes continuation at 80 and 320G with setting differences',()=>{
   assert.ok(row[0]>row[1]&&row[1]>row[2]&&row[2]<.5);
  }
  let s=a.startZone(a.enter(),'giru',{setting:6});s.award='40';let t=a.step(s,{},()=>0);
- assert.equal(t.flow.award,'80');assert.match(t.message,/31%/);
+ assert.equal(t.flow.award,'80');assert.match(t.message,/30%/);
  s=a.normalize(JSON.parse(JSON.stringify(t.flow)));assert.equal(s.giruSetting,6);
  t=a.step(s,{},()=>.36);assert.equal(t.flow.zone,'');assert.equal(t.flow.remaining,'130');
 });
@@ -34,7 +34,7 @@ test('Sora stocks each seven without starting a bonus until zone ends',()=>{
  const t=a.step(s,{},()=>0);assert.equal(t.internalBonus.kind,'BIG');assert.equal(t.flow.stock,'9');assert.equal(a.afterBonus(t.flow).remaining,'50');
 });
 test('Ouma super adds 200G without normal freeze and Urapi yields 40G mean target',()=>{
- let s=a.startZone(a.enter(),'ouma',{oumaGames:1});let seq=[.99,0,.99];const t=a.step(s,{},()=>seq.shift());assert.equal(t.result,'SUPER_NOVA');assert.equal(t.internalBonus,null);assert.equal(t.flow.remaining,'250');
+ let s=a.startZone(a.enter(),'ouma',{oumaGames:1});s.awardTier=4;let seq=[.99,0,.99];const t=a.step(s,{},()=>seq.shift());assert.equal(t.result,'SUPER_NOVA');assert.equal(t.internalBonus,null);assert.equal(t.flow.remaining,'250');
  assert.equal(a.defaults.urapiGames*a.defaults.urapiHit*20,40);
  assert.ok(Math.abs(3*(.3*10+.6*(5+5/18)+.1*5)-20)<1e-10);assert.equal(5*(.3*10+.6*5),30);
 });

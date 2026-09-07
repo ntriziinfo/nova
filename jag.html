@@ -6533,11 +6533,11 @@ body{
 </style>
 <link rel="stylesheet" href="nova-cabinet.css?v=20260907-art1">
 <link rel="stylesheet" href="nova-artwork.css?v=20260907-5">
-<script src="nova-artwork.js?v=20260907-roles3" defer></script>
-<script src="nova-art.js?v=20260907-roles3"></script>
-<script src="nova-balance.js?v=20260907-roles3"></script>
-<script src="nova-normal.js?v=20260907-roles3"></script>
-<script src="nova-flow.js?v=20260907-roles3"></script>
+<script src="nova-artwork.js?v=20260907-waves4" defer></script>
+<script src="nova-art.js?v=20260907-waves4"></script>
+<script src="nova-balance.js?v=20260907-waves4"></script>
+<script src="nova-normal.js?v=20260907-waves4"></script>
+<script src="nova-flow.js?v=20260907-waves4"></script>
 </head>
 <body>
 <div class="confetti" id="confetti"></div>
@@ -11246,7 +11246,7 @@ body{
       if(data?.settings){
         const previousAudioBalance = data.settings.audioBalanceVersion || 0;
         settings = {...settings, ...data.settings};
-        if(settings.balanceVersion!=='roles3'){settings.novaArt={...settings.novaArt,...Object.fromEntries([1,2,3,4,5,6].map(i=>['direct'+i,NovaArt.defaults['direct'+i]]))};settings.balanceVersion='roles3';}
+        if(settings.balanceVersion!=='waves4'){settings.novaArt={...settings.novaArt,...Object.fromEntries([1,2,3,4,5,6].map(i=>['direct'+i,NovaArt.defaults['direct'+i]]))};settings.balanceVersion='waves4';}
         if(previousAudioBalance < AUDIO_BALANCE_VERSION){
           const savedBgmVolume = Number(settings.bgmVolume);
           const savedSfxVolume = Number(settings.sfxVolume);
@@ -13682,7 +13682,7 @@ body{
     const artLabels={initial:'ART初期G数',rare:'ARTレア役確率',big:'レア役からBIG確率',zone:'レア役からゾーン確率',czArt:'CZ成功時ART振分',urapiGames:'うらぴ継続G数',urapiHit:'うらぴ図柄揃い確率',oumaGames:'逢魔継続G数',soraHit:'空7揃い確率',oumaHit:'逢魔ノヴァ揃い確率'};
     for(let i=1;i<=6;i++)artLabels['direct'+i]='設定'+i+' ART直撃分母';
     const giruTable=document.createElement('div');giruTable.innerHTML='<p>ギル継続率（仮）：現在の上乗せG数で判定。上限なし。</p><table><tr><th>設定</th><th>80G未満</th><th>80〜319G</th><th>320G以上</th></tr>'+NovaArt.giruRates.map((row,i)=>'<tr><td>'+(i+1)+'</td>'+row.map(p=>'<td>'+Math.round(p*100)+'%</td>').join('')+'</tr>').join('')+'</table>';artPanel.append(giruTable);
-    const zoneTable=document.createElement('div');zoneTable.innerHTML='<p>特化ゾーン選択率（設定順）</p><table><tr><th>設定</th>'+Object.values(NovaArt.names).map(x=>'<th>'+x+'</th>').join('')+'</tr>'+NovaArt.zoneWeights.map((row,i)=>'<tr><td>'+(i+1)+'</td>'+row.map(p=>'<td>'+p+'%</td>').join('')+'</tr>').join('')+'</table><p>入口分母は標準機械割に合わせた係数を適用。確率を変更すると標準機械割の対象外です。通常小役は偶奇差なしの緩やかな設定差、ART直撃は設定差を拡大。ボーナス特殊図柄は設定別の低頻度抽選、ART1セット50G。通常ART・ボーナス純増2.5pt/G。</p>';artPanel.append(zoneTable);
+    const zoneTable=document.createElement('div');zoneTable.innerHTML='<p>特化ゾーン選択率（設定順）</p><table><tr><th>設定</th>'+Object.values(NovaArt.names).map(x=>'<th>'+x+'</th>').join('')+'</tr>'+NovaArt.zoneWeights.map((row,i)=>'<tr><td>'+(i+1)+'</td>'+row.map(p=>'<td>'+p+'%</td>').join('')+'</tr>').join('')+'</table><p>入口分母は標準機械割に合わせた係数を適用。確率を変更すると標準機械割の対象外です。通常小役は偶奇差なしの緩やかな設定差、ART直撃の設定差は小幅。上乗せは小さい結果を中心に、まれに大きく伸びる振分。ボーナス特殊図柄は設定別の低頻度抽選、ART1セット50G。通常ART・ボーナス純増2.5pt/G。</p>';artPanel.append(zoneTable);
     const artCfg=NovaArt.config(settings.novaArt);
     for(const [key,label]of Object.entries(artLabels)){const row=document.createElement('label');row.className='field';row.textContent=label;const input=document.createElement('input');input.type='number';input.dataset.artConfig=key;input.setAttribute('aria-label',label);input.min=key.startsWith('direct')?'2':key==='initial'||key.endsWith('Games')?'1':'0';input.max=key.startsWith('direct')?'100000':key==='initial'||key.endsWith('Games')?'1000':'1';input.step=key.startsWith('direct')?'1':key==='initial'||key.endsWith('Games')?'1':'0.01';input.value=artCfg[key];row.append(input);artPanel.append(row);}
     const artSave=document.createElement('button');artSave.type='button';artSave.textContent='ART設定を保存';artSave.onclick=()=>{const value={};artPanel.querySelectorAll('input').forEach(x=>value[x.dataset.artConfig]=x.valueAsNumber);settings.novaArt=NovaArt.config(value);persistState();artSave.textContent='ART設定を保存しました';};artPanel.append(artSave);

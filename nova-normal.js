@@ -2,7 +2,7 @@
 globalThis.NovaNormal=(()=>{
  const modes=['通常A','通常B','通常C','天国準備','天国A','天国B'];
  const ceilings=[600,600,300,600,100,100];
- const transitions=[[50,30,10,8,1,1],[25,40,15,15,3,2],[35,30,15,10,7,3],[0,0,0,0,80,20],[35,20,10,5,25,5],[15,10,5,5,30,35]];
+ const transitions=[[70,15,5,8,1,1],[15,65,7,10,2,1],[30,25,25,10,7,3],[0,0,0,0,80,20],[12,8,3,2,65,10],[8,5,3,2,12,70]];
  const rare={WEAK_SUICA:{p:1/100,up:.25,cz:.06,gain:1,pay:6},STRONG_SUICA:{p:1/500,up:.65,cz:.3,gain:3,pay:6},STRONG_BELL:{p:1/400,up:.5,cz:.2,gain:2,pay:8},CHANCE_A:{p:1/250,up:.5,cz:.25,gain:2,pay:0},CHANCE_B:{p:1/125,up:.25,cz:.1,gain:1,pay:0},WEAK_NOVA:{p:1/400,up:.35,cz:.15,gain:2,pay:0},STRONG_NOVA:{p:1/2000,up:.75,cz:.5,gain:4,pay:0}};
  const defaults={highMultiplier:2,bandMultiplier:2,downMiss:.08,downReplay:.05,czFailureGain:10,hundredGain:5,superDenom:32768};
  function config(v={}){const c={...defaults};for(const k in c)if(Number.isFinite(Number(v[k])))c[k]=Math.max(0,Math.min(k==='superDenom'?1e9:100,Number(v[k])));c.superDenom=Math.max(2,c.superDenom);return c;}
