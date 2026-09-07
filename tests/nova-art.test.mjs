@@ -30,7 +30,7 @@ test('Giru has exact unlimited doubling, survives JSON, and adds final value onc
  s=a.step(s,{},()=>.5).flow;assert.equal(s.remaining,(375n+28n*2n**1100n).toString());assert.equal(s.zero,false);assert.equal(s.zone,'');
 });
 test('Sora adds ART sets directly without BIG stock or a bonus',()=>{
- let s=a.startZone(a.enter(),'sora');for(let i=0;i<10;i++){const t=a.step(s,{soraHit:1,soraReset:0},()=>0);assert.equal(t.result,'BIG');assert.equal(t.internalBonus,null);s=t.flow;}assert.equal(s.stock,'0');assert.equal(s.sets,'11');
+ let s=a.startZone(a.enter(),'sora');for(let i=0;i<10;i++){const t=a.step(s,{soraHit:1,soraReset:0},()=>.5);assert.equal(t.result,'BIG');assert.equal(t.internalBonus,null);s=t.flow;}assert.equal(s.stock,'0');assert.equal(s.sets,'11');
  const t=a.step(s,{rare:0},()=>.99);assert.equal(t.internalBonus,null);assert.equal(t.flow.stock,'0');assert.equal(t.flow.remaining,'275');
 });
 test('Ouma super adds 200G without normal freeze and Urapi yields 40G mean target',()=>{
