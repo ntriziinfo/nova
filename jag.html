@@ -14967,6 +14967,12 @@ body{
     playStopSound(i, stopOrder);
   }
 
+  function playCzConfirmedSound(resolved){
+    if(!resolved?.bonusHit || resolved.czPatrolPlayed)return;
+    resolved.czPatrolPlayed=true;
+    playOneShotSound('assets/media/jag/cz_patrol_confirm.wav',sfxOutputVolume());
+  }
+
   let czLampTimers=[];
   function showCzLamp(stopOrder,resolved){
     if(resolved?.czLamp&&stopOrder!==3)return;
@@ -14976,11 +14982,12 @@ body{
     const display=NovaFlow.lampAtStop(lamp,stopOrder);
     const target=display.stage;
     const previous=Number(machine.dataset.czLamp)||0;
+    if(previous>=6&&target===6&&resolved.bonusHit)playCzConfirmedSound(resolved);
     for(let stage=previous+1;stage<=target;stage++){
-      czLampTimers.push(setTimeout(()=>{machine.dataset.czLamp=String(stage);},(stage-previous-1)*100));
+      czLampTimers.push(setTimeout(()=>{machine.dataset.czLamp=String(stage);if(stage===6&&resolved.bonusHit)playCzConfirmedSound(resolved);},(stage-previous-1)*100));
     }
     if(display.rainbow){
-      czLampTimers.push(setTimeout(()=>{machine.dataset.czRainbow='true';},0));
+      czLampTimers.push(setTimeout(()=>{machine.dataset.czRainbow='true';if(resolved.bonusHit)playCzConfirmedSound(resolved);},0));
     }
   }
 
