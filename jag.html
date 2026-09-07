@@ -7249,6 +7249,7 @@ body{
   const STORAGE_RESUME_KEY = STORAGE_KEY + "_resume";
   const PREFERENCES_STORAGE_KEY = "nova_slot_preferences_v1_" + bootMachineId;
 
+  const CZ_BGM_SRC = "assets/media/nova/audiostock_933855.wav";
   const DEFAULT_NORMAL_BGM_SRC = "assets/media/nova/audiostock_1117081.wav";
   const HIGH_MODE_BGM_SRC = "";
 
@@ -12428,6 +12429,7 @@ body{
   }
 
   function normalBgmSrc(){
+    if(!session.active && ["cz","strong_cz"].includes(normalState.flow?.phase)) return CZ_BGM_SRC;
     if(speedToBonusActive && SPEED_BGM_SRC) return SPEED_BGM_SRC;
     if(!session.active && isHighMode() && HIGH_MODE_BGM_SRC) return HIGH_MODE_BGM_SRC;
     return DEFAULT_NORMAL_BGM_SRC;
@@ -15010,6 +15012,10 @@ body{
     const stopAutoAtFirstHit = currentSpin && currentSpin.normalActiveAtStart && isAtFirstHitForAuto(resolved);
     if(currentSpin && currentSpin.normalActiveAtStart){
       applyNormalResult(result, resolved, lineRow);
+      if(resolved.czEntry || (['cz','strong_cz'].includes(resolved.flowBefore?.phase) && !['cz','strong_cz'].includes(normalState.flow?.phase))){
+        pauseNormalBgm();
+        playNormalBgm();
+      }
       if(stopAutoAtFirstHit && autoPlay){
         stopAutoPlay(resolved.bonusWaitSpin ? "BONUS確定画面のためAUTO停止" : "AT初当たり確定のためAUTO停止");
       }
