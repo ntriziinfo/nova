@@ -8589,6 +8589,14 @@ body{
     return "";
   }
 
+  function playCzCountdownOnLever(resolved){
+    if(resolved?.bonusPendingAtStart)return;
+    const flow=resolved?.flowBefore;
+    if(!['cz','strong_cz'].includes(flow?.phase))return;
+    const src={3:'assets/media/jag/cz_remaining_3.wav',2:'assets/media/jag/cz_remaining_2.wav',1:'assets/media/jag/cz_last.wav'}[flow.remaining];
+    if(src)playOneShotSound(src,voiceOutputVolume());
+  }
+
   function playPendingSettingVoiceOnLever(){
     const premiumSrc = String(normalState.pendingPremiumVoiceSrc || "");
     const settingSrc = String(normalState.pendingSettingVoiceSrc || "");
@@ -14717,6 +14725,7 @@ body{
       reversePushGuide,
       pendingBattleOutcome:null
     };
+    playCzCountdownOnLever(resolved);
     currentSpin.manualBonusStop = false; // Fixed-G prototype: bonus starts on the next confirmed spin.
     if(normalState.flow?.zone==='sora')showOverlay('7・nebulaを狙え');
     if(normalState.flow?.zone==='ouma')showOverlay('ノヴァを狙え');
@@ -15305,6 +15314,7 @@ body{
     if(currentSpin.autoStopTakeoverScheduled) return true;
     currentSpin.autoStopTakeoverScheduled = true;
     currentSpin.autoStopAtStart = true;
+    playCzCountdownOnLever(resolved);
     currentSpin.manualBonusStop = false;
     stopAllReels();
     return true;
