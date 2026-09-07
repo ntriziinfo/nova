@@ -20,7 +20,7 @@ globalThis.NovaFlow = (() => {
     const cfg=config(options);
     return {phase:strong?'strong_cz':'cz',remaining:strong?cfg.strongGames:cfg.czGames,success:random()<(strong?cfg.strongChance:cfg.czChance)};
   }
-  function afterBonus(value,options){return NovaArt.afterBonus(value,options);}
+  function afterBonus(value,options,sets=0){return NovaArt.afterBonus(value,options,sets);}
   function advance(value){
     const state=normalize(value);
     return normalize({...state,remaining:Math.max(0,state.remaining-1)});

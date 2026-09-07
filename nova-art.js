@@ -2,16 +2,22 @@
 globalThis.NovaArt=(()=>{
  const names={sosuke:'宗介',toto:'とと',urapi:'うらぴ',giru:'ギル',sora:'空',ouma:'逢魔'};
  const defaults={initial:50,rare:.03,big:.12,zone:.4,czArt:.25,urapiGames:5,urapiHit:.4,oumaGames:5,soraHit:.25,oumaHit:.6,direct1:1800,direct2:1500,direct3:1200,direct4:900,direct5:600,direct6:400};
+ const zoneWeights=Object.freeze([[40,30,15,8,5,2],[38,30,16,8,6,2],[36,29,17,9,6,3],[34,28,18,9,7,4],[31,27,19,10,8,5],[28,26,20,10,10,6]].map(Object.freeze));
+ function pickZone(setting=1,rng=Math.random){let roll=rng()*100;const weights=zoneWeights[validSetting(setting)-1];for(let i=0;i<6;i++){roll-=weights[i];if(roll<0)return Object.keys(names)[i];}return 'ouma';}
+ const bonusSpecial=.05;
+ function advanceBonus(state,special=false){const remaining=Math.max(0,Number(state.bonusGamesRemaining)||0);return {bonusGamesRemaining:Math.max(0,remaining-1),bonusArtSets:(Number(state.bonusArtSets)||0)+(remaining>0&&special?1:0)};}
+ function drawPaidRole(zeroChance=0,bellPay=8,rng=Math.random){const bell=(5.5/(1-zeroChance)-3)/(bellPay-3);return rng()<Math.max(0,Math.min(1,bell))?'BELL':'REPLAY';}
+ function drawBonus(rng=Math.random){return rng()<bonusSpecial?'STRONG_NOVA':drawPaidRole(bonusSpecial,15,rng);}
  const direct=[1800,1500,1200,900,600,400];
  const giruRates=Object.freeze([[.45,.25,.10],[.47,.27,.12],[.49,.29,.14],[.51,.31,.16],[.53,.33,.18],[.55,.35,.20]].map(Object.freeze));
  const validSetting=x=>Math.max(1,Math.min(6,Math.round(Number(x)||1)));
  function giruChance(award,setting=1){return giruRates[validSetting(setting)-1][integer(award)<80n?0:integer(award)<320n?1:2];}
  const integer=x=>{try{return BigInt(String(x??0))<0n?0n:BigInt(String(x??0));}catch{return 0n;}};
  function config(v={}){const c={...defaults};for(const k in c){const n=Number(v?.[k]);if(Number.isFinite(n))c[k]=k.startsWith('direct')?Math.max(2,Math.min(100000,Math.round(n))):k.endsWith('Games')||k==='initial'?Math.max(1,Math.min(1000,Math.round(n))):Math.max(0,Math.min(1,n));}c.zone=Math.min(c.zone,1-c.big);return c;}
- function normalize(v){return {phase:'art',remaining:integer(v?.remaining).toString(),zone:names[v?.zone]?v.zone:'',zoneLeft:Math.max(0,Math.floor(Number(v?.zoneLeft)||0)),award:integer(v?.award).toString(),stock:integer(v?.stock).toString(),zero:!!v?.zero,color:v?.color||'white',giruSetting:validSetting(v?.giruSetting)};}
+ function normalize(v){return {phase:'art',remaining:integer(v?.remaining).toString(),zone:names[v?.zone]?v.zone:'',zoneLeft:Math.max(0,Math.floor(Number(v?.zoneLeft)||0)),award:integer(v?.award).toString(),stock:integer(v?.stock).toString(),sets:integer(v?.sets).toString(),zero:!!v?.zero,color:v?.color||'white',giruSetting:validSetting(v?.giruSetting)};}
  function enter(c){return normalize({remaining:config(c).initial});}
  function startZone(s,z,c){s=normalize(s);const setting=validSetting(c?.setting);c=config(c);return {...s,giruSetting:setting,zone:z,zoneLeft:{sosuke:3,toto:5,urapi:c.urapiGames,giru:1,sora:10,ouma:c.oumaGames}[z],award:z==='giru'?'5':'0',zero:false,color:'white'};}
- function afterBonus(v,c){const s=v?.phase==='art'?normalize(v):enter(c);if(integer(s.remaining)===0n)s.remaining=String(config(c).initial);return s;}
+ function afterBonus(v,c,won=0){const s=v?.phase==='art'?normalize(v):normalize({});s.sets=(integer(s.sets)+integer(won)).toString();if(integer(s.remaining)===0n&&integer(s.sets)>0n){s.remaining=String(config(c).initial);s.sets=(integer(s.sets)-1n).toString();}return integer(s.remaining)>0n||integer(s.stock)>0n||s.zone?s:{phase:'normal',remaining:0,success:false};}
  function step(value,options={},rng=Math.random,forced=''){
   const c=config(options);let s=normalize(value),result='MISS',message='',internalBonus=null,reverse=false;
   const add=n=>{s.remaining=(integer(s.remaining)+integer(n)).toString();};
@@ -19,7 +25,7 @@ globalThis.NovaArt=(()=>{
   if(forced.startsWith('ZONE_')){s=startZone(s,forced.slice(5),{...c,setting:options.setting});return {result,flow:s,message:names[s.zone]+'ゾーン突入'};}
   if(!s.zone&&integer(s.stock)>0n){s.stock=(integer(s.stock)-1n).toString();return {result:'MISS',flow:s,internalBonus:{kind:'BIG',source:'空ゾーンストック',internalResult:'BIG'}};}
   if(!s.zone&&integer(s.remaining)===0n)return {result,flow:{phase:'normal',remaining:0,success:false},message:'ART終了'};
-  const roll=rng();result=roll<.6?'REPLAY':roll<.9?'BELL':'MISS';
+  const roll=rng();result=s.zone?(roll<.6?'REPLAY':roll<.9?'BELL':'MISS'):drawPaidRole(c.rare,8,()=>roll);
   if(['MISS','BELL','REPLAY','WEAK_NOVA','STRONG_NOVA','SUPER_NOVA'].includes(forced))result=forced;
   if(s.zone){
    const z=s.zone;s.zoneLeft=Math.max(0,s.zoneLeft-1);
@@ -35,11 +41,11 @@ globalThis.NovaArt=(()=>{
    if(z==='ouma'){if(!['WEAK_NOVA','STRONG_NOVA','SUPER_NOVA'].includes(forced)&&rng()<c.oumaHit){const r=rng();result=r<.7?'WEAK_NOVA':r<.95?'STRONG_NOVA':'SUPER_NOVA';}const n={WEAK_NOVA:20,STRONG_NOVA:50,SUPER_NOVA:200}[result]||0;s.award=(integer(s.award)+BigInt(n)).toString();message=n?`逢魔 ${result} ＋${n}G`:'ノヴァを狙え';if(!s.zoneLeft)finish();}
   }else{
    s.remaining=(integer(s.remaining)-1n).toString();
-   const rare=forced==='RARE'||(!forced&&rng()<c.rare);if(rare){result='WEAK_NOVA';const r=rng();if(r<c.big)internalBonus={kind:'BIG',source:'ARTレア役',internalResult:'BIG'};else if(r<c.big+c.zone){const keys=Object.keys(names);s=startZone(s,keys[Math.min(5,Math.floor(rng()*6))],{...c,setting:options.setting});message=names[s.zone]+'ゾーン突入';}else message='ARTレア役';}
-   if(!s.zone&&!internalBonus&&integer(s.remaining)===0n){message='ART終了';return {result,flow:{phase:'normal',remaining:0,success:false},message};}
+   const rare=forced==='RARE'||(!forced&&rng()<c.rare);if(rare){result='WEAK_NOVA';const r=rng();if(r<c.big)internalBonus={kind:'BIG',source:'ARTレア役',internalResult:'BIG'};else if(r<c.big+c.zone){s=startZone(s,pickZone(options.setting,rng),{...c,setting:options.setting});message=names[s.zone]+'ゾーン突入';}else message='ARTレア役';}
+   if(!s.zone&&!internalBonus&&integer(s.remaining)===0n){if(integer(s.sets)>0n){s.remaining=String(c.initial);s.sets=(integer(s.sets)-1n).toString();return {result,flow:s,message:'次のARTセット開始'};}message='ART終了';return {result,flow:{phase:'normal',remaining:0,success:false},message};}
   }
   return {result,flow:s,message,internalBonus,reverse,zoneSpin:!!value.zone};
  }
- function label(v){const s=normalize(v);return `ART ${s.remaining}G${s.zone?' / '+names[s.zone]+' '+(s.zero?'0G連':s.zoneLeft+'G'):''}${integer(s.stock)>0n?' / BIGストック '+s.stock:''}${s.zone==='giru'?' / '+s.award+'G / 継続'+Math.round(giruChance(s.award,s.giruSetting)*100)+'%':''}`;}
- return {names,defaults,direct,giruRates,giruChance,config,normalize,enter,startZone,afterBonus,step,label};
+ function label(v){const s=normalize(v);return `ART ${s.remaining}G / 待機${s.sets}SET${s.zone?' / '+names[s.zone]+' '+(s.zero?'0G連':s.zoneLeft+'G'):''}${integer(s.stock)>0n?' / BIGストック '+s.stock:''}${s.zone==='giru'?' / '+s.award+'G / 継続'+Math.round(giruChance(s.award,s.giruSetting)*100)+'%':''}`;}
+ return {names,defaults,direct,zoneWeights,pickZone,bonusSpecial,advanceBonus,drawPaidRole,drawBonus,giruRates,giruChance,config,normalize,enter,startZone,afterBonus,step,label};
 })();

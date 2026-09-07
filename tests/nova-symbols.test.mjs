@@ -23,7 +23,7 @@ const isNovaGrid=grid=>[0,1,2].every(r=>[0,1,2].every(c=>grid[r][c]===novaSymbol
 'drawSuperNovaBonus','resolveNormalOutcome','decideBigPremiumEffect'
 ].map(fn).join('\n')+`
 const aTypeBonusRemainingNet=()=>remaining;
-let remaining=1;
+let remaining=1;const session={bonusGamesRemaining:30};
 let pendingATypeInternalBonus=null;let pendingArtStep=null;
 const normalState={sinceBonus:20,bonusPending:false,risingRemain:0};
 const settings={};
@@ -48,8 +48,8 @@ test('actual stop grids match every supported outcome using real consecutive str
 test('bell pays 8 normally and 15 throughout bonus including final game',()=>{
  assert.equal(run('normalRewardFor("BELL")'),8);
  assert.equal(run('resolveATypeBonusOutcome("BELL").reward'),15);
- assert.equal(run('remaining=96; resolveATypeBonusOutcome("BELL").reward'),15);
- assert.equal(run('remaining=0; resolveATypeBonusOutcome("BELL").reward'),0);
+ assert.equal(run('session.bonusGamesRemaining=1; resolveATypeBonusOutcome("BELL").reward'),15);
+ assert.equal(run('session.bonusGamesRemaining=0; resolveATypeBonusOutcome("BELL").reward'),0);
 });
 test('retired forced outcomes cannot enter active play',()=>{
  assert.equal(run('normalizeATypeResult("GRAPE")'),'BELL');
@@ -105,7 +105,7 @@ test('game resolver carries CZ entry and final success into the bonus pipeline',
  assert.equal(run('czLast.flowAfter.phase'),'normal');
 });
 test('game resolver expires ART on its fiftieth game with no automatic bonus',()=>{
- run('normalState.flow=NovaFlow.afterBonus();');
+ run('normalState.flow=NovaFlow.afterBonus(null,undefined,1);');
  for(let i=0;i<50;i++){
   run('pendingArtStep=NovaArt.step(normalState.flow,{rare:0},()=>0);globalThis.rtSpin=resolveNormalOutcome("REPLAY");normalState.flow=rtSpin.flowAfter;');
   assert.equal(run('rtSpin.flowAfter.phase'),i===49?'normal':'art');

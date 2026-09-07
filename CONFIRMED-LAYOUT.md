@@ -1,6 +1,6 @@
 # 確定配置・ランプ仕様（2026-09-07）
 
-最新の設計方針は `ART-SPEC.md` のART・6種類の上乗せゾーン。ART試作を実装済み。以下のCZ・RTは移行前の仕様記録であり、ART-SPEC.md末尾の実装値を優先する。
+現行ゲーム性の数値は BALANCE-VERIFICATION.md を優先（純増2.5pt、BIG30G/REG15G、ART保証なし）。最新の設計方針は `ART-SPEC.md` のART・6種類の上乗せゾーン。ART試作を実装済み。以下のCZ・RTは移行前の仕様記録であり、ART-SPEC.md末尾の実装値を優先する。
 
 ## 現行ゲーム性：CZ・RT（以前のRISING32Gを置き換え）
 - 通常 → CZまたは強CZ → 成功でボーナス → RT50G → 通常。CZ失敗は通常へ戻る。

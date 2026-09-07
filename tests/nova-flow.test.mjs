@@ -22,7 +22,7 @@ test('CZ consumes exactly ten subsequent games and persists success across reloa
  state=flow.advance(state);assert.equal(state.phase,'normal');
 });
 test('ART starts at 50 and returns to normal only after the 50th game',()=>{
- let state=flow.afterBonus();
+ let state=flow.afterBonus(null,undefined,1);
  for(let n=50;n>0;n--){assert.equal(state.phase,'art');assert.equal(state.remaining,String(n));state=context.NovaArt.step(state,{rare:0},()=>0).flow;}
  assert.equal(state.phase,'normal');assert.equal(state.remaining,0);
  assert.equal(flow.normalize({phase:'rising',remaining:32}).phase,'normal');
@@ -41,7 +41,7 @@ test('normal entry lottery has separate CZ and strong CZ rates',()=>{
 test('new flow and isolated state storage are wired into game',()=>{
  const game=fs.readFileSync('jag.html','utf8');
  assert.match(game,/nova-flow\.js/);
- assert.match(game,/normalState\.flow = premiumOneGameRen \? normalState\.flow : NovaFlow\.afterBonus/);
+ assert.match(game,/normalState\.flow = NovaFlow\.afterBonus/);
  assert.match(game,/flow:NovaFlow\.normalize\(data\.normalState\.flow\)/);
  assert.match(game,/nova_slot_state_v1_/);
  const draw=game.slice(game.indexOf('  function drawIndependentATypeOutcome(){'),game.indexOf('  function drawNormalResult(){'));
