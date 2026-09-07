@@ -16,6 +16,7 @@ globalThis.NovaArt=(()=>{
 
  function drawPaidRole(zeroChance=0,bellPay=8,rng=Math.random){const bell=(5.5/(1-zeroChance)-3)/(bellPay-3);return rng()<Math.max(0,Math.min(1,bell))?'BELL':'REPLAY';}
  function drawBonus(rng=Math.random,setting){const p=setting===undefined?bonusSpecial:bonusSpecialFor(setting);return rng()<p?'NEBULA':drawPaidRole(p,8,rng);}
+ const zoneEntryScale=[0.7290687711696987,0.7309815147854967,0.6366181841436438,0.7072043524617079,0.688,0.667];
  const direct=[1400,1320,1240,1160,1080,1000];
  const giruRates=Object.freeze({normal:[.7702549139553321,.55,.2],ura:[.8732025744756524,.65,.2]});
  function giruChance(award,setting=1,ura=false){const g=integer(award)*2n/11n,rates=ura?giruRates.ura:giruRates.normal;return rates[g<(ura?160n:80n)?0:g<(ura?640n:320n)?1:2];}
@@ -38,7 +39,7 @@ globalThis.NovaArt=(()=>{
  function settleZone(value){const s=normalize(value);if(!s.zone)return s;if(s.zone!=='sora')s.remaining=(integer(s.remaining)+integer(s.award)).toString();s.zone='';s.color='white';s.zoneLeft=0;s.zero=false;s.oumaPending=false;return s;}
  function afterBonus(v,c,won=0){const s=v?.phase==='art'?normalize(v):normalize({});s.sets=(integer(s.sets)+integer(won)).toString();if(integer(s.remaining)===0n&&integer(s.sets)>0n){s.remaining=String(config(c).initial);s.sets=(integer(s.sets)-1n).toString();}return integer(s.remaining)>0n||integer(s.stock)>0n||s.zone?s:{phase:'normal',remaining:0,success:false};}
  function step(value,options={},rng=Math.random,forced=''){
-  const c=config(options);if(options.setting){c.rare=Math.min(.99,c.rare*(globalThis.NovaNormal?.rareFactor(options.setting)??1));const factor=1+.2*biasFor(options.setting);c.big=Math.min(1,c.big*factor);c.zone=Math.min(1-c.big,c.zone*factor);}let s=normalize(prepareBet(value,options,rng)),freeOumaSpin=s.zone==='ouma'&&s.zero,result='MISS',message='',internalBonus=null,reverse=false,queuedEntered=false;
+  const c=config(options);if(options.setting){c.rare=Math.min(.99,c.rare*(globalThis.NovaNormal?.rareFactor(options.setting)??1));const factor=(1+.2*biasFor(options.setting))*zoneEntryScale[validSetting(options.setting)-1];c.big=Math.min(1,c.big*factor);c.zone=Math.min(1-c.big,c.zone*factor);}let s=normalize(prepareBet(value,options,rng)),freeOumaSpin=s.zone==='ouma'&&s.zero,result='MISS',message='',internalBonus=null,reverse=false,queuedEntered=false;
   const finish=()=>{const z=s.zone,name=zoneName(s);s=settleZone(s);message=`${name}ゾーン終了 / ${z==='sora'?s.zoneSets+'セット上乗せ':'＋'+s.award+'pt'}`;};
   if(s.entryStage==='seven'){s.entryStage='roulette';return {result:'BIG',flow:s,zoneSpin:true,message:'赤7揃い！ 特化ゾーンルーレット'};}
   if(s.entryStage==='roulette'){s.entryStage='confirmed';return {result:'MISS',flow:s,zoneSpin:true,message:zoneName(s.pendingZone)+'ゾーン確定！'};}
@@ -70,5 +71,5 @@ globalThis.NovaArt=(()=>{
   return {result,flow:s,message,internalBonus,reverse,oumaFreeze:freeOumaSpin,zoneSpin:!!value.zone||queuedEntered};
  }
  function label(v){const s=normalize(v);return `ART ${s.remaining}pt / 待機${s.sets}SET${s.entryStage?' / '+({seven:'赤7を狙え・減算停止',roulette:'ルーレット・減算停止',confirmed:zoneName(s.pendingZone)+'ゾーン確定'}[s.entryStage]):''}${s.zone?' / '+zoneName(s)+' '+(s.zero?'0G連':s.oumaPending?'BETで継続抽選':s.zoneLeft+'G'):''}${integer(s.stock)>0n?' / BIGストック '+s.stock:''}${s.zone==='giru'?' / 基準'+(s.giruBase?points(s.giruBase):'未定')+'pt / '+s.award+'pt / '+s.giruContinues+'回継続':''}`;}
- return {points,bonusTarget,payout,guarantees,settleZone,prepareBet,resetGamesMean,soraRates,oumaFreezeRate,baseZone,zoneName,zoneIds,pickAwardTier,swingAward,names,defaults,direct,zoneWeights,pickZone,bonusSpecial,settingBias,biasFor,bonusSpecialFor,advanceBonus,drawPaidRole,drawBonus,giruRates,giruChance,config,normalize,enter,startZone,afterBonus,step,label};
+ return {zoneEntryScale,points,bonusTarget,payout,guarantees,settleZone,prepareBet,resetGamesMean,soraRates,oumaFreezeRate,baseZone,zoneName,zoneIds,pickAwardTier,swingAward,names,defaults,direct,zoneWeights,pickZone,bonusSpecial,settingBias,biasFor,bonusSpecialFor,advanceBonus,drawPaidRole,drawBonus,giruRates,giruChance,config,normalize,enter,startZone,afterBonus,step,label};
 })();
