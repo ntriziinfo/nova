@@ -7111,7 +7111,7 @@ body{
           <input id="bigAddInput" type="number" min="0" max="1000" step="1" value="252" readonly />
         </div>
         <div class="help">
-          BBは252pt、RBは96pt。ベルは通常8pt・ボーナス中15pt、リプレイは3pt。ノヴァ目の配当・当選は未設定です。
+          BBは252pt、RBは96pt。ベルは通常8pt・ボーナス中15pt、リプレイは3pt。通常時のスーパーノヴァ目はBIG・フリーズ各50%。弱・強は未設定です。
         </div>
       </div>
 
@@ -9683,6 +9683,8 @@ body{
   }
 
   function decideBigPremiumEffect(result, resolved, premiumForced=false){
+    // The Super NOVA branch has already drawn its exclusive 1:1 outcome.
+    if(resolved?.superNovaOutcome) return resolved.superNovaOutcome === "FREEZE";
     if(!isBigPremiumEffectEligible(result, resolved)) return false;
     if(A_TYPE_MODE && resolved && resolved.bonusPendingAtStart) return !!resolved.premiumBonus;
     return !!premiumForced || Math.random() < GEKIATSU_CHANCE_ON_BIG;
@@ -11064,9 +11066,10 @@ body{
 
   function resolveNormalOutcome(result, lineRow=1){
     if(A_TYPE_MODE){
-      const internalBonus = pendingATypeInternalBonus;
+      const superNovaBonus = result === "SUPER_NOVA" ? drawSuperNovaBonus() : null;
+      const internalBonus = superNovaBonus || pendingATypeInternalBonus;
       pendingATypeInternalBonus = null;
-      const bonusPendingAtStart = !!normalState.bonusPending;
+      const bonusPendingAtStart = !superNovaBonus && !!normalState.bonusPending;
       const risingAtStart = !bonusPendingAtStart && isNovaRisingMode();
       const risingRemainAfter = risingAtStart
         ? Math.max(0, normalizeNovaRisingRemain(normalState.risingRemain) - 1)
@@ -11124,7 +11127,8 @@ body{
         bar3PremiumReady:false,
         bonusKind:isReg ? "MID" : isBig ? "BIG" : "",
         bonusSource,
-        premiumBonus:isBig && (bonusPendingAtStart ? !!normalState.premiumBonus : result === "BAR3"),
+        premiumBonus:isBig && (superNovaBonus ? superNovaBonus.premiumBonus : bonusPendingAtStart ? !!normalState.premiumBonus : result === "BAR3"),
+        superNovaOutcome:superNovaBonus?.superNovaOutcome || "",
         oneGameRenBonus:isBig && bonusPendingAtStart ? !!normalState.oneGameRenBonus : false,
         aTypeBonusReady:isReadyBonus
       };
@@ -13523,6 +13527,12 @@ body{
   }
   function isNovaResult(result){
     return ["WEAK_NOVA","STRONG_NOVA","SUPER_NOVA"].includes(result);
+  }
+  function drawSuperNovaBonus(){
+    const freeze = Math.random() < 0.5;
+    return {kind:"BIG",premiumBonus:freeze,superNovaOutcome:freeze?"FREEZE":"BIG",
+      source:freeze?"スーパーノヴァ目 → フリーズ":"スーパーノヴァ目 → BIG",
+      internalResult:"SUPER_NOVA",gamesSinceLastBonusAtStart:normalizeBonusAfterGames(normalState.sinceBonus)};
   }
   function buildForcedNovaGrid(result){
     const tripleColumns = result === "SUPER_NOVA" ? [0,1,2] : result === "STRONG_NOVA" ? [0,Math.random()<0.5?1:2] : [0];
@@ -16291,6 +16301,6 @@ body{
 })();
 </script>
 <button type="button" id="novaSymbolPreviewOpen">ノヴァ目を確認</button>
-<dialog id="novaSymbolPreview"><h2>ノヴァ目</h2><label>出目<select id="novaPatternSelect"><option value="WEAK_NOVA">弱ノヴァ目：左3連</option><option value="STRONG_MIDDLE">強ノヴァ目：左・中3連</option><option value="STRONG_RIGHT">強ノヴァ目：左・右3連</option><option value="SUPER_NOVA" selected>スーパーノヴァ目：全リール3連</option></select></label><p id="novaPatternDescription"></p><div id="novaSymbolPreviewGrid"></div><p>出目の確認用です。出現率・配当・ボーナス対応は未設定。</p><button type="button" id="novaSymbolPreviewClose">閉じる</button></dialog>
+<dialog id="novaSymbolPreview"><h2>ノヴァ目</h2><label>出目<select id="novaPatternSelect"><option value="WEAK_NOVA">弱ノヴァ目：左3連</option><option value="STRONG_MIDDLE">強ノヴァ目：左・中3連</option><option value="STRONG_RIGHT">強ノヴァ目：左・右3連</option><option value="SUPER_NOVA" selected>スーパーノヴァ目：全リール3連</option></select></label><p id="novaPatternDescription"></p><div id="novaSymbolPreviewGrid"></div><p>出目の確認用です。通常時のスーパーはBIG・フリーズ各50%。ボーナス中は対象外。弱・強と自然出現率は未設定。</p><button type="button" id="novaSymbolPreviewClose">閉じる</button></dialog>
 </body>
 </html>

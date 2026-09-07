@@ -17,10 +17,17 @@ const isNovaGrid=grid=>[0,1,2].every(r=>[0,1,2].every(c=>grid[r][c]===novaSymbol
 'mod','reelWindowFromTopIndex','normalizeATypeResult','displayResultFor','isMiddleLineOnlyResult',
 'hasBellDiagonal','cherryResultFromRow','cherryResultFromRows','displayedResultFromGrid',
 'displayedResultFromRow','gridPaylineRows','gridHasOnlyAllowedPaylines','buildNovaReelGrid',
-'normalRewardFor','resolveATypeBonusOutcome','isCherryResult','novaPatternFromGrid','isNovaResult','buildForcedNovaGrid'
+'normalRewardFor','resolveATypeBonusOutcome','isCherryResult','novaPatternFromGrid','isNovaResult','buildForcedNovaGrid',
+'drawSuperNovaBonus','resolveNormalOutcome','decideBigPremiumEffect'
 ].map(fn).join('\n')+`
 const aTypeBonusRemainingNet=()=>remaining;
 let remaining=1;
+let pendingATypeInternalBonus=null;
+const normalState={sinceBonus:20,bonusPending:false,risingRemain:0};
+const normalizeBonusAfterGames=value=>Number(value)||0;
+const normalizeNovaRisingRemain=value=>Number(value)||0;
+const isNovaRisingMode=()=>false;
+const nextBonusAfterGames=value=>value+1;
 `,context);
 const run=code=>vm.runInContext(code,context);
 test('every reel has exactly one contiguous three-cell logo and no retired symbols',()=>{
@@ -64,4 +71,19 @@ test('forced NOVA outcomes survive normalization and stop at the exact requested
   assert.equal(run(`normalRewardFor('${result}')`),0);
   assert.equal(run(`remaining=96;resolveATypeBonusOutcome('${result}').reward`),0);
  }
+});
+test('Super NOVA draws exactly one 50:50 BIG or freeze outcome without premium reroll',()=>{
+ for(const [roll,expected] of [[0,'FREEZE'],[.499999,'FREEZE'],[.5,'BIG'],[.999999,'BIG']]){
+  run(`globalThis.drawCount=0; Math.random=()=>{drawCount++;return ${roll}}; globalThis.outcome=resolveNormalOutcome('SUPER_NOVA');`);
+  assert.equal(run('outcome.superNovaOutcome'),expected);
+  assert.equal(run('outcome.bonusHit'),true);
+  assert.equal(run('outcome.bonusKind'),'BIG');
+  assert.equal(run('outcome.premiumBonus'),expected==='FREEZE');
+  assert.equal(run('decideBigPremiumEffect("SUPER_NOVA",outcome,true)'),expected==='FREEZE');
+  assert.equal(run('drawCount'),1);
+ }
+ run('drawCount=0; remaining=96; globalThis.bonusOutcome=resolveATypeBonusOutcome("SUPER_NOVA");');
+ assert.equal(run('drawCount'),0);
+ assert.equal(run('bonusOutcome.superNovaOutcome'),undefined);
+ assert.equal(run('bonusOutcome.reward'),0);
 });
