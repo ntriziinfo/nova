@@ -5,6 +5,7 @@ import vm from 'node:vm';
 const source=fs.readFileSync('jag.html','utf8');
 const fn=name=>source.match(new RegExp('  function '+name+'\\([^]*?\\n  }'))[0];
 const context=vm.createContext({});
+vm.runInContext(fs.readFileSync('nova-flow.js','utf8'),context);
 const constants=source.slice(source.indexOf('  const A_TYPE_PAYOUTS'),source.indexOf('  const symbolImagePreloads'));
 const result=source.slice(source.indexOf('  const RESULT ='),source.indexOf('  const SETTING_PROFILE'));
 const strips=source.slice(source.indexOf('  const REEL_STRIPS ='),source.indexOf('  function mod('));
@@ -24,6 +25,8 @@ const aTypeBonusRemainingNet=()=>remaining;
 let remaining=1;
 let pendingATypeInternalBonus=null;
 const normalState={sinceBonus:20,bonusPending:false,risingRemain:0};
+const settings={};
+const NORMAL_ROLE_PAYOUTS={};
 const normalizeBonusAfterGames=value=>Number(value)||0;
 const normalizeNovaRisingRemain=value=>Number(value)||0;
 const isNovaRisingMode=()=>false;
@@ -86,4 +89,27 @@ test('Super NOVA draws exactly one 50:50 BIG or freeze outcome without premium r
  assert.equal(run('drawCount'),0);
  assert.equal(run('bonusOutcome.superNovaOutcome'),undefined);
  assert.equal(run('bonusOutcome.reward'),0);
+});
+test('game resolver carries CZ entry and final success into the bonus pipeline',()=>{
+ run('settings.novaFlow={czGames:2,czChance:1};normalState.flow=NovaFlow.normalize(null);globalThis.entry=resolveNormalOutcome("CZ");');
+ assert.equal(run('entry.flowAfter.phase'),'cz');
+ assert.equal(run('entry.flowAfter.remaining'),2);
+ assert.equal(run('entry.bonusHit'),false);
+ run('normalState.flow=entry.flowAfter;globalThis.czFirst=resolveNormalOutcome("MISS");');
+ assert.equal(run('czFirst.flowAfter.remaining'),1);
+ run('normalState.flow=czFirst.flowAfter;pendingATypeInternalBonus={kind:"BIG",source:"CZ成功",gamesSinceLastBonusAtStart:20};globalThis.czLast=resolveNormalOutcome("MISS");');
+ assert.equal(run('czLast.czCompleted'),true);
+ assert.equal(run('czLast.bonusHit'),true);
+ assert.equal(run('czLast.bonusSource'),'CZ成功');
+ assert.equal(run('czLast.flowAfter.phase'),'normal');
+});
+test('game resolver expires RT on its fiftieth game with no automatic bonus',()=>{
+ run('normalState.flow=NovaFlow.afterBonus();');
+ for(let i=0;i<50;i++){
+  run('globalThis.rtSpin=resolveNormalOutcome("REPLAY");normalState.flow=rtSpin.flowAfter;');
+  assert.equal(run('rtSpin.rtCompleted'),i===49);
+  assert.equal(run('rtSpin.reward'),3);
+  assert.equal(run('rtSpin.bonusHit'),false);
+ }
+ assert.equal(run('normalState.flow.phase'),'normal');
 });

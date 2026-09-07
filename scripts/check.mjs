@@ -22,9 +22,9 @@ for (const asset of ["assets/logo/nova_logo.svg", "assets/hero/kv_vertical_copy_
 
 const game = readFileSync("jag.html", "utf8");
 for (const required of [
-  "NOVA_RISING_ENTRY_RATE",
-  "NOVA_NORMAL_BONUS_SCALE",
-  "pickNovaRisingRemainAfterBonus",
+  "NovaFlow.drawEntry",
+  "NovaFlow.drawRT",
+  "NovaFlow.afterBonus",
   "nova_slot_state_v1_"
 ]) {
   if (!game.includes(required)) throw new Error(`Missing NOVA implementation marker: ${required}`);

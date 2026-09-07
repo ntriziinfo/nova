@@ -6531,9 +6531,10 @@ body{
   .vertexConnectionBadge.offline{color:#ff8f9c;border-color:rgba(255,91,113,.65);background:rgba(52,9,17,.9)}
   .vertexConnectionBadge.legacy{color:#d4a6ff;border-color:rgba(185,109,255,.6)}
 </style>
-<link rel="stylesheet" href="nova-cabinet.css?v=20260907-4">
-<link rel="stylesheet" href="nova-artwork.css?v=20260907-4">
-<script src="nova-artwork.js?v=20260907-4" defer></script>
+<link rel="stylesheet" href="nova-cabinet.css?v=20260907-5">
+<link rel="stylesheet" href="nova-artwork.css?v=20260907-5">
+<script src="nova-artwork.js?v=20260907-5" defer></script>
+<script src="nova-flow.js?v=20260907-5"></script>
 </head>
 <body>
 <div class="confetti" id="confetti"></div>
@@ -7081,7 +7082,7 @@ body{
           <button class="dangerBtn" id="resetBtn">初期化</button>
         </div>
         <div class="help" style="margin-top:10px">
-          1プレイごとに3ptを消費します。Aタイプ中は画像の設定別確率でBB/RB/ベルを抽選し、ハズレは払い出しなしです。
+          1Gは3pt。通常からCZ・強CZを抽選し、成功するとボーナスへ。ボーナス後はRT50G、消化後は通常へ戻ります。
         </div>
       </div>
 
@@ -7096,7 +7097,7 @@ body{
           <input id="bigMulInput" type="number" min="0" max="1000" step="1" value="252" readonly />
         </div>
         <div class="help">
-          BB/RBは当選ゲームで確定告知し、指定純増までボーナスゲームを消化してから通常ゲームへ戻ります。ベルは設定別確率で通常払い出しします。
+          BB/RBは当選ゲームで確定告知し、指定純増までボーナスゲームを消化してからRT50Gへ移行します。ベルは設定別確率で通常払い出しします。
         </div>
       </div>
 
@@ -7117,12 +7118,24 @@ body{
 
       <div class="card secret" id="secretPanel">
         <h2>非公開デバッグ</h2>
+        <details><summary>CZ仮設定</summary>
+        <p>通常 → CZ／強CZ → ボーナス → RT 50G → 通常。CZ失敗時は通常へ。</p>
+        <label>CZ 継続G<input type="number" min="1" max="100" data-flow-config="czGames"></label>
+        <label>強CZ 継続G<input type="number" min="1" max="100" data-flow-config="strongGames"></label>
+        <label>CZ 期待度 (%)<input type="number" min="0" max="100" data-flow-config="czChance"></label>
+        <label>強CZ 期待度 (%)<input type="number" min="0" max="100" data-flow-config="strongChance"></label>
+        <label>CZ 突入率 1/<input type="number" min="2" max="100000" data-flow-config="czDenom"></label>
+        <label>強CZ 突入率 1/<input type="number" min="2" max="100000" data-flow-config="strongDenom"></label>
+        <button type="button" id="saveFlowConfig">CZ設定を保存</button><output id="flowConfigStatus"></output>
+        <p>RTは50G。リプレイ60%・ベル30%・ハズレ10%、平均純増1.2pt/G。</p></details>
         <button class="subBtn" id="debugNovaPatternsBtn" type="button">ノヴァ目3段階を確認</button>
         <div class="field">
           <label>次回転の出目指定</label>
           <select id="forceResult">
             <option value="">ランダム</option>
             <option value="MISS">ハズレ</option>
+            <option value="CZ">CZ突入</option>
+            <option value="STRONG_CZ">強CZ突入</option>
             <option value="REPLAY">リプレイ（3pt）</option>
             <option value="BELL">ベル（通常8pt／ボーナス15pt）</option>
 
@@ -7460,6 +7473,8 @@ body{
   preloadSymbolImages();
 
   const RESULT = {
+    CZ:{name:"CZ突入",reel:["7","BAR","7"],label:"CZ",cls:"purple",kind:"miss"},
+    STRONG_CZ:{name:"強CZ突入",reel:["7","BAR","7"],label:"強CZ",cls:"gold",kind:"miss"},
     WEAK_NOVA:{name:"弱ノヴァ目",reel:["NOVA_0_1","NOVA_1_1","NOVA_2_1"],label:"弱ノヴァ目",cls:"purple",kind:"miss"},
     STRONG_NOVA:{name:"強ノヴァ目",reel:["NOVA_0_1","NOVA_1_1","NOVA_2_1"],label:"強ノヴァ目",cls:"purple",kind:"miss"},
     SUPER_NOVA:{name:"スーパーノヴァ目",reel:["NOVA_0_1","NOVA_1_1","NOVA_2_1"],label:"スーパーノヴァ目",cls:"gold",kind:"miss"},
@@ -9836,6 +9851,7 @@ body{
   function currentSetting(){ return SETTING[settings.setting] || SETTING[1]; }
   function targetRtp(){ return targetRtpFor(settings.setting); }
   function targetRtpText(settingNo = settings.setting){
+    if(A_TYPE_MODE) return "再計算前";
     const value = (targetRtpFor(settingNo) || 0) * 100;
     return A_TYPE_MODE ? `${value.toFixed(1)}%` : `${Math.round(value)}%`;
   }
@@ -9861,7 +9877,7 @@ body{
   }
 
   function normalRewardFor(result, lineRow=1){
-    if(isNovaResult(result)) return 0;
+    if(isNovaResult(result) || result === "CZ" || result === "STRONG_CZ") return 0;
     if(A_TYPE_MODE && (result === "BIG" || result === "MID")) return 0;
     if(A_TYPE_MODE && isCherryResult(result)) return aTypeCherryPayoutForLine(lineRow);
     if(A_TYPE_MODE && A_TYPE_PAYOUTS[result]) return A_TYPE_PAYOUTS[result];
@@ -9869,7 +9885,7 @@ body{
   }
 
   function normalizeATypeResult(result){
-    if(isNovaResult(result)) return result;
+    if(isNovaResult(result) || result === "CZ" || result === "STRONG_CZ") return result;
     if(result === "GRAPE") return "BELL";
     return ["MISS","BIG","MID","BELL","REPLAY","BAR3"].includes(result) ? result : "MISS";
   }
@@ -10151,28 +10167,20 @@ body{
   }
 
   function isNovaRisingMode(){
-    return A_TYPE_MODE && normalizeNovaRisingRemain(normalState.risingRemain) > 0;
+    return false; // Replaced by CZ -> bonus -> RT flow.
   }
 
-  function novaBonusModeScale(settingNo = settings.setting){
-    const normalScale = NOVA_NORMAL_BONUS_SCALE[settingNo] || NOVA_NORMAL_BONUS_SCALE[1];
-    return normalScale * (isNovaRisingMode() ? NOVA_RISING_BONUS_MULTIPLIER : 1);
+  function novaBonusModeScale(){
+    return 1;
   }
 
-  function pickNovaRisingRemainAfterBonus(resumeRemain=0, bonusFromRising=false, settingNo=settings.setting){
-    const carried = normalizeNovaRisingRemain(resumeRemain);
-    if(bonusFromRising){
-      return Math.random() < NOVA_RISING_RESTART_RATE ? NOVA_RISING_GAMES : carried;
-    }
-    const entryRate = NOVA_RISING_ENTRY_RATE[settingNo] ?? NOVA_RISING_ENTRY_RATE[1];
-    return Math.random() < entryRate ? NOVA_RISING_GAMES : 0;
+  function pickNovaRisingRemainAfterBonus(){
+    return 0;
   }
 
   function normalModeLabel(){
     if(normalState.bonusPending) return "BONUS確定";
-    if(isNovaRisingMode()) return `RISING ${normalizeNovaRisingRemain(normalState.risingRemain)}G`;
-    if(normalState.morningCeilingActive) return isHighMode() ? "朝一高確" : "朝一";
-    return isHighMode() ? "高確" : "通常";
+    return NovaFlow.label(normalState.flow);
   }
 
   function pendingBonusLabel(){
@@ -10998,26 +11006,25 @@ body{
   }
 
   function drawIndependentATypeOutcome(){
-    const setting = settings.setting;
-    const big = A_TYPE_BIG_DETAIL_TABLE[setting] || A_TYPE_BIG_DETAIL_TABLE[1];
-    const reg = A_TYPE_REG_DETAIL_TABLE[setting] || A_TYPE_REG_DETAIL_TABLE[1];
-    const multiplier = clamp(Number(settings.oddsMultiplier) || 1, 0.1, 100);
-    const bonusMultiplier = multiplier * novaBonusModeScale(setting);
-    // Retain the total BB/RB rate; former cherry co-hits are now standalone.
-    const bigP = clamp((1 / big.solo + 1 / big.cherry) * bonusMultiplier, 0, .98);
-    const regP = clamp((1 / reg.solo + 1 / reg.cherry) * bonusMultiplier, 0, .98 - bigP);
-    // Combine the former grape and bell lotteries into the 8pt bell.
-    const bellP = clamp((1 / A_TYPE_GRAPE_TABLE[setting] + 1 / A_TYPE_BELL_TABLE[setting]) * multiplier, 0, .98 - bigP - regP);
-    const replayP = clamp((1 / A_TYPE_REPLAY_TABLE[setting]) * multiplier, 0, .98 - bigP - regP - bellP);
-    let roll = Math.random();
-    if(roll < bigP) return {result:"MISS", internalBonus:{kind:"BIG",source:"単独当選",internalResult:"BIG"}};
-    roll -= bigP;
-    if(roll < regP) return {result:"MISS", internalBonus:{kind:"MID",source:"単独当選",internalResult:"MID"}};
-    roll -= regP;
-    if(roll < bellP) return {result:"BELL", internalBonus:null};
-    roll -= bellP;
-    if(roll < replayP) return {result:"REPLAY", internalBonus:null};
-    return {result:"MISS", internalBonus:null};
+    const flow = NovaFlow.normalize(normalState.flow);
+    if(flow.phase === "rt") return {result:NovaFlow.drawRT(),internalBonus:null};
+    if(flow.phase === "normal"){
+      const entry=NovaFlow.drawEntry(NovaFlow.config(settings.novaFlow));
+      if(entry) return {result:entry,internalBonus:null};
+    }
+    const setting=settings.setting;
+    const multiplier=clamp(Number(settings.oddsMultiplier)||1,.1,100);
+    const bellP=clamp((1/A_TYPE_GRAPE_TABLE[setting]+1/A_TYPE_BELL_TABLE[setting])*multiplier,0,.98);
+    const replayP=clamp((1/A_TYPE_REPLAY_TABLE[setting])*multiplier,0,.98-bellP);
+    const roll=Math.random();
+    const result=roll<bellP?"BELL":roll<bellP+replayP?"REPLAY":"MISS";
+    let internalBonus=null;
+    if((flow.phase === "cz" || flow.phase === "strong_cz") && flow.remaining === 1 && flow.success){
+      const bonus=A_TYPE_BONUS_TABLE[setting]||A_TYPE_BONUS_TABLE[1];
+      const kind=Math.random()<(1/bonus.big)/(1/bonus.big+1/bonus.reg)?"BIG":"MID";
+      internalBonus={kind,source:flow.phase === "strong_cz"?"強CZ成功":"CZ成功",internalResult:kind};
+    }
+    return {result,internalBonus};
   }
 
   function drawNormalResult(){
@@ -11066,6 +11073,8 @@ body{
 
   function resolveNormalOutcome(result, lineRow=1){
     if(A_TYPE_MODE){
+      const flowBefore = NovaFlow.normalize(normalState.flow);
+      const czEntry = result === "CZ" || result === "STRONG_CZ";
       const superNovaBonus = result === "SUPER_NOVA" ? drawSuperNovaBonus() : null;
       const internalBonus = superNovaBonus || pendingATypeInternalBonus;
       pendingATypeInternalBonus = null;
@@ -11103,6 +11112,11 @@ body{
               ? "単独当選"
               : "";
       return {
+        flowBefore,
+        flowAfter:czEntry ? NovaFlow.enterCZ(result === "STRONG_CZ",settings.novaFlow) : (isNewBonusHit || isReadyBonus) ? NovaFlow.normalize(null) : bonusPendingAtStart ? flowBefore : NovaFlow.advance(flowBefore),
+        czEntry,
+        czCompleted:(flowBefore.phase === "cz" || flowBefore.phase === "strong_cz") && flowBefore.remaining === 1,
+        rtCompleted:flowBefore.phase === "rt" && flowBefore.remaining === 1,
         normalGame:true,
         reward:normalRewardFor(result, lineRow),
         add:0,
@@ -11262,7 +11276,8 @@ body{
           ...normalState,
           ...data.normalState,
           highRemain:Math.max(0, Number(data.normalState.highRemain) || 0),
-          risingRemain:normalizeNovaRisingRemain(data.normalState.risingRemain),
+          risingRemain:0,
+          flow:NovaFlow.normalize(data.normalState.flow),
           risingBonusOrigin:!!data.normalState.risingBonusOrigin,
           sinceBonus:normalizeBonusAfterGames(data.normalState.sinceBonus),
           bonusPending:!!data.normalState.bonusPending,
@@ -11714,7 +11729,7 @@ body{
       if(option) option.textContent = A_TYPE_MODE ? `設定${settingNo} / ${targetRtpText(settingNo)}` : (settingNo === 6 ? "設定6 / 目標115%" : option.textContent);
     }
     const adminStInfoText = A_TYPE_MODE
-      ? `${normalModeLabel()} / BB ${oddsText(1 / (A_TYPE_BONUS_TABLE[settings.setting] || A_TYPE_BONUS_TABLE[1]).big)} / RB ${oddsText(1 / (A_TYPE_BONUS_TABLE[settings.setting] || A_TYPE_BONUS_TABLE[1]).reg)}`
+      ? `${normalModeLabel()} / CZ・強CZ経由 / 1G ${SPIN_COST}pt`
       : session.active ? setGameCount() + "G/SET" : (normalState.bonusPending ? `BONUS確定 / ${pendingBonusLabel()}待ち` : `${normalModeLabel()} / 天井まで${ceilingRemain()}G`);
     if($("stInfoView")) $("stInfoView").textContent = adminStInfoText;
     if($("adminStInfoView")) $("adminStInfoView").textContent = adminStInfoText;
@@ -11821,6 +11836,7 @@ body{
       hideDevilZoneConfirmScreen();
       readSettings();
       if(A_TYPE_MODE){
+        normalState.flow = NovaFlow.normalize(null);
         const bonusKind = normalizeATypeBonusKind(options.bonusKind || normalState.bonusKind || "BIG");
         const oneGameRenBonus = bonusKind === "BIG" && !!(options.oneGameRenBonus || normalState.oneGameRenBonus);
         const premiumBonus = bonusKind === "BIG" && !oneGameRenBonus && !!(options.premiumBonus || normalState.premiumBonus);
@@ -12061,7 +12077,8 @@ body{
     resetBonusEndSpecialEffects(true);
     setSpeedFrameOffHold(false);
     if(aTypeEnd){
-      normalState.risingRemain = nextRisingRemain;
+      normalState.flow = premiumOneGameRen ? NovaFlow.normalize(null) : NovaFlow.afterBonus();
+      normalState.risingRemain = 0;
       normalState.risingBonusOrigin = premiumOneGameRen ? bonusFromRising : false;
       normalState.mode = nextRisingRemain > 0 ? "rising" : "normal";
       if(!premiumOneGameRen && nextRisingRemain > 0){
@@ -12105,6 +12122,11 @@ body{
       playWinSound(true);
     }else if(!aTypeEnd){
       playLoseSound();
+    }
+    if(aTypeEnd && !premiumOneGameRen){
+      showMessage("RT突入", "50G / リプレイ60% / 平均純増1.2pt/G");
+      log("RT突入：50G / 平均純増1.2pt/G");
+      showOverlay("RT 50G");
     }
     updateDisplay();
   }
@@ -12550,7 +12572,7 @@ body{
 
   function applyNormalResult(result, resolved, lineRow=1){
     const info = RESULT[result] || RESULT.MISS;
-    const modeAtStart = resolved.risingAtStart ? "RISING" : (resolved.highAtStart ? "高確" : "通常");
+    const modeAtStart = A_TYPE_MODE ? NovaFlow.label(resolved.flowBefore) : (resolved.highAtStart ? "高確" : "通常");
     const lineText = result !== "MISS" ? `${lineName(lineRow)}ライン` : "";
     const normalReward = Number(resolved.reward) || 0;
     const normalRewardText = normalReward > 0 ? ` / +${normalReward}pt` : "";
@@ -12573,8 +12595,9 @@ body{
       ? normalizeBonusAfterGames(resolved.ceilingAfter)
       : clamp(Number(resolved.ceilingAfter) || 0, 0, currentNormalCeilingGames());
     if(A_TYPE_MODE){
-      normalState.risingRemain = normalizeNovaRisingRemain(resolved.risingRemainAfter);
-      normalState.mode = isNovaRisingMode() ? "rising" : "normal";
+      normalState.flow = NovaFlow.normalize(resolved.flowAfter);
+      normalState.risingRemain = 0;
+      normalState.mode = normalState.flow.phase;
       if(!resolved.bonusPendingAtStart && (resolved.bonusHit || resolved.aTypeBonusReady)){
         normalState.risingBonusOrigin = !!resolved.risingAtStart;
       }
@@ -12591,6 +12614,13 @@ body{
       }
     }
 
+    if(A_TYPE_MODE && (resolved.czEntry || resolved.rtCompleted || (resolved.czCompleted && !resolved.bonusHit))){
+      const message=resolved.czEntry ? (result === "STRONG_CZ" ? "強CZ突入" : "CZ突入") : resolved.rtCompleted ? "RT終了" : "CZ終了";
+      showMessage(message, normalModeLabel()+normalRewardText);
+      log(message+" / "+normalModeLabel());
+      showOverlay(message);
+      return;
+    }
     if(resolved.manualLineupMiss){
       jagChanceHold = true;
       normalState.bonusPending = true;
@@ -12960,6 +12990,11 @@ body{
     if(reelArea){
       reelArea.classList.toggle("premiumBigOverlayOn", !!(isATypeBonusActive() && (session.premiumBonus || session.oneGameRenBonus)));
     }
+    const flowStatus=$("novaFlowStatus");
+    if(flowStatus){
+      flowStatus.textContent=session.active ? aTypeBonusLabel(session.bonusKind)+" BONUS" : normalModeLabel();
+      flowStatus.dataset.phase=session.active?"bonus":NovaFlow.normalize(normalState.flow).phase;
+    }
     $("modeTag").className = "modeTag " + ((active || isNovaRisingMode()) ? "active" : "");
     $("modeTag").textContent = A_TYPE_MODE ? (active ? `${aTypeBonusLabel(session.bonusKind)} BONUS` : normalModeLabel()) : active ? (isContinuationBattleActive() ? "継続BATTLE" : "BATTLE") : normalModeLabel();
 
@@ -12972,7 +13007,7 @@ body{
     const stInfoText = A_TYPE_MODE
       ? active
         ? `${aTypeBonusLabel(session.bonusKind)} BONUS / 純増${aTypeBonusNet()}/${Number(session.bonusTarget) || aTypeBonusTarget()}pt / 小役${A_TYPE_BONUS_PAY_PER_GAME}pt`
-        : `${normalModeLabel()} / BB ${oddsText(1 / (A_TYPE_BONUS_TABLE[settings.setting] || A_TYPE_BONUS_TABLE[1]).big)} / RB ${oddsText(1 / (A_TYPE_BONUS_TABLE[settings.setting] || A_TYPE_BONUS_TABLE[1]).reg)} / 1G ${SPIN_COST}pt`
+        : `${normalModeLabel()} / CZ・強CZ経由 / 1G ${SPIN_COST}pt`
       : active
         ? (isContinuationBattleActive()
           ? `継続BATTLE ${session.battleRemain}G / 継続${formatRate(session.continuationRate)} STOCK${session.stockSets || 0}`
@@ -13170,9 +13205,10 @@ body{
         remainBig.textContent = pendingBonusLabel();
         remainBig.classList.remove("idle");
       }else{
-        if(isNovaRisingMode()){
-          if(label) label.textContent = "RISING残り";
-          remainBig.textContent = String(normalizeNovaRisingRemain(normalState.risingRemain)).padStart(2, "0");
+        const flow=NovaFlow.normalize(normalState.flow);
+        if(flow.phase !== "normal"){
+          if(label) label.textContent = flow.phase === "rt" ? "RT残り" : "CZ残り";
+          remainBig.textContent = String(flow.remaining).padStart(2,"0");
           remainBig.classList.remove("idle");
         }else{
           remainBig.textContent = isHighMode() ? String(normalState.highRemain).padStart(2, "0") : "--";
@@ -13255,10 +13291,10 @@ body{
       return;
     }
 
-    let html = '<tr><td>設定</td><td>単独BB</td><td>単独RB</td></tr>';
+    let html = '<tr><td>設定</td><td>CZ成功後BB</td><td>CZ成功後RB</td></tr>';
     for(const i of [1,2,3,4,5,6]){
-      const big=A_TYPE_BIG_DETAIL_TABLE[i], reg=A_TYPE_REG_DETAIL_TABLE[i];
-      html += '<tr><td>'+i+'</td><td>1/'+(1/(1/big.solo+1/big.cherry)).toFixed(2)+'</td><td>1/'+(1/(1/reg.solo+1/reg.cherry)).toFixed(2)+'</td></tr>';
+      const bonus=A_TYPE_BONUS_TABLE[i], bigRate=(1/bonus.big)/(1/bonus.big+1/bonus.reg);
+      html += '<tr><td>'+i+'</td><td>'+(bigRate*100).toFixed(1)+'%</td><td>'+((1-bigRate)*100).toFixed(1)+'%</td></tr>';
     }
     table.innerHTML = html;
   }
@@ -13268,12 +13304,11 @@ body{
     if(!table) return;
 
     if(A_TYPE_MODE){
-      let html = '<tr><td>設定</td><td>BB</td><td>RB</td><td>合算</td><td>ベル</td><td>リプレイ</td></tr>';
-      for(const i of [1,2,3,4,5,6]){
-        const bonus=A_TYPE_BONUS_TABLE[i];
-        const bell=1/(1/A_TYPE_GRAPE_TABLE[i]+1/A_TYPE_BELL_TABLE[i]);
-        html += '<tr><td>'+i+'</td><td>1/'+bonus.big.toFixed(1)+'</td><td>1/'+bonus.reg.toFixed(1)+'</td><td>1/'+bonus.total.toFixed(1)+'</td><td>1/'+bell.toFixed(2)+'</td><td>1/'+A_TYPE_REPLAY_TABLE[i].toFixed(2)+'</td></tr>';
-      }
+      const cfg=NovaFlow.config(settings.novaFlow);
+      let html = '<tr><td>状態</td><td>継続</td><td>通常時突入率</td><td>期待度</td></tr>';
+      html += '<tr><td>CZ</td><td>'+cfg.czGames+'G</td><td>1/'+cfg.czDenom+'</td><td>'+cfg.czChance*100+'%</td></tr>';
+      html += '<tr><td>強CZ</td><td>'+cfg.strongGames+'G</td><td>1/'+cfg.strongDenom+'</td><td>'+cfg.strongChance*100+'%</td></tr>';
+      html += '<tr><td>RT</td><td>50G</td><td>ボーナス後</td><td>平均純増1.2pt</td></tr>';
       table.innerHTML = html;
       renderRegDetailTable();
       return;
@@ -13581,6 +13616,22 @@ body{
   }
 
   document.addEventListener("DOMContentLoaded", () => {
+    const status=document.createElement("div");status.id="novaFlowStatus";
+    document.querySelector(".reelArea").append(status);
+    const cfg=NovaFlow.config(settings.novaFlow);
+    for(const key of Object.keys(cfg)){
+      const input=document.querySelector('[data-flow-config="'+key+'"]');
+      if(input)input.value=key.endsWith("Chance")?cfg[key]*100:cfg[key];
+    }
+    document.getElementById("saveFlowConfig").onclick=()=>{
+      const value={};
+      document.querySelectorAll('[data-flow-config]').forEach(input=>{
+        const key=input.dataset.flowConfig;value[key]=input.valueAsNumber/(key.endsWith("Chance")?100:1);
+      });
+      settings.novaFlow=NovaFlow.config(value);persistState();renderSettingTable();
+      document.getElementById("flowConfigStatus").textContent="CZ設定を保存しました（次回突入から適用）";
+    };
+    updateDisplay();
     const preview = document.getElementById("novaSymbolPreview");
     const patternSelect = document.getElementById("novaPatternSelect");
     const renderNovaPreview = () => {
@@ -14124,6 +14175,7 @@ body{
   function buildNovaReelGrid(result, winRow=1){
     result = normalizeATypeResult(result);
     if(isNovaResult(result)) return buildForcedNovaGrid(result);
+    if(result === "CZ" || result === "STRONG_CZ") result = "MISS";
     const spec = RESULT[result] || RESULT.MISS;
     if(isMiddleLineOnlyResult(result)) winRow = 1;
     const cacheKey = result + ":" + winRow;
