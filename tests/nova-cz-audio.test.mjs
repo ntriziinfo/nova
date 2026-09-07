@@ -5,7 +5,7 @@ const played=[];const ctx=vm.createContext({voiceOutputVolume:()=>.5,playOneShot
 test('CZ and strong CZ play exactly the remaining 3, 2 and final game clips',()=>{
  for(const phase of ['cz','strong_cz']){
   played.length=0;for(let remaining=20;remaining>=1;remaining--)ctx.playCzCountdownOnLever({flowBefore:{phase,remaining}});
-  assert.deepEqual(played.map(p=>p.src),['assets/media/jag/cz_remaining_3.wav','assets/media/jag/cz_remaining_2.wav','assets/media/jag/cz_last.wav']);
+  assert.deepEqual(played.map(p=>p.src),['assets/media/jag/cz_remaining_3.wav?v=count2','assets/media/jag/cz_remaining_2.wav?v=count2','assets/media/jag/cz_last.wav?v=count2']);
   assert.ok(played.every(p=>p.volume===.5));
  }
 });
