@@ -68,6 +68,11 @@
   }
   function setOpen(open){panel.hidden=!open;layer.classList.toggle('editing',open);toggle.setAttribute('aria-expanded',String(open));if(!open){lampMode.value='auto';syncLamp();}sync();}
   toggle.addEventListener('click',event=>{event.stopPropagation();setOpen(panel.hidden)});
+  // Opening debug also releases artwork drag targets and closes its overlay.
+  const debugObserver=new MutationObserver(()=>{
+    if(document.body.classList.contains('debugOpen')&&!panel.hidden)setOpen(false);
+  });
+  debugObserver.observe(document.body,{attributes:true,attributeFilter:['class']});
   panel.addEventListener('click',event=>event.stopPropagation());
   panel.querySelector('#novaArtSelect').addEventListener('change',event=>{selected=event.target.value;sync();status.textContent='';});
   for(const [field,input] of Object.entries(fields)) input.addEventListener('input',()=>{
