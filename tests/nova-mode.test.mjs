@@ -63,10 +63,12 @@ test("RISING calibration preserves each setting's long-run bonus rate", () => {
 });
 
 test("child-role rates stay independent from the RISING bonus multiplier", () => {
-  assert.match(game, /const soloCherryP = clamp\(\(1 \/ soloCherry\) \* multiplier/);
-  assert.match(game, /const grapeP = clamp\(\(1 \/ grape\) \* multiplier/);
-  assert.match(game, /const bigSoloP = clamp\(\(1 \/ bigDetail\.solo\) \* bonusMultiplier/);
-  assert.match(game, /const regSoloP = clamp\(\(1 \/ regDetail\.solo\) \* bonusMultiplier/);
+  const draw = game.slice(game.indexOf('  function drawIndependentATypeOutcome(){'), game.indexOf('  function drawNormalResult(){'));
+  assert.match(draw, /const bellP = clamp[^\n]*\* multiplier/);
+  assert.match(draw, /const replayP = clamp[^\n]*\* multiplier/);
+  assert.match(draw, /const bigP = clamp[^\n]*\* bonusMultiplier/);
+  assert.match(draw, /const regP = clamp[^\n]*\* bonusMultiplier/);
+  assert.doesNotMatch(draw, /result:"(?:GRAPE|SMALL|CHERRY_ANY)"/);
 });
 
 test("NOVA branding and isolated local storage are present", () => {

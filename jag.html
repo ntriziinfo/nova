@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="UTF-8" />
@@ -6739,11 +6739,11 @@ body{
               <tr><td>BB</td><td id="roleCounterBigCount">0</td><td id="roleCounterBigOdds">-</td></tr>
               <tr><td>PBB</td><td id="roleCounterPremiumBigCount">0</td><td id="roleCounterPremiumBigOdds">-</td></tr>
               <tr><td>RB</td><td id="roleCounterRegCount">0</td><td id="roleCounterRegOdds">-</td></tr>
-              <tr><td>ブドウ</td><td id="roleCounterGrapeCount">0</td><td id="roleCounterGrapeOdds">-</td></tr>
+
               <tr><td>リプレイ</td><td id="roleCounterReplayCount">0</td><td id="roleCounterReplayOdds">-</td></tr>
               <tr><td>ベル</td><td id="roleCounterBellCount">0</td><td id="roleCounterBellOdds">-</td></tr>
-              <tr><td>宗介</td><td id="roleCounterPieroCount">0</td><td id="roleCounterPieroOdds">-</td></tr>
-              <tr><td>チェリー</td><td id="roleCounterCherryCount">0</td><td id="roleCounterCherryOdds">-</td></tr>
+
+
             </table>
           </div>
         </div>
@@ -6825,7 +6825,7 @@ body{
           <div class="stat"><div class="k">回転数</div><div class="v" id="totalSpinsView">0</div></div>
           <div class="stat"><div class="k">BB</div><div class="v" id="bigCountView">0</div></div>
           <div class="stat"><div class="k">RB</div><div class="v" id="midCountView">0</div></div>
-          <div class="stat"><div class="k">ブドウ</div><div class="v" id="grapeCountView">0</div></div>
+          <div class="stat"><div class="k">ベル</div><div class="v" id="grapeCountView">0</div></div>
           <div class="stat"><div class="k">損益</div><div class="v" id="totalProfitView">0</div></div>
         </div>
       </div>
@@ -6865,7 +6865,7 @@ body{
             <div><span>TYPE</span><b id="wdCounterSt">A</b></div>
             <div><span>BB</span><b id="wdCounterBig">0</b></div>
             <div><span>RB</span><b id="wdCounterReg">0</b></div>
-            <div><span>ブドウ</span><b id="wdCounterGrape">0</b></div>
+            <div><span>ベル</span><b id="wdCounterGrape">0</b></div>
           </div>
         </div>
         <div class="payline"></div>
@@ -7082,7 +7082,7 @@ body{
           <button class="dangerBtn" id="resetBtn">初期化</button>
         </div>
         <div class="help" style="margin-top:10px">
-          1プレイごとに3ptを消費します。Aタイプ中は画像の設定別確率でBB/RB/ブドウを抽選し、ハズレは払い出しなしです。
+          1プレイごとに3ptを消費します。Aタイプ中は画像の設定別確率でBB/RB/ベルを抽選し、ハズレは払い出しなしです。
         </div>
       </div>
 
@@ -7097,7 +7097,7 @@ body{
           <input id="bigMulInput" type="number" min="0" max="1000" step="1" value="252" readonly />
         </div>
         <div class="help">
-          BB/RBは当選ゲームで確定告知し、指定純増までボーナスゲームを消化してから通常ゲームへ戻ります。ブドウは設定別確率で通常払い出しします。
+          BB/RBは当選ゲームで確定告知し、指定純増までボーナスゲームを消化してから通常ゲームへ戻ります。ベルは設定別確率で通常払い出しします。
         </div>
       </div>
 
@@ -7112,7 +7112,7 @@ body{
           <input id="bigAddInput" type="number" min="0" max="1000" step="1" value="252" readonly />
         </div>
         <div class="help">
-          BBは252pt、RBは96pt、ブドウは8pt、ベルは10pt、ゾウリプレイは3pt、宗介特殊役は14pt、チェリーは中段1pt・上下段2pt。
+          BBは252pt、RBは96pt。ベルは通常8pt・ボーナス中15pt、リプレイは3pt。ノヴァ目の配当・当選は未設定です。
         </div>
       </div>
 
@@ -7124,14 +7124,14 @@ body{
             <option value="">ランダム</option>
             <option value="MISS">ハズレ</option>
             <option value="REPLAY">リプレイ（3pt）</option>
-            <option value="GRAPE">ブドウ（8pt）</option>
-            <option value="SMALL">特殊役（宗介/14pt）</option>
-            <option value="CHERRY_ANY">チェリー（中段1pt・上下段2pt）</option>
+            <option value="BELL">ベル（通常8pt／ボーナス15pt）</option>
+
+
             <option value="MID">RB（77BAR/96pt）</option>
-            <option value="MID_CHERRY">RBチェリー同時（77BAR/96pt）</option>
+
             <option value="BIG">BB（777/252pt）</option>
             <option value="BAR3">BAR</option>
-            <option value="REACH_ME">リーチ目</option>
+
           </select>
         </div>
         <div class="row">
@@ -7144,7 +7144,7 @@ body{
           <div class="row" style="margin-top:8px">
             <button class="subBtn" id="debugMidBtn">即RB</button>
             <button class="subBtn" id="debugBigBtn">即BB</button>
-            <button class="subBtn" id="debugGrapeBtn">即ブドウ</button>
+            <button class="subBtn" id="debugGrapeBtn">即ベル</button>
             <button class="subBtn" id="debugMissBtn">即ハズレ</button>
           </div>
         </div>
@@ -7401,14 +7401,14 @@ body{
   const A_TYPE_PAYOUTS = Object.freeze({
     BIG:252,
     MID:96,
-    SMALL:14,
+    SMALL:0,
     GRAPE:8,
-    BELL:10,
+    BELL:8,
     REPLAY:3
   });
   const PREMIUM_BIG_CHAIN_PAYOUT = A_TYPE_PREMIUM_BIG_PAYOUT;
-  const A_TYPE_BONUS_PAY_PER_GAME = A_TYPE_PAYOUTS.SMALL;
-  const A_TYPE_BONUS_MAIN_RESULT = "SMALL";
+  const A_TYPE_BONUS_PAY_PER_GAME = 15;
+  const A_TYPE_BONUS_MAIN_RESULT = "BELL";
   const A_TYPE_RESULT_SET = new Set(["MISS", "BIG", "MID", "MID_CHERRY", "SMALL", "GRAPE", "BELL", "REPLAY", "CHERRY_ANY", "CHERRY_DOUBLE", "CHERRY_TRIPLE", "BAR3"]);
 
   const USER_FACE = "__USER_FACE__";
@@ -7494,7 +7494,7 @@ body{
     6:{weights:[{result:"SMALL",w:4},{result:"MID",w:3},{result:"BIG",w:0.397},{result:"BELL",w:300},{result:"BELL3",w:70},{result:"REPLAY",w:366},{result:"SUICA",w:3},{result:"CHERRY_DOUBLE",w:2},{result:"CHERRY_TRIPLE",w:1}]}
   });
 
-  const symbols = ["7","BAR",ELEPHANT_SYMBOL,GRAPE_SYMBOL,CHERRY_SYMBOL,PIERROT_SYMBOL,BELL_SYMBOL];
+  const symbols = ["7","BAR",ELEPHANT_SYMBOL,BELL_SYMBOL];
   const AUDIO_BALANCE_VERSION = 9;
   const ROLE_STAT_COUNTER_VERSION = 2;
   const DEFAULT_MASTER_VOLUME = 0.70;
@@ -9860,7 +9860,8 @@ body{
   }
 
   function normalizeATypeResult(result){
-    return A_TYPE_RESULT_SET.has(result) ? result : "MISS";
+    if(result === "GRAPE") return "BELL";
+    return ["MISS","BIG","MID","BELL","REPLAY","BAR3"].includes(result) ? result : "MISS";
   }
 
   function normalizeForceResult(result){
@@ -9909,7 +9910,7 @@ body{
 
   function resolveATypeBonusOutcome(result){
     const remainingNet = aTypeBonusRemainingNet();
-    const reward = remainingNet > 0 ? Math.min(A_TYPE_BONUS_PAY_PER_GAME, SPIN_COST + remainingNet) : 0;
+    const reward = remainingNet > 0 ? A_TYPE_BONUS_PAY_PER_GAME : 0;
     return {
       reward,
       add:0,
@@ -10516,6 +10517,7 @@ body{
       stats.smallCount++;
     }else if(result === "BELL"){
       stats.bellCount++;
+      stats.grapeCount = (Number(stats.grapeCount) || 0) + 1;
     }else if(result === "BELL3"){
       stats.diagonalBellCount = (Number(stats.diagonalBellCount) || 0) + 1;
     }else if(result === "REPLAY"){
@@ -10985,42 +10987,25 @@ body{
   }
 
   function drawIndependentATypeOutcome(){
-    const bigDetail = A_TYPE_BIG_DETAIL_TABLE[settings.setting] || A_TYPE_BIG_DETAIL_TABLE[1];
-    const grape = A_TYPE_GRAPE_TABLE[settings.setting] || A_TYPE_GRAPE_TABLE[1];
-    const soloCherry = A_TYPE_SOLO_CHERRY_TABLE[settings.setting] || A_TYPE_SOLO_CHERRY_TABLE[1];
-    const replay = A_TYPE_REPLAY_TABLE[settings.setting] || A_TYPE_REPLAY_TABLE[1];
-    const bell = A_TYPE_BELL_TABLE[settings.setting] || A_TYPE_BELL_TABLE[1];
-    const pierrot = A_TYPE_PIERROT_TABLE[settings.setting] || A_TYPE_PIERROT_TABLE[1];
-    const regDetail = A_TYPE_REG_DETAIL_TABLE[settings.setting] || A_TYPE_REG_DETAIL_TABLE[1];
-    let roll = Math.random();
+    const setting = settings.setting;
+    const big = A_TYPE_BIG_DETAIL_TABLE[setting] || A_TYPE_BIG_DETAIL_TABLE[1];
+    const reg = A_TYPE_REG_DETAIL_TABLE[setting] || A_TYPE_REG_DETAIL_TABLE[1];
     const multiplier = clamp(Number(settings.oddsMultiplier) || 1, 0.1, 100);
-    const bonusMultiplier = multiplier * novaBonusModeScale(settings.setting);
-    const soloCherryP = clamp((1 / soloCherry) * multiplier, 0, 0.98);
-    const bigCherryP = clamp((1 / bigDetail.cherry) * bonusMultiplier, 0, 0.98 - soloCherryP);
-    const regCherryP = clamp((1 / regDetail.cherry) * bonusMultiplier, 0, 0.98 - soloCherryP - bigCherryP);
-    const bigSoloP = clamp((1 / bigDetail.solo) * bonusMultiplier, 0, 0.98 - soloCherryP - bigCherryP - regCherryP);
-    const regSoloP = clamp((1 / regDetail.solo) * bonusMultiplier, 0, 0.98 - soloCherryP - bigCherryP - regCherryP - bigSoloP);
-    const grapeP = clamp((1 / grape) * multiplier, 0, 0.98 - soloCherryP - bigCherryP - regCherryP - bigSoloP - regSoloP);
-    const replayP = clamp((1 / replay) * multiplier, 0, 0.98 - soloCherryP - bigCherryP - regCherryP - bigSoloP - regSoloP - grapeP);
-    const bellP = clamp((1 / bell) * multiplier, 0, 0.98 - soloCherryP - bigCherryP - regCherryP - bigSoloP - regSoloP - grapeP - replayP);
-    const pierrotP = clamp((1 / pierrot) * multiplier, 0, 0.98 - soloCherryP - bigCherryP - regCherryP - bigSoloP - regSoloP - grapeP - replayP - bellP);
-    if(roll < soloCherryP) return {result:"CHERRY_ANY", internalBonus:null};
-    roll -= soloCherryP;
-    if(roll < bigCherryP) return {result:"CHERRY_ANY", internalBonus:{kind:"BIG", source:"チェリー同時当選", internalResult:"BIG_CHERRY"}};
-    roll -= bigCherryP;
-    if(roll < regCherryP) return {result:"CHERRY_ANY", internalBonus:{kind:"MID", source:"チェリー同時当選", internalResult:"MID_CHERRY"}};
-    roll -= regCherryP;
-    if(roll < bigSoloP) return {result:"MISS", internalBonus:{kind:"BIG", source:"単独当選", internalResult:"BIG"}};
-    roll -= bigSoloP;
-    if(roll < regSoloP) return {result:"MISS", internalBonus:{kind:"MID", source:"単独当選", internalResult:"MID"}};
-    roll -= regSoloP;
-    if(roll < grapeP) return {result:"GRAPE", internalBonus:null};
-    roll -= grapeP;
-    if(roll < replayP) return {result:"REPLAY", internalBonus:null};
-    roll -= replayP;
+    const bonusMultiplier = multiplier * novaBonusModeScale(setting);
+    // Retain the total BB/RB rate; former cherry co-hits are now standalone.
+    const bigP = clamp((1 / big.solo + 1 / big.cherry) * bonusMultiplier, 0, .98);
+    const regP = clamp((1 / reg.solo + 1 / reg.cherry) * bonusMultiplier, 0, .98 - bigP);
+    // Combine the former grape and bell lotteries into the 8pt bell.
+    const bellP = clamp((1 / A_TYPE_GRAPE_TABLE[setting] + 1 / A_TYPE_BELL_TABLE[setting]) * multiplier, 0, .98 - bigP - regP);
+    const replayP = clamp((1 / A_TYPE_REPLAY_TABLE[setting]) * multiplier, 0, .98 - bigP - regP - bellP);
+    let roll = Math.random();
+    if(roll < bigP) return {result:"MISS", internalBonus:{kind:"BIG",source:"単独当選",internalResult:"BIG"}};
+    roll -= bigP;
+    if(roll < regP) return {result:"MISS", internalBonus:{kind:"MID",source:"単独当選",internalResult:"MID"}};
+    roll -= regP;
     if(roll < bellP) return {result:"BELL", internalBonus:null};
     roll -= bellP;
-    if(roll < pierrotP) return {result:"SMALL", internalBonus:null};
+    if(roll < replayP) return {result:"REPLAY", internalBonus:null};
     return {result:"MISS", internalBonus:null};
   }
 
@@ -12985,7 +12970,7 @@ body{
     if($("stInfoViewLegacy")) $("stInfoViewLegacy").textContent = stInfoText;
     if($("adminStInfoView")) $("adminStInfoView").textContent = stInfoText;
     const payoutScaleText = A_TYPE_MODE
-      ? `Aタイプ:BB純増${A_TYPE_PAYOUTS.BIG}pt/RB純増${A_TYPE_PAYOUTS.MID}pt/ブドウ${A_TYPE_PAYOUTS.GRAPE}pt/ベル${A_TYPE_PAYOUTS.BELL}pt/ゾウリプレイ${A_TYPE_PAYOUTS.REPLAY}pt/宗介特殊役${A_TYPE_PAYOUTS.SMALL}pt/チェリー中段1pt・上下段2pt`
+      ? `BB純増${A_TYPE_PAYOUTS.BIG}pt/RB純増${A_TYPE_PAYOUTS.MID}pt/ベル通常8pt・ボーナス15pt/リプレイ3pt`
       : `通常:ベル${NORMAL_ROLE_PAYOUTS.BELL}pt/スイカ${NORMAL_ROLE_PAYOUTS.SUICA}pt/チェリー${NORMAL_ROLE_PAYOUTS.CHERRY_ANY}pt/リプレイ${NORMAL_ROLE_PAYOUTS.REPLAY}pt/REG${NORMAL_ROLE_PAYOUTS.MID}pt / 通常小役${Math.round(NORMAL_ROLE_RATE * 100)}% / 高確小役${Math.round(HIGH_ROLE_RATE * 100)}% / ATベル${ROLE_PAYOUTS.BELL}pt/斜めベル${ROLE_PAYOUTS.BELL3}pt / 平均継続${formatRate(averageContinuationRate(settings.setting))}`;
     if($("payoutScaleView")) $("payoutScaleView").textContent = payoutScaleText;
     if($("payoutScaleViewLegacy")) $("payoutScaleViewLegacy").textContent = payoutScaleText;
@@ -13256,17 +13241,10 @@ body{
       return;
     }
 
-    let html = `<tr><td>設定</td><td>単独BIG</td><td>チェリーBIG</td><td>単独RB</td><td>チェリーRB</td></tr>`;
+    let html = '<tr><td>設定</td><td>単独BB</td><td>単独RB</td></tr>';
     for(const i of [1,2,3,4,5,6]){
-      const bigDetail = A_TYPE_BIG_DETAIL_TABLE[i];
-      const regDetail = A_TYPE_REG_DETAIL_TABLE[i];
-      html += `<tr>
-        <td>${i}</td>
-        <td>1/${bigDetail.solo.toFixed(2)}</td>
-        <td>1/${bigDetail.cherry.toFixed(2)}</td>
-        <td>1/${regDetail.solo.toFixed(2)}</td>
-        <td>1/${regDetail.cherry.toFixed(2)}</td>
-      </tr>`;
+      const big=A_TYPE_BIG_DETAIL_TABLE[i], reg=A_TYPE_REG_DETAIL_TABLE[i];
+      html += '<tr><td>'+i+'</td><td>1/'+(1/(1/big.solo+1/big.cherry)).toFixed(2)+'</td><td>1/'+(1/(1/reg.solo+1/reg.cherry)).toFixed(2)+'</td></tr>';
     }
     table.innerHTML = html;
   }
@@ -13276,26 +13254,11 @@ body{
     if(!table) return;
 
     if(A_TYPE_MODE){
-      let html = `<tr><td>設定</td><td>BB</td><td>RB</td><td>合算</td><td>ぶどう</td><td>単独チェリー</td><td>リプレイ</td><td>ベル</td><td>宗介</td><td>機械割</td></tr>`;
+      let html = '<tr><td>設定</td><td>BB</td><td>RB</td><td>合算</td><td>ベル</td><td>リプレイ</td></tr>';
       for(const i of [1,2,3,4,5,6]){
-        const bonus = A_TYPE_BONUS_TABLE[i];
-        const grape = A_TYPE_GRAPE_TABLE[i] || A_TYPE_GRAPE_TABLE[1];
-        const soloCherry = A_TYPE_SOLO_CHERRY_TABLE[i] || A_TYPE_SOLO_CHERRY_TABLE[1];
-        const replay = A_TYPE_REPLAY_TABLE[i] || A_TYPE_REPLAY_TABLE[1];
-        const bell = A_TYPE_BELL_TABLE[i] || A_TYPE_BELL_TABLE[1];
-        const pierrot = A_TYPE_PIERROT_TABLE[i] || A_TYPE_PIERROT_TABLE[1];
-        html += `<tr>
-          <td>${i}</td>
-          <td>1/${bonus.big.toFixed(1)}</td>
-          <td>1/${bonus.reg.toFixed(1)}</td>
-          <td>1/${bonus.total.toFixed(1)}</td>
-          <td>1/${grape.toFixed(2)}</td>
-          <td>1/${soloCherry.toFixed(1)}</td>
-          <td>1/${replay.toFixed(2)}</td>
-          <td>1/${bell.toFixed(0)}</td>
-          <td>1/${pierrot.toFixed(0)}</td>
-          <td>${(targetRtpFor(i) * 100).toFixed(1)}%</td>
-        </tr>`;
+        const bonus=A_TYPE_BONUS_TABLE[i];
+        const bell=1/(1/A_TYPE_GRAPE_TABLE[i]+1/A_TYPE_BELL_TABLE[i]);
+        html += '<tr><td>'+i+'</td><td>1/'+bonus.big.toFixed(1)+'</td><td>1/'+bonus.reg.toFixed(1)+'</td><td>1/'+bonus.total.toFixed(1)+'</td><td>1/'+bell.toFixed(2)+'</td><td>1/'+A_TYPE_REPLAY_TABLE[i].toFixed(2)+'</td></tr>';
       }
       table.innerHTML = html;
       renderRegDetailTable();
@@ -13537,7 +13500,16 @@ body{
     }
   }
 
+  const NOVA_LOGO_SRC = "assets/design/nova-cabinet-v1/lower-panel-original.webp";
+  function novaSymbol(column, row){ return "NOVA_" + column + "_" + row; }
+  function novaGrid(){ return [0,1,2].map(row => [0,1,2].map(column => novaSymbol(column,row))); }
+  function isNovaGrid(grid){ return [0,1,2].every(row => [0,1,2].every(column => grid?.[row]?.[column] === novaSymbol(column,row))); }
   function cellHtml(symbol, label, cls){
+    const tile = /^NOVA_([0-2])_([0-2])$/.exec(symbol);
+    if(tile) return '<span class="novaLogoTile" aria-label="ノヴァ目 '+tile[1]+' '+tile[2]+'"><img src="'+NOVA_LOGO_SRC+'" draggable="false" alt="" style="left:-'+Number(tile[1])*100+'%;top:-'+Number(tile[2])*100+'%"></span>';
+    // Legacy saved visual states must not reintroduce retired artwork.
+    if(symbol === GRAPE_SYMBOL) symbol = BELL_SYMBOL;
+    if(symbol === PIERROT_SYMBOL || symbol === CHERRY_SYMBOL) symbol = ELEPHANT_SYMBOL;
     const inner =
       (typeof USER_FACE !== "undefined" && symbol === USER_FACE)
         ? `<img class="symImg" src="${USER_FACE_SRC}" alt="small hit symbol" loading="eager" decoding="sync" draggable="false">`
@@ -13566,6 +13538,15 @@ body{
                           : `<div class="sym ${cls || ""}">${escapeHtml(symbol)}</div>`;
     return `${inner}`;
   }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const preview = document.getElementById("novaSymbolPreview");
+    document.getElementById("novaSymbolPreviewOpen").onclick = () => {
+      document.getElementById("novaSymbolPreviewGrid").innerHTML = novaGrid().flatMap(row => row.map(symbol => '<div>'+cellHtml(symbol)+ '</div>')).join('');
+      preview.showModal();
+    };
+    document.getElementById("novaSymbolPreviewClose").onclick = () => preview.close();
+  });
 
   function ensureReelCells(index){
     const win = reels[index] ? reels[index].querySelector(".window") : null;
@@ -13596,12 +13577,12 @@ body{
     div.innerHTML = cellHtml(symbol, label, cls);
   }
 
-  const REEL_STRIPS = [
-    // Reference rows 21 -> 1, top to bottom.
-    [BELL_SYMBOL,"7",ELEPHANT_SYMBOL,GRAPE_SYMBOL,ELEPHANT_SYMBOL,GRAPE_SYMBOL,"BAR",CHERRY_SYMBOL,GRAPE_SYMBOL,ELEPHANT_SYMBOL,GRAPE_SYMBOL,"7",PIERROT_SYMBOL,GRAPE_SYMBOL,ELEPHANT_SYMBOL,GRAPE_SYMBOL,CHERRY_SYMBOL,"BAR",GRAPE_SYMBOL,ELEPHANT_SYMBOL,GRAPE_SYMBOL],
-    [ELEPHANT_SYMBOL,"7",GRAPE_SYMBOL,CHERRY_SYMBOL,ELEPHANT_SYMBOL,BELL_SYMBOL,GRAPE_SYMBOL,CHERRY_SYMBOL,ELEPHANT_SYMBOL,"BAR",GRAPE_SYMBOL,CHERRY_SYMBOL,ELEPHANT_SYMBOL,BELL_SYMBOL,GRAPE_SYMBOL,CHERRY_SYMBOL,ELEPHANT_SYMBOL,"BAR",GRAPE_SYMBOL,CHERRY_SYMBOL,PIERROT_SYMBOL],
-    [GRAPE_SYMBOL,"7","BAR",BELL_SYMBOL,ELEPHANT_SYMBOL,GRAPE_SYMBOL,PIERROT_SYMBOL,BELL_SYMBOL,ELEPHANT_SYMBOL,"BAR",PIERROT_SYMBOL,BELL_SYMBOL,ELEPHANT_SYMBOL,GRAPE_SYMBOL,PIERROT_SYMBOL,BELL_SYMBOL,ELEPHANT_SYMBOL,GRAPE_SYMBOL,PIERROT_SYMBOL,BELL_SYMBOL,ELEPHANT_SYMBOL]
-  ];
+  const REEL_STRIPS = [0,1,2].map(column => [
+    BELL_SYMBOL,"7",ELEPHANT_SYMBOL,BELL_SYMBOL,"BAR",ELEPHANT_SYMBOL,
+    novaSymbol(column,0),novaSymbol(column,1),novaSymbol(column,2),
+    BELL_SYMBOL,ELEPHANT_SYMBOL,"7",BELL_SYMBOL,"BAR",ELEPHANT_SYMBOL,
+    BELL_SYMBOL,ELEPHANT_SYMBOL,"BAR",BELL_SYMBOL,ELEPHANT_SYMBOL,BELL_SYMBOL
+  ]);
 
   function mod(n, m){
     return ((n % m) + m) % m;
@@ -14082,7 +14063,28 @@ body{
     return displayedResultFromGrid(grid) === displayResultFor(result) && hasOnlyTargetPayline(grid, result, winRow);
   }
 
+  const novaStopGridCache = new Map();
+  function buildNovaReelGrid(result, winRow=1){
+    result = normalizeATypeResult(result);
+    const spec = RESULT[result] || RESULT.MISS;
+    if(isMiddleLineOnlyResult(result)) winRow = 1;
+    const cacheKey = result + ":" + winRow;
+    const cached = novaStopGridCache.get(cacheKey);
+    if(cached) return cached[Math.floor(Math.random()*cached.length)].map(row=>row.slice());
+    const choices = REEL_STRIPS.map((strip,column) => strip.map((_,top) => reelWindowFromTopIndex(column,top))
+      .filter(items => result === "MISS" || items[winRow] === spec.reel[column]));
+    const grids = [];
+    for(const left of choices[0]) for(const middle of choices[1]) for(const right of choices[2]){
+      const grid = [0,1,2].map(row => [left[row],middle[row],right[row]]);
+      if(!isNovaGrid(grid) && displayedResultFromGrid(grid) === result && gridHasOnlyAllowedPaylines(grid,result)) grids.push(grid);
+    }
+    if(!grids.length) throw new Error("No valid NOVA reel stop for " + result);
+    novaStopGridCache.set(cacheKey,grids);
+    return grids[Math.floor(Math.random()*grids.length)].map(row=>row.slice());
+  }
+
   function buildGrid(result, winRow=1){
+    if(A_TYPE_MODE) return buildNovaReelGrid(result,winRow);
   function buildDiagonalBellGrid(winRows){
     const bell = RESULT.BELL.reel[0];
     const down = Array.isArray(winRows) ? winRows[0] === 0 : Math.random() < 0.5;
@@ -16141,7 +16143,7 @@ body{
     onClick("debugMidBtn", ()=>direct("MID"));
     onClick("debugBar3Btn", ()=>direct("BAR3"));
     onClick("debugBigBtn", ()=>direct("BIG"));
-    onClick("debugGrapeBtn", ()=>direct("GRAPE"));
+    onClick("debugGrapeBtn", ()=>direct("BELL"));
     onClick("debugBellPayBtn", ()=>direct("BELL"));
     onClick("debugBell3Btn", ()=>direct("BELL3"));
     onClick("debugReplayBtn", ()=>direct("REPLAY"));
@@ -16237,5 +16239,7 @@ body{
   requestBackgroundLogoSync();
 })();
 </script>
+<button type="button" id="novaSymbolPreviewOpen">ノヴァ目を確認</button>
+<dialog id="novaSymbolPreview"><h2>ノヴァ目</h2><p>左・中・右、各3コマでロゴが完成。配当・当選は未設定。</p><div id="novaSymbolPreviewGrid"></div><button type="button" id="novaSymbolPreviewClose">閉じる</button></dialog>
 </body>
 </html>
