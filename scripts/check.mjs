@@ -22,8 +22,8 @@ for (const asset of ["assets/logo/nova_logo.svg", "assets/hero/kv_vertical_copy_
 
 const game = readFileSync("jag.html", "utf8");
 for (const required of [
-  "NovaFlow.drawEntry",
-  "NovaFlow.drawRT",
+  "NovaNormal.spin",
+  "NovaArt.step",
   "NovaFlow.afterBonus",
   "nova_slot_state_v1_"
 ]) {

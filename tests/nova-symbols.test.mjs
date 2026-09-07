@@ -7,6 +7,7 @@ const fn=name=>source.match(new RegExp('  function '+name+'\\([^]*?\\n  }'))[0];
 const context=vm.createContext({});
 vm.runInContext(fs.readFileSync('nova-art.js','utf8'),context);
 vm.runInContext(fs.readFileSync('nova-flow.js','utf8'),context);
+vm.runInContext(fs.readFileSync('nova-normal.js','utf8'),context);
 const constants=source.slice(source.indexOf('  const A_TYPE_PAYOUTS'),source.indexOf('  const symbolImagePreloads'));
 const result=source.slice(source.indexOf('  const RESULT ='),source.indexOf('  const SETTING_PROFILE'));
 const strips=source.slice(source.indexOf('  const REEL_STRIPS ='),source.indexOf('  function mod('));
@@ -38,17 +39,17 @@ test('every reel has exactly one contiguous three-cell logo and no retired symbo
  assert.equal(run('REEL_STRIPS.every((s,c)=>s.length===21 && s.filter(x=>x.startsWith("NOVA_")).length===3 && [0,1,2].every(r=>s[6+r]===novaSymbol(c,r)) && !s.some(x=>[GRAPE_SYMBOL,CHERRY_SYMBOL,PIERROT_SYMBOL].includes(x)))'),true);
 });
 test('actual stop grids match every supported outcome using real consecutive strip cells',()=>{
- for(const result of ['MISS','BELL','REPLAY','BIG','MID','BAR3']) for(const row of [0,1,2]){
+ for(const result of ['MISS','BELL','STRONG_BELL','WEAK_SUICA','STRONG_SUICA','CHANCE_A','CHANCE_B','REPLAY','BIG','MID','BAR3']) for(const row of [0,1,2]){
   run(`globalThis.grid=buildNovaReelGrid(${JSON.stringify(result)},${row});`);
   assert.equal(run('displayedResultFromGrid(grid)'),result);
   assert.equal(run('gridHasOnlyAllowedPaylines(grid,'+JSON.stringify(result)+')'),true);
   assert.equal(run('REEL_STRIPS.every((s,c)=>s.some((_,i)=>[0,1,2].every(r=>grid[r][c]===s[(i+r)%21])))'),true);
  }
 });
-test('bell pays 8 normally and 15 throughout bonus including final game',()=>{
+test('bell pays 8 normally and throughout bonus including final game',()=>{
  assert.equal(run('normalRewardFor("BELL")'),8);
- assert.equal(run('resolveATypeBonusOutcome("BELL").reward'),15);
- assert.equal(run('session.bonusGamesRemaining=1; resolveATypeBonusOutcome("BELL").reward'),15);
+ assert.equal(run('resolveATypeBonusOutcome("BELL").reward'),8);
+ assert.equal(run('session.bonusGamesRemaining=1; resolveATypeBonusOutcome("BELL").reward'),8);
  assert.equal(run('session.bonusGamesRemaining=0; resolveATypeBonusOutcome("BELL").reward'),0);
 });
 test('retired forced outcomes cannot enter active play',()=>{

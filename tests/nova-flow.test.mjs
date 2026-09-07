@@ -45,7 +45,7 @@ test('new flow and isolated state storage are wired into game',()=>{
  assert.match(game,/flow:NovaFlow\.normalize\(data\.normalState\.flow\)/);
  assert.match(game,/nova_slot_state_v1_/);
  const draw=game.slice(game.indexOf('  function drawIndependentATypeOutcome(){'),game.indexOf('  function drawNormalResult(){'));
- assert.match(draw,/NovaFlow\.drawRT\(\)/);
- assert.match(draw,/flow\.remaining === 1 && flow\.success/);
+ assert.match(draw,/NovaNormal\.spin\(/);
+ assert.match(fs.readFileSync('nova-normal.js','utf8'),/flow.remaining===1&&flow.success/);
  assert.doesNotMatch(draw,/novaBonusModeScale|bigP|regP/);
 });

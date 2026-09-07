@@ -41,9 +41,9 @@
   panel.querySelector('h2').after(lampControls);
   const lampMode=panel.querySelector('#novaLampMode');
   const machine=document.getElementById('machine');
-  const chance=document.getElementById('jagGogoChance');
+  const chance=document.getElementById('stLamp');
   function syncLamp(){
-    const automatic=machine.classList.contains('active')?'rainbow':chance?.classList.contains('is-lit')?'blink':'dim';
+    const automatic=machine.classList.contains('active')?'rainbow':chance?.classList.contains('on')?'blink':'dim';
     layer.dataset.lamp=lampMode.value==='auto'?automatic:lampMode.value;
   }
   lampMode.addEventListener('change',syncLamp);
