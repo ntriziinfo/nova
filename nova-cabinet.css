@@ -68,3 +68,5 @@ body[data-art-zone=toto][data-toto-color=rainbow] .novaArtItem[data-artwork=toto
 
 #zoneRoulette{position:absolute;z-index:90;left:15%;right:15%;top:40%;padding:20px;background:#160e24f2;border:2px solid #e8bb62;border-radius:12px;color:#fff;text-align:center;font:bold 22px system-ui;pointer-events:none;box-shadow:0 0 24px #b859dd}
 #zoneRoulette[hidden]{display:none}
+
+.reel.cz-stop-blackout .window{filter:brightness(0)!important}

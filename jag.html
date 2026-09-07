@@ -6531,7 +6531,7 @@ body{
   .vertexConnectionBadge.offline{color:#ff8f9c;border-color:rgba(255,91,113,.65);background:rgba(52,9,17,.9)}
   .vertexConnectionBadge.legacy{color:#d4a6ff;border-color:rgba(185,109,255,.6)}
 </style>
-<link rel="stylesheet" href="nova-cabinet.css?v=20260907-flow16">
+<link rel="stylesheet" href="nova-cabinet.css?v=20260907-cz-stop20">
 <link rel="stylesheet" href="nova-artwork.css?v=20260907-cz-lamps10">
 <script src="nova-artwork.js?v=20260907-cz-lamps10" defer></script>
 <script src="nova-art.js?v=20260907-replay-audio19"></script>
@@ -7272,7 +7272,7 @@ body{
 
   const KOATARI_SOUND_SRC = "";
   const PAYOUT_SOUND_SRC = "assets/media/jag/bell.wav";
-  const PAYOUT_3PT_BELL_SOUND_SRC = "assets/media/jag/bell.wav";
+  const PAYOUT_3PT_BELL_SOUND_SRC = "assets/media/nova/bell_payout.wav";
   const REPLAY_SOUND_SRC = "assets/media/nova/replay.wav";
   const CHERRY_SOUND_SRC = "assets/media/jag/cherry.wav";
   const SPECIAL_SYMBOL_SOUND_SRC = "assets/media/jag/special_symbol.wav";
@@ -10517,6 +10517,7 @@ body{
   }
 
   function chargeSpinCost(){
+    clearCzReelBlackout();
     if(!session.active && normalState.flow?.phase==='art' && normalState.flow.zero)return;
     if(A_TYPE_MODE && normalState.replayFree){normalState.replayFree=false;return;}
     stats.totalFee = (Number(stats.totalFee) || 0) + SPIN_COST;
@@ -16041,6 +16042,7 @@ body{
   }
 
   function payoutSoundSrcFor(result, reward=0, spin=currentSpin){
+    if(A_TYPE_MODE && ["BELL","STRONG_BELL","GRAPE","BELL3"].includes(result))return PAYOUT_3PT_BELL_SOUND_SRC;
     if(isPremiumBigBonusPieroSound(result, spin)) return PREMIUM_PIERO_SYMBOL_SOUND_SRC;
     if(result === "REPLAY") return REPLAY_SOUND_SRC;
     if(result === "CHERRY_ANY" || result === "CHERRY_DOUBLE" || result === "CHERRY_TRIPLE" || result === "MID_CHERRY") return CHERRY_SOUND_SRC;
@@ -16085,16 +16087,21 @@ body{
     const success=!failed&&(display.rainbow||display.stage>previousStage||resolved.bonusHit||resolved.flowAfter?.phase==='art');
     return success?'assets/media/jag/cz_third_success.wav':'assets/media/jag/cz_third_failure.wav';
   }
+  function clearCzReelBlackout(){
+    document.querySelectorAll('.reel.cz-stop-blackout').forEach(reel=>reel.classList.remove('cz-stop-blackout'));
+  }
   function playStopSound(i, stopOrder=null){
     const resolved=currentSpin?.resolved;
     if(stopOrder===3&&resolved?.czLamp){
       if(resolved.czThirdSoundPlayed)return;
       resolved.czThirdSoundPlayed=true;
       const previous=Number(document.getElementById('machine').dataset.czLamp)||0;
-      playOneShotSound(czThirdStopSound(resolved,previous),sfxOutputVolume());
+      const sound=czThirdStopSound(resolved,previous);
+      if(sound.endsWith('cz_third_failure.wav'))document.querySelector('.reel[data-reel="'+i+'"]').classList.add('cz-stop-blackout');
+      playOneShotSound(sound,sfxOutputVolume());
       return;
     }
-    playOneShotSound(STOP_SOUND_SRC);
+    playOneShotSound(resolved?.czLamp && (stopOrder===1 || stopOrder===2)?"assets/media/nova/cz_stop_12.wav":STOP_SOUND_SRC);
   }
   function playWinSound(big){
     if(debugFastSpinActive || speedToBonusActive) return;
