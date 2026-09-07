@@ -1,0 +1,6 @@
+import fs from 'node:fs';import {simulate} from './simulate-normal.mjs';
+const setting=Number(process.argv[2]),mode=process.argv[3]||'fit';
+function run(factor,games,seed){NovaArt.zoneEntryScale[setting-1]=factor;return simulate(setting,NovaBalance.profile(setting).scale,games,seed);}
+const target=NovaBalance.targets[setting-1];
+if(mode==='fit'){let lo=0,hi=1.5;const history=[];for(let k=0;k<8;k++){const factor=(lo+hi)/2,rows=[0,1,2].map(i=>run(factor,150000,711389+setting+i*149911)),bet=rows.reduce((s,r)=>s+r.totalBet,0),rtp=rows.reduce((s,r)=>s+r.totalBet+r.net,0)/bet;history.push({factor,rtp});console.log(JSON.stringify({setting,k,factor,rtp}));if(rtp<target)lo=factor;else hi=factor;}fs.writeFileSync(`net4-fit-${setting}.json`,JSON.stringify({setting,factor:(lo+hi)/2,history}));}
+else {const factor=Number(process.argv[4]||NovaArt.zoneEntryScale[setting-1]),rows=[];for(let i=0;i<10;i++){rows.push(run(factor,500000,12397183+setting+i*197933));console.log(JSON.stringify({setting,done:i+1}));}const bet=rows.reduce((s,r)=>s+r.totalBet,0),rtp=rows.reduce((s,r)=>s+r.totalBet+r.net,0)/bet;fs.writeFileSync(`net4-verify-${setting}.json`,JSON.stringify({setting,factor,target,rtp,rows},null,2));console.log(JSON.stringify({setting,factor,rtp}));}

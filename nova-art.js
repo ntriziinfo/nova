@@ -17,10 +17,10 @@ globalThis.NovaArt=(()=>{
  function advanceBonus(state,special=false,reward=0){const target=bonusTarget(state.bonusKind),paid=Number(state.paid)||0;return {bonusTarget:target,bonusPointsRemaining:Math.max(0,target-paid-Math.max(0,Number(reward)||0)),bonusArtSets:(Number(state.bonusArtSets)||0)+(paid<target&&special?1:0)};}
 
  // Replay has no payout and makes the next BET free: net = (bellPay-3)*P(bell) + (otherPay-3)*P(other).
- function paidBellChance(otherChance=0,bellPay=15,otherPay=0){return Math.max(0,Math.min(1,(2.5-otherChance*(otherPay-3))/((1-otherChance)*(bellPay-3))));}
+ function paidBellChance(otherChance=0,bellPay=15,otherPay=0){return Math.max(0,Math.min(1,(4-otherChance*(otherPay-3))/((1-otherChance)*(bellPay-3))));}
  function drawPaidRole(zeroChance=0,bellPay=15,rng=Math.random){return rng()<paidBellChance(zeroChance,bellPay)?'BELL':'REPLAY';}
  function drawBonus(rng=Math.random,setting){const p=setting===undefined?bonusSpecial:bonusSpecialFor(setting);return rng()<p?'NEBULA':drawPaidRole(p,15,rng);}
- const zoneEntryScale=[0.0434765625,0.075,0.075,0.11,0.14,0.185];
+ const zoneEntryScale=[0.49,0.47,0.45,0.46,0.495,0.505];
  // Normalize by actual rare-role frequency, preserving the average ART zone entry rate.
  const zoneRoleWeights=Object.freeze({WEAK_SUICA:1,STRONG_SUICA:10,STRONG_BELL:10,CHANCE_A:4,CHANCE_B:2,WEAK_NOVA:1,STRONG_NOVA:10});
  function zoneRoleMultiplier(role){const table=globalThis.NovaNormal?.rare;if(!table)return role==='CHANCE_A'?1.2:role==='CHANCE_B'?.9:1;let total=0,weighted=0;for(const [key,v]of Object.entries(table)){total+=v.p;weighted+=v.p*(zoneRoleWeights[key]||1);}return (zoneRoleWeights[role]||1)*total/weighted;}

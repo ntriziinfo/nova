@@ -6534,8 +6534,8 @@ body{
 <link rel="stylesheet" href="nova-cabinet.css?v=20260907-roulette-lamps22">
 <link rel="stylesheet" href="nova-artwork.css?v=20260907-cz-lamps10">
 <script src="nova-artwork.js?v=20260907-cz-lamps10" defer></script>
-<script src="nova-art.js?v=20260908-guarantee25"></script>
-<script src="nova-balance.js?v=20260908-guarantee25"></script>
+<script src="nova-art.js?v=20260908-net4-26"></script>
+<script src="nova-balance.js?v=20260908-net4-26"></script>
 <script src="nova-normal.js?v=20260907-bell15-23"></script>
 <script src="nova-flow.js?v=20260907-cz-third12"></script>
 <style>
@@ -7128,7 +7128,7 @@ body{
         <label>CZ 突入率 1/<input type="number" min="2" max="100000" data-flow-config="czDenom"></label>
         <label>強CZ 突入率 1/<input type="number" min="2" max="100000" data-flow-config="strongDenom"></label>
         <button type="button" id="saveFlowConfig">CZ設定を保存</button><output id="flowConfigStatus"></output>
-        <p>ART初期275pt（仮）。通常ART・ボーナスの期待純増2.5pt/G。特化ゾーンの消化は別配分。標準機械割はコンプリート打ち切り・手動強制・仮設定変更を除く理論値。</p></details>
+        <p>ART初期275pt（仮）。通常ART・ボーナスの期待純増4pt/G。特化ゾーンの消化は別配分。設定ごとの表示機械割は目標値です。</p></details>
         <button class="subBtn" id="debugNovaPatternsBtn" type="button">ノヴァ目3段階を確認</button>
         <div class="field">
           <label>次回転の出目指定</label>
@@ -13157,7 +13157,7 @@ body{
     if($("adminTargetRtpView")) $("adminTargetRtpView").textContent = targetRtpText();
     const stInfoText = A_TYPE_MODE
       ? active
-        ? `${aTypeBonusLabel(session.bonusKind)} 残り${aTypeBonusRemainingNet()}pt / ART獲得${session.bonusArtSets||0}SET / 純増目標2.5pt/G`
+        ? `${aTypeBonusLabel(session.bonusKind)} 残り${aTypeBonusRemainingNet()}pt / ART獲得${session.bonusArtSets||0}SET / 純増目標4pt/G`
         : `${normalModeLabel()} / CZ・強CZ経由 / 1G ${SPIN_COST}pt`
       : active
         ? (isContinuationBattleActive()
@@ -13170,7 +13170,7 @@ body{
     if($("stInfoViewLegacy")) $("stInfoViewLegacy").textContent = stInfoText;
     if($("adminStInfoView")) $("adminStInfoView").textContent = stInfoText;
     const payoutScaleText = A_TYPE_MODE
-      ? `BIG150pt/REG75pt/純増2.5pt/G/ベル共通15pt/リプレイ再遊技`
+      ? `BIG150pt/REG75pt/純増4pt/G/ベル共通15pt/リプレイ再遊技`
       : `通常:ベル${NORMAL_ROLE_PAYOUTS.BELL}pt/スイカ${NORMAL_ROLE_PAYOUTS.SUICA}pt/チェリー${NORMAL_ROLE_PAYOUTS.CHERRY_ANY}pt/リプレイ${NORMAL_ROLE_PAYOUTS.REPLAY}pt/REG${NORMAL_ROLE_PAYOUTS.MID}pt / 通常小役${Math.round(NORMAL_ROLE_RATE * 100)}% / 高確小役${Math.round(HIGH_ROLE_RATE * 100)}% / ATベル${ROLE_PAYOUTS.BELL}pt/斜めベル${ROLE_PAYOUTS.BELL3}pt / 平均継続${formatRate(averageContinuationRate(settings.setting))}`;
     if($("payoutScaleView")) $("payoutScaleView").textContent = payoutScaleText;
     if($("payoutScaleViewLegacy")) $("payoutScaleViewLegacy").textContent = payoutScaleText;
@@ -13463,7 +13463,7 @@ body{
       let html = '<tr><td>状態</td><td>継続</td><td>通常時突入率</td><td>期待度</td></tr>';
       html += '<tr><td>CZ</td><td>'+cfg.czGames+'G</td><td>1/'+(cfg.czDenom/NovaBalance.profile(settings.setting).scale).toFixed(1)+'</td><td>'+cfg.czChance*100+'%</td></tr>';
       html += '<tr><td>強CZ</td><td>'+cfg.strongGames+'G</td><td>1/'+(cfg.strongDenom/NovaBalance.profile(settings.setting).scale).toFixed(1)+'</td><td>'+cfg.strongChance*100+'%</td></tr>';
-      html += '<tr><td>ART</td><td>初期275pt</td><td>直撃・CZ・ボーナス後</td><td>通常消化基準2.5pt/G</td></tr>';
+      html += '<tr><td>ART</td><td>初期275pt</td><td>直撃・CZ・ボーナス後</td><td>通常消化基準4pt/G</td></tr>';
       table.innerHTML = html;
       renderRegDetailTable();
       return;
@@ -13788,7 +13788,7 @@ body{
     artPanel.innerHTML='<summary>ART・上乗せゾーン仮設定</summary><p>ART中もスイカ・強ベル・チャンス目・ノヴァ目を抽選。うらぴはnebula揃いで上乗せ。ギルは最終到達G数を加算・0G連BET無料・上限なし。</p>';
     const artLabels={initial:'ART初期pt',rare:'ARTレア役確率',big:'レア役から特化当選確率A',zone:'レア役から特化当選確率B',urapiGames:'うらぴ継続G数',urapiHit:'うらぴ図柄揃い確率',oumaGames:'逢魔継続G数',soraHit:'空7揃い基準率（リセット補正前）',oumaHit:'逢魔ノヴァ揃い確率',uraChance:'裏ゾーン昇格確率',soraReset:'空nebulaリセット率',soraUraReset:'裏空nebulaリセット率',oumaFreeze:'逢魔フリーズ継続率',oumaUraFreeze:'裏逢魔フリーズ継続率'};
     const giruTable=document.createElement('div');giruTable.innerHTML='<p>ギルは1G目で基準6〜28pt、2G目から継続抽選。以降0G連で成功ごとに倍増。初期保証は通常・裏ともに100pt。</p>';artPanel.append(giruTable);
-    const zoneTable=document.createElement('div');zoneTable.innerHTML='<p>初期保証（通常・裏共通）：宗介50pt、とと50pt、うらぴ80pt、ギル100pt、空1セット、逢魔100pt。<br>特化ゾーン選択率（設定順）</p><table><tr><th>設定</th>'+Object.values(NovaArt.names).map(x=>'<th>'+x+'</th>').join('')+'</tr>'+NovaArt.zoneWeights.map((row,i)=>'<tr><td>'+(i+1)+'</td>'+row.map(p=>'<td>'+p+'%</td>').join('')+'</tr>').join('')+'</table><p>入口分母は従来係数を維持。初期加算への変更により、以前の目標機械割への適合は未調整です。通常小役は偶奇差なしの緩やかな設定差、ART直撃の設定差は小幅。上乗せは小さい結果を中心に、まれに大きく伸びる振分。ボーナス特殊図柄は設定別の低頻度抽選、ART1セット275pt。通常ART・ボーナス純増2.5pt/G。</p>';artPanel.append(zoneTable);const uraTable=document.createElement('div');uraTable.innerHTML='<p>各ゾーン突入時に裏へ昇格（標準3%・全設定共通）。突入時に初期値を加算。消化中に獲得した上乗せを追加。</p><table><tr><th>ゾーン</th><th>通常の初期値</th><th>裏の初期値</th></tr>'+Object.entries(NovaArt.names).map(([key,name])=>'<tr><td>'+name+'</td>'+['normal','ura'].map(type=>'<td>'+NovaArt.guarantees[type][key]+(key==='sora'?'SET':'pt')+'</td>').join('')+'</tr>').join('')+'</table>';artPanel.append(uraTable);
+    const zoneTable=document.createElement('div');zoneTable.innerHTML='<p>初期保証（通常・裏共通）：宗介50pt、とと50pt、うらぴ80pt、ギル100pt、空1セット、逢魔100pt。<br>特化ゾーン選択率（設定順）</p><table><tr><th>設定</th>'+Object.values(NovaArt.names).map(x=>'<th>'+x+'</th>').join('')+'</tr>'+NovaArt.zoneWeights.map((row,i)=>'<tr><td>'+(i+1)+'</td>'+row.map(p=>'<td>'+p+'%</td>').join('')+'</tr>').join('')+'</table><p>純増4pt/Gと現在の初期保証に合わせて特化ゾーン突入率を調整。通常小役は偶奇差なしの緩やかな設定差、ART直撃の設定差は小幅。上乗せは小さい結果を中心に、まれに大きく伸びる振分。ボーナス特殊図柄は設定別の低頻度抽選、ART1セット275pt。通常ART・ボーナス純増4pt/G。</p>';artPanel.append(zoneTable);const uraTable=document.createElement('div');uraTable.innerHTML='<p>各ゾーン突入時に裏へ昇格（標準3%・全設定共通）。突入時に初期値を加算。消化中に獲得した上乗せを追加。</p><table><tr><th>ゾーン</th><th>通常の初期値</th><th>裏の初期値</th></tr>'+Object.entries(NovaArt.names).map(([key,name])=>'<tr><td>'+name+'</td>'+['normal','ura'].map(type=>'<td>'+NovaArt.guarantees[type][key]+(key==='sora'?'SET':'pt')+'</td>').join('')+'</tr>').join('')+'</table>';artPanel.append(uraTable);
     const artCfg=NovaArt.config(settings.novaArt);
     for(const [key,label]of Object.entries(artLabels)){const row=document.createElement('label');row.className='field';row.textContent=label;const input=document.createElement('input');input.type='number';input.dataset.artConfig=key;input.setAttribute('aria-label',label);input.min=key.startsWith('direct')?'2':key==='initial'||key.endsWith('Games')?'1':'0';input.max=key.startsWith('direct')?'100000':key==='initial'?String(Number.MAX_SAFE_INTEGER):key.endsWith('Games')?'1000':'1';input.step=key.startsWith('direct')?'1':key==='initial'||key.endsWith('Games')?'1':'0.01';input.value=artCfg[key];row.append(input);artPanel.append(row);}
     const artSave=document.createElement('button');artSave.type='button';artSave.textContent='ART設定を保存';artSave.onclick=()=>{const value={payoutVersion:1};artPanel.querySelectorAll('input').forEach(x=>value[x.dataset.artConfig]=x.valueAsNumber);settings.novaArt=NovaArt.config(value);persistState();artSave.textContent='ART設定を保存しました';};artPanel.append(artSave);

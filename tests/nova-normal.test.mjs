@@ -11,5 +11,5 @@ test('live ART rare roles pay correctly and chance A has a stronger BIG draw tha
  const next=role=>a.step(a.enter(),opts,()=>.13,role);
  assert.equal(next('CHANCE_A').flow.entryStage,'seven');assert.equal(next('CHANCE_B').internalBonus,null);
  for(const role of ['WEAK_SUICA','STRONG_SUICA','STRONG_BELL'])assert.equal(next(role).result,role);
- let seed=333,paid=0;const rng=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};for(let i=0;i<200000;i++){const result=a.step(a.enter(),{big:0,zone:0},rng).result;paid+=n.pay(result)+(result==='REPLAY'?3:0);}assert.ok(Math.abs(paid/200000-5.5)<.03);
+ let seed=333,paid=0;const rng=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};for(let i=0;i<200000;i++){const result=a.step(a.enter(),{big:0,zone:0},rng).result;paid+=n.pay(result)+(result==='REPLAY'?3:0);}assert.ok(Math.abs(paid/200000-7)<.03);
 });
