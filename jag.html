@@ -7722,6 +7722,8 @@ body{
   };
 
   let isSpinning = false;
+  let jagChainCount = null;
+  let jagChainBonusHandoff = false;
   let jagLastGamePayout = 0;
   let jagLastBonusPayout = 0;
   let jagChanceHold = false;
@@ -11420,6 +11422,7 @@ body{
           endSignal:runtime.session.endSignal || null
         };
       }
+      jagChainCount = runtime.jagChainCount && Number.isFinite(runtime.jagChainCount.paid) && Number.isFinite(runtime.jagChainCount.fee) ? {...runtime.jagChainCount} : null;
       jagLastGamePayout = Number(runtime.jagLastGamePayout) || 0;
       jagLastBonusPayout = Number(runtime.jagLastBonusPayout) || 0;
       jagChanceHold = !!runtime.jagChanceHold;
@@ -11453,6 +11456,7 @@ body{
   function runtimeStateForStorage(){
     return {
       session:{...session},
+      jagChainCount,
       jagLastGamePayout,
       jagLastBonusPayout,
       jagChanceHold,
@@ -12651,6 +12655,7 @@ body{
   }
 
   function applyNormalResult(result, resolved, lineRow=1){
+    if(A_TYPE_MODE && resolved.aTypeBonusReady)jagChainBonusHandoff=true;
     if(A_TYPE_MODE && resolved.normalInternal)normalState.internal=NovaNormal.normalize(resolved.normalInternal);
     const info = RESULT[result] || RESULT.MISS;
     const modeAtStart = A_TYPE_MODE ? NovaFlow.label(resolved.flowBefore) : (resolved.highAtStart ? "高確" : "通常");
@@ -13070,6 +13075,12 @@ body{
     });
   }
 
+  function chainCountStep(previous,continuing,paid,fee){
+    if(!continuing)return {state:null,count:0};
+    const state=previous && paid>=previous.paid && fee>=previous.fee ? previous : {paid,fee};
+    return {state,count:Math.max(0,Math.floor((paid-state.paid)-(fee-state.fee)))};
+  }
+
   function updateDisplay(){
     const active = session.active;
     const profit = stats.totalPaid - stats.totalFee;
@@ -13187,11 +13198,15 @@ body{
       gogoChance.setAttribute("aria-pressed", jagChanceLit ? "true" : "false");
     }
     const displayCredit = SLOT_PLAY_SESSION ? profit - playSessionBaselineProfit() : profit;
-    const displayCount = active
-      ? (isATypeBonusActive() ? aTypeBonusNet() : Math.max(0, Number(session.paid) || 0))
-      : 0;
+    if(active)jagChainBonusHandoff=false;
+    const chain=chainCountStep(jagChainCount,!!(active || jagChainBonusHandoff || normalState.bonusPending || normalState.flow?.phase==='art'),Number(stats.totalPaid)||0,Number(stats.totalFee)||0);
+    jagChainCount=chain.state;
+    const displayCount=chain.count;
     setText("jagCreditMeter", formatCreditDifference(displayCredit));
-    setText("jagCountMeter", formatMeterDigits(displayCount, 3, 999));
+    const countText=String(displayCount).padStart(3,'0');
+    setText("jagCountMeter",countText);
+    $("jagCountMeter").style.setProperty('font-size',`min(60cqh, ${63/Math.max(3,countText.length)}cqw)`,'important');
+    $("jagCountMeter").setAttribute('aria-label',`初当たりからの総獲得 ${displayCount}pt`);
     setText("jagGamePayoutMeter", formatMeterDigits(jagLastGamePayout, 3, 999));
     const atCountText = stats.totalSessions || 0;
     const stEmblem = $("wdStEmblem");
@@ -13480,6 +13495,8 @@ body{
     reels.forEach(r=>r.classList.remove("spinning"));
     isSpinning = false;
     currentSpin = null;
+    jagChainCount = null;
+    jagChainBonusHandoff = false;
     stats = {totalSessions:0,totalFee:0,totalPaid:0,totalSpins:0,normalSpins:0,highSpins:0,roleStatVersion:ROLE_STAT_COUNTER_VERSION,bigCount:0,midCount:0,premiumBigCount:0,grapeCount:0,smallCount:0,bellCount:0,diagonalBellCount:0,replayCount:0,suikaCount:0,cherryCount:0,slumpHigh:0,slumpLow:0,slumpHistory:[{spin:0, profit:0}]};
     slumpView = {xZoom:1,yZoom:1,seekStart:0,followEnd:true};
     bonusConfirmBgmHold = false;
@@ -13536,6 +13553,8 @@ body{
     reels.forEach(r=>r.classList.remove("spinning"));
     isSpinning = false;
     currentSpin = null;
+    jagChainCount = null;
+    jagChainBonusHandoff = false;
     stats = {totalSessions:0,totalFee:0,totalPaid:0,totalSpins:0,normalSpins:0,highSpins:0,roleStatVersion:ROLE_STAT_COUNTER_VERSION,bigCount:0,midCount:0,premiumBigCount:0,grapeCount:0,smallCount:0,bellCount:0,diagonalBellCount:0,replayCount:0,suikaCount:0,cherryCount:0,slumpHigh:0,slumpLow:0,slumpHistory:[{spin:0, profit:0}]};
     slumpView = {xZoom:1,yZoom:1,seekStart:0,followEnd:true};
     bonusConfirmBgmHold = false;
