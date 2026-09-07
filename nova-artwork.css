@@ -22,7 +22,7 @@
 }
 .novaArtLayer.editing .novaArtItem{pointer-events:auto;cursor:move;touch-action:none;outline:1px dashed #aaa}
 .novaArtLayer.editing .novaArtItem.selected{outline:2px solid #ef89ff}
-#novaArtToggle{position:fixed;right:96px;bottom:16px;z-index:100;font-size:12px;width:70px;height:44px;padding:4px;background:#21182c;color:#fff;border:1px solid #b18dc3;border-radius:8px}
+#novaArtToggle{position:static;flex:0 0 70px;font-size:12px;width:70px;height:54px;padding:4px;background:#21182c;color:#fff;border:1px solid #b18dc3;border-radius:8px}
 body.debugOpen #novaArtToggle{display:none}
 #novaArtPanel{position:fixed;right:12px;top:82px;z-index:10100;width:min(300px,calc(100vw - 24px));max-height:calc(100vh - 100px);overflow:auto;box-sizing:border-box;padding:16px;background:#17131e;color:#fff;border:1px solid #aa80bc;border-radius:12px;font:14px/1.5 system-ui;text-align:left;box-shadow:0 12px 40px #0009}
 #novaArtPanel[hidden]{display:none}

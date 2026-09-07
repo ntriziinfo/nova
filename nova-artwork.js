@@ -32,7 +32,7 @@
   }
   document.getElementById('machine').append(layer);
   const toggle=document.createElement('button'); toggle.id='novaArtToggle'; toggle.type='button'; toggle.textContent='イラスト'; toggle.setAttribute('aria-expanded','false'); toggle.setAttribute('aria-controls','novaArtPanel');
-  document.body.append(toggle);
+  document.getElementById('layoutEditToggleBtn').after(toggle);
   const panel=document.createElement('section'); panel.id='novaArtPanel'; panel.hidden=true; panel.setAttribute('aria-label','イラスト配置');
   panel.innerHTML=`<h2>イラスト配置</h2><label>画像<select id="novaArtSelect">${originals.map(id=>`<option value="${id}">${id}</option>`).join('')}</select></label><p>画像をドラッグして移動できます。大きさは縦横比を保って変更します。</p><label>横位置 (%)<input id="novaArtX" type="number" min="0" max="96" step="0.1"></label><label>縦位置 (%)<input id="novaArtY" type="number" min="0" max="96" step="0.1"></label><label>表示幅 (%)<input id="novaArtW" type="number" min="4" max="45" step="0.1"></label><div class="novaArtActions"><button type="button" id="novaArtSave">保存</button><button type="button" id="novaArtReset">選択画像を戻す</button><button type="button" id="novaArtClose">閉じる</button></div><output role="status" id="novaArtStatus"></output><p>保存先はこのブラウザーです。原本画像は変更しません。</p>`;
   document.body.append(panel);

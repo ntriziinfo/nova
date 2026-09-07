@@ -6532,9 +6532,9 @@ body{
   .vertexConnectionBadge.offline{color:#ff8f9c;border-color:rgba(255,91,113,.65);background:rgba(52,9,17,.9)}
   .vertexConnectionBadge.legacy{color:#d4a6ff;border-color:rgba(185,109,255,.6)}
 </style>
-<link rel="stylesheet" href="nova-cabinet.css">
-<link rel="stylesheet" href="nova-artwork.css">
-<script src="nova-artwork.js" defer></script>
+<link rel="stylesheet" href="nova-cabinet.css?v=20260907-3">
+<link rel="stylesheet" href="nova-artwork.css?v=20260907-3">
+<script src="nova-artwork.js?v=20260907-3" defer></script>
 </head>
 <body>
 <div class="confetti" id="confetti"></div>
@@ -13542,6 +13542,11 @@ body{
   document.addEventListener("DOMContentLoaded", () => {
     const preview = document.getElementById("novaSymbolPreview");
     document.getElementById("novaSymbolPreviewOpen").onclick = () => {
+      const cell = document.querySelector('.reel .cell') || document.querySelector('.cell');
+      if(cell){
+        const rect = cell.getBoundingClientRect();
+        if(rect.height > 0) document.getElementById("novaSymbolPreviewGrid").style.aspectRatio = String(rect.width / rect.height);
+      }
       document.getElementById("novaSymbolPreviewGrid").innerHTML = novaGrid().flatMap(row => row.map(symbol => '<div>'+cellHtml(symbol)+ '</div>')).join('');
       preview.showModal();
     };
