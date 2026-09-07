@@ -7249,6 +7249,8 @@ body{
   const STORAGE_RESUME_KEY = STORAGE_KEY + "_resume";
   const PREFERENCES_STORAGE_KEY = "nova_slot_preferences_v1_" + bootMachineId;
 
+  const NOVA_BIG_BGM_SRC = "assets/media/nova/BIG.wav";
+  const NOVA_REG_BGM_SRC = "assets/media/nova/NovaREG.wav";
   const CZ_BGM_SRC = "assets/media/nova/audiostock_933855.wav";
   const DEFAULT_NORMAL_BGM_SRC = "assets/media/nova/audiostock_1117081.wav";
   const HIGH_MODE_BGM_SRC = "";
@@ -11422,6 +11424,7 @@ body{
           endSignal:runtime.session.endSignal || null
         };
       }
+      if(A_TYPE_MODE && session.active && session.phase==='a_type_bonus')session.bonusBgmSrc=pickATypeBonusBgm(session.bonusKind).src;
       jagChainCount = runtime.jagChainCount && Number.isFinite(runtime.jagChainCount.paid) && Number.isFinite(runtime.jagChainCount.fee) ? {...runtime.jagChainCount} : null;
       jagLastGamePayout = Number(runtime.jagLastGamePayout) || 0;
       jagLastBonusPayout = Number(runtime.jagLastBonusPayout) || 0;
@@ -12506,6 +12509,7 @@ body{
 
   function pickATypeBonusBgm(kind="BIG", within50=false, options={}){
     const normalized = normalizeATypeBonusKind(kind);
+    if(A_TYPE_MODE)return {src:normalized==='MID'?NOVA_REG_BGM_SRC:NOVA_BIG_BGM_SRC,label:normalized==='MID'?'REG BGM':'BIG BGM'};
     if(normalized === "MID"){
       return {src:REG_BONUS_BGM_SRC, label:"REG BGM"};
     }
