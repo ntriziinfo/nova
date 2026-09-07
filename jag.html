@@ -6131,7 +6131,7 @@ body{
   padding-top:10px !important;
   padding-bottom:2px !important;
   box-sizing:border-box !important;
-  gap:5.9% !important;
+  gap:var(--layout-reels-gap, 5.9%) !important;
   z-index:3 !important;
   filter:drop-shadow(0 4px 5px rgba(0,0,0,.34)) !important;
 }
@@ -6655,6 +6655,7 @@ body{
             <div class="layoutEditGroup">
               <div class="layoutEditGroupTitle">REEL</div>
               <div class="layoutEditRows">
+                <label class="layoutEditRow"><span>リール間隔</span><input class="layoutEditInput" aria-label="リール間隔" type="range" min="0" max="15" step="0.1" data-layout-target="reels" data-layout-prop="gap"><b class="layoutEditValue" data-layout-view="reels-gap"></b></label>
                 <label class="layoutEditRow"><span>X</span><input class="layoutEditInput" type="range" min="0" max="45" step="0.1" data-layout-target="reels" data-layout-prop="x"><b class="layoutEditValue" data-layout-view="reels-x"></b></label>
                 <label class="layoutEditRow"><span>Y</span><input class="layoutEditInput" type="range" min="0" max="55" step="0.1" data-layout-target="reels" data-layout-prop="y"><b class="layoutEditValue" data-layout-view="reels-y"></b></label>
                 <label class="layoutEditRow"><span>W</span><input class="layoutEditInput" type="range" min="30" max="90" step="0.1" data-layout-target="reels" data-layout-prop="w"><b class="layoutEditValue" data-layout-view="reels-w"></b></label>
@@ -8131,7 +8132,7 @@ body{
   const BG_ORANGE_LOGO_ANCHOR_X = 964;
   const BG_LOGO_LOWER_ANCHOR_Y = 742;
   const LAYOUT_DEFAULTS = Object.freeze({
-    reels:{x:22.7, y:41.9, w:53.4, h:37.9},
+    reels:{x:22.7, y:41.9, w:53.4, h:37.9, gap:5.9},
     chance:{x:22.0, y:85.8, w:11.9, h:11.0},
     credit:{x:38.0, y:85.8, w:12.2, h:11.0},
     count:{x:52.0, y:85.8, w:12.2, h:11.0},
