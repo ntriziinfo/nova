@@ -1,0 +1,10 @@
+import fs from 'node:fs';
+import crypto from 'node:crypto';
+const rows=Array.from({length:6},(_,i)=>JSON.parse(fs.readFileSync(`reset-stats-setting-${i+1}.json`,'utf8')));
+const sourceHashes=Object.fromEntries(['nova-art.js','nova-normal.js','nova-flow.js','nova-balance.js','scripts/simulate-normal.mjs','scripts/measure-session-stats.mjs'].map(f=>[f,crypto.createHash('sha256').update(fs.readFileSync(f)).digest('hex')]));
+const report={date:new Date().toISOString(),conditions:{resetWeights:'0pt:5%,25pt:10%,50pt:15%,75pt:25%,90pt:20%,100pt:25%（全設定共通・仮設定）',gamesPerTrial:10000,trialsPerSetting:1000,start:'通常A・低確・穢れはリセット抽選・差枚0',win:'終了時差枚 > 0',threshold:'各試行の途中を含む最高差枚 > 閾値。閾値ごとに1試行最大1回。',rtp:'総払い出しpt / 総使用pt。リプレイ後はBET無料。',limitations:'現行共有ロジックによるシミュレーション。実ブラウザのプレイログではない。目押しミス、音声待機、コンプリート打ち切りは含めない。10,000G時点の未消化ボーナス・ATは換金しない。'},sourceHashes,settings:rows};
+fs.writeFileSync('RESET-STATS-V28.json',JSON.stringify(report,null,2));
+const pct=n=>(n*100).toFixed(2)+'%';
+const md=['# 現行AT設定・10,000G試行集計','', '各設定1,000試行、合計6,000万G。現行共有抽選コードを使用したシミュレーション実測。','', ...Object.entries(report.conditions).map(([k,v])=>`- ${k}: ${v}`),'','| 設定 | 勝率 | 1,000pt超え | 2,000pt超え | 4,000pt超え | 実測機械割 | 平均差枚pt |','|---|---:|---:|---:|---:|---:|---:|',...rows.map(r=>`| ${r.setting} | ${pct(r.wins/r.trials)} (${r.wins}/1,000) | ${r.over[1000]} | ${r.over[2000]} | ${r.over[4000]} | ${pct(r.rtp)} | ${r.meanNet.toFixed(1)} |`),'','各閾値は重複集計。4,000pt超えの試行は1,000pt・2,000pt超えにも含まれる。終了時マイナスでも途中で超えれば計上。数値は有限試行の推定であり確定値ではない。','',`集計日時: ${report.date}`];
+fs.writeFileSync('RESET-STATS-V28.md',md.join('\n')+'\n');
+console.log(md.join('\n'));

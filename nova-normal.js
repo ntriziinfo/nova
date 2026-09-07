@@ -6,6 +6,8 @@ globalThis.NovaNormal=(()=>{
  const rare={WEAK_SUICA:{p:1/100,up:.25,cz:.06,gain:1,pay:6},STRONG_SUICA:{p:1/500,up:.65,cz:.3,gain:3,pay:6},STRONG_BELL:{p:1/400,up:.5,cz:.2,gain:2,pay:15},CHANCE_A:{p:1/250,up:.5,cz:.25,gain:2,pay:0},CHANCE_B:{p:1/125,up:.25,cz:.1,gain:1,pay:0},WEAK_NOVA:{p:1/400,up:.35,cz:.15,gain:2,pay:0},STRONG_NOVA:{p:1/2000,up:.75,cz:.5,gain:4,pay:0}};
  const defaults={highMultiplier:2,bandMultiplier:2,downMiss:.08,downReplay:.05,czFailureGain:10,hundredGain:5,superDenom:32768};
  function config(v={}){const c={...defaults};for(const k in c)if(Number.isFinite(Number(v[k])))c[k]=Math.max(0,Math.min(k==='superDenom'?1e9:100,Number(v[k])));c.superDenom=Math.max(2,c.superDenom);return c;}
+ const resetImpurity=Object.freeze([{pt:0,weight:5},{pt:25,weight:10},{pt:50,weight:15},{pt:75,weight:25},{pt:90,weight:20},{pt:100,weight:25}].map(Object.freeze));
+ function reset(rng=Math.random){return normalize({impurity:resetImpurity[weighted(resetImpurity.map(x=>x.weight),rng)].pt});}
  function normalize(v){return {mode:modes.includes(v?.mode)?v.mode:modes[0],games:Math.max(0,Math.floor(Number(v?.games)||0)),level:v?.level==='high'?'high':'low',impurity:Math.min(100,Math.max(0,Number(v?.impurity)||0))};}
  function weighted(weights,rng){let n=rng()*weights.reduce((a,b)=>a+b,0);return Math.max(0,weights.findIndex(w=>(n-=w)<0));}
  function ceiling(v){return ceilings[modes.indexOf(normalize(v).mode)];}
@@ -46,5 +48,5 @@ globalThis.NovaNormal=(()=>{
  function afterBonus(value,rng=Math.random){const s=normalize(value);return {...s,mode:modes[weighted(transitions[modes.indexOf(s.mode)],rng)],games:0,level:'low'};}
  function drawRare(rng=Math.random){const keys=Object.keys(rare);return keys[weighted(keys.map(k=>rare[k].p),rng)];}
  const rareMean=Object.values(rare).reduce((s,r)=>s+r.p*r.pay,0)/Object.values(rare).reduce((s,r)=>s+r.p,0);
- return {modes,ceilings,transitions,rare,rareMean,rareFactor,roleProbabilities,drawRare,defaults,config,normalize,ceiling,favored,multiplier,pay,drawRole,advance,spin,claim,afterArt,afterBonus};
+ return {resetImpurity,reset,modes,ceilings,transitions,rare,rareMean,rareFactor,roleProbabilities,drawRare,defaults,config,normalize,ceiling,favored,multiplier,pay,drawRole,advance,spin,claim,afterArt,afterBonus};
 })();
