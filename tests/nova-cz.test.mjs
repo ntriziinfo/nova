@@ -40,3 +40,17 @@ test('losing CZ never reveals Ouma or rainbow; winners support both confirmation
  assert.equal(f.drawLamp(win,()=>.9).stage,6);
  assert.equal(f.drawLamp(win,()=>.1).rainbow,true);
 });
+
+test('shared presentation quantile never lowers the target after probability increases or a rewrite',()=>{
+ for(const u of [.001,.01,.05,.1,.2,.4,.6,.8,.95,.999])for(const coin of [.1,.9]){
+  let lastLoss=0,lastWin=0;
+  for(const p of [.4,.43,.5,.6,.7,.8,.9,.99,1]){
+   const state={phase:'cz',remaining:5,totalGames:10,winProbability:p,lampRoll:u,rainbowRoll:coin};
+   const rank=s=>{const lamp=f.drawLamp(s);return lamp.rainbow?6:lamp.stage;};
+   const win=rank({...state,success:true});assert.ok(win>=lastWin);lastWin=win;
+   if(p<1){const loss=rank({...state,success:false});assert.ok(loss>=lastLoss);assert.ok(win>=loss);lastLoss=loss;}
+  }
+ }
+ const saved=f.normalize(JSON.parse(JSON.stringify(f.enterCZ(false,undefined,()=>.35))));
+ assert.equal(saved.lampRoll,.35);assert.equal(saved.rainbowRoll,.35);assert.equal(saved.totalGames,10);
+});
