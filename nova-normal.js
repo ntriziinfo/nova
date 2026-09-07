@@ -31,9 +31,15 @@ globalThis.NovaNormal=(()=>{
    const rareEntry=(rare[result]?.cz||0)*scale*mult;
    if(rng()<rareEntry){token.entry=rng()<.2?'STRONG_CZ':'CZ';return token;}
    if(!forced){token.entry=NovaFlow.drawEntry({...cz,czDenom:Math.max(2,cz.czDenom/(scale*mult)),strongDenom:Math.max(2,cz.strongDenom/(scale*mult))},rng);}
-  }else if(['cz','strong_cz'].includes(flow.phase)&&flow.remaining===1&&flow.success){
-   if(rng()<NovaArt.config(options.art).czArt)token.direct=true;
-   else {const row=NovaBalance.normal[2];token.internalBonus={kind:rng()<row[1]/(row[0]+row[1])?'BIG':'MID',source:flow.phase==='cz'?'CZ成功':'強CZ成功'};}
+  }else if(['cz','strong_cz'].includes(flow.phase)){
+   flow.lampRoll??=rng();flow.rainbowRoll??=rng();
+   token.czLamp={...NovaFlow.drawLamp(flow,rng),totalGames:flow.totalGames,remaining:flow.remaining};
+   const display=NovaFlow.lampAtStop(token.czLamp,3);
+   const allLit=flow.success&&(display.stage===6||display.rainbow);
+   if(flow.remaining===1&&flow.success||allLit){
+    if(!allLit&&rng()<NovaArt.config(options.art).czArt)token.direct=true;
+    else {const row=NovaBalance.normal[2];token.internalBonus={kind:rng()<row[1]/(row[0]+row[1])?'BIG':'MID',source:allLit?'CZ全員点灯':flow.phase==='cz'?'CZ成功':'強CZ成功'};}
+   }
   }
   return token;
  }

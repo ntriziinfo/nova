@@ -80,3 +80,16 @@ test('live stop handler leaves first two stops dark and applies surprise rainbow
  ctx.showCzLamp(3,{czLamp:{stage:5,rainbow:true,rainbowAt:1,totalGames:20,remaining:20}});
  assert.equal(machine.dataset.czLamp,'1');assert.equal(machine.dataset.czRainbow,'true');
 });
+
+test('full or rainbow lamps end CZ early with a bonus even when direct ART chance is 100%',()=>{
+ for(const [remaining,rainbowRoll] of [[2,.9],[20,0]]){
+  const flow={phase:'cz',remaining,totalGames:20,success:true,winProbability:1,lampRoll:.9,rainbowRoll};
+  const t=n.spin({games:50},flow,1,{art:{czArt:1}},()=>.9,'MISS');
+  assert.equal(t.direct,false);assert.equal(t.internalBonus.source,'CZ全員点灯');
+  assert.ok(['BIG','MID'].includes(t.internalBonus.kind));
+ }
+});
+test('partial lamps keep CZ running and never award a premature bonus',()=>{
+ const t=n.spin({games:50},{phase:'cz',remaining:20,totalGames:20,success:true,winProbability:1,lampRoll:.9,rainbowRoll:.9},1,{},()=>.9,'MISS');
+ assert.equal(t.internalBonus,null);assert.equal(t.direct,false);
+});

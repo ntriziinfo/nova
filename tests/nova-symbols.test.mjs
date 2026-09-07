@@ -140,3 +140,13 @@ test('freeze pending bonus aligns 777 and is ready without a BAR or second bonus
  assert.equal(run('freezeReady.premiumBonus'),true);
  assert.equal(run('freezeReady.oneGameRenBonus'),false);
 });
+
+test('CZ full-lamp bonus pending aligns BIG or REG on the very next game',()=>{
+ for(const kind of ['BIG','MID']){
+  run(`normalState.flow=NovaFlow.normalize(null);normalState.bonusPending=true;normalState.bonusKind="${kind}";normalState.bonusSource="CZ全員点灯";normalState.premiumBonus=false;pendingForceResult="";`);
+  assert.equal(run('drawNormalResult()'),kind);
+  run('globalThis.fullLampNext=resolveNormalOutcome(drawNormalResult());');
+  assert.equal(run('fullLampNext.aTypeBonusReady'),true);
+  assert.equal(run('fullLampNext.bonusWaitSpin'),false);
+ }
+});

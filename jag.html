@@ -6536,7 +6536,7 @@ body{
 <script src="nova-artwork.js?v=20260907-cz-lamps10" defer></script>
 <script src="nova-art.js?v=20260907-cz-lamps10"></script>
 <script src="nova-balance.js?v=20260907-cz-lamps10"></script>
-<script src="nova-normal.js?v=20260907-art-reset11"></script>
+<script src="nova-normal.js?v=20260907-cz-bonus13"></script>
 <script src="nova-flow.js?v=20260907-cz-third12"></script>
 <style>
 /* Fit the original nebula art to reel width; its transparent vertical margins
@@ -11059,10 +11059,10 @@ body{
     pendingArtStep={
       result:token.result,normalInternal:token.state,
       flow:token.direct?NovaArt.enter(settings.novaArt):token.entry?NovaFlow.enterCZ(token.entry==='STRONG_CZ',settings.novaFlow):token.internalBonus?NovaFlow.normalize(null):NovaFlow.advance(token.czFlow),
-      czLamp:inCz?{...NovaFlow.drawLamp({...token.czFlow,
+      czLamp:token.czLamp || (inCz?{...NovaFlow.drawLamp({...token.czFlow,
         success:token.czFlow.success||!!token.internalBonus||token.direct,
         winProbability:ceilingHit?1:token.czFlow.winProbability}),
-        totalGames:token.czFlow.totalGames,remaining:token.czFlow.remaining}:null,
+        totalGames:token.czFlow.totalGames,remaining:token.czFlow.remaining}:null),
       message:token.direct?'ART突入':token.entry?token.entry+'突入':''
     };
     return {result:token.result,internalBonus:token.internalBonus};
@@ -12817,7 +12817,7 @@ body{
     if(resolved.bonusHit){
       if(A_TYPE_MODE){
         const announced = !!(currentSpin && currentSpin.bonusAnnouncementLit);
-        jagChanceHold = announced || jagChanceHold;
+        jagChanceHold = announced || jagChanceHold || resolved.bonusSource === 'CZ全員点灯';
         normalState.bonusPending = true;
         normalState.bonusKind = resolved.bonusKind || "BIG";
         normalState.bonusSource = resolved.bonusSource;
