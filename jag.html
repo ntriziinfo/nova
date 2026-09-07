@@ -6538,6 +6538,15 @@ body{
 <script src="nova-balance.js?v=20260907-cz-lamps10"></script>
 <script src="nova-normal.js?v=20260907-cz-lamps10"></script>
 <script src="nova-flow.js?v=20260907-cz-lamps10"></script>
+<style>
+/* Fit the original nebula art to reel width; its transparent vertical margins
+   no longer shrink the lettering to the cell height. Keep native proportions. */
+.cell img.nebulaSymImg{
+  width:100% !important;height:auto !important;
+  max-width:100% !important;max-height:none !important;
+  flex-shrink:0;object-fit:contain !important;filter:none !important;transform:none !important;
+}
+</style>
 <style>.cell img[src*="/gang-v3/"]{width:100% !important;height:100% !important;max-width:100% !important;max-height:100% !important;object-fit:contain !important;filter:none !important;}</style>
 </head>
 <body>
