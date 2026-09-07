@@ -6534,9 +6534,9 @@ body{
 <link rel="stylesheet" href="nova-cabinet.css?v=20260907-roulette-lamps22">
 <link rel="stylesheet" href="nova-artwork.css?v=20260907-cz-lamps10">
 <script src="nova-artwork.js?v=20260907-cz-lamps10" defer></script>
-<script src="nova-art.js?v=20260907-replay-audio19"></script>
-<script src="nova-balance.js?v=20260907-replay-audio19"></script>
-<script src="nova-normal.js?v=20260907-replay-audio19"></script>
+<script src="nova-art.js?v=20260907-bell15-23"></script>
+<script src="nova-balance.js?v=20260907-bell15-23"></script>
+<script src="nova-normal.js?v=20260907-bell15-23"></script>
 <script src="nova-flow.js?v=20260907-cz-third12"></script>
 <style>
 /* Fit the original nebula art to reel width; its transparent vertical margins
@@ -7111,7 +7111,7 @@ body{
           <input id="bigAddInput" type="number" min="0" max="1000" step="1" value="150" readonly />
         </div>
         <div class="help">
-          BIGは150pt、REGは75pt。特殊図柄揃い1回でART＋275pt相当の1SET（専用図柄はnebula）、初当たりのART保証なし。ベルは通常・ボーナス共通8pt、リプレイは次回BET無料。通常時のスーパーノヴァ目はBIG・フリーズ各50%。弱・強ノヴァ目はレア役です。
+          BIGは150pt、REGは75pt。特殊図柄揃い1回でART＋275pt相当の1SET（専用図柄はnebula）、初当たりのART保証なし。ベルは通常・ボーナス共通15pt、リプレイは次回BET無料。通常時のスーパーノヴァ目はBIG・フリーズ各50%。弱・強ノヴァ目はレア役です。
         </div>
       </div>
 
@@ -7138,7 +7138,7 @@ body{
             <option value="CZ">CZ突入</option>
             <option value="STRONG_CZ">強CZ突入</option>
             <option value="REPLAY">リプレイ（次回BET無料）</option>
-            <option value="BELL">ベル（右肩下がり8pt）</option>
+            <option value="BELL">ベル（右肩下がり15pt）</option>
 
 
             <option value="MID">REG（77BAR/75pt）</option>
@@ -7420,7 +7420,7 @@ body{
     MID:96,
     SMALL:0,
     GRAPE:8,
-    BELL:8,
+    BELL:15,
     REPLAY:0
   });
   const PREMIUM_BIG_CHAIN_PAYOUT = A_TYPE_PREMIUM_BIG_PAYOUT;
@@ -11308,6 +11308,7 @@ body{
         const previousAudioBalance = data.settings.audioBalanceVersion || 0;
         settings = {...settings, ...data.settings};
         if(settings.balanceVersion!=='cz-lamps10'){settings.novaArt={...settings.novaArt,...Object.fromEntries([1,2,3,4,5,6].map(i=>['direct'+i,NovaArt.defaults['direct'+i]])),soraHit:NovaArt.defaults.soraHit,oumaHit:NovaArt.defaults.oumaHit,uraChance:NovaArt.defaults.uraChance};settings.balanceVersion='cz-lamps10';}
+        if(settings.bellBalanceVersion!==23){settings.novaArt={...NovaArt.defaults};settings.bellBalanceVersion=23;}
         if(previousAudioBalance < AUDIO_BALANCE_VERSION){
           const savedBgmVolume = Number(settings.bgmVolume);
           const savedSfxVolume = Number(settings.sfxVolume);
@@ -13169,7 +13170,7 @@ body{
     if($("stInfoViewLegacy")) $("stInfoViewLegacy").textContent = stInfoText;
     if($("adminStInfoView")) $("adminStInfoView").textContent = stInfoText;
     const payoutScaleText = A_TYPE_MODE
-      ? `BIG150pt/REG75pt/純増2.5pt/G/ベル共通8pt/リプレイ再遊技`
+      ? `BIG150pt/REG75pt/純増2.5pt/G/ベル共通15pt/リプレイ再遊技`
       : `通常:ベル${NORMAL_ROLE_PAYOUTS.BELL}pt/スイカ${NORMAL_ROLE_PAYOUTS.SUICA}pt/チェリー${NORMAL_ROLE_PAYOUTS.CHERRY_ANY}pt/リプレイ${NORMAL_ROLE_PAYOUTS.REPLAY}pt/REG${NORMAL_ROLE_PAYOUTS.MID}pt / 通常小役${Math.round(NORMAL_ROLE_RATE * 100)}% / 高確小役${Math.round(HIGH_ROLE_RATE * 100)}% / ATベル${ROLE_PAYOUTS.BELL}pt/斜めベル${ROLE_PAYOUTS.BELL3}pt / 平均継続${formatRate(averageContinuationRate(settings.setting))}`;
     if($("payoutScaleView")) $("payoutScaleView").textContent = payoutScaleText;
     if($("payoutScaleViewLegacy")) $("payoutScaleViewLegacy").textContent = payoutScaleText;

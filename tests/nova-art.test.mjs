@@ -18,7 +18,7 @@ test('Giru changes continuation at 80 and 320G with mean 80G across settings',()
 });
 test('ART natural and forced Giru entries preserve the selected setting',()=>{
  let forced=a.step(a.enter(),{setting:5},()=>0,'ZONE_giru');assert.equal(forced.flow.giruSetting,5);
- let sequence=[0,0,.2,.82];const natural=a.step(a.enter(),{setting:6},()=>sequence.shift());
+ let sequence=[0,0,0,.82];const natural=a.step(a.enter(),{setting:6},()=>sequence.shift());
  assert.equal(natural.flow.pendingZone,'giru');assert.equal(natural.flow.entryStage,'seven');
 });
 test('all six zones preserve ART games and finish correctly',()=>{

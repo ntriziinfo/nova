@@ -47,10 +47,10 @@ test('actual stop grids match every supported outcome using real consecutive str
   assert.equal(run('REEL_STRIPS.every((s,c)=>s.some((_,i)=>[0,1,2].every(r=>grid[r][c]===s[(i+r)%21])))'),true);
  }
 });
-test('bell pays 8 normally and throughout bonus including final game',()=>{
- assert.equal(run('normalRewardFor("BELL")'),8);
- assert.equal(run('resolveATypeBonusOutcome("BELL").reward'),8);
- assert.equal(run('session.paid=145; resolveATypeBonusOutcome("BELL").reward'),8);
+test('bell pays 15 normally and throughout bonus including final game',()=>{
+ assert.equal(run('normalRewardFor("BELL")'),15);
+ assert.equal(run('resolveATypeBonusOutcome("BELL").reward'),15);
+ assert.equal(run('session.paid=145; resolveATypeBonusOutcome("BELL").reward'),15);
  assert.equal(run('session.paid=150; resolveATypeBonusOutcome("BELL").reward'),0);
 });
 

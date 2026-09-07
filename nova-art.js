@@ -7,7 +7,7 @@ globalThis.NovaArt=(()=>{
  const guarantees=Object.freeze({normal:Object.freeze({sosuke:10,toto:20,urapi:40,giru:50,sora:1,ouma:50}),ura:Object.freeze({sosuke:60,toto:80,urapi:100,giru:150,sora:3,ouma:150})});
  const points=g=>(integer(g)*11n+1n)/2n;
  const bonusTarget=kind=>kind==='MID'?75:150;
- const payout=role=>globalThis.NovaNormal?NovaNormal.pay(role):(role==='BELL'?8:role==='REPLAY'?0:0);
+ const payout=role=>globalThis.NovaNormal?NovaNormal.pay(role):(role==='BELL'?15:role==='REPLAY'?0:0);
  function drawPreparation(role,setting=1,rng=Math.random){const rare=globalThis.NovaNormal?.rare[role];let sets=0,zones=[];if(rare){if(rng()<rare.cz)sets++;if(rng()<rare.cz*.5){zones.push(pickZone(setting,rng));sets=Math.max(1,sets);}}return {sets,zones};}
  const bonusSpecial=.0125;
  const settingBias=[-2.7,-2.55,-2.27,-2.13,-1.8,-1.46];
@@ -15,9 +15,11 @@ globalThis.NovaArt=(()=>{
  const bonusSpecialFor=setting=>.013*(1+.15*biasFor(setting));
  function advanceBonus(state,special=false,reward=0){const target=bonusTarget(state.bonusKind),paid=Number(state.paid)||0;return {bonusTarget:target,bonusPointsRemaining:Math.max(0,target-paid-Math.max(0,Number(reward)||0)),bonusArtSets:(Number(state.bonusArtSets)||0)+(paid<target&&special?1:0)};}
 
- function drawPaidRole(zeroChance=0,bellPay=8,rng=Math.random){const bell=(5.5/(1-zeroChance)-3)/(bellPay-3);return rng()<Math.max(0,Math.min(1,bell))?'BELL':'REPLAY';}
- function drawBonus(rng=Math.random,setting){const p=setting===undefined?bonusSpecial:bonusSpecialFor(setting);return rng()<p?'NEBULA':drawPaidRole(p,8,rng);}
- const zoneEntryScale=[1.06,0.9730677499999998,0.9063,0.8878,0.87109375,0.825];
+ // Replay has no payout and makes the next BET free: net = (bellPay-3)*P(bell) + (otherPay-3)*P(other).
+ function paidBellChance(otherChance=0,bellPay=15,otherPay=0){return Math.max(0,Math.min(1,(2.5-otherChance*(otherPay-3))/((1-otherChance)*(bellPay-3))));}
+ function drawPaidRole(zeroChance=0,bellPay=15,rng=Math.random){return rng()<paidBellChance(zeroChance,bellPay)?'BELL':'REPLAY';}
+ function drawBonus(rng=Math.random,setting){const p=setting===undefined?bonusSpecial:bonusSpecialFor(setting);return rng()<p?'NEBULA':drawPaidRole(p,15,rng);}
+ const zoneEntryScale=[0.0434765625,0.075,0.075,0.11,0.14,0.185];
  const direct=[1400,1320,1240,1160,1080,1000];
  const giruRates=Object.freeze({normal:[.7702549139553321,.55,.2],ura:[.8732025744756524,.65,.2]});
  function giruChance(award,setting=1,ura=false){const g=integer(award)*2n/11n,rates=ura?giruRates.ura:giruRates.normal;return rates[g<(ura?160n:80n)?0:g<(ura?640n:320n)?1:2];}
@@ -49,7 +51,7 @@ globalThis.NovaArt=(()=>{
   if(!s.zone&&s.queuedZones.length){queuedEntered=true;const z=s.queuedZones.shift();s=startZone(s,z,{...c,setting:options.setting,allowUra:true},rng);}
   if(!s.zone&&integer(s.stock)>0n){s.stock=(integer(s.stock)-1n).toString();return {result:'MISS',flow:s,internalBonus:{kind:'BIG',source:'空ゾーンストック',internalResult:'BIG'}};}
   if(!s.zone&&integer(s.remaining)===0n)return {result,flow:{phase:'normal',remaining:0,success:false},message:'ART終了'};
-  const roll=rng();result=s.zone?(roll<.6?'REPLAY':roll<.9?'BELL':'MISS'):(roll<((5.5-c.rare*(globalThis.NovaNormal?.rareMean||0))/(1-c.rare)-3)/5?'BELL':'REPLAY');
+  const roll=rng();result=s.zone?(roll<.6?'REPLAY':roll<.9?'BELL':'MISS'):(roll<paidBellChance(c.rare,15,globalThis.NovaNormal?.rareMean||0)?'BELL':'REPLAY');
   if(['NEBULA','MISS','BELL','REPLAY','WEAK_NOVA','STRONG_NOVA','SUPER_NOVA'].includes(forced))result=forced;
   if(s.zone){
    const z=s.zone,oumaZero=z==='ouma'&&s.zero;if(!oumaZero)s.zoneLeft=Math.max(0,s.zoneLeft-1);
@@ -72,5 +74,5 @@ globalThis.NovaArt=(()=>{
   return {result,flow:s,message,internalBonus,reverse,oumaFreeze:freeOumaSpin,zoneSpin:!!value.zone||queuedEntered};
  }
  function label(v){const s=normalize(v);return `ART ${s.remaining}pt / 待機${s.sets}SET${s.entryStage?' / '+({seven:'赤7を狙え・減算停止',roulette:'ルーレット・減算停止',confirmed:zoneName(s.pendingZone)+'ゾーン確定'}[s.entryStage]):''}${s.zone?' / '+zoneName(s)+' '+(s.zero?'0G連':s.oumaPending?'BETで継続抽選':s.zoneLeft+'G'):''}${integer(s.stock)>0n?' / BIGストック '+s.stock:''}${s.zone==='giru'?' / 基準'+(s.giruBase?points(s.giruBase):'未定')+'pt / '+s.award+'pt / '+s.giruContinues+'回継続':''}`;}
- return {drawPreparation,zoneEntryScale,points,bonusTarget,payout,guarantees,settleZone,prepareBet,resetGamesMean,soraRates,oumaFreezeRate,baseZone,zoneName,zoneIds,pickAwardTier,swingAward,names,defaults,direct,zoneWeights,pickZone,bonusSpecial,settingBias,biasFor,bonusSpecialFor,advanceBonus,drawPaidRole,drawBonus,giruRates,giruChance,config,normalize,enter,startZone,afterBonus,step,label};
+ return {paidBellChance,drawPreparation,zoneEntryScale,points,bonusTarget,payout,guarantees,settleZone,prepareBet,resetGamesMean,soraRates,oumaFreezeRate,baseZone,zoneName,zoneIds,pickAwardTier,swingAward,names,defaults,direct,zoneWeights,pickZone,bonusSpecial,settingBias,biasFor,bonusSpecialFor,advanceBonus,drawPaidRole,drawBonus,giruRates,giruChance,config,normalize,enter,startZone,afterBonus,step,label};
 })();
