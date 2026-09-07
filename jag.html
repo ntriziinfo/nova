@@ -16024,7 +16024,22 @@ body{
   }
 
   function playSpinSound(){ playOneShotSound(SPIN_SOUND_SRC); }
+  function czThirdStopSound(resolved,previousStage){
+    if(!resolved?.czLamp)return '';
+    const display=NovaFlow.lampAtStop(resolved.czLamp,3);
+    const failed=resolved.czCompleted&&!resolved.bonusHit&&resolved.flowAfter?.phase==='normal';
+    const success=!failed&&(display.rainbow||display.stage>previousStage||resolved.bonusHit||resolved.flowAfter?.phase==='art');
+    return success?'assets/media/jag/cz_third_success.wav':'assets/media/jag/cz_third_failure.wav';
+  }
   function playStopSound(i, stopOrder=null){
+    const resolved=currentSpin?.resolved;
+    if(stopOrder===3&&resolved?.czLamp){
+      if(resolved.czThirdSoundPlayed)return;
+      resolved.czThirdSoundPlayed=true;
+      const previous=Number(document.getElementById('machine').dataset.czLamp)||0;
+      playOneShotSound(czThirdStopSound(resolved,previous),sfxOutputVolume());
+      return;
+    }
     playOneShotSound(STOP_SOUND_SRC);
   }
   function playWinSound(big){
