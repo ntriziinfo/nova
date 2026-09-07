@@ -1,0 +1,38 @@
+/* Generated raster cabinet skin. CSS only mounts artwork and live game layers.
+   The supplied lower panel remains a separate, unmodified image. */
+html { background:#08070a !important; background-image:none !important; }
+:root { --jag-reel-top:490px; --jag-reel-height:520px; }
+@media(max-width:760px) {
+  :root { --jag-reel-top:474px; --jag-reel-height:503px; }
+}
+.cabinetPartsScene > .cabinetPart,
+.cabinetPartsScene > .cabinetTopSevenOverlay,
+.cabinetFrontParts,
+.reelCenterBandLayer { display:none !important; }
+.novaCabinetArtwork {
+  position:absolute; inset:0; width:100%; height:100%;
+  display:block; pointer-events:none; user-select:none;
+}
+.novaLowerPanel {
+  position:absolute; left:15.5%; top:75.2%; width:68.5%; height:16.8%;
+  object-fit:contain; display:block; pointer-events:none; user-select:none;
+}
+/* Keep the RISING control order, centers, image sprites and event handlers. */
+.playControls .centerStopBtns button:nth-child(n) {
+  top:69.3% !important; width:8.8% !important; height:8.8% !important;
+}
+.cabinetStopButton { top:69.3%; }
+.playControls .betArea { top:68.8% !important; width:15.4% !important; height:15.4% !important; }
+.cabinetStartLever { top:68.8%; }
+.playControls.leverDown .cabinetStartLever { top:70%; }
+.playControls .autoArea { top:69.3% !important; }
+.playControls .betArea .spinBtn { width:100% !important; height:100% !important; }
+.jagBonusDataMeters {
+  border:0; border-radius:0; background:#080609; box-shadow:none;
+}
+.jagBonusDataMeter span { color:#eee; text-shadow:none; }
+/* Data readouts stay legible over the generated empty display recesses. */
+.jagPayoutMeter { background:#080609 !important; }
+.reels { padding:0 !important; }
+.payline { left:var(--layout-reels-x) !important; right:auto !important;
+  width:var(--layout-reels-w) !important; top:41% !important; }

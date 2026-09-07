@@ -6532,6 +6532,7 @@ body{
   .vertexConnectionBadge.offline{color:#ff8f9c;border-color:rgba(255,91,113,.65);background:rgba(52,9,17,.9)}
   .vertexConnectionBadge.legacy{color:#d4a6ff;border-color:rgba(185,109,255,.6)}
 </style>
+<link rel="stylesheet" href="nova-cabinet.css">
 </head>
 <body>
 <div class="confetti" id="confetti"></div>
@@ -6562,6 +6563,8 @@ body{
     <section class="machine normal" id="machine">
       <div class="jagCabinetShell" aria-hidden="true">
         <div class="cabinetPartsScene" aria-hidden="true">
+          <img class="novaCabinetArtwork" src="assets/design/nova-cabinet-v1/cabinet-game.png" alt="">
+          <img class="novaLowerPanel" src="assets/design/nova-cabinet-v1/lower-panel-original.webp" alt="">
           <img class="cabinetPart cabinetPartTop" src="assets/cabinet/parts/rising_part_top.png" alt="">
           <div class="cabinetTopSevenOverlay" aria-hidden="true">
             <img src="assets/symbols/sym_seven.png" alt="">
@@ -8092,8 +8095,8 @@ body{
   if(SLOT_DEBUG_ENABLED) document.body.classList.add("debugMode");
   const PAGE_ZOOM_STORAGE_KEY = "nova_unified_page_zoom_v3";
   const PAGE_PAN_STORAGE_KEY = "nova_unified_page_pan_x_v3";
-  const LAYOUT_EDIT_STORAGE_KEY = "nova_layout_editor_v3";
-  const LAYOUT_DEFAULT_STORAGE_KEY = "nova_layout_default_v3";
+  const LAYOUT_EDIT_STORAGE_KEY = "nova_layout_editor_generated_v1";
+  const LAYOUT_DEFAULT_STORAGE_KEY = "nova_layout_default_generated_v1";
   const LAYOUT_EDITOR_ENABLED = true;
   const PAGE_STAGE_WIDTH = 1360;
   const PAGE_ZOOM_MIN = 0.75;
@@ -8113,12 +8116,12 @@ body{
   const BG_ORANGE_LOGO_ANCHOR_X = 964;
   const BG_LOGO_LOWER_ANCHOR_Y = 742;
   const LAYOUT_DEFAULTS = Object.freeze({
-    reels:{x:20.6, y:20.4, w:57.4, h:56.4},
-    chance:{x:14.6, y:76.0, w:11.9, h:22.4},
-    credit:{x:28.0, y:80.4, w:12.2, h:22.1},
-    count:{x:41.6, y:83.2, w:12.2, h:11.2},
-    payout:{x:57.0, y:83.2, w:12.2, h:11.2},
-    bonusdata:{x:19.0, y:6.5, w:62.9, h:13.3}
+    reels:{x:21.6, y:12.4, w:56.5, h:68.8},
+    chance:{x:22.0, y:85.8, w:11.9, h:11.0},
+    credit:{x:38.0, y:85.8, w:12.2, h:11.0},
+    count:{x:52.0, y:85.8, w:12.2, h:11.0},
+    payout:{x:66.0, y:85.8, w:11.0, h:11.0},
+    bonusdata:{x:22.0, y:1.9, w:56.0, h:7.0}
   });
   let pageZoom = 1;
   let pagePanX = PAGE_PAN_DEFAULT;
