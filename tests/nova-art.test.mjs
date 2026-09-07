@@ -1,5 +1,26 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
 const ctx=vm.createContext({});vm.runInContext(fs.readFileSync('nova-art.js','utf8'),ctx);const a=ctx.NovaArt;
+test('Giru changes continuation at 80 and 320G with setting differences',()=>{
+ for(let setting=1;setting<=6;setting++){
+  const row=a.giruRates[setting-1];
+  for(const [g,p]of [[5,row[0]],[79,row[0]],[80,row[1]],[319,row[1]],[320,row[2]],[640,row[2]]]){
+   assert.equal(a.giruChance(String(g),setting),p);
+   let state=a.startZone(a.enter(),'giru',{setting});state.award=String(g);
+   assert.equal(a.step(state,{},()=>p).flow.zone,'');
+   assert.equal(a.step(state,{},()=>p-1e-9).flow.award,String(g*2));
+  }
+  assert.ok(row[0]>row[1]&&row[1]>row[2]&&row[2]<.5);
+ }
+ let s=a.startZone(a.enter(),'giru',{setting:6});s.award='40';let t=a.step(s,{},()=>0);
+ assert.equal(t.flow.award,'80');assert.match(t.message,/35%/);
+ s=a.normalize(JSON.parse(JSON.stringify(t.flow)));assert.equal(s.giruSetting,6);
+ t=a.step(s,{},()=>.36);assert.equal(t.flow.zone,'');assert.equal(t.flow.remaining,'130');
+});
+test('ART natural and forced Giru entries preserve the selected setting',()=>{
+ let forced=a.step(a.enter(),{setting:5},()=>0,'ZONE_giru');assert.equal(forced.flow.giruSetting,5);
+ let sequence=[0,0,.2,.51];const natural=a.step(a.enter(),{setting:6},()=>sequence.shift());
+ assert.equal(natural.flow.zone,'giru');assert.equal(natural.flow.giruSetting,6);
+});
 test('all six zones preserve ART games and finish correctly',()=>{
  for(const zone of Object.keys(a.names)){let s=a.startZone(a.enter(),zone);let n=0;while(s.zone&&n++<20)s=a.step(s,{},()=>.99).flow;assert.equal(s.zone,'');assert.ok(BigInt(s.remaining)>=50n);assert.equal(n,{sosuke:3,toto:5,urapi:5,giru:1,sora:10,ouma:5}[zone]);}
 });
