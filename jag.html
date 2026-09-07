@@ -7234,7 +7234,7 @@ body{
   const STORAGE_RESUME_KEY = STORAGE_KEY + "_resume";
   const PREFERENCES_STORAGE_KEY = "nova_slot_preferences_v1_" + bootMachineId;
 
-  const DEFAULT_NORMAL_BGM_SRC = "";
+  const DEFAULT_NORMAL_BGM_SRC = "assets/media/nova/audiostock_1117081.wav";
   const HIGH_MODE_BGM_SRC = "";
 
   const AT_BGM_SRC = "";
@@ -12328,8 +12328,8 @@ body{
   }
 
   function normalBgmSrc(){
-    if(speedToBonusActive) return SPEED_BGM_SRC;
-    if(!session.active && isHighMode()) return HIGH_MODE_BGM_SRC;
+    if(speedToBonusActive && SPEED_BGM_SRC) return SPEED_BGM_SRC;
+    if(!session.active && isHighMode() && HIGH_MODE_BGM_SRC) return HIGH_MODE_BGM_SRC;
     return DEFAULT_NORMAL_BGM_SRC;
   }
 
