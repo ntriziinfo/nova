@@ -96,8 +96,8 @@ body[data-art-ura=true][data-art-zone=ouma] .novaArtItem[data-artwork=ouma1] img
 
 #machine[data-ouma-freeze=lift] .reel .window,#machine[data-ouma-freeze=bet] .reel .window{animation:oumaReelRattle var(--ouma-rattle-speed,70ms) steps(1,end) var(--ouma-rattle-delay,0ms) infinite!important}
 @keyframes oumaRattleLift{0%{transform:translateY(0)}100%{transform:translateY(-100%)}}
-@keyframes oumaReelRattle{0%{translate:-2px -3px}20%{translate:3px 2px}40%{translate:-3px 1px}60%{translate:2px -2px}80%{translate:0 3px}100%{translate:-2px -3px}}
-@media(prefers-reduced-motion:reduce){#machine[data-ouma-freeze=lift] .reel .window,#machine[data-ouma-freeze=bet] .reel .window{animation:none!important}#machine[data-ouma-freeze=lift] .reel .window .cell{animation:oumaRattleLift .5s ease-out var(--ouma-lift-delay,0ms) both!important}}
+@keyframes oumaReelRattle{0%{transform:translate(-3px,-4px)}20%{transform:translate(4px,3px)}40%{transform:translate(-4px,2px)}60%{transform:translate(3px,-3px)}80%{transform:translate(0,4px)}100%{transform:translate(-3px,-4px)}}
+@media(prefers-reduced-motion:reduce){#machine[data-ouma-freeze=lift] .reel .window,#machine[data-ouma-freeze=bet] .reel .window{animation:oumaReelRattleReduced .16s steps(1,end) infinite!important}#machine[data-ouma-freeze=lift] .reel .window .cell{animation:oumaRattleLift .5s ease-out var(--ouma-lift-delay,0ms) both!important}}
 /* The active zone character stays fully lit despite music sequence opacity. */
 body[data-art-zone=sosuke] .novaArtItem[data-artwork=sosuke],
 body[data-art-zone=toto] .novaArtItem[data-artwork=toto],
@@ -124,3 +124,10 @@ body[data-art-zone=urapi] .novaArtItem:not([data-artwork=urapi]) img,
 body[data-art-zone=giru] .novaArtItem:not([data-artwork=giru1]) img,
 body[data-art-zone=sora] .novaArtItem:not([data-artwork=sora1]) img,
 body[data-art-zone=ouma] .novaArtItem:not([data-artwork=ouma1]) img{animation:none!important;opacity:1!important;filter:brightness(.24) saturate(.7)!important}
+
+/* Keep stopped and spinning symbols on the same neutral rendering path. */
+.wrap{will-change:auto!important}
+#machine .reel,#machine .reel.spinning{filter:none!important}
+#machine .reel .cell img{image-rendering:auto;filter:none!important}
+#machine .reel.spinning .cell.isAimSymbol img{transform:none!important}
+@keyframes oumaReelRattleReduced{0%,100%{transform:translateY(-1px)}50%{transform:translateY(1px)}}
