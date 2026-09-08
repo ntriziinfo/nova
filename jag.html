@@ -15276,7 +15276,7 @@ body{
       reels.forEach((_,i)=>{NovaReelMotion.clear(i);setReelColumn(i,reelWindowFromTopIndex(i,tops[i]+1),'','',null);});
       const oumaFailed=!normalState.flow.zero;
       clearOumaPresentation();spin({oumaFailed});
-    },1500);
+    },2000);
   }
 
   function finishSpin(result, resolved, lineRow=1){
