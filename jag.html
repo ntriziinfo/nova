@@ -6531,13 +6531,13 @@ body{
   .vertexConnectionBadge.offline{color:#ff8f9c;border-color:rgba(255,91,113,.65);background:rgba(52,9,17,.9)}
   .vertexConnectionBadge.legacy{color:#d4a6ff;border-color:rgba(185,109,255,.6)}
 </style>
-<link rel="stylesheet" href="nova-cabinet.css?v=20260908-ladder-role-56">
-<link rel="stylesheet" href="nova-artwork.css?v=20260908-ladder-role-56">
-<script src="nova-artwork.js?v=20260908-ladder-role-56" defer></script>
-<script src="nova-beat-lamps.js?v=20260908-ladder-role-56"></script>
-<script src="nova-art.js?v=20260908-ladder-role-56"></script>
-<script src="nova-balance.js?v=20260908-ladder-role-56"></script>
-<script src="nova-normal.js?v=20260908-ladder-role-56"></script>
+<link rel="stylesheet" href="nova-cabinet.css?v=20260908-ladder-guarantee-57">
+<link rel="stylesheet" href="nova-artwork.css?v=20260908-ladder-guarantee-57">
+<script src="nova-artwork.js?v=20260908-ladder-guarantee-57" defer></script>
+<script src="nova-beat-lamps.js?v=20260908-ladder-guarantee-57"></script>
+<script src="nova-art.js?v=20260908-ladder-guarantee-57"></script>
+<script src="nova-balance.js?v=20260908-ladder-guarantee-57"></script>
+<script src="nova-normal.js?v=20260908-ladder-guarantee-57"></script>
 <script src="nova-flow.js?v=20260908-state-nova-33"></script>
 <style>
 /* Fit the original nebula art to reel width; its transparent vertical margins
@@ -11339,6 +11339,7 @@ body{
         settings.audioBalanceVersion = AUDIO_BALANCE_VERSION;
       }
       if(settings.at150Version!==45){settings.novaArt={...settings.novaArt,...{"initial":150,"ladderSosuke":0.7,"ladderGiru":0.95,"ladderUraGiru":0.98,"totoHit":0.35,"soraHit":0.63,"soraUraHit":0.75,"urapiSuper":0.49,"oumaSuper":0.77,"oumaUraSuper":0.98,"payoutVersion":1}};settings.completeLimitPt=10000;settings.at150Version=45;}
+      if(settings.ladderGuaranteeVersion!==57){settings.novaArt={...settings.novaArt,ladderSosuke:.4,ladderGiru:.5,ladderUraGiru:2/3};settings.ladderGuaranteeVersion=57;}
       settings.completeLimitPt = Math.max(1, Math.round(Number(settings.completeLimitPt) || DEFAULT_COMPLETE_LIMIT_PT));
       settings.title = normalizeMachineTitle(settings.title);
       if(!SETTING[settings.setting]) settings.setting = 1;
@@ -13814,7 +13815,7 @@ body{
     const artLabels={initial:'AT初期pt',ladderSosuke:'宗介 小役合算率',ladderGiru:'ギル 小役合算率',ladderUraGiru:'裏ギル 小役合算率',totoHit:'とと 7揃い率',totoReset:'とと nebula率',soraHit:'空 7揃い率',soraReset:'空 nebula率',soraUraHit:'裏空 7揃い率',soraUraReset:'裏空 nebula率',urapiSuper:'うらぴ スーパーノヴァ率',oumaSuper:'逢魔 スーパーノヴァ率',oumaUraSuper:'裏逢魔 スーパーノヴァ率',oumaFreeze:'逢魔フリーズ継続率',oumaUraFreeze:'裏逢魔フリーズ継続率'};
     const zoneTable=document.createElement('div');zoneTable.innerHTML='<p>宗介・ギルは各5テーブル（各20%）、裏ギルは4テーブル（各25%）。同額の段階も突破で次へ進みます。<br>7揃い：50・100・150・200・300・500pt、nebulaで残り5Gへリセット。<br>スーパーノヴァ：通常50・100pt、裏逢魔100・200pt（フリーズ中も共通）。逢魔と裏逢魔はBETでフリーズ抽選、当選時は無料の自動0G連。</p><table><tr><th>設定</th>'+['弱上乗せ','強上乗せ','超上乗せ'].map(x=>'<th>'+x+'</th>').join('')+'</tr>'+[1,2,3,4,5,6].map(setting=>NovaArt.zoneGroupWeights(setting)).map((row,i)=>'<tr><td>'+(i+1)+'</td>'+row.map(p=>'<td>'+p.toFixed(2)+'%</td>').join('')+'</tr>').join('')+'</table><p>弱＝宗介・とと・うらぴ、強＝ギル・空・逢魔、超＝裏3種。強当選後の3%で超へ昇格（従来どおり）。各区分内は3種均等。確定後の再昇格抽選はありません。通常ATの小役確率・直乗せ・高確抽選は据え置き。</p>';artPanel.append(zoneTable);
     const bonusTable=document.createElement('p');bonusTable.textContent='ボーナス中nebula揃い（設定1〜6）：'+NovaArt.bonusSpecialRates.map(p=>(p*100).toFixed(2)+'%').join(' / ');artPanel.append(bonusTable);
-    const ladderTable=document.createElement('div');ladderTable.innerHTML=Object.entries(NovaArt.ladderTables).map(([id,rows])=>'<p>'+NovaArt.zoneName(id)+'（各'+(100/rows.length)+'%）</p><table><tr><th>番号</th><th>1段階</th><th>2段階</th><th>3段階</th><th>4段階</th><th>5段階</th></tr>'+rows.map((row,i)=>'<tr><td>'+(i+1)+'</td>'+row.map(pt=>'<td>'+pt+'pt</td>').join('')+'</tr>').join('')+'</table>').join('');artPanel.append(ladderTable);
+    const ladderTable=document.createElement('div');ladderTable.innerHTML=Object.entries(NovaArt.ladderTables).map(([id,rows])=>{const flow={zone:NovaArt.baseZone(id),ura:id.startsWith('ura_')};return '<p>'+NovaArt.zoneName(id)+'</p><table><tr><th>番号</th><th>段階（pt）</th>'+[1,2,3,4,5,6].map(n=>'<th>設定'+n+'</th>').join('')+'</tr>'+rows.map((row,i)=>'<tr><td>'+(i+1)+'</td><td>'+row.join(' → ')+'</td>'+[1,2,3,4,5,6].map(n=>'<td>'+NovaArt.ladderWeightsFor(flow,n)[i].toFixed(1)+'%</td>').join('')+'</tr>').join('')+'</table>';}).join('');artPanel.append(ladderTable);
     const artCfg=NovaArt.config(settings.novaArt);
     for(const [key,label]of Object.entries(artLabels)){const row=document.createElement('label');row.className='field';row.textContent=label;const input=document.createElement('input');input.type='number';input.dataset.artConfig=key;input.setAttribute('aria-label',label);input.min=key.startsWith('direct')?'2':key==='initial'||key.endsWith('Games')?'1':'0';input.max=key.startsWith('direct')?'100000':key==='initial'?String(Number.MAX_SAFE_INTEGER):key.endsWith('Games')?'1000':'1';input.step=key.startsWith('direct')?'1':key==='initial'||key.endsWith('Games')?'1':'0.01';input.value=artCfg[key];row.append(input);artPanel.append(row);}
     const artSave=document.createElement('button');artSave.type='button';artSave.textContent='AT設定を保存';artSave.onclick=()=>{const value={payoutVersion:1};artPanel.querySelectorAll('input').forEach(x=>value[x.dataset.artConfig]=x.valueAsNumber);settings.novaArt=NovaArt.config(value);persistState();artSave.textContent='AT設定を保存しました';};artPanel.append(artSave);

@@ -21,7 +21,7 @@ test('nine zones and retired aliases preserve queued awards without new promotio
 test('shared tables and one-shot settle once on the first challenge',()=>{
  for(const id of ['sosuke','giru','ura_giru']){
   const rows=a.ladderTables[id];assert.equal(rows.length,7);
-  for(let i=0;i<7;i++)assert.deepEqual(Array.from(a.startZone(a.enter(),id,{},()=>(i+.5)/7).ladder),Array.from(rows[i]));
+  let cum=0;const weights=a.ladderWeightsFor({zone:a.baseZone(id),ura:id.startsWith('ura_')},1);for(let i=0;i<7;i++){assert.deepEqual(Array.from(a.startZone(a.enter(),id,{},()=>(cum+weights[i]/2)/100).ladder),Array.from(rows[i]));cum+=weights[i];}
   let s=a.startZone(a.enter(),id,{},()=>.999);assert.equal(s.zoneLeft,2);
   s=save(a.step(s,{},()=>0).flow);assert.equal(s.award,'50');assert.equal(s.zoneLeft,1);
   const win=a.step(s,{},()=>0,'REPLAY').flow;assert.equal(win.zone,'');assert.equal(win.remaining,'2150');
@@ -40,15 +40,15 @@ test('first game reveals secured rung, four successes grant highest only in five
 test('50 to 100 then MISS settles exactly 100 and sixth table can reach 3000',()=>{
  let s=a.startZone(a.enter(),'giru',{},()=>0);s=a.step(s,{},()=>0).flow;s=a.step(s,{},()=>0,'REPLAY').flow;
  s=a.step(s,{},()=>0,'MISS').flow;assert.equal(s.zone,'');assert.equal(s.remaining,'250');
- s=a.startZone(a.enter(),'ura_giru',{},()=>5.5/7);for(let i=0;i<5;i++)s=a.step(s,{},()=>0,'BELL').flow;
+ s=a.startZone(a.enter(),'ura_giru',{},()=>.9);for(let i=0;i<5;i++)s=a.step(s,{},()=>0,'BELL').flow;
  assert.equal(s.award,'3000');assert.equal(s.remaining,'3150');
 });
 test('ladder strength changes success probability, with exact boundary failure',()=>{
  let prev=0;
  for(const id of ['sosuke','giru','ura_giru']){
-  let s=a.startZone(a.enter(),id,{},()=>0);s=a.step(s,{},()=>0).flow;
+  let s=a.startZone(a.enter(),id,{},()=>.999);s=a.step(s,{},()=>0).flow;
   const p=a.zoneRules(s).success;assert.ok(p>prev);prev=p;
-  assert.equal(a.step(s,{},()=>p).flow.zone,'');assert.notEqual(a.step(s,{},()=>p-1e-10).flow.zone,'');
+  assert.equal(a.step(s,{},()=>p).flow.zone,'');assert.equal(a.step(s,{},()=>p-1e-10).flow.award,'2000');
  }
 });
 test('seven family can award each amount, grants no sets and resets final game to five',()=>{
