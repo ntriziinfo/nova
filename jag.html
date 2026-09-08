@@ -6531,14 +6531,14 @@ body{
   .vertexConnectionBadge.offline{color:#ff8f9c;border-color:rgba(255,91,113,.65);background:rgba(52,9,17,.9)}
   .vertexConnectionBadge.legacy{color:#d4a6ff;border-color:rgba(185,109,255,.6)}
 </style>
-<link rel="stylesheet" href="nova-cabinet.css?v=20260908-ouma-bgm-66">
-<link rel="stylesheet" href="nova-artwork.css?v=20260908-ouma-bgm-66">
-<script src="nova-artwork.js?v=20260908-ouma-bgm-66" defer></script>
-<script src="nova-beat-lamps.js?v=20260908-ouma-bgm-66"></script>
-<script src="nova-reel-motion.js?v=20260908-ouma-bgm-66"></script>
-<script src="nova-art.js?v=20260908-ouma-bgm-66"></script>
-<script src="nova-balance.js?v=20260908-ouma-bgm-66"></script>
-<script src="nova-normal.js?v=20260908-ouma-bgm-66"></script>
+<link rel="stylesheet" href="nova-cabinet.css?v=20260908-ouma-volume-67">
+<link rel="stylesheet" href="nova-artwork.css?v=20260908-ouma-volume-67">
+<script src="nova-artwork.js?v=20260908-ouma-volume-67" defer></script>
+<script src="nova-beat-lamps.js?v=20260908-ouma-volume-67"></script>
+<script src="nova-reel-motion.js?v=20260908-ouma-volume-67"></script>
+<script src="nova-art.js?v=20260908-ouma-volume-67"></script>
+<script src="nova-balance.js?v=20260908-ouma-volume-67"></script>
+<script src="nova-normal.js?v=20260908-ouma-volume-67"></script>
 <script src="nova-flow.js?v=20260908-state-nova-33"></script>
 <style>
 /* Fit the original nebula art to reel width; its transparent vertical margins
@@ -7560,6 +7560,7 @@ body{
   }
 
   const AUDIO_SOURCE_OUTPUT_SCALE = Object.freeze({
+    ["assets/media/nova/ouma1.wav"]: dbToGain(8.5),
     [BIG_BONUS_BGM_SRCS[0]]: dbToGain(0),
     [BIG_BONUS_BGM_SRCS[1]]: dbToGain(-2),
     [BIG_50G_BONUS_BGM_SRC]: dbToGain(-3.5),
@@ -8713,6 +8714,7 @@ body{
   }
 
   function applyAudioOutputVolumes(){
+    if(oumaReverseAudio)oumaReverseAudio.volume=sfxOutputVolumeForSource(SFX_OUTPUT_SCALE,"assets/media/nova/ouma1.wav");
     applyBgmOutputVolumes();
     if(koatariSound) koatariSound.volume = sfxOutputVolumeForSource(SFX_OUTPUT_SCALE, KOATARI_SOUND_SRC);
     if(bigSound) bigSound.volume = sfxOutputVolumeForSource(SFX_OUTPUT_SCALE, BIG_SOUND_SRC);
@@ -15139,12 +15141,13 @@ body{
   var oumaReverseAudio=null,oumaReverseLoadTimer=null;
   function clearOumaReverseAudio(){
     clearTimeout(oumaReverseLoadTimer);oumaReverseLoadTimer=null;
-    if(oumaReverseAudio){oumaReverseAudio.onerror=null;oumaReverseAudio.pause();oumaReverseAudio=null;}
+    if(oumaReverseAudio){const audio=oumaReverseAudio;oumaReverseAudio=null;audio.onerror=null;audio.onplaying=null;audio.pause();try{audio.removeAttribute("src");audio.load();}catch(e){}}
   }
   function startOumaReverseAudio(spin){
+    if(!spin?.resolved?.oumaFreeze)return;
     clearOumaReverseAudio();
     const audio=new Audio('assets/media/nova/ouma1.wav');oumaReverseAudio=audio;
-    audio.preload='auto';audio.volume=sfxOutputVolume();
+    audio.preload='auto';audio.volume=sfxOutputVolumeForSource(SFX_OUTPUT_SCALE,'assets/media/nova/ouma1.wav');
     let started=false,fallback=null;
     const useFallback=()=>{if(fallback===null)fallback={time:performance.now(),offset:audio.currentTime||0};};
     const clock=()=>fallback?(performance.now()-fallback.time)/1000+fallback.offset:audio.currentTime;
@@ -15159,7 +15162,7 @@ body{
     audio.onerror=()=>{useFallback();begin();};
     oumaReverseLoadTimer=setTimeout(()=>{if(!started){audio.pause();useFallback();begin();}},3000);
     const play=audio.play();
-    if(play?.then)play.then(()=>{if(fallback)audio.pause();begin();}).catch(()=>{useFallback();begin();});else begin();
+    if(play?.then)play.then(()=>{if(oumaReverseAudio!==audio||currentSpin!==spin){audio.pause();return;}if(fallback)audio.pause();begin();}).catch(()=>{if(oumaReverseAudio!==audio||currentSpin!==spin)return;useFallback();begin();});else begin();
   }
 
   let oumaChainTimer=null;
@@ -15171,6 +15174,7 @@ body{
   function scheduleOumaZeroChain(){
     const previous=normalState.flow;
     if(previous?.zone!=='ouma'||!previous.oumaPending||debugFastSpinActive||isCompleteTrialLocked())return false;
+    clearOumaReverseAudio();
     clearOumaPresentation();stopAutoPlay('逢魔フリーズ操作待ち');stopSpeedToBonus('逢魔フリーズ操作待ち');
     oumaPresentation={stage:'lift',previous};
     reels.forEach((reel,i)=>{reel.style.setProperty('--ouma-lift-delay',[0,90,170][i]+'ms');reel.style.setProperty('--ouma-rattle-speed',[70,83,61][i]+'ms');reel.style.setProperty('--ouma-rattle-delay',[0,-31,-17][i]+'ms');});
