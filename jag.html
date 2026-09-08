@@ -6531,14 +6531,14 @@ body{
   .vertexConnectionBadge.offline{color:#ff8f9c;border-color:rgba(255,91,113,.65);background:rgba(52,9,17,.9)}
   .vertexConnectionBadge.legacy{color:#d4a6ff;border-color:rgba(185,109,255,.6)}
 </style>
-<link rel="stylesheet" href="nova-cabinet.css?v=20260908-ouma-zero-miss-79">
-<link rel="stylesheet" href="nova-artwork.css?v=20260908-ouma-zero-miss-79">
-<script src="nova-artwork.js?v=20260908-ouma-zero-miss-79" defer></script>
-<script src="nova-beat-lamps.js?v=20260908-ouma-zero-miss-79"></script>
-<script src="nova-reel-motion.js?v=20260908-ouma-zero-miss-79"></script>
-<script src="nova-art.js?v=20260908-ouma-zero-miss-79"></script>
-<script src="nova-balance.js?v=20260908-ouma-zero-miss-79"></script>
-<script src="nova-normal.js?v=20260908-ouma-zero-miss-79"></script>
+<link rel="stylesheet" href="nova-cabinet.css?v=20260908-super-stop-80">
+<link rel="stylesheet" href="nova-artwork.css?v=20260908-super-stop-80">
+<script src="nova-artwork.js?v=20260908-super-stop-80" defer></script>
+<script src="nova-beat-lamps.js?v=20260908-super-stop-80"></script>
+<script src="nova-reel-motion.js?v=20260908-super-stop-80"></script>
+<script src="nova-art.js?v=20260908-super-stop-80"></script>
+<script src="nova-balance.js?v=20260908-super-stop-80"></script>
+<script src="nova-normal.js?v=20260908-super-stop-80"></script>
 <script src="nova-flow.js?v=20260908-state-nova-33"></script>
 <style>
 /* Fit the original nebula art to reel width; its transparent vertical margins
@@ -8079,6 +8079,10 @@ body{
   oumaFailPreload.preload='auto';
   oneShotSoundCache.set('assets/media/nova/ouma-fail.wav',oumaFailPreload);
   oumaFailPreload.load();
+  const superNovaStopPreload=new Audio('assets/media/nova/super-nova-stop.wav');
+  superNovaStopPreload.preload='auto';
+  oneShotSoundCache.set('assets/media/nova/super-nova-stop.wav',superNovaStopPreload);
+  superNovaStopPreload.load();
   let gekiatsuActive = false;
   let gekiatsuHideTimer = null;
   let premiumBigConfirmMovieHold = false;
@@ -16302,6 +16306,12 @@ body{
     document.querySelectorAll('.reel.cz-stop-blackout').forEach(reel=>reel.classList.remove('cz-stop-blackout'));
   }
   function playStopSound(i, stopOrder=null){
+    if(stopOrder===3&&currentSpin?.result==='SUPER_NOVA'){
+      if(currentSpin.superNovaStopSoundPlayed)return;
+      currentSpin.superNovaStopSoundPlayed=true;
+      playOneShotSound('assets/media/nova/super-nova-stop.wav',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
+      return;
+    }
     const resolved=currentSpin?.resolved;
     if(stopOrder===3&&resolved?.czLamp){
       if(resolved.czThirdSoundPlayed)return;
