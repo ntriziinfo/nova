@@ -6538,8 +6538,8 @@ body{
 <script src="nova-reel-motion.js?v=20260909-result-image-84"></script>
 <link rel="stylesheet" href="nova-results.css?v=20260909-result-image-84">
 <script src="nova-results.js?v=20260909-result-image-84"></script>
-<link rel="stylesheet" href="nova-ladder-presentation.css?v=20260909-shutter-86">
-<script src="nova-ladder-presentation.js?v=20260909-shutter-86"></script>
+<link rel="stylesheet" href="nova-ladder-presentation.css?v=20260909-shutter-87">
+<script src="nova-ladder-presentation.js?v=20260909-shutter-87"></script>
 <script src="nova-art.js?v=20260909-result-image-84"></script>
 <script src="nova-balance.js?v=20260909-result-image-84"></script>
 <script src="nova-normal.js?v=20260909-result-image-84"></script>
@@ -12515,7 +12515,7 @@ body{
   }
 
   function playNormalBgm(){
-    if(normalState.resultCard || normalState.pendingZoneResult){pauseNormalBgm();return;}
+    if(normalState.resultCard || normalState.pendingZoneResult || normalState.ladderAwardPresentation){pauseNormalBgm();return;}
     if(debugFastSpinActive) return;
     if(session.active) return;
     if(bonusConfirmBgmHold && !session.active) return;
@@ -12740,6 +12740,7 @@ body{
   }
   function applyNormalResult(result, resolved, lineRow=1){
     if(typeof debugFastSpinActive!=='undefined' && debugFastSpinActive){const audit=fastAtAuditMessage(result,resolved);if(audit)log(`${audit} / ${stats.totalSpins}G`);}
+    const completedLadderPresentation=normalState.ladderAwardPresentation?.started?normalState.ladderAwardPresentation:null;
     playStrongNovaSound(result,resolved);
     if(A_TYPE_MODE && result==="REPLAY")normalState.replayFree=true;
     if(A_TYPE_MODE && resolved.aTypeBonusReady)jagChainBonusHandoff=true;
@@ -12772,7 +12773,12 @@ body{
     if(A_TYPE_MODE){
       normalState.flow = NovaFlow.normalize(resolved.flowAfter);
       const zoneCard=NovaResults.transition(resolved.flowBefore,normalState.flow,settings.setting);
-      if(zoneCard)displayNovaResult(zoneCard);
+      if(zoneCard){
+        if(!debugFastSpinActive&&NovaLadder.eligible(resolved.flowBefore)){
+          normalState.ladderAwardPresentation={card:zoneCard,flow:resolved.flowBefore,started:false};
+        }else displayNovaResult(zoneCard);
+      }
+      if(completedLadderPresentation){delete normalState.ladderAwardPresentation;displayNovaResult(completedLadderPresentation.card);}
       if(resolved.flowBefore?.phase==='art'&&normalState.flow.phase==='normal'&&!resolved.bonusHit&&!resolved.aTypeBonusReady){
         const base=Number.isFinite(normalState.resultAtStartPaid)?normalState.resultAtStartPaid:(Number(stats.totalPaid)||0)-normalReward;
         displayNovaResult({kind:'at',...NovaResults.pick('at','',settings.setting),pt:String(Math.max(0,(Number(stats.totalPaid)||0)-base))});
@@ -13189,7 +13195,11 @@ body{
   }
 
   function updateDisplay(){
-    if(!debugFastSpinActive)NovaLadder.sync(normalState.resultCard||session.active?null:normalState.flow,isSpinning);
+    if(!debugFastSpinActive){
+      const pending=normalState.ladderAwardPresentation;
+      NovaLadder.sync(normalState.resultCard||session.active?null:pending?.flow||normalState.flow,isSpinning);
+      if(pending)NovaLadder.award(pending.card.pt,pending.started);
+    }
     if(normalState.resultCard&&!NovaResults.visible&&!NovaResults.editing)NovaResults.show(normalState.resultCard);
     if(!isSpinning)showZoneRoulette(session.active?null:normalState.flow);
     if(!isSpinning && $("spinBtn"))$("spinBtn").title=normalState.replayFree?"リプレイ：次回BET消費なし":"";
@@ -14810,7 +14820,10 @@ body{
       countTotalSpinIfNeeded(aTypeBonusActiveAtSpinStart);
       chargeSpinCost();
     }
-    if(!debugFastSpinActive)NovaLadder.bet(normalState.flow);
+    if(!debugFastSpinActive){
+      if(normalState.ladderAwardPresentation){normalState.ladderAwardPresentation.started=true;NovaLadder.award(normalState.ladderAwardPresentation.card.pt,true);}
+      else NovaLadder.bet(normalState.flow);
+    }
     $("stLamp").classList.remove("on");
     const reachMeAnnouncementLit = activateReachMeBonusAnnouncementIfNeeded(normalActiveAtSpinStart);
     if(reachMeAnnouncementLit) triggerBonusConfirmBetSoundIfNeeded();

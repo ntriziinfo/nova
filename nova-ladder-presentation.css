@@ -18,3 +18,20 @@
 .novaLadderPresentation[data-stage=clamp] .novaLadderUpper .novaLadderMetal{animation:oumaReelRattle 35ms steps(1,end) infinite}
 .novaLadderPresentation[data-stage=clamp] .novaLadderLower .novaLadderMetal{animation:oumaReelRattle 41.5ms steps(1,end) -15.5ms infinite}
 @media(prefers-reduced-motion:reduce){.novaLadderPresentation[data-stage=clamp] .novaLadderMetal{animation:none}.novaLadderHalf,.novaArtItem{transition-duration:100ms}}
+.novaLadderCharacter{position:absolute;left:4%;bottom:2%;width:23%;height:94%;object-fit:contain;z-index:3;filter:brightness(1.2) drop-shadow(0 0 7px #fff5b0)}
+.novaLadderCharacter[data-ura=true]{filter:grayscale(1) sepia(1) saturate(10) hue-rotate(315deg) brightness(1.1) drop-shadow(0 0 9px #f22)}
+.novaLadderAmount{left:61%}
+.novaLadderPresentation[data-stage=settled] .novaLadderUpper,.novaLadderPresentation[data-stage=award] .novaLadderUpper{transform:translateY(-100%)}
+.novaLadderPresentation[data-stage=settled] .novaLadderLower,.novaLadderPresentation[data-stage=award] .novaLadderLower{transform:translateY(100%)}
+.novaLadderPresentation[data-stage=settled] .novaLadderAmount{opacity:1}
+.novaLadderPresentation[data-stage=award] .novaLadderAmount{opacity:1;width:76%;height:125%;filter:drop-shadow(0 0 12px #ffb52e);transform:translate(-50%,-50%) scale(1.1)}
+.novaLadderMetal{background:#18161a url('assets/ladder/outlaw-shutter.png') center/100% 100% no-repeat;border:0}
+.novaLadderMetal{inset:0;overflow:hidden}
+.novaLadderTarget{position:absolute;left:30%;top:0;width:65%;height:200%;object-fit:contain}
+.novaLadderLower .novaLadderTarget{top:-100%}
+.novaLadderPresentation[data-stage=clamp] .novaLadderUpper,.novaLadderPresentation[data-stage=clamp] .novaLadderLower{transform:translateY(0)}
+.novaLadderUpper .novaLadderMetal,.novaLadderLower .novaLadderMetal{border:0}
+.novaLadderTargetJoined{position:absolute;left:30%;top:0;width:65%;height:100%;object-fit:contain;z-index:4;opacity:0;pointer-events:none;transition:opacity 80ms 380ms}
+.novaLadderPresentation[data-stage=clamp] .novaLadderTargetJoined{opacity:1}
+.novaLadderPresentation[data-stage=clamp] .novaLadderTarget{visibility:hidden}
+.novaLadderCharacter{z-index:5}
