@@ -11,7 +11,7 @@ globalThis.NovaFlow = (() => {
       czChance:bounded(value.czChance,.4,0,1),strongChance:bounded(value.strongChance,.7,0,1),
       czDenom:bounded(value.czDenom,120,2,100000),strongDenom:bounded(value.strongDenom,600,2,100000)};
   }
-  const rewriteRates=Object.freeze({WEAK_SUICA:.05,STRONG_SUICA:.25,STRONG_BELL:.20,CHANCE_A:.25,CHANCE_B:.10,WEAK_NOVA:.10,STRONG_NOVA:.50});
+  const rewriteRates=Object.freeze({WEAK_SUICA:.05,STRONG_SUICA:.50,STRONG_BELL:.40,CHANCE_A:.50,CHANCE_B:.10,WEAK_NOVA:.20,STRONG_NOVA:1});
   const lampConfidence=Object.freeze([.01,.05,.30,.60,.80,1]);
   function rewrite(value,role,options={},random=Math.random){
     const state=normalize(value);

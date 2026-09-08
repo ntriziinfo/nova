@@ -11,4 +11,4 @@ test('freeze bonus uses BIG payout target, no setting hint, no old PBB sound',()
  assert.match(h,/premiumChainEligible:false/);assert.doesNotMatch(h,/A_TYPE_PREMIUM_BIG_PAYOUT = 500/);
 });
 
-test('setting-specific ART rare rates preserve expected 4pt',()=>{for(let setting=1;setting<=6;setting++){const rare=a.defaults.rare*n.rareFactor(setting),bell=a.paidBellChance(rare,15,n.rareMean);assert.ok(bell>0&&bell<1);assert.ok(Math.abs((1-rare)*12*bell+rare*(n.rareMean-3)-4)<1e-12);}});
+test('setting-specific ART rare rates preserve expected 4pt',()=>{for(let setting=1;setting<=6;setting++){const rare=a.defaults.rare*a.rareFactor(setting),bell=a.paidBellChance(rare,15,a.rareMean);assert.ok(bell>0&&bell<1);assert.ok(Math.abs((1-rare)*12*bell+rare*(a.rareMean-3)-4)<1e-12);}});

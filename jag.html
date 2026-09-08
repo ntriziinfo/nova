@@ -6534,10 +6534,10 @@ body{
 <link rel="stylesheet" href="nova-cabinet.css?v=20260907-roulette-lamps22">
 <link rel="stylesheet" href="nova-artwork.css?v=20260907-cz-lamps10">
 <script src="nova-artwork.js?v=20260907-cz-lamps10" defer></script>
-<script src="nova-art.js?v=20260908-normal-at-31"></script>
+<script src="nova-art.js?v=20260908-role-split-32"></script>
 <script src="nova-balance.js?v=20260908-normal-at-31"></script>
-<script src="nova-normal.js?v=20260908-normal-at-31"></script>
-<script src="nova-flow.js?v=20260907-cz-third12"></script>
+<script src="nova-normal.js?v=20260908-role-split-32"></script>
+<script src="nova-flow.js?v=20260908-role-split-32"></script>
 <style>
 /* Fit the original nebula art to reel width; its transparent vertical margins
    no longer shrink the lettering to the cell height. Keep native proportions. */
@@ -11105,7 +11105,7 @@ body{
       }
       if(isNovaResult(pendingForceResult)) return pendingForceResult;
       if(normalState.bonusPending){
-        if(normalState.prepLeft>0)return NovaNormal.rare[pendingForceResult]?pendingForceResult:NovaNormal.drawRole(settings.setting);
+        if(normalState.prepLeft>0)return NovaArt.rareRoles[pendingForceResult]?pendingForceResult:NovaArt.drawPreparationRole(settings.setting);
         if(!isChanceLampLit()) return "MISS";
         if(!A_TYPE_MODE && (normalState.premiumBonus || normalState.oneGameRenBonus)) return "BAR3";
         return normalState.bonusKind === "MID" ? "MID" : "BIG";

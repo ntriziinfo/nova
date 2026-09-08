@@ -3,7 +3,8 @@ globalThis.NovaNormal=(()=>{
  const modes=['通常A','通常B','通常C','天国準備','天国A','天国B'];
  const ceilings=[600,600,300,600,100,100];
  const transitions=[[70,15,5,8,1,1],[15,65,7,10,2,1],[30,25,25,10,7,3],[0,0,0,0,80,20],[12,8,3,2,65,10],[8,5,3,2,12,70]];
- const rare={WEAK_SUICA:{p:1/100,up:.25,cz:.06,gain:1,pay:6},STRONG_SUICA:{p:1/500,up:.65,cz:.3,gain:3,pay:6},STRONG_BELL:{p:1/400,up:.5,cz:.2,gain:2,pay:15},CHANCE_A:{p:1/250,up:.5,cz:.25,gain:2,pay:0},CHANCE_B:{p:1/125,up:.25,cz:.1,gain:1,pay:0},WEAK_NOVA:{p:1/400,up:.35,cz:.15,gain:2,pay:0},STRONG_NOVA:{p:1/2000,up:.75,cz:.5,gain:4,pay:0}};
+ // Normal/CZ only: strong roles and NOVA appear 20% less often and have twice the CZ weight.
+ const rare={WEAK_SUICA:{p:1/100,up:.25,cz:.06,gain:1,pay:6},STRONG_SUICA:{p:1/625,up:.65,cz:.6,gain:3,pay:6},STRONG_BELL:{p:1/500,up:.5,cz:.4,gain:2,pay:15},CHANCE_A:{p:1/312.5,up:.5,cz:.5,gain:2,pay:0},CHANCE_B:{p:1/125,up:.25,cz:.1,gain:1,pay:0},WEAK_NOVA:{p:1/500,up:.35,cz:.3,gain:2,pay:0},STRONG_NOVA:{p:1/2500,up:.75,cz:1,gain:4,pay:0}};
  const defaults={highMultiplier:2,bandMultiplier:2,downMiss:.08,downReplay:.05,czFailureGain:10,hundredGain:5,superDenom:32768};
  function config(v={}){const c={...defaults};for(const k in c)if(Number.isFinite(Number(v[k])))c[k]=Math.max(0,Math.min(k==='superDenom'?1e9:100,Number(v[k])));c.superDenom=Math.max(2,c.superDenom);return c;}
  const resetImpurityPoints=Object.freeze([0,25,50,75,90,100]);
@@ -17,7 +18,10 @@ globalThis.NovaNormal=(()=>{
  function multiplier(v,c){c=config(c);return (normalize(v).level==='high'?c.highMultiplier:1)*(favored(v)?c.bandMultiplier:1);}
  function pay(role){return rare[role]?.pay??(role==='BELL'?15:role==='REPLAY'?0:0);}
  function rareFactor(setting=3){return 1+.016*(Math.max(1,Math.min(6,Math.round(Number(setting)||3)))-3);}
- function roleProbabilities(setting=3){const frequent=1+.004*(Math.max(1,Math.min(6,Math.round(Number(setting)||3)))-3),r=Object.fromEntries(Object.entries(rare).map(([k,v])=>[k,v.p*rareFactor(setting)]));r.BELL=((.120877629551039*8*frequent-7/400*rareFactor(setting))/15);r.REPLAY=frequent/7.452119;r.MISS=1-Object.values(r).reduce((a,b)=>a+b,0);return r;}
+ function roleProbabilities(setting=3){const frequent=1+.004*(Math.max(1,Math.min(6,Math.round(Number(setting)||3)))-3),r=Object.fromEntries(Object.entries(rare).map(([k,v])=>[k,v.p*rareFactor(setting)]));
+  // Replace lost rare-role payout with ordinary bells, retaining the existing normal-play base.
+  const rarePay=Object.entries(r).reduce((sum,[role,p])=>sum+p*pay(role),0);
+  r.BELL=(.120877629551039*8*frequent+.092*rareFactor(setting)-rarePay)/15;r.REPLAY=frequent/7.452119;r.MISS=1-Object.values(r).reduce((a,b)=>a+b,0);return r;}
  const roleEntries=[1,2,3,4,5,6].map(s=>Object.entries(roleProbabilities(s)));
  function drawRole(setting,rng=Math.random){let r=rng();for(const [role,p]of roleEntries[Math.max(0,Math.min(5,Math.round(Number(setting)||3)-1))]){r-=p;if(r<0)return role;}return 'MISS';}
  function advance(value,role,flow,options={},rng=Math.random){const s=normalize(value),c=config(options);s.games++;if(rare[role]){s.impurity=Math.min(100,s.impurity+rare[role].gain);if(rng()<rare[role].up)s.level='high';}else if(role==='MISS'||role==='REPLAY'){if(rng()<(role==='MISS'?c.downMiss:c.downReplay))s.level='low';}if(s.games%100===0)s.impurity=Math.min(100,s.impurity+c.hundredGain);if(['cz','strong_cz'].includes(flow?.phase)&&flow.remaining===1&&!flow.success)s.impurity=Math.min(100,s.impurity+c.czFailureGain);return s;}
