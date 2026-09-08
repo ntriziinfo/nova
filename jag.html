@@ -6531,14 +6531,14 @@ body{
   .vertexConnectionBadge.offline{color:#ff8f9c;border-color:rgba(255,91,113,.65);background:rgba(52,9,17,.9)}
   .vertexConnectionBadge.legacy{color:#d4a6ff;border-color:rgba(185,109,255,.6)}
 </style>
-<link rel="stylesheet" href="nova-cabinet.css?v=20260908-fail-bet-75">
-<link rel="stylesheet" href="nova-artwork.css?v=20260908-fail-bet-75">
-<script src="nova-artwork.js?v=20260908-fail-bet-75" defer></script>
-<script src="nova-beat-lamps.js?v=20260908-fail-bet-75"></script>
-<script src="nova-reel-motion.js?v=20260908-fail-bet-75"></script>
-<script src="nova-art.js?v=20260908-fail-bet-75"></script>
-<script src="nova-balance.js?v=20260908-fail-bet-75"></script>
-<script src="nova-normal.js?v=20260908-fail-bet-75"></script>
+<link rel="stylesheet" href="nova-cabinet.css?v=20260908-ouma-real-game-76">
+<link rel="stylesheet" href="nova-artwork.css?v=20260908-ouma-real-game-76">
+<script src="nova-artwork.js?v=20260908-ouma-real-game-76" defer></script>
+<script src="nova-beat-lamps.js?v=20260908-ouma-real-game-76"></script>
+<script src="nova-reel-motion.js?v=20260908-ouma-real-game-76"></script>
+<script src="nova-art.js?v=20260908-ouma-real-game-76"></script>
+<script src="nova-balance.js?v=20260908-ouma-real-game-76"></script>
+<script src="nova-normal.js?v=20260908-ouma-real-game-76"></script>
 <script src="nova-flow.js?v=20260908-state-nova-33"></script>
 <style>
 /* Fit the original nebula art to reel width; its transparent vertical margins
@@ -14638,7 +14638,7 @@ body{
     return true;
   }
 
-  async function spin(){
+  async function spin(options={}){
     if(!oumaPresentation&&!isSpinning&&!debugFastSpinActive&&normalState.flow?.zone==='ouma'&&normalState.flow.oumaPending){scheduleOumaZeroChain();return;}
     if(oumaPresentation){if(oumaPresentation.stage==='bet')resolveOumaChallenge();return;}
     if(debugFastSpinActive) return;
@@ -14924,7 +14924,12 @@ body{
         ? `${battleRemainText()} / ${waitText}`
         : waitText;
     if(!speedModeSpinAtStart && !premiumBigConfirmSilence) playNormalBgm();
-    if(!resolved.oumaFreeze)playSpinSound();
+    if(options?.oumaFailed){
+      playOneShotSound('assets/media/nova/ouma-fail.wav');
+      const machine=document.getElementById('machine');machine.dataset.oumaFailDim='true';
+      clearTimeout(oumaFailDimTimer);
+      oumaFailDimTimer=setTimeout(()=>{machine.dataset.oumaFailDim='';oumaFailDimTimer=null;},900);
+    }else if(!resolved.oumaFreeze)playSpinSound();
     ensureBattleBgmContinuing();
     ensureBarBgmContinuing();
 
@@ -15180,8 +15185,11 @@ body{
   }
 
   let oumaChainTimer=null;
+  var oumaFailDimTimer=null;
   var oumaPresentation=null;
   function clearOumaPresentation(){
+    clearTimeout(oumaFailDimTimer);oumaFailDimTimer=null;
+    document.getElementById('machine').dataset.oumaFailDim='';
     clearTimeout(oumaChainTimer);oumaChainTimer=null;
     if(['lift','fail'].includes(oumaPresentation?.stage))NovaReelMotion.clearAll();
     if(oumaIntroAudio){oumaIntroAudio.pause();oumaIntroAudio=null;}
@@ -15213,8 +15221,8 @@ body{
     presentation.stage='lift';$('spinBtn').disabled=true;
     const machine=document.getElementById('machine');machine.dataset.oumaFreeze='lift';
     normalState.flow=NovaArt.prepareBet(previous,settings.novaArt,Math.random);
-    if(!normalState.flow.zero)playOneShotSound('assets/media/nova/ouma-fail.wav');
     persistState();
+    if(!normalState.flow.zero){clearOumaPresentation();spin({oumaFailed:true});return;}
     const audio=new Audio('assets/media/nova/uuufa.wav');oumaIntroAudio=audio;
     audio.volume=sfxOutputVolumeForSource(SFX_OUTPUT_SCALE,'assets/media/nova/uuufa.wav');
     audio.play()?.then(()=>{if(oumaIntroAudio!==audio)audio.pause();}).catch(()=>{});
@@ -15226,14 +15234,7 @@ body{
     oumaChainTimer=setTimeout(()=>{
       if(oumaPresentation!==presentation)return;
       reels.forEach((_,i)=>{NovaReelMotion.clear(i);setReelColumn(i,reelWindowFromTopIndex(i,tops[i]+1),'','',null);});
-      if(normalState.flow.zero){clearOumaPresentation();spin();return;}
-      presentation.stage='fail';machine.dataset.oumaFreeze='fail';
-      if(oumaIntroAudio){oumaIntroAudio.pause();oumaIntroAudio=null;}
-
-      const failedAt=performance.now();
-      reels.forEach((reel,i)=>NovaReelMotion.startSynced(i,reel,REEL_STRIPS[i],reelWindowFromTopIndex(i,tops[i]+1),false,cellHtml,()=> (performance.now()-failedAt)/1000,900,()=>{},tops[i]+1));
-      $('resultText').textContent='逢魔フリーズ 継続失敗';
-      oumaChainTimer=setTimeout(()=>{clearOumaPresentation();updateDisplay();},900);
+      clearOumaPresentation();spin();
     },1500);
   }
 
