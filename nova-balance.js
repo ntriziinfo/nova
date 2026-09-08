@@ -7,14 +7,13 @@ globalThis.NovaBalance=(()=>{
   if(r.family==='ladder')return a.ladderTableFor(s).reduce((sum,l)=>{let reach=1,value=l[0];for(let i=1;i<l.length;i++){reach*=r.success*a.zoneAwardFactor(l[i]);value+=(l[i]-l[i-1])*reach;}return sum+value;},0)/a.ladderTableFor(s).length;
   const V=new Map(),K=new Map(),values=r.family==='seven'?a.sevenValues:[50*r.awardMultiplier,100*r.awardMultiplier],weights=r.family==='seven'?r.weights:[1-r.hundred,r.hundred],mean=values.reduce((v,n,i)=>v+n*weights[i],0),hit=Math.min(r.hit,1-(r.reset||0));
   const tailFreeze=s.zone==='ouma'?a.oumaFreezeRate({...s,award:String(limit)},c):0,freeMean=tailFreeze*mean/(1-tailFreeze);
-  function tail(left){if(r.family==='nova')return left*hit*factor*(mean+freeMean);const reset=r.reset*factor,reward=Math.min(r.hit,1-reset)*factor*mean,full=reset?((1-reset)**-5-1)/reset*reward:5*reward;return reset?(1-(1-reset)**left)/reset*(reward+reset*full):left*reward;}
+  function tail(left){if(r.family==='nova')return left*hit*factor*(mean+freeMean);const reset=r.reset*factor,reward=reset*10+Math.min(r.hit,1-reset)*factor*mean,full=reset?((1-reset)**-5-1)/reset*reward:5*reward;return reset?(1-(1-reset)**left)/reset*(reward+reset*full):left*reward;}
   const get=(map,left,award)=>award>=limit?tail(left)+(map===K?freeMean:0):map.get(award)[left];
-  for(let award=limit-50;award>=0;award-=50){
+  const grid=r.family==='seven'?10:50;for(let award=limit-grid;award>=0;award-=grid){
    const v=Array(6).fill(0);V.set(award,v);
    if(r.family==='seven'){
-    const win=weights.map((w,i)=>hit*w*a.zoneAwardFactor(award,values[i])),miss=1-r.reset-win.reduce((x,y)=>x+y,0),aa=[0],bb=[0];
-    for(let left=1;left<=5;left++){aa[left]=miss*aa[left-1]+win.reduce((sum,p,i)=>sum+p*(values[i]+get(V,left-1,award+values[i])),0);bb[left]=r.reset+miss*bb[left-1];}
-    const full=aa[5]/(1-bb[5]);for(let left=1;left<=5;left++)v[left]=aa[left]+bb[left]*full;
+    const win=weights.map((w,i)=>hit*w*a.zoneAwardFactor(award,values[i])),miss=1-r.reset-win.reduce((x,y)=>x+y,0);
+    for(let left=1;left<=5;left++)v[left]=r.reset*(10+get(V,5,award+10))+miss*v[left-1]+win.reduce((sum,p,i)=>sum+p*(values[i]+get(V,left-1,award+values[i])),0);
    }else{
     const k=Array(6).fill(0);K.set(award,k);const freeze=a.oumaFreezeRate({...s,award:String(award)},c)*(s.zone==='urapi'?0:1),win=weights.map((w,i)=>hit*w*a.zoneAwardFactor(award,values[i])),miss=1-win.reduce((x,y)=>x+y,0);
     for(let left=0;left<=5;left++){if(left)v[left]=miss*v[left-1]+win.reduce((sum,p,i)=>sum+p*(values[i]+get(K,left-1,award+values[i])),0);k[left]=(1-freeze)*v[left]+freeze*weights.reduce((sum,w,i)=>sum+w*(values[i]+get(K,left,award+values[i])),0);}

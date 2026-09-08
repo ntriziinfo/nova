@@ -63,7 +63,7 @@ test('seven family can award each amount, grants no sets and resets final game t
    const t=a.step({...s,zoneLeft:1},{},()=>roll,'BIG');
    assert.equal(t.flow.award,String(a.sevenValues[i]));assert.equal(t.flow.remaining,String(150+a.sevenValues[i]));assert.equal(t.flow.sets,'0');assert.equal(t.flow.queuedZones.length,0);assert.equal(t.internalBonus,null);
   }
-  const t=a.step({...s,zoneLeft:1},{},()=>.99,'NEBULA');assert.equal(t.flow.zoneLeft,5);assert.equal(t.flow.award,'0');assert.equal(t.flow.zero,false);
+  const t=a.step({...s,zoneLeft:1},{},()=>.99,'NEBULA');assert.equal(t.flow.zoneLeft,5);assert.equal(t.flow.award,'10');assert.equal(t.flow.zero,false);
   const miss=a.step({...s,zoneLeft:1},{},()=>.99,'MISS');assert.equal(miss.flow.remaining,'150');assert.equal(miss.flow.zone,'');
  }
 });
