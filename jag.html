@@ -12513,6 +12513,7 @@ body{
   }
 
   function playNormalBgm(){
+    if(normalState.resultCard){pauseNormalBgm();return;}
     if(debugFastSpinActive) return;
     if(session.active) return;
     if(bonusConfirmBgmHold && !session.active) return;
@@ -12730,6 +12731,7 @@ body{
   function displayNovaResult(card){
     if(debugFastSpinActive)return;
     normalState.resultCard=card;NovaResults.show(card);
+    pauseNormalBgm();
     stopAutoPlay('リザルト表示');stopSpeedToBonus('リザルト表示');
     playLockedBonusConfirmSound('assets/media/nova/result-eyecatch.wav',bgmOutputVolume(BGM_OUTPUT_SCALE));
   }
@@ -14682,7 +14684,6 @@ body{
       return;
     }
     if(!canPlayCompleteTrial()) return;
-    if(!isSpinning&&normalState.resultCard){normalState.resultCard=null;NovaResults.hide();}
     // 回転中にメインボタンを押したら、残りリールを停止する
     if(isSpinning){
       stopAllReels();
@@ -14753,6 +14754,7 @@ body{
     const spinWaitMs = spinWaitMsForMode(speedModeSpinAtStart);
 
     isSpinning = true;
+    if(normalState.resultCard){normalState.resultCard=null;NovaResults.hide();}
     jagLastGamePayout = 0;
     if(!normalState.bonusPending && !session.active) jagChanceHold = false;
     clearReelLight(true);

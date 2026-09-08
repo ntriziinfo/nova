@@ -1,6 +1,11 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
 const html=fs.readFileSync('jag.html','utf8');
 const fn=name=>html.match(new RegExp('  function '+name+'\\([^]*?\\n  }'))[0];
+test('background music stays paused through result callbacks and resumes after result dismissal',()=>{
+ let plays=0,pauses=0;const c=vm.createContext({normalState:{resultCard:{kind:'zone'}},debugFastSpinActive:false,session:{active:false},bonusConfirmBgmHold:false,barBgmActive:false,battleBgmActive:false,bgm:{paused:true,play(){plays++;return Promise.resolve();}},pauseNormalBgm(){pauses++;},ensureNormalBgmSource:()=> 'at.wav',bgmOutputVolumeForSource:()=>.5,BGM_OUTPUT_SCALE:1,getAudio(){}});
+ vm.runInContext(fn('playNormalBgm'),c);c.playNormalBgm();c.playNormalBgm();assert.equal(plays,0);assert.equal(pauses,2);
+ c.normalState.resultCard=null;c.playNormalBgm();assert.equal(plays,1);
+});
 test('eyecatch holds next spin until ended, without a fixed release timer',()=>{
  let audio;const c=vm.createContext({debugFastSpinActive:false,speedToBonusActive:false,A_TYPE_MODE:true,SEVEN_CONFIRM_SOUND_SRC:'seven',oneShotSoundCache:new Map(),bonusConfirmSoundPlaying:false,bonusConfirmSoundAudio:null,bonusConfirmSoundTimer:null,updateAutoUi(){},applyAudioSourceOutputScale:v=>v,setTimeout(){throw Error('unexpected timeout')},clearTimeout(){},Audio:class{constructor(src){audio=this;this.src=src;}pause(){}getAttribute(){return this.src;}play(){return Promise.resolve();}}});
  vm.runInContext(fn('clearBonusConfirmSoundLock')+'\n'+fn('playLockedBonusConfirmSound'),c);
