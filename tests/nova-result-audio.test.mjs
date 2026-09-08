@@ -8,7 +8,7 @@ test('background music stays paused through result callbacks and resumes after r
  c.normalState.pendingZoneResult=null;c.playNormalBgm();assert.equal(plays,1);
 });
 test('normal and reverse SUPER NOVA use the same stop sound exactly once',()=>{
- for(const oumaFreeze of [false,true]){const sounds=[];const c=vm.createContext({currentSpin:{result:'SUPER_NOVA',resolved:{oumaFreeze}},sfxOutputVolume:()=>.5,playOneShotSound:(...args)=>sounds.push(args)});vm.runInContext(fn('playStopSound'),c);c.playStopSound(2,3);c.playStopSound(2,3);assert.equal(sounds.length,1);assert.equal(sounds[0][0],'assets/media/nova/super-nova-stop.wav');assert.equal(sounds[0][1],.5);}
+ for(const oumaFreeze of [false,true]){const sounds=[];const c=vm.createContext({isLadderShutterSpin:()=>false,currentSpin:{result:'SUPER_NOVA',resolved:{oumaFreeze}},sfxOutputVolume:()=>.5,playOneShotSound:(...args)=>sounds.push(args)});vm.runInContext(fn('playStopSound'),c);c.playStopSound(2,3);c.playStopSound(2,3);assert.equal(sounds.length,1);assert.equal(sounds[0][0],'assets/media/nova/super-nova-stop.wav');assert.equal(sounds[0][1],.5);}
 });
 test('eyecatch holds next spin until ended, without a fixed release timer',()=>{
  let audio;const c=vm.createContext({debugFastSpinActive:false,speedToBonusActive:false,A_TYPE_MODE:true,SEVEN_CONFIRM_SOUND_SRC:'seven',oneShotSoundCache:new Map(),bonusConfirmSoundPlaying:false,bonusConfirmSoundAudio:null,bonusConfirmSoundTimer:null,updateAutoUi(){},applyAudioSourceOutputScale:v=>v,setTimeout(){throw Error('unexpected timeout')},clearTimeout(){},Audio:class{constructor(src){audio=this;this.src=src;}pause(){}getAttribute(){return this.src;}play(){return Promise.resolve();}}});
@@ -22,4 +22,11 @@ test('zone and AT result third stops skip result delay; ordinary games keep it',
  for(const [before,after,expected] of [[{zone:'toto'},{zone:''},0],[{phase:'art'},{phase:'normal'},0],[{phase:'normal'},{phase:'normal'},1000]]){
   const c=vm.createContext({NovaLadder:{eligible:()=>false},currentSpin:{resolved:{flowBefore:before,flowAfter:after}},normalState:{},isPremiumBigFinalBonusSpin:()=>false,autoResultWaitMs:1000});vm.runInContext(code+';globalThis.wait=resultWaitMs;',c);assert.equal(c.wait,expected);
  }
+});
+
+test('shutter stops restart movement sound and third stop replaces it with close sound',()=>{
+ const sounds=[];let paused=0;const c=vm.createContext({isLadderShutterSpin:()=>true,sfxOutputVolume:()=>.5,oneShotSoundCache:new Map([['assets/media/nova/shutter.wav',{pause(){paused++;}}]]),playOneShotSound:(src)=>sounds.push(src)});
+ vm.runInContext(fn('playStopSound'),c);
+ c.playStopSound(2,1);c.playStopSound(0,2);c.playStopSound(1,3);
+ assert.deepEqual(sounds,['assets/media/nova/shutter.wav','assets/media/nova/shutter.wav','assets/media/nova/shutter-close.wav']);assert.equal(paused,1);
 });
