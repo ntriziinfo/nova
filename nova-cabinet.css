@@ -111,3 +111,16 @@ body[data-art-zone=urapi] .novaArtItem[data-artwork=urapi] img,
 body[data-art-zone=giru] .novaArtItem[data-artwork=giru1] img,
 body[data-art-zone=sora] .novaArtItem[data-artwork=sora1] img,
 body[data-art-zone=ouma] .novaArtItem[data-artwork=ouma1] img{opacity:1!important}
+/* During a zone only its own character is lit; other lamps remain dark. */
+body[data-art-zone=sosuke] .novaArtItem:not([data-artwork=sosuke]),
+body[data-art-zone=toto] .novaArtItem:not([data-artwork=toto]),
+body[data-art-zone=urapi] .novaArtItem:not([data-artwork=urapi]),
+body[data-art-zone=giru] .novaArtItem:not([data-artwork=giru1]),
+body[data-art-zone=sora] .novaArtItem:not([data-artwork=sora1]),
+body[data-art-zone=ouma] .novaArtItem:not([data-artwork=ouma1]){animation:none!important;opacity:1!important}
+body[data-art-zone=sosuke] .novaArtItem:not([data-artwork=sosuke]) img,
+body[data-art-zone=toto] .novaArtItem:not([data-artwork=toto]) img,
+body[data-art-zone=urapi] .novaArtItem:not([data-artwork=urapi]) img,
+body[data-art-zone=giru] .novaArtItem:not([data-artwork=giru1]) img,
+body[data-art-zone=sora] .novaArtItem:not([data-artwork=sora1]) img,
+body[data-art-zone=ouma] .novaArtItem:not([data-artwork=ouma1]) img{animation:none!important;opacity:1!important;filter:brightness(.24) saturate(.7)!important}
