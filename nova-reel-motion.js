@@ -1,6 +1,6 @@
 /* One continuous symbol strip for spinning and landing. Original image assets are reused. */
 globalThis.NovaReelMotion=(()=>{
- const rotationMs=750;
+ const rotationMs=700;
  const active=new Map(),mod=(n,m)=>(n%m+m)%m;
  function clear(i){const s=active.get(i);if(!s)return;cancelAnimationFrame(s.raf);s.layer.remove();s.win.classList.remove('novaMotionActive');active.delete(i);s.resolve?.(false);}
  function start(i,reel,strip,top,reverse,html){
