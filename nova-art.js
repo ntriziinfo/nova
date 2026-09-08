@@ -98,7 +98,16 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
  function pickAtZone(setting,boost=false,rng=Math.random,preparation=false){
   const row=atZoneWeights(setting,boost,preparation);let roll=rng()*100;const i=row.findIndex(w=>(roll-=w)<0);return zoneIds[i<0?8:i];
  }
- function resolveAtRole(s,role,setting,rng=Math.random){
+ // Soft restraint on new AT rewards, based on actual session net points.
+ const netLimits=[2000,2000,4000,4000,5000,0];
+ const netRewardControl={startRatio:0,floor:.05};
+ function netRewardFactor(setting,netPt=0){
+  const limit=netLimits[validSetting(setting)-1],net=Number(netPt);
+  if(!limit||!Number.isFinite(net)||net<=limit*netRewardControl.startRatio)return 1;
+  const start=limit*netRewardControl.startRatio,progress=Math.min(1,(net-start)/(limit-start));
+  return 1-(1-netRewardControl.floor)*progress;
+ }
+ function resolveAtRole(s,role,setting,rng=Math.random,netPt=0){
   const wasHigh=!!s.atHigh,held=wasHigh&&s.atHighLeft>0,out={wasHigh,direct:0,zone:'',promoted:false};
   if(held)s.atHighLeft--;
   const rule=atRoleRules[role];
@@ -108,6 +117,12 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
   }
   if(role==='STRONG_NOVA'||(role==='WEAK_NOVA'&&rng()<(wasHigh?.75:.25)))out.zone=pickAtZone(setting,wasHigh&&role==='STRONG_NOVA',rng);
   if(wasHigh&&!held&&(role==='REPLAY'||role==='MISS')&&rng()<(role==='REPLAY'?.05:.08)){s.atHigh=false;s.atHighLeft=0;}
+  const factor=netRewardFactor(setting,netPt);
+  if(factor<1){
+   if(out.direct&&rng()>=factor)out.direct=0;
+   if(out.zone&&rng()>=factor)out.zone='';
+  }
+  out.rewardFactor=factor;
   return out;
  }
  function step(value,options={},rng=Math.random,forced=''){
@@ -147,7 +162,7 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
   }else{
    // Remaining AT points are consumed by actual payout after role selection.
    const rare=forced==='RARE'||!!rareRoles[forced]||(!forced&&rng()<c.rare);if(rare)result=rareRoles[forced]?forced:drawAtRare(options.setting,rng);
-   atOutcome=resolveAtRole(s,result,options.setting,rng);
+   atOutcome=resolveAtRole(s,result,options.setting,rng,options.netPt);
    if(atOutcome.direct){s.remaining=(integer(s.remaining)+BigInt(atOutcome.direct)).toString();message='直乗せ＋'+atOutcome.direct+'pt';}
    if(atOutcome.zone){s.entryStage='seven';s.giruSetting=validSetting(options.setting);s.pendingZone=atOutcome.zone;message='特化ゾーン確定！ 赤7を狙え / pt減算停止';}
    const paid=s.entryStage?0n:BigInt(payout(result));s.remaining=(integer(s.remaining)>paid?integer(s.remaining)-paid:0n).toString();
@@ -156,5 +171,5 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
   return {atOutcome,result,flow:s,message,internalBonus,reverse,oumaFreeze:freeOumaSpin,zoneSpin:!!value.zone||queuedEntered};
  }
  function label(v){const s=normalize(v);return `AT ${s.remaining}pt / 待機${s.sets}SET${s.entryStage?' / '+({seven:'赤7を狙え・減算停止',roulette:'ルーレット・減算停止',confirmed:zoneName(s.pendingZone)+'ゾーン確定'}[s.entryStage]):''}${s.zone?' / '+zoneName(s)+' '+(s.zero?'0G連':s.oumaPending?'BETで継続抽選':s.zoneLeft+'G'):''}${integer(s.stock)>0n?' / BIGストック '+s.stock:''}${s.zone?' / 獲得'+s.award+'pt':''}`;}
- return {superZoneChance,zoneGroups,zoneGroupWeights,upgradeGuaranteedZone,bonusSpecialRates,zoneRules,ladderTables,ladderTableFor,ladderValues,sevenValues,sevenWeights,atZoneWeights,tuning,atMix,drawAtRare,atRoleRules,pickAtZone,resolveAtRole,rareRoles,rareTotal,rareMean,rareFactor,drawRare,roleProbabilities,bonusRoleProbabilities,preparationProbabilities,drawPreparationRole,zoneRoleWeights,zoneRoleMultiplier,paidBellChance,drawPreparation,zoneEntryScale,points,bonusTarget,payout,settleZone,prepareBet,oumaFreezeRate,baseZone,zoneName,zoneIds,names,defaults,direct,zoneWeights,pickZone,bonusSpecial,settingBias,biasFor,bonusSpecialFor,advanceBonus,drawPaidRole,drawBonus,config,normalize,enter,startZone,afterBonus,step,label};
+ return {netRewardControl,netLimits,netRewardFactor,superZoneChance,zoneGroups,zoneGroupWeights,upgradeGuaranteedZone,bonusSpecialRates,zoneRules,ladderTables,ladderTableFor,ladderValues,sevenValues,sevenWeights,atZoneWeights,tuning,atMix,drawAtRare,atRoleRules,pickAtZone,resolveAtRole,rareRoles,rareTotal,rareMean,rareFactor,drawRare,roleProbabilities,bonusRoleProbabilities,preparationProbabilities,drawPreparationRole,zoneRoleWeights,zoneRoleMultiplier,paidBellChance,drawPreparation,zoneEntryScale,points,bonusTarget,payout,settleZone,prepareBet,oumaFreezeRate,baseZone,zoneName,zoneIds,names,defaults,direct,zoneWeights,pickZone,bonusSpecial,settingBias,biasFor,bonusSpecialFor,advanceBonus,drawPaidRole,drawBonus,config,normalize,enter,startZone,afterBonus,step,label};
 })();

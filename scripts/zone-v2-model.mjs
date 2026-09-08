@@ -50,7 +50,7 @@ export function simulate(setting,games,seed,options={}){
    const prior=flow;flow=a.prepareBet(flow,c,rng);if(!prior.zone&&flow.zone)zoneEntry(flow);
    if(!flow.zero)bet(flow.zone?'zone':'at');else counts.zero++;
    const eligible=!flow.zone&&!flow.entryStage&&!flow.queuedZones?.length&&Number(flow.stock||0)===0&&Number(flow.remaining)>0;
-   const s=a.step(flow,c,rng);
+   const s=a.step(flow,{...c,netPt:options.netGuard===false?0:paid-fee},rng);
    if(eligible){atMetrics.eligible++;if(flow.atHigh)atMetrics.high++;if(s.flow.entryStage==='seven')atMetrics.zoneWins++;}
    if(s.atOutcome){const o=s.atOutcome;if(o.promoted)atMetrics.promotions++;if(o.direct){atMetrics.directWins++;atMetrics.directPoints+=o.direct;if(s.result==='STRONG_SUICA'&&o.direct===100)atMetrics.suica100++;if(s.result==='STRONG_SUICA'&&o.direct===300)atMetrics.suica300++;}}if(!flow.zone&&s.flow.zone)zoneEntry(s.flow);
    paid+=n.pay(s.result);if(s.result==='REPLAY')replay=true;state=n.afterArt(state,flow,s.flow);flow=s.flow;if(s.internalBonus)bonus('BIG');continue;
