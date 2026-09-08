@@ -40,3 +40,9 @@ test('internal red seven confirmation plays patrol once before lineup',()=>{
  c.playZoneInternalConfirmedSound({flowBefore:{phase:'art',entryStage:'seven'},flowAfter:{phase:'art',entryStage:'roulette'}});assert.equal(played.length,1);
  c.playZoneInternalConfirmedSound({flowBefore:{phase:'art'},flowAfter:{phase:'art'}});assert.equal(played.length,1);
 });
+
+test('final ladder award BET plays supplied audio instead of regular start sound',()=>{
+ const sounds=[];const c=vm.createContext({normalState:{ladderAwardPresentation:{started:true}},isLadderShutterSpin:()=>false,SPIN_SOUND_SRC:'normal.wav',sfxOutputVolume:()=>.5,playOneShotSound:src=>sounds.push(src)});
+ vm.runInContext(fn('playSpinSound'),c);c.playSpinSound();assert.equal(sounds[0],'assets/media/nova/ladder-final-award.wav');
+ c.normalState.ladderAwardPresentation=null;c.playSpinSound();assert.equal(sounds[1],'normal.wav');
+});
