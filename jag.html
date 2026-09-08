@@ -6531,12 +6531,12 @@ body{
   .vertexConnectionBadge.offline{color:#ff8f9c;border-color:rgba(255,91,113,.65);background:rgba(52,9,17,.9)}
   .vertexConnectionBadge.legacy{color:#d4a6ff;border-color:rgba(185,109,255,.6)}
 </style>
-<link rel="stylesheet" href="nova-cabinet.css?v=20260908-zone-tail-39">
+<link rel="stylesheet" href="nova-cabinet.css?v=20260908-loss-boost-40">
 <link rel="stylesheet" href="nova-artwork.css?v=20260907-cz-lamps10">
 <script src="nova-artwork.js?v=20260907-cz-lamps10" defer></script>
-<script src="nova-art.js?v=20260908-zone-tail-39"></script>
-<script src="nova-balance.js?v=20260908-zone-tail-39"></script>
-<script src="nova-normal.js?v=20260908-zone-tail-39"></script>
+<script src="nova-art.js?v=20260908-loss-boost-40"></script>
+<script src="nova-balance.js?v=20260908-loss-boost-40"></script>
+<script src="nova-normal.js?v=20260908-loss-boost-40"></script>
 <script src="nova-flow.js?v=20260908-state-nova-33"></script>
 <style>
 /* Fit the original nebula art to reel width; its transparent vertical margins
@@ -13798,7 +13798,7 @@ body{
     document.getElementById('saveFlowConfig').closest('details').after(normalPanel);
     document.getElementById('novaApplyInternal').onclick=()=>{if(isSpinning||session.active)return;normalState.internal=NovaNormal.normalize({mode:$('novaMode').value,games:$('novaModeGames').value,level:$('novaLevel').value,highLeft:$('novaLevel').value==='high'?10:0,impurity:$('novaImpurity').value});persistState();updateDisplay();};
     const artPanel=document.createElement('details');artPanel.id='novaArtConfig';
-    artPanel.innerHTML='<summary>AT・上乗せゾーン仮設定（9種類）</summary><p>ゾーン単体の累計上乗せが2000pt以上になる当選は元の1%。到達後の追加上乗せ・nebula延長・逢魔フリーズも抑制。全設定共通、獲得済みptは維持。</p><p>差枚に応じた新規AT上乗せ抑制：設定1・2は＋2000pt、設定3・4は＋4000pt、設定5は＋5000ptが目安。プラス差枚から徐々に抑制し、目安以上では新規特化ゾーン・直乗せ当選率が元の5%。設定6は対象外。獲得済みptや当選済みゾーンは維持。</p><p>全ゾーン5G。段階式は1G目に最初の額を確保、残り4Gで上の段階へ挑戦。ハズレで終了し最高到達額のみ獲得。7揃い系・ノヴァ系は成立ごとに加算。</p>';
+    artPanel.innerHTML='<summary>AT・上乗せゾーン仮設定（9種類）</summary><p>差枚−2000pt以下：AT中の直乗せ・弱ノヴァのゾーン当選率1.5倍（最大100%）。全設定共通。−2000ptを上回ると解除。ゾーン単体2000pt抑制は継続。</p><p>ゾーン単体の累計上乗せが2000pt以上になる当選は元の1%。到達後の追加上乗せ・nebula延長・逢魔フリーズも抑制。全設定共通、獲得済みptは維持。</p><p>差枚に応じた新規AT上乗せ抑制：設定1・2は＋2000pt、設定3・4は＋4000pt、設定5は＋5000ptが目安。プラス差枚から徐々に抑制し、目安以上では新規特化ゾーン・直乗せ当選率が元の5%。設定6は対象外。獲得済みptや当選済みゾーンは維持。</p><p>全ゾーン5G。段階式は1G目に最初の額を確保、残り4Gで上の段階へ挑戦。ハズレで終了し最高到達額のみ獲得。7揃い系・ノヴァ系は成立ごとに加算。</p>';
     const artLabels={initial:'AT初期pt',ladderSosuke:'宗介 突破役確率',ladderGiru:'ギル 突破役確率',ladderUraGiru:'裏ギル 突破役確率',totoHit:'とと 7揃い率',totoReset:'とと nebula率',soraHit:'空 7揃い率',soraReset:'空 nebula率',soraUraHit:'裏空 7揃い率',soraUraReset:'裏空 nebula率',urapiSuper:'うらぴ スーパーノヴァ率',oumaSuper:'逢魔 スーパーノヴァ率',oumaUraSuper:'裏逢魔 スーパーノヴァ率',oumaFreeze:'逢魔フリーズ継続率',oumaUraFreeze:'裏逢魔フリーズ継続率'};
     const zoneTable=document.createElement('div');zoneTable.innerHTML='<p>宗介・ギルは各5テーブル（各20%）、裏ギルは4テーブル（各25%）。同額の段階も突破で次へ進みます。<br>7揃い：50・100・150・200・300・500pt、nebulaで残り5Gへリセット。<br>スーパーノヴァ：通常50・100pt、裏逢魔100・200pt（フリーズ中も共通）。逢魔と裏逢魔はBETでフリーズ抽選、当選時は無料の自動0G連。</p><table><tr><th>設定</th>'+['弱上乗せ','強上乗せ','超上乗せ'].map(x=>'<th>'+x+'</th>').join('')+'</tr>'+[1,2,3,4,5,6].map(setting=>NovaArt.zoneGroupWeights(setting)).map((row,i)=>'<tr><td>'+(i+1)+'</td>'+row.map(p=>'<td>'+p.toFixed(2)+'%</td>').join('')+'</tr>').join('')+'</table><p>弱＝宗介・とと・うらぴ、強＝ギル・空・逢魔、超＝裏3種。強当選後の3%で超へ昇格（従来どおり）。各区分内は3種均等。確定後の再昇格抽選はありません。通常ATの小役確率・直乗せ・高確抽選は据え置き。</p>';artPanel.append(zoneTable);
     const bonusTable=document.createElement('p');bonusTable.textContent='ボーナス中nebula揃い（設定1〜6）：'+NovaArt.bonusSpecialRates.map(p=>(p*100).toFixed(2)+'%').join(' / ');artPanel.append(bonusTable);

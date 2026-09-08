@@ -4,7 +4,7 @@ for(let setting=1;setting<=6;setting++){
  const paired=[];for(let i=0;i<trials;i++){
   const seed=383837+setting*100000+i*7919;
   const before=simulate(setting,10000,seed,{rng:'xoshiro128',netGuard:false});
-  const after=setting===6?before:simulate(setting,10000,seed,{rng:'xoshiro128'});
+  const after=simulate(setting,10000,seed,{rng:'xoshiro128'});
   paired.push({seed,before,after});
  }
  const report={setting,trials,gamesPerTrial:10000,limit:NovaArt.netLimits[setting-1],results:{},paired};

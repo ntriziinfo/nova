@@ -102,24 +102,26 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
  }
  // Soft restraint on new AT rewards, based on actual session net points.
  const netLimits=[2000,2000,4000,4000,5000,0];
+ const lossRewardControl={threshold:-2000,multiplier:1.5};
  const netRewardControl={startRatio:0,floor:.05};
  function netRewardFactor(setting,netPt=0){
   const limit=netLimits[validSetting(setting)-1],net=Number(netPt);
+  if(Number.isFinite(net)&&net<=lossRewardControl.threshold)return lossRewardControl.multiplier;
   if(!limit||!Number.isFinite(net)||net<=limit*netRewardControl.startRatio)return 1;
   const start=limit*netRewardControl.startRatio,progress=Math.min(1,(net-start)/(limit-start));
   return 1-(1-netRewardControl.floor)*progress;
  }
  function resolveAtRole(s,role,setting,rng=Math.random,netPt=0){
+  const factor=netRewardFactor(setting,netPt),boost=Math.max(1,factor);
   const wasHigh=!!s.atHigh,held=wasHigh&&s.atHighLeft>0,out={wasHigh,direct:0,zone:'',promoted:false};
   if(held)s.atHighLeft--;
   const rule=atRoleRules[role];
   if(rule){
    if(!wasHigh&&rng()<rule.up){s.atHigh=true;s.atHighLeft=10;out.promoted=true;}
-   if(rng()<rule.hit){let r=rng();const i=rule.weights.findIndex(w=>(r-=w)<0);out.direct=rule.values[i<0?rule.values.length-1:i];}
+   if(rng()<Math.min(1,rule.hit*boost)){let r=rng();const i=rule.weights.findIndex(w=>(r-=w)<0);out.direct=rule.values[i<0?rule.values.length-1:i];}
   }
-  if(role==='STRONG_NOVA'||(role==='WEAK_NOVA'&&rng()<(wasHigh?.75:.25)))out.zone=pickAtZone(setting,wasHigh&&role==='STRONG_NOVA',rng);
+  if(role==='STRONG_NOVA'||(role==='WEAK_NOVA'&&rng()<Math.min(1,(wasHigh?.75:.25)*boost)))out.zone=pickAtZone(setting,wasHigh&&role==='STRONG_NOVA',rng);
   if(wasHigh&&!held&&(role==='REPLAY'||role==='MISS')&&rng()<(role==='REPLAY'?.05:.08)){s.atHigh=false;s.atHighLeft=0;}
-  const factor=netRewardFactor(setting,netPt);
   if(factor<1){
    if(out.direct&&rng()>=factor)out.direct=0;
    if(out.zone&&rng()>=factor)out.zone='';
@@ -174,5 +176,5 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
   return {atOutcome,result,flow:s,message,internalBonus,reverse,oumaFreeze:freeOumaSpin,zoneSpin:!!value.zone||queuedEntered};
  }
  function label(v){const s=normalize(v);return `AT ${s.remaining}pt / 待機${s.sets}SET${s.entryStage?' / '+({seven:'赤7を狙え・減算停止',roulette:'ルーレット・減算停止',confirmed:zoneName(s.pendingZone)+'ゾーン確定'}[s.entryStage]):''}${s.zone?' / '+zoneName(s)+' '+(s.zero?'0G連':s.oumaPending?'BETで継続抽選':s.zoneLeft+'G'):''}${integer(s.stock)>0n?' / BIGストック '+s.stock:''}${s.zone?' / 獲得'+s.award+'pt':''}`;}
- return {zoneTailControl,zoneAwardFactor,netRewardControl,netLimits,netRewardFactor,superZoneChance,zoneGroups,zoneGroupWeights,upgradeGuaranteedZone,bonusSpecialRates,zoneRules,ladderTables,ladderTableFor,ladderValues,sevenValues,sevenWeights,atZoneWeights,tuning,atMix,drawAtRare,atRoleRules,pickAtZone,resolveAtRole,rareRoles,rareTotal,rareMean,rareFactor,drawRare,roleProbabilities,bonusRoleProbabilities,preparationProbabilities,drawPreparationRole,zoneRoleWeights,zoneRoleMultiplier,paidBellChance,drawPreparation,zoneEntryScale,points,bonusTarget,payout,settleZone,prepareBet,oumaFreezeRate,baseZone,zoneName,zoneIds,names,defaults,direct,zoneWeights,pickZone,bonusSpecial,settingBias,biasFor,bonusSpecialFor,advanceBonus,drawPaidRole,drawBonus,config,normalize,enter,startZone,afterBonus,step,label};
+ return {lossRewardControl,zoneTailControl,zoneAwardFactor,netRewardControl,netLimits,netRewardFactor,superZoneChance,zoneGroups,zoneGroupWeights,upgradeGuaranteedZone,bonusSpecialRates,zoneRules,ladderTables,ladderTableFor,ladderValues,sevenValues,sevenWeights,atZoneWeights,tuning,atMix,drawAtRare,atRoleRules,pickAtZone,resolveAtRole,rareRoles,rareTotal,rareMean,rareFactor,drawRare,roleProbabilities,bonusRoleProbabilities,preparationProbabilities,drawPreparationRole,zoneRoleWeights,zoneRoleMultiplier,paidBellChance,drawPreparation,zoneEntryScale,points,bonusTarget,payout,settleZone,prepareBet,oumaFreezeRate,baseZone,zoneName,zoneIds,names,defaults,direct,zoneWeights,pickZone,bonusSpecial,settingBias,biasFor,bonusSpecialFor,advanceBonus,drawPaidRole,drawBonus,config,normalize,enter,startZone,afterBonus,step,label};
 })();
