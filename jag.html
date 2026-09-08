@@ -6531,14 +6531,16 @@ body{
   .vertexConnectionBadge.offline{color:#ff8f9c;border-color:rgba(255,91,113,.65);background:rgba(52,9,17,.9)}
   .vertexConnectionBadge.legacy{color:#d4a6ff;border-color:rgba(185,109,255,.6)}
 </style>
-<link rel="stylesheet" href="nova-cabinet.css?v=20260908-freeze-no-hit-81">
-<link rel="stylesheet" href="nova-artwork.css?v=20260908-freeze-no-hit-81">
-<script src="nova-artwork.js?v=20260908-freeze-no-hit-81" defer></script>
-<script src="nova-beat-lamps.js?v=20260908-freeze-no-hit-81"></script>
-<script src="nova-reel-motion.js?v=20260908-freeze-no-hit-81"></script>
-<script src="nova-art.js?v=20260908-freeze-no-hit-81"></script>
-<script src="nova-balance.js?v=20260908-freeze-no-hit-81"></script>
-<script src="nova-normal.js?v=20260908-freeze-no-hit-81"></script>
+<link rel="stylesheet" href="nova-cabinet.css?v=20260909-results-82">
+<link rel="stylesheet" href="nova-artwork.css?v=20260909-results-82">
+<script src="nova-artwork.js?v=20260909-results-82" defer></script>
+<script src="nova-beat-lamps.js?v=20260909-results-82"></script>
+<script src="nova-reel-motion.js?v=20260909-results-82"></script>
+<link rel="stylesheet" href="nova-results.css?v=20260909-results-82">
+<script src="nova-results.js?v=20260909-results-82"></script>
+<script src="nova-art.js?v=20260909-results-82"></script>
+<script src="nova-balance.js?v=20260909-results-82"></script>
+<script src="nova-normal.js?v=20260909-results-82"></script>
 <script src="nova-flow.js?v=20260908-state-nova-33"></script>
 <style>
 /* Fit the original nebula art to reel width; its transparent vertical margins
@@ -12207,6 +12209,7 @@ body{
       const beforeBonusResume=normalState.flow;
       normalState.flow = NovaFlow.afterBonus(normalState.flow,settings.novaArt,wonArtSets);
       resetNormalCountersAfterArt(beforeBonusResume,normalState.flow);
+      if(normalState.flow.phase==='art'&&!Number.isFinite(normalState.resultAtStartPaid))normalState.resultAtStartPaid=Number(stats.totalPaid)||0;
       if(normalState.flow.phase==='art' && wonZones.length){
         normalState.flow.queuedZones.push(...wonZones);
         if(!normalState.flow.zone){const z=normalState.flow.queuedZones.shift();normalState.flow=NovaArt.startZone(normalState.flow,z,{...settings.novaArt,setting:settings.setting,allowUra:true});}
@@ -12718,6 +12721,11 @@ body{
     return `[FAST][AT] ${result} / ${resolved.artMessage} / 残り${f?.remaining ?? 0}pt / 待機${f?.sets ?? 0}SET`;
   }
 
+  function displayNovaResult(card){
+    if(debugFastSpinActive)return;
+    normalState.resultCard=card;NovaResults.show(card);
+    stopAutoPlay('リザルト表示');stopSpeedToBonus('リザルト表示');
+  }
   function applyNormalResult(result, resolved, lineRow=1){
     if(typeof debugFastSpinActive!=='undefined' && debugFastSpinActive){const audit=fastAtAuditMessage(result,resolved);if(audit)log(`${audit} / ${stats.totalSpins}G`);}
     playStrongNovaSound(result,resolved);
@@ -12751,6 +12759,13 @@ body{
       : clamp(Number(resolved.ceilingAfter) || 0, 0, currentNormalCeilingGames());
     if(A_TYPE_MODE){
       normalState.flow = NovaFlow.normalize(resolved.flowAfter);
+      const zoneCard=NovaResults.transition(resolved.flowBefore,normalState.flow,settings.setting);
+      if(zoneCard)displayNovaResult(zoneCard);
+      if(resolved.flowBefore?.phase==='art'&&normalState.flow.phase==='normal'&&!resolved.bonusHit&&!resolved.aTypeBonusReady){
+        const base=Number.isFinite(normalState.resultAtStartPaid)?normalState.resultAtStartPaid:(Number(stats.totalPaid)||0)-normalReward;
+        displayNovaResult({kind:'at',...NovaResults.pick('at','',settings.setting),pt:String(Math.max(0,(Number(stats.totalPaid)||0)-base))});
+        delete normalState.resultAtStartPaid;
+      }
       resetNormalCountersAfterArt(resolved.flowBefore,normalState.flow);
       normalState.risingRemain = 0;
       normalState.mode = normalState.flow.phase;
@@ -13162,6 +13177,7 @@ body{
   }
 
   function updateDisplay(){
+    if(normalState.resultCard&&!NovaResults.visible&&!NovaResults.editing)NovaResults.show(normalState.resultCard);
     if(!isSpinning)showZoneRoulette(session.active?null:normalState.flow);
     if(!isSpinning && $("spinBtn"))$("spinBtn").title=normalState.replayFree?"リプレイ：次回BET消費なし":"";
     const active = session.active;
@@ -13583,6 +13599,7 @@ body{
     currentSpin = null;
     jagChainCount = null;
     jagChainBonusHandoff = false;
+    NovaResults.hide();
     stats = {totalSessions:0,totalFee:0,totalPaid:0,totalSpins:0,normalSpins:0,highSpins:0,roleStatVersion:ROLE_STAT_COUNTER_VERSION,bigCount:0,midCount:0,premiumBigCount:0,grapeCount:0,smallCount:0,bellCount:0,diagonalBellCount:0,replayCount:0,suikaCount:0,cherryCount:0,slumpHigh:0,slumpLow:0,slumpHistory:[{spin:0, profit:0}]};
     slumpView = {xZoom:1,yZoom:1,seekStart:0,followEnd:true};
     bonusConfirmBgmHold = false;
@@ -14643,6 +14660,8 @@ body{
   }
 
   async function spin(options={}){
+    if(NovaResults.editing)return;
+    if(normalState.flow?.phase==='art'&&!Number.isFinite(normalState.resultAtStartPaid))normalState.resultAtStartPaid=Number(stats.totalPaid)||0;
     if(!oumaPresentation&&!isSpinning&&!debugFastSpinActive&&normalState.flow?.zone==='ouma'&&normalState.flow.oumaPending){scheduleOumaZeroChain();return;}
     if(oumaPresentation){if(oumaPresentation.stage==='bet')resolveOumaChallenge();return;}
     if(debugFastSpinActive) return;
@@ -14656,6 +14675,7 @@ body{
       return;
     }
     if(!canPlayCompleteTrial()) return;
+    if(!isSpinning&&normalState.resultCard){normalState.resultCard=null;NovaResults.hide();}
     // 回転中にメインボタンを押したら、残りリールを停止する
     if(isSpinning){
       stopAllReels();
@@ -15229,6 +15249,7 @@ body{
     presentation.stage='lift';$('spinBtn').disabled=true;
     const machine=document.getElementById('machine');machine.dataset.oumaFreeze='lift';
     normalState.flow=NovaArt.prepareBet(previous,settings.novaArt,Math.random);
+    normalState.pendingZoneResult=NovaResults.transition(previous,normalState.flow,settings.setting);
     persistState();
 
     const audio=new Audio('assets/media/nova/uuufa.wav');oumaIntroAudio=audio;
@@ -15263,6 +15284,7 @@ body{
 
     if(resolved.oumaFailed){
       $('resultText').textContent='逢魔フリーズ 継続失敗 / ハズレ（0G）';
+      if(normalState.pendingZoneResult){displayNovaResult(normalState.pendingZoneResult);normalState.pendingZoneResult=null;}
       persistState();updateDisplay();playNormalBgm();
       return;
     }

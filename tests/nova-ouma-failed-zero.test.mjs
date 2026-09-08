@@ -10,6 +10,6 @@ test('failed continuation bypasses fee, game counter and role/zone draws',()=>{
 });
 test('failed continuation completion skips ordinary result application',()=>{
  const block=h.match(/    if\(resolved.oumaFailed\)\{[^]*?\n    }/)[0];let displayed=0;
- const c=vm.createContext({resolved:{oumaFailed:true},$:()=>({}),persistState(){},updateDisplay(){displayed++},playNormalBgm(){}});
+ const c=vm.createContext({normalState:{},resolved:{oumaFailed:true},$:()=>({}),persistState(){},updateDisplay(){displayed++},playNormalBgm(){}});
  vm.runInContext('(function(){'+block+'throw new Error("ordinary payout path reached");})()',c);assert.equal(displayed,1);
 });
