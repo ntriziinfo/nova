@@ -17,18 +17,25 @@ test('nine zones and retired aliases preserve queued awards without new promotio
   assert.equal(a.startZone(a.enter(),base,{allowUra:true},()=>.03).ura,false);
  }
 });
-test('21 equiprobable ladders contain exactly five increasing listed amounts',()=>{
- const found=new Set();
- for(let i=0;i<21;i++){
-  const s=a.startZone(a.enter(),'giru',{},()=>(i+.5)/21);found.add(s.ladder.join(','));
-  assert.equal(s.ladder.length,5);assert.ok(s.ladder.every((n,j)=>a.ladderValues.includes(n)&&(!j||n>s.ladder[j-1])));
-  assert.equal(s.award,String(s.ladder[0]));assert.equal(save(s).award,s.award);
- }assert.equal(found.size,21);
+test('zone-specific tables have equal row weights and preserve duplicate rungs',()=>{
+ for(const [id,rows]of Object.entries(a.ladderTables)){
+  assert.equal(rows.length,id==='ura_giru'?4:5);
+  for(let i=0;i<rows.length;i++)for(const roll of [i/rows.length,(i+.999999)/rows.length]){
+   const s=a.startZone(a.enter(),id,{},()=>roll);
+   assert.deepEqual(Array.from(s.ladder),Array.from(rows[i]));
+   assert.equal(s.award,String(rows[i][0]));assert.deepEqual(Array.from(save(s).ladder),Array.from(rows[i]));
+  }
+ }
+ assert.deepEqual(Array.from(a.ladderTables.sosuke[0]),[50,50,100,100,200]);
+ assert.deepEqual(Array.from(a.ladderTables.sosuke[1]),[50,50,100,100,200]);
+ let s=a.startZone(a.enter(),'sosuke',{},()=>.99);s=a.step(s,{},()=>0).flow;
+ for(let i=1;i<=3;i++){s=a.step(s,{},()=>0,'REPLAY').flow;assert.equal(s.award,'50');assert.equal(s.ladderIndex,i);}
+ s=a.step(s,{},()=>0,'REPLAY').flow;assert.equal(s.award,'500');assert.equal(s.remaining,'775');
 });
 test('first game reveals secured rung, four successes grant highest only in five paid games',()=>{
  for(const id of ['sosuke','giru','ura_giru']){
   let s=a.startZone(a.enter(),id,{},()=>0);const steps=Array.from(s.ladder);
-  s=a.step(s,{},()=>.99).flow;assert.equal(s.award,'50');assert.equal(s.zoneLeft,4);assert.ok(s.zone);
+  s=a.step(s,{},()=>.99).flow;assert.equal(s.award,String(steps[0]));assert.equal(s.zoneLeft,4);assert.ok(s.zone);
   for(let i=1;i<=4;i++){s=save(a.step(s,{},()=>.99,'REPLAY').flow);assert.equal(s.award,String(steps[i]));assert.equal(s.zero,false);}
   assert.equal(s.zone,'');assert.equal(s.remaining,String(275+steps[4]));assert.equal(a.settleZone(s).remaining,s.remaining);
  }
