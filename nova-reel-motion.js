@@ -11,16 +11,21 @@ globalThis.NovaReelMotion=(()=>{
   const cellHeight=layer.firstElementChild.getBoundingClientRect().height/scale;
   const s={win,layer,strip,h:cellHeight,stepMs:rotationMs/strip.length,pos:strip.length+mod(top,strip.length),direction:reverse?1:-1,last:performance.now(),raf:0};active.set(i,s);
   function frame(now){if(active.get(i)!==s)return;
-   if(s.landing){const t=Math.min(1,(now-s.landing.time)/s.landing.duration);s.pos=s.landing.from+(s.landing.to-s.landing.from)*(1-(1-t)**2);if(t===1){s.layer.style.transform=`translateY(${-s.pos*s.h}px)`;s.raf=0;const resolve=s.resolve;s.resolve=null;resolve(true);return;}}
+   if(s.landing){const t=Math.min(1,(now-s.landing.time)/s.landing.duration);s.pos=s.landing.from+(s.landing.to-s.landing.from)*t;if(t===1){s.layer.style.transform=`translateY(${-s.pos*s.h}px)`;s.raf=0;const resolve=s.resolve;s.resolve=null;resolve(true);return;}}
    else{s.pos=strip.length+mod(s.pos-strip.length+s.direction*(now-s.last)/s.stepMs,strip.length);}
    s.last=now;s.layer.style.transform=`translateY(${-s.pos*s.h}px)`;s.raf=requestAnimationFrame(frame);
   }s.raf=requestAnimationFrame(frame);
  }
- function stop(i,column){const s=active.get(i);if(!s)return Promise.resolve(false);const target=s.strip.findIndex((_,n)=>column.every((v,j)=>s.strip[(n+j)%s.strip.length]===v));
-  if(target<0)throw new Error('Stop column is absent from reel strip '+i);
-  let distance=s.direction>0?mod(target-mod(s.pos,s.strip.length),s.strip.length):mod(mod(s.pos,s.strip.length)-target,s.strip.length);
-  if(distance<.001)distance=0;
-  return new Promise(resolve=>{s.resolve=resolve;s.landing={from:s.pos,to:s.pos+s.direction*distance,time:performance.now(),duration:Math.max(140,distance*s.stepMs*2)};});
+ function stop(i,column){
+  const s=active.get(i);if(!s)return Promise.resolve(false);
+  const now=performance.now();
+  s.pos=s.strip.length+mod(s.pos-s.strip.length+s.direction*(now-s.last)/s.stepMs,s.strip.length);s.last=now;
+  const distances=s.strip.flatMap((_,n)=>column.every((v,j)=>s.strip[(n+j)%s.strip.length]===v)?[s.direction>0?mod(n-mod(s.pos,s.strip.length),s.strip.length):mod(mod(s.pos,s.strip.length)-n,s.strip.length)]:[]);
+  if(!distances.length)throw new Error('Stop column is absent from reel strip '+i);
+  const distance=Math.min(...distances);
+  if(distance<1e-9){cancelAnimationFrame(s.raf);s.layer.style.transform=`translateY(${-s.pos*s.h}px)`;return Promise.resolve(true);}
+  return new Promise(resolve=>{s.resolve=resolve;s.landing={from:s.pos,to:s.pos+s.direction*distance,time:now,duration:distance*s.stepMs};});
  }
+
  return {rotationMs,start,stop,clear,has:i=>active.has(i),top:i=>{const s=active.get(i);return s?mod(Math.round(s.pos),s.strip.length):null;},clearAll:()=>[...active.keys()].forEach(clear)};
 })();
