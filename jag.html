@@ -6531,14 +6531,14 @@ body{
   .vertexConnectionBadge.offline{color:#ff8f9c;border-color:rgba(255,91,113,.65);background:rgba(52,9,17,.9)}
   .vertexConnectionBadge.legacy{color:#d4a6ff;border-color:rgba(185,109,255,.6)}
 </style>
-<link rel="stylesheet" href="nova-cabinet.css?v=20260908-stop800-62">
-<link rel="stylesheet" href="nova-artwork.css?v=20260908-stop800-62">
-<script src="nova-artwork.js?v=20260908-stop800-62" defer></script>
-<script src="nova-beat-lamps.js?v=20260908-stop800-62"></script>
-<script src="nova-reel-motion.js?v=20260908-stop800-62"></script>
-<script src="nova-art.js?v=20260908-stop800-62"></script>
-<script src="nova-balance.js?v=20260908-stop800-62"></script>
-<script src="nova-normal.js?v=20260908-stop800-62"></script>
+<link rel="stylesheet" href="nova-cabinet.css?v=20260908-nearest-common-63">
+<link rel="stylesheet" href="nova-artwork.css?v=20260908-nearest-common-63">
+<script src="nova-artwork.js?v=20260908-nearest-common-63" defer></script>
+<script src="nova-beat-lamps.js?v=20260908-nearest-common-63"></script>
+<script src="nova-reel-motion.js?v=20260908-nearest-common-63"></script>
+<script src="nova-art.js?v=20260908-nearest-common-63"></script>
+<script src="nova-balance.js?v=20260908-nearest-common-63"></script>
+<script src="nova-normal.js?v=20260908-nearest-common-63"></script>
 <script src="nova-flow.js?v=20260908-state-nova-33"></script>
 <style>
 /* Fit the original nebula art to reel width; its transparent vertical margins
@@ -13894,11 +13894,11 @@ body{
   }
 
   const REEL_STRIPS = [0,1,2].map(column => [
-    BELL_SYMBOL,"7",ELEPHANT_SYMBOL,BELL_SYMBOL,"BAR",ELEPHANT_SYMBOL,
-    novaSymbol(column,0),novaSymbol(column,1),novaSymbol(column,2),
-    BELL_SYMBOL,column===1?SUICA_SYMBOL:ELEPHANT_SYMBOL,column===2?SUICA_SYMBOL:"7",BELL_SYMBOL,"BAR",ELEPHANT_SYMBOL,
-    SUICA_SYMBOL,ELEPHANT_SYMBOL,"BAR",column===0?SUICA_SYMBOL:BELL_SYMBOL,ELEPHANT_SYMBOL,BELL_SYMBOL
-  ].map((symbol,index)=>index===[3,12,20][column]?NEBULA_SYMBOL:symbol));
+    BELL_SYMBOL,ELEPHANT_SYMBOL,"7",BELL_SYMBOL,ELEPHANT_SYMBOL,
+    SUICA_SYMBOL,BELL_SYMBOL,ELEPHANT_SYMBOL,NEBULA_SYMBOL,BELL_SYMBOL,
+    ELEPHANT_SYMBOL,"BAR",BELL_SYMBOL,ELEPHANT_SYMBOL,novaSymbol(column,0),
+    novaSymbol(column,1),novaSymbol(column,2),BELL_SYMBOL,ELEPHANT_SYMBOL,SUICA_SYMBOL
+  ].map(symbol=>column===1?(symbol===BELL_SYMBOL?ELEPHANT_SYMBOL:symbol===ELEPHANT_SYMBOL?BELL_SYMBOL:symbol):symbol));
 
   function mod(n, m){
     return ((n % m) + m) % m;
@@ -14416,6 +14416,24 @@ body{
     if(!grids.length) throw new Error("No valid NOVA reel stop for " + result);
     novaStopGridCache.set(cacheKey,grids);
     return grids[Math.floor(Math.random()*grids.length)].map(row=>row.slice());
+  }
+
+  function nearestCommonStopColumn(index,spin,distance){
+    if(!['BELL','REPLAY'].includes(spin.result))return null;
+    buildNovaReelGrid(spin.result,spin.lineRow);
+    const candidates=novaStopGridCache.get(spin.result+':'+spin.lineRow)||[];
+    const held=spin.commonStopColumns||[];
+    let best=null,bestDistance=Infinity;
+    for(const candidate of candidates){
+      if(!held.every((column,c)=>!column||column.every((v,r)=>candidate[r][c]===v)))continue;
+      const column=candidate.map(row=>row[index]),d=distance(column);
+      if(d<bestDistance){bestDistance=d;best=column;}
+    }
+    if(!best)throw new Error('No compatible common-role stop');
+    spin.commonStopColumns ||= [];
+    spin.commonStopColumns[index]=best;
+    setGridColumn(spin.grid,index,best);
+    return best;
   }
 
   function buildGrid(result, winRow=1){
@@ -14948,12 +14966,14 @@ body{
     hideBattleIntro();
     if(isRogiHighZoneSpin(currentSpin)) stopRogiStopEffect(true);
 
+    if(!options.visualReady&&currentSpin.visualStopping?.[i])return;
     const {grid, spec, result, lineRow} = currentSpin;
     const stopOrder = currentSpin.stopped.filter(Boolean).length + 1;
     const reversePushWrongFirst = isReversePushGuidedMiss(currentSpin) && stopOrder === 1 && i !== 2;
     let col = options.visualColumn || (currentSpin.manualBonusStop
       ? manualStopColumnForReel(i, currentSpin)
       : [grid[0][i], grid[1][i], grid[2][i]]);
+    if(!options.visualReady&&NovaReelMotion.has(i)){col=nearestCommonStopColumn(i,currentSpin,column=>NovaReelMotion.distance(i,column))||col;}
     if(currentSpin.manualBonusStop && stopOrder === 3 && !options.visualColumn){
       col = manualBonusFinalColumnForReel(i, currentSpin, col);
     }

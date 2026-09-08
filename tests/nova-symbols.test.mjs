@@ -21,7 +21,7 @@ const isNovaGrid=grid=>[0,1,2].every(r=>[0,1,2].every(c=>grid[r][c]===novaSymbol
 'hasBellDiagonal','cherryResultFromRow','cherryResultFromRows','displayedResultFromGrid',
 'displayedResultFromRow','gridPaylineRows','gridHasOnlyAllowedPaylines','buildNovaReelGrid',
 'normalRewardFor','resolveATypeBonusOutcome','isCherryResult','novaPatternFromGrid','isNovaResult','buildForcedNovaGrid',
-'drawSuperNovaBonus','resolveNormalOutcome','decideBigPremiumEffect','drawNormalResult'
+'setGridColumn','nearestCommonStopColumn','drawSuperNovaBonus','resolveNormalOutcome','decideBigPremiumEffect','drawNormalResult'
 ].map(fn).join('\n')+`
 const aTypeBonusRemainingNet=()=>remaining;
 let remaining=1;const session={paid:0,bonusKind:"BIG"};const isATypeBonusComplete=()=>session.paid>=NovaArt.bonusTarget(session.bonusKind);
@@ -37,14 +37,14 @@ const nextBonusAfterGames=value=>value+1;
 `,context);
 const run=code=>vm.runInContext(code,context);
 test('every reel has exactly one contiguous three-cell logo and no retired symbols',()=>{
- assert.equal(run('REEL_STRIPS.every((s,c)=>s.length===21 && s.filter(x=>x.startsWith("NOVA_")).length===3 && [0,1,2].every(r=>s[6+r]===novaSymbol(c,r)) && !s.some(x=>[GRAPE_SYMBOL,CHERRY_SYMBOL,PIERROT_SYMBOL].includes(x)))'),true);
+ assert.equal(run('REEL_STRIPS.every((s,c)=>s.length===20 && s.filter(x=>x.startsWith("NOVA_")).length===3 && [0,1,2].every(r=>s[14+r]===novaSymbol(c,r)) && !s.some(x=>[GRAPE_SYMBOL,CHERRY_SYMBOL,PIERROT_SYMBOL].includes(x)))'),true);
 });
 test('actual stop grids match every supported outcome using real consecutive strip cells',()=>{
  for(const result of ['NEBULA','MISS','BELL','WEAK_SUICA','STRONG_SUICA','CHANCE_A','CHANCE_B','REPLAY','BIG','MID','BAR3']) for(const row of [0,1,2]){
   run(`globalThis.grid=buildNovaReelGrid(${JSON.stringify(result)},${row});`);
   assert.equal(run('displayedResultFromGrid(grid)'),result);
   assert.equal(run('gridHasOnlyAllowedPaylines(grid,'+JSON.stringify(result)+')'),true);
-  assert.equal(run('REEL_STRIPS.every((s,c)=>s.some((_,i)=>[0,1,2].every(r=>grid[r][c]===s[(i+r)%21])))'),true);
+  assert.equal(run('REEL_STRIPS.every((s,c)=>s.some((_,i)=>[0,1,2].every(r=>grid[r][c]===s[(i+r)%20])))'),true);
  }
 });
 test('bell pays 15 normally and throughout bonus including final game',()=>{
@@ -81,7 +81,7 @@ test('forced NOVA outcomes survive normalization and stop at the exact requested
   for(let i=0;i<40;i++){
    run(`globalThis.forcedGrid=buildNovaReelGrid('${result}');`);
    assert.equal(run('novaPatternFromGrid(forcedGrid)'),result);
-   assert.equal(run('REEL_STRIPS.every((s,c)=>s.some((_,top)=>[0,1,2].every(r=>forcedGrid[r][c]===s[(top+r)%21])))'),true);
+   assert.equal(run('REEL_STRIPS.every((s,c)=>s.some((_,top)=>[0,1,2].every(r=>forcedGrid[r][c]===s[(top+r)%20])))'),true);
   }
   assert.equal(run(`normalRewardFor('${result}')`),0);
   assert.equal(run(`remaining=96;resolveATypeBonusOutcome('${result}').reward`),0);
@@ -144,4 +144,20 @@ test('CZ full-lamp bonus pending aligns BIG or REG on the very next game',()=>{
   assert.equal(run('fullLampNext.aTypeBonusReady'),true);
   assert.equal(run('fullLampNext.bonusWaitSpin'),false);
  }
+});
+test('nearest common stops preserve the role for every reel position and stop order',()=>{
+ const stats=run(`(()=>{
+ const stats={};const orders=[[0,1,2],[0,2,1],[1,0,2],[1,2,0],[2,0,1],[2,1,0]];
+ for(const role of ['BELL','REPLAY']){let max=0,total=0,count=0;
+  buildNovaReelGrid(role,1);
+  const grids=novaStopGridCache.get(role+':1');
+  for(const order of orders)for(const direction of [-1,1])for(let l=0;l<20;l++)for(let m=0;m<20;m++)for(let r=0;r<20;r++){
+   const positions=[l+.25,m+.25,r+.25],spin={result:role,lineRow:1,grid:grids[0].map(row=>row.slice())};
+   for(const i of order){const distances=new Map();for(let top=0;top<20;top++){const key=reelWindowFromTopIndex(i,top).join('|'),d=mod(direction*(top-positions[i]),20);distances.set(key,Math.min(distances.get(key)??Infinity,d));}const distance=column=>distances.get(column.join('|'));
+    const column=nearestCommonStopColumn(i,spin,distance),d=distance(column);max=Math.max(max,d);total+=d;count++;
+   }
+   if(displayedResultFromGrid(spin.grid)!==role||!gridHasOnlyAllowedPaylines(spin.grid,role))throw Error('role mismatch '+role);
+  }stats[role]={max,average:total/count,count};
+ }return stats;})()`);
+ console.log('nearest-stop exhaustive statistics',JSON.stringify(stats));assert.ok(stats.BELL.max<20);assert.ok(stats.REPLAY.max<20);
 });

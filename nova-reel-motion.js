@@ -1,6 +1,6 @@
 /* One continuous symbol strip for spinning and landing. Original image assets are reused. */
 globalThis.NovaReelMotion=(()=>{
- const rotationMs=800;
+ const rotationMs=750;
  const active=new Map(),mod=(n,m)=>(n%m+m)%m;
  function clear(i){const s=active.get(i);if(!s)return;cancelAnimationFrame(s.raf);s.layer.remove();s.win.classList.remove('novaMotionActive');active.delete(i);s.resolve?.(false);}
  function start(i,reel,strip,top,reverse,html){
@@ -16,6 +16,12 @@ globalThis.NovaReelMotion=(()=>{
    s.last=now;s.layer.style.transform=`translateY(${-s.pos*s.h}px)`;s.raf=requestAnimationFrame(frame);
   }s.raf=requestAnimationFrame(frame);
  }
+ function distance(i,column){
+  const s=active.get(i);if(!s)return Infinity;
+  const pos=mod(s.pos+s.direction*(performance.now()-s.last)/s.stepMs,s.strip.length);
+  const ds=s.strip.flatMap((_,n)=>column.every((v,j)=>s.strip[(n+j)%s.strip.length]===v)?[s.direction>0?mod(n-pos,s.strip.length):mod(pos-n,s.strip.length)]:[]);
+  return ds.length?Math.min(...ds):Infinity;
+ }
  function stop(i,column){
   const s=active.get(i);if(!s)return Promise.resolve(false);
   const now=performance.now();
@@ -27,5 +33,5 @@ globalThis.NovaReelMotion=(()=>{
   return new Promise(resolve=>{s.resolve=resolve;s.landing={from:s.pos,to:s.pos+s.direction*distance,time:now,duration:distance*s.stepMs};});
  }
 
- return {rotationMs,start,stop,clear,has:i=>active.has(i),top:i=>{const s=active.get(i);return s?mod(Math.round(s.pos),s.strip.length):null;},clearAll:()=>[...active.keys()].forEach(clear)};
+ return {rotationMs,distance,start,stop,clear,has:i=>active.has(i),top:i=>{const s=active.get(i);return s?mod(Math.round(s.pos),s.strip.length):null;},clearAll:()=>[...active.keys()].forEach(clear)};
 })();
