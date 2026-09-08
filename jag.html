@@ -7567,6 +7567,7 @@ body{
   }
 
   const AUDIO_SOURCE_OUTPUT_SCALE = Object.freeze({
+    ['assets/media/nova/ouma-reverse-v2.wav']: dbToGain(5),
 
     [BIG_BONUS_BGM_SRCS[0]]: dbToGain(0),
     [BIG_BONUS_BGM_SRCS[1]]: dbToGain(-2),
@@ -8753,6 +8754,7 @@ body{
   }
 
   function applyBgmOutputVolumes(){
+    resultEyecatchPreload.volume = bgmOutputVolumeForSource(BGM_OUTPUT_SCALE,'assets/media/nova/result-eyecatch.wav');
     if(bgm) bgm.volume = bgmOutputVolumeForSource(BGM_OUTPUT_SCALE, bgm.getAttribute("src") || normalBgmSrc());
     if(barBgm) barBgm.volume = bgmOutputVolumeForSource(BAR_BGM_OUTPUT_SCALE, activeBarBgmSrc());
     if(battleBgm) battleBgm.volume = bgmOutputVolumeForSource(BATTLE_BGM_OUTPUT_SCALE, BATTLE_BGM_SRC);
@@ -12729,7 +12731,7 @@ body{
     if(debugFastSpinActive)return;
     normalState.resultCard=card;NovaResults.show(card);
     stopAutoPlay('リザルト表示');stopSpeedToBonus('リザルト表示');
-    playLockedBonusConfirmSound('assets/media/nova/result-eyecatch.wav',sfxOutputVolume());
+    playLockedBonusConfirmSound('assets/media/nova/result-eyecatch.wav',bgmOutputVolume(BGM_OUTPUT_SCALE));
   }
   function applyNormalResult(result, resolved, lineRow=1){
     if(typeof debugFastSpinActive!=='undefined' && debugFastSpinActive){const audit=fastAtAuditMessage(result,resolved);if(audit)log(`${audit} / ${stats.totalSpins}G`);}
