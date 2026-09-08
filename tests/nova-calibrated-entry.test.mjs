@@ -7,6 +7,6 @@ test('weak NOVA uses 25 percent entry at low AT across settings',()=>{
   const run=roll=>{let seq=[.99,roll,.5,.99];return a.step(a.enter(),{setting},()=>seq.shift()??.99,'WEAK_NOVA');};
   assert.equal(run(threshold-1e-9).flow.entryStage,'seven');
   assert.equal(run(threshold+1e-9).flow.entryStage,'');
-  assert.equal(a.startZone(a.enter(),'giru',{setting}).initialAward,'100');
+  assert.ok(a.ladderValues.includes(Number(a.startZone(a.enter(),'giru',{setting}).initialAward)));
  }
 });

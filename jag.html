@@ -6531,11 +6531,11 @@ body{
   .vertexConnectionBadge.offline{color:#ff8f9c;border-color:rgba(255,91,113,.65);background:rgba(52,9,17,.9)}
   .vertexConnectionBadge.legacy{color:#d4a6ff;border-color:rgba(185,109,255,.6)}
 </style>
-<link rel="stylesheet" href="nova-cabinet.css?v=20260907-roulette-lamps22">
+<link rel="stylesheet" href="nova-cabinet.css?v=20260908-zones-34">
 <link rel="stylesheet" href="nova-artwork.css?v=20260907-cz-lamps10">
 <script src="nova-artwork.js?v=20260907-cz-lamps10" defer></script>
-<script src="nova-art.js?v=20260908-state-nova-33"></script>
-<script src="nova-balance.js?v=20260908-normal-at-31"></script>
+<script src="nova-art.js?v=20260908-zones-34"></script>
+<script src="nova-balance.js?v=20260908-zones-34"></script>
 <script src="nova-normal.js?v=20260908-state-nova-33"></script>
 <script src="nova-flow.js?v=20260908-state-nova-33"></script>
 <style>
@@ -11310,6 +11310,7 @@ body{
         if(settings.balanceVersion!=='cz-lamps10'){settings.novaArt={...settings.novaArt,...Object.fromEntries([1,2,3,4,5,6].map(i=>['direct'+i,NovaArt.defaults['direct'+i]])),soraHit:NovaArt.defaults.soraHit,oumaHit:NovaArt.defaults.oumaHit,uraChance:NovaArt.defaults.uraChance};settings.balanceVersion='cz-lamps10';}
         if(settings.bellBalanceVersion!==23){settings.novaArt={...NovaArt.defaults};settings.bellBalanceVersion=23;}
         if(settings.lotteryVersion!==33){settings.novaArt={...NovaArt.defaults};settings.novaNormal={...NovaNormal.defaults};settings.novaFlow={...NovaFlow.defaults};settings.lotteryVersion=33;}
+        if(settings.zoneVersion!==2){settings.novaArt={...NovaArt.defaults,initial:settings.novaArt?.initial||275};settings.zoneVersion=2;}
         if(previousAudioBalance < AUDIO_BALANCE_VERSION){
           const savedBgmVolume = Number(settings.bgmVolume);
           const savedSfxVolume = Number(settings.sfxVolume);
@@ -13796,10 +13797,10 @@ body{
     document.getElementById('saveFlowConfig').closest('details').after(normalPanel);
     document.getElementById('novaApplyInternal').onclick=()=>{if(isSpinning||session.active)return;normalState.internal=NovaNormal.normalize({mode:$('novaMode').value,games:$('novaModeGames').value,level:$('novaLevel').value,highLeft:$('novaLevel').value==='high'?10:0,impurity:$('novaImpurity').value});persistState();updateDisplay();};
     const artPanel=document.createElement('details');artPanel.id='novaArtConfig';
-    artPanel.innerHTML='<summary>AT・上乗せゾーン仮設定</summary><p>AT中はスイカ・チャンス目で高確移行と直乗せ、ノヴァ目で特化ゾーンを抽選。高確保証10G、以後リプレイ5%・ハズレ8%で降格。うらぴはnebula揃いで上乗せ。ギルは最終到達G数を加算・0G連BET無料・上限なし。</p>';
-    const artLabels={initial:'AT初期pt',urapiGames:'うらぴ継続G数',urapiHit:'うらぴ図柄揃い確率',oumaGames:'逢魔継続G数',soraHit:'空7揃い基準率（リセット補正前）',oumaHit:'逢魔ノヴァ揃い確率',uraChance:'裏ゾーン昇格確率',soraReset:'空nebulaリセット率',soraUraReset:'裏空nebulaリセット率',oumaFreeze:'逢魔フリーズ継続率',oumaUraFreeze:'裏逢魔フリーズ継続率'};
-    const giruTable=document.createElement('div');giruTable.innerHTML='<p>ギルは1G目で基準6〜28pt、2G目から継続抽選。以降0G連で成功ごとに倍増。初期保証は通常・裏ともに100pt。</p>';artPanel.append(giruTable);
-    const zoneTable=document.createElement('div');zoneTable.innerHTML='<p>初期保証（通常・裏共通）：宗介50pt、とと50pt、うらぴ80pt、ギル100pt、空1セット、逢魔100pt。<br>特化ゾーン選択率（設定順）</p><table><tr><th>設定</th>'+Object.values(NovaArt.names).map(x=>'<th>'+x+'</th>').join('')+'</tr>'+[1,2,3,4,5,6].map(setting=>NovaArt.atZoneWeights(setting)).map((row,i)=>'<tr><td>'+(i+1)+'</td>'+row.map(p=>'<td>'+p.toFixed(2)+'%</td>').join('')+'</tr>').join('')+'</table><p>純増4pt/Gと現在の初期保証に合わせて特化ゾーン突入率を調整。チャンス目A:Bは奇数40:60・偶数60:40で、当選時の恩恵は共通。通常ノヴァ目はCZ直抽選。AT弱ノヴァは低確25%・高確75%、強ノヴァは100%で特化当選。高確の強ノヴァはギル以上をさらに優遇。上乗せは小さい結果を中心に、まれに大きく伸びる振分。ボーナス特殊図柄は設定別の低頻度抽選、AT1セット275pt。通常AT・ボーナス純増4pt/G。空の7揃いは75%で1SET、25%で特化ゾーンを予約。裏空は裏ギル・裏空・裏逢魔の合計選択率20〜30%。裏ギル・裏空・裏逢魔の平均上乗せ目標は約2,000pt。</p>';artPanel.append(zoneTable);const uraTable=document.createElement('div');uraTable.innerHTML='<p>各ゾーン突入時に裏へ昇格（標準3%・全設定共通）。突入時に初期値を加算。消化中に獲得した上乗せを追加。</p><table><tr><th>ゾーン</th><th>通常の初期値</th><th>裏の初期値</th></tr>'+Object.entries(NovaArt.names).map(([key,name])=>'<tr><td>'+name+'</td>'+['normal','ura'].map(type=>'<td>'+NovaArt.guarantees[type][key]+(key==='sora'?'SET':'pt')+'</td>').join('')+'</tr>').join('')+'</table>';artPanel.append(uraTable);
+    artPanel.innerHTML='<summary>AT・上乗せゾーン仮設定（9種類）</summary><p>全ゾーン5G。段階式は1G目に最初の額を確保、残り4Gで上の段階へ挑戦。ハズレで終了し最高到達額のみ獲得。7揃い系・ノヴァ系は成立ごとに加算。</p>';
+    const artLabels={initial:'AT初期pt',ladderSosuke:'宗介 突破役確率',ladderGiru:'ギル 突破役確率',ladderUraGiru:'裏ギル 突破役確率',totoHit:'とと 7揃い率',totoReset:'とと nebula率',soraHit:'空 7揃い率',soraReset:'空 nebula率',soraUraHit:'裏空 7揃い率',soraUraReset:'裏空 nebula率',urapiSuper:'うらぴ スーパーノヴァ率',oumaSuper:'逢魔 スーパーノヴァ率',oumaUraSuper:'裏逢魔 スーパーノヴァ率',oumaFreeze:'逢魔フリーズ継続率',oumaUraFreeze:'裏逢魔フリーズ継続率',uraChance:'ギル・空・逢魔の裏昇格率'};
+    const zoneTable=document.createElement('div');zoneTable.innerHTML='<p>段階候補：50・100・200・300・500・1000・2000ptから5段階。<br>7揃い：50・100・150・200・300・500pt、nebulaで残り5Gへリセット。<br>スーパーノヴァ：50・100pt。逢魔と裏逢魔はBETでフリーズ抽選、当選時は無料の自動0G連。</p><table><tr><th>設定</th>'+Object.values(NovaArt.names).map(x=>'<th>'+x+'</th>').join('')+'</tr>'+[1,2,3,4,5,6].map(setting=>NovaArt.atZoneWeights(setting)).map((row,i)=>'<tr><td>'+(i+1)+'</td>'+row.map(p=>'<td>'+p.toFixed(2)+'%</td>').join('')+'</tr>').join('')+'</table><p>ギル・空・逢魔の当選時のみ裏昇格を抽選。裏宗介・裏とと・裏うらぴは通常版へ統合。通常ATの小役確率・直乗せ・高確抽選は据え置き。</p>';artPanel.append(zoneTable);
+    const bonusTable=document.createElement('p');bonusTable.textContent='ボーナス中nebula揃い（設定1〜6）：'+NovaArt.bonusSpecialRates.map(p=>(p*100).toFixed(2)+'%').join(' / ');artPanel.append(bonusTable);
     const artCfg=NovaArt.config(settings.novaArt);
     for(const [key,label]of Object.entries(artLabels)){const row=document.createElement('label');row.className='field';row.textContent=label;const input=document.createElement('input');input.type='number';input.dataset.artConfig=key;input.setAttribute('aria-label',label);input.min=key.startsWith('direct')?'2':key==='initial'||key.endsWith('Games')?'1':'0';input.max=key.startsWith('direct')?'100000':key==='initial'?String(Number.MAX_SAFE_INTEGER):key.endsWith('Games')?'1000':'1';input.step=key.startsWith('direct')?'1':key==='initial'||key.endsWith('Games')?'1':'0.01';input.value=artCfg[key];row.append(input);artPanel.append(row);}
     const artSave=document.createElement('button');artSave.type='button';artSave.textContent='AT設定を保存';artSave.onclick=()=>{const value={payoutVersion:1};artPanel.querySelectorAll('input').forEach(x=>value[x.dataset.artConfig]=x.valueAsNumber);settings.novaArt=NovaArt.config(value);persistState();artSave.textContent='AT設定を保存しました';};artPanel.append(artSave);
@@ -14804,9 +14805,8 @@ body{
     };
     playCzCountdownOnLever(resolved);
     currentSpin.manualBonusStop = false; // Fixed-G prototype: bonus starts on the next confirmed spin.
-    if(normalState.flow?.zone==='sora')showOverlay('7・nebulaを狙え');
-    if(normalState.flow?.zone==='ouma')showOverlay('ノヴァを狙え');
-    if(normalState.flow?.zone==='urapi')showOverlay('nebulaを狙え');
+    if(['toto','sora'].includes(normalState.flow?.zone))showOverlay('7・nebulaを狙え');
+    if(['urapi','ouma'].includes(normalState.flow?.zone))showOverlay('スーパーノヴァを狙え');
     if(resolved.oumaFreeze)showOverlay('逢魔フリーズ！ 0G連・ノヴァを狙え');
     if(resolved.artReverse)showOverlay('逆回転！ '+resolved.flowAfter.award+'pt');
     if(currentSpin.bonusConfirmWaitSpin){
@@ -14871,11 +14871,11 @@ body{
     });
 
     // オート/SPEED中だけ自動停止。手動時はストップ/左中右を押すまで止まらない。
-    if(autoPlay || speedModeSpinAtStart){
+    if(autoPlay || speedModeSpinAtStart || resolved.oumaFreeze){
       const stopOrder = zoneActiveAtSpinStart ? [2,1,0] : [0,1,2];
       stopOrder.forEach((i,idx)=>{
         const normalAutoStopDelay = autoStopDelayMs(idx);
-        const delay = speedModeSpinAtStart ? speedModeStopDelay(i) : normalAutoStopDelay;
+        const delay = resolved.oumaFreeze ? spinWaitMs + 150 + idx * 300 : speedModeSpinAtStart ? speedModeStopDelay(i) : normalAutoStopDelay;
         setTimeout(()=>stopSingleReel(i), delay);
       });
     }
@@ -15064,6 +15064,21 @@ body{
     }
   }
 
+  let oumaChainTimer=null;
+  function scheduleOumaZeroChain(){
+    const previous=normalState.flow;
+    if(previous?.zone!=='ouma'||!previous.oumaPending||debugFastSpinActive||isCompleteTrialLocked())return false;
+    clearTimeout(oumaChainTimer);
+    oumaChainTimer=setTimeout(()=>{
+      if(normalState.flow!==previous||isSpinning||session.active||debugFastSpinActive||isCompleteTrialLocked())return;
+      normalState.flow=NovaArt.prepareBet(previous,settings.novaArt,Math.random);
+      persistState();updateDisplay();
+      if(normalState.flow.zero){spin();}
+      else{if(!normalState.flow.zone)log(NovaArt.zoneName(previous)+'ゾーン終了 / ＋'+previous.award+'pt');scheduleNextSpeedToBonus();scheduleNextAuto();}
+    },900);
+    return true;
+  }
+
   function finishSpin(result, resolved, lineRow=1){
     if(!isSpinning || (currentSpin && currentSpin.finishing)) return;
     if(spinWaitTimer){
@@ -15166,7 +15181,7 @@ body{
         stopSpeedToBonus("ボーナス確定のためSPEED停止");
         setSpeedFrameOffHold(true);
         queueBonusSessionStart(180);
-      }else{
+      }else if(!(resolved.oumaFreeze&&scheduleOumaZeroChain())){
         scheduleNextSpeedToBonus();
         scheduleNextAuto();
       }

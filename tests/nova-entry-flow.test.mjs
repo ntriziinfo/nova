@@ -8,8 +8,8 @@ test('ART win freezes quota, then red seven, roulette, announcement, zone',()=>{
  s=a.normalize(JSON.parse(JSON.stringify(s)));
  let r=a.step(s,{},()=>.5);s=r.flow;assert.equal(r.result,'BIG');assert.equal(r.zoneSpin,true);assert.equal(r.internalBonus,undefined);assert.equal(s.entryStage,'roulette');assert.equal(s.remaining,'5');
  s=a.step(a.normalize(JSON.parse(JSON.stringify(s))),{},()=>.5).flow;assert.equal(s.entryStage,'confirmed');assert.equal(s.zone,'');assert.equal(s.remaining,'5');
- s=a.prepareBet(s,{},()=>.5);assert.equal(s.zone,'sosuke');assert.equal(s.zoneLeft,3);assert.equal(s.entryStage,'');assert.equal(s.remaining,'5');
- s=a.prepareBet(s,{},()=>.5);assert.equal(s.zoneLeft,3);
+ s=a.prepareBet(s,{},()=>.5);assert.equal(s.zone,'sosuke');assert.equal(s.zoneLeft,5);assert.equal(s.entryStage,'');assert.equal(s.remaining,'5');
+ s=a.prepareBet(s,{},()=>.5);assert.equal(s.zoneLeft,5);
 });
 test('CZ success always goes to a bonus even with legacy direct ART setting',()=>{
  for(const roll of [.1,.8]){let f=ctx.NovaFlow.enterCZ(false,{},()=>0);f.remaining=1;f.success=true;

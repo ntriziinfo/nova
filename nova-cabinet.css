@@ -72,6 +72,10 @@ body[data-art-zone=toto][data-toto-color=rainbow] .novaArtItem[data-artwork=toto
 .reel.cz-stop-blackout .window{filter:brightness(0)!important}
 
 body[data-art-zone=urapi] .novaArtItem[data-artwork=urapi] img{animation:none!important;filter:brightness(1.25) drop-shadow(0 0 12px #fff)!important}
+body[data-art-zone=sosuke] .novaArtItem[data-artwork=sosuke] img,
+body[data-art-zone=giru] .novaArtItem[data-artwork=giru1] img,
+body[data-art-zone=sora] .novaArtItem[data-artwork=sora1] img,
+body[data-art-zone=ouma] .novaArtItem[data-artwork=ouma1] img{animation:none!important;filter:brightness(1.25) drop-shadow(0 0 12px #fff)!important}
 
 body[data-zone-roulette-lamp=sosuke] .novaArtItem[data-artwork=sosuke] img,
 body[data-zone-roulette-lamp=toto] .novaArtItem[data-artwork=toto] img,
