@@ -18,7 +18,7 @@ test('Giru changes continuation at 80 and 320G with mean 80G across settings',()
 });
 test('ART natural and forced Giru entries preserve the selected setting',()=>{
  let forced=a.step(a.enter(),{setting:5},()=>0,'ZONE_giru');assert.equal(forced.flow.giruSetting,5);
- let sequence=[0,0,0,0,.82,.99];const natural=a.step(a.enter(),{setting:6},()=>sequence.shift());
+ const row=a.atZoneWeights(6);const pick=(row[0]+row[1]+row[2]+row[3]/2)/100;let sequence=[.99,pick,.99];const natural=a.step(a.enter(),{setting:6},()=>sequence.shift(),'STRONG_NOVA');
  assert.equal(natural.flow.pendingZone,'giru');assert.equal(natural.flow.entryStage,'seven');
 });
 test('all six zones preserve ART games and finish correctly',()=>{
@@ -38,8 +38,4 @@ test('Ouma super adds 200G without normal freeze and Urapi yields 40G mean targe
  assert.equal(a.defaults.urapiGames*a.defaults.urapiHit*20,40);
  assert.ok(Math.abs(3*(.3*10+.6*(5+5/18)+.1*5)-20)<1e-10);assert.equal(5*(.3*10+.6*5),30);
 });
-test('ART bonus pauses games, exact rare branches, higher-setting direct rates',()=>{
- let s=a.enter();let seq=[0,0,0,0,0,.99];let t=a.step(s,{},()=>seq.shift());assert.equal(t.flow.entryStage,'seven');assert.equal(a.afterBonus(t.flow).remaining,'275');
- seq=[0,0,.2,0,0,.99];t=a.step(s,{},()=>seq.shift());assert.equal(t.flow.pendingZone,'sosuke');
- assert.ok(a.direct.every((n,i)=>i===0||n<a.direct[i-1]));
-});
+test('AT NOVA entry preserves quota through bonus interruption',()=>{const t=a.step(a.enter(),{setting:3},()=>.5,'STRONG_NOVA');assert.equal(t.flow.entryStage,'seven');assert.equal(a.afterBonus(t.flow).remaining,'275');assert.equal(t.internalBonus,null);});

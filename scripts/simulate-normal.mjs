@@ -14,7 +14,7 @@ export function simulate(setting,scale,games=1000000,seed=1234567,options={}){
   if(t.result==='SUPER_NOVA'){const freeze=rng()<.5;if(freeze)freezes++;flow={phase:'normal'};bonus('BIG',freeze);}
   else if(t.internalBonus){if(t.internalBonus.source.includes('天井'))ceilings++;flow={phase:'normal'};bonus(t.internalBonus.kind);}
   else if(t.direct)flow=a.enter(c);
-  else if(t.entry)flow=NovaFlow.enterCZ(t.entry==='STRONG_CZ',undefined,rng);
+  else if(t.entry)flow=NovaFlow.enterCZ(t.entry==='STRONG_CZ',t.czOptions,rng);
   else flow=NovaFlow.advance(t.czFlow);
  }
  }catch(error){if(error!==sessionEnd)throw error;}
