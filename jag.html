@@ -15641,16 +15641,17 @@ body{
     const simBtn = $("tenKSimBtn");
     if(!startBtn || !stopBtn || !status) return;
 
-    startBtn.textContent = `高速回転 ${DEBUG_FAST_SPINS_PER_SECOND}G/s`;
+    startBtn.textContent = isCompleteTrialLocked() ? "朝一リセットして高速回転" : `高速回転 ${DEBUG_FAST_SPINS_PER_SECOND}G/s`;
 
     startBtn.disabled = debugFastSpinActive;
     stopBtn.disabled = !debugFastSpinActive;
     if(simBtn) simBtn.disabled = debugFastSpinActive || debugOneClickSimActive || isSpinning;
-    if(isCompleteTrialLocked()){
-      startBtn.disabled = true;
-    }
 
-    if(debugFastSpinActive){
+
+    if(isCompleteTrialLocked()){
+      status.textContent = "COMPLETE / 朝一リセットで高速回転を再開できます";
+      status.style.color = "rgba(255,255,255,.65)";
+    }else if(debugFastSpinActive){
       status.textContent = `高速回転中 ${DEBUG_FAST_SPINS_PER_SECOND}G/s / 今回${debugFastSpinCount}G`;
       status.style.color = "var(--green)";
     }else{
@@ -15661,6 +15662,7 @@ body{
 
   function startDebugFastSpin(){
     if(debugFastSpinActive) return;
+    if(isCompleteTrialLocked() && !morningResetGame(true, "高速回転再開の朝一リセット")) return;
     if(!canPlayCompleteTrial()) return;
     if(isSpinning){
       showMessage("高速回転待機", "現在の回転停止後に開始してください");
