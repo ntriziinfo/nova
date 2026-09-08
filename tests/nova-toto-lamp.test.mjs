@@ -8,7 +8,7 @@ test('normal and ura Toto clear rainbow on final stop without losing award',()=>
  for(const zone of ['toto','ura_toto']){
   const before={...a.startZone(a.enter(),zone,{},()=>.5),zoneLeft:1,color:'rainbow',award:'550'};
   const after=a.step(before,{},()=>.99,'MISS').flow;
-  assert.equal(after.zone,'');assert.equal(after.color,'white');assert.equal(after.remaining,'825');
+  assert.equal(after.zone,'');assert.equal(after.color,'white');assert.equal(after.remaining,'700');
   assert.equal(a.normalize(JSON.parse(JSON.stringify(after))).color,'white');
  }
 });

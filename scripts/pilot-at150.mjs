@@ -1,0 +1,3 @@
+import fs from 'node:fs';import {loadModel,simulate} from './zone-v2-model.mjs';loadModel();
+const keys=['ladderSosuke','ladderGiru','ladderUraGiru','totoHit','soraHit','soraUraHit','urapiSuper','oumaSuper','oumaUraSuper'];const output=[];
+for(const m of [1,1.2,1.4,1.6])for(const setting of [1,3,6]){const art=m===1?{}:{initial:150,payoutVersion:1,...Object.fromEntries(keys.map(k=>[k,Math.min(.98,NovaArt.defaults[k]*m)]))};let bet=0,paid=0;for(let i=0;i<48;i++){const r=simulate(setting,10000,4500000+setting*100000+i*7919,{rng:'xoshiro128',art});bet+=r.totalBet;paid+=r.totalPaid;}const row={m,setting,rtp:paid/bet,art};output.push(row);console.log(JSON.stringify(row));fs.writeFileSync('../../outputs/at150-pilot45.json',JSON.stringify(output,null,2));}

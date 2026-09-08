@@ -1,7 +1,7 @@
 /* AT payout-point rules. Decimal strings preserve unlimited exact awards. */
 globalThis.NovaArt=(()=>{
  const names={sosuke:'宗介',toto:'とと',urapi:'うらぴ',giru:'ギル',sora:'空',ouma:'逢魔'};
- const defaults={initial:275,payoutVersion:1,ladderSosuke:.5,ladderGiru:.7,ladderUraGiru:.86,totoHit:.25,totoReset:.02,soraUraHit:.65,urapiSuper:.35,oumaSuper:.55,oumaUraSuper:.7,rare:.03,big:.12,zone:.4,czArt:.25,soraHit:.45,soraReset:.06,soraUraReset:.25,oumaFreeze:.25,oumaUraFreeze:.65,direct1:1400,direct2:1320,direct3:1240,direct4:1160,direct5:1080,direct6:1000};
+ const defaults={initial:150,payoutVersion:1,ladderSosuke:0.7,ladderGiru:0.95,ladderUraGiru:0.98,totoHit:0.35,totoReset:.02,soraUraHit:0.75,urapiSuper:0.49,oumaSuper:0.77,oumaUraSuper:0.98,rare:.03,big:.12,zone:.4,czArt:.25,soraHit:0.63,soraReset:.06,soraUraReset:.25,oumaFreeze:.25,oumaUraFreeze:.65,direct1:1400,direct2:1320,direct3:1240,direct4:1160,direct5:1080,direct6:1000};
  const zoneWeights=Object.freeze([[35,29,17,9,7,3],[34.5,29,17,9.5,7,3],[34,28.5,17.5,9.5,7.25,3.25],[33.5,28.5,17.5,9.5,7.5,3.5],[33,28,18,9.5,7.75,3.75],[32.5,27.5,18,10,8,4]].map(Object.freeze));
  const superZoneChance=.03;
  const zoneGroups={weak:['sosuke','toto','urapi'],strong:['giru','sora','ouma'],super:['ura_giru','ura_sora','ura_ouma']};
@@ -30,7 +30,7 @@ globalThis.NovaArt=(()=>{
  const settingBias=[-2.7,-2.55,-2.27,-2.13,-1.8,-1.46];
  const biasFor=setting=>settingBias[Math.max(0,Math.min(5,Math.round(Number(setting)||1)-1))];
  // Zone v2 calibration: dedicated bonus NEBULA rates; normal/CZ and AT roles stay independent.
- const bonusSpecialRates=[.03996655234234661,.04229979338837095,.042454781614400576,.04471435169927831,.05243846117157629,.05033043246930798];
+ const bonusSpecialRates=[0.05849463058977963,0.06016986125454101,0.06353023384823513,0.06259443571245721,0.06736560691665441,0.05608260376555219];
  const bonusSpecialFor=setting=>bonusSpecialRates[Math.max(0,Math.min(5,Math.round(Number(setting)||1)-1))];
  function advanceBonus(state,special=false,reward=0){const target=bonusTarget(state.bonusKind),paid=Number(state.paid)||0;return {bonusTarget:target,bonusPointsRemaining:Math.max(0,target-paid-Math.max(0,Number(reward)||0)),bonusArtSets:(Number(state.bonusArtSets)||0)+(paid<target&&special?1:0)};}
 

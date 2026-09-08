@@ -6531,12 +6531,12 @@ body{
   .vertexConnectionBadge.offline{color:#ff8f9c;border-color:rgba(255,91,113,.65);background:rgba(52,9,17,.9)}
   .vertexConnectionBadge.legacy{color:#d4a6ff;border-color:rgba(185,109,255,.6)}
 </style>
-<link rel="stylesheet" href="nova-cabinet.css?v=20260908-base275-reset99-43">
+<link rel="stylesheet" href="nova-cabinet.css?v=20260908-at150-45">
 <link rel="stylesheet" href="nova-artwork.css?v=20260907-cz-lamps10">
 <script src="nova-artwork.js?v=20260907-cz-lamps10" defer></script>
-<script src="nova-art.js?v=20260908-base275-reset99-43"></script>
-<script src="nova-balance.js?v=20260908-base275-reset99-43"></script>
-<script src="nova-normal.js?v=20260908-base275-reset99-43"></script>
+<script src="nova-art.js?v=20260908-at150-45"></script>
+<script src="nova-balance.js?v=20260908-at150-45"></script>
+<script src="nova-normal.js?v=20260908-at150-45"></script>
 <script src="nova-flow.js?v=20260908-state-nova-33"></script>
 <style>
 /* Fit the original nebula art to reel width; its transparent vertical margins
@@ -7641,7 +7641,7 @@ body{
     rogiMovieVolume:DEFAULT_ROGI_MOVIE_VOLUME,
     audioMuted:false,
     audioBalanceVersion:AUDIO_BALANCE_VERSION,
-    completeLimitPt:19000
+    completeLimitPt:10000
   };
 
   let stats = {
@@ -7921,7 +7921,7 @@ body{
   const SPEED_MODE_MAX_SPINS_PER_SECOND = 10;
   const SPEED_MODE_MULTIPLIER = 3;
   const COMPLETE_TRIAL_ENABLED = true;
-  const DEFAULT_COMPLETE_LIMIT_PT = 19000;
+  const DEFAULT_COMPLETE_LIMIT_PT = 10000;
   const SLUMP_MAX_HISTORY_POINTS = 20000;
   const SLUMP_MAX_DRAW_POINTS = 1400;
   let autoPlay = false;
@@ -11336,6 +11336,7 @@ body{
         settings.masterVolume = Object.prototype.hasOwnProperty.call(data.settings, "masterVolume") && Number.isFinite(savedMasterVolume) ? clamp(savedMasterVolume, 0, 1) : DEFAULT_MASTER_VOLUME;
         settings.audioBalanceVersion = AUDIO_BALANCE_VERSION;
       }
+      if(settings.at150Version!==45){settings.novaArt={...settings.novaArt,...{"initial":150,"ladderSosuke":0.7,"ladderGiru":0.95,"ladderUraGiru":0.98,"totoHit":0.35,"soraHit":0.63,"soraUraHit":0.75,"urapiSuper":0.49,"oumaSuper":0.77,"oumaUraSuper":0.98,"payoutVersion":1}};settings.completeLimitPt=10000;settings.at150Version=45;}
       settings.completeLimitPt = Math.max(1, Math.round(Number(settings.completeLimitPt) || DEFAULT_COMPLETE_LIMIT_PT));
       settings.title = normalizeMachineTitle(settings.title);
       if(!SETTING[settings.setting]) settings.setting = 1;

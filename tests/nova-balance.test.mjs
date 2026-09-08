@@ -14,10 +14,10 @@ test('BIG150 and REG75 finish by gross payout and do not guarantee ART',()=>{
   assert.equal(a.afterBonus(null,{},s.bonusArtSets).phase,'normal');
  }
 });
-test('specials award sets without consuming points; sets continue at 275pt',()=>{
+test('specials award sets without consuming points; sets continue at 150pt',()=>{
  let bonus={bonusKind:'BIG',paid:0,bonusArtSets:0};for(let i=0;i<2;i++)bonus={...bonus,...a.advanceBonus(bonus,true,0)};
- assert.equal(bonus.bonusArtSets,2);let flow=a.afterBonus(null,{},2);assert.equal(flow.remaining,'275');assert.equal(flow.sets,'1');
- flow={...flow,remaining:'3'};flow=a.step(flow,{rare:0},()=>.99,'BELL').flow;assert.equal(flow.remaining,'275');assert.equal(flow.sets,'0');
+ assert.equal(bonus.bonusArtSets,2);let flow=a.afterBonus(null,{},2);assert.equal(flow.remaining,'150');assert.equal(flow.sets,'1');
+ flow={...flow,remaining:'3'};flow=a.step(flow,{rare:0},()=>.99,'BELL').flow;assert.equal(flow.remaining,'150');assert.equal(flow.sets,'0');
  flow={...flow,remaining:'3'};flow=a.step(flow,{rare:0},()=>.99,'BELL').flow;assert.equal(flow.phase,'normal');
  const held=a.afterBonus({...a.enter(),remaining:'17',sets:'2'}, {},1);assert.equal(held.remaining,'17');assert.equal(held.sets,'3');
 });

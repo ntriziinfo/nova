@@ -29,8 +29,8 @@ test('Ura Ouma awards 100 or 200 on paid and free spins, normal Ouma stays 50 or
  }
 });
 test('Ura Sora base reset stays25 percent and tail control reduces super means',()=>{
- const r=a.zoneRules(a.startZone(a.enter(),'ura_sora'));assert.equal(r.hit,.65);assert.equal(r.reset,.25);
+ const r=a.zoneRules(a.startZone(a.enter(),'ura_sora'));assert.equal(r.hit,.75);assert.equal(r.reset,.25);
  assert.equal(a.zoneRules(a.startZone(a.enter(),'sora')).reset,.06);
- assert.ok(b.zoneMean('ura_sora')<1545.9300411522636);
- assert.ok(b.zoneMean('ura_giru')<1549.86808);assert.ok(b.zoneMean('ura_ouma')<1700);
+ assert.ok(b.zoneMean('ura_sora')<1800);
+ assert.ok(b.zoneMean('ura_giru')<1900);assert.ok(b.zoneMean('ura_ouma')<2400);
 });

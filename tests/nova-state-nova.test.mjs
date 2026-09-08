@@ -28,12 +28,12 @@ test('AT guarantee pauses during roulette and zones, carries through sets and sa
  assert.equal(s.atHighLeft,9);s=a.prepareBet(s,{setting:3},()=>.99);
  s=a.step(s,{setting:3},()=>.99).flow;assert.equal(s.atHighLeft,9);
  s=a.normalize(JSON.parse(JSON.stringify({...a.enter(),atHigh:true,atHighLeft:1,remaining:'15',sets:'1'})));
- s=a.step(s,{setting:3},()=>0,'BELL').flow;assert.equal(s.remaining,'275');assert.equal(s.atHigh,true);assert.equal(s.atHighLeft,0);
+ s=a.step(s,{setting:3},()=>0,'BELL').flow;assert.equal(s.remaining,'150');assert.equal(s.atHigh,true);assert.equal(s.atHighLeft,0);
  s=a.step(s,{setting:3},()=>0,'REPLAY').flow;assert.equal(s.atHigh,false);
 });
 test('strong SUICA rare 300pt is literal points, not converted G, and pays 6pt',()=>{
  const seq=[.99,.99,0,.99999];const t=a.step(a.enter(),{setting:3},()=>seq.shift()??.99,'STRONG_SUICA');
- assert.equal(t.atOutcome.direct,300);assert.equal(t.flow.remaining,'569');assert.equal(a.payout(t.result),6);
+ assert.equal(t.atOutcome.direct,300);assert.equal(t.flow.remaining,'444');assert.equal(a.payout(t.result),6);
 });
 test('live normal path passes strong CZ options and preserves normalized AT state',()=>{
  const c=load(),html=fs.readFileSync('jag.html','utf8');
@@ -43,5 +43,5 @@ test('live normal path passes strong CZ options and preserves normalized AT stat
 });
 test('old forced strong bell maps to ordinary bell in both engines',()=>{
  assert.equal(n.spin({}, {phase:'normal'},3,{},()=>.99,'STRONG_BELL').result,'BELL');
- const t=a.step(a.enter(),{setting:3},()=>.99,'STRONG_BELL');assert.equal(t.result,'BELL');assert.equal(t.flow.remaining,'260');
+ const t=a.step(a.enter(),{setting:3},()=>.99,'STRONG_BELL');assert.equal(t.result,'BELL');assert.equal(t.flow.remaining,'135');
 });

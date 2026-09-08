@@ -21,11 +21,11 @@ test('CZ consumes its selected number of subsequent games and persists success a
  assert.equal(state.remaining,1);assert.equal(state.success,true);
  state=flow.advance(state);assert.equal(state.phase,'normal');
 });
-test('ART starts at 275pt and ends after actual payouts reach the target',()=>{
+test('ART starts at 150pt and ends after actual payouts reach the target',()=>{
  let state=flow.afterBonus(null,undefined,1);
- assert.equal(state.remaining,'275');
- for(let i=0;i<18;i++)state=context.NovaArt.step(state,{rare:0},()=>.99,'BELL').flow;
- assert.equal(state.remaining,'5');
+ assert.equal(state.remaining,'150');
+ for(let i=0;i<9;i++)state=context.NovaArt.step(state,{rare:0},()=>.99,'BELL').flow;
+ assert.equal(state.remaining,'15');
  state=context.NovaArt.step(state,{rare:0},()=>.99,'BELL').flow;
  assert.equal(state.phase,'normal');assert.equal(state.remaining,0);
 });
