@@ -58,6 +58,7 @@ globalThis.NovaLadder=(()=>{
   if(!flow.ladderRevealed){root.dataset.stage='table';return;}
   const target=flow.ladder[Math.min(flow.ladder.length-1,(flow.ladderIndex||0)+1)];
   const img=root.querySelector('.novaLadderIntegrated');img.src=`assets/ladder/shutter-${target}.png`;img.alt=`昇格チャレンジ ${target}pt`;
+  if(root.dataset.stage==='table'){root.dataset.stage='open';void upper.offsetHeight;}
   root.dataset.stop='0';root.dataset.stage='challenge';
  }
  function stop(count){
