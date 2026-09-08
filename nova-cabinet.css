@@ -131,3 +131,6 @@ body[data-art-zone=ouma] .novaArtItem:not([data-artwork=ouma1]) img{animation:no
 #machine .reel .cell img{image-rendering:auto;filter:none!important}
 #machine .reel.spinning .cell.isAimSymbol img{transform:none!important}
 @keyframes oumaReelRattleReduced{0%,100%{transform:translateY(-1px)}50%{transform:translateY(1px)}}
+
+/* Symbol movement conveys direction; cabinet shaking obscures it. */
+#machine .reel.spinning{animation:none!important}
