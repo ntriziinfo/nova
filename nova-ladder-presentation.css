@@ -3,35 +3,22 @@
 .novaArtItem{transition:translate 420ms cubic-bezier(.22,.7,.2,1)}
 #machine[data-ladder-active] .novaArtLayer{clip-path:inset(var(--ladder-lamp-top) 0 var(--ladder-lamp-bottom) 0)}
 #machine[data-ladder-active] .novaArtItem{translate:0 var(--ladder-lamp-lift)}
-.novaLadderHalf{position:absolute;left:0;width:100%;height:50%;z-index:2;transition:transform 400ms cubic-bezier(.22,.7,.2,1)}
-.novaLadderUpper{top:0}.novaLadderLower{top:50%}
-.novaLadderMetal{position:absolute;inset:-5px;background:repeating-linear-gradient(0deg,#151419 0px,#56515a 3px,#25232a 7px,#100f14 12px);border:4px solid #9a8283;box-shadow:inset 0 0 18px #000,0 0 9px #000}
-.novaLadderUpper .novaLadderMetal{border-bottom:4px solid #e1aa68}
-.novaLadderLower .novaLadderMetal{border-top:4px solid #e1aa68}
-.novaLadderAmount{position:absolute;left:50%;top:50%;width:70%;height:100%;object-fit:contain;transform:translate(-50%,-50%);transition:transform 300ms,opacity 150ms;z-index:1;opacity:0}
-.novaLadderPresentation[data-stage=open] .novaLadderUpper{transform:translateY(-92%)}
-.novaLadderPresentation[data-stage=open] .novaLadderLower{transform:translateY(92%)}
-.novaLadderPresentation[data-stage=open] .novaLadderAmount{opacity:1}
-.novaLadderPresentation[data-stage=clamp] .novaLadderUpper{transform:translateY(-68%)}
-.novaLadderPresentation[data-stage=clamp] .novaLadderLower{transform:translateY(68%)}
-.novaLadderPresentation[data-stage=clamp] .novaLadderAmount{opacity:1;transform:translate(-50%,-50%) scale(.78)}
-.novaLadderPresentation[data-stage=clamp] .novaLadderUpper .novaLadderMetal{animation:oumaReelRattle 35ms steps(1,end) infinite}
-.novaLadderPresentation[data-stage=clamp] .novaLadderLower .novaLadderMetal{animation:oumaReelRattle 41.5ms steps(1,end) -15.5ms infinite}
-@media(prefers-reduced-motion:reduce){.novaLadderPresentation[data-stage=clamp] .novaLadderMetal{animation:none}.novaLadderHalf,.novaArtItem{transition-duration:100ms}}
+.novaLadderTable{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:1%;padding:2%;box-sizing:border-box;visibility:hidden}
+.novaLadderTableItem{flex:1;min-width:0;max-width:28%;border-bottom:2px solid #57402a}
+.novaLadderTableItem img{width:100%;display:block}
+.novaLadderTableItem[data-current=true]{border-color:#ffcc54;filter:drop-shadow(0 0 4px #fa5)}
+[data-stage=table] .novaLadderTable{visibility:visible}
+.novaLadderAmount{position:absolute;left:61%;top:50%;width:70%;height:100%;object-fit:contain;transform:translate(-50%,-50%);z-index:1}
 .novaLadderCharacter{position:absolute;left:4%;bottom:2%;width:23%;height:94%;object-fit:contain;z-index:3;filter:brightness(1.2) drop-shadow(0 0 7px #fff5b0)}
 .novaLadderCharacter[data-ura=true]{filter:grayscale(1) sepia(1) saturate(10) hue-rotate(315deg) brightness(1.1) drop-shadow(0 0 9px #f22)}
-.novaLadderAmount{left:61%}
-.novaLadderPresentation[data-stage=settled] .novaLadderUpper,.novaLadderPresentation[data-stage=award] .novaLadderUpper{transform:translateY(-100%)}
-.novaLadderPresentation[data-stage=settled] .novaLadderLower,.novaLadderPresentation[data-stage=award] .novaLadderLower{transform:translateY(100%)}
-.novaLadderPresentation[data-stage=settled] .novaLadderAmount{opacity:1}
-.novaLadderPresentation[data-stage=award] .novaLadderAmount{opacity:1;width:76%;height:125%;filter:drop-shadow(0 0 12px #ffb52e);transform:translate(-50%,-50%) scale(1.1)}
-.novaLadderMetal{background:#18161a url('assets/ladder/outlaw-shutter.png') center/100% 100% no-repeat;border:0}
-.novaLadderMetal{inset:0;overflow:hidden}
-.novaLadderTarget{position:absolute;left:30%;top:0;width:65%;height:200%;object-fit:contain}
-.novaLadderLower .novaLadderTarget{top:-100%}
-.novaLadderPresentation[data-stage=clamp] .novaLadderUpper,.novaLadderPresentation[data-stage=clamp] .novaLadderLower{transform:translateY(0)}
-.novaLadderUpper .novaLadderMetal,.novaLadderLower .novaLadderMetal{border:0}
-.novaLadderTargetJoined{position:absolute;left:30%;top:0;width:65%;height:100%;object-fit:contain;z-index:4;opacity:0;pointer-events:none;transition:opacity 80ms 380ms}
-.novaLadderPresentation[data-stage=clamp] .novaLadderTargetJoined{opacity:1}
-.novaLadderPresentation[data-stage=clamp] .novaLadderTarget{visibility:hidden}
-.novaLadderCharacter{z-index:5}
+.novaLadderDoor{position:absolute;inset:0;z-index:2;transform:translateY(-105%);transition:transform 450ms cubic-bezier(.2,.7,.3,1)}
+.novaLadderIntegrated{display:block;width:100%;height:100%;object-fit:fill}
+[data-stage=table] .novaLadderAmount,[data-stage=table] .novaLadderCharacter,[data-stage=table] .novaLadderDoor{visibility:hidden}
+[data-stage=challenge] .novaLadderDoor{transform:translateY(-20%)}
+[data-stage=challenge] .novaLadderIntegrated{animation:oumaReelRattle 35ms steps(1,end) infinite}
+[data-stage=promote] .novaLadderDoor{transform:translateY(0)}
+[data-stage=award] .novaLadderAmount{width:76%;height:125%;filter:drop-shadow(0 0 12px #ffb52e);transform:translate(-50%,-50%) scale(1.1)}
+@media(prefers-reduced-motion:reduce){.novaLadderIntegrated{animation:none!important}.novaLadderDoor,.novaArtItem{transition-duration:100ms}}
+[data-stage=table] .novaLadderAmount,[data-stage=table] .novaLadderCharacter,[data-stage=table] .novaLadderDoor{display:none}
+[data-stage=challenge] .novaLadderDoor{transform:translateY(-8%)}
+[data-stage=challenge] .novaLadderAmount{display:none}

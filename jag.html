@@ -6538,8 +6538,8 @@ body{
 <script src="nova-reel-motion.js?v=20260909-result-image-84"></script>
 <link rel="stylesheet" href="nova-results.css?v=20260909-result-image-84">
 <script src="nova-results.js?v=20260909-result-image-84"></script>
-<link rel="stylesheet" href="nova-ladder-presentation.css?v=20260909-shutter-87">
-<script src="nova-ladder-presentation.js?v=20260909-shutter-87"></script>
+<link rel="stylesheet" href="nova-ladder-presentation.css?v=20260909-shutter-88">
+<script src="nova-ladder-presentation.js?v=20260909-shutter-88"></script>
 <script src="nova-art.js?v=20260909-result-image-84"></script>
 <script src="nova-balance.js?v=20260909-result-image-84"></script>
 <script src="nova-normal.js?v=20260909-result-image-84"></script>
@@ -12775,7 +12775,7 @@ body{
       const zoneCard=NovaResults.transition(resolved.flowBefore,normalState.flow,settings.setting);
       if(zoneCard){
         if(!debugFastSpinActive&&NovaLadder.eligible(resolved.flowBefore)){
-          normalState.ladderAwardPresentation={card:zoneCard,flow:resolved.flowBefore,started:false};
+          normalState.ladderAwardPresentation={card:zoneCard,flow:resolved.flowBefore,started:false,promoted:result!=="MISS"};
         }else displayNovaResult(zoneCard);
       }
       if(completedLadderPresentation){delete normalState.ladderAwardPresentation;displayNovaResult(completedLadderPresentation.card);}
@@ -13198,7 +13198,7 @@ body{
     if(!debugFastSpinActive){
       const pending=normalState.ladderAwardPresentation;
       NovaLadder.sync(normalState.resultCard||session.active?null:pending?.flow||normalState.flow,isSpinning);
-      if(pending)NovaLadder.award(pending.card.pt,pending.started);
+      if(pending)NovaLadder.award(pending.card.pt,pending.started,pending.promoted);
     }
     if(normalState.resultCard&&!NovaResults.visible&&!NovaResults.editing)NovaResults.show(normalState.resultCard);
     if(!isSpinning)showZoneRoulette(session.active?null:normalState.flow);
