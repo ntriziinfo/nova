@@ -12682,7 +12682,14 @@ body{
     }catch(e){}
   }
 
+  function fastAtAuditMessage(result, resolved){
+    if(!resolved?.artMessage || !/ゾーン終了|特化ゾーン確定|次のATセット|AT終了|直乗せ|ゾーン獲得/.test(resolved.artMessage))return '';
+    const f=resolved.flowAfter;
+    return `[FAST][AT] ${result} / ${resolved.artMessage} / 残り${f?.remaining ?? 0}pt / 待機${f?.sets ?? 0}SET`;
+  }
+
   function applyNormalResult(result, resolved, lineRow=1){
+    if(typeof debugFastSpinActive!=='undefined' && debugFastSpinActive){const audit=fastAtAuditMessage(result,resolved);if(audit)log(`${audit} / ${stats.totalSpins}G`);}
     playStrongNovaSound(result,resolved);
     if(A_TYPE_MODE && result==="REPLAY")normalState.replayFree=true;
     if(A_TYPE_MODE && resolved.aTypeBonusReady)jagChainBonusHandoff=true;
