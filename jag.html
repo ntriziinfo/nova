@@ -6531,14 +6531,14 @@ body{
   .vertexConnectionBadge.offline{color:#ff8f9c;border-color:rgba(255,91,113,.65);background:rgba(52,9,17,.9)}
   .vertexConnectionBadge.legacy{color:#d4a6ff;border-color:rgba(185,109,255,.6)}
 </style>
-<link rel="stylesheet" href="nova-cabinet.css?v=20260908-continuous-reels-60">
-<link rel="stylesheet" href="nova-artwork.css?v=20260908-continuous-reels-60">
-<script src="nova-artwork.js?v=20260908-continuous-reels-60" defer></script>
-<script src="nova-beat-lamps.js?v=20260908-continuous-reels-60"></script>
-<script src="nova-reel-motion.js?v=20260908-continuous-reels-60"></script>
-<script src="nova-art.js?v=20260908-continuous-reels-60"></script>
-<script src="nova-balance.js?v=20260908-continuous-reels-60"></script>
-<script src="nova-normal.js?v=20260908-continuous-reels-60"></script>
+<link rel="stylesheet" href="nova-cabinet.css?v=20260908-reel800-61">
+<link rel="stylesheet" href="nova-artwork.css?v=20260908-reel800-61">
+<script src="nova-artwork.js?v=20260908-reel800-61" defer></script>
+<script src="nova-beat-lamps.js?v=20260908-reel800-61"></script>
+<script src="nova-reel-motion.js?v=20260908-reel800-61"></script>
+<script src="nova-art.js?v=20260908-reel800-61"></script>
+<script src="nova-balance.js?v=20260908-reel800-61"></script>
+<script src="nova-normal.js?v=20260908-reel800-61"></script>
 <script src="nova-flow.js?v=20260908-state-nova-33"></script>
 <style>
 /* Fit the original nebula art to reel width; its transparent vertical margins
@@ -7745,7 +7745,7 @@ body{
   const MIN_SPIN_WAIT_MS = 500;
   const RESULT_WAIT_MS = 1000;
   const KEYBOARD_STOP_TURBO_MULTIPLIER = 3;
-  const REEL_FULL_ROTATION_MS = 1800;
+  const REEL_FULL_ROTATION_MS = NovaReelMotion.rotationMs;
   const SPIN_COST = 3;
   const BONUS_ANNOUNCE_THIRD_STOP_RATE = 0.70;
   const BONUS_ANNOUNCE_EARLY_TIMINGS = Object.freeze(["lever", "stop1", "stop2"]);
@@ -14494,7 +14494,7 @@ body{
     symbols.forEach((symbol,i)=>updateReelCell(cells[i], symbol, "", "", false, i === 1));
     if(reels[index].classList.contains('spinning')){
       const reverse=!!currentSpin?.artReverse;
-      const duration=Math.max(90,REEL_FULL_ROTATION_MS/strip.length)*.8;
+      const duration=Math.max(16,REEL_FULL_ROTATION_MS/strip.length)*.8;
       cells.forEach(cell=>{
         cell.getAnimations().filter(a=>a.id==='nova-reel-step').forEach(a=>a.cancel());
         const motion=cell.animate([{transform:'translateY('+(reverse?'18%':'-18%')+')'},{transform:'translateY(0)'}],{duration,easing:'linear'});
@@ -14897,7 +14897,7 @@ body{
       setRandomReel(i);
       const strip = REEL_STRIPS[i] || REEL_STRIPS[0];
       if(A_TYPE_MODE){NovaReelMotion.start(i,reel,strip,currentReelTopIndex(i),!!currentSpin?.artReverse,cellHtml);}
-      else{const reelStepMs=Math.max(90,REEL_FULL_ROTATION_MS/strip.length);spinIntervals[i]=setInterval(()=>setRandomReel(i),reelStepMs);}
+      else{const reelStepMs=Math.max(16,REEL_FULL_ROTATION_MS/strip.length);spinIntervals[i]=setInterval(()=>setRandomReel(i),reelStepMs);}
     });
 
     // オート/SPEED中だけ自動停止。手動時はストップ/左中右を押すまで止まらない。
