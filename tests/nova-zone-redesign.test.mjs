@@ -18,21 +18,17 @@ test('nine zones and retired aliases preserve queued awards without new promotio
   assert.equal(a.startZone(a.enter(),base,{allowUra:true},()=>0).ura,false);
  }
 });
-test('zone-specific tables have equal row weights and preserve duplicate rungs',()=>{
- for(const [id,rows]of Object.entries(a.ladderTables)){
-  assert.equal(rows.length,id==='ura_giru'?4:5);
-  for(let i=0;i<rows.length;i++)for(const roll of [i/rows.length,(i+.999999)/rows.length]){
-   const s=a.startZone(a.enter(),id,{},()=>roll);
-   assert.deepEqual(Array.from(s.ladder),Array.from(rows[i]));
-   assert.equal(s.award,String(rows[i][0]));assert.deepEqual(Array.from(save(s).ladder),Array.from(rows[i]));
-  }
+test('shared tables and one-shot settle once on the first challenge',()=>{
+ for(const id of ['sosuke','giru','ura_giru']){
+  const rows=a.ladderTables[id];assert.equal(rows.length,7);
+  for(let i=0;i<7;i++)assert.deepEqual(Array.from(a.startZone(a.enter(),id,{},()=>(i+.5)/7).ladder),Array.from(rows[i]));
+  let s=a.startZone(a.enter(),id,{},()=>.999);assert.equal(s.zoneLeft,2);
+  s=save(a.step(s,{},()=>0).flow);assert.equal(s.award,'50');assert.equal(s.zoneLeft,1);
+  const win=a.step(s,{},()=>0,'REPLAY').flow;assert.equal(win.zone,'');assert.equal(win.remaining,'2150');
+  const lose=a.step(s,{},()=>0,'MISS').flow;assert.equal(lose.zone,'');assert.equal(lose.remaining,'200');
  }
- assert.deepEqual(Array.from(a.ladderTables.sosuke[0]),[50,50,100,100,200]);
- assert.deepEqual(Array.from(a.ladderTables.sosuke[1]),[50,50,100,100,200]);
- let s=a.startZone(a.enter(),'sosuke',{},()=>.99);s=a.step(s,{},()=>0).flow;
- for(let i=1;i<=3;i++){s=a.step(s,{},()=>0,'REPLAY').flow;assert.equal(s.award,'50');assert.equal(s.ladderIndex,i);}
- s=a.step(s,{},()=>0,'REPLAY').flow;assert.equal(s.award,'500');assert.equal(s.remaining,'650');
 });
+
 test('first game reveals secured rung, four successes grant highest only in five paid games',()=>{
  for(const id of ['sosuke','giru','ura_giru']){
   let s=a.startZone(a.enter(),id,{},()=>0);const steps=Array.from(s.ladder);
@@ -41,11 +37,11 @@ test('first game reveals secured rung, four successes grant highest only in five
   assert.equal(s.zone,'');assert.equal(s.remaining,String(150+steps[4]));assert.equal(a.settleZone(s).remaining,s.remaining);
  }
 });
-test('50 to 100 then MISS settles exactly 100 and ladder cannot exceed 2000',()=>{
+test('50 to 100 then MISS settles exactly 100 and sixth table can reach 3000',()=>{
  let s=a.startZone(a.enter(),'giru',{},()=>0);s=a.step(s,{},()=>0).flow;s=a.step(s,{},()=>0,'REPLAY').flow;
  s=a.step(s,{},()=>0,'MISS').flow;assert.equal(s.zone,'');assert.equal(s.remaining,'250');
- s=a.startZone(a.enter(),'ura_giru',{},()=>.999);for(let i=0;i<5;i++)s=a.step(s,{},()=>0,'BELL').flow;
- assert.equal(s.award,'2000');assert.equal(s.remaining,'2150');
+ s=a.startZone(a.enter(),'ura_giru',{},()=>5.5/7);for(let i=0;i<5;i++)s=a.step(s,{},()=>0,'BELL').flow;
+ assert.equal(s.award,'3000');assert.equal(s.remaining,'3150');
 });
 test('ladder strength changes success probability, with exact boundary failure',()=>{
  let prev=0;
