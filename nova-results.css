@@ -1,5 +1,6 @@
 .novaResultsLayer{position:absolute;left:0;top:0;width:100%;height:var(--jag-cabinet-height);z-index:90;pointer-events:none}
 .novaResultsLayer[hidden]{display:none!important}
+.novaResultsLayer[data-loading=true] .novaResultArt{visibility:hidden}
 .novaResultCard{position:absolute;background:#000;overflow:hidden}
 .novaResultArt{position:absolute}
 .novaResultArt>img{width:100%;height:100%;display:block;max-width:none;filter:none!important}

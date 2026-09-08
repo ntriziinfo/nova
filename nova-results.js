@@ -11,7 +11,7 @@ globalThis.NovaResults=(()=>{
   return null;
  }
  const defaults={x:22,y:34,w:56,h:23,imageX:0,imageY:0,scale:100,numberX:7,numberY:54,numberW:36,numberH:10,font:9};
- let positions={},root,card,art,num,panel,select,preview=false,active=null;
+ let positions={},root,card,art,num,panel,select,preview=false,active=null,imageRequest=0;
  try{positions=JSON.parse(localStorage.getItem('nova_result_layout_v1'))||{};}catch{}
  const key=()=>active?active.character+'-'+active.color:'sosuke-red';
  const layout=()=>({...defaults,...positions[key()]});
@@ -38,8 +38,21 @@ globalThis.NovaResults=(()=>{
   panel.querySelector('#novaResultClose').onclick=()=>{panel.close();if(preview){preview=false;hide();}};
   new ResizeObserver(apply).observe(machine);window.addEventListener('resize',apply);
  }
- function show(value){init();if(!root)return;active=value;root.hidden=false;const img=art.querySelector('img');img.onload=apply;img.src=`assets/results/${value.character}-${value.color}.png`;img.alt=`${names[value.character]} ${value.kind==='at'?'AT総獲得':'上乗せ'} ${value.pt}pt`;num.textContent=String(value.pt);num.setAttribute('aria-label',value.pt+'pt');apply();}
- function hide(){if(root)root.hidden=true;active=null;}
+ function show(value){
+  init();if(!root)return;
+  const request=++imageRequest;active=value;root.hidden=false;root.dataset.loading='true';
+  const img=new Image();img.draggable=false;
+  img.alt=`${names[value.character]} ${value.kind==='at'?'AT総獲得':'上乗せ'} ${value.pt}pt`;
+  img.onload=()=>{
+   if(request!==imageRequest||active!==value)return;
+   art.querySelector('img').replaceWith(img);
+   num.textContent=String(value.pt);num.setAttribute('aria-label',value.pt+'pt');
+   apply();delete root.dataset.loading;
+  };
+  img.src=`assets/results/${value.character}-${value.color}.png`;
+  apply();
+ }
+ function hide(){imageRequest++;if(root)root.hidden=true;active=null;}
  if(typeof document!=='undefined')document.addEventListener('DOMContentLoaded',init);
  return {pick,transition,show,hide,get visible(){return !!active},get editing(){return !!panel?.open}};
 })();
