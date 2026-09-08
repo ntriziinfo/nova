@@ -6531,12 +6531,12 @@ body{
   .vertexConnectionBadge.offline{color:#ff8f9c;border-color:rgba(255,91,113,.65);background:rgba(52,9,17,.9)}
   .vertexConnectionBadge.legacy{color:#d4a6ff;border-color:rgba(185,109,255,.6)}
 </style>
-<link rel="stylesheet" href="nova-cabinet.css?v=20260908-at150-45">
-<link rel="stylesheet" href="nova-artwork.css?v=20260907-cz-lamps10">
-<script src="nova-artwork.js?v=20260907-cz-lamps10" defer></script>
-<script src="nova-art.js?v=20260908-at150-45"></script>
-<script src="nova-balance.js?v=20260908-at150-45"></script>
-<script src="nova-normal.js?v=20260908-at150-45"></script>
+<link rel="stylesheet" href="nova-cabinet.css?v=20260908-lamp46">
+<link rel="stylesheet" href="nova-artwork.css?v=20260908-lamp46">
+<script src="nova-artwork.js?v=20260908-lamp46" defer></script>
+<script src="nova-art.js?v=20260908-lamp46"></script>
+<script src="nova-balance.js?v=20260908-lamp46"></script>
+<script src="nova-normal.js?v=20260908-lamp46"></script>
 <script src="nova-flow.js?v=20260908-state-nova-33"></script>
 <style>
 /* Fit the original nebula art to reel width; its transparent vertical margins
@@ -13156,6 +13156,7 @@ body{
       flowStatus.textContent=session.active ? aTypeBonusLabel(session.bonusKind)+" 残り"+aTypeBonusRemainingNet()+"pt / AT獲得"+(session.bonusArtSets||0)+"SET" : normalModeLabel();
       flowStatus.dataset.phase=session.active?"bonus":NovaFlow.normalize(normalState.flow).phase;
       document.body.dataset.artZone=session.active?'':normalState.flow?.zone||'';
+      document.body.dataset.artUra=String(!session.active&&!!normalState.flow?.zone&&!!normalState.flow?.ura);
       document.body.dataset.totoColor=document.body.dataset.artZone==='toto'?(normalState.flow?.color||'white'):'white';
     }
     $("modeTag").className = "modeTag " + ((active || isNovaRisingMode()) ? "active" : "");
@@ -13560,6 +13561,7 @@ body{
     jagLastGamePayout = 0;
     jagLastBonusPayout = 0;
     jagChanceHold = false;
+    showCzLamp(0,null);
     completeTrialState = {locked:false,lockedSetting:0,rescueActive:false,completeProfit:0};
     setSpeedFrameOffHold(false);
     forceResult = "";
@@ -13619,6 +13621,7 @@ body{
     jagLastGamePayout = 0;
     jagLastBonusPayout = 0;
     jagChanceHold = false;
+    showCzLamp(0,null);
     completeTrialState = {locked:false,lockedSetting:0,rescueActive:false,completeProfit:0};
     setSpeedFrameOffHold(false);
     forceResult = "";
@@ -14763,7 +14766,7 @@ body{
       : "";
 
 
-    if(!resolved.czLamp)showCzLamp(0,null);
+    showCzLamp(0,resolved);
     if(normalState.flow?.entryStage!=='roulette')showZoneRoulette(null);
     currentSpin = {
       artReverse:!!resolved.artReverse,
@@ -15051,6 +15054,8 @@ body{
   }
   let czLampTimers=[];
   function showCzLamp(stopOrder,resolved){
+    const host=document.getElementById('machine');
+    host.dataset.czBlink=resolved?.czLamp&&stopOrder<3?String(stopOrder):'';
     if(resolved?.czLamp&&stopOrder!==3)return;
     czLampTimers.forEach(clearTimeout);czLampTimers=[];
     const lamp=resolved?.czLamp,machine=document.getElementById('machine');

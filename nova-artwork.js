@@ -45,13 +45,13 @@
   function syncLamp(){
     const stage=Number(machine.dataset.czLamp)||0;
     const order=['sosuke','toto','urapi','giru1','sora1','ouma1'];
-    for(const [id,item] of items)item.dataset.czLit=String(order.indexOf(id)<stage);
+    for(const [id,item] of items){item.dataset.czLit=String(order.indexOf(id)<stage);item.dataset.czPending=String(machine.dataset.czBlink!==undefined&&machine.dataset.czBlink!==''&&order.indexOf(id)===stage&&stage<6&&machine.dataset.czRainbow!=='true');}
     const automatic=machine.dataset.czRainbow==='true'?'rainbow':stage?'cz':machine.classList.contains('active')?'rainbow':chance?.classList.contains('on')?'blink':'dim';
     layer.dataset.lamp=lampMode.value==='auto'?automatic:lampMode.value;
   }
   lampMode.addEventListener('change',syncLamp);
   const lampObserver=new MutationObserver(syncLamp);
-  lampObserver.observe(machine,{attributes:true,attributeFilter:['class','data-cz-lamp','data-cz-rainbow']});
+  lampObserver.observe(machine,{attributes:true,attributeFilter:['class','data-cz-lamp','data-cz-rainbow','data-cz-blink']});
   if(chance)lampObserver.observe(chance,{attributes:true,attributeFilter:['class']});
   syncLamp();
   const status=panel.querySelector('#novaArtStatus');
