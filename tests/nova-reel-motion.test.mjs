@@ -14,3 +14,11 @@ test('landing keeps 700ms rotation speed and stops at nearest matching occurrenc
  }
 });
 test('aligned symbols stop immediately with no artificial minimum delay',async()=>{const t=setup();t.a.start(0,t.reel,['A','B','C'],0,false,s=>s);assert.equal(await t.a.stop(0,['A','B','C']),true);t.a.clearAll();});
+test('audio clock controls all three reels and lands exactly at 4.4 seconds',()=>{
+ const t=setup();let audioTime=0,landed=0;const strip=['A','B','C','D','E'];
+ for(let i=0;i<3;i++)t.a.startSynced(i,t.reel,strip,['C','D','E'],true,s=>s,()=>audioTime,4400,()=>landed++);
+ t.tick(10000);assert.equal(landed,0);
+ audioTime=4.399;t.tick(16);assert.equal(landed,0);
+ audioTime=4.4;t.tick(16);assert.equal(landed,3);for(let i=0;i<3;i++)assert.equal(t.a.top(i),2);
+ t.tick(1000);assert.equal(landed,3);
+});

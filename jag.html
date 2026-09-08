@@ -13549,6 +13549,7 @@ body{
     stopGuaranteedSetStartLight();
     spinIntervals.forEach(id=>clearInterval(id));
     NovaReelMotion.clearAll();
+    clearOumaReverseAudio();
     if(spinWaitTimer){
       clearTimeout(spinWaitTimer);
       spinWaitTimer = null;
@@ -13611,6 +13612,7 @@ body{
     stopGuaranteedSetStartLight();
     spinIntervals.forEach(id=>clearInterval(id));
     NovaReelMotion.clearAll();
+    clearOumaReverseAudio();
     if(spinWaitTimer){
       clearTimeout(spinWaitTimer);
       spinWaitTimer = null;
@@ -14905,7 +14907,7 @@ body{
         ? `${battleRemainText()} / ${waitText}`
         : waitText;
     if(!speedModeSpinAtStart && !premiumBigConfirmSilence) playNormalBgm();
-    playSpinSound();
+    if(!resolved.oumaFreeze)playSpinSound();
     ensureBattleBgmContinuing();
     ensureBarBgmContinuing();
 
@@ -14914,12 +14916,13 @@ body{
       reel.classList.add("spinning");
       setRandomReel(i);
       const strip = REEL_STRIPS[i] || REEL_STRIPS[0];
-      if(A_TYPE_MODE){NovaReelMotion.start(i,reel,strip,currentReelTopIndex(i),!!currentSpin?.artReverse,cellHtml);}
-      else{const reelStepMs=Math.max(16,REEL_FULL_ROTATION_MS/strip.length);spinIntervals[i]=setInterval(()=>setRandomReel(i),reelStepMs);}
+      if(A_TYPE_MODE&&!resolved.oumaFreeze){NovaReelMotion.start(i,reel,strip,currentReelTopIndex(i),!!currentSpin?.artReverse,cellHtml);}
+      else if(!resolved.oumaFreeze){const reelStepMs=Math.max(16,REEL_FULL_ROTATION_MS/strip.length);spinIntervals[i]=setInterval(()=>setRandomReel(i),reelStepMs);}
     });
 
     // オート/SPEED中だけ自動停止。手動時はストップ/左中右を押すまで止まらない。
-    if(autoPlay || speedModeSpinAtStart || resolved.oumaFreeze){
+    if(resolved.oumaFreeze){startOumaReverseAudio(currentSpin);}
+    if(!resolved.oumaFreeze&&(autoPlay || speedModeSpinAtStart)){
       const stopOrder = zoneActiveAtSpinStart ? [2,1,0] : [0,1,2];
       stopOrder.forEach((i,idx)=>{
         const normalAutoStopDelay = autoStopDelayMs(idx);
@@ -15130,6 +15133,32 @@ body{
     if(display.rainbow){
       czLampTimers.push(setTimeout(()=>{machine.dataset.czRainbow='true';if(resolved.bonusHit)playCzConfirmedSound(resolved);},0));
     }
+  }
+
+  var oumaReverseAudio=null,oumaReverseLoadTimer=null;
+  function clearOumaReverseAudio(){
+    clearTimeout(oumaReverseLoadTimer);oumaReverseLoadTimer=null;
+    if(oumaReverseAudio){oumaReverseAudio.onerror=null;oumaReverseAudio.pause();oumaReverseAudio=null;}
+  }
+  function startOumaReverseAudio(spin){
+    clearOumaReverseAudio();
+    const audio=new Audio('assets/media/nova/ouma1.wav');oumaReverseAudio=audio;
+    audio.preload='auto';audio.volume=sfxOutputVolume();
+    let started=false,fallback=null;
+    const useFallback=()=>{if(fallback===null)fallback={time:performance.now(),offset:audio.currentTime||0};};
+    const clock=()=>fallback?(performance.now()-fallback.time)/1000+fallback.offset:audio.currentTime;
+    const begin=()=>{
+      if(started||currentSpin!==spin||oumaReverseAudio!==audio)return;
+      started=true;clearTimeout(oumaReverseLoadTimer);let landed=0;
+      reels.forEach((reel,i)=>NovaReelMotion.startSynced(i,reel,REEL_STRIPS[i],spin.grid.map(row=>row[i]),true,cellHtml,clock,4400,()=>{
+        if(currentSpin!==spin||oumaReverseAudio!==audio)return;
+        if(++landed===3){spinCanStop=true;[0,1,2].forEach(index=>stopSingleReel(index,{oumaAuto:true,visualReady:true,visualColumn:spin.grid.map(row=>row[index])}));}
+      }));
+    };
+    audio.onerror=()=>{useFallback();begin();};
+    oumaReverseLoadTimer=setTimeout(()=>{if(!started){audio.pause();useFallback();begin();}},3000);
+    const play=audio.play();
+    if(play?.then)play.then(()=>{if(fallback)audio.pause();begin();}).catch(()=>{useFallback();begin();});else begin();
   }
 
   let oumaChainTimer=null;

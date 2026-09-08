@@ -3,7 +3,7 @@ globalThis.NovaReelMotion=(()=>{
  const rotationMs=700;
  const active=new Map(),mod=(n,m)=>(n%m+m)%m;
  function clear(i){const s=active.get(i);if(!s)return;cancelAnimationFrame(s.raf);s.layer.remove();s.win.classList.remove('novaMotionActive');active.delete(i);s.resolve?.(false);}
- function start(i,reel,strip,top,reverse,html){
+ function start(i,reel,strip,top,reverse,html,sync=null){
   clear(i);const win=reel.querySelector('.window'),scale=win.getBoundingClientRect().width/win.offsetWidth||1,h=win.getBoundingClientRect().height/3/(win.getBoundingClientRect().width/win.offsetWidth||1),layer=document.createElement('div');
   layer.className='novaMovingStrip';layer.setAttribute('aria-hidden','true');
   for(let n=0;n<strip.length*3;n++){const cell=document.createElement('div');cell.className='cell';cell.style.height=h+'px';cell.innerHTML=html(strip[n%strip.length]);layer.append(cell);}
@@ -11,10 +11,22 @@ globalThis.NovaReelMotion=(()=>{
   const cellHeight=layer.firstElementChild.getBoundingClientRect().height/scale;
   const s={win,layer,strip,h:cellHeight,stepMs:rotationMs/strip.length,pos:strip.length+mod(top,strip.length),direction:reverse?1:-1,last:performance.now(),raf:0};active.set(i,s);
   function frame(now){if(active.get(i)!==s)return;
-   if(s.landing){const t=Math.min(1,(now-s.landing.time)/s.landing.duration);s.pos=s.landing.from+(s.landing.to-s.landing.from)*t;if(t===1){s.layer.style.transform=`translateY(${-s.pos*s.h}px)`;s.raf=0;const resolve=s.resolve;s.resolve=null;resolve(true);return;}}
+   if(sync){
+    const elapsed=Math.min(sync.duration,Math.max(0,sync.clock()*1000));
+    s.pos=strip.length+mod(top+s.direction*elapsed/s.stepMs,strip.length);
+    s.layer.style.transform=`translateY(${-s.pos*s.h}px)`;
+    if(elapsed>=sync.duration){s.raf=0;sync.done();return;}
+   }
+   else if(s.landing){const t=Math.min(1,(now-s.landing.time)/s.landing.duration);s.pos=s.landing.from+(s.landing.to-s.landing.from)*t;if(t===1){s.layer.style.transform=`translateY(${-s.pos*s.h}px)`;s.raf=0;const resolve=s.resolve;s.resolve=null;resolve(true);return;}}
    else{s.pos=strip.length+mod(s.pos-strip.length+s.direction*(now-s.last)/s.stepMs,strip.length);}
    s.last=now;s.layer.style.transform=`translateY(${-s.pos*s.h}px)`;s.raf=requestAnimationFrame(frame);
   }s.raf=requestAnimationFrame(frame);
+ }
+ function startSynced(i,reel,strip,column,reverse,html,clock,duration,done){
+  const target=strip.findIndex((_,n)=>column.every((v,j)=>strip[(n+j)%strip.length]===v));
+  if(target<0)throw new Error('Synced stop absent from strip');
+  const top=target-(reverse?1:-1)*duration/(rotationMs/strip.length);
+  start(i,reel,strip,top,reverse,html,{clock,duration,done});
  }
  function distance(i,column){
   const s=active.get(i);if(!s)return Infinity;
@@ -33,5 +45,5 @@ globalThis.NovaReelMotion=(()=>{
   return new Promise(resolve=>{s.resolve=resolve;s.landing={from:s.pos,to:s.pos+s.direction*distance,time:now,duration:distance*s.stepMs};});
  }
 
- return {rotationMs,distance,start,stop,clear,has:i=>active.has(i),top:i=>{const s=active.get(i);return s?mod(Math.round(s.pos),s.strip.length):null;},clearAll:()=>[...active.keys()].forEach(clear)};
+ return {rotationMs,startSynced,distance,start,stop,clear,has:i=>active.has(i),top:i=>{const s=active.get(i);return s?mod(Math.round(s.pos),s.strip.length):null;},clearAll:()=>[...active.keys()].forEach(clear)};
 })();
