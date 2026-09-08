@@ -12513,7 +12513,7 @@ body{
   }
 
   function playNormalBgm(){
-    if(normalState.resultCard){pauseNormalBgm();return;}
+    if(normalState.resultCard || normalState.pendingZoneResult){pauseNormalBgm();return;}
     if(debugFastSpinActive) return;
     if(session.active) return;
     if(bonusConfirmBgmHold && !session.active) return;
@@ -16350,7 +16350,6 @@ body{
   }
   function playStopSound(i, stopOrder=null){
     if(stopOrder===3&&currentSpin?.result==='SUPER_NOVA'){
-      if(currentSpin.resolved?.oumaFreeze)return;
       if(currentSpin.superNovaStopSoundPlayed)return;
       currentSpin.superNovaStopSoundPlayed=true;
       playOneShotSound('assets/media/nova/super-nova-stop.wav',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
