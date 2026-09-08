@@ -58,7 +58,11 @@ globalThis.NovaLadder=(()=>{
   if(!flow.ladderRevealed){root.dataset.stage='table';return;}
   const target=flow.ladder[Math.min(flow.ladder.length-1,(flow.ladderIndex||0)+1)];
   const img=root.querySelector('.novaLadderIntegrated');img.src=`assets/ladder/shutter-${target}.png`;img.alt=`昇格チャレンジ ${target}pt`;
-  root.dataset.stage='challenge';
+  root.dataset.stop='0';root.dataset.stage='challenge';
+ }
+ function stop(count){
+  if(!root||root.hidden||root.dataset.stage!=='challenge')return;
+  if(count===1||count===2)root.dataset.stop=String(count);
  }
  function award(points,started,promoted=false){
   if(!init())return;
@@ -72,5 +76,5 @@ globalThis.NovaLadder=(()=>{
   if(!started&&promoted){root.dataset.stage='promote';locked=true;const request=token;timer=setTimeout(()=>{if(request!==token)return;root.dataset.stage='settled';locked=false;},850);}
  }
  if(typeof document!=='undefined'){document.addEventListener('DOMContentLoaded',init);window.addEventListener('resize',()=>{if(root&&!root.hidden)layout();});}
- return {eligible,sync,bet,hide,award,get busy(){return locked;}};
+ return {eligible,sync,bet,stop,hide,award,get busy(){return locked;}};
 })();
