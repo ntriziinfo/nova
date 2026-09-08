@@ -6531,14 +6531,14 @@ body{
   .vertexConnectionBadge.offline{color:#ff8f9c;border-color:rgba(255,91,113,.65);background:rgba(52,9,17,.9)}
   .vertexConnectionBadge.legacy{color:#d4a6ff;border-color:rgba(185,109,255,.6)}
 </style>
-<link rel="stylesheet" href="nova-cabinet.css?v=20260908-nova-shake-78">
-<link rel="stylesheet" href="nova-artwork.css?v=20260908-nova-shake-78">
-<script src="nova-artwork.js?v=20260908-nova-shake-78" defer></script>
-<script src="nova-beat-lamps.js?v=20260908-nova-shake-78"></script>
-<script src="nova-reel-motion.js?v=20260908-nova-shake-78"></script>
-<script src="nova-art.js?v=20260908-nova-shake-78"></script>
-<script src="nova-balance.js?v=20260908-nova-shake-78"></script>
-<script src="nova-normal.js?v=20260908-nova-shake-78"></script>
+<link rel="stylesheet" href="nova-cabinet.css?v=20260908-ouma-zero-miss-79">
+<link rel="stylesheet" href="nova-artwork.css?v=20260908-ouma-zero-miss-79">
+<script src="nova-artwork.js?v=20260908-ouma-zero-miss-79" defer></script>
+<script src="nova-beat-lamps.js?v=20260908-ouma-zero-miss-79"></script>
+<script src="nova-reel-motion.js?v=20260908-ouma-zero-miss-79"></script>
+<script src="nova-art.js?v=20260908-ouma-zero-miss-79"></script>
+<script src="nova-balance.js?v=20260908-ouma-zero-miss-79"></script>
+<script src="nova-normal.js?v=20260908-ouma-zero-miss-79"></script>
 <script src="nova-flow.js?v=20260908-state-nova-33"></script>
 <style>
 /* Fit the original nebula art to reel width; its transparent vertical margins
@@ -14768,8 +14768,10 @@ body{
     }else{
       session.remain--;
     }
-    countTotalSpinIfNeeded(aTypeBonusActiveAtSpinStart);
-    chargeSpinCost();
+    if(!options?.oumaFailed){
+      countTotalSpinIfNeeded(aTypeBonusActiveAtSpinStart);
+      chargeSpinCost();
+    }
     $("stLamp").classList.remove("on");
     const reachMeAnnouncementLit = activateReachMeBonusAnnouncementIfNeeded(normalActiveAtSpinStart);
     if(reachMeAnnouncementLit) triggerBonusConfirmBetSoundIfNeeded();
@@ -14782,10 +14784,10 @@ body{
     const devilRushEntryEffect = atSpinAtStart ? consumeDevilRushEntryEffect() : "";
     if(devilRushEntryEffect) showDevilRushEntryEffect(devilRushEntryEffect);
     // 大当たりを含む成立役はBET/レバーON時点で確定させる。停止時はこの結果を表示するだけ。
-    const result = normalActiveAtSpinStart ? drawNormalResult() : drawResult();
+    const result = options?.oumaFailed ? "MISS" : normalActiveAtSpinStart ? drawNormalResult() : drawResult();
     const spec = RESULT[result];
     const lineRow = resultLineRow(result);
-    const resolved = normalActiveAtSpinStart ? resolveNormalOutcome(result, lineRow) : resolveOutcome(result);
+    const resolved = options?.oumaFailed ? {oumaFailed:true,reward:0,flowBefore:normalState.flow,flowAfter:normalState.flow} : normalActiveAtSpinStart ? resolveNormalOutcome(result, lineRow) : resolveOutcome(result);
     const reversePushGuide = zoneActiveAtSpinStart ? decideReversePushGuide(result, zoneActiveAtSpinStart ? currentGoraiZoneType() : "") : "";
     let grid = zoneActiveAtSpinStart && reversePushGuide && result === "MISS"
       ? buildReversePushMissGrid()
@@ -14873,7 +14875,7 @@ body{
     playCzCountdownOnLever(resolved);
     currentSpin.manualBonusStop = false; // Fixed-G prototype: bonus starts on the next confirmed spin.
     if(['toto','sora'].includes(normalState.flow?.zone))showOverlay('7・nebulaを狙え');
-    if(['urapi','ouma'].includes(normalState.flow?.zone))showOverlay('スーパーノヴァを狙え');
+    if(!resolved.oumaFailed&&['urapi','ouma'].includes(normalState.flow?.zone))showOverlay('スーパーノヴァを狙え');
     if(resolved.oumaFreeze)showOverlay('逢魔フリーズ！ 0G連・ノヴァを狙え');
     if(resolved.artReverse)showOverlay('逆回転！ '+resolved.flowAfter.award+'pt');
     if(currentSpin.bonusConfirmWaitSpin){
@@ -15254,6 +15256,12 @@ body{
     $("spinBtn").disabled = false;
     stopBtns.forEach(b=>b.disabled=true);
     syncCabinetControlState();
+
+    if(resolved.oumaFailed){
+      $('resultText').textContent='逢魔フリーズ 継続失敗 / ハズレ（0G）';
+      persistState();updateDisplay();playNormalBgm();
+      return;
+    }
 
     showCzLamp(3,resolved);
     const reward = resolved.reward;
