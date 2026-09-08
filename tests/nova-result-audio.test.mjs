@@ -25,8 +25,9 @@ test('zone and AT result third stops skip result delay; ordinary games keep it',
 });
 
 test('shutter stops restart movement sound and third stop replaces it with close sound',()=>{
- const sounds=[];let paused=0;const c=vm.createContext({isLadderShutterSpin:()=>true,sfxOutputVolume:()=>.5,oneShotSoundCache:new Map([['assets/media/nova/shutter.wav',{pause(){paused++;}}]]),playOneShotSound:(src)=>sounds.push(src)});
+ const sounds=[];let paused=0;const c=vm.createContext({currentSpin:{result:'REPLAY'},isLadderShutterSpin:()=>true,sfxOutputVolume:()=>.5,oneShotSoundCache:new Map([['assets/media/nova/shutter.wav',{pause(){paused++;}}]]),playOneShotSound:(src)=>sounds.push(src)});
  vm.runInContext(fn('playStopSound'),c);
  c.playStopSound(2,1);c.playStopSound(0,2);c.playStopSound(1,3);
  assert.deepEqual(sounds,['assets/media/nova/shutter.wav','assets/media/nova/shutter.wav','assets/media/nova/shutter-close.wav']);assert.equal(paused,1);
+ c.currentSpin.result='MISS';c.playStopSound(1,3);assert.equal(sounds.at(-1),'assets/media/nova/ouma-fail.wav');assert.equal(paused,2);
 });

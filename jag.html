@@ -16376,7 +16376,7 @@ body{
   function playStopSound(i, stopOrder=null){
     if(isLadderShutterSpin()&&stopOrder>=1&&stopOrder<=3){
       if(stopOrder===3)oneShotSoundCache.get('assets/media/nova/shutter.wav')?.pause();
-      playOneShotSound(stopOrder===3?'assets/media/nova/shutter-close.wav':'assets/media/nova/shutter.wav',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
+      playOneShotSound(stopOrder===3?(currentSpin?.result==='MISS'?'assets/media/nova/ouma-fail.wav':'assets/media/nova/shutter-close.wav'):'assets/media/nova/shutter.wav',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
       return;
     }
     if(stopOrder===3&&currentSpin?.result==='SUPER_NOVA'){
