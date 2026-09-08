@@ -31,3 +31,12 @@ test('shutter stops restart movement sound and third stop replaces it with close
  assert.deepEqual(sounds,['assets/media/nova/shutter.wav','assets/media/nova/shutter.wav','assets/media/nova/shutter-close.wav']);assert.equal(paused,1);
  c.currentSpin.result='MISS';c.playStopSound(1,3);assert.equal(sounds.at(-1),'assets/media/nova/ouma-fail.wav');assert.equal(paused,2);
 });
+
+test('internal red seven confirmation plays patrol once before lineup',()=>{
+ const played=[];const c=vm.createContext({debugFastSpinActive:false,speedToBonusActive:false,sfxOutputVolume:()=>.5,playLockedBonusConfirmSound:src=>played.push(src)});
+ vm.runInContext(fn('playZoneInternalConfirmedSound'),c);
+ const r={flowBefore:{phase:'art',entryStage:''},flowAfter:{phase:'art',entryStage:'seven'}};
+ c.playZoneInternalConfirmedSound(r);c.playZoneInternalConfirmedSound(r);assert.equal(played.length,1);assert.equal(played[0],'assets/media/jag/cz_patrol_confirm.wav?v=19');
+ c.playZoneInternalConfirmedSound({flowBefore:{phase:'art',entryStage:'seven'},flowAfter:{phase:'art',entryStage:'roulette'}});assert.equal(played.length,1);
+ c.playZoneInternalConfirmedSound({flowBefore:{phase:'art'},flowAfter:{phase:'art'}});assert.equal(played.length,1);
+});

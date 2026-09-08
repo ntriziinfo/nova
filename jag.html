@@ -14987,6 +14987,7 @@ body{
       clearTimeout(oumaFailDimTimer);
       oumaFailDimTimer=setTimeout(()=>{machine.dataset.oumaFailDim='';oumaFailDimTimer=null;},900);
     }else if(!resolved.oumaFreeze)playSpinSound();
+    playZoneInternalConfirmedSound(resolved);
     ensureBattleBgmContinuing();
     ensureBarBgmContinuing();
 
@@ -15176,6 +15177,13 @@ body{
     setReelColumn(i, columnSymbols, label, cls, lineRow);
     stopBtns[i].disabled = true;
     playStopSound(i, stopOrder);
+  }
+
+  function playZoneInternalConfirmedSound(resolved){
+    if(debugFastSpinActive||speedToBonusActive||!resolved||resolved.zonePatrolPlayed)return;
+    if(resolved.flowBefore?.phase!=='art'||resolved.flowBefore?.entryStage||resolved.flowAfter?.entryStage!=='seven')return;
+    resolved.zonePatrolPlayed=true;
+    playLockedBonusConfirmSound('assets/media/jag/cz_patrol_confirm.wav?v=19',sfxOutputVolume());
   }
 
   function playCzConfirmedSound(resolved){
