@@ -5,11 +5,11 @@ globalThis.NovaBalance=(()=>{
  function zoneMean(id,options={}){const a=NovaArt,c=a.config(options),s=a.startZone(a.enter(),id,c,()=>.5),r=a.zoneRules(s,c);
   if(r.family==='ladder')return a.ladderTableFor(s).reduce((sum,l)=>sum+l[0]+l.slice(1).reduce((v,n,i)=>v+(n-l[i])*r.success**(i+1),0),0)/a.ladderTableFor(s).length;
   if(r.family==='seven'){const games=r.reset===0?5:((1-r.reset)**-5-1)/r.reset;return games*Math.min(r.hit,1-r.reset)*r.weights.reduce((sum,w,i)=>sum+w*a.sevenValues[i],0);}
-  return 5*r.hit*(50+50*r.hundred)/(1-r.freeze);
+  return 5*r.hit*(50+50*r.hundred)*r.awardMultiplier/(1-r.freeze);
  }
  const giruMean=(setting,ura=false)=>zoneMean(ura?'ura_giru':'giru');
  // Entry scales fitted with the normal-mode / ceiling / impurity / freeze simulation.
- function profile(setting){const i=Math.max(0,Math.min(5,Math.round(Number(setting)||1)-1)),scale=.21*(1+.12*NovaArt.settingBias[i]);return {setting:i+1,target:targets[i],scale,directDenom:NovaArt.defaults['direct'+(i+1)]/scale,czDenom:120/scale,strongDenom:600/scale,verifiedModel:'ladder-tables-pending-rtp'};}
+ function profile(setting){const i=Math.max(0,Math.min(5,Math.round(Number(setting)||1)-1)),scale=.21*(1+.12*NovaArt.settingBias[i]);return {setting:i+1,target:targets[i],scale,directDenom:NovaArt.defaults['direct'+(i+1)]/scale,czDenom:120/scale,strongDenom:600/scale,verifiedModel:'super-groups-pending-rtp'};}
  const profiles=targets.map((_,i)=>profile(i+1));
  return {targets,normal,profiles,profile,giruMean,zoneMean};
 })();

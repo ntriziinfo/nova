@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
-const ctx=vm.createContext({});vm.runInContext(fs.readFileSync('nova-normal.js','utf8'),ctx);const n=ctx.NovaNormal;
+const ctx=vm.createContext({});for(const f of ['nova-art.js','nova-normal.js'])vm.runInContext(fs.readFileSync(f,'utf8'),ctx);const n=ctx.NovaNormal;
 test('reset lottery exhaustively matches percentage allocation',()=>{for(let setting=1;setting<=6;setting++){const counts={};for(let i=0;i<10000;i++){const state=n.reset(()=>(i+.5)/10000,setting);counts[state.impurity]=(counts[state.impurity]||0)+1;assert.equal(state.games,0);assert.equal(state.mode,'通常A');assert.equal(state.level,'low');}for(const {pt,weight} of n.resetDistribution(setting))assert.equal(counts[pt],weight*100);}});
 test('load normalization and bonus release do not redraw reset points',()=>{for(const pt of [0,25,50,75,90,100]){assert.equal(n.normalize(JSON.parse(JSON.stringify({impurity:pt}))).impurity,pt);}const s=n.claim(n.reset(()=>.999),false,()=>0);assert.equal(s.state.impurity,0);assert.equal(s.sets,1);assert.equal(s.zones[0],'urapi');assert.equal(n.claim(s.state).sets,0);});
 

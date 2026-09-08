@@ -13,8 +13,9 @@ test('nine zones and retired aliases preserve queued awards without new promotio
   assert.equal(a.normalize({pendingZone:'ura_'+base,queuedZones:['ura_'+base]}).pendingZone,base);
  }
  for(const base of ['giru','sora','ouma']){
-  assert.equal(a.startZone(a.enter(),base,{allowUra:true},()=>.029999).ura,true);
-  assert.equal(a.startZone(a.enter(),base,{allowUra:true},()=>.03).ura,false);
+  assert.equal(a.upgradeGuaranteedZone(base,()=>.029999),'ura_'+base);
+  assert.equal(a.upgradeGuaranteedZone(base,()=>.03),base);
+  assert.equal(a.startZone(a.enter(),base,{allowUra:true},()=>0).ura,false);
  }
 });
 test('zone-specific tables have equal row weights and preserve duplicate rungs',()=>{
@@ -69,7 +70,7 @@ test('seven family can award each amount, grants no sets and resets final game t
 test('NOVA family uses SUPER only and literal 50 or100 points; urapi never freezes',()=>{
  for(const id of ['urapi','ouma','ura_ouma'])for(const [roll,award]of [[0,100],[.99,50]]){
   const s=a.startZone(a.enter(),id,{},()=>.5),t=a.step(s,{},()=>roll,'SUPER_NOVA');
-  assert.equal(t.flow.award,String(award));assert.equal(t.internalBonus,null);assert.equal(t.result,'SUPER_NOVA');assert.equal(t.flow.oumaPending,id!=='urapi');
+  assert.equal(t.flow.award,String(award*(id==='ura_ouma'?2:1)));assert.equal(t.internalBonus,null);assert.equal(t.result,'SUPER_NOVA');assert.equal(t.flow.oumaPending,id!=='urapi');
  }
 });
 test('last-game Ouma hit continues free SUPER chains then settles only once',()=>{
