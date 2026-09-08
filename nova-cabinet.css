@@ -88,8 +88,13 @@ body[data-art-ura=true][data-art-zone=giru] .novaArtItem[data-artwork=giru1] img
 body[data-art-ura=true][data-art-zone=sora] .novaArtItem[data-artwork=sora1] img,
 body[data-art-ura=true][data-art-zone=ouma] .novaArtItem[data-artwork=ouma1] img{animation:none!important;filter:grayscale(1) sepia(1) saturate(10) hue-rotate(315deg) brightness(1.05) drop-shadow(0 0 12px #ff2020)!important}
 /* Freeze lift moves every visible symbol by exactly one symbol height. */
-#machine[data-ouma-freeze=lift] .reel .window .cell{transform:translateY(-100%)!important;transition:transform .7s ease-out!important}
+#machine[data-ouma-freeze=lift] .reel .window .cell{animation:oumaRattleLift .5s steps(9,end) var(--ouma-lift-delay,0ms) both!important;transition:none!important}
 #machine[data-ouma-freeze=bet] .reel .window .cell,#machine[data-ouma-freeze=fail] .reel .window .cell{transform:translateY(-100%)!important}
 #machine[data-ouma-freeze=fail] .reel .window{filter:brightness(0)!important}
 #machine[data-ouma-freeze=lift] button,#machine[data-ouma-freeze=fail] button{pointer-events:none}
 #machine[data-ouma-freeze=bet] button:not(#spinBtn){pointer-events:none}
+
+#machine[data-ouma-freeze=lift] .reel .window,#machine[data-ouma-freeze=bet] .reel .window{animation:oumaReelRattle var(--ouma-rattle-speed,70ms) steps(1,end) var(--ouma-rattle-delay,0ms) infinite!important}
+@keyframes oumaRattleLift{0%{transform:translateY(0)}100%{transform:translateY(-100%)}}
+@keyframes oumaReelRattle{0%{translate:-2px -3px}20%{translate:3px 2px}40%{translate:-3px 1px}60%{translate:2px -2px}80%{translate:0 3px}100%{translate:-2px -3px}}
+@media(prefers-reduced-motion:reduce){#machine[data-ouma-freeze=lift] .reel .window,#machine[data-ouma-freeze=bet] .reel .window{animation:none!important}#machine[data-ouma-freeze=lift] .reel .window .cell{animation:oumaRattleLift .5s ease-out var(--ouma-lift-delay,0ms) both!important}}

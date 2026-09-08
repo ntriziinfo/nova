@@ -6531,13 +6531,13 @@ body{
   .vertexConnectionBadge.offline{color:#ff8f9c;border-color:rgba(255,91,113,.65);background:rgba(52,9,17,.9)}
   .vertexConnectionBadge.legacy{color:#d4a6ff;border-color:rgba(185,109,255,.6)}
 </style>
-<link rel="stylesheet" href="nova-cabinet.css?v=20260908-smooth51">
-<link rel="stylesheet" href="nova-artwork.css?v=20260908-smooth51">
-<script src="nova-artwork.js?v=20260908-smooth51" defer></script>
-<script src="nova-beat-lamps.js?v=20260908-smooth51"></script>
-<script src="nova-art.js?v=20260908-smooth51"></script>
-<script src="nova-balance.js?v=20260908-smooth51"></script>
-<script src="nova-normal.js?v=20260908-smooth51"></script>
+<link rel="stylesheet" href="nova-cabinet.css?v=20260908-rattle52">
+<link rel="stylesheet" href="nova-artwork.css?v=20260908-rattle52">
+<script src="nova-artwork.js?v=20260908-rattle52" defer></script>
+<script src="nova-beat-lamps.js?v=20260908-rattle52"></script>
+<script src="nova-art.js?v=20260908-rattle52"></script>
+<script src="nova-balance.js?v=20260908-rattle52"></script>
+<script src="nova-normal.js?v=20260908-rattle52"></script>
 <script src="nova-flow.js?v=20260908-state-nova-33"></script>
 <style>
 /* Fit the original nebula art to reel width; its transparent vertical margins
@@ -15095,6 +15095,7 @@ body{
     if(previous?.zone!=='ouma'||!previous.oumaPending||debugFastSpinActive||isCompleteTrialLocked())return false;
     clearOumaPresentation();stopAutoPlay('逢魔フリーズ操作待ち');stopSpeedToBonus('逢魔フリーズ操作待ち');
     oumaPresentation={stage:'lift',previous};
+    reels.forEach((reel,i)=>{reel.style.setProperty('--ouma-lift-delay',[0,90,170][i]+'ms');reel.style.setProperty('--ouma-rattle-speed',[70,83,61][i]+'ms');reel.style.setProperty('--ouma-rattle-delay',[0,-31,-17][i]+'ms');});
     const machine=document.getElementById('machine');machine.dataset.oumaFreeze='lift';
     $('spinBtn').disabled=true;stopBtns.forEach(b=>b.disabled=true);
     showOverlay('逢魔フリーズチャレンジ');
