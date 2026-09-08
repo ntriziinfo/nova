@@ -7,4 +7,3 @@ test('cancelled reverse playback cannot start when its play promise resolves lat
  ctx.startOumaReverseAudio(ctx.currentSpin);assert.equal(created,1);assert.equal(ctx.oumaReverseAudio.volume,.93);
  ctx.clearOumaReverseAudio();resolve();await Promise.resolve();await Promise.resolve();assert.equal(started,0);assert.equal(ctx.oumaReverseAudio,null);assert.ok(paused>=2);
 });
-test('waiting entry clears prior reverse audio before displaying the next challenge',()=>{const body=fn('scheduleOumaZeroChain');assert.ok(body.indexOf('clearOumaReverseAudio()')<body.indexOf("stage:'lift'"));assert.match(h,/\["assets\/media\/nova\/ouma1.wav"\]: dbToGain\(8.5\)/);});

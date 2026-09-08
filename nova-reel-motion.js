@@ -13,20 +13,23 @@ globalThis.NovaReelMotion=(()=>{
   function frame(now){if(active.get(i)!==s)return;
    if(sync){
     const elapsed=Math.min(sync.duration,Math.max(0,sync.clock()*1000));
-    s.pos=strip.length+mod(top+s.direction*elapsed/s.stepMs,strip.length);
+    s.pos=strip.length+mod(top+s.direction*(sync.steps===undefined?elapsed/s.stepMs:sync.steps*elapsed/sync.duration),strip.length);
     s.layer.style.transform=`translateY(${-s.pos*s.h}px)`;
     if(elapsed>=sync.duration){s.raf=0;sync.done();return;}
    }
    else if(s.landing){const t=Math.min(1,(now-s.landing.time)/s.landing.duration);s.pos=s.landing.from+(s.landing.to-s.landing.from)*t;if(t===1){s.layer.style.transform=`translateY(${-s.pos*s.h}px)`;s.raf=0;const resolve=s.resolve;s.resolve=null;resolve(true);return;}}
    else{s.pos=strip.length+mod(s.pos-strip.length+s.direction*(now-s.last)/s.stepMs,strip.length);}
    s.last=now;s.layer.style.transform=`translateY(${-s.pos*s.h}px)`;s.raf=requestAnimationFrame(frame);
-  }s.raf=requestAnimationFrame(frame);
+  }s.layer.style.transform=`translateY(${-s.pos*s.h}px)`;s.raf=requestAnimationFrame(frame);
  }
- function startSynced(i,reel,strip,column,reverse,html,clock,duration,done){
+ function startSynced(i,reel,strip,column,reverse,html,clock,duration,done,initialTop){
   const target=strip.findIndex((_,n)=>column.every((v,j)=>strip[(n+j)%strip.length]===v));
   if(target<0)throw new Error('Synced stop absent from strip');
-  const top=target-(reverse?1:-1)*duration/(rotationMs/strip.length);
-  start(i,reel,strip,top,reverse,html,{clock,duration,done});
+  const direction=reverse?1:-1;
+  const top=initialTop===undefined?target-direction*duration/(rotationMs/strip.length):initialTop;
+  const distance=mod(direction*(target-top),strip.length);
+  const steps=distance+Math.max(0,Math.round((duration/(rotationMs/strip.length)-distance)/strip.length))*strip.length;
+  start(i,reel,strip,top,reverse,html,{clock,duration,done,steps});
  }
  function distance(i,column){
   const s=active.get(i);if(!s)return Infinity;

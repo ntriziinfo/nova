@@ -6531,14 +6531,14 @@ body{
   .vertexConnectionBadge.offline{color:#ff8f9c;border-color:rgba(255,91,113,.65);background:rgba(52,9,17,.9)}
   .vertexConnectionBadge.legacy{color:#d4a6ff;border-color:rgba(185,109,255,.6)}
 </style>
-<link rel="stylesheet" href="nova-cabinet.css?v=20260908-zone-bgm-69">
-<link rel="stylesheet" href="nova-artwork.css?v=20260908-zone-bgm-69">
-<script src="nova-artwork.js?v=20260908-zone-bgm-69" defer></script>
-<script src="nova-beat-lamps.js?v=20260908-zone-bgm-69"></script>
-<script src="nova-reel-motion.js?v=20260908-zone-bgm-69"></script>
-<script src="nova-art.js?v=20260908-zone-bgm-69"></script>
-<script src="nova-balance.js?v=20260908-zone-bgm-69"></script>
-<script src="nova-normal.js?v=20260908-zone-bgm-69"></script>
+<link rel="stylesheet" href="nova-cabinet.css?v=20260908-ouma-sequence-70">
+<link rel="stylesheet" href="nova-artwork.css?v=20260908-ouma-sequence-70">
+<script src="nova-artwork.js?v=20260908-ouma-sequence-70" defer></script>
+<script src="nova-beat-lamps.js?v=20260908-ouma-sequence-70"></script>
+<script src="nova-reel-motion.js?v=20260908-ouma-sequence-70"></script>
+<script src="nova-art.js?v=20260908-ouma-sequence-70"></script>
+<script src="nova-balance.js?v=20260908-ouma-sequence-70"></script>
+<script src="nova-normal.js?v=20260908-ouma-sequence-70"></script>
 <script src="nova-flow.js?v=20260908-state-nova-33"></script>
 <style>
 /* Fit the original nebula art to reel width; its transparent vertical margins
@@ -8719,6 +8719,7 @@ body{
   }
 
   function applyAudioOutputVolumes(){
+    if(oumaIntroAudio)oumaIntroAudio.volume=sfxOutputVolumeForSource(SFX_OUTPUT_SCALE,'assets/media/nova/uuufa.wav');
     if(oumaReverseAudio)oumaReverseAudio.volume=sfxOutputVolumeForSource(SFX_OUTPUT_SCALE,"assets/media/nova/ouma1.wav");
     applyBgmOutputVolumes();
     if(koatariSound) koatariSound.volume = sfxOutputVolumeForSource(SFX_OUTPUT_SCALE, KOATARI_SOUND_SRC);
@@ -14495,6 +14496,7 @@ body{
   }
 
   function setReelColumn(index, columnSymbols, label, cls, winRow=null){
+    if(typeof oumaStoppedTops!=='undefined')oumaStoppedTops[index]=REEL_STRIPS[index].findIndex((_,n)=>columnSymbols.every((v,j)=>REEL_STRIPS[index][(n+j)%REEL_STRIPS[index].length]===v));
     const cells = ensureReelCells(index);
     columnSymbols.forEach((symbol,i)=>{
       const isWin = Array.isArray(winRow) ? i === winRow[index] : winRow !== null && i === winRow;
@@ -14922,10 +14924,10 @@ body{
     ensureBattleBgmContinuing();
     ensureBarBgmContinuing();
 
-    resetReelSpinOffsets();
+    if(!resolved.oumaFreeze)resetReelSpinOffsets();
     reels.forEach((reel,i)=>{
       reel.classList.add("spinning");
-      setRandomReel(i);
+      if(!resolved.oumaFreeze)setRandomReel(i);
       const strip = REEL_STRIPS[i] || REEL_STRIPS[0];
       if(A_TYPE_MODE&&!resolved.oumaFreeze){NovaReelMotion.start(i,reel,strip,currentReelTopIndex(i),!!currentSpin?.artReverse,cellHtml);}
       else if(!resolved.oumaFreeze){const reelStepMs=Math.max(16,REEL_FULL_ROTATION_MS/strip.length);spinIntervals[i]=setInterval(()=>setRandomReel(i),reelStepMs);}
@@ -15146,10 +15148,10 @@ body{
     }
   }
 
-  var oumaReverseAudio=null,oumaReverseLoadTimer=null;
+  var oumaReverseAudio=null,oumaReverseLoadTimer=null,oumaIntroAudio=null,oumaStoppedTops=[0,0,0];
   function clearOumaReverseAudio(){
     clearTimeout(oumaReverseLoadTimer);oumaReverseLoadTimer=null;
-    if(oumaReverseAudio){const audio=oumaReverseAudio;oumaReverseAudio=null;audio.onerror=null;audio.onplaying=null;audio.pause();try{audio.removeAttribute("src");audio.load();}catch(e){}}
+    if(oumaReverseAudio){const audio=oumaReverseAudio;oumaReverseAudio=null;audio.onerror=null;audio.onended=null;audio.onplaying=null;audio.pause();try{audio.removeAttribute("src");audio.load();}catch(e){}}
   }
   function startOumaReverseAudio(spin){
     if(!spin?.resolved?.oumaFreeze)return;
@@ -15165,7 +15167,7 @@ body{
       reels.forEach((reel,i)=>NovaReelMotion.startSynced(i,reel,REEL_STRIPS[i],spin.grid.map(row=>row[i]),true,cellHtml,clock,4400,()=>{
         if(currentSpin!==spin||oumaReverseAudio!==audio)return;
         if(++landed===3){spinCanStop=true;[0,1,2].forEach(index=>stopSingleReel(index,{oumaAuto:true,visualReady:true,visualColumn:spin.grid.map(row=>row[index])}));}
-      }));
+      },Math.max(0,oumaStoppedTops[i])));
     };
     audio.onerror=()=>{useFallback();begin();};
     oumaReverseLoadTimer=setTimeout(()=>{if(!started){audio.pause();useFallback();begin();}},3000);
@@ -15176,37 +15178,53 @@ body{
   let oumaChainTimer=null;
   var oumaPresentation=null;
   function clearOumaPresentation(){
-    clearTimeout(oumaChainTimer);oumaChainTimer=null;oumaPresentation=null;
+    clearTimeout(oumaChainTimer);oumaChainTimer=null;
+    if(oumaPresentation?.stage==='lift')NovaReelMotion.clearAll();
+    if(oumaIntroAudio){oumaIntroAudio.pause();oumaIntroAudio=null;}
+    if(oumaReverseAudio)oumaReverseAudio.onended=null;
+    oumaPresentation=null;
     document.getElementById('machine').dataset.oumaFreeze='';
   }
   function scheduleOumaZeroChain(){
     const previous=normalState.flow;
     if(previous?.zone!=='ouma'||!previous.oumaPending||debugFastSpinActive||isCompleteTrialLocked())return false;
-    clearOumaReverseAudio();
     clearOumaPresentation();stopAutoPlay('逢魔フリーズ操作待ち');stopSpeedToBonus('逢魔フリーズ操作待ち');
-    oumaPresentation={stage:'lift',previous};
-    reels.forEach((reel,i)=>{reel.style.setProperty('--ouma-lift-delay',[0,90,170][i]+'ms');reel.style.setProperty('--ouma-rattle-speed',[70,83,61][i]+'ms');reel.style.setProperty('--ouma-rattle-delay',[0,-31,-17][i]+'ms');});
-    const machine=document.getElementById('machine');machine.dataset.oumaFreeze='lift';
+    const presentation=oumaPresentation={stage:'hold',previous};
+    reels.forEach((reel,i)=>{reel.style.setProperty('--ouma-rattle-speed',[35,41.5,30.5][i]+'ms');reel.style.setProperty('--ouma-rattle-delay',[0,-15.5,-8.5][i]+'ms');});
+    const machine=document.getElementById('machine');machine.dataset.oumaFreeze='hold';
     $('spinBtn').disabled=true;stopBtns.forEach(b=>b.disabled=true);
-    showOverlay('逢魔フリーズチャレンジ');
-    oumaChainTimer=setTimeout(()=>{
-      if(normalState.flow!==previous||!oumaPresentation){clearOumaPresentation();return;}
-      oumaPresentation.stage='bet';machine.dataset.oumaFreeze='bet';
+    const ready=()=>{
+      if(oumaPresentation!==presentation||normalState.flow!==previous)return;
+      clearOumaReverseAudio();presentation.stage='bet';machine.dataset.oumaFreeze='bet';
       $('spinBtn').disabled=false;$('spinBtn').textContent='BET';$('resultText').textContent='BETで逢魔フリーズ継続チャレンジ';
-    },750);
+    };
+    if(oumaReverseAudio&&!oumaReverseAudio.ended&&!oumaReverseAudio.paused){oumaReverseAudio.onended=ready;oumaReverseAudio.onerror=ready;}
+    else ready();
     return true;
   }
   function resolveOumaChallenge(){
     if(oumaPresentation?.stage!=='bet')return;
-    const previous=oumaPresentation.previous;
+    const presentation=oumaPresentation,previous=presentation.previous;
     if(normalState.flow!==previous){clearOumaPresentation();return;}
-    oumaPresentation.stage='resolve';$('spinBtn').disabled=true;
-    normalState.flow=NovaArt.prepareBet(previous,settings.novaArt,Math.random);
-    persistState();
-    if(normalState.flow.zero){clearOumaPresentation();spin();return;}
-    oumaPresentation.stage='fail';document.getElementById('machine').dataset.oumaFreeze='fail';
-    $('resultText').textContent='逢魔フリーズ 継続失敗';
-    oumaChainTimer=setTimeout(()=>{clearOumaPresentation();updateDisplay();},900);
+    presentation.stage='lift';$('spinBtn').disabled=true;
+    const machine=document.getElementById('machine');machine.dataset.oumaFreeze='lift';
+    normalState.flow=NovaArt.prepareBet(previous,settings.novaArt,Math.random);persistState();
+    const audio=new Audio('assets/media/nova/uuufa.wav');oumaIntroAudio=audio;
+    audio.volume=sfxOutputVolumeForSource(SFX_OUTPUT_SCALE,'assets/media/nova/uuufa.wav');
+    audio.play()?.then(()=>{if(oumaIntroAudio!==audio)audio.pause();}).catch(()=>{});
+    const started=performance.now(),tops=oumaStoppedTops.map(top=>Math.max(0,top));
+    reels.forEach((reel,i)=>NovaReelMotion.start(i,reel,REEL_STRIPS[i],tops[i],true,cellHtml,{
+      clock:()=>Math.min(500,Math.max(0,performance.now()-started-[0,65,120][i]))/1000,
+      duration:500,steps:1,done:()=>{}
+    }));
+    oumaChainTimer=setTimeout(()=>{
+      if(oumaPresentation!==presentation)return;
+      reels.forEach((_,i)=>{NovaReelMotion.clear(i);setReelColumn(i,reelWindowFromTopIndex(i,tops[i]+1),'','',null);});
+      if(normalState.flow.zero){clearOumaPresentation();spin();return;}
+      presentation.stage='fail';machine.dataset.oumaFreeze='fail';
+      $('resultText').textContent='逢魔フリーズ 継続失敗';
+      oumaChainTimer=setTimeout(()=>{clearOumaPresentation();updateDisplay();},900);
+    },1500);
   }
 
   function finishSpin(result, resolved, lineRow=1){

@@ -22,3 +22,8 @@ test('audio clock controls all three reels and lands exactly at 4.4 seconds',()=
  audioTime=4.4;t.tick(16);assert.equal(landed,3);for(let i=0;i<3;i++)assert.equal(t.a.top(i),2);
  t.tick(1000);assert.equal(landed,3);
 });
+test('synced reverse begins at stopped position and lands on target without phase jump',()=>{
+ const t=setup();let audioTime=0;const strip=['A','B','C','D','E'];
+ t.a.startSynced(0,t.reel,strip,['C','D','E'],true,s=>s,()=>audioTime,4400,()=>{},4);
+ assert.equal(t.a.top(0),4);audioTime=4.4;t.tick(16);assert.equal(t.a.top(0),2);
+});

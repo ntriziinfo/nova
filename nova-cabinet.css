@@ -87,17 +87,13 @@ body[data-zone-roulette-lamp=ouma1] .novaArtItem[data-artwork=ouma1] img{animati
 body[data-art-ura=true][data-art-zone=giru] .novaArtItem[data-artwork=giru1] img,
 body[data-art-ura=true][data-art-zone=sora] .novaArtItem[data-artwork=sora1] img,
 body[data-art-ura=true][data-art-zone=ouma] .novaArtItem[data-artwork=ouma1] img{animation:none!important;filter:grayscale(1) sepia(1) saturate(10) hue-rotate(315deg) brightness(1.05) drop-shadow(0 0 12px #ff2020)!important}
-/* Freeze lift moves every visible symbol by exactly one symbol height. */
-#machine[data-ouma-freeze=lift] .reel .window .cell{animation:oumaRattleLift .5s steps(9,end) var(--ouma-lift-delay,0ms) both!important;transition:none!important}
-#machine[data-ouma-freeze=bet] .reel .window .cell,#machine[data-ouma-freeze=fail] .reel .window .cell{transform:translateY(-100%)!important}
-#machine[data-ouma-freeze=fail] .reel .window{filter:brightness(0)!important}
-#machine[data-ouma-freeze=lift] button,#machine[data-ouma-freeze=fail] button{pointer-events:none}
+/* Waiting and landed reels tremble independently; lift uses the actual strip. */
+#machine[data-ouma-freeze=fail] .reel .window{filter:brightness(.25)!important}
+#machine[data-ouma-freeze=lift] button,#machine[data-ouma-freeze=hold] button,#machine[data-ouma-freeze=fail] button{pointer-events:none}
 #machine[data-ouma-freeze=bet] button:not(#spinBtn){pointer-events:none}
-
-#machine[data-ouma-freeze=lift] .reel .window,#machine[data-ouma-freeze=bet] .reel .window{animation:oumaReelRattle var(--ouma-rattle-speed,70ms) steps(1,end) var(--ouma-rattle-delay,0ms) infinite!important}
-@keyframes oumaRattleLift{0%{transform:translateY(0)}100%{transform:translateY(-100%)}}
+#machine[data-ouma-freeze=lift] .reel .window,#machine[data-ouma-freeze=bet] .reel .window,#machine[data-ouma-freeze=hold] .reel .window{animation:oumaReelRattle var(--ouma-rattle-speed,35ms) steps(1,end) var(--ouma-rattle-delay,0ms) infinite!important}
 @keyframes oumaReelRattle{0%{transform:translate(-3px,-4px)}20%{transform:translate(4px,3px)}40%{transform:translate(-4px,2px)}60%{transform:translate(3px,-3px)}80%{transform:translate(0,4px)}100%{transform:translate(-3px,-4px)}}
-@media(prefers-reduced-motion:reduce){#machine[data-ouma-freeze=lift] .reel .window,#machine[data-ouma-freeze=bet] .reel .window{animation:oumaReelRattleReduced .16s steps(1,end) infinite!important}#machine[data-ouma-freeze=lift] .reel .window .cell{animation:oumaRattleLift .5s ease-out var(--ouma-lift-delay,0ms) both!important}}
+@media(prefers-reduced-motion:reduce){#machine[data-ouma-freeze] .reel .window{animation-name:oumaReelRattleReduced!important}}
 /* The active zone character stays fully lit despite music sequence opacity. */
 body[data-art-zone=sosuke] .novaArtItem[data-artwork=sosuke],
 body[data-art-zone=toto] .novaArtItem[data-artwork=toto],
