@@ -24,13 +24,27 @@ globalThis.NovaLadder=(()=>{
   const layer=host.querySelector('.novaArtLayer');
   if(layer)host.style.setProperty('--ladder-lamp-bottom',Math.max(0,layer.clientHeight-bottom)+'px');
  }
- function hide(){token++;clearTimeout(timer);clearTimeout(unlock);locked=false;key='';if(amount)delete amount.dataset.final;if(root){root.hidden=true;root.dataset.stage='';delete host.dataset.ladderActive;}}
+ function hide(){token++;clearTimeout(timer);clearTimeout(unlock);locked=false;key='';if(amount)delete amount.dataset.final;if(root){upper.ontransitionend=null;root.hidden=true;root.dataset.stage='';delete host.dataset.ladderActive;}}
+ function closeThenReveal(nextStage){
+  const request=token;locked=true;root.dataset.stage='promote';
+  let closed=false;
+  const landed=()=>{
+   if(closed||request!==token)return;closed=true;upper.ontransitionend=null;clearTimeout(timer);
+   root.dataset.stage='closed';
+   timer=setTimeout(()=>{if(request!==token)return;root.dataset.stage=nextStage;
+    unlock=setTimeout(()=>{if(request===token)locked=false;},700);
+   },500);
+  };
+  upper.ontransitionend=event=>{if(event.target===upper&&event.propertyName==='transform')landed();};
+  // Fallback for hidden tabs or an already closed door: allow a full descent before holding.
+  timer=setTimeout(landed,1200);
+ }
  function open(points,promote=false){
   const request=++token;clearTimeout(timer);clearTimeout(unlock);locked=promote;
   root.hidden=false;host.dataset.ladderActive='true';
   amount.src=`assets/ladder/${points}.png`;amount.alt=`確保 ${points}pt`;amount.style.visibility='visible';
   root.dataset.stage=promote?'promote':'open';
-  if(promote)timer=setTimeout(()=>{if(request!==token)return;root.dataset.stage='open';locked=false;},850);
+  if(promote)closeThenReveal('open');
  }
  function sync(flow,spinning=false){
   if(spinning)return;
@@ -74,7 +88,7 @@ globalThis.NovaLadder=(()=>{
   root.hidden=false;host.dataset.ladderActive='true';layout();root.dataset.stage=stage;
   amount.onload=()=>{amount.style.visibility='visible';};
   amount.src=`assets/ladder/${points}.png`;amount.alt=`獲得 ${points}pt`;amount.dataset.final=String(points);amount.style.visibility='visible';
-  if(!started&&promoted){root.dataset.stage='promote';locked=true;const request=token;timer=setTimeout(()=>{if(request!==token)return;root.dataset.stage='settled';locked=false;},850);}
+  if(!started&&promoted)closeThenReveal('settled');
  }
  if(typeof document!=='undefined'){document.addEventListener('DOMContentLoaded',init);window.addEventListener('resize',()=>{if(root&&!root.hidden)layout();});}
  return {eligible,sync,bet,stop,hide,award,get busy(){return locked;}};
