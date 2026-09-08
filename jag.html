@@ -6531,14 +6531,14 @@ body{
   .vertexConnectionBadge.offline{color:#ff8f9c;border-color:rgba(255,91,113,.65);background:rgba(52,9,17,.9)}
   .vertexConnectionBadge.legacy{color:#d4a6ff;border-color:rgba(185,109,255,.6)}
 </style>
-<link rel="stylesheet" href="nova-cabinet.css?v=20260908-ouma-real-game-76">
-<link rel="stylesheet" href="nova-artwork.css?v=20260908-ouma-real-game-76">
-<script src="nova-artwork.js?v=20260908-ouma-real-game-76" defer></script>
-<script src="nova-beat-lamps.js?v=20260908-ouma-real-game-76"></script>
-<script src="nova-reel-motion.js?v=20260908-ouma-real-game-76"></script>
-<script src="nova-art.js?v=20260908-ouma-real-game-76"></script>
-<script src="nova-balance.js?v=20260908-ouma-real-game-76"></script>
-<script src="nova-normal.js?v=20260908-ouma-real-game-76"></script>
+<link rel="stylesheet" href="nova-cabinet.css?v=20260908-ouma-lift-game-77">
+<link rel="stylesheet" href="nova-artwork.css?v=20260908-ouma-lift-game-77">
+<script src="nova-artwork.js?v=20260908-ouma-lift-game-77" defer></script>
+<script src="nova-beat-lamps.js?v=20260908-ouma-lift-game-77"></script>
+<script src="nova-reel-motion.js?v=20260908-ouma-lift-game-77"></script>
+<script src="nova-art.js?v=20260908-ouma-lift-game-77"></script>
+<script src="nova-balance.js?v=20260908-ouma-lift-game-77"></script>
+<script src="nova-normal.js?v=20260908-ouma-lift-game-77"></script>
 <script src="nova-flow.js?v=20260908-state-nova-33"></script>
 <style>
 /* Fit the original nebula art to reel width; its transparent vertical margins
@@ -14933,12 +14933,12 @@ body{
     ensureBattleBgmContinuing();
     ensureBarBgmContinuing();
 
-    if(!resolved.oumaFreeze)resetReelSpinOffsets();
+    if(!resolved.oumaFreeze&&!options?.oumaFailed)resetReelSpinOffsets();
     reels.forEach((reel,i)=>{
       reel.classList.add("spinning");
-      if(!resolved.oumaFreeze)setRandomReel(i);
+      if(!resolved.oumaFreeze&&!options?.oumaFailed)setRandomReel(i);
       const strip = REEL_STRIPS[i] || REEL_STRIPS[0];
-      if(A_TYPE_MODE&&!resolved.oumaFreeze){NovaReelMotion.start(i,reel,strip,currentReelTopIndex(i),!!currentSpin?.artReverse,cellHtml);}
+      if(A_TYPE_MODE&&!resolved.oumaFreeze){NovaReelMotion.start(i,reel,strip,options?.oumaFailed?Math.max(0,oumaStoppedTops[i]):currentReelTopIndex(i),!!currentSpin?.artReverse,cellHtml);}
       else if(!resolved.oumaFreeze){const reelStepMs=Math.max(16,REEL_FULL_ROTATION_MS/strip.length);spinIntervals[i]=setInterval(()=>setRandomReel(i),reelStepMs);}
     });
 
@@ -15222,7 +15222,7 @@ body{
     const machine=document.getElementById('machine');machine.dataset.oumaFreeze='lift';
     normalState.flow=NovaArt.prepareBet(previous,settings.novaArt,Math.random);
     persistState();
-    if(!normalState.flow.zero){clearOumaPresentation();spin({oumaFailed:true});return;}
+
     const audio=new Audio('assets/media/nova/uuufa.wav');oumaIntroAudio=audio;
     audio.volume=sfxOutputVolumeForSource(SFX_OUTPUT_SCALE,'assets/media/nova/uuufa.wav');
     audio.play()?.then(()=>{if(oumaIntroAudio!==audio)audio.pause();}).catch(()=>{});
@@ -15234,7 +15234,8 @@ body{
     oumaChainTimer=setTimeout(()=>{
       if(oumaPresentation!==presentation)return;
       reels.forEach((_,i)=>{NovaReelMotion.clear(i);setReelColumn(i,reelWindowFromTopIndex(i,tops[i]+1),'','',null);});
-      clearOumaPresentation();spin();
+      const oumaFailed=!normalState.flow.zero;
+      clearOumaPresentation();spin({oumaFailed});
     },1500);
   }
 
