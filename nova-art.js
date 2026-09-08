@@ -30,7 +30,7 @@ globalThis.NovaArt=(()=>{
  const settingBias=[-2.7,-2.55,-2.27,-2.13,-1.8,-1.46];
  const biasFor=setting=>settingBias[Math.max(0,Math.min(5,Math.round(Number(setting)||1)-1))];
  // Zone v2 calibration: dedicated bonus NEBULA rates; normal/CZ and AT roles stay independent.
- const bonusSpecialRates=[.023,.023,.0253,.028,.0321,.0405];
+ const bonusSpecialRates=[.03996655234234661,.04229979338837095,.042454781614400576,.04471435169927831,.05243846117157629,.05033043246930798];
  const bonusSpecialFor=setting=>bonusSpecialRates[Math.max(0,Math.min(5,Math.round(Number(setting)||1)-1))];
  function advanceBonus(state,special=false,reward=0){const target=bonusTarget(state.bonusKind),paid=Number(state.paid)||0;return {bonusTarget:target,bonusPointsRemaining:Math.max(0,target-paid-Math.max(0,Number(reward)||0)),bonusArtSets:(Number(state.bonusArtSets)||0)+(paid<target&&special?1:0)};}
 
@@ -120,7 +120,7 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
    if(!wasHigh&&rng()<rule.up){s.atHigh=true;s.atHighLeft=10;out.promoted=true;}
    if(rng()<Math.min(1,rule.hit*boost)){let r=rng();const i=rule.weights.findIndex(w=>(r-=w)<0);out.direct=rule.values[i<0?rule.values.length-1:i];}
   }
-  if(role==='STRONG_NOVA'||(role==='WEAK_NOVA'&&rng()<Math.min(1,(wasHigh?.75:.25)*boost)))out.zone=pickAtZone(setting,wasHigh&&role==='STRONG_NOVA',rng);
+  if(role==='STRONG_NOVA'||(role==='WEAK_NOVA'&&rng()<Math.min(1,(wasHigh?.75:.25)*boost*2)))out.zone=pickAtZone(setting,wasHigh&&role==='STRONG_NOVA',rng);
   if(wasHigh&&!held&&(role==='REPLAY'||role==='MISS')&&rng()<(role==='REPLAY'?.05:.08)){s.atHigh=false;s.atHighLeft=0;}
   if(factor<1){
    if(out.direct&&rng()>=factor)out.direct=0;
