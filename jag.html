@@ -6531,13 +6531,13 @@ body{
   .vertexConnectionBadge.offline{color:#ff8f9c;border-color:rgba(255,91,113,.65);background:rgba(52,9,17,.9)}
   .vertexConnectionBadge.legacy{color:#d4a6ff;border-color:rgba(185,109,255,.6)}
 </style>
-<link rel="stylesheet" href="nova-cabinet.css?v=20260908-order49">
-<link rel="stylesheet" href="nova-artwork.css?v=20260908-order49">
-<script src="nova-artwork.js?v=20260908-order49" defer></script>
-<script src="nova-beat-lamps.js?v=20260908-order49"></script>
-<script src="nova-art.js?v=20260908-order49"></script>
-<script src="nova-balance.js?v=20260908-order49"></script>
-<script src="nova-normal.js?v=20260908-order49"></script>
+<link rel="stylesheet" href="nova-cabinet.css?v=20260908-ouma50">
+<link rel="stylesheet" href="nova-artwork.css?v=20260908-ouma50">
+<script src="nova-artwork.js?v=20260908-ouma50" defer></script>
+<script src="nova-beat-lamps.js?v=20260908-ouma50"></script>
+<script src="nova-art.js?v=20260908-ouma50"></script>
+<script src="nova-balance.js?v=20260908-ouma50"></script>
+<script src="nova-normal.js?v=20260908-ouma50"></script>
 <script src="nova-flow.js?v=20260908-state-nova-33"></script>
 <style>
 /* Fit the original nebula art to reel width; its transparent vertical margins
@@ -10712,6 +10712,7 @@ body{
   }
 
   function canPlayCompleteTrial(){
+    if(typeof oumaPresentation!=='undefined'&&oumaPresentation)return false;
     if(bonusConfirmSoundPlaying || bonusEndBgmPlaying)return false;
     if(!isCompleteTrialLocked()) return true;
     stopAutoPlay("COMPLETE中のためAUTO停止");
@@ -11194,7 +11195,7 @@ body{
         flowBefore,
         flowAfter:artStep?.flow || (czEntry ? NovaFlow.enterCZ(result === "STRONG_CZ",settings.novaFlow) : flowBefore.phase==='art' ? flowBefore : (isNewBonusHit || isReadyBonus) ? NovaFlow.normalize(null) : bonusPendingAtStart ? flowBefore : NovaFlow.advance(flowBefore)),
         artMessage:artStep?.message || '',
-        artReverse:!!artStep?.reverse,oumaFreeze:!!artStep?.oumaFreeze,
+        artReverse:!!(artStep?.reverse||artStep?.oumaFreeze),oumaFreeze:!!artStep?.oumaFreeze,
         zoneSpin,
         czEntry,
         czCompleted:(flowBefore.phase === "cz" || flowBefore.phase === "strong_cz") && flowBefore.remaining === 1,
@@ -13566,6 +13567,7 @@ body{
     jagLastGamePayout = 0;
     jagLastBonusPayout = 0;
     jagChanceHold = false;
+    clearOumaPresentation();
     showCzLamp(0,null);
     completeTrialState = {locked:false,lockedSetting:0,rescueActive:false,completeProfit:0};
     setSpeedFrameOffHold(false);
@@ -13626,6 +13628,7 @@ body{
     jagLastGamePayout = 0;
     jagLastBonusPayout = 0;
     jagChanceHold = false;
+    clearOumaPresentation();
     showCzLamp(0,null);
     completeTrialState = {locked:false,lockedSetting:0,rescueActive:false,completeProfit:0};
     setSpeedFrameOffHold(false);
@@ -14585,6 +14588,8 @@ body{
   }
 
   async function spin(){
+    if(!oumaPresentation&&!isSpinning&&!debugFastSpinActive&&normalState.flow?.zone==='ouma'&&normalState.flow.oumaPending){scheduleOumaZeroChain();return;}
+    if(oumaPresentation){if(oumaPresentation.stage==='bet')resolveOumaChallenge();return;}
     if(debugFastSpinActive) return;
     if(speedToBonusActive && !speedModeSpinRequest) return;
     if(bonusEndBgmPlaying){
@@ -14887,7 +14892,7 @@ body{
       stopOrder.forEach((i,idx)=>{
         const normalAutoStopDelay = autoStopDelayMs(idx);
         const delay = resolved.oumaFreeze ? spinWaitMs + 150 + idx * 300 : speedModeSpinAtStart ? speedModeStopDelay(i) : normalAutoStopDelay;
-        setTimeout(()=>stopSingleReel(i), delay);
+        setTimeout(()=>stopSingleReel(i,{oumaAuto:!!resolved.oumaFreeze}), delay);
       });
     }
   }
@@ -14911,6 +14916,7 @@ body{
   }
 
   function stopSingleReel(i, options={}){
+    if(currentSpin?.resolved?.oumaFreeze&&!options.oumaAuto)return;
     if(!isSpinning || !currentSpin || currentSpin.stopped[i]) return;
     if(options.keyboardTurbo){
       currentSpin.keyboardTurboStop = true;
@@ -15007,6 +15013,7 @@ body{
   }
 
   function stopAllReels(){
+    if(currentSpin?.resolved?.oumaFreeze)return;
     if(!isSpinning || !currentSpin) return;
     if(isPremiumBigConfirmStopLocked()){
       $("resultText").textContent = "フリーズ告知中...";
@@ -15078,18 +15085,37 @@ body{
   }
 
   let oumaChainTimer=null;
+  var oumaPresentation=null;
+  function clearOumaPresentation(){
+    clearTimeout(oumaChainTimer);oumaChainTimer=null;oumaPresentation=null;
+    document.getElementById('machine').dataset.oumaFreeze='';
+  }
   function scheduleOumaZeroChain(){
     const previous=normalState.flow;
     if(previous?.zone!=='ouma'||!previous.oumaPending||debugFastSpinActive||isCompleteTrialLocked())return false;
-    clearTimeout(oumaChainTimer);
+    clearOumaPresentation();stopAutoPlay('逢魔フリーズ操作待ち');stopSpeedToBonus('逢魔フリーズ操作待ち');
+    oumaPresentation={stage:'lift',previous};
+    const machine=document.getElementById('machine');machine.dataset.oumaFreeze='lift';
+    $('spinBtn').disabled=true;stopBtns.forEach(b=>b.disabled=true);
+    showOverlay('逢魔フリーズチャレンジ');
     oumaChainTimer=setTimeout(()=>{
-      if(normalState.flow!==previous||isSpinning||session.active||debugFastSpinActive||isCompleteTrialLocked())return;
-      normalState.flow=NovaArt.prepareBet(previous,settings.novaArt,Math.random);
-      persistState();updateDisplay();
-      if(normalState.flow.zero){spin();}
-      else{if(!normalState.flow.zone)log(NovaArt.zoneName(previous)+'ゾーン終了 / ＋'+previous.award+'pt');scheduleNextSpeedToBonus();scheduleNextAuto();}
-    },900);
+      if(normalState.flow!==previous||!oumaPresentation){clearOumaPresentation();return;}
+      oumaPresentation.stage='bet';machine.dataset.oumaFreeze='bet';
+      $('spinBtn').disabled=false;$('spinBtn').textContent='BET';$('resultText').textContent='BETで逢魔フリーズ継続チャレンジ';
+    },750);
     return true;
+  }
+  function resolveOumaChallenge(){
+    if(oumaPresentation?.stage!=='bet')return;
+    const previous=oumaPresentation.previous;
+    if(normalState.flow!==previous){clearOumaPresentation();return;}
+    oumaPresentation.stage='resolve';$('spinBtn').disabled=true;
+    normalState.flow=NovaArt.prepareBet(previous,settings.novaArt,Math.random);
+    persistState();
+    if(normalState.flow.zero){clearOumaPresentation();spin();return;}
+    oumaPresentation.stage='fail';document.getElementById('machine').dataset.oumaFreeze='fail';
+    $('resultText').textContent='逢魔フリーズ 継続失敗';
+    oumaChainTimer=setTimeout(()=>{clearOumaPresentation();updateDisplay();},900);
   }
 
   function finishSpin(result, resolved, lineRow=1){
@@ -15194,7 +15220,7 @@ body{
         stopSpeedToBonus("ボーナス確定のためSPEED停止");
         setSpeedFrameOffHold(true);
         queueBonusSessionStart(180);
-      }else if(!(resolved.oumaFreeze&&scheduleOumaZeroChain())){
+      }else if(!(scheduleOumaZeroChain())){
         scheduleNextSpeedToBonus();
         scheduleNextAuto();
       }

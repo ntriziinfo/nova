@@ -95,5 +95,5 @@ test('analytic expectations agree with independent simulation and strength order
 });
 test('live zero-chain wiring automatically stops reels and continues with state guards',()=>{
  const h=fs.readFileSync('jag.html','utf8');assert.match(h,/autoPlay \|\| speedModeSpinAtStart \|\| resolved.oumaFreeze/);
- assert.match(h,/resolved.oumaFreeze&&scheduleOumaZeroChain/);assert.match(h,/normalState.flow!==previous/);assert.match(h,/normalState.flow.zero\)\{spin\(\)/);
+ assert.match(h,/!\(scheduleOumaZeroChain\(\)\)/);assert.match(h,/normalState.flow!==previous/);assert.match(h,/normalState.flow.zero\)\{clearOumaPresentation\(\);spin\(\)/);
 });
