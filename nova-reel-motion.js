@@ -26,9 +26,10 @@ globalThis.NovaReelMotion=(()=>{
   const target=strip.findIndex((_,n)=>column.every((v,j)=>strip[(n+j)%strip.length]===v));
   if(target<0)throw new Error('Synced stop absent from strip');
   const direction=reverse?1:-1;
-  const top=initialTop===undefined?target-direction*duration/(rotationMs/strip.length):initialTop;
+  const syncedRotationMs=reverse?rotationMs/2:rotationMs;
+  const top=initialTop===undefined?target-direction*duration/(syncedRotationMs/strip.length):initialTop;
   const distance=mod(direction*(target-top),strip.length);
-  const steps=distance+Math.max(0,Math.round((duration/(rotationMs/strip.length)-distance)/strip.length))*strip.length;
+  const steps=distance+Math.max(0,Math.round((duration/(syncedRotationMs/strip.length)-distance)/strip.length))*strip.length;
   start(i,reel,strip,top,reverse,html,{clock,duration,done,steps});
  }
  function distance(i,column){

@@ -27,3 +27,9 @@ test('synced reverse begins at stopped position and lands on target without phas
  t.a.startSynced(0,t.reel,strip,['C','D','E'],true,s=>s,()=>audioTime,4400,()=>{},4);
  assert.equal(t.a.top(0),4);audioTime=4.4;t.tick(16);assert.equal(t.a.top(0),2);
 });
+test('freeze reverse targets twice normal speed while preserving starting and final symbols',()=>{
+ const t=setup();let audioTime=0;const strip=Array.from({length:20},(_,i)=>String(i));
+ t.a.startSynced(0,t.reel,strip,['0','1','2'],true,s=>s,()=>audioTime,4400,()=>{},0);
+ audioTime=.1;t.tick(16);assert.equal(t.a.top(0),5);
+ audioTime=4.4;t.tick(16);assert.equal(t.a.top(0),0);
+});
