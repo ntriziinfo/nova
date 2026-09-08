@@ -2,10 +2,25 @@
 globalThis.NovaBalance=(()=>{
  const targets=[.95,.965,.98,1.02,1.07,1.14];
  const normal=[[354.112628,570.311235,6.592194,128,7.464630],[335.340933,496.870459,6.554256,192,7.482946],[318.675842,391.096799,6.455407,124,7.452119],[295.728558,359.759320,6.248231,184,7.301746],[288.226978,283.780845,6.120643,120,7.250883],[276.519476,276.524590,5.897360,176,7.245667]];
- function zoneMean(id,options={}){const a=NovaArt,c=a.config(options),s=a.startZone(a.enter(),id,c,()=>.5),r=a.zoneRules(s,c);
-  if(r.family==='ladder')return a.ladderTableFor(s).reduce((sum,l)=>sum+l[0]+l.slice(1).reduce((v,n,i)=>v+(n-l[i])*r.success**(i+1),0),0)/a.ladderTableFor(s).length;
-  if(r.family==='seven'){const games=r.reset===0?5:((1-r.reset)**-5-1)/r.reset;return games*Math.min(r.hit,1-r.reset)*r.weights.reduce((sum,w,i)=>sum+w*a.sevenValues[i],0);}
-  return 5*r.hit*(50+50*r.hundred)*r.awardMultiplier/(1-r.freeze);
+ // Exact reward recursion: 50pt grid below the threshold, translation-invariant tail above it.
+ function zoneMean(id,options={}){const a=NovaArt,c=a.config(options),s=a.startZone(a.enter(),id,c,()=>.5),r=a.zoneRules(s,c),limit=a.zoneTailControl.threshold,factor=a.zoneTailControl.factor;
+  if(r.family==='ladder')return a.ladderTableFor(s).reduce((sum,l)=>{let reach=1,value=l[0];for(let i=1;i<l.length;i++){reach*=r.success*a.zoneAwardFactor(l[i]);value+=(l[i]-l[i-1])*reach;}return sum+value;},0)/a.ladderTableFor(s).length;
+  const V=new Map(),K=new Map(),values=r.family==='seven'?a.sevenValues:[50*r.awardMultiplier,100*r.awardMultiplier],weights=r.family==='seven'?r.weights:[1-r.hundred,r.hundred],mean=values.reduce((v,n,i)=>v+n*weights[i],0),hit=Math.min(r.hit,1-(r.reset||0));
+  const tailFreeze=s.zone==='ouma'?a.oumaFreezeRate({...s,award:String(limit)},c):0,freeMean=tailFreeze*mean/(1-tailFreeze);
+  function tail(left){if(r.family==='nova')return left*hit*factor*(mean+freeMean);const reset=r.reset*factor,reward=Math.min(r.hit,1-reset)*factor*mean,full=reset?((1-reset)**-5-1)/reset*reward:5*reward;return reset?(1-(1-reset)**left)/reset*(reward+reset*full):left*reward;}
+  const get=(map,left,award)=>award>=limit?tail(left)+(map===K?freeMean:0):map.get(award)[left];
+  for(let award=limit-50;award>=0;award-=50){
+   const v=Array(6).fill(0);V.set(award,v);
+   if(r.family==='seven'){
+    const win=weights.map((w,i)=>hit*w*a.zoneAwardFactor(award,values[i])),miss=1-r.reset-win.reduce((x,y)=>x+y,0),aa=[0],bb=[0];
+    for(let left=1;left<=5;left++){aa[left]=miss*aa[left-1]+win.reduce((sum,p,i)=>sum+p*(values[i]+get(V,left-1,award+values[i])),0);bb[left]=r.reset+miss*bb[left-1];}
+    const full=aa[5]/(1-bb[5]);for(let left=1;left<=5;left++)v[left]=aa[left]+bb[left]*full;
+   }else{
+    const k=Array(6).fill(0);K.set(award,k);const freeze=a.oumaFreezeRate({...s,award:String(award)},c)*(s.zone==='urapi'?0:1),win=weights.map((w,i)=>hit*w*a.zoneAwardFactor(award,values[i])),miss=1-win.reduce((x,y)=>x+y,0);
+    for(let left=0;left<=5;left++){if(left)v[left]=miss*v[left-1]+win.reduce((sum,p,i)=>sum+p*(values[i]+get(K,left-1,award+values[i])),0);k[left]=(1-freeze)*v[left]+freeze*weights.reduce((sum,w,i)=>sum+w*(values[i]+get(K,left,award+values[i])),0);}
+   }
+  }
+  return V.get(0)[5];
  }
  const giruMean=(setting,ura=false)=>zoneMean(ura?'ura_giru':'giru');
  // Entry scales fitted with the normal-mode / ceiling / impurity / freeze simulation.

@@ -71,13 +71,15 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
  const ladderTableFor=s=>ladderTables[(s.ura?'ura_':'')+s.zone]||ladderTables[s.zone];
  const sevenValues=[50,100,150,200,300,500];
  const sevenWeights={toto:[.65,.2,.08,.04,.02,.01],sora:[.4,.25,.15,.1,.07,.03],ura_sora:[.2,.2,.2,.15,.15,.1]};
+ const zoneTailControl={threshold:2000,factor:.01};
+ function zoneAwardFactor(award,next=0){return integer(award)+integer(next)>=BigInt(zoneTailControl.threshold)?zoneTailControl.factor:1;}
  function zoneRules(s,c=defaults){const id=(s.ura?'ura_':'')+s.zone;
   if(['sosuke','giru'].includes(s.zone))return {family:'ladder',success:s.zone==='sosuke'?c.ladderSosuke:s.ura?c.ladderUraGiru:c.ladderGiru};
-  if(['toto','sora'].includes(s.zone))return {family:'seven',hit:s.zone==='toto'?c.totoHit:s.ura?c.soraUraHit:c.soraHit,reset:Math.min(.3,s.zone==='toto'?c.totoReset:s.ura?c.soraUraReset:c.soraReset),weights:sevenWeights[id]};
+  if(['toto','sora'].includes(s.zone))return {family:'seven',hit:s.zone==='toto'?c.totoHit:s.ura?c.soraUraHit:c.soraHit,reset:Math.min(.3,s.zone==='toto'?c.totoReset:s.ura?c.soraUraReset:c.soraReset)*zoneAwardFactor(s.award),weights:sevenWeights[id]};
   return {family:'nova',awardMultiplier:s.zone==='ouma'&&s.ura?2:1,hit:s.zone==='urapi'?c.urapiSuper:s.ura?c.oumaUraSuper:c.oumaSuper,hundred:s.zone==='urapi'?.3:s.ura?.7:.5,freeze:s.zone==='urapi'?0:oumaFreezeRate(s,c)};
  }
  function startZone(s,z,c,rng=Math.random){s=normalize(s);const setting=validSetting(c?.setting);z=canonicalZone(z);const explicitUra=String(z).startsWith('ura_');z=baseZone(z);c=config(c);if(!names[z])return s;const ura=['giru','sora','ouma'].includes(z)&&explicitUra;const table=ladderTableFor({zone:z,ura});const ladder=['sosuke','giru'].includes(z)?table[Math.min(table.length-1,Math.floor(rng()*table.length))].slice():[];return {...s,zoneVersion:2,ladder,ladderIndex:0,ladderRevealed:false,ura,oumaPending:false,zoneZones:'0',zoneSets:'0',initialAward:ladder.length?String(ladder[0]):'0',giruSetting:setting,zone:z,zoneLeft:5,award:ladder.length?String(ladder[0]):'0',zero:false,color:'white'};}
- function oumaFreezeRate(s,c){return Math.min(.95,s.ura?c.oumaUraFreeze:c.oumaFreeze);}
+ function oumaFreezeRate(s,c){return Math.min(.95,s.ura?c.oumaUraFreeze:c.oumaFreeze)*zoneAwardFactor(s.award,s.ura?200:100);}
  function prepareBet(value,options={},rng=Math.random){if(value?.entryStage==='confirmed'){const s=startZone(value,value.pendingZone,{...options,setting:value.giruSetting},rng);s.entryStage='';s.pendingZone='';return s;}if(value?.zone!=='ouma'||!value?.oumaPending)return value;const s=normalize(value);s.oumaPending=false;s.zero=rng()<oumaFreezeRate(s,config(options));if(!s.zero&&s.zoneLeft===0)return settleZone(s);return s;}
  function settleZone(value){const s=normalize(value);if(!s.zone)return s;s.remaining=(integer(s.remaining)+integer(s.award)).toString();s.zone='';s.color='white';s.zoneLeft=0;s.zero=false;s.oumaPending=false;return s;}
  function afterBonus(v,c,won=0){const s=v?.phase==='art'?normalize(v):normalize({});s.sets=(integer(s.sets)+integer(won)).toString();if(integer(s.remaining)===0n&&integer(s.sets)>0n){s.remaining=String(config(c).initial);s.sets=(integer(s.sets)-1n).toString();}return integer(s.remaining)>0n||integer(s.stock)>0n||s.zone?s:{phase:'normal',remaining:0,success:false};}
@@ -145,16 +147,17 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
     result=forced|| (rng()<rules.success?(rng()<.7?'REPLAY':'BELL'):'MISS');
     if(!s.ladderRevealed){s.ladderRevealed=true;result='MISS';message=zoneName(s)+' '+s.award+'pt確保 / '+s.ladder.join(' → ')+'pt';}
     else if(result==='MISS'){finish();}
+    else if(!forced&&zoneAwardFactor(s.ladder[Math.min(4,s.ladderIndex+1)])<1&&rng()>=zoneTailControl.factor){result='MISS';finish();}
     else {s.ladderIndex=Math.min(4,s.ladderIndex+1);s.award=String(s.ladder[s.ladderIndex]);message=zoneName(s)+' 突破！ '+s.award+'pt確保';if(!s.zoneLeft||s.ladderIndex===4)finish();}
    }else if(rules.family==='seven'){
     const r=rng();result=forced|| (r<rules.reset?'NEBULA':r<rules.reset+Math.min(rules.hit,1-rules.reset)?'BIG':'MISS');
     if(result==='NEBULA'){s.zoneLeft=5;message=zoneName(s)+' nebula揃い！ 残り5Gへリセット';}
-    else if(result==='BIG'){let r=rng(),i=rules.weights.findIndex(w=>(r-=w)<0);const n=sevenValues[i<0?5:i];s.award=(integer(s.award)+BigInt(n)).toString();message=zoneName(s)+' 7揃い！ ＋'+n+'pt';}
+    else if(result==='BIG'){let r=rng(),i=rules.weights.findIndex(w=>(r-=w)<0);const n=sevenValues[i<0?5:i];if(!forced&&zoneAwardFactor(s.award,n)<1&&rng()>=zoneTailControl.factor){result='MISS';message='7・nebulaを狙え';}else{s.award=(integer(s.award)+BigInt(n)).toString();message=zoneName(s)+' 7揃い！ ＋'+n+'pt';}}
     else message='7・nebulaを狙え';
     if(!s.zoneLeft)finish();
    }else{
     result=free?'SUPER_NOVA':forced|| (rng()<rules.hit?'SUPER_NOVA':'MISS');
-    if(result==='SUPER_NOVA'){const n=(rng()<rules.hundred?100:50)*rules.awardMultiplier;s.award=(integer(s.award)+BigInt(n)).toString();message=(free?'逢魔フリーズ！ 0G連 / ':'')+zoneName(s)+' スーパーノヴァ揃い ＋'+n+'pt';}
+    if(result==='SUPER_NOVA'){const n=(rng()<rules.hundred?100:50)*rules.awardMultiplier;if(!free&&!forced&&zoneAwardFactor(s.award,n)<1&&rng()>=zoneTailControl.factor){result='MISS';message='スーパーノヴァを狙え';}else{s.award=(integer(s.award)+BigInt(n)).toString();message=(free?'逢魔フリーズ！ 0G連 / ':'')+zoneName(s)+' スーパーノヴァ揃い ＋'+n+'pt';}}
     else message='スーパーノヴァを狙え';
     s.oumaPending=s.zone==='ouma'&&result==='SUPER_NOVA';s.zero=false;
     if(!s.zoneLeft&&!s.oumaPending)finish();
@@ -171,5 +174,5 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
   return {atOutcome,result,flow:s,message,internalBonus,reverse,oumaFreeze:freeOumaSpin,zoneSpin:!!value.zone||queuedEntered};
  }
  function label(v){const s=normalize(v);return `AT ${s.remaining}pt / 待機${s.sets}SET${s.entryStage?' / '+({seven:'赤7を狙え・減算停止',roulette:'ルーレット・減算停止',confirmed:zoneName(s.pendingZone)+'ゾーン確定'}[s.entryStage]):''}${s.zone?' / '+zoneName(s)+' '+(s.zero?'0G連':s.oumaPending?'BETで継続抽選':s.zoneLeft+'G'):''}${integer(s.stock)>0n?' / BIGストック '+s.stock:''}${s.zone?' / 獲得'+s.award+'pt':''}`;}
- return {netRewardControl,netLimits,netRewardFactor,superZoneChance,zoneGroups,zoneGroupWeights,upgradeGuaranteedZone,bonusSpecialRates,zoneRules,ladderTables,ladderTableFor,ladderValues,sevenValues,sevenWeights,atZoneWeights,tuning,atMix,drawAtRare,atRoleRules,pickAtZone,resolveAtRole,rareRoles,rareTotal,rareMean,rareFactor,drawRare,roleProbabilities,bonusRoleProbabilities,preparationProbabilities,drawPreparationRole,zoneRoleWeights,zoneRoleMultiplier,paidBellChance,drawPreparation,zoneEntryScale,points,bonusTarget,payout,settleZone,prepareBet,oumaFreezeRate,baseZone,zoneName,zoneIds,names,defaults,direct,zoneWeights,pickZone,bonusSpecial,settingBias,biasFor,bonusSpecialFor,advanceBonus,drawPaidRole,drawBonus,config,normalize,enter,startZone,afterBonus,step,label};
+ return {zoneTailControl,zoneAwardFactor,netRewardControl,netLimits,netRewardFactor,superZoneChance,zoneGroups,zoneGroupWeights,upgradeGuaranteedZone,bonusSpecialRates,zoneRules,ladderTables,ladderTableFor,ladderValues,sevenValues,sevenWeights,atZoneWeights,tuning,atMix,drawAtRare,atRoleRules,pickAtZone,resolveAtRole,rareRoles,rareTotal,rareMean,rareFactor,drawRare,roleProbabilities,bonusRoleProbabilities,preparationProbabilities,drawPreparationRole,zoneRoleWeights,zoneRoleMultiplier,paidBellChance,drawPreparation,zoneEntryScale,points,bonusTarget,payout,settleZone,prepareBet,oumaFreezeRate,baseZone,zoneName,zoneIds,names,defaults,direct,zoneWeights,pickZone,bonusSpecial,settingBias,biasFor,bonusSpecialFor,advanceBonus,drawPaidRole,drawBonus,config,normalize,enter,startZone,afterBonus,step,label};
 })();
