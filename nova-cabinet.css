@@ -98,3 +98,16 @@ body[data-art-ura=true][data-art-zone=ouma] .novaArtItem[data-artwork=ouma1] img
 @keyframes oumaRattleLift{0%{transform:translateY(0)}100%{transform:translateY(-100%)}}
 @keyframes oumaReelRattle{0%{translate:-2px -3px}20%{translate:3px 2px}40%{translate:-3px 1px}60%{translate:2px -2px}80%{translate:0 3px}100%{translate:-2px -3px}}
 @media(prefers-reduced-motion:reduce){#machine[data-ouma-freeze=lift] .reel .window,#machine[data-ouma-freeze=bet] .reel .window{animation:none!important}#machine[data-ouma-freeze=lift] .reel .window .cell{animation:oumaRattleLift .5s ease-out var(--ouma-lift-delay,0ms) both!important}}
+/* The active zone character stays fully lit despite music sequence opacity. */
+body[data-art-zone=sosuke] .novaArtItem[data-artwork=sosuke],
+body[data-art-zone=toto] .novaArtItem[data-artwork=toto],
+body[data-art-zone=urapi] .novaArtItem[data-artwork=urapi],
+body[data-art-zone=giru] .novaArtItem[data-artwork=giru1],
+body[data-art-zone=sora] .novaArtItem[data-artwork=sora1],
+body[data-art-zone=ouma] .novaArtItem[data-artwork=ouma1]{opacity:1!important;animation:none!important}
+body[data-art-zone=sosuke] .novaArtItem[data-artwork=sosuke] img,
+body[data-art-zone=toto] .novaArtItem[data-artwork=toto] img,
+body[data-art-zone=urapi] .novaArtItem[data-artwork=urapi] img,
+body[data-art-zone=giru] .novaArtItem[data-artwork=giru1] img,
+body[data-art-zone=sora] .novaArtItem[data-artwork=sora1] img,
+body[data-art-zone=ouma] .novaArtItem[data-artwork=ouma1] img{opacity:1!important}
