@@ -15240,7 +15240,7 @@ body{
   function scheduleOumaZeroChain(){
     const previous=normalState.flow;
     if(previous?.zone!=='ouma'||!previous.oumaPending||debugFastSpinActive||isCompleteTrialLocked())return false;
-    clearOumaPresentation(true);stopAutoPlay('逢魔フリーズ操作待ち');stopSpeedToBonus('逢魔フリーズ操作待ち');
+    clearOumaPresentation(true);stopSpeedToBonus('逢魔フリーズ操作待ち');
     const presentation=oumaPresentation={stage:'hold',previous};
     reels.forEach((reel,i)=>{reel.style.setProperty('--ouma-rattle-speed',[35,41.5,30.5][i]+'ms');reel.style.setProperty('--ouma-rattle-delay',[0,-15.5,-8.5][i]+'ms');});
     const machine=document.getElementById('machine');machine.dataset.oumaFreeze='hold';
@@ -15249,6 +15249,7 @@ body{
       if(oumaPresentation!==presentation||normalState.flow!==previous)return;
       clearOumaReverseAudio();presentation.stage='bet';machine.dataset.oumaFreeze='bet';
       $('spinBtn').disabled=false;$('spinBtn').textContent='BET';$('resultText').textContent='BETで逢魔フリーズ継続チャレンジ';
+      if(autoPlay)queueAutoStep(autoDelayMs());
     };
     if(oumaReverseAudio&&!oumaReverseAudio.ended&&!oumaReverseAudio.paused){oumaReverseAudio.onended=ready;oumaReverseAudio.onerror=ready;}
     else ready();
@@ -15278,7 +15279,7 @@ body{
       reels.forEach((_,i)=>{NovaReelMotion.clear(i);setReelColumn(i,reelWindowFromTopIndex(i,tops[i]+1),'','',null);});
       const oumaFailed=!normalState.flow.zero;
       clearOumaPresentation();spin({oumaFailed});
-    },2000);
+    },4000);
   }
 
   function finishSpin(result, resolved, lineRow=1){
@@ -15299,6 +15300,7 @@ body{
       $('resultText').textContent='逢魔フリーズ 継続失敗 / ハズレ（0G）';
       if(normalState.pendingZoneResult){displayNovaResult(normalState.pendingZoneResult);normalState.pendingZoneResult=null;}
       persistState();updateDisplay();playNormalBgm();
+      scheduleNextAuto();
       return;
     }
 
@@ -15639,12 +15641,12 @@ body{
 
   function requestAutoStopCurrentSpin(){
     if(!isSpinning || !currentSpin) return false;
+    if(currentSpin.resolved?.oumaFreeze)return false; // Reverse reels stop together on the audio cue.
     if(!spinCanStop) return false;
     if(isPremiumBigConfirmStopLocked()) return false;
     if(currentSpin.autoStopTakeoverScheduled) return true;
     currentSpin.autoStopTakeoverScheduled = true;
     currentSpin.autoStopAtStart = true;
-    playCzCountdownOnLever(resolved);
     currentSpin.manualBonusStop = false;
     stopAllReels();
     return true;
@@ -15657,6 +15659,11 @@ body{
       return;
     }
     if(!canPlayCompleteTrial()) return;
+    if(oumaPresentation){
+      if(oumaPresentation.stage==='bet')resolveOumaChallenge();
+      queueAutoStep(autoPollDelayMs());
+      return;
+    }
     if(isRogiThirdStopHoldActive()){
       if(isRogiThirdStopMoviePlaying()){
         queueAutoStep(autoPollDelayMs());
