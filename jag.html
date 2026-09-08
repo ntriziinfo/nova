@@ -6531,14 +6531,14 @@ body{
   .vertexConnectionBadge.offline{color:#ff8f9c;border-color:rgba(255,91,113,.65);background:rgba(52,9,17,.9)}
   .vertexConnectionBadge.legacy{color:#d4a6ff;border-color:rgba(185,109,255,.6)}
 </style>
-<link rel="stylesheet" href="nova-cabinet.css?v=20260908-ouma-lift-game-77">
-<link rel="stylesheet" href="nova-artwork.css?v=20260908-ouma-lift-game-77">
-<script src="nova-artwork.js?v=20260908-ouma-lift-game-77" defer></script>
-<script src="nova-beat-lamps.js?v=20260908-ouma-lift-game-77"></script>
-<script src="nova-reel-motion.js?v=20260908-ouma-lift-game-77"></script>
-<script src="nova-art.js?v=20260908-ouma-lift-game-77"></script>
-<script src="nova-balance.js?v=20260908-ouma-lift-game-77"></script>
-<script src="nova-normal.js?v=20260908-ouma-lift-game-77"></script>
+<link rel="stylesheet" href="nova-cabinet.css?v=20260908-nova-shake-78">
+<link rel="stylesheet" href="nova-artwork.css?v=20260908-nova-shake-78">
+<script src="nova-artwork.js?v=20260908-nova-shake-78" defer></script>
+<script src="nova-beat-lamps.js?v=20260908-nova-shake-78"></script>
+<script src="nova-reel-motion.js?v=20260908-nova-shake-78"></script>
+<script src="nova-art.js?v=20260908-nova-shake-78"></script>
+<script src="nova-balance.js?v=20260908-nova-shake-78"></script>
+<script src="nova-normal.js?v=20260908-nova-shake-78"></script>
 <script src="nova-flow.js?v=20260908-state-nova-33"></script>
 <style>
 /* Fit the original nebula art to reel width; its transparent vertical margins
@@ -15175,7 +15175,7 @@ body{
       started=true;clearTimeout(oumaReverseLoadTimer);let landed=0;
       reels.forEach((reel,i)=>NovaReelMotion.startSynced(i,reel,REEL_STRIPS[i],spin.grid.map(row=>row[i]),true,cellHtml,clock,4400,()=>{
         if(currentSpin!==spin||oumaReverseAudio!==audio)return;
-        if(++landed===3){spinCanStop=true;[0,1,2].forEach(index=>stopSingleReel(index,{oumaAuto:true,visualReady:true,visualColumn:spin.grid.map(row=>row[index])}));}
+        if(++landed===3){document.getElementById('machine').dataset.oumaNovaShake='true';spinCanStop=true;[0,1,2].forEach(index=>stopSingleReel(index,{oumaAuto:true,visualReady:true,visualColumn:spin.grid.map(row=>row[index])}));}
       },Math.max(0,oumaStoppedTops[i])));
     };
     audio.onerror=()=>{useFallback();begin();};
@@ -15187,7 +15187,8 @@ body{
   let oumaChainTimer=null;
   var oumaFailDimTimer=null;
   var oumaPresentation=null;
-  function clearOumaPresentation(){
+  function clearOumaPresentation(keepNovaShake=false){
+    if(!keepNovaShake)document.getElementById('machine').dataset.oumaNovaShake='';
     clearTimeout(oumaFailDimTimer);oumaFailDimTimer=null;
     document.getElementById('machine').dataset.oumaFailDim='';
     clearTimeout(oumaChainTimer);oumaChainTimer=null;
@@ -15200,7 +15201,7 @@ body{
   function scheduleOumaZeroChain(){
     const previous=normalState.flow;
     if(previous?.zone!=='ouma'||!previous.oumaPending||debugFastSpinActive||isCompleteTrialLocked())return false;
-    clearOumaPresentation();stopAutoPlay('逢魔フリーズ操作待ち');stopSpeedToBonus('逢魔フリーズ操作待ち');
+    clearOumaPresentation(true);stopAutoPlay('逢魔フリーズ操作待ち');stopSpeedToBonus('逢魔フリーズ操作待ち');
     const presentation=oumaPresentation={stage:'hold',previous};
     reels.forEach((reel,i)=>{reel.style.setProperty('--ouma-rattle-speed',[35,41.5,30.5][i]+'ms');reel.style.setProperty('--ouma-rattle-delay',[0,-15.5,-8.5][i]+'ms');});
     const machine=document.getElementById('machine');machine.dataset.oumaFreeze='hold';
@@ -15218,6 +15219,7 @@ body{
     if(oumaPresentation?.stage!=='bet')return;
     const presentation=oumaPresentation,previous=presentation.previous;
     if(normalState.flow!==previous){clearOumaPresentation();return;}
+    document.getElementById('machine').dataset.oumaNovaShake='';
     presentation.stage='lift';$('spinBtn').disabled=true;
     const machine=document.getElementById('machine');machine.dataset.oumaFreeze='lift';
     normalState.flow=NovaArt.prepareBet(previous,settings.novaArt,Math.random);

@@ -135,3 +135,7 @@ body[data-art-zone=ouma] .novaArtItem:not([data-artwork=ouma1]) img{animation:no
 .window.novaMotionActive>.cell{visibility:hidden!important}
 .novaMovingStrip{position:absolute;top:0;left:0;width:100%;pointer-events:none}
 .novaMovingStrip>.cell{box-sizing:border-box;min-height:0!important;width:100%;margin:0!important;visibility:visible!important}
+/* Shake the landed NOVA artwork itself; original image pixels are untouched. */
+#machine[data-ouma-nova-shake=true] .reel .window > .cell .novaLogoTile{animation:oumaNovaSymbolShake 60ms steps(1,end) infinite!important}
+@keyframes oumaNovaSymbolShake{0%{transform:translate(-2px,-2px)}25%{transform:translate(2px,1px)}50%{transform:translate(-1px,2px)}75%{transform:translate(2px,-1px)}100%{transform:translate(-2px,-2px)}}
+@media(prefers-reduced-motion:reduce){#machine[data-ouma-nova-shake=true] .reel .window > .cell .novaLogoTile{animation:none!important}}
