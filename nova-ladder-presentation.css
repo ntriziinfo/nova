@@ -15,8 +15,8 @@
 .novaLadderIntegrated{display:block;width:100%;height:100%;object-fit:fill}
 [data-stage=table] .novaLadderAmount,[data-stage=table] .novaLadderCharacter,[data-stage=table] .novaLadderDoor{visibility:hidden}
 
-@keyframes novaShutterRattle{0%,100%{transform:translate(-7px,-7px)}25%{transform:translate(8px,6px)}50%{transform:translate(-8px,7px)}75%{transform:translate(7px,-6px)}}
-[data-stage=challenge] .novaLadderIntegrated,[data-stage=promote] .novaLadderIntegrated{animation:novaShutterRattle 100ms steps(1,end) infinite}
+@keyframes novaShutterRattle{0%,100%{transform:translateY(-4px)}20%{transform:translateY(3px)}40%{transform:translateY(2px)}60%{transform:translateY(-3px)}80%{transform:translateY(4px)}}
+[data-stage=challenge] .novaLadderIntegrated,[data-stage=promote] .novaLadderIntegrated{animation:novaShutterRattle 35ms steps(1,end) infinite}
 [data-stage=promote] .novaLadderDoor{transform:translateY(0)}
 [data-stage=award] .novaLadderAmount{width:76%;height:125%;filter:drop-shadow(0 0 12px #ffb52e);transform:translate(-50%,-50%) scale(1.1)}
 @media(prefers-reduced-motion:reduce){.novaLadderIntegrated{animation-duration:200ms!important}.novaArtItem{transition-duration:100ms}}
