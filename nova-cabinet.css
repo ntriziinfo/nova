@@ -134,3 +134,8 @@ body[data-art-zone=ouma] .novaArtItem:not([data-artwork=ouma1]) img{animation:no
 
 /* Symbol movement conveys direction; cabinet shaking obscures it. */
 #machine .reel.spinning{animation:none!important}
+
+.window.novaMotionActive{overflow:hidden!important}
+.window.novaMotionActive>.cell{visibility:hidden!important}
+.novaMovingStrip{position:absolute;top:0;left:0;width:100%;pointer-events:none}
+.novaMovingStrip>.cell{box-sizing:border-box;min-height:0!important;width:100%;margin:0!important;visibility:visible!important}

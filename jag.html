@@ -6531,13 +6531,14 @@ body{
   .vertexConnectionBadge.offline{color:#ff8f9c;border-color:rgba(255,91,113,.65);background:rgba(52,9,17,.9)}
   .vertexConnectionBadge.legacy{color:#d4a6ff;border-color:rgba(185,109,255,.6)}
 </style>
-<link rel="stylesheet" href="nova-cabinet.css?v=20260908-reel-direction-59">
-<link rel="stylesheet" href="nova-artwork.css?v=20260908-reel-direction-59">
-<script src="nova-artwork.js?v=20260908-reel-direction-59" defer></script>
-<script src="nova-beat-lamps.js?v=20260908-reel-direction-59"></script>
-<script src="nova-art.js?v=20260908-reel-direction-59"></script>
-<script src="nova-balance.js?v=20260908-reel-direction-59"></script>
-<script src="nova-normal.js?v=20260908-reel-direction-59"></script>
+<link rel="stylesheet" href="nova-cabinet.css?v=20260908-continuous-reels-60">
+<link rel="stylesheet" href="nova-artwork.css?v=20260908-continuous-reels-60">
+<script src="nova-artwork.js?v=20260908-continuous-reels-60" defer></script>
+<script src="nova-beat-lamps.js?v=20260908-continuous-reels-60"></script>
+<script src="nova-reel-motion.js?v=20260908-continuous-reels-60"></script>
+<script src="nova-art.js?v=20260908-continuous-reels-60"></script>
+<script src="nova-balance.js?v=20260908-continuous-reels-60"></script>
+<script src="nova-normal.js?v=20260908-continuous-reels-60"></script>
 <script src="nova-flow.js?v=20260908-state-nova-33"></script>
 <style>
 /* Fit the original nebula art to reel width; its transparent vertical margins
@@ -13547,6 +13548,7 @@ body{
     clearReelVideos({forceReversePush:true});
     stopGuaranteedSetStartLight();
     spinIntervals.forEach(id=>clearInterval(id));
+    NovaReelMotion.clearAll();
     if(spinWaitTimer){
       clearTimeout(spinWaitTimer);
       spinWaitTimer = null;
@@ -13608,6 +13610,7 @@ body{
     clearReelVideos({forceReversePush:true});
     stopGuaranteedSetStartLight();
     spinIntervals.forEach(id=>clearInterval(id));
+    NovaReelMotion.clearAll();
     if(spinWaitTimer){
       clearTimeout(spinWaitTimer);
       spinWaitTimer = null;
@@ -13925,8 +13928,9 @@ body{
   }
 
   function currentReelTopIndex(reelIndex){
+    if(NovaReelMotion.has(reelIndex))return NovaReelMotion.top(reelIndex);
     const strip = REEL_STRIPS[reelIndex] || REEL_STRIPS[0];
-    return mod((Number(reelSpinOffsets[reelIndex]) || 0) + 1, strip.length);
+    return mod((Number(reelSpinOffsets[reelIndex]) || 0) + (currentSpin?.artReverse?-1:1), strip.length);
   }
 
   function reelWindowFromTopIndex(reelIndex, topIndex){
@@ -14892,8 +14896,8 @@ body{
       reel.classList.add("spinning");
       setRandomReel(i);
       const strip = REEL_STRIPS[i] || REEL_STRIPS[0];
-      const reelStepMs = Math.max(90, REEL_FULL_ROTATION_MS / strip.length);
-      spinIntervals[i] = setInterval(()=>setRandomReel(i), reelStepMs);
+      if(A_TYPE_MODE){NovaReelMotion.start(i,reel,strip,currentReelTopIndex(i),!!currentSpin?.artReverse,cellHtml);}
+      else{const reelStepMs=Math.max(90,REEL_FULL_ROTATION_MS/strip.length);spinIntervals[i]=setInterval(()=>setRandomReel(i),reelStepMs);}
     });
 
     // オート/SPEED中だけ自動停止。手動時はストップ/左中右を押すまで止まらない。
@@ -14947,14 +14951,26 @@ body{
     const {grid, spec, result, lineRow} = currentSpin;
     const stopOrder = currentSpin.stopped.filter(Boolean).length + 1;
     const reversePushWrongFirst = isReversePushGuidedMiss(currentSpin) && stopOrder === 1 && i !== 2;
-    let col = currentSpin.manualBonusStop
+    let col = options.visualColumn || (currentSpin.manualBonusStop
       ? manualStopColumnForReel(i, currentSpin)
-      : [grid[0][i], grid[1][i], grid[2][i]];
-    if(currentSpin.manualBonusStop && stopOrder === 3){
+      : [grid[0][i], grid[1][i], grid[2][i]]);
+    if(currentSpin.manualBonusStop && stopOrder === 3 && !options.visualColumn){
       col = manualBonusFinalColumnForReel(i, currentSpin, col);
     }
     if(currentSpin.manualBonusStop){
       setGridColumn(grid, i, col);
+    }
+    if(!options.visualReady&&NovaReelMotion.has(i)){
+      const spin=currentSpin;
+      spin.visualStopping ||= [false,false,false];
+      if(spin.visualStopping[i])return;
+      spin.visualStopping[i]=true;stopBtns[i].disabled=true;
+      spin.visualStopQueue=(spin.visualStopQueue||Promise.resolve()).then(async()=>{
+        if(currentSpin!==spin||!isSpinning)return;
+        const landed=await NovaReelMotion.stop(i,col);
+        if(landed&&currentSpin===spin&&isSpinning)stopSingleReel(i,{...options,visualReady:true,visualColumn:col});
+      }).catch(error=>{console.error(error);spin.visualStopping[i]=false;stopBtns[i].disabled=false;});
+      return;
     }
     const label = i === 1 ? spec.label : "";
 
@@ -15046,6 +15062,7 @@ body{
   }
 
   function stopReel(i, columnSymbols, label, cls, lineRow=null, stopOrder=null){
+    NovaReelMotion.clear(i);
     clearInterval(spinIntervals[i]);
     reels[i].querySelectorAll('.cell').forEach(cell=>cell.getAnimations().filter(a=>a.id==='nova-reel-step').forEach(a=>a.cancel()));
     reels[i].classList.remove("spinning");
