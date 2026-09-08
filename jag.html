@@ -6531,16 +6531,16 @@ body{
   .vertexConnectionBadge.offline{color:#ff8f9c;border-color:rgba(255,91,113,.65);background:rgba(52,9,17,.9)}
   .vertexConnectionBadge.legacy{color:#d4a6ff;border-color:rgba(185,109,255,.6)}
 </style>
-<link rel="stylesheet" href="nova-cabinet.css?v=20260909-results-82">
-<link rel="stylesheet" href="nova-artwork.css?v=20260909-results-82">
-<script src="nova-artwork.js?v=20260909-results-82" defer></script>
-<script src="nova-beat-lamps.js?v=20260909-results-82"></script>
-<script src="nova-reel-motion.js?v=20260909-results-82"></script>
-<link rel="stylesheet" href="nova-results.css?v=20260909-results-82">
-<script src="nova-results.js?v=20260909-results-82"></script>
-<script src="nova-art.js?v=20260909-results-82"></script>
-<script src="nova-balance.js?v=20260909-results-82"></script>
-<script src="nova-normal.js?v=20260909-results-82"></script>
+<link rel="stylesheet" href="nova-cabinet.css?v=20260909-result-audio-83">
+<link rel="stylesheet" href="nova-artwork.css?v=20260909-result-audio-83">
+<script src="nova-artwork.js?v=20260909-result-audio-83" defer></script>
+<script src="nova-beat-lamps.js?v=20260909-result-audio-83"></script>
+<script src="nova-reel-motion.js?v=20260909-result-audio-83"></script>
+<link rel="stylesheet" href="nova-results.css?v=20260909-result-audio-83">
+<script src="nova-results.js?v=20260909-result-audio-83"></script>
+<script src="nova-art.js?v=20260909-result-audio-83"></script>
+<script src="nova-balance.js?v=20260909-result-audio-83"></script>
+<script src="nova-normal.js?v=20260909-result-audio-83"></script>
 <script src="nova-flow.js?v=20260908-state-nova-33"></script>
 <style>
 /* Fit the original nebula art to reel width; its transparent vertical margins
@@ -8077,6 +8077,9 @@ body{
   let bellZakoLayer = null;
   const bellZakoTimers = [null, null, null];
   const oneShotSoundCache = new Map();
+  const resultEyecatchPreload = new Audio('assets/media/nova/result-eyecatch.wav');
+  resultEyecatchPreload.preload='auto';resultEyecatchPreload.load();
+  oneShotSoundCache.set('assets/media/nova/result-eyecatch.wav',resultEyecatchPreload);
   const oumaFailPreload = new Audio('assets/media/nova/ouma-fail.wav');
   oumaFailPreload.preload='auto';
   oneShotSoundCache.set('assets/media/nova/ouma-fail.wav',oumaFailPreload);
@@ -8642,6 +8645,7 @@ body{
   }
 
   function playArtEndSound(resolved){
+    if(normalState.resultCard)return; // The result eyecatch owns the ending sound and playback lock.
     if(resolved?.flowBefore?.phase!=='art'||resolved.flowAfter?.phase!=='normal'||resolved.bonusHit||resolved.artEndSoundPlayed)return;
     resolved.artEndSoundPlayed=true;
     playLockedBonusConfirmSound(BONUS_END_BGM_SRC,bgmOutputVolume(BGM_OUTPUT_SCALE));
@@ -12725,6 +12729,7 @@ body{
     if(debugFastSpinActive)return;
     normalState.resultCard=card;NovaResults.show(card);
     stopAutoPlay('リザルト表示');stopSpeedToBonus('リザルト表示');
+    playLockedBonusConfirmSound('assets/media/nova/result-eyecatch.wav',sfxOutputVolume());
   }
   function applyNormalResult(result, resolved, lineRow=1){
     if(typeof debugFastSpinActive!=='undefined' && debugFastSpinActive){const audit=fastAtAuditMessage(result,resolved);if(audit)log(`${audit} / ${stats.totalSpins}G`);}
@@ -15099,7 +15104,11 @@ body{
         ? Math.round(RESULT_WAIT_MS / KEYBOARD_STOP_TURBO_MULTIPLIER)
         : RESULT_WAIT_MS;
       const autoResultWaitMs = currentSpin.autoStopAtStart ? autoScaledDelayMs(keyboardResultWaitMs) : keyboardResultWaitMs;
-      const resultWaitMs = (currentSpin.speedModeAtStart || isPremiumBigFinalBonusSpin(currentSpin)) ? 0 : autoResultWaitMs;
+      const r=currentSpin.resolved;
+      const resultEnding=!!normalState.pendingZoneResult ||
+        (!!r?.flowBefore?.zone&&!r?.flowAfter?.zone) ||
+        (r?.flowBefore?.phase==='art'&&r?.flowAfter?.phase==='normal'&&!r.bonusHit&&!r.aTypeBonusReady);
+      const resultWaitMs = (resultEnding || currentSpin.speedModeAtStart || isPremiumBigFinalBonusSpin(currentSpin)) ? 0 : autoResultWaitMs;
       setTimeout(()=>{
         if(currentSpin){
           prepareManualBonusOutcome(currentSpin);
@@ -15855,6 +15864,7 @@ body{
   }
 
   function startDebugFastSpin(){
+    if(bonusConfirmSoundPlaying || bonusEndBgmPlaying)return;
     if(debugFastSpinActive) return;
     if(isCompleteTrialLocked() && !morningResetGame(true, "高速回転再開の朝一リセット")) return;
     if(!canPlayCompleteTrial()) return;
