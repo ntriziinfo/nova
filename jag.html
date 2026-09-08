@@ -6531,14 +6531,14 @@ body{
   .vertexConnectionBadge.offline{color:#ff8f9c;border-color:rgba(255,91,113,.65);background:rgba(52,9,17,.9)}
   .vertexConnectionBadge.legacy{color:#d4a6ff;border-color:rgba(185,109,255,.6)}
 </style>
-<link rel="stylesheet" href="nova-cabinet.css?v=20260908-ouma-audio-65">
-<link rel="stylesheet" href="nova-artwork.css?v=20260908-ouma-audio-65">
-<script src="nova-artwork.js?v=20260908-ouma-audio-65" defer></script>
-<script src="nova-beat-lamps.js?v=20260908-ouma-audio-65"></script>
-<script src="nova-reel-motion.js?v=20260908-ouma-audio-65"></script>
-<script src="nova-art.js?v=20260908-ouma-audio-65"></script>
-<script src="nova-balance.js?v=20260908-ouma-audio-65"></script>
-<script src="nova-normal.js?v=20260908-ouma-audio-65"></script>
+<link rel="stylesheet" href="nova-cabinet.css?v=20260908-ouma-bgm-66">
+<link rel="stylesheet" href="nova-artwork.css?v=20260908-ouma-bgm-66">
+<script src="nova-artwork.js?v=20260908-ouma-bgm-66" defer></script>
+<script src="nova-beat-lamps.js?v=20260908-ouma-bgm-66"></script>
+<script src="nova-reel-motion.js?v=20260908-ouma-bgm-66"></script>
+<script src="nova-art.js?v=20260908-ouma-bgm-66"></script>
+<script src="nova-balance.js?v=20260908-ouma-bgm-66"></script>
+<script src="nova-normal.js?v=20260908-ouma-bgm-66"></script>
 <script src="nova-flow.js?v=20260908-state-nova-33"></script>
 <style>
 /* Fit the original nebula art to reel width; its transparent vertical margins
@@ -7251,6 +7251,7 @@ body{
   const STORAGE_RESUME_KEY = STORAGE_KEY + "_resume";
   const PREFERENCES_STORAGE_KEY = "nova_slot_preferences_v1_" + bootMachineId;
 
+  const OUMA_ZONE_BGM_SRC = "assets/media/nova/oumafreez.wav";
   const NOVA_ART_BGM_SRC = "assets/media/nova/RUSH.wav";
   const NOVA_BIG_BGM_SRC = "assets/media/nova/BIG.wav";
   const NOVA_REG_BGM_SRC = "assets/media/nova/NovaREG.wav";
@@ -12466,7 +12467,7 @@ body{
   }
 
   function normalBgmSrc(){
-    if(!session.active && normalState.flow?.phase==='art') return NOVA_ART_BGM_SRC;
+    if(!session.active && normalState.flow?.phase==='art') return normalState.flow.zone==='ouma'?OUMA_ZONE_BGM_SRC:NOVA_ART_BGM_SRC;
     if(!session.active && ["cz","strong_cz"].includes(normalState.flow?.phase)) return CZ_BGM_SRC;
     if(speedToBonusActive && SPEED_BGM_SRC) return SPEED_BGM_SRC;
     if(!session.active && isHighMode() && HIGH_MODE_BGM_SRC) return HIGH_MODE_BGM_SRC;
@@ -15244,7 +15245,7 @@ body{
     if(currentSpin && currentSpin.normalActiveAtStart){
       applyNormalResult(result, resolved, lineRow);
       playArtEndSound(resolved);
-      if(resolved.flowBefore?.phase!==normalState.flow?.phase && (['cz','strong_cz','art'].includes(resolved.flowBefore?.phase)||['cz','strong_cz','art'].includes(normalState.flow?.phase))){
+      if((resolved.flowBefore?.phase!==normalState.flow?.phase && (['cz','strong_cz','art'].includes(resolved.flowBefore?.phase)||['cz','strong_cz','art'].includes(normalState.flow?.phase)))||resolved.flowBefore?.zone!==normalState.flow?.zone){
         pauseNormalBgm();
         playNormalBgm();
       }
