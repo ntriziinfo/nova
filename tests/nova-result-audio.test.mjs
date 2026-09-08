@@ -20,6 +20,6 @@ test('eyecatch holds next spin until ended, without a fixed release timer',()=>{
 test('zone and AT result third stops skip result delay; ordinary games keep it',()=>{
  const code=html.match(/      const r=currentSpin.resolved;[^]*?const resultWaitMs =[^\n]+/)[0];
  for(const [before,after,expected] of [[{zone:'toto'},{zone:''},0],[{phase:'art'},{phase:'normal'},0],[{phase:'normal'},{phase:'normal'},1000]]){
-  const c=vm.createContext({currentSpin:{resolved:{flowBefore:before,flowAfter:after}},normalState:{},isPremiumBigFinalBonusSpin:()=>false,autoResultWaitMs:1000});vm.runInContext(code+';globalThis.wait=resultWaitMs;',c);assert.equal(c.wait,expected);
+  const c=vm.createContext({NovaLadder:{eligible:()=>false},currentSpin:{resolved:{flowBefore:before,flowAfter:after}},normalState:{},isPremiumBigFinalBonusSpin:()=>false,autoResultWaitMs:1000});vm.runInContext(code+';globalThis.wait=resultWaitMs;',c);assert.equal(c.wait,expected);
  }
 });

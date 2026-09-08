@@ -1,0 +1,17 @@
+.novaLadderPresentation{position:absolute;inset:0;z-index:80;background:#050205;overflow:hidden;pointer-events:none;isolation:isolate}
+.novaLadderPresentation[hidden]{display:none!important}
+.reels.novaLadderActive>.reel{visibility:hidden}
+.reelArea:has(.novaLadderActive) .payline{visibility:hidden}
+.novaLadderHalf{position:absolute;left:0;width:100%;height:50%;overflow:hidden;z-index:2;transition:transform 400ms cubic-bezier(.22,.7,.2,1);background:#000}
+.novaLadderUpper{top:0}.novaLadderLower{top:50%}
+.novaLadderSnapshot{position:absolute;left:0;top:0;width:100%}
+.novaLadderLower .novaLadderSnapshot{top:-100%}
+.novaLadderAmount{position:absolute;left:50%;top:50%;width:70%;height:88%;object-fit:contain;transform:translate(-50%,-50%);transition:transform 300ms,opacity 150ms;z-index:1;opacity:0}
+.novaLadderPresentation[data-stage=open] .novaLadderUpper{transform:translateY(-82%)}
+.novaLadderPresentation[data-stage=open] .novaLadderLower{transform:translateY(82%)}
+.novaLadderPresentation[data-stage=open] .novaLadderAmount{opacity:1}
+.novaLadderPresentation[data-stage=clamp] .novaLadderUpper{transform:translateY(-42%)}
+.novaLadderPresentation[data-stage=clamp] .novaLadderLower{transform:translateY(42%)}
+.novaLadderPresentation[data-stage=clamp] .novaLadderAmount{opacity:1;transform:translate(-50%,-50%) scale(.72)}
+.novaLadderPresentation[data-stage=clamp] .novaLadderColumn{animation:oumaReelRattle var(--ladder-rattle,35ms) steps(1,end) var(--ladder-delay,0ms) infinite}
+@media(prefers-reduced-motion:reduce){.novaLadderPresentation[data-stage=clamp] .novaLadderColumn{animation:none}.novaLadderHalf{transition-duration:100ms}}

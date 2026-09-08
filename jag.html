@@ -6538,6 +6538,8 @@ body{
 <script src="nova-reel-motion.js?v=20260909-result-image-84"></script>
 <link rel="stylesheet" href="nova-results.css?v=20260909-result-image-84">
 <script src="nova-results.js?v=20260909-result-image-84"></script>
+<link rel="stylesheet" href="nova-ladder-presentation.css?v=20260909-ladder-85">
+<script src="nova-ladder-presentation.js?v=20260909-ladder-85"></script>
 <script src="nova-art.js?v=20260909-result-image-84"></script>
 <script src="nova-balance.js?v=20260909-result-image-84"></script>
 <script src="nova-normal.js?v=20260909-result-image-84"></script>
@@ -12730,6 +12732,7 @@ body{
 
   function displayNovaResult(card){
     if(debugFastSpinActive)return;
+    NovaLadder.hide();
     normalState.resultCard=card;NovaResults.show(card);
     pauseNormalBgm();
     stopAutoPlay('リザルト表示');stopSpeedToBonus('リザルト表示');
@@ -13186,6 +13189,7 @@ body{
   }
 
   function updateDisplay(){
+    if(!debugFastSpinActive)NovaLadder.sync(normalState.resultCard||session.active?null:normalState.flow,isSpinning);
     if(normalState.resultCard&&!NovaResults.visible&&!NovaResults.editing)NovaResults.show(normalState.resultCard);
     if(!isSpinning)showZoneRoulette(session.active?null:normalState.flow);
     if(!isSpinning && $("spinBtn"))$("spinBtn").title=normalState.replayFree?"リプレイ：次回BET消費なし":"";
@@ -14669,6 +14673,7 @@ body{
   }
 
   async function spin(options={}){
+    if(NovaLadder.busy)return;
     if(NovaResults.editing)return;
     if(normalState.flow?.phase==='art'&&!Number.isFinite(normalState.resultAtStartPaid))normalState.resultAtStartPaid=Number(stats.totalPaid)||0;
     if(!oumaPresentation&&!isSpinning&&!debugFastSpinActive&&normalState.flow?.zone==='ouma'&&normalState.flow.oumaPending){scheduleOumaZeroChain();return;}
@@ -14805,6 +14810,7 @@ body{
       countTotalSpinIfNeeded(aTypeBonusActiveAtSpinStart);
       chargeSpinCost();
     }
+    if(!debugFastSpinActive)NovaLadder.bet(normalState.flow);
     $("stLamp").classList.remove("on");
     const reachMeAnnouncementLit = activateReachMeBonusAnnouncementIfNeeded(normalActiveAtSpinStart);
     if(reachMeAnnouncementLit) triggerBonusConfirmBetSoundIfNeeded();
@@ -15112,7 +15118,7 @@ body{
       const resultEnding=!!normalState.pendingZoneResult ||
         (!!r?.flowBefore?.zone&&!r?.flowAfter?.zone) ||
         (r?.flowBefore?.phase==='art'&&r?.flowAfter?.phase==='normal'&&!r.bonusHit&&!r.aTypeBonusReady);
-      const resultWaitMs = (resultEnding || currentSpin.speedModeAtStart || isPremiumBigFinalBonusSpin(currentSpin)) ? 0 : autoResultWaitMs;
+      const resultWaitMs = (resultEnding || NovaLadder.eligible(r?.flowBefore) || currentSpin.speedModeAtStart || isPremiumBigFinalBonusSpin(currentSpin)) ? 0 : autoResultWaitMs;
       setTimeout(()=>{
         if(currentSpin){
           prepareManualBonusOutcome(currentSpin);
@@ -15876,6 +15882,7 @@ body{
 
   function startDebugFastSpin(){
     if(bonusConfirmSoundPlaying || bonusEndBgmPlaying)return;
+    NovaLadder.hide();
     if(debugFastSpinActive) return;
     if(isCompleteTrialLocked() && !morningResetGame(true, "高速回転再開の朝一リセット")) return;
     if(!canPlayCompleteTrial()) return;
