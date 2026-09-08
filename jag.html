@@ -6531,14 +6531,14 @@ body{
   .vertexConnectionBadge.offline{color:#ff8f9c;border-color:rgba(255,91,113,.65);background:rgba(52,9,17,.9)}
   .vertexConnectionBadge.legacy{color:#d4a6ff;border-color:rgba(185,109,255,.6)}
 </style>
-<link rel="stylesheet" href="nova-cabinet.css?v=20260908-reverse-speed-73">
-<link rel="stylesheet" href="nova-artwork.css?v=20260908-reverse-speed-73">
-<script src="nova-artwork.js?v=20260908-reverse-speed-73" defer></script>
-<script src="nova-beat-lamps.js?v=20260908-reverse-speed-73"></script>
-<script src="nova-reel-motion.js?v=20260908-reverse-speed-73"></script>
-<script src="nova-art.js?v=20260908-reverse-speed-73"></script>
-<script src="nova-balance.js?v=20260908-reverse-speed-73"></script>
-<script src="nova-normal.js?v=20260908-reverse-speed-73"></script>
+<link rel="stylesheet" href="nova-cabinet.css?v=20260908-reverse-se-74">
+<link rel="stylesheet" href="nova-artwork.css?v=20260908-reverse-se-74">
+<script src="nova-artwork.js?v=20260908-reverse-se-74" defer></script>
+<script src="nova-beat-lamps.js?v=20260908-reverse-se-74"></script>
+<script src="nova-reel-motion.js?v=20260908-reverse-se-74"></script>
+<script src="nova-art.js?v=20260908-reverse-se-74"></script>
+<script src="nova-balance.js?v=20260908-reverse-se-74"></script>
+<script src="nova-normal.js?v=20260908-reverse-se-74"></script>
 <script src="nova-flow.js?v=20260908-state-nova-33"></script>
 <style>
 /* Fit the original nebula art to reel width; its transparent vertical margins
@@ -7565,7 +7565,7 @@ body{
   }
 
   const AUDIO_SOURCE_OUTPUT_SCALE = Object.freeze({
-    ["assets/media/nova/ouma1.wav"]: dbToGain(8.5),
+
     [BIG_BONUS_BGM_SRCS[0]]: dbToGain(0),
     [BIG_BONUS_BGM_SRCS[1]]: dbToGain(-2),
     [BIG_50G_BONUS_BGM_SRC]: dbToGain(-3.5),
@@ -8720,7 +8720,7 @@ body{
 
   function applyAudioOutputVolumes(){
     if(oumaIntroAudio)oumaIntroAudio.volume=sfxOutputVolumeForSource(SFX_OUTPUT_SCALE,'assets/media/nova/uuufa.wav');
-    if(oumaReverseAudio)oumaReverseAudio.volume=sfxOutputVolumeForSource(SFX_OUTPUT_SCALE,"assets/media/nova/ouma1.wav");
+    if(oumaReverseAudio)oumaReverseAudio.volume=sfxOutputVolumeForSource(SFX_OUTPUT_SCALE,"assets/media/nova/ouma-reverse-v2.wav");
     applyBgmOutputVolumes();
     if(koatariSound) koatariSound.volume = sfxOutputVolumeForSource(SFX_OUTPUT_SCALE, KOATARI_SOUND_SRC);
     if(bigSound) bigSound.volume = sfxOutputVolumeForSource(SFX_OUTPUT_SCALE, BIG_SOUND_SRC);
@@ -15156,8 +15156,8 @@ body{
   function startOumaReverseAudio(spin){
     if(!spin?.resolved?.oumaFreeze)return;
     clearOumaReverseAudio();
-    const audio=new Audio('assets/media/nova/ouma1.wav');oumaReverseAudio=audio;
-    audio.preload='auto';audio.volume=sfxOutputVolumeForSource(SFX_OUTPUT_SCALE,'assets/media/nova/ouma1.wav');
+    const audio=new Audio('assets/media/nova/ouma-reverse-v2.wav');oumaReverseAudio=audio;
+    audio.preload='auto';audio.volume=sfxOutputVolumeForSource(SFX_OUTPUT_SCALE,'assets/media/nova/ouma-reverse-v2.wav');
     let started=false,fallback=null;
     const useFallback=()=>{if(fallback===null)fallback={time:performance.now(),offset:audio.currentTime||0};};
     const clock=()=>fallback?(performance.now()-fallback.time)/1000+fallback.offset:audio.currentTime;
@@ -15166,7 +15166,7 @@ body{
       started=true;clearTimeout(oumaReverseLoadTimer);let landed=0;
       reels.forEach((reel,i)=>NovaReelMotion.startSynced(i,reel,REEL_STRIPS[i],spin.grid.map(row=>row[i]),true,cellHtml,clock,4400,()=>{
         if(currentSpin!==spin||oumaReverseAudio!==audio)return;
-        if(++landed===3){clearOumaReverseAudio();spinCanStop=true;[0,1,2].forEach(index=>stopSingleReel(index,{oumaAuto:true,visualReady:true,visualColumn:spin.grid.map(row=>row[index])}));}
+        if(++landed===3){spinCanStop=true;[0,1,2].forEach(index=>stopSingleReel(index,{oumaAuto:true,visualReady:true,visualColumn:spin.grid.map(row=>row[index])}));}
       },Math.max(0,oumaStoppedTops[i])));
     };
     audio.onerror=()=>{useFallback();begin();};
