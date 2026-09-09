@@ -69,6 +69,20 @@ test('suppressed miss cue never opens video',()=>{
 test('cue dismissal runs after real reel landing, not button acceptance',()=>{
  const html=fs.readFileSync('jag.html','utf8');const stop=html.slice(html.indexOf('  function stopSingleReel(i,'),html.indexOf('  function stopAllReels()'));
  assert.equal(stop.slice(0,stop.indexOf('await NovaReelMotion.stop')).includes('NovaAim.hide()'),false);
- assert.match(stop,/currentSpin.stopped\[i\] = true;\s*if\(currentSpin.stopped.every\(Boolean\)\)NovaAim.hide\(\);/);
+ assert.match(stop,/currentSpin.stopped\[i\] = true;\s*if\(currentSpin.stopped.every\(Boolean\)\)\{/);
+ assert.ok(stop.indexOf('NovaAim.fail(')>stop.indexOf('currentSpin.stopped[i] = true'));
  assert.ok(stop.indexOf('NovaAim.win(')>stop.indexOf('currentSpin.stopped[i] = true'));
+});
+
+test('guided miss stays grayscale, plays failure once and resets on next BET',()=>{
+ const {aim,elements,timers}=setup();let sounds=0,results=0;
+ aim.bet({symbol:'seven',color:'blue',result:'MISS',guide:true});
+ const root=elements[0];aim.fail(()=>sounds++);aim.fail(()=>sounds++);
+ assert.equal(root.dataset.failed,'true');assert.equal(root.hidden,false);assert.equal(sounds,1);
+ aim.afterWin(()=>results++);assert.equal(results,0);
+ [...timers.values()][0].fn();assert.equal(results,1);assert.equal(aim.busy,false);
+ aim.bet({symbol:'nebula',color:'red',result:'NEBULA'});assert.equal(root.dataset.failed,undefined);
+});
+test('no-guide miss has no failure video or sound',()=>{
+ const {aim}=setup();let sounds=0;aim.bet({guide:false});aim.fail(()=>sounds++);assert.equal(sounds,0);assert.equal(aim.busy,false);
 });

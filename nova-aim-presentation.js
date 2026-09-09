@@ -27,7 +27,7 @@ globalThis.NovaAim=(()=>{
  }
  function hide(){
   if(active){active.pause();active.hidden=true;active=null;}
-  if(root){root.hidden=true;delete host.dataset.aimActive;}
+  if(root){root.hidden=true;delete root.dataset.failed;delete host.dataset.aimActive;}
  }
  function hasGuide(aim){return !!aim&&aim.guide!==false;}
  function drawGuide(aim,rng=Math.random){return aim.result!=='MISS'||rng()<.5;}
@@ -44,6 +44,17 @@ globalThis.NovaAim=(()=>{
   const rank=order.indexOf(index)+1;
   const onLine=valid&&hit || (rank<3 && !(valid&&!hit&&index===0));
   return {onLine,aligned:valid&&hit,rank};
+ }
+ function fail(playSound){
+  if(!active||!root||root.hidden||root.dataset.failed==='true')return;
+  root.dataset.failed='true';playSound();
+  // Let the miss remain visible before a final-game result or AUTO advances.
+  const token=++winToken;winLocked=true;clearTimeout(winTimer);
+  winTimer=setTimeout(()=>{
+   if(token!==winToken)return;winLocked=false;
+   const callbacks=afterWinCallbacks;afterWinCallbacks=[];callbacks.forEach(fn=>fn());
+   window.dispatchEvent(new Event('nova-aim-unlocked'));
+  },650);
  }
  function win(playSound){
   if(!init())return;
@@ -69,5 +80,5 @@ globalThis.NovaAim=(()=>{
   document.addEventListener('DOMContentLoaded',init);
   window.addEventListener('resize',layout);
  }
- return {hasGuide,drawGuide,stopTarget,bet,hide,layout,win,afterWin,reset,get busy(){return winLocked;}};
+ return {hasGuide,drawGuide,stopTarget,bet,hide,layout,fail,win,afterWin,reset,get busy(){return winLocked;}};
 })();

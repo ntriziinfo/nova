@@ -6540,10 +6540,10 @@ body{
 <script src="nova-results.js?v=20260909-result-image-84"></script>
 <link rel="stylesheet" href="nova-ladder-presentation.css?v=20260909-shutter-95">
 <script src="nova-ladder-presentation.js?v=20260909-shutter-95"></script>
-<link rel="stylesheet" href="nova-aim-presentation.css?v=20260909-aim-99">
-<script src="nova-aim-presentation.js?v=20260909-aim-99"></script>
-<script src="nova-art.js?v=20260909-aim-99"></script>
-<script src="nova-balance.js?v=20260909-aim-99"></script>
+<link rel="stylesheet" href="nova-aim-presentation.css?v=20260909-aim-100">
+<script src="nova-aim-presentation.js?v=20260909-aim-100"></script>
+<script src="nova-art.js?v=20260909-aim-100"></script>
+<script src="nova-balance.js?v=20260909-aim-100"></script>
 <script src="nova-normal.js?v=20260909-result-image-84"></script>
 <script src="nova-flow.js?v=20260908-state-nova-33"></script>
 <style>
@@ -15101,7 +15101,11 @@ body{
 
     stopReel(i, col, label, spec.cls, currentSpin.manualBonusStop || result === "MISS" ? null : lineRow, stopOrder);
     currentSpin.stopped[i] = true;
-    if(currentSpin.stopped.every(Boolean))NovaAim.hide();
+    if(currentSpin.stopped.every(Boolean)){
+      if(NovaAim.hasGuide(currentSpin.resolved?.aim)&&!currentSpin.aimAligned&&!debugFastSpinActive){
+        NovaAim.fail(()=>playOneShotSound('assets/media/nova/ouma-fail.wav',sfxOutputVolume(),{allowDuringPremiumConfirm:true}));
+      }else NovaAim.hide();
+    }
     syncCabinetControlState();
     showCzLamp(stopOrder,currentSpin.resolved);
     NovaLadder.stop(stopOrder);
