@@ -5,7 +5,7 @@ test('rare roles and hundred boundary never add impurity',()=>{
  for(const role of [...Object.keys(n.rare),'MISS'])assert.equal(n.advance({games:99,impurity:25},role,{phase:'normal'},{hundredGain:99},()=>0).impurity,25);
 });
 test('ceiling rescue reaches cap before bonus claim',()=>{
- for(const [state,gain]of [[{morningCeiling:true,games:98},1],[{mode:'天国A',games:99},1],[{mode:'通常C',games:299},5],[{games:599},10]])assert.equal(n.spin(state,{phase:'normal'},1,{},()=>.99,'MISS').state.impurity,gain);
+ for(const [state,gain]of [[{mode:'特殊',games:199},1],[{mode:'天国',games:99},1],[{mode:'天国準備',games:299},5],[{games:599},10]])assert.equal(n.spin(state,{phase:'normal'},1,{},()=>.99,'MISS').state.impurity,gain);
  const t=n.spin({games:599,impurity:95},{phase:'normal'},1,{},()=>.99,'MISS');
  assert.equal(t.state.impurity,100);assert.equal(n.claim(t.state,false,()=>.5).sets,1);
 });

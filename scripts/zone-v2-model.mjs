@@ -21,7 +21,7 @@ export function simulate(setting,games,seed,options={}){
  const initialMode=state.mode;let cutoff=null;
  let paid=0,count=0,fee=0,replay=false,peak=0,maxDrawdown=0,maxNormalGames=0,artStart=null,maxArtNet=0;
  let bonusG=0,bonusP=0,bonusFee=0,freezes=0,ceilings=0,release=0,normalGap=0,maxBonusGap=0;
- const counts={normal:0,cz:0,prep:0,align:0,bonus:0,at:0,zone:0,zero:0,BIG:0,REG:0,czEntries:0,strongEntries:0,czWins:0,artEntries:0,zoneEntries:0,rareCzEntries:0,backgroundCzEntries:0,highNormalG:0,favoredNormalG:0};
+ const counts={normal:0,cz:0,prep:0,align:0,bonus:0,at:0,zone:0,zero:0,BIG:0,REG:0,czEntries:0,strongEntries:0,czWins:0,artEntries:0,zoneEntries:0,gameCzEntries:0,ceilingCzEntries:0,rareCzEntries:0,backgroundCzEntries:0,highNormalG:0,favoredNormalG:0};
  const atMetrics={eligible:0,high:0,zoneWins:0,directWins:0,directPoints:0,promotions:0,suica100:0,suica300:0};const blocks=[];let blockBet=0,blockPaid=0,blockPeak=0,firstComplete=null;
  const zones={},normalRoles={},normalPayout={bet:0,paid:0,games:0};
  const sessionEnd=Symbol('session end'),scale=NovaBalance.profile(setting).scale*(options.scaleMultiplier??1);
@@ -62,7 +62,7 @@ export function simulate(setting,games,seed,options={}){
   if(t.result==='SUPER_NOVA'){const freeze=rng()<.5;if(freeze)freezes++;flow={phase:'normal'};bonus('BIG',freeze);}
   else if(t.internalBonus){if(t.internalBonus.source.includes('天井'))ceilings++;else counts.czWins++;flow={phase:'normal'};bonus(t.internalBonus.kind);}
   else if(t.direct){flow=a.enter(c);counts.artEntries++;}
-  else if(t.entry){if(t.entry==='STRONG_CZ')counts.strongEntries++;else counts.czEntries++;if(t.entrySource==='rare')counts.rareCzEntries++;else if(t.entrySource==='background')counts.backgroundCzEntries++;flow=NovaFlow.enterCZ(t.entry==='STRONG_CZ',t.czOptions??options.cz,rng);}
+  else if(t.entry){if(t.entry==='STRONG_CZ')counts.strongEntries++;else counts.czEntries++;if(t.entrySource==='game')counts.gameCzEntries++;if(t.entrySource==='ceiling')counts.ceilingCzEntries++;if(t.entrySource==='rare')counts.rareCzEntries++;else if(t.entrySource==='background')counts.backgroundCzEntries++;flow=NovaFlow.enterCZ(t.entry==='STRONG_CZ',t.czOptions??options.cz,rng);}
   else flow=NovaFlow.advance(t.czFlow);
  }}catch(e){if(e!==sessionEnd)throw e;}
  track();maxBonusGap=Math.max(maxBonusGap,normalGap);if(options.recordBlocks)saveBlock();

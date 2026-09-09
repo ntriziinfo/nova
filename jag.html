@@ -6540,10 +6540,10 @@ body{
 <script src="nova-results.js?v=20260909-result-image-84"></script>
 <link rel="stylesheet" href="nova-ladder-presentation.css?v=20260909-shutter-95">
 <script src="nova-ladder-presentation.js?v=20260909-shutter-95"></script>
-<link rel="stylesheet" href="nova-aim-presentation.css?v=20260909-zone-107">
-<script src="nova-aim-presentation.js?v=20260909-zone-107"></script>
-<script src="nova-art.js?v=20260909-zone-107"></script>
-<script src="nova-balance.js?v=20260909-zone-107"></script>
+<link rel="stylesheet" href="nova-aim-presentation.css?v=20260909-zone-108">
+<script src="nova-aim-presentation.js?v=20260909-zone-108"></script>
+<script src="nova-art.js?v=20260909-zone-108"></script>
+<script src="nova-balance.js?v=20260909-zone-108"></script>
 <script src="nova-normal.js?v=20260909-result-image-84"></script>
 <script src="nova-flow.js?v=20260908-state-nova-33"></script>
 <style>
@@ -10255,7 +10255,7 @@ body{
 
   function normalModeLabel(){
     if(normalState.bonusPending) return normalState.prepLeft>0?"ボーナス準備中 残り"+normalState.prepLeft+"G":"7を狙え";
-    return NovaFlow.label(normalState.flow);
+    return normalState.flow?.phase==='normal'?NovaNormal.normalLabel(normalState.internal):NovaFlow.label(normalState.flow);
   }
 
   function pendingBonusLabel(){
@@ -10509,7 +10509,7 @@ body{
   }
 
   function currentNormalCeilingGames(){
-    return normalState.morningCeilingActive ? MORNING_CEILING_GAMES : NORMAL_CEILING_GAMES;
+    return A_TYPE_MODE?NovaNormal.ceiling(normalState.internal):normalState.morningCeilingActive ? MORNING_CEILING_GAMES : NORMAL_CEILING_GAMES;
   }
 
   function normalizeBonusAfterGames(value){
@@ -10579,7 +10579,7 @@ body{
 
   function pickNormalBonusKind(source="", result="MISS", settingNo = settings.setting){
     if(result === "MID") return "MID";
-    if(source === "朝一天井99G" || source === "天井300G") return "BIG";
+    if(source === "朝一天井200G＋前兆" || source === "天井300G") return "BIG";
     if(result === "BIG" || result === "BAR3" || source === "天井300G" || source === "BAR揃い") return "BIG";
     const bigRate = NORMAL_BIG_BONUS_RATE[settingNo] ?? NORMAL_BIG_BONUS_RATE[1];
     return Math.random() < bigRate ? "BIG" : "MID";
@@ -11119,7 +11119,7 @@ body{
         success:token.czFlow.success||!!token.internalBonus||token.direct,
         winProbability:ceilingHit?1:token.czFlow.winProbability}),
         totalGames:token.czFlow.totalGames,remaining:token.czFlow.remaining}:null),
-      message:token.direct?'AT突入':token.entry?token.entry+'突入':''
+      message:token.direct?'AT突入':token.entry?token.entry+'突入':token.message||''
     };
     return {result:token.result,internalBonus:token.internalBonus};
   }
@@ -11282,7 +11282,7 @@ body{
       bonusSource = "天井300G";
     }
     if(!bonusPending && ceilingAfter >= ceilingLimit && normalState.morningCeilingActive){
-      bonusSource = "朝一天井99G";
+      bonusSource = "朝一天井200G＋前兆";
     }
     const bonusKind = directBar3Ready
       ? "BIG"
@@ -13725,8 +13725,8 @@ body{
     if($("premiumForceStatus")) $("premiumForceStatus").value = "OFF";
     $("stLamp").classList.remove("on");
     setMorningBarReels();
-    showMessage(reason, A_TYPE_MODE ? `設定${settings.setting}据え置き / 朝一リセット / 初回天井99G` : `設定${settings.setting}据え置き / 初回天井${MORNING_CEILING_GAMES}G / COMPLETE解除`);
-    $("resultText").textContent = A_TYPE_MODE ? "朝一 / 初回天井99G" : `朝一モード / 天井まで${ceilingRemain()}G`;
+    showMessage(reason, A_TYPE_MODE ? `設定${settings.setting}据え置き / 朝一リセット / 初回天井200G＋前兆` : `設定${settings.setting}据え置き / 初回天井${MORNING_CEILING_GAMES}G / COMPLETE解除`);
+    $("resultText").textContent = A_TYPE_MODE ? "朝一 / 初回天井200G＋前兆" : `朝一モード / 天井まで${ceilingRemain()}G`;
     persistState();
     updateDisplay();
     log(A_TYPE_MODE ? `[RESET] ${reason} / 設定${settings.setting} / Aタイプ通常` : `[RESET] ${reason} / 設定${settings.setting} / 初回天井${MORNING_CEILING_GAMES}G / COMPLETE解除`);
@@ -13735,7 +13735,7 @@ body{
 
   function morningResetGame(confirmFirst=true, reason="朝一リセット"){
     const message = A_TYPE_MODE
-      ? "設定はそのままでCOMPLETEを解除し、朝一状態（初回天井99G）に戻しますか？"
+      ? "設定はそのままでCOMPLETEを解除し、朝一状態（初回天井200G＋前兆）に戻しますか？"
       : `設定はそのままでCOMPLETEを解除し、朝一モード（初回天井${MORNING_CEILING_GAMES}G）にしますか？`;
     if(confirmFirst && !confirm(message)) return false;
     return resetRuntimeForMorning(reason);
@@ -13748,7 +13748,7 @@ body{
     const row = document.createElement("div");
     row.className = "row";
     row.style.marginBottom = "8px";
-    row.innerHTML = `<button class="subBtn" id="morningResetBtn" type="button">${A_TYPE_MODE ? "朝一リセット（99G）" : "朝一リセット"}</button>`;
+    row.innerHTML = `<button class="subBtn" id="morningResetBtn" type="button">${A_TYPE_MODE ? "朝一リセット（特殊200G）" : "朝一リセット"}</button>`;
     const simBtn = document.createElement("button");
     simBtn.className = "subBtn";
     simBtn.id = "tenKSimBtn";
@@ -13759,7 +13759,7 @@ body{
     help.className = "help";
     help.style.margin = "-2px 0 10px";
     help.textContent = A_TYPE_MODE
-      ? "朝一リセット：設定はそのまま、COMPLETE解除、初回ボーナスまで天井99G。"
+      ? "朝一リセット：設定はそのまま、COMPLETE解除、初回ボーナスまで天井200G＋前兆。"
       : `朝一リセット：設定はそのまま、COMPLETE解除、初回BB/RBまで天井${MORNING_CEILING_GAMES}G。`;
     anchor.insertAdjacentElement("afterend", help);
     anchor.insertAdjacentElement("afterend", row);
@@ -13887,7 +13887,7 @@ body{
     const forceSelect=document.getElementById('forceResult');
     for(const [value,label] of [['ART','AT突入'],['FREEZE','フリーズ'],...Object.keys(NovaNormal.rare).filter(k=>!isNovaResult(k)).map(k=>[k,RESULT[k].name]),['RARE','ATレア役'],...NovaArt.zoneIds.map(k=>['ZONE_'+k,NovaArt.zoneName(k)+'ゾーン'])]){const option=document.createElement('option');option.value=value;option.textContent=label;forceSelect.append(option);}
     const normalPanel=document.createElement('details');normalPanel.id='novaNormalConfig';
-    normalPanel.innerHTML='<summary>内部モード・穢れ・状態（仮設定）</summary><output id="novaInternalStatus"></output><label>通常モード<select id="novaMode">'+NovaNormal.modes.map(x=>'<option>'+x+'</option>').join('')+'</select></label><label>天井カウンター<input id="novaModeGames" type="number" min="0" max="600" value="0"></label><label>内部状態<select id="novaLevel"><option value="low">低確</option><option value="high">高確</option></select></label><label>穢れpt<input id="novaImpurity" type="number" min="0" max="100" value="0"></label><button id="novaApplyInternal" type="button">内部状態を適用</button><p>朝一リセット後は初回ボーナスまで天井99G。リセット時の穢れは50pt中心の低pt寄り振り分け。高設定ほど75pt以上を小幅に優遇。初当たりボーナス開始時にモード移行。穢れ100ptは次のボーナスで消費し、AT＋特化ゾーンを予約。フリーズは通常スーパーノヴァ目の1/2。</p>';
+    normalPanel.innerHTML='<summary>内部モード・穢れ・状態（仮設定）</summary><output id="novaInternalStatus"></output><label>通常モード<select id="novaMode">'+NovaNormal.modes.map(x=>'<option>'+x+'</option>').join('')+'</select></label><label>天井カウンター<input id="novaModeGames" type="number" min="0" max="600" value="0"></label><label>内部状態<select id="novaLevel"><option value="low">低確</option><option value="high">高確</option></select></label><label>穢れpt<input id="novaImpurity" type="number" min="0" max="100" value="0"></label><button id="novaApplyInternal" type="button">内部状態を適用</button><p>朝一リセットは特殊モード（200G＋前兆）。規定GゾーンはCZまたはガセ前兆。天井恩恵はBIG／突破確定CZを各50%。リセット時の穢れは50pt中心の低pt寄り振り分け。高設定ほど75pt以上を小幅に優遇。初当たりボーナス開始時にモード移行。穢れ100ptは次のボーナスで消費し、AT＋特化ゾーンを予約。フリーズは通常スーパーノヴァ目の1/2。</p>';
     const resetTable=document.createElement('div');resetTable.innerHTML='<table><tr><th>設定</th>'+NovaNormal.resetImpurityPoints.map(pt=>'<th>'+pt+'pt</th>').join('')+'</tr>'+NovaNormal.resetImpurityWeights.map((row,i)=>'<tr><td>'+(i+1)+'</td>'+row.map(w=>'<td>'+w+'%</td>').join('')+'</tr>').join('')+'</table>';normalPanel.append(resetTable);
     const nc=NovaNormal.config(settings.novaNormal);for(const [k,v]of Object.entries(nc).filter(([k])=>!['highMultiplier','bandMultiplier'].includes(k))){const label=document.createElement('label');label.textContent=({highMultiplier:'高確CZ倍率',bandMultiplier:'優遇区間CZ倍率',downMiss:'ハズレ降格率',downReplay:'リプレイ降格率',czFailureGain:'CZ失敗の穢れpt',bonusFailureGain:'ボーナスAT非突入の穢れpt',atDryGain:'AT駆け抜けの穢れpt',ceilingGain:'600G天井の穢れpt（300Gは半分・100G以下は1割）',regChainGain:'REG連続の穢れpt',superDenom:'通常スーパーノヴァ目分母'})[k];const input=document.createElement('input');input.type='number';input.step='any';input.value=v;input.dataset.normalConfig=k;label.append(input);normalPanel.append(label);}
     const saveNormal=document.createElement('button');saveNormal.textContent='通常設定を保存';saveNormal.onclick=()=>{const c={};normalPanel.querySelectorAll('[data-normal-config]').forEach(x=>c[x.dataset.normalConfig]=x.valueAsNumber);settings.novaNormal=NovaNormal.config(c);persistState();};normalPanel.append(saveNormal);

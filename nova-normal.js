@@ -1,8 +1,13 @@
 /* Internal normal-play rules. No supplied image or audio is processed. */
 globalThis.NovaNormal=(()=>{
- const modes=['通常A','通常B','通常C','天国準備','天国A','天国B'];
- const ceilings=[600,600,300,600,100,100];
- const transitions=[[70,15,5,8,1,1],[15,65,7,10,2,1],[30,25,25,10,7,3],[0,0,0,0,80,20],[12,8,3,2,65,10],[8,5,3,2,12,70]];
+ const modes=['通常A','通常B','通常C','チャンス','天国準備','天国','特殊'];
+ const ceilings=[600,600,500,600,300,100,200];
+ const transitions=[[55,20,10,8,5,2,0],[20,45,15,10,7,3,0],[25,20,25,15,10,5,0],[15,15,20,25,15,10,0],[0,0,0,0,0,100,0],[20,10,10,10,10,40,0],[20,20,20,20,10,10,0]];
+ const gameZoneRates={通常A:{200:.55,300:.55},通常B:{100:.45,500:.8},通常C:{100:.55,200:.55,300:.55},チャンス:{50:.15,100:.55,150:.15,200:.55,250:.15,300:.8},天国準備:{50:.55,100:.55,150:.55,200:.8},天国:{50:.65},特殊:{50:.25,100:.6,150:.25}};
+ const gameZoneConfig={fakeRate:.5,preludeMin:3,preludeMax:8,ceilingBonusRate:.5};
+ function zoneRate(value){const s=normalize(value),g=s.games+1;if(g>=ceiling(s)||g%50)return 0;return gameZoneRates[s.mode][g]??(g%100===0?.1:0);}
+ function prelude(kind,rng){return {kind,left:gameZoneConfig.preludeMin+Math.floor(rng()*(gameZoneConfig.preludeMax-gameZoneConfig.preludeMin+1))};}
+ function normalLabel(value){const s=normalize(value);return s.prelude?'前兆中':'通常';}
  // Normal/CZ: SUICA and chance eyes promote state; NOVA draws CZ directly.
  const rare={WEAK_SUICA:{p:0.011,up:.05,cz:.06,gain:1,pay:6},STRONG_SUICA:{p:0.0026,up:.5,cz:.6,gain:3,pay:6},CHANCE_A:{p:1/312.5,up:9/28,cz:3/14,gain:1,pay:0},CHANCE_B:{p:1/125,up:9/28,cz:3/14,gain:1,pay:0},WEAK_NOVA:{p:1/128,up:.35,cz:.3,gain:2,pay:0},STRONG_NOVA:{p:1/2500,up:.75,cz:1,gain:4,pay:0}};
  const defaults={highMultiplier:2,bandMultiplier:2,downMiss:.08,downReplay:.05,czFailureGain:1,bonusFailureGain:2,atDryGain:2,ceilingGain:10,regChainGain:2,superDenom:32768};
@@ -10,12 +15,12 @@ globalThis.NovaNormal=(()=>{
  const resetImpurityPoints=Object.freeze([0,25,50,75,90,100]);
  const resetImpurityWeights=Object.freeze([[20,25,35,15,4,1],[19,25,35,16,4,1],[18,25,35,16,5,1],[17,25,35,17,5,1],[16,24,35,18,5,2],[15,24,35,18,6,2]].map(Object.freeze));
  function resetDistribution(setting=1){const row=resetImpurityWeights[Math.max(0,Math.min(5,Math.round(Number(setting)||1)-1))];return resetImpurityPoints.map((pt,i)=>({pt,weight:row[i]}));}
- function reset(rng=Math.random,setting=1){const row=resetDistribution(setting);return normalize({morningCeiling:true,impurity:row[weighted(row.map(x=>x.weight),rng)].pt});}
- function normalize(v){return {regStreak:Math.max(0,Math.floor(Number(v?.regStreak)||0)),morningCeiling:v?.morningCeiling===true,mode:modes.includes(v?.mode)?v.mode:modes[0],games:Math.max(0,Math.floor(Number(v?.games)||0)),level:v?.level==='high'?'high':'low',highLeft:v?.level==='high'?Math.max(0,Math.floor(Number(v?.highLeft)||0)):0,impurity:Math.min(100,Math.max(0,Number(v?.impurity)||0))};}
+ function reset(rng=Math.random,setting=1){const row=resetDistribution(setting);return normalize({mode:'特殊',impurity:row[weighted(row.map(x=>x.weight),rng)].pt});}
+ function normalize(v){const mode=['天国A','天国B'].includes(v?.mode)?'天国':v?.mode;return {prelude:v?.prelude&&['fake','cz','ceilingBonus','ceilingCz'].includes(v.prelude.kind)?{kind:v.prelude.kind,left:Math.max(0,Math.min(8,Math.floor(Number(v.prelude.left)||0)))}:null,ceilingHandled:!!v?.ceilingHandled,regStreak:Math.max(0,Math.floor(Number(v?.regStreak)||0)),morningCeiling:v?.morningCeiling===true,mode:modes.includes(mode)?mode:modes[0],games:Math.max(0,Math.floor(Number(v?.games)||0)),level:v?.level==='high'?'high':'low',highLeft:v?.level==='high'?Math.max(0,Math.floor(Number(v?.highLeft)||0)):0,impurity:Math.min(100,Math.max(0,Number(v?.impurity)||0))};}
  function weighted(weights,rng){let n=rng()*weights.reduce((a,b)=>a+b,0);return Math.max(0,weights.findIndex(w=>(n-=w)<0));}
- function ceiling(v){return normalize(v).morningCeiling?99:ceilings[modes.indexOf(normalize(v).mode)];}
- function favored(v){const s=normalize(v),digit=Math.floor((s.games+1)/100)%10;return s.mode==='通常A'&&digit%2===0||s.mode==='通常B'&&digit%2===1;}
- function multiplier(v,c){c=config(c);return (normalize(v).level==='high'?c.highMultiplier:1)*(favored(v)?c.bandMultiplier:1);}
+ function ceiling(v){return ceilings[modes.indexOf(normalize(v).mode)];}
+ function favored(v){return zoneRate(v)>.1;}
+ function multiplier(){return 1;}
  function pay(role){return rare[role]?.pay??(role==='BELL'?15:role==='REPLAY'?0:0);}
  function rareFactor(setting=3){return 1+.016*(Math.max(1,Math.min(6,Math.round(Number(setting)||3)))-3);}
  function roleProbabilities(setting=3){const frequent=1+.004*(Math.max(1,Math.min(6,Math.round(Number(setting)||3)))-3),r=Object.fromEntries(Object.entries(rare).map(([k,v])=>[k,v.p*rareFactor(setting)]));
@@ -34,7 +39,7 @@ globalThis.NovaNormal=(()=>{
 
    if(stateRoles.includes(role)){
     if(s.level==='low'){
-     const rate=Math.min(1,rare[role].up*(favored(value)?2:1));
+     const rate=Math.min(1,rare[role].up);
      if(rng()<rate){s.level='high';s.highLeft=10;}
     }
    }
@@ -52,14 +57,29 @@ globalThis.NovaNormal=(()=>{
   const state=advance(before,result,flow,c,rng),token={result,state,czFlow:flow,internalBonus:null,entry:'',direct:false};
   const bonus=source=>({kind:'BIG',source,internalResult:'BIG'});
   if(forced==='FREEZE'){token.result='MISS';token.internalBonus={...bonus('フリーズ'),premiumBonus:true};return token;}
-  if(before.games+1>=ceiling(before)){state.impurity=Math.min(100,state.impurity+c.ceilingGain*(ceiling(before)>=600?1:ceiling(before)>=300?.5:.1));token.internalBonus=bonus((before.morningCeiling?'朝一':before.mode)+' 天井'+ceiling(before)+'G');return token;}
+  if(!before.ceilingHandled&&before.games+1>=ceiling(before)){
+   state.ceilingHandled=true;state.impurity=Math.min(100,state.impurity+c.ceilingGain*(ceiling(before)>=500?1:ceiling(before)>=300?.5:.1));
+   state.prelude=prelude(rng()<gameZoneConfig.ceilingBonusRate?'ceilingBonus':'ceilingCz',rng);token.message='前兆開始';
+  }else if(!state.prelude&&zoneRate(before)>0){
+   const hit=rng()<zoneRate(before);if(hit||rng()<gameZoneConfig.fakeRate){state.prelude=prelude(hit?'cz':'fake',rng);token.message='前兆開始';}
+  }
   if(flow.phase==='normal'){
-   if(!forced&&rng()<1/c.superDenom){token.result='SUPER_NOVA';return token;}
+   if(before.prelude&&state.prelude){
+    state.prelude.left=Math.max(0,state.prelude.left-1);
+    if(!state.prelude.left){const kind=state.prelude.kind;state.prelude=null;
+     if(kind==='ceilingBonus'){token.internalBonus=bonus(before.mode+' 天井'+ceiling(before)+'G＋前兆');return token;}
+     if(kind==='ceilingCz'){token.entry='STRONG_CZ';token.entrySource='ceiling';token.czOptions={...options.cz,strongChance:1};token.message='天井CZ突入';return token;}
+     if(kind==='cz'){token.entry='CZ';token.entrySource='game';return token;}
+     token.message='前兆終了';
+    }
+   }
+   if(state.prelude?.kind.startsWith('ceiling'))return token;
+   if(!forced&&rng()<1/c.superDenom){token.result='SUPER_NOVA';state.prelude=null;return token;}
    if(result==='STRONG_NOVA'){
-    token.entry='STRONG_CZ';token.entrySource='rare';token.czOptions={...options.cz,strongChance:before.level==='high'?1:.85};return token;
+    state.prelude=null;token.entry='STRONG_CZ';token.entrySource='rare';token.czOptions={...options.cz,strongChance:before.level==='high'?1:.85};return token;
    }
    if(result==='WEAK_NOVA'&&rng()<(before.level==='high'?.75:.25)){
-    token.entry='CZ';token.entrySource='rare';return token;
+    state.prelude=null;token.entry='CZ';token.entrySource='rare';return token;
    }
   }else if(['cz','strong_cz'].includes(flow.phase)){
    flow.lampRoll??=rng();flow.rainbowRoll??=rng();
@@ -73,10 +93,10 @@ globalThis.NovaNormal=(()=>{
   return token;
  }
  function claim(value,freeze=false,rng=Math.random){const state=normalize(value),zones=[];if(state.impurity>=100){state.impurity=0;zones.push(['urapi','giru','sora','ouma'][Math.min(3,Math.floor(rng()*4))]);}if(freeze)zones.push(['giru','sora','ouma'][Math.min(2,Math.floor(rng()*3))]);return {state,zones:zones.map(z=>NovaArt.upgradeGuaranteedZone(z,rng)),sets:zones.length?1:0};}
- function afterArt(value,before,after,options={}){const s=normalize(value);if(before?.phase==='art'&&after?.phase==='normal'){s.games=0;if(after.dryAtEnd===true)s.impurity=Math.min(100,s.impurity+config(options).atDryGain);}return s;}
+ function afterArt(value,before,after,options={}){const s=normalize(value);if(before?.phase==='art'&&after?.phase==='normal'){s.games=0;s.prelude=null;s.ceilingHandled=false;if(after.dryAtEnd===true)s.impurity=Math.min(100,s.impurity+config(options).atDryGain);}return s;}
  function bonusEnd(value,kind,after,options={}){const s=normalize(value),c=config(options);s.regStreak=['MID','REG'].includes(kind)?s.regStreak+1:0;const gain=(after?.phase!=='art'?c.bonusFailureGain:0)+(s.regStreak>=2?c.regChainGain:0);s.impurity=Math.min(100,s.impurity+gain);return s;}
- function afterBonus(value,rng=Math.random){const s=normalize(value);return {...s,morningCeiling:false,mode:modes[weighted(transitions[modes.indexOf(s.mode)],rng)],games:0,level:'low',highLeft:0};}
+ function afterBonus(value,rng=Math.random){const s=normalize(value);return {...s,prelude:null,ceilingHandled:false,morningCeiling:false,mode:modes[weighted(transitions[modes.indexOf(s.mode)],rng)],games:0,level:'low',highLeft:0};}
  function drawRare(rng=Math.random){const keys=Object.keys(rare);return keys[weighted(keys.map(k=>rare[k].p),rng)];}
  const rareMean=Object.values(rare).reduce((s,r)=>s+r.p*r.pay,0)/Object.values(rare).reduce((s,r)=>s+r.p,0);
- return {resetImpurityPoints,resetImpurityWeights,resetDistribution,reset,modes,ceilings,transitions,rare,rareMean,rareFactor,roleProbabilities,drawRare,defaults,config,normalize,ceiling,favored,multiplier,pay,drawRole,advance,spin,claim,afterArt,bonusEnd,afterBonus};
+ return {gameZoneRates,gameZoneConfig,zoneRate,normalLabel,resetImpurityPoints,resetImpurityWeights,resetDistribution,reset,modes,ceilings,transitions,rare,rareMean,rareFactor,roleProbabilities,drawRare,defaults,config,normalize,ceiling,favored,multiplier,pay,drawRole,advance,spin,claim,afterArt,bonusEnd,afterBonus};
 })();
