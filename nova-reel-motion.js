@@ -38,13 +38,18 @@ globalThis.NovaReelMotion=(()=>{
   const ds=s.strip.flatMap((_,n)=>column.every((v,j)=>s.strip[(n+j)%s.strip.length]===v)?[s.direction>0?mod(n-pos,s.strip.length):mod(pos-n,s.strip.length)]:[]);
   return ds.length?Math.min(...ds):Infinity;
  }
- function stop(i,column){
+ function stop(i,column,options={}){
   const s=active.get(i);if(!s)return Promise.resolve(false);
   const now=performance.now();
   s.pos=s.strip.length+mod(s.pos-s.strip.length+s.direction*(now-s.last)/s.stepMs,s.strip.length);s.last=now;
   const distances=s.strip.flatMap((_,n)=>column.every((v,j)=>s.strip[(n+j)%s.strip.length]===v)?[s.direction>0?mod(n-mod(s.pos,s.strip.length),s.strip.length):mod(mod(s.pos,s.strip.length)-n,s.strip.length)]:[]);
   if(!distances.length)throw new Error('Stop column is absent from reel strip '+i);
   const distance=Math.min(...distances);
+  if(options.immediate){
+   cancelAnimationFrame(s.raf);s.raf=0;
+   s.pos+=s.direction*distance;s.layer.style.transform=`translateY(${-s.pos*s.h}px)`;
+   return Promise.resolve(true);
+  }
   if(distance<1e-9){cancelAnimationFrame(s.raf);s.layer.style.transform=`translateY(${-s.pos*s.h}px)`;return Promise.resolve(true);}
   return new Promise(resolve=>{s.resolve=resolve;s.landing={from:s.pos,to:s.pos+s.direction*distance,time:now,duration:distance*s.stepMs};});
  }

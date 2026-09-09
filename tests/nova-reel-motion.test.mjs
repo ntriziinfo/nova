@@ -33,3 +33,16 @@ test('freeze reverse targets twice normal speed while preserving starting and fi
  audioTime=.1;t.tick(16);assert.equal(t.a.top(0),5);
  audioTime=4.4;t.tick(16);assert.equal(t.a.top(0),0);
 });
+
+test('immediate common-role stop lands without advancing time and remains stopped',async()=>{
+ for(const reverse of [false,true]){
+  const t=setup(),strip=['A','B','C','D','E'];t.a.start(0,t.reel,strip,0,reverse,s=>s);t.tick(55);
+  assert.equal(await t.a.stop(0,['C','D','E'],{immediate:true}),true);
+  assert.equal(t.a.top(0),2);const transform=t.win.layer.style.transform;t.tick(1000);
+  assert.equal(t.win.layer.style.transform,transform);t.a.clearAll();
+ }
+});
+test('only bell and replay request immediate landing',()=>{
+ const html=fs.readFileSync('jag.html','utf8');
+ assert.match(html,/NovaReelMotion.stop\(i,col,\{immediate:\['BELL','REPLAY'\].includes\(spin.result\)&&!spin.manualBonusStop\}\)/);
+});

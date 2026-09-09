@@ -6535,7 +6535,7 @@ body{
 <link rel="stylesheet" href="nova-artwork.css?v=20260909-result-image-84">
 <script src="nova-artwork.js?v=20260909-lamp-position-98" defer></script>
 <script src="nova-beat-lamps.js?v=20260909-result-image-84"></script>
-<script src="nova-reel-motion.js?v=20260909-result-image-84"></script>
+<script src="nova-reel-motion.js?v=20260909-common-stop-101"></script>
 <link rel="stylesheet" href="nova-results.css?v=20260909-result-image-84">
 <script src="nova-results.js?v=20260909-result-image-84"></script>
 <link rel="stylesheet" href="nova-ladder-presentation.css?v=20260909-shutter-95">
@@ -15092,7 +15092,7 @@ body{
       spin.visualStopping[i]=true;stopBtns[i].disabled=true;
       Promise.resolve().then(async()=>{
         if(currentSpin!==spin||!isSpinning)return;
-        const landed=await NovaReelMotion.stop(i,col);
+        const landed=await NovaReelMotion.stop(i,col,{immediate:['BELL','REPLAY'].includes(spin.result)&&!spin.manualBonusStop});
         if(landed&&currentSpin===spin&&isSpinning)stopSingleReel(i,{...options,visualReady:true,visualColumn:col});
       }).catch(error=>{console.error(error);spin.visualStopping[i]=false;stopBtns[i].disabled=false;});
       return;
