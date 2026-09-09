@@ -56,3 +56,19 @@ test('artwork rendering preserves configured coordinates while dimensions are un
  const c=vm.createContext({items:new Map([['urapi',item]]),positions:{urapi:position},layer:{clientWidth:1000,clientHeight:0}});
  vm.runInContext(render,c);c.render('urapi');assert.equal(position.y,34.0807);assert.equal(item.style.top,'34.0807%');
 });
+test('miss guide uses 50 percent boundary; wins always guide',()=>{
+ const {aim}=setup();assert.equal(aim.drawGuide({result:'MISS'},()=>.499999),true);assert.equal(aim.drawGuide({result:'MISS'},()=>.5),false);
+ for(const result of ['BIG','NEBULA'])assert.equal(aim.drawGuide({result},()=>.999),true);
+ let seed=198,shown=0;const rng=()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/4294967296);
+ for(let i=0;i<100000;i++)shown+=aim.drawGuide({result:'MISS'},rng);
+ assert.ok(Math.abs(shown/100000-.5)<.01);
+});
+test('suppressed miss cue never opens video',()=>{
+ const {aim,elements}=setup();aim.bet({symbol:'seven',color:'blue',result:'MISS',guide:false});assert.equal(elements.length,0);assert.equal(aim.hasGuide({guide:false}),false);
+});
+test('cue dismissal runs after real reel landing, not button acceptance',()=>{
+ const html=fs.readFileSync('jag.html','utf8');const stop=html.slice(html.indexOf('  function stopSingleReel(i,'),html.indexOf('  function stopAllReels()'));
+ assert.equal(stop.slice(0,stop.indexOf('await NovaReelMotion.stop')).includes('NovaAim.hide()'),false);
+ assert.match(stop,/currentSpin.stopped\[i\] = true;\s*if\(currentSpin.stopped.every\(Boolean\)\)NovaAim.hide\(\);/);
+ assert.ok(stop.indexOf('NovaAim.win(')>stop.indexOf('currentSpin.stopped[i] = true'));
+});

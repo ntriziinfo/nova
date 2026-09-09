@@ -6540,10 +6540,10 @@ body{
 <script src="nova-results.js?v=20260909-result-image-84"></script>
 <link rel="stylesheet" href="nova-ladder-presentation.css?v=20260909-shutter-95">
 <script src="nova-ladder-presentation.js?v=20260909-shutter-95"></script>
-<link rel="stylesheet" href="nova-aim-presentation.css?v=20260909-aim-98">
-<script src="nova-aim-presentation.js?v=20260909-aim-98"></script>
-<script src="nova-art.js?v=20260909-aim-98"></script>
-<script src="nova-balance.js?v=20260909-aim-98"></script>
+<link rel="stylesheet" href="nova-aim-presentation.css?v=20260909-aim-99">
+<script src="nova-aim-presentation.js?v=20260909-aim-99"></script>
+<script src="nova-art.js?v=20260909-aim-99"></script>
+<script src="nova-balance.js?v=20260909-aim-99"></script>
 <script src="nova-normal.js?v=20260909-result-image-84"></script>
 <script src="nova-flow.js?v=20260908-state-nova-33"></script>
 <style>
@@ -14939,8 +14939,9 @@ body{
     playCzCountdownOnLever(resolved);
     currentSpin.manualBonusStop = false; // Fixed-G prototype: bonus starts on the next confirmed spin.
     if(!debugFastSpinActive){
+      if(resolved.aim)resolved.aim.guide ??= NovaAim.drawGuide(resolved.aim);
       NovaAim.bet(resolved.aim);
-      if(resolved.aim)playOneShotSound('assets/media/nova/aim/cue-'+resolved.aim.color+'.wav',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
+      if(NovaAim.hasGuide(resolved.aim))playOneShotSound('assets/media/nova/aim/cue-'+resolved.aim.color+'.wav',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
     }
     if(!resolved.oumaFailed&&['urapi','ouma'].includes(normalState.flow?.zone))showOverlay('ノヴァを狙え');
     if(resolved.oumaFreeze)showOverlay('逢魔フリーズ！ 0G連・ノヴァを狙え');
@@ -15062,7 +15063,7 @@ body{
     if(isRogiHighZoneSpin(currentSpin)) stopRogiStopEffect(true);
 
     if(!options.visualReady&&currentSpin.visualStopping?.[i])return;
-    if(currentSpin.resolved?.aim&&!options.visualReady){
+    if(NovaAim.hasGuide(currentSpin.resolved?.aim)&&!options.visualReady){
       currentSpin.aimStopOrder ||= [];
       if(!currentSpin.aimStopOrder.includes(i))currentSpin.aimStopOrder.push(i);
       const target=NovaAim.stopTarget(currentSpin.resolved.aim,currentSpin.result,currentSpin.aimStopOrder,i);
@@ -15072,8 +15073,7 @@ body{
       currentSpin.lineRow=1;currentSpin.aimAligned=target.aligned;
     }
     const {grid, spec, result, lineRow} = currentSpin;
-    const stopOrder = currentSpin.resolved?.aim ? currentSpin.aimStopOrder.indexOf(i)+1 : currentSpin.stopped.filter(Boolean).length + 1;
-    if(stopOrder===3)NovaAim.hide();
+    const stopOrder = NovaAim.hasGuide(currentSpin.resolved?.aim) ? currentSpin.aimStopOrder.indexOf(i)+1 : currentSpin.stopped.filter(Boolean).length + 1;
     const reversePushWrongFirst = isReversePushGuidedMiss(currentSpin) && stopOrder === 1 && i !== 2;
     let col = options.visualColumn || (currentSpin.manualBonusStop
       ? manualStopColumnForReel(i, currentSpin)
@@ -15101,6 +15101,7 @@ body{
 
     stopReel(i, col, label, spec.cls, currentSpin.manualBonusStop || result === "MISS" ? null : lineRow, stopOrder);
     currentSpin.stopped[i] = true;
+    if(currentSpin.stopped.every(Boolean))NovaAim.hide();
     syncCabinetControlState();
     showCzLamp(stopOrder,currentSpin.resolved);
     NovaLadder.stop(stopOrder);

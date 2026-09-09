@@ -29,8 +29,10 @@ globalThis.NovaAim=(()=>{
   if(active){active.pause();active.hidden=true;active=null;}
   if(root){root.hidden=true;delete host.dataset.aimActive;}
  }
+ function hasGuide(aim){return !!aim&&aim.guide!==false;}
+ function drawGuide(aim,rng=Math.random){return aim.result!=='MISS'||rng()<.5;}
  function bet(aim){
-  hide();if(!aim||!init())return;
+  hide();if(!hasGuide(aim)||!init())return;
   const video=videos.get(aim.symbol+':'+aim.color);if(!video)return;
   active=video;root.dataset.color=aim.color;root.dataset.symbol=aim.symbol;root.hidden=false;
   host.dataset.aimActive='true';video.hidden=false;video.currentTime=0;layout();
@@ -67,5 +69,5 @@ globalThis.NovaAim=(()=>{
   document.addEventListener('DOMContentLoaded',init);
   window.addEventListener('resize',layout);
  }
- return {stopTarget,bet,hide,layout,win,afterWin,reset,get busy(){return winLocked;}};
+ return {hasGuide,drawGuide,stopTarget,bet,hide,layout,win,afterWin,reset,get busy(){return winLocked;}};
 })();
