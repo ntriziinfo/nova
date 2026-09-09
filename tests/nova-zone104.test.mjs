@@ -7,7 +7,7 @@ test('roulette rare role upgrades to six/giru or ura-giru, seven/sosuke only',()
  const no=a.step({...a.enter(),entryStage:'roulette',pendingZone:'toto'}, {},()=>.99);assert.equal(no.flow.rouletteTable,0);
 });
 test('normal table selection never includes six or seven',()=>{
- for(const id of ['sosuke','giru','ura_giru'])for(let setting=1;setting<=6;setting++)for(let i=0;i<100;i++){
+ for(const id of ['sosuke','giru'])for(let setting=1;setting<=6;setting++)for(let i=0;i<100;i++){
   const s=a.startZone(a.enter(),id,{setting},()=>i/100);assert.ok(a.ladderTables.sosuke.slice(0,5).some(l=>JSON.stringify(l)===JSON.stringify(s.ladder)));
  }
 });

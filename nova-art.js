@@ -65,9 +65,9 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
  const sharedLadderTables=[[50,100,200,300,500],[50,50,500,500,1000],[100,200,300,500,1000],[100,100,500,1000,2000],[200,300,500,1000,2000],[300,500,1000,2000,3000],[50,2000]];
  const ladderTables={sosuke:sharedLadderTables,giru:sharedLadderTables,ura_giru:sharedLadderTables};
  const ladderWeightBases={sosuke:[40,25,18,8,5,2,2],giru:[20,20,25,15,12,5,3],ura_giru:[8,10,22,22,23,10,5]};
- function ladderWeightsFor(s,setting=s.giruSetting){const id=(s.ura?'ura_':'')+s.zone,base=ladderWeightBases[id]||ladderWeightBases.sosuke;const weights=base.map((v,i)=>i<5?v+(validSetting(setting)-1)*[-.6,-.4,0,0,.6,.4,0][i]:0),total=weights.reduce((a,b)=>a+b,0);return weights.map(v=>v*100/total);}
+ function ladderWeightsFor(s,setting=s.giruSetting){if(s.zone==='giru'&&s.ura)return [0,0,0,0,0,100,0];const id=(s.ura?'ura_':'')+s.zone,base=ladderWeightBases[id]||ladderWeightBases.sosuke;const weights=base.map((v,i)=>i<5?v+(validSetting(setting)-1)*[-.6,-.4,0,0,.6,.4,0][i]:0),total=weights.reduce((a,b)=>a+b,0);return weights.map(v=>v*100/total);}
  function pickLadder(s,setting,rng){const rows=ladderTableFor(s),weights=ladderWeightsFor(s,setting);let r=rng()*100,i=weights.findIndex(w=>(r-=w)<0);return rows[i<0?rows.length-1:i].slice();}
- function ladderGuaranteed(s){return s.zone==='giru'&&s.ladder?.length!==2&&integer(s.award)<BigInt(s.ura?300:100);}
+ function ladderGuaranteed(s){return s.zone==='giru'&&s.ladder?.length!==2&&(s.ura?integer(s.award)<=300n:integer(s.award)<100n);}
  function drawLadderRole(s,c,rng){const p=ladderGuaranteed(s)?1:zoneRules(s,c).success,r=rng();return r<p*.7?'REPLAY':r<p?'BELL':'MISS';}
  const ladderTableFor=s=>ladderTables[(s.ura?'ura_':'')+s.zone]||ladderTables[s.zone];
  const sevenValues=[50,100,150,200,300,500];
