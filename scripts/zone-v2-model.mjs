@@ -23,10 +23,11 @@ export function simulate(setting,games,seed,options={}){
  let bonusG=0,bonusP=0,bonusFee=0,freezes=0,ceilings=0,release=0,normalGap=0,maxBonusGap=0;
  const counts={normal:0,cz:0,prep:0,align:0,bonus:0,at:0,zone:0,zero:0,BIG:0,REG:0,czEntries:0,strongEntries:0,czWins:0,artEntries:0,zoneEntries:0,gameCzEntries:0,ceilingCzEntries:0,rareCzEntries:0,backgroundCzEntries:0,highNormalG:0,favoredNormalG:0};
  const bonusMetrics={normal:{completed:0,nebulaWins:0},upper:{completed:0,nebulaWins:0}};
+ const atLevelMetrics=Object.fromEntries([0,1,2,3,4,5].map(t=>[t,{entries:0,completed:0,completedPaid:0,completedNet:0,games:0}]));let treatmentStart=null;
  const atMetrics={eligible:0,high:0,zoneWins:0,directWins:0,directPoints:0,promotions:0,suica100:0,suica300:0};const blocks=[];let blockBet=0,blockPaid=0,blockPeak=0,firstComplete=null;
  const zones={},normalRoles={},normalPayout={bet:0,paid:0,games:0};
  const sessionEnd=Symbol('session end'),scale=NovaBalance.profile(setting).scale*(options.scaleMultiplier??1);
- const track=()=>{const net=paid-fee;peak=Math.max(peak,net);maxDrawdown=Math.max(maxDrawdown,peak-net);if(artStart!==null)maxArtNet=Math.max(maxArtNet,net-artStart);if(options.recordBlocks)blockPeak=Math.max(blockPeak,net-(blockPaid-blockBet));if(!firstComplete&&net>=(options.completeLimitPt??19000))firstComplete={games:count,totalBet:fee,totalPaid:paid,net};};
+ const track=()=>{if(flow.phase==='art'&&!treatmentStart){const tier=flow.atLevel||0;treatmentStart={tier,paid,fee};atLevelMetrics[tier].entries++;}if(flow.phase!=='art'&&treatmentStart){const row=atLevelMetrics[treatmentStart.tier];row.completed++;row.completedPaid+=paid-treatmentStart.paid;row.completedNet+=paid-treatmentStart.paid-fee+treatmentStart.fee;treatmentStart=null;}const net=paid-fee;peak=Math.max(peak,net);maxDrawdown=Math.max(maxDrawdown,peak-net);if(artStart!==null)maxArtNet=Math.max(maxArtNet,net-artStart);if(options.recordBlocks)blockPeak=Math.max(blockPeak,net-(blockPaid-blockBet));if(!firstComplete&&net>=(options.completeLimitPt??19000))firstComplete={games:count,totalBet:fee,totalPaid:paid,net};};
  const saveBlock=()=>{blocks.push({endGame:count,totalBet:fee-blockBet,totalPaid:paid-blockPaid,net:paid-blockPaid-fee+blockBet,peak:blockPeak});blockBet=fee;blockPaid=paid;blockPeak=0;};
  const bet=phase=>{track();if(options.completeLimitPt&&paid-fee>=options.completeLimitPt)throw sessionEnd;if(count>=games&&!cutoff)cutoff={games:count,totalBet:fee,totalPaid:paid,net:paid-fee,peak,phase};if(options.exactGames!==false&&!options.settleEnd&&count>=games)throw sessionEnd;if(options.recordBlocks&&count>0&&count%options.recordBlocks===0)saveBlock();count++;counts[phase]++;normalGap++;const charged=replay?0:3;fee+=charged;replay=false;return charged;};
  const zoneEntry=f=>{if(f.zone){counts.zoneEntries++;const name=(f.ura?'ura_':'')+f.zone;zones[name]=(zones[name]||0)+1;}};
@@ -43,7 +44,7 @@ export function simulate(setting,games,seed,options={}){
    const r=a.drawBonus(rng,setting,tier),pay=a.bonusPayout?a.bonusPayout({paid:bonusPaid},r):n.pay(r);bonusPaid+=pay;const before=fee;bet('bonus');bonusFee+=fee-before;paid+=pay;replay=r==='REPLAY';bonusG++;bonusP+=pay;track();if(r==='NEBULA'){sets++;nebula=true;}
   }
   bonusMetrics[tier].completed++;bonusMetrics[tier].nebulaWins+=nebula;
-  const before=flow;flow=a.afterBonus(flow,c,sets);state=n.bonusEnd(state,kind,flow);state=n.afterArt(state,before,flow,options.normal,rng);
+  const before=flow;flow=a.afterBonus(flow,c,sets,rng);state=n.bonusEnd(state,kind,flow);state=n.afterArt(state,before,flow,options.normal,rng);
   if(before.phase!=='art'&&flow.phase==='art')counts.artEntries++;
   if(flow.phase==='art'&&claim.zones.length){flow.queuedZones.push(...claim.zones);if(!flow.zone){flow=a.startZone(flow,flow.queuedZones.shift(),{...c,allowUra:true},rng);zoneEntry(flow);}}
  }
@@ -52,6 +53,7 @@ export function simulate(setting,games,seed,options={}){
   if(flow.phase==='art'){
    const prior=flow;flow=a.prepareBet(flow,c,rng);if(!prior.zone&&flow.zone)zoneEntry(flow);
    if(!flow.zero)bet(flow.zone?'zone':'at');else counts.zero++;
+   if(!flow.zero)atLevelMetrics[flow.atLevel||0].games++;
    const eligible=!flow.zone&&!flow.entryStage&&!flow.queuedZones?.length&&Number(flow.stock||0)===0&&Number(flow.remaining)>0;
    const s=a.step(flow,{...c,netPt:options.netGuard===false?0:paid-fee},rng);
    if(eligible){atMetrics.eligible++;if(flow.atHigh)atMetrics.high++;if(s.flow.entryStage==='seven')atMetrics.zoneWins++;}
@@ -64,10 +66,10 @@ export function simulate(setting,games,seed,options={}){
   if(normal){normalRoles[t.result]=(normalRoles[t.result]||0)+1;normalPayout.bet+=charged;normalPayout.paid+=n.pay(t.result);normalPayout.games++;}
   if(t.result==='SUPER_NOVA'){const freeze=rng()<.5;if(freeze)freezes++;flow={phase:'normal'};bonus('BIG',freeze);}
   else if(t.internalBonus){if(t.internalBonus.source.includes('天井'))ceilings++;else counts.czWins++;flow={phase:'normal'};bonus(t.internalBonus.kind);}
-  else if(t.direct){flow=a.enter(c);counts.artEntries++;}
+  else if(t.direct){flow=a.enter(c,rng);counts.artEntries++;}
   else if(t.entry){if(t.entry==='STRONG_CZ')counts.strongEntries++;else counts.czEntries++;if(t.entrySource==='game')counts.gameCzEntries++;if(t.entrySource==='ceiling')counts.ceilingCzEntries++;if(t.entrySource==='rare')counts.rareCzEntries++;else if(t.entrySource==='background')counts.backgroundCzEntries++;flow=NovaFlow.enterCZ(t.entry==='STRONG_CZ',t.czOptions??options.cz,rng);}
   else flow=NovaFlow.advance(t.czFlow);
  }}catch(e){if(e!==sessionEnd)throw e;}
  track();maxBonusGap=Math.max(maxBonusGap,normalGap);if(options.recordBlocks)saveBlock();
- return {bonusMetrics,atMetrics,seed,setting,initialMode,cutoff:cutoff||{games:count,totalBet:fee,totalPaid:paid,net:paid-fee,peak,phase:flow.phase},games:count,totalBet:fee,totalPaid:paid,rtp:paid/fee,net:paid-fee,peak,maxDrawdown,maxNormalGames,maxBonusGap,maxArtNet,freezes,ceilings,release,bonusNet:(bonusP-bonusFee)/bonusG,counts,zones,normalRoles,normalPayout,endPhase:flow.phase,firstComplete,blocks:options.recordBlocks?blocks:undefined,unspentAtQuota:flow.phase==='art'?Number(flow.remaining||0)+Number(flow.sets||0)*c.initial+(flow.zone?Number(flow.award||0):0):0};
+ return {atLevelMetrics,bonusMetrics,atMetrics,seed,setting,initialMode,cutoff:cutoff||{games:count,totalBet:fee,totalPaid:paid,net:paid-fee,peak,phase:flow.phase},games:count,totalBet:fee,totalPaid:paid,rtp:paid/fee,net:paid-fee,peak,maxDrawdown,maxNormalGames,maxBonusGap,maxArtNet,freezes,ceilings,release,bonusNet:(bonusP-bonusFee)/bonusG,counts,zones,normalRoles,normalPayout,endPhase:flow.phase,firstComplete,blocks:options.recordBlocks?blocks:undefined,unspentAtQuota:flow.phase==='art'?Number(flow.remaining||0)+Number(flow.sets||0)*c.initial+(flow.zone?Number(flow.award||0):0):0};
 }

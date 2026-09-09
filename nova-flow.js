@@ -67,7 +67,7 @@ globalThis.NovaFlow = (() => {
     const games=min+Math.min(max-min,Math.floor(random()*(max-min+1)));
     return {phase:strong?'strong_cz':'cz',remaining:games,success,winProbability:strong?cfg.strongChance:cfg.czChance,totalGames:games,lampRoll:random(),rainbowRoll:random()};
   }
-  function afterBonus(value,options,sets=0){return NovaArt.afterBonus(value,options,sets);}
+  function afterBonus(value,options,sets=0,random=Math.random){return NovaArt.afterBonus(value,options,sets,random);}
   function advance(value){
     const state=normalize(value);
     return normalize({...state,remaining:Math.max(0,state.remaining-1)});

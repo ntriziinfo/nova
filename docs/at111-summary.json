@@ -1,0 +1,579 @@
+{
+  "rules": {
+    "weights": [
+      [
+        5,
+        15,
+        25,
+        25,
+        30
+      ],
+      [
+        4,
+        12,
+        24,
+        27,
+        33
+      ],
+      [
+        3,
+        11,
+        24,
+        27,
+        35
+      ],
+      [
+        3,
+        9,
+        22,
+        28,
+        38
+      ],
+      [
+        2,
+        7,
+        18,
+        28,
+        45
+      ],
+      [
+        1,
+        3,
+        8,
+        23,
+        65
+      ]
+    ],
+    "levels": [
+      {
+        "rare": 1,
+        "direct": 1,
+        "weakNova": 1,
+        "groups": null
+      },
+      {
+        "rare": 1,
+        "direct": 0.65,
+        "weakNova": 0.6,
+        "groups": [
+          90,
+          9.7,
+          0.3
+        ]
+      },
+      {
+        "rare": 1.2,
+        "direct": 0.85,
+        "weakNova": 0.85,
+        "groups": [
+          75,
+          24.25,
+          0.75
+        ]
+      },
+      {
+        "rare": 1.4,
+        "direct": 1.1,
+        "weakNova": 1.1,
+        "groups": [
+          58,
+          40.74,
+          1.26
+        ]
+      },
+      {
+        "rare": 1.6,
+        "direct": 1.3,
+        "weakNova": 1.35,
+        "groups": [
+          42,
+          56.26,
+          1.74
+        ]
+      },
+      {
+        "rare": 1.8,
+        "direct": 1.5,
+        "weakNova": 1.6,
+        "groups": [
+          25,
+          72.75,
+          2.25
+        ]
+      }
+    ]
+  },
+  "targets": [
+    0.95,
+    0.965,
+    0.98,
+    1.02,
+    1.07,
+    1.14
+  ],
+  "summaries": [
+    {
+      "setting": 1,
+      "weights": [
+        5,
+        15,
+        25,
+        25,
+        30
+      ],
+      "seedBase": 111900000,
+      "rng": "xoshiro128",
+      "maxGames": 10000,
+      "completeLimitPt": 10000,
+      "sourceHashes": {
+        "nova-normal.js": "54734d9d1214b9c8e96857bc9d52a6cb881e37fa1f4520ce023455999fb2a2bd",
+        "nova-art.js": "01769107c1fd11ddc0c89a715d0ddbc8cc2bcdf287674b3fd165a44cc2d4924a",
+        "nova-flow.js": "a877360e6b1dbd050322c4046f9453a85748f1dd9d877113f80567eb9a41f108",
+        "nova-balance.js": "d747b6959fe06df36eb0dab1ddca3bb1a5627b517ad83790d20b970e4ead2556",
+        "scripts/zone-v2-model.mjs": "1786f00d85767d58b08eb3c178faa3359b56cf781d1c63d51b7e0c27124fa4b5"
+      },
+      "trials": 1000,
+      "games": 9462643,
+      "bet": 20927742,
+      "paid": 19799934,
+      "rtp": 0.9461094273811288,
+      "ci95": [
+        0.9275369142835759,
+        0.9646819404786817
+      ],
+      "tierMetrics": {
+        "0": {
+          "entries": 0,
+          "completed": 0,
+          "completedPaid": 0,
+          "completedNet": 0,
+          "games": 0
+        },
+        "1": {
+          "entries": 651,
+          "completed": 648,
+          "completedPaid": 212880,
+          "completedNet": 162126,
+          "games": 43133
+        },
+        "2": {
+          "entries": 2032,
+          "completed": 2017,
+          "completedPaid": 778206,
+          "completedNet": 586533,
+          "games": 158201
+        },
+        "3": {
+          "entries": 3415,
+          "completed": 3386,
+          "completedPaid": 1688751,
+          "completedNet": 1254033,
+          "games": 351765
+        },
+        "4": {
+          "entries": 3315,
+          "completed": 3252,
+          "completedPaid": 2369079,
+          "completedNet": 1735959,
+          "games": 527165
+        },
+        "5": {
+          "entries": 3992,
+          "completed": 3709,
+          "completedPaid": 4088757,
+          "completedNet": 2964810,
+          "games": 1467246
+        }
+      },
+      "complete": 149,
+      "elapsedSeconds": 197.533
+    },
+    {
+      "setting": 2,
+      "weights": [
+        4,
+        12,
+        24,
+        27,
+        33
+      ],
+      "seedBase": 111900000,
+      "rng": "xoshiro128",
+      "maxGames": 10000,
+      "completeLimitPt": 10000,
+      "sourceHashes": {
+        "nova-normal.js": "54734d9d1214b9c8e96857bc9d52a6cb881e37fa1f4520ce023455999fb2a2bd",
+        "nova-art.js": "01769107c1fd11ddc0c89a715d0ddbc8cc2bcdf287674b3fd165a44cc2d4924a",
+        "nova-flow.js": "a877360e6b1dbd050322c4046f9453a85748f1dd9d877113f80567eb9a41f108",
+        "nova-balance.js": "d747b6959fe06df36eb0dab1ddca3bb1a5627b517ad83790d20b970e4ead2556",
+        "scripts/zone-v2-model.mjs": "1786f00d85767d58b08eb3c178faa3359b56cf781d1c63d51b7e0c27124fa4b5"
+      },
+      "trials": 1000,
+      "games": 9523781,
+      "bet": 20938527,
+      "paid": 20259541,
+      "rtp": 0.9675724085080102,
+      "ci95": [
+        0.949254871762061,
+        0.9858899452539593
+      ],
+      "tierMetrics": {
+        "0": {
+          "entries": 0,
+          "completed": 0,
+          "completedPaid": 0,
+          "completedNet": 0,
+          "games": 0
+        },
+        "1": {
+          "entries": 540,
+          "completed": 536,
+          "completedPaid": 163767,
+          "completedNet": 125556,
+          "games": 33755
+        },
+        "2": {
+          "entries": 1622,
+          "completed": 1611,
+          "completedPaid": 631851,
+          "completedNet": 475317,
+          "games": 127392
+        },
+        "3": {
+          "entries": 3215,
+          "completed": 3175,
+          "completedPaid": 1643244,
+          "completedNet": 1218147,
+          "games": 344592
+        },
+        "4": {
+          "entries": 3621,
+          "completed": 3569,
+          "completedPaid": 2863362,
+          "completedNet": 2092317,
+          "games": 640596
+        },
+        "5": {
+          "entries": 4464,
+          "completed": 4174,
+          "completedPaid": 4367595,
+          "completedNet": 3168267,
+          "games": 1515083
+        }
+      },
+      "complete": 151,
+      "elapsedSeconds": 205.033
+    },
+    {
+      "setting": 3,
+      "weights": [
+        3,
+        11,
+        24,
+        27,
+        35
+      ],
+      "seedBase": 111900000,
+      "rng": "xoshiro128",
+      "maxGames": 10000,
+      "completeLimitPt": 10000,
+      "sourceHashes": {
+        "nova-normal.js": "54734d9d1214b9c8e96857bc9d52a6cb881e37fa1f4520ce023455999fb2a2bd",
+        "nova-art.js": "01769107c1fd11ddc0c89a715d0ddbc8cc2bcdf287674b3fd165a44cc2d4924a",
+        "nova-flow.js": "a877360e6b1dbd050322c4046f9453a85748f1dd9d877113f80567eb9a41f108",
+        "nova-balance.js": "d747b6959fe06df36eb0dab1ddca3bb1a5627b517ad83790d20b970e4ead2556",
+        "scripts/zone-v2-model.mjs": "1786f00d85767d58b08eb3c178faa3359b56cf781d1c63d51b7e0c27124fa4b5"
+      },
+      "trials": 1000,
+      "games": 9452494,
+      "bet": 20802564,
+      "paid": 20008634,
+      "rtp": 0.9618349930325897,
+      "ci95": [
+        0.9435896254912602,
+        0.9800803605739191
+      ],
+      "tierMetrics": {
+        "0": {
+          "entries": 0,
+          "completed": 0,
+          "completedPaid": 0,
+          "completedNet": 0,
+          "games": 0
+        },
+        "1": {
+          "entries": 400,
+          "completed": 398,
+          "completedPaid": 131886,
+          "completedNet": 100749,
+          "games": 26321
+        },
+        "2": {
+          "entries": 1522,
+          "completed": 1509,
+          "completedPaid": 589653,
+          "completedNet": 444732,
+          "games": 121046
+        },
+        "3": {
+          "entries": 3264,
+          "completed": 3244,
+          "completedPaid": 1646649,
+          "completedNet": 1224180,
+          "games": 342698
+        },
+        "4": {
+          "entries": 3659,
+          "completed": 3591,
+          "completedPaid": 2553150,
+          "completedNet": 1870278,
+          "games": 566574
+        },
+        "5": {
+          "entries": 4663,
+          "completed": 4366,
+          "completedPaid": 4583907,
+          "completedNet": 3321216,
+          "games": 1553614
+        }
+      },
+      "complete": 149,
+      "elapsedSeconds": 198.221
+    },
+    {
+      "setting": 4,
+      "weights": [
+        3,
+        9,
+        22,
+        28,
+        38
+      ],
+      "seedBase": 111900000,
+      "rng": "xoshiro128",
+      "maxGames": 10000,
+      "completeLimitPt": 10000,
+      "sourceHashes": {
+        "nova-normal.js": "54734d9d1214b9c8e96857bc9d52a6cb881e37fa1f4520ce023455999fb2a2bd",
+        "nova-art.js": "01769107c1fd11ddc0c89a715d0ddbc8cc2bcdf287674b3fd165a44cc2d4924a",
+        "nova-flow.js": "a877360e6b1dbd050322c4046f9453a85748f1dd9d877113f80567eb9a41f108",
+        "nova-balance.js": "d747b6959fe06df36eb0dab1ddca3bb1a5627b517ad83790d20b970e4ead2556",
+        "scripts/zone-v2-model.mjs": "1786f00d85767d58b08eb3c178faa3359b56cf781d1c63d51b7e0c27124fa4b5"
+      },
+      "trials": 1000,
+      "games": 9323857,
+      "bet": 20318280,
+      "paid": 20358552,
+      "rtp": 1.0019820575363663,
+      "ci95": [
+        0.9826098599643086,
+        1.021354255108424
+      ],
+      "tierMetrics": {
+        "0": {
+          "entries": 0,
+          "completed": 0,
+          "completedPaid": 0,
+          "completedNet": 0,
+          "games": 0
+        },
+        "1": {
+          "entries": 438,
+          "completed": 435,
+          "completedPaid": 135267,
+          "completedNet": 103575,
+          "games": 27455
+        },
+        "2": {
+          "entries": 1222,
+          "completed": 1213,
+          "completedPaid": 476037,
+          "completedNet": 357906,
+          "games": 96883
+        },
+        "3": {
+          "entries": 2895,
+          "completed": 2866,
+          "completedPaid": 1456080,
+          "completedNet": 1080381,
+          "games": 302961
+        },
+        "4": {
+          "entries": 3583,
+          "completed": 3520,
+          "completedPaid": 2453610,
+          "completedNet": 1795560,
+          "games": 559409
+        },
+        "5": {
+          "entries": 5007,
+          "completed": 4679,
+          "completedPaid": 5153604,
+          "completedNet": 3737157,
+          "games": 1753861
+        }
+      },
+      "complete": 179,
+      "elapsedSeconds": 174.997
+    },
+    {
+      "setting": 5,
+      "weights": [
+        2,
+        7,
+        18,
+        28,
+        45
+      ],
+      "seedBase": 111900000,
+      "rng": "xoshiro128",
+      "maxGames": 10000,
+      "completeLimitPt": 10000,
+      "sourceHashes": {
+        "nova-normal.js": "54734d9d1214b9c8e96857bc9d52a6cb881e37fa1f4520ce023455999fb2a2bd",
+        "nova-art.js": "01769107c1fd11ddc0c89a715d0ddbc8cc2bcdf287674b3fd165a44cc2d4924a",
+        "nova-flow.js": "a877360e6b1dbd050322c4046f9453a85748f1dd9d877113f80567eb9a41f108",
+        "nova-balance.js": "d747b6959fe06df36eb0dab1ddca3bb1a5627b517ad83790d20b970e4ead2556",
+        "scripts/zone-v2-model.mjs": "1786f00d85767d58b08eb3c178faa3359b56cf781d1c63d51b7e0c27124fa4b5"
+      },
+      "trials": 1000,
+      "games": 9328456,
+      "bet": 20091888,
+      "paid": 21095478,
+      "rtp": 1.0499500096755467,
+      "ci95": [
+        1.0294524365928552,
+        1.0704475827582383
+      ],
+      "tierMetrics": {
+        "0": {
+          "entries": 0,
+          "completed": 0,
+          "completedPaid": 0,
+          "completedNet": 0,
+          "games": 0
+        },
+        "1": {
+          "entries": 250,
+          "completed": 246,
+          "completedPaid": 79911,
+          "completedNet": 60834,
+          "games": 16493
+        },
+        "2": {
+          "entries": 949,
+          "completed": 936,
+          "completedPaid": 340005,
+          "completedNet": 257037,
+          "games": 70498
+        },
+        "3": {
+          "entries": 2310,
+          "completed": 2282,
+          "completedPaid": 1211697,
+          "completedNet": 899838,
+          "games": 250944
+        },
+        "4": {
+          "entries": 3700,
+          "completed": 3638,
+          "completedPaid": 2838594,
+          "completedNet": 2077491,
+          "games": 638850
+        },
+        "5": {
+          "entries": 5784,
+          "completed": 5400,
+          "completedPaid": 5637063,
+          "completedNet": 4090482,
+          "games": 1958971
+        }
+      },
+      "complete": 209,
+      "elapsedSeconds": 177.473
+    },
+    {
+      "setting": 6,
+      "weights": [
+        1,
+        3,
+        8,
+        23,
+        65
+      ],
+      "seedBase": 111900000,
+      "rng": "xoshiro128",
+      "maxGames": 10000,
+      "completeLimitPt": 10000,
+      "sourceHashes": {
+        "nova-normal.js": "54734d9d1214b9c8e96857bc9d52a6cb881e37fa1f4520ce023455999fb2a2bd",
+        "nova-art.js": "01769107c1fd11ddc0c89a715d0ddbc8cc2bcdf287674b3fd165a44cc2d4924a",
+        "nova-flow.js": "a877360e6b1dbd050322c4046f9453a85748f1dd9d877113f80567eb9a41f108",
+        "nova-balance.js": "d747b6959fe06df36eb0dab1ddca3bb1a5627b517ad83790d20b970e4ead2556",
+        "scripts/zone-v2-model.mjs": "1786f00d85767d58b08eb3c178faa3359b56cf781d1c63d51b7e0c27124fa4b5"
+      },
+      "trials": 1000,
+      "games": 8861636,
+      "bet": 18653721,
+      "paid": 21471160,
+      "rtp": 1.1510389803728704,
+      "ci95": [
+        1.1273093845666289,
+        1.174768576179112
+      ],
+      "tierMetrics": {
+        "0": {
+          "entries": 0,
+          "completed": 0,
+          "completedPaid": 0,
+          "completedNet": 0,
+          "games": 0
+        },
+        "1": {
+          "entries": 124,
+          "completed": 124,
+          "completedPaid": 36957,
+          "completedNet": 28284,
+          "games": 7339
+        },
+        "2": {
+          "entries": 316,
+          "completed": 314,
+          "completedPaid": 104457,
+          "completedNet": 79377,
+          "games": 20786
+        },
+        "3": {
+          "entries": 907,
+          "completed": 904,
+          "completedPaid": 464187,
+          "completedNet": 344511,
+          "games": 94403
+        },
+        "4": {
+          "entries": 2640,
+          "completed": 2585,
+          "completedPaid": 2012226,
+          "completedNet": 1473147,
+          "games": 455715
+        },
+        "5": {
+          "entries": 7585,
+          "completed": 7078,
+          "completedPaid": 7444005,
+          "completedNet": 5399343,
+          "games": 2603287
+        }
+      },
+      "complete": 324,
+      "elapsedSeconds": 178.353
+    }
+  ],
+  "sourceHashes": {
+    "nova-normal.js": "54734d9d1214b9c8e96857bc9d52a6cb881e37fa1f4520ce023455999fb2a2bd",
+    "nova-art.js": "01769107c1fd11ddc0c89a715d0ddbc8cc2bcdf287674b3fd165a44cc2d4924a",
+    "nova-flow.js": "a877360e6b1dbd050322c4046f9453a85748f1dd9d877113f80567eb9a41f108",
+    "nova-balance.js": "d747b6959fe06df36eb0dab1ddca3bb1a5627b517ad83790d20b970e4ead2556",
+    "scripts/zone-v2-model.mjs": "1786f00d85767d58b08eb3c178faa3359b56cf781d1c63d51b7e0c27124fa4b5"
+  }
+}

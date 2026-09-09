@@ -1,0 +1,16 @@
+import fs from 'node:fs';
+import {createHash} from 'node:crypto';
+import {loadModel,simulate} from './zone-v2-model.mjs';
+loadModel();
+const [settingArg,weightsArg='default',trialsArg='100',tag='pilot5',seedArg='111500000']=process.argv.slice(2);
+const setting=Number(settingArg),weights=weightsArg==='default'?undefined:JSON.parse(weightsArg),trials=Number(trialsArg),seedBase=Number(seedArg);
+if(!Number.isInteger(setting)||setting<1||setting>6||!Number.isInteger(trials)||trials<2||!/^[a-z0-9-]+$/.test(tag))throw Error('setting weights trials tag seed');
+if(weights&&(!Array.isArray(weights)||weights.length!==5||weights.some(p=>!Number.isFinite(p)||p<0)||!weights.some(p=>p>0)))throw Error('Invalid weights');
+const sourceHashes=Object.fromEntries(['nova-normal.js','nova-art.js','nova-flow.js','nova-balance.js','scripts/zone-v2-model.mjs'].map(file=>[file,createHash('sha256').update(fs.readFileSync(file)).digest('hex')]));
+const rows=[],start=Date.now();
+for(let i=0;i<trials;i++)rows.push(simulate(setting,10000,seedBase+setting*100003+i*7919,{rng:'xoshiro128',completeLimitPt:10000,art:weights?{atLevelWeights:weights}:{}}));
+const sum=k=>rows.reduce((s,r)=>s+r[k],0),bet=sum('totalBet'),paid=sum('totalPaid'),rtp=paid/bet;
+const se=Math.sqrt(rows.reduce((s,r)=>s+(r.totalPaid-rtp*r.totalBet)**2,0)/(trials-1)/trials)/(bet/trials);
+const tierMetrics=Object.fromEntries([0,1,2,3,4,5].map(t=>[t,Object.fromEntries(Object.keys(rows[0].atLevelMetrics[t]).map(k=>[k,rows.reduce((s,r)=>s+r.atLevelMetrics[t][k],0)]))]));
+const report={setting,weights:weights??NovaArt.atLevelRules.weights[setting-1],seedBase,rng:'xoshiro128',maxGames:10000,completeLimitPt:10000,sourceHashes,trials,games:sum('games'),bet,paid,rtp,ci95:[rtp-1.96*se,rtp+1.96*se],tierMetrics,complete:rows.filter(r=>r.firstComplete).length,elapsedSeconds:(Date.now()-start)/1000};
+fs.writeFileSync(`docs/at111-${tag}-${setting}.json`,JSON.stringify({report,rows},null,2));console.log(JSON.stringify(report));

@@ -11,11 +11,11 @@ test('AT, bonus, preparation and zone draws do not read the normal lottery',()=>
  const c=load(),a=c.NovaArt;
  function trace(){const random=rng(),out=[];for(let setting=1;setting<=6;setting++){
   for(let i=0;i<2000;i++){
-   out.push(a.step(a.enter(),{setting},random));
+   out.push(a.step(a.enter({setting},random),{setting},random));
    out.push(a.drawBonus(random,setting));
    const role=a.drawPreparationRole(setting,random);out.push([role,a.drawPreparation(role,setting,random)]);
   }
-  for(const zone of a.zoneIds){let s=a.startZone(a.enter(),zone,{setting},random);for(let i=0;i<20&&s.zone;i++){s=a.prepareBet(s,{setting},random);const t=a.step(s,{setting},random);out.push(t);s=t.flow;}}
+  for(const zone of a.zoneIds){let s=a.startZone(a.enter({setting},random),zone,{setting},random);for(let i=0;i<20&&s.zone;i++){s=a.prepareBet(s,{setting},random);const t=a.step(s,{setting},random);out.push(t);s=t.flow;}}
  }return plain(out);}
  const before=trace();
  c.NovaNormal=new Proxy({}, {get(){throw Error('AT/bonus read the normal table');}});
@@ -31,7 +31,7 @@ test('independent AT/bonus distributions normalize and retain expected 4pt per g
   assert.ok(Math.abs(net-4)<1e-12);
  }
  const actual={},random=rng();const N=200000;
- for(let i=0;i<N;i++){const role=a.step(a.enter(),{setting:3},random).result;actual[role]=(actual[role]||0)+1;}
+ for(let i=0;i<N;i++){const role=a.step(a.normalize({payoutVersion:1,remaining:150}),{setting:3},random).result;actual[role]=(actual[role]||0)+1;}
  for(const [role,p]of Object.entries(a.roleProbabilities(3)))assert.ok(Math.abs((actual[role]||0)/N-p)<6*Math.sqrt(p*(1-p)/N),role);
 });
 

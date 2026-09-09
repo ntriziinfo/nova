@@ -1,4 +1,4 @@
-最新のボーナス仕様・試算は [BIG一本化110](docs/bonus110-report.md)、通常モードは [モード・前兆109](docs/modes109-report.md) を参照してください。[払い出しpt管理](PAYOUT-MANAGEMENT.md) は管理方式と旧仕様の記録です。
+最新のATレベル・機械割試算は [ATレベル5段階111](docs/at111-report.md)、ボーナス仕様は [BIG一本化110](docs/bonus110-report.md)、通常モードは [モード・前兆109](docs/modes109-report.md) を参照してください。[払い出しpt管理](PAYOUT-MANAGEMENT.md) は管理方式と旧仕様の記録です。
 
 # NOVA
 

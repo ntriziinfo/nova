@@ -6540,12 +6540,12 @@ body{
 <script src="nova-results.js?v=20260909-result-image-84"></script>
 <link rel="stylesheet" href="nova-ladder-presentation.css?v=20260909-shutter-95">
 <script src="nova-ladder-presentation.js?v=20260909-shutter-95"></script>
-<link rel="stylesheet" href="nova-aim-presentation.css?v=20260909-zone-110">
-<script src="nova-aim-presentation.js?v=20260909-zone-110"></script>
-<script src="nova-art.js?v=20260909-zone-110"></script>
-<script src="nova-balance.js?v=20260909-zone-110"></script>
-<script src="nova-normal.js?v=20260909-zone-110"></script>
-<script src="nova-flow.js?v=20260908-state-nova-33"></script>
+<link rel="stylesheet" href="nova-aim-presentation.css?v=20260909-zone-111">
+<script src="nova-aim-presentation.js?v=20260909-zone-111"></script>
+<script src="nova-art.js?v=20260909-zone-111"></script>
+<script src="nova-balance.js?v=20260909-zone-111"></script>
+<script src="nova-normal.js?v=20260909-zone-111"></script>
+<script src="nova-flow.js?v=20260909-state-nova-111"></script>
 <style>
 /* Fit the original nebula art to reel width; its transparent vertical margins
    no longer shrink the lettering to the cell height. Keep native proportions. */
@@ -11117,7 +11117,7 @@ body{
     const ceilingHit=token.internalBonus?.source?.includes('天井');
     pendingArtStep={
       result:token.result,normalInternal:token.state,
-      flow:token.direct?NovaArt.enter(settings.novaArt):token.entry?NovaFlow.enterCZ(token.entry==='STRONG_CZ',token.czOptions ?? settings.novaFlow):token.internalBonus?NovaFlow.normalize(null):NovaFlow.advance(token.czFlow),
+      flow:token.direct?NovaArt.enter({...settings.novaArt,setting:settings.setting}):token.entry?NovaFlow.enterCZ(token.entry==='STRONG_CZ',token.czOptions ?? settings.novaFlow):token.internalBonus?NovaFlow.normalize(null):NovaFlow.advance(token.czFlow),
       czLamp:token.czLamp || (inCz?{...NovaFlow.drawLamp({...token.czFlow,
         success:token.czFlow.success||!!token.internalBonus||token.direct,
         winProbability:ceilingHit?1:token.czFlow.winProbability}),
@@ -11133,8 +11133,8 @@ body{
       pendingArtStep=null;
       pendingATypeInternalBonus = null;
       if(!normalState.bonusPending && (pendingForceResult==='ART'||pendingForceResult.startsWith('ZONE_'))){
-        const base=normalState.flow?.phase==='art'?normalState.flow:NovaArt.enter(settings.novaArt);
-        pendingArtStep=pendingForceResult==='ART'?{result:'MISS',flow:NovaArt.enter(settings.novaArt),message:'AT突入'}:NovaArt.step(base,{...settings.novaArt,setting:settings.setting,netPt:currentProfit()},Math.random,pendingForceResult);
+        const base=normalState.flow?.phase==='art'?normalState.flow:pendingForceResult==='ART'?null:NovaArt.enter({...settings.novaArt,setting:settings.setting});
+        pendingArtStep=pendingForceResult==='ART'?{result:'MISS',flow:NovaArt.enter({...settings.novaArt,setting:settings.setting}),message:'AT突入'}:NovaArt.step(base,{...settings.novaArt,setting:settings.setting,netPt:currentProfit()},Math.random,pendingForceResult);
         return pendingArtStep.result;
       }
       if(!normalState.bonusPending && normalState.flow?.phase==='art' && !['MID','BAR3'].includes(pendingForceResult)){
@@ -12233,7 +12233,7 @@ body{
     setSpeedFrameOffHold(false);
     if(aTypeEnd){
       const beforeBonusResume=normalState.flow;
-      normalState.flow = NovaFlow.afterBonus(normalState.flow,settings.novaArt,wonArtSets);
+      normalState.flow = NovaFlow.afterBonus(normalState.flow,{...settings.novaArt,setting:settings.setting},wonArtSets);
       normalState.internal=NovaNormal.bonusEnd(normalState.internal,endedBonusKind,normalState.flow,settings.novaNormal);
       resetNormalCountersAfterArt(beforeBonusResume,normalState.flow);
       if(normalState.flow.phase==='art'&&!Number.isFinite(normalState.resultAtStartPaid))normalState.resultAtStartPaid=Number(stats.totalPaid)||0;
@@ -13239,12 +13239,13 @@ body{
       reelArea.classList.toggle("premiumBigOverlayOn", !!(isATypeBonusActive() && (session.premiumBonus || session.oneGameRenBonus)));
     }
     const internal=NovaNormal.normalize(normalState.internal);
-    if($('novaInternalStatus'))$('novaInternalStatus').textContent=internal.mode+' / '+internal.games+'G（天井'+NovaNormal.ceiling(internal)+'G） / '+(internal.level==='high'?'高確（保証'+internal.highLeft+'G）':'低確')+ (normalState.flow?.phase==='art'?' / AT '+(normalState.flow.atHigh?'高確（保証'+normalState.flow.atHighLeft+'G）':'低確'):'')+' / 穢れ'+internal.impurity+'pt / 特化予約 '+(session.active?(session.bonusZones||[]):(normalState.flow?.queuedZones||[])).map(z=>NovaArt.zoneName(z)).join('・');
+    if($('novaInternalStatus'))$('novaInternalStatus').textContent=internal.mode+' / '+internal.games+'G（天井'+NovaNormal.ceiling(internal)+'G） / '+(internal.level==='high'?'高確（保証'+internal.highLeft+'G）':'低確')+ (normalState.flow?.phase==='art'?' / '+NovaArt.atLevelLabel(normalState.flow.atLevel)+' '+(normalState.flow.atHigh?'高確（保証'+normalState.flow.atHighLeft+'G）':'低確'):'')+' / 穢れ'+internal.impurity+'pt / 特化予約 '+(session.active?(session.bonusZones||[]):(normalState.flow?.queuedZones||[])).map(z=>NovaArt.zoneName(z)).join('・');
     const flowStatus=$("novaFlowStatus");
     if(flowStatus){
       flowStatus.textContent=session.active ? aTypeBonusLabel(session.bonusKind)+" 残り"+aTypeBonusRemainingNet()+"pt / AT獲得"+(session.bonusArtSets||0)+"SET" : normalModeLabel();
       flowStatus.dataset.phase=session.active?"bonus":NovaFlow.normalize(normalState.flow).phase;
       document.body.dataset.gamePhase=flowStatus.dataset.phase;
+      document.body.dataset.atLevel=normalState.flow?.phase==='art'?NovaArt.atLevel(normalState.flow.atLevel):'';
       document.body.dataset.bonusTier=session.active?NovaArt.bonusTier(session.bonusTier):'';
       document.body.dataset.artZone=session.active?'':normalState.flow?.zone||'';
       document.body.dataset.artUra=String(!session.active&&!!normalState.flow?.zone&&!!normalState.flow?.ura);
@@ -13899,9 +13900,10 @@ body{
     document.getElementById('saveFlowConfig').closest('details').after(normalPanel);
     document.getElementById('novaApplyInternal').onclick=()=>{if(isSpinning||session.active)return;normalState.internal=NovaNormal.normalize({mode:$('novaMode').value,games:$('novaModeGames').value,level:$('novaLevel').value,highLeft:$('novaLevel').value==='high'?10:0,impurity:$('novaImpurity').value});persistState();updateDisplay();};
     const artPanel=document.createElement('details');artPanel.id='novaArtConfig';
-    artPanel.innerHTML='<summary>AT・上乗せゾーン仮設定（9種類）</summary><p>差枚−2000pt以下：AT中の直乗せ・弱ノヴァのゾーン当選率1.5倍（最大100%）。全設定共通。−2000ptを上回ると解除。ゾーン単体2000ptによる減衰は撤廃。</p><p>ゾーン単体の累計上乗せptによる減衰なし。2000pt以上でも図柄揃い・nebula延長・フリーズ継続率は変わりません。</p><p>差枚に応じた新規AT上乗せ抑制：設定1・2は＋2000pt、設定3・4は＋4000pt、設定5は＋5000ptが目安。プラス差枚から徐々に抑制し、目安以上では新規特化ゾーン・直乗せ当選率が元の5%。設定6は対象外。獲得済みptや当選済みゾーンは維持。</p><p>全ゾーン5G。段階式は1G目に最初の額を確保、残り4Gで上の段階へ挑戦。ハズレで終了し最高到達額のみ獲得。7揃い系・ノヴァ系は成立ごとに加算。</p>';
+    artPanel.innerHTML='<summary>AT・上乗せゾーン仮設定（9種類）</summary><p>AT初当たり時にLv.1〜5を1回抽選し、AT終了まで固定。セット継続・特化・ボーナス復帰・保存読込でも引き直しなし。通常／上位BIGの抽選とは独立。</p><p>ゾーン単体の累計上乗せptによる減衰なし。2000pt以上でも図柄揃い・nebula延長・フリーズ継続率は変わりません。</p><p>差枚による上乗せの増減は撤廃。ATの初期150pt・獲得済みpt・特化の保証は維持。更新前から消化中のATは従来の基本抽選を継続し、次のATから新振り分けを適用。</p><p>全ゾーン5G。段階式は1G目に最初の額を確保、残り4Gで上の段階へ挑戦。ハズレで終了し最高到達額のみ獲得。7揃い系・ノヴァ系は成立ごとに加算。</p>';
+    const levelTable=document.createElement('div');levelTable.innerHTML='<table><tr><th>設定</th>'+[1,2,3,4,5].map(l=>'<th>Lv.'+l+'</th>').join('')+'</tr>'+NovaArt.atLevelRules.weights.map((row,i)=>'<tr><td>'+(i+1)+'</td>'+row.map(p=>'<td>'+p.toFixed(1)+'%</td>').join('')+'</tr>').join('')+'</table><p>Lv.1からLv.5へ段階的にATレア役・直乗せ・特化抽選を優遇。レベルによる補正は全設定共通。強ノヴァは全レベルで特化確定。</p><table><tr><th>AT</th><th>レア役倍率</th><th>直乗せ倍率</th><th>弱ノヴァ低確／高確</th><th>弱特化</th><th>強特化</th><th>裏特化</th></tr>'+[1,2,3,4,5].map(l=>{const r=NovaArt.atLevelRules.levels[l];return '<tr><td>Lv.'+l+'</td><td>'+r.rare+'倍</td><td>'+r.direct+'倍</td><td>'+(Math.min(1,.5*r.weakNova)*100).toFixed(1)+'%／'+(Math.min(1,1.5*r.weakNova)*100).toFixed(1)+'%</td>'+r.groups.map(p=>'<td>'+p.toFixed(2)+'%</td>').join('')+'</tr>';}).join('')+'</table>';artPanel.append(levelTable);
     const artLabels={initial:'AT初期pt',ladderSosuke:'宗介 小役合算率',ladderGiru:'ギル 小役合算率',ladderUraGiru:'裏ギル 小役合算率',totoHit:'とと 7揃い率',totoReset:'とと nebula率',soraHit:'空 7揃い率',soraReset:'空 nebula率',soraUraRed:'裏空 赤ナビ振分率',soraUraHit:'裏空 7図柄選択用ウェイト',soraUraReset:'裏空 nebula率',urapiSuper:'うらぴ スーパーノヴァ率',oumaSuper:'逢魔 スーパーノヴァ率',oumaUraSuper:'裏逢魔 スーパーノヴァ率',urapiFreeze:'うらぴフリーズ継続率',oumaFreeze:'逢魔フリーズ継続率',oumaUraFreeze:'裏逢魔フリーズ継続率'};
-    const zoneTable=document.createElement('div');zoneTable.innerHTML='<p>宗介・ギルは各5テーブル（各20%）、裏ギルは4テーブル（各25%）。同額の段階も突破で次へ進みます。<br>7揃い：50・100・150・200・300・500pt、nebulaで残り5Gへリセット。<br>スーパーノヴァ：通常50・100pt、裏逢魔100・200pt（フリーズ中も共通）。逢魔と裏逢魔はBETでフリーズ抽選、当選時は無料の自動0G連。</p><table><tr><th>設定</th>'+['弱上乗せ','強上乗せ','超上乗せ'].map(x=>'<th>'+x+'</th>').join('')+'</tr>'+[1,2,3,4,5,6].map(setting=>NovaArt.zoneGroupWeights(setting)).map((row,i)=>'<tr><td>'+(i+1)+'</td>'+row.map(p=>'<td>'+p.toFixed(2)+'%</td>').join('')+'</tr>').join('')+'</table><p>弱＝宗介・とと・うらぴ、強＝ギル・空・逢魔、超＝裏3種。強当選後の3%で超へ昇格（従来どおり）。各区分内は3種均等。キャラルーレット中のレア役でテーブル⑥⑦への昇格抽選あり。通常ATの小役確率・直乗せ・高確抽選は据え置き。</p>';artPanel.append(zoneTable);
+    const zoneTable=document.createElement('div');zoneTable.innerHTML='<p>宗介・ギルは各5テーブル（各20%）、裏ギルは4テーブル（各25%）。同額の段階も突破で次へ進みます。<br>7揃い：50・100・150・200・300・500pt、nebulaで残り5Gへリセット。<br>スーパーノヴァ：通常50・100pt、裏逢魔100・200pt（フリーズ中も共通）。逢魔と裏逢魔はBETでフリーズ抽選、当選時は無料の自動0G連。</p><table><tr><th>設定（準備中抽選）</th>'+['弱上乗せ','強上乗せ','超上乗せ'].map(x=>'<th>'+x+'</th>').join('')+'</tr>'+[1,2,3,4,5,6].map(setting=>NovaArt.zoneGroupWeights(setting,false,true)).map((row,i)=>'<tr><td>'+(i+1)+'</td>'+row.map(p=>'<td>'+p.toFixed(2)+'%</td>').join('')+'</tr>').join('')+'</table><p>弱＝宗介・とと・うらぴ、強＝ギル・空・逢魔、超＝裏3種。強当選後の3%で超へ昇格（従来どおり）。各区分内は3種均等。キャラルーレット中のレア役でテーブル⑥⑦への昇格抽選あり。通常ATの抽選は上記のATレベルを参照。準備中の抽選は従来通り。</p>';artPanel.append(zoneTable);
     const bonusTable=document.createElement('p');bonusTable.textContent='BIGは100pt。通常52%／上位80%のAT期待度（保証契機は別枠）。上位選択率10%の仮設定、全設定共通。白点滅＝通常、赤点滅＝上位。ネビュラを狙えは逆押し。REGは廃止。';artPanel.append(bonusTable);
     const ladderTable=document.createElement('div');ladderTable.innerHTML=Object.entries(NovaArt.ladderTables).map(([id,rows])=>{const flow={zone:NovaArt.baseZone(id),ura:id.startsWith('ura_')};return '<p>'+NovaArt.zoneName(id)+'</p><table><tr><th>番号</th><th>段階（pt）</th>'+[1,2,3,4,5,6].map(n=>'<th>設定'+n+'</th>').join('')+'</tr>'+rows.map((row,i)=>'<tr><td>'+(i+1)+'</td><td>'+row.join(' → ')+'</td>'+[1,2,3,4,5,6].map(n=>'<td>'+NovaArt.ladderWeightsFor(flow,n)[i].toFixed(1)+'%</td>').join('')+'</tr>').join('')+'</table>';}).join('');artPanel.append(ladderTable);const ladderNote=document.createElement('p');ladderNote.textContent='上表は通常選択率。⑥はレア役昇格時のみギル・裏ギル、⑦はレア役昇格時のみ宗介。';artPanel.append(ladderNote);
     const artCfg=NovaArt.config(settings.novaArt);
