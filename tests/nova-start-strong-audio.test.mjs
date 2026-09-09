@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
-const html=fs.readFileSync('jag.html','utf8'),calls=[],ctx=vm.createContext({SPIN_SOUND_SRC:'assets/media/nova/spin_start.wav',sfxOutputVolume:()=>.5,playOneShotSound:(...args)=>calls.push(args)});
+const html=fs.readFileSync('jag.html','utf8'),calls=[],ctx=vm.createContext({normalState:{},isLadderShutterSpin:()=>false,SPIN_SOUND_SRC:'assets/media/nova/spin_start.wav',sfxOutputVolume:()=>.5,playOneShotSound:(...args)=>calls.push(args)});
 for(const name of ['playSpinSound','playStrongNovaSound','playWeakNovaSound'])vm.runInContext(html.match(new RegExp('  function '+name+'\\([^]*?\\n  }'))?.[0]||'',ctx);
 test('strong nova has dedicated zero-payout sound and no duplicate',()=>{
  const resolved={reward:0};ctx.playStrongNovaSound('WEAK_NOVA',resolved);assert.equal(calls.length,0);
