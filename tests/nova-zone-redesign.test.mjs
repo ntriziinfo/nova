@@ -21,8 +21,9 @@ test('nine zones and retired aliases preserve queued awards without new promotio
 test('shared tables and one-shot settle once on the first challenge',()=>{
  for(const id of ['sosuke','giru','ura_giru']){
   const rows=a.ladderTables[id];assert.equal(rows.length,7);
-  let cum=0;const weights=a.ladderWeightsFor({zone:a.baseZone(id),ura:id.startsWith('ura_')},1);for(let i=0;i<7;i++){assert.deepEqual(Array.from(a.startZone(a.enter(),id,{},()=>(cum+weights[i]/2)/100).ladder),Array.from(rows[i]));cum+=weights[i];}
-  let s=a.startZone(a.enter(),id,{},()=>.999);assert.equal(s.zoneLeft,2);
+  let cum=0;const weights=a.ladderWeightsFor({zone:a.baseZone(id),ura:id.startsWith('ura_')},1);for(let i=0;i<5;i++){assert.deepEqual(Array.from(a.startZone(a.enter(),id,{},()=>(cum+weights[i]/2)/100).ladder),Array.from(rows[i]));cum+=weights[i];}
+  if(id!=='sosuke')continue;
+  let s=a.prepareBet({...a.enter(),entryStage:'confirmed',pendingZone:'sosuke',rouletteTable:7},{},()=>.999);assert.equal(s.zoneLeft,2);
   s=save(a.step(s,{},()=>0).flow);assert.equal(s.award,'50');assert.equal(s.zoneLeft,1);
   const win=a.step(s,{},()=>0,'REPLAY').flow;assert.equal(win.zone,'');assert.equal(win.remaining,'2150');
   const lose=a.step(s,{},()=>0,'MISS').flow;assert.equal(lose.zone,'');assert.equal(lose.remaining,'200');
@@ -63,10 +64,10 @@ test('seven family can award each amount, grants no sets and resets final game t
   const miss=a.step({...s,zoneLeft:1},{},()=>.99,'MISS');assert.equal(miss.flow.remaining,'150');assert.equal(miss.flow.zone,'');
  }
 });
-test('NOVA family uses SUPER only and literal 50 or100 points; urapi never freezes',()=>{
+test('NOVA family uses SUPER only and literal 50 or100 points; urapi participates in freeze challenge',()=>{
  for(const id of ['urapi','ouma','ura_ouma'])for(const [roll,award]of [[0,100],[.99,50]]){
   const s=a.startZone(a.enter(),id,{},()=>.5),t=a.step(s,{},()=>roll,'SUPER_NOVA');
-  assert.equal(t.flow.award,String(award*(id==='ura_ouma'?2:1)));assert.equal(t.internalBonus,null);assert.equal(t.result,'SUPER_NOVA');assert.equal(t.flow.oumaPending,id!=='urapi');
+  assert.equal(t.flow.award,String(award*(id==='ura_ouma'?2:1)));assert.equal(t.internalBonus,null);assert.equal(t.result,'SUPER_NOVA');assert.equal(t.flow.oumaPending,true);
  }
 });
 test('last-game Ouma hit continues free SUPER chains then settles only once',()=>{

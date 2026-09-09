@@ -1,0 +1,7 @@
+import fs from 'node:fs';import vm from 'node:vm';import {execFileSync} from 'node:child_process';
+const old=vm.createContext({});for(const f of ['nova-art.js','nova-balance.js'])vm.runInContext(execFileSync('git',['show','74e040b:'+f],{encoding:'utf8'}),old);
+for(const f of ['nova-art.js','nova-balance.js'])vm.runInThisContext(fs.readFileSync(f,'utf8'));
+let seed=1042026;const rng=()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/4294967296),n=10000,rows=[];
+for(const id of NovaArt.zoneIds){let sum=0,sq=0,min=Infinity,max=0,zero=0;for(let k=0;k<n;k++){let s=NovaArt.startZone(NovaArt.enter(),id,{setting:1},rng),spins=0;while(s.zone){s=NovaArt.step(s,{setting:1},rng).flow;if(++spins>10000)throw Error('runaway');}const v=Number(s.award);sum+=v;sq+=v*v;min=Math.min(min,v);max=Math.max(max,v);if(!v)zero++;}const row={id,before:old.NovaBalance.zoneMean(id,{setting:1}),theory:NovaBalance.zoneMean(id,{setting:1}),setting6:NovaBalance.zoneMean(id,{setting:6}),sampleMean:sum/n,ci95:1.96*Math.sqrt((sq-sum*sum/n)/(n-1)/n),min,max,zero};rows.push(row);console.log(JSON.stringify(row));}
+const special=[['sosuke',7],['giru',6],['ura_giru',6]].map(([id,table])=>({id,table,mean:NovaBalance.zoneMean(id,{setting:1,rouletteTable:table})}));
+const report={seed:1042026,trialsPerZone:n,setting:1,definition:'zone awarded points only; excludes normal payouts and following AT',rows,special};fs.writeFileSync('docs/zone-104-report.json',JSON.stringify(report,null,2));console.log(JSON.stringify({special}));
