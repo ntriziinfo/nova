@@ -6540,10 +6540,10 @@ body{
 <script src="nova-results.js?v=20260909-result-image-84"></script>
 <link rel="stylesheet" href="nova-ladder-presentation.css?v=20260909-shutter-95">
 <script src="nova-ladder-presentation.js?v=20260909-shutter-95"></script>
-<link rel="stylesheet" href="nova-aim-presentation.css?v=20260909-aim-100">
-<script src="nova-aim-presentation.js?v=20260909-aim-100"></script>
-<script src="nova-art.js?v=20260909-aim-100"></script>
-<script src="nova-balance.js?v=20260909-aim-100"></script>
+<link rel="stylesheet" href="nova-aim-presentation.css?v=20260909-aim-102">
+<script src="nova-aim-presentation.js?v=20260909-aim-102"></script>
+<script src="nova-art.js?v=20260909-aim-102"></script>
+<script src="nova-balance.js?v=20260909-aim-102"></script>
 <script src="nova-normal.js?v=20260909-result-image-84"></script>
 <script src="nova-flow.js?v=20260908-state-nova-33"></script>
 <style>
@@ -8085,7 +8085,7 @@ body{
   const bellZakoTimers = [null, null, null];
   const aimWinAudios=new Set();
   const oneShotSoundCache = new Map();
-  for(const src of ['assets/media/nova/aim/seven-win.wav','assets/media/nova/aim/cue-blue.wav','assets/media/nova/aim/cue-red.wav','assets/media/nova/aim/cue-rainbow.wav','assets/media/nova/shutter.wav','assets/media/nova/shutter-close.wav','assets/media/nova/ladder-final-award.wav','assets/media/nova/ladder-final-award-under1000.wav']){const audio=new Audio(src);audio.preload='auto';oneShotSoundCache.set(src,audio);audio.load();}
+  for(const src of ['assets/media/nova/aim/nebula-win.wav','assets/media/nova/aim/seven-win.wav','assets/media/nova/aim/cue-blue.wav','assets/media/nova/aim/cue-red.wav','assets/media/nova/aim/cue-rainbow.wav','assets/media/nova/shutter.wav','assets/media/nova/shutter-close.wav','assets/media/nova/ladder-final-award.wav','assets/media/nova/ladder-final-award-under1000.wav']){const audio=new Audio(src);audio.preload='auto';oneShotSoundCache.set(src,audio);audio.load();}
   const resultEyecatchPreload = new Audio('assets/media/nova/result-eyecatch.wav');
   resultEyecatchPreload.preload='auto';resultEyecatchPreload.load();
   oneShotSoundCache.set('assets/media/nova/result-eyecatch.wav',resultEyecatchPreload);
@@ -15109,8 +15109,10 @@ body{
     syncCabinetControlState();
     showCzLamp(stopOrder,currentSpin.resolved);
     NovaLadder.stop(stopOrder);
-    if(currentSpin.stopped.every(Boolean)&&currentSpin.resolved?.aim?.symbol==='seven'&&currentSpin.result==='BIG'&&currentSpin.aimAligned&&!currentSpin.aimWinPlayed&&!debugFastSpinActive){
-      currentSpin.aimWinPlayed=true;NovaAim.win(playAimSevenWinSound);
+    if(currentSpin.stopped.every(Boolean)&&NovaAim.hasGuide(currentSpin.resolved?.aim)&&['BIG','NEBULA'].includes(currentSpin.result)&&currentSpin.aimAligned&&!currentSpin.aimWinPlayed&&!debugFastSpinActive){
+      currentSpin.aimWinPlayed=true;
+      const symbol=currentSpin.resolved.aim.symbol;
+      NovaAim.win(()=>playAimSevenWinSound(symbol),symbol);
     }
     if(stopOrder===3 && currentSpin.resolved?.czLamp)playCzConfirmedSound(currentSpin.resolved);
     if(stopOrder===3)showZoneRoulette(currentSpin.resolved?.flowAfter);
@@ -16127,9 +16129,9 @@ body{
     o.stop(ctx.currentTime+delay+dur+.04);
   }
 
-  function playAimSevenWinSound(){
+  function playAimSevenWinSound(symbol='seven'){
     if(debugFastSpinActive)return;
-    const src='assets/media/nova/aim/seven-win.wav';
+    const src='assets/media/nova/aim/'+(symbol==='nebula'?'nebula':'seven')+'-win.wav';
     const audio=oneShotSoundCache.get(src).cloneNode(true);
     audio.loop=false;audio.volume=sfxOutputVolume();aimWinAudios.add(audio);
     audio.onended=audio.onerror=()=>aimWinAudios.delete(audio);

@@ -13,6 +13,7 @@ globalThis.NovaAim=(()=>{
    video.setAttribute('aria-label',`${symbol==='seven'?'7':'nebula'}を狙え！`);
    root.append(video);videos.set(symbol+':'+color,video);
   }
+  const nebulaWin=document.createElement('video');nebulaWin.muted=true;nebulaWin.loop=false;nebulaWin.playsInline=true;nebulaWin.preload='auto';nebulaWin.hidden=true;nebulaWin.src='assets/media/nova/aim/nebula-win.mp4';root.append(nebulaWin);videos.set('nebula-win',nebulaWin);
   const win=document.createElement('video');win.muted=true;win.loop=false;win.playsInline=true;win.preload='auto';win.hidden=true;win.src='assets/media/nova/aim/seven-win.mp4';root.append(win);videos.set('win',win);
   return true;
  }
@@ -56,10 +57,10 @@ globalThis.NovaAim=(()=>{
    window.dispatchEvent(new Event('nova-aim-unlocked'));
   },650);
  }
- function win(playSound){
+ function win(playSound,symbol='seven'){
   if(!init())return;
   hide();const token=++winToken;winLocked=true;clearTimeout(winTimer);
-  const video=videos.get('win');active=video;root.hidden=false;root.dataset.symbol='seven';root.dataset.color='win';
+  const video=videos.get(symbol==='nebula'?'nebula-win':'win');active=video;root.hidden=false;root.dataset.symbol=symbol;root.dataset.color='win';
   host.dataset.aimActive='true';video.hidden=false;video.currentTime=0;layout();
   let started=false;
   const start=()=>{
@@ -75,7 +76,7 @@ globalThis.NovaAim=(()=>{
   video.play().catch(start);
  }
  function afterWin(fn){if(winLocked)afterWinCallbacks.push(fn);else fn();}
- function reset(){winToken++;clearTimeout(winTimer);winLocked=false;afterWinCallbacks=[];if(videos.has('win')){videos.get('win').onplaying=null;videos.get('win').onerror=null;}hide();}
+ function reset(){winToken++;clearTimeout(winTimer);winLocked=false;afterWinCallbacks=[];for(const video of videos.values()){video.onplaying=null;video.onerror=null;}hide();}
  if(typeof document!=='undefined'){
   document.addEventListener('DOMContentLoaded',init);
   window.addEventListener('resize',layout);

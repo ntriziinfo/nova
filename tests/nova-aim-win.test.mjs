@@ -86,3 +86,15 @@ test('guided miss stays grayscale, plays failure once and resets on next BET',()
 test('no-guide miss has no failure video or sound',()=>{
  const {aim}=setup();let sounds=0;aim.bet({guide:false});aim.fail(()=>sounds++);assert.equal(sounds,0);assert.equal(aim.busy,false);
 });
+test('nebula win uses dedicated silent video and same 3 second lock',()=>{
+ const {aim,elements,timers}=setup();let sounds=0;aim.win(()=>sounds++,'nebula');
+ const video=elements.find(e=>e.src?.endsWith('nebula-win.mp4'));
+ assert.equal(video.hidden,false);assert.equal(video.muted,true);assert.equal(video.loop,false);
+ assert.equal(elements[0].dataset.symbol,'nebula');assert.equal(aim.busy,true);
+ video.onplaying();assert.equal(sounds,1);const timer=[...timers.values()][0];assert.equal(timer.ms,3000);timer.fn();assert.equal(aim.busy,false);
+});
+test('nebula audio uses dedicated source and continues independently from video',()=>{
+ const html=fs.readFileSync('jag.html','utf8');let played=0;const audio={play(){played++;return Promise.resolve();}};
+ const c=vm.createContext({debugFastSpinActive:false,aimWinAudios:new Set(),sfxOutputVolume:()=>.5,oneShotSoundCache:new Map([['assets/media/nova/aim/nebula-win.wav',{cloneNode:()=>audio}]])});
+ vm.runInContext(html.match(/  function playAimSevenWinSound\([^]*?\n  }/)[0],c);c.playAimSevenWinSound('nebula');assert.equal(played,1);assert.equal(audio.loop,false);assert.equal(c.aimWinAudios.has(audio),true);
+});
