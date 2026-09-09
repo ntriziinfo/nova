@@ -2,6 +2,7 @@
 globalThis.NovaAim=(()=>{
  let host,root,active=null;
  const videos=new Map();
+ let winLocked=false,winTimer=null,winToken=0,afterWinCallbacks=[];
  function init(){
   if(root)return true;
   host=document.getElementById('machine');if(!host)return false;
@@ -12,6 +13,7 @@ globalThis.NovaAim=(()=>{
    video.setAttribute('aria-label',`${symbol==='seven'?'7':'nebula'}を狙え！`);
    root.append(video);videos.set(symbol+':'+color,video);
   }
+  const win=document.createElement('video');win.muted=true;win.loop=false;win.playsInline=true;win.preload='auto';win.hidden=true;win.src='assets/media/nova/aim/seven-win.mp4';root.append(win);videos.set('win',win);
   return true;
  }
  // Same geometry as the ladder shutter: lamp bay, above the real reels.
@@ -34,9 +36,29 @@ globalThis.NovaAim=(()=>{
   host.dataset.aimActive='true';video.hidden=false;video.currentTime=0;layout();
   video.play().catch(()=>{ /* Remain on this cue's first frame if autoplay is blocked. */ });
  }
+ function win(playSound){
+  if(!init())return;
+  hide();const token=++winToken;winLocked=true;clearTimeout(winTimer);
+  const video=videos.get('win');active=video;root.hidden=false;root.dataset.symbol='seven';root.dataset.color='win';
+  host.dataset.aimActive='true';video.hidden=false;video.currentTime=0;layout();
+  let started=false;
+  const start=()=>{
+   if(started||token!==winToken)return;started=true;video.onplaying=null;video.onerror=null;
+   playSound();
+   winTimer=setTimeout(()=>{
+    if(token!==winToken)return;winLocked=false;
+    const callbacks=afterWinCallbacks;afterWinCallbacks=[];callbacks.forEach(fn=>fn());
+    window.dispatchEvent(new Event('nova-aim-unlocked'));
+   },3000);
+  };
+  video.onplaying=start;video.onerror=start;
+  video.play().catch(start);
+ }
+ function afterWin(fn){if(winLocked)afterWinCallbacks.push(fn);else fn();}
+ function reset(){winToken++;clearTimeout(winTimer);winLocked=false;afterWinCallbacks=[];if(videos.has('win')){videos.get('win').onplaying=null;videos.get('win').onerror=null;}hide();}
  if(typeof document!=='undefined'){
   document.addEventListener('DOMContentLoaded',init);
   window.addEventListener('resize',layout);
  }
- return {bet,hide,layout};
+ return {bet,hide,layout,win,afterWin,reset,get busy(){return winLocked;}};
 })();

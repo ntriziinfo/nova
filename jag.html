@@ -6540,10 +6540,10 @@ body{
 <script src="nova-results.js?v=20260909-result-image-84"></script>
 <link rel="stylesheet" href="nova-ladder-presentation.css?v=20260909-shutter-95">
 <script src="nova-ladder-presentation.js?v=20260909-shutter-95"></script>
-<link rel="stylesheet" href="nova-aim-presentation.css?v=20260909-aim-96">
-<script src="nova-aim-presentation.js?v=20260909-aim-96"></script>
-<script src="nova-art.js?v=20260909-aim-96"></script>
-<script src="nova-balance.js?v=20260909-aim-96"></script>
+<link rel="stylesheet" href="nova-aim-presentation.css?v=20260909-aim-97">
+<script src="nova-aim-presentation.js?v=20260909-aim-97"></script>
+<script src="nova-art.js?v=20260909-aim-97"></script>
+<script src="nova-balance.js?v=20260909-aim-97"></script>
 <script src="nova-normal.js?v=20260909-result-image-84"></script>
 <script src="nova-flow.js?v=20260908-state-nova-33"></script>
 <style>
@@ -8083,8 +8083,9 @@ body{
   let bellReadyVideoKeepAliveTimer = null;
   let bellZakoLayer = null;
   const bellZakoTimers = [null, null, null];
+  const aimWinAudios=new Set();
   const oneShotSoundCache = new Map();
-  for(const src of ['assets/media/nova/shutter.wav','assets/media/nova/shutter-close.wav','assets/media/nova/ladder-final-award.wav','assets/media/nova/ladder-final-award-under1000.wav']){const audio=new Audio(src);audio.preload='auto';oneShotSoundCache.set(src,audio);audio.load();}
+  for(const src of ['assets/media/nova/aim/seven-win.wav','assets/media/nova/aim/cue-blue.wav','assets/media/nova/aim/cue-red.wav','assets/media/nova/aim/cue-rainbow.wav','assets/media/nova/shutter.wav','assets/media/nova/shutter-close.wav','assets/media/nova/ladder-final-award.wav','assets/media/nova/ladder-final-award-under1000.wav']){const audio=new Audio(src);audio.preload='auto';oneShotSoundCache.set(src,audio);audio.load();}
   const resultEyecatchPreload = new Audio('assets/media/nova/result-eyecatch.wav');
   resultEyecatchPreload.preload='auto';resultEyecatchPreload.load();
   oneShotSoundCache.set('assets/media/nova/result-eyecatch.wav',resultEyecatchPreload);
@@ -8741,6 +8742,7 @@ body{
   }
 
   function applyAudioOutputVolumes(){
+    for(const audio of aimWinAudios)audio.volume=sfxOutputVolume();
     if(oumaIntroAudio)oumaIntroAudio.volume=sfxOutputVolumeForSource(SFX_OUTPUT_SCALE,'assets/media/nova/uuufa.wav');
     if(oumaReverseAudio)oumaReverseAudio.volume=sfxOutputVolumeForSource(SFX_OUTPUT_SCALE,"assets/media/nova/ouma-reverse-v2.wav");
     applyBgmOutputVolumes();
@@ -12738,6 +12740,7 @@ body{
 
   function displayNovaResult(card){
     if(debugFastSpinActive)return;
+    if(NovaAim.busy){pauseNormalBgm();NovaAim.afterWin(()=>displayNovaResult(card));return;}
     NovaLadder.hide();
     NovaAim.hide();
     normalState.resultCard=card;NovaResults.show(card);
@@ -13598,7 +13601,7 @@ body{
     stopDebugFastSpin("初期化のため高速停止");
     stopSpeedToBonus("初期化のためSPEED停止");
     if(!confirm("統計と現在の状態を初期化しますか？")) return;
-    NovaAim.hide();
+    NovaAim.reset();
     stopAutoPlay("初期化のためオート停止");
     pauseNormalBgm();
     stopBattleBgm(false);
@@ -13661,7 +13664,7 @@ body{
   }
 
   function resetRuntimeForMorning(reason="朝一リセット"){
-    NovaAim.hide();
+    NovaAim.reset();
     stopDebugFastSpin(`${reason}のため高速停止`);
     stopSpeedToBonus(`${reason}のためSPEED停止`);
     stopAutoPlay(`${reason}のためAUTO停止`);
@@ -14692,7 +14695,7 @@ body{
   }
 
   async function spin(options={}){
-    if(NovaLadder.busy)return;
+    if(NovaLadder.busy||NovaAim.busy)return;
     if(NovaResults.editing)return;
     if(normalState.flow?.phase==='art'&&!Number.isFinite(normalState.resultAtStartPaid))normalState.resultAtStartPaid=Number(stats.totalPaid)||0;
     if(!oumaPresentation&&!isSpinning&&!debugFastSpinActive&&normalState.flow?.zone==='ouma'&&normalState.flow.oumaPending){scheduleOumaZeroChain();return;}
@@ -14935,7 +14938,10 @@ body{
     };
     playCzCountdownOnLever(resolved);
     currentSpin.manualBonusStop = false; // Fixed-G prototype: bonus starts on the next confirmed spin.
-    if(!debugFastSpinActive)NovaAim.bet(resolved.aim);
+    if(!debugFastSpinActive){
+      NovaAim.bet(resolved.aim);
+      if(resolved.aim)playOneShotSound('assets/media/nova/aim/cue-'+resolved.aim.color+'.wav',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
+    }
     if(!resolved.oumaFailed&&['urapi','ouma'].includes(normalState.flow?.zone))showOverlay('ノヴァを狙え');
     if(resolved.oumaFreeze)showOverlay('逢魔フリーズ！ 0G連・ノヴァを狙え');
     if(resolved.artReverse)showOverlay('逆回転！ '+resolved.flowAfter.award+'pt');
@@ -15089,6 +15095,9 @@ body{
     syncCabinetControlState();
     showCzLamp(stopOrder,currentSpin.resolved);
     NovaLadder.stop(stopOrder);
+    if(stopOrder===3&&currentSpin.resolved?.aim?.symbol==='seven'&&currentSpin.result==='BIG'&&!currentSpin.aimWinPlayed&&!debugFastSpinActive){
+      currentSpin.aimWinPlayed=true;NovaAim.win(playAimSevenWinSound);
+    }
     if(stopOrder===3 && currentSpin.resolved?.czLamp)playCzConfirmedSound(currentSpin.resolved);
     if(stopOrder===3)showZoneRoulette(currentSpin.resolved?.flowAfter);
     maybePlayPremiumBigLineupVoice(stopOrder, currentSpin);
@@ -15913,6 +15922,7 @@ body{
   }
 
   function startDebugFastSpin(){
+    if(NovaAim.busy)return;
     if(bonusConfirmSoundPlaying || bonusEndBgmPlaying)return;
     NovaLadder.hide();
     NovaAim.hide();
@@ -16103,6 +16113,15 @@ body{
     o.stop(ctx.currentTime+delay+dur+.04);
   }
 
+  function playAimSevenWinSound(){
+    if(debugFastSpinActive)return;
+    const src='assets/media/nova/aim/seven-win.wav';
+    const audio=oneShotSoundCache.get(src).cloneNode(true);
+    audio.loop=false;audio.volume=sfxOutputVolume();aimWinAudios.add(audio);
+    audio.onended=audio.onerror=()=>aimWinAudios.delete(audio);
+    audio.play().catch(()=>aimWinAudios.delete(audio));
+  }
+  window.addEventListener('nova-aim-unlocked',()=>{updateDisplay();if(autoPlay)queueAutoStep(50);});
   function playOneShotSound(src, volume=sfxOutputVolume(), options={}){
     if(debugFastSpinActive || speedToBonusActive) return;
     if(premiumBigConfirmSilence && !options.allowDuringPremiumConfirm) return;
