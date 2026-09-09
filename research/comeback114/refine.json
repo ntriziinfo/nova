@@ -1,0 +1,26 @@
+[
+  {
+    "tag": "refine",
+    "setting": 2,
+    "trials": 1000,
+    "seedBase": 115400000
+  },
+  {
+    "tag": "refine",
+    "setting": 3,
+    "trials": 1000,
+    "seedBase": 115400000
+  },
+  {
+    "tag": "refine",
+    "setting": 4,
+    "trials": 1000,
+    "seedBase": 115400000
+  },
+  {
+    "tag": "refine",
+    "setting": 6,
+    "trials": 1000,
+    "seedBase": 115400000
+  }
+]

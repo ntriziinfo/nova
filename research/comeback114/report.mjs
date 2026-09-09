@@ -1,0 +1,32 @@
+import fs from 'node:fs';
+import {createHash} from 'node:crypto';
+import {loadModel} from '../burst112/production-model.mjs';
+// Run without CLI arguments; the imported legacy file also has a standalone CLI.
+import {distribution} from '../burst113/distribution.mjs';
+loadModel();
+const sources=JSON.parse(fs.readFileSync('research/comeback114/selected-data.json'));
+const full=sources.map(({setting,file})=>{const d=JSON.parse(fs.readFileSync(file));return {setting,sourceFile:file,report:d.report,stopped:distribution(d.rows,true),unlimited:distribution(d.rows,false)};});
+const settings=full.map(({stopped,unlimited,...r})=>{const {values:a,...s}=stopped,{values:b,...u}=unlimited;return {...r,stopped:s,unlimited:u};});
+const files=['nova-art.js','nova-balance.js','nova-flow.js','nova-normal.js','research/burst112/production-model.mjs'];
+const summary={version:114,measurement:{gamesPerTrial:30000,trialsPerSetting:1000,fullGames:180000000,win:'final payout minus actual BET > 0',complete:'first session net +10000pt, or 30000G cutoff',rtp:'aggregate actual payout / aggregate actual BET; replay makes next BET free',seedSelection:'settings 1/5: verify; 2/3/4: refine; 6: final6; independently seeded after calibration'},rules:NovaArt.comebackRules,burstEntry:NovaArt.burstRules.entry,sourceHashes:Object.fromEntries(files.map(f=>[f,createHash('sha256').update(fs.readFileSync(f)).digest('hex')])),settings};
+fs.writeFileSync('docs/comeback114-summary.json',JSON.stringify(summary,null,2)+'\n');
+fs.writeFileSync('docs/comeback114-distribution.json',JSON.stringify({measurement:summary.measurement,settings:full},null,2)+'\n');
+const pct=x=>(x*100).toFixed(2)+'%',n=x=>Math.round(x).toLocaleString('en-US'),signed=x=>(x>=0?'+':'')+n(x);
+let md=`# AT終了時の引き戻し5G：仕様と30,000G試算\n\n最終セットの残りptが0になった第三停止で、そのまま引き戻し5Gへ移行。ATリザルトは5Gすべて非当選だった場合に表示する。セットストック・ボーナスストック・予約済み特化がある場合は、それらの消化を優先する。\n\n## 動作\n\n- 毎BETで特化の対応キャラを1人選び、元の位置のランプを点滅させる。毎G独立に抽選するため、同じキャラが続く場合もある。\n- ハズレ・ベル・リプレイ・すべてのレア役で復活抽選。第三停止の図柄停止後、当選時だけ獲得キャラを点灯する。\n- 当選時は次のBETで獲得特化ゾーンへ進み、その獲得ptでATを再開。150ptの追加配布は行わない。\n- 引き戻しは同じATの続き。ATレベルと爆発チャレンジの使用済み状態を維持し、Lv.5のまま復活できる。\n- 強ノヴァ目は復活確定。宗介・とと・うらぴが点滅していた場合はギル・空・逢魔のいずれかへ昇格し、既存の3%裏昇格抽選も適用。すでに上位・裏なら格下げしない。\n- スーパーノヴァ目は復活＋裏ギル・裏空・裏逢魔のいずれかを確定。\n- 5G非当選で初めて通常へ戻り、AT終了時のモード移行・駆け抜け穢れを1回処理する。AUTOと保存後の再開に対応。\n\n## 役別の復活当選率\n\n小役自体の出現率は通常時の設定別確率を使う。スーパーノヴァ目1/32,768はハズレから振り替える。以下は、その役が成立したゲームでの復活当選率。通常時・AT中の小役確率や特化ゾーンの性能はこの調整では変更していない。\n\n|成立役|設定1|設定2|設定3|設定4|設定5|設定6|\n|---|---:|---:|---:|---:|---:|---:|\n`;
+for(const [role,label] of Object.entries({MISS:'ハズレ',BELL:'ベル',REPLAY:'リプレイ',WEAK_SUICA:'弱スイカ',STRONG_SUICA:'強スイカ',CHANCE_A:'チャンス目A',CHANCE_B:'チャンス目B',WEAK_NOVA:'弱ノヴァ目',STRONG_NOVA:'強ノヴァ目',SUPER_NOVA:'スーパーノヴァ目'}))md+=`|${label}|${settings.map(r=>pct(NovaArt.comebackChance(role,r.setting))).join('|')}|\n`;
+md+='\n|設定|5G復活率（理論）|実測|引き戻し開始回数|復活回数|\n|---|---:|---:|---:|---:|\n';
+for(const r of settings){const p=Object.entries(NovaArt.comebackRoleProbabilities(r.setting)).reduce((sum,[role,p])=>sum+p*NovaArt.comebackChance(role,r.setting),0),c=r.report.comeback;md+=`|${r.setting}|${pct(1-(1-p)**5)}|${pct(c.wins/c.entries)}|${n(c.entries)}|${n(c.wins)}|\n`;}
+md+='\n実測の引き戻し回数はコンプリート後も30,000Gまで計算した全ゲームから集計。終了時点で5Gを消化しきっていない試行も開始回数に含む。\n\n## 機械割と到達率\n\n各設定30,000G×1,000回、採用データは計1億8,000万G。設定1・5は最初の検証、設定2・3・4は突入率を微調整した後に別の乱数シードで再検証。設定6は到達率が高かったため、突入率と復活当選率を設定5と共通にし、さらに別シードで再検証した。先行調整のデータは含めない。\n\n本体条件は差枚＋10,000pt到達でコンプリート、未到達なら30,000Gで終了。停止なしは比較用に30,000Gまで継続した値。勝率は終了差枚がプラスの割合、到達率は途中で一度でも＋10,000ptに達した割合。払い出しの累計10,000ptとは異なる。95%区間は到達率・勝率がWilson、機械割が試行単位の比率推定。\n\n|設定|機械割・停止あり|機械割95%区間|機械割・停止なし|＋10,000pt到達率|到達率95%区間|目安|勝率|平均差枚|\n|---|---:|---|---:|---:|---|---:|---:|---:|\n';
+const goals=[.02,.04,.06,.10,.15,.20];
+for(const r of settings)md+=`|${r.setting}|${pct(r.report.stoppedRtp.value)}|${r.report.stoppedRtp.ci.map(pct).join('〜')}|${pct(r.report.rtp.value)}|${pct(r.report.completeRate)}|${r.report.completeCI.map(pct).join('〜')}|${pct(goals[r.setting-1])}|${pct(r.stopped.winRate)}|${signed(r.stopped.mean)}pt|\n`;
+md+='\n以前に合意した到達率優先の方針を維持した調整。設定6の機械割114%を達成したという意味ではない。有限期間のゲーム内試算であり、理論上の定常機械割や日本の型式試験への適合を示すものではない。\n\n![差枚分布](comeback114-stopped-distribution.png)\n\n|終了差枚帯|設定1|設定2|設定3|設定4|設定5|設定6|\n|---|---:|---:|---:|---:|---:|---:|\n';
+for(let i=0;i<settings[0].stopped.bands.length;i++)md+=`|${settings[0].stopped.bands[i].label}|${settings.map(r=>pct(r.stopped.bands[i].count/1000)).join('|')}|\n`;
+md+='\n## 爆発チャレンジの頻度調整\n\n引き戻しによる継続分を加えると到達率も上がるため、爆発チャレンジの突入率を次のように調整。成功時の＋2,000pt・Lv.5昇格、3G以内の成功率50%、同一AT中1回、初期150ptは維持した。\n\n下表は強ノヴァ目成立時の抽選率。弱スイカ0.05倍、強スイカ0.5倍、チャンス目A/B0.2倍、弱ノヴァ0.1倍。通常・特化・引き戻し中は爆発チャレンジを別途抽選しない。\n\n|設定|変更前|変更後|実測突入回数|実測成功率|\n|---|---:|---:|---:|---:|\n';
+const oldEntry=[.0012,.0028,.004,.0046,.0058,.0078];
+for(const r of settings)md+=`|${r.setting}|${pct(oldEntry[r.setting-1])}|${(NovaArt.burstRules.entry[r.setting-1]*100).toFixed(3)}%|${r.report.burstAttempts}|${pct(r.report.burstWins/r.report.burstAttempts)}|\n`;
+const old=JSON.parse(fs.readFileSync('docs/burst113-summary.json')).settings;
+md+='\n## 引き戻し追加前との比較\n\nどちらも各設定30,000G×1,000回。シードが異なるため差には標本誤差を含む。\n\n|設定|追加前・機械割|今回・機械割|追加前・到達率|今回・到達率|\n|---|---:|---:|---:|---:|\n';
+for(const r of settings){const p=old[r.setting-1].report;md+=`|${r.setting}|${pct(p.stoppedRtp.value)}|${pct(r.report.stoppedRtp.value)}|${pct(p.completeRate)}|${pct(r.report.completeRate)}|\n`;}
+md+='\n## 再現と確認\n\n- 現在の本体コアで再計算：`node research/comeback114/run.mjs batch research/comeback114/verify.json`、`node research/comeback114/run.mjs batch research/comeback114/refine.json`。前者は全設定、後者は2・3・4・6の別シード。設定6の採用条件は`node research/comeback114/run.mjs batch research/comeback114/final6.json`。\n- 採用データ：`research/comeback114/selected-data.json`。各試行の差枚分布は`docs/comeback114-distribution.json`に保存。\n- レポート生成：`node research/comeback114/report.mjs`（引数なし）。グラフ：`python research/comeback114/plot-distribution.py`。\n- 本体コアとの軌跡一致：`node research/comeback114/verify-production.mjs`。通常前兆のキャッシュ最適化を無効にした本体コードで、BET・払い出し・引き戻し・AT終了まで照合する。\n- `tests/nova-comeback114.test.mjs`で5G終了、全役抽選、最終G復活、強役昇格、保存・ボーナス割り込み、既存ストック優先を検証。\n- 実画面で点滅の明暗、第三停止前の非確定、確定後の点灯、保存・再開、AUTOを無音で確認。キャラの元画像は加工せず配置を維持。\n';
+fs.writeFileSync('docs/comeback114-report.md',md);
+console.log(JSON.stringify(settings.map(r=>({setting:r.setting,rtp:r.report.stoppedRtp.value,unlimited:r.report.rtp.value,reach:r.report.completeRate,win:r.stopped.winRate,net:r.stopped.mean,recovery:r.report.comeback.wins/r.report.comeback.entries}))));

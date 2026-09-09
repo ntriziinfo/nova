@@ -18,12 +18,12 @@ test('burst success adds 2000 to the retained quota and promotes to Lv5 only aft
  assert.equal(oldWon.remaining,'8150');assert.equal(oldWon.burstUsed,true);
 });
 
-test('entry probabilities spread the chance across more AT games without changing its 50% success',()=>{
- loadModel();const a=NovaArt,old=[.0006,.00115,.00165,.0027,.0036,.0052];
+test('calibrated entry rates do not decrease by setting or change 2000pt, 50% success or initial 150pt',()=>{
+ loadModel();const a=NovaArt;
  assert.equal(a.burstRules.award,2000);assert.equal(a.burstRules.games,3);assert.equal(a.burstRules.success,.5);
  for(let s=1;s<=6;s++){
-  assert.ok(a.burstChance('STRONG_NOVA',s)>old[s-1]);
-  assert.ok(a.burstChance('STRONG_NOVA',s)<4*old[s-1]);
+  assert.ok(a.burstChance('STRONG_NOVA',s)>0);
+  if(s>1)assert.ok(a.burstChance('STRONG_NOVA',s)>=a.burstChance('STRONG_NOVA',s-1));
   assert.equal(a.burstChance('BELL',s),0);assert.equal(a.burstChance('REPLAY',s),0);
   assert.equal(a.enter({setting:s},()=>.99999).atLevel,3);
   assert.equal(a.enter({setting:s},()=>0).remaining,'150');

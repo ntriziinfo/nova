@@ -1,0 +1,184 @@
+{
+  "assetsUnchanged": true,
+  "blink": {
+    "animation": "novaComebackBlink",
+    "before": 5,
+    "lamp": "sosuke",
+    "mode": "blink",
+    "opacity": [
+      "0.237703",
+      "0.700872",
+      "0.998963",
+      "0.632922",
+      "0.173746"
+    ]
+  },
+  "failure": [
+    {
+      "event": "continue",
+      "left": 4,
+      "mode": "waiting",
+      "phase": "art"
+    },
+    {
+      "event": "continue",
+      "left": 3,
+      "mode": "waiting",
+      "phase": "art"
+    },
+    {
+      "event": "continue",
+      "left": 2,
+      "mode": "waiting",
+      "phase": "art"
+    },
+    {
+      "event": "continue",
+      "left": 1,
+      "mode": "waiting",
+      "phase": "art"
+    },
+    {
+      "event": "failure",
+      "mode": ""
+    }
+  ],
+  "success": {
+    "before": {
+      "left": 1,
+      "mode": "blink"
+    },
+    "pressed": {
+      "mode": "blink"
+    },
+    "second": {
+      "left": 1,
+      "mode": "blink"
+    },
+    "won": {
+      "mode": "won",
+      "quota": "0",
+      "zone": "ura_giru"
+    }
+  },
+  "fullInlineStyleUnchanged": false,
+  "styleComparisonNote": "Full inline style includes changing music lamp opacity; layout and asset checks below compare only positions, dimensions, transforms and image paths.",
+  "additional": {
+    "afterReload": {
+      "mode": "",
+      "ura": true,
+      "zone": "giru"
+    },
+    "autoFail": {
+      "events": [
+        {
+          "event": "continue",
+          "left": 4,
+          "phase": "art"
+        },
+        {
+          "event": "continue",
+          "left": 3,
+          "phase": "art"
+        },
+        {
+          "event": "continue",
+          "left": 2,
+          "phase": "art"
+        },
+        {
+          "event": "continue",
+          "left": 1,
+          "phase": "art"
+        },
+        {
+          "event": "failure",
+          "phase": "normal"
+        }
+      ],
+      "finished": true,
+      "mode": ""
+    },
+    "autoSuccess": {
+      "modes": [
+        "blink",
+        "won",
+        ""
+      ],
+      "ura": true,
+      "zone": "ouma"
+    },
+    "layoutUnchanged": true,
+    "positions": [
+      {
+        "id": "ouma1",
+        "layout": [
+          "39.3417%",
+          "35.3043%",
+          "15.5%",
+          "",
+          ""
+        ],
+        "src": "assets/illustrations/originals/ouma1.png"
+      },
+      {
+        "id": "sora1",
+        "layout": [
+          "47.925%",
+          "35.118%",
+          "15.7%",
+          "",
+          ""
+        ],
+        "src": "assets/illustrations/originals/sora1.png"
+      },
+      {
+        "id": "sosuke",
+        "layout": [
+          "67.5542%",
+          "35.9391%",
+          "10.7%",
+          "",
+          ""
+        ],
+        "src": "assets/illustrations/originals/sosuke.png"
+      },
+      {
+        "id": "toto",
+        "layout": [
+          "59.5417%",
+          "36.5652%",
+          "9.1%",
+          "",
+          ""
+        ],
+        "src": "assets/illustrations/originals/toto.png"
+      },
+      {
+        "id": "urapi",
+        "layout": [
+          "19.7667%",
+          "34.0807%",
+          "17.6%",
+          "",
+          ""
+        ],
+        "src": "assets/illustrations/originals/urapi.png"
+      },
+      {
+        "id": "giru1",
+        "layout": [
+          "30.1667%",
+          "35.2609%",
+          "15.5%",
+          "",
+          ""
+        ],
+        "src": "assets/illustrations/originals/giru1.png"
+      }
+    ]
+  },
+  "browserErrors": [],
+  "audio": "Chrome --mute-audio",
+  "passed": true
+}
