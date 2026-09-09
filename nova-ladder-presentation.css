@@ -16,7 +16,7 @@
 [data-stage=table] .novaLadderAmount,[data-stage=table] .novaLadderCharacter,[data-stage=table] .novaLadderDoor{visibility:hidden}
 
 @keyframes novaShutterRattle{0%,100%{transform:translateY(-4px)}20%{transform:translateY(3px)}40%{transform:translateY(2px)}60%{transform:translateY(-3px)}80%{transform:translateY(4px)}}
-[data-stage=challenge] .novaLadderIntegrated,[data-stage=promote] .novaLadderIntegrated{animation:novaShutterRattle 35ms steps(1,end) infinite}
+[data-stage=challenge] .novaLadderIntegrated{animation:novaShutterRattle 35ms steps(1,end) infinite}
 [data-stage=promote] .novaLadderDoor,[data-stage=closed] .novaLadderDoor{transform:translateY(0)}
 [data-stage=award] .novaLadderAmount{width:76%;height:125%;filter:drop-shadow(0 0 12px #ffb52e);transform:translate(-50%,-50%) scale(1.1)}
 @media(prefers-reduced-motion:reduce){.novaLadderIntegrated{animation-duration:200ms!important}.novaArtItem{transition-duration:100ms}}
@@ -24,3 +24,6 @@
 [data-stage=challenge] .novaLadderDoor{transform:translateY(-65%)}
 [data-stage=challenge][data-stop="1"] .novaLadderDoor{transform:translateY(-40%)}
 [data-stage=challenge][data-stop="2"] .novaLadderDoor{transform:translateY(-15%)}
+
+[data-stage=promote] .novaLadderDoor{transition-duration:216.6667ms}
+[data-stage=settled][data-failed=true] .novaLadderDoor{transition-duration:325ms}

@@ -84,6 +84,7 @@ globalThis.NovaLadder=(()=>{
   const stage=started?'award':'settled';
   if(root.dataset.awardStarted===String(!!started)&&amount.dataset.final===String(points))return;
   root.dataset.awardStarted=String(!!started);
+  root.dataset.failed=String(!started&&!promoted);
   token++;clearTimeout(timer);clearTimeout(unlock);locked=false;
   root.hidden=false;host.dataset.ladderActive='true';layout();root.dataset.stage=stage;
   amount.onload=()=>{amount.style.visibility='visible';};
