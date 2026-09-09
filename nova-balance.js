@@ -5,6 +5,17 @@ globalThis.NovaBalance=(()=>{
  // Exact reward recursion: 50pt grid below the threshold, translation-invariant tail above it.
  function zoneMean(id,options={}){const a=NovaArt,c=a.config(options),s=a.startZone(a.enter(),id,{...c,setting:options.setting},()=>.5),r=a.zoneRules(s,c),limit=a.zoneTailControl.threshold,factor=a.zoneTailControl.factor;
   if(r.family==='ladder')return a.ladderTableFor(s).reduce((sum,l,j)=>{let reach=1,value=l[0];for(let i=1;i<l.length;i++){reach*=a.ladderGuaranteed({...s,ladder:l,award:String(l[i-1])})?1:r.success;value+=(l[i]-l[i-1])*reach;}return sum+value*a.ladderWeightsFor(s)[j]/100;},0);
+  if(r.family==='seven'){
+   const mean=a.sevenValues.reduce((n,v,i)=>n+v*r.weights[i],0),values=new Map();
+   const tail=a.sevenAimRules({...s,award:String(limit)},c),reward=tail.reset*10+tail.hit*mean;
+   const full=tail.reset?((1-tail.reset)**-5-1)/tail.reset*reward:5*reward;
+   const get=(left,award)=>award>=limit?(tail.reset?(1-(1-tail.reset)**left)/tail.reset*(reward+tail.reset*full):left*reward):values.get(award)[left];
+   for(let award=limit-10;award>=0;award-=10){
+    const row=Array(6).fill(0),rates=a.sevenAimRules({...s,award:String(award)},c);values.set(award,row);
+    for(let left=1;left<=5;left++)row[left]=rates.reset*(10+get(5,award+10))+(1-rates.reset-rates.hit)*row[left-1]+rates.hit*a.sevenValues.reduce((n,v,i)=>n+r.weights[i]*(v+get(left-1,award+v)),0);
+   }
+   return values.get(0)[5];
+  }
   const V=new Map(),K=new Map(),values=r.family==='seven'?a.sevenValues:[50*r.awardMultiplier,100*r.awardMultiplier],weights=r.family==='seven'?r.weights:[1-r.hundred,r.hundred],mean=values.reduce((v,n,i)=>v+n*weights[i],0),hit=Math.min(r.hit,1-(r.reset||0));
   const tailFreeze=s.zone==='ouma'?a.oumaFreezeRate({...s,award:String(limit)},c):0,freeMean=tailFreeze*mean/(1-tailFreeze);
   function tail(left){if(r.family==='nova')return left*hit*factor*(mean+freeMean);const reset=r.reset*factor,reward=reset*10+Math.min(r.hit,1-reset)*factor*mean,full=reset?((1-reset)**-5-1)/reset*reward:5*reward;return reset?(1-(1-reset)**left)/reset*(reward+reset*full):left*reward;}

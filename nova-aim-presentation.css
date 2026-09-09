@@ -1,0 +1,4 @@
+.novaAimPresentation{position:absolute;z-index:49;overflow:hidden;pointer-events:none;background:#020815}
+.novaAimPresentation[hidden],.novaAimPresentation video[hidden]{display:none!important}
+.novaAimPresentation video{display:block;width:100%;height:100%;object-fit:fill}
+#machine[data-aim-active] .novaArtLayer{visibility:hidden}

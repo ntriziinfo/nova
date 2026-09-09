@@ -72,6 +72,15 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
  const ladderTableFor=s=>ladderTables[(s.ura?'ura_':'')+s.zone]||ladderTables[s.zone];
  const sevenValues=[50,100,150,200,300,500];
  const sevenWeights={toto:[.65,.2,.08,.04,.02,.01],sora:[.4,.25,.15,.1,.07,.03],ura_sora:[.2,.2,.2,.15,.15,.1]};
+ const aimColors=Object.freeze([{color:'blue',weight:.60,hit:.20},{color:'red',weight:.35,hit:.80},{color:'rainbow',weight:.05,hit:1}].map(Object.freeze));
+ function sevenAimRules(s,c=defaults){const r=zoneRules(s,c),total=r.reset+Math.min(r.hit,1-r.reset),nebula=total?r.reset/total:0,hit=aimColors.reduce((n,row)=>n+row.weight*row.hit,0);return {nebula,reset:hit*nebula,hit:hit*(1-nebula)};}
+ function drawSevenAim(s,c,rng=Math.random,forced=''){
+  if(forced)return {symbol:forced==='NEBULA'?'nebula':'seven',color:forced==='BIG'||forced==='NEBULA'?'rainbow':'blue',result:forced,forced:true};
+  const symbol=rng()<sevenAimRules(s,c).nebula?'nebula':'seven';
+  let roll=rng();const row=aimColors.find(r=>(roll-=r.weight)<0)||aimColors[2];
+  const hit=rng()<row.hit;
+  return {symbol,color:row.color,result:hit?(symbol==='nebula'?'NEBULA':'BIG'):'MISS',forced:false};
+ }
  const zoneTailControl={threshold:2000,factor:.01};
  function zoneAwardFactor(award,next=0){return integer(award)+integer(next)>=BigInt(zoneTailControl.threshold)?zoneTailControl.factor:1;}
  function zoneRules(s,c=defaults){const id=(s.ura?'ura_':'')+s.zone;
@@ -133,7 +142,7 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
  function step(value,options={},rng=Math.random,forced=''){
   if(forced==='STRONG_BELL')forced='BELL';
   const c=config(options);if(options.setting){c.rare=Math.min(.99,c.rare*rareFactor(options.setting));const factor=(1+.2*biasFor(options.setting))*zoneEntryScale[validSetting(options.setting)-1];c.big=Math.min(1,c.big*factor);c.zone=Math.min(1-c.big,c.zone*factor);}let s=normalize(prepareBet(value,options,rng)),freeOumaSpin=s.zone==='ouma'&&s.zero,result='MISS',message='',internalBonus=null,reverse=false,queuedEntered=false;
-  let atOutcome=null;const finish=()=>{const z=s.zone,name=zoneName(s);s=settleZone(s);message=`${name}ゾーン終了 / ${'＋'+s.award+'pt'}`;};
+  let atOutcome=null,aim=null;const finish=()=>{const z=s.zone,name=zoneName(s);s=settleZone(s);message=`${name}ゾーン終了 / ${'＋'+s.award+'pt'}`;};
   if(s.entryStage==='seven'){s.entryStage='roulette';return {result:'BIG',flow:s,zoneSpin:true,message:'赤7揃い！ 特化ゾーンルーレット'};}
   if(s.entryStage==='roulette'){s.entryStage='confirmed';return {result:'MISS',flow:s,zoneSpin:true,message:zoneName(s.pendingZone)+'ゾーン確定！'};}
   if(!s.zone&&forced==='BIG'){s.entryStage='roulette';s.giruSetting=validSetting(options.setting);s.pendingZone=pickZone(options.setting,rng);return {result:'BIG',flow:s,zoneSpin:true,message:'赤7揃い！ 特化ゾーンルーレット'};}
@@ -152,9 +161,9 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
     else if(result==='MISS'){finish();}
     else {s.ladderIndex=Math.min(s.ladder.length-1,s.ladderIndex+1);s.award=String(s.ladder[s.ladderIndex]);message=zoneName(s)+' 突破！ '+s.award+'pt確保';if(!s.zoneLeft||s.ladderIndex===s.ladder.length-1)finish();}
    }else if(rules.family==='seven'){
-    const r=rng();result=forced|| (r<rules.reset?'NEBULA':r<rules.reset+Math.min(rules.hit,1-rules.reset)?'BIG':'MISS');
+    aim=drawSevenAim(s,c,rng,forced);result=aim.result;
     if(result==='NEBULA'){s.award=(integer(s.award)+10n).toString();s.zoneLeft=5;message=zoneName(s)+' nebula揃い！ ＋10pt / 残り5Gへリセット';}
-    else if(result==='BIG'){let r=rng(),i=rules.weights.findIndex(w=>(r-=w)<0);const n=sevenValues[i<0?5:i];if(!forced&&zoneAwardFactor(s.award,n)<1&&rng()>=zoneTailControl.factor){result='MISS';message='7・nebulaを狙え';}else{s.award=(integer(s.award)+BigInt(n)).toString();message=zoneName(s)+' 7揃い！ ＋'+n+'pt';}}
+    else if(result==='BIG'){let r=rng(),i=rules.weights.findIndex(w=>(r-=w)<0);const n=sevenValues[i<0?5:i];s.award=(integer(s.award)+BigInt(n)).toString();message=zoneName(s)+' 7揃い！ ＋'+n+'pt';}
     else message='7・nebulaを狙え';
     if(!s.zoneLeft)finish();
    }else{
@@ -173,8 +182,8 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
    const paid=s.entryStage?0n:BigInt(payout(result));s.remaining=(integer(s.remaining)>paid?integer(s.remaining)-paid:0n).toString();
    if(!s.zone&&!s.entryStage&&!internalBonus&&integer(s.remaining)===0n){if(integer(s.sets)>0n){s.remaining=String(c.initial);s.sets=(integer(s.sets)-1n).toString();return {atOutcome,result,flow:s,message:'次のATセット開始'};}message='AT終了';return {atOutcome,result,flow:{phase:'normal',remaining:0,success:false},message};}
   }
-  return {atOutcome,result,flow:s,message,internalBonus,reverse,oumaFreeze:freeOumaSpin,zoneSpin:!!value.zone||queuedEntered};
+  return {atOutcome,aim,result,flow:s,message,internalBonus,reverse,oumaFreeze:freeOumaSpin,zoneSpin:!!value.zone||queuedEntered};
  }
  function label(v){const s=normalize(v);return `AT ${s.remaining}pt / 待機${s.sets}SET${s.entryStage?' / '+({seven:'赤7を狙え・減算停止',roulette:'ルーレット・減算停止',confirmed:zoneName(s.pendingZone)+'ゾーン確定'}[s.entryStage]):''}${s.zone?' / '+zoneName(s)+' '+(s.zero?'0G連':s.oumaPending?'BETで継続抽選':s.zoneLeft+'G'):''}${integer(s.stock)>0n?' / BIGストック '+s.stock:''}${s.zone?' / 獲得'+s.award+'pt':''}`;}
- return {ladderWeightsFor,ladderGuaranteed,drawLadderRole,lossRewardControl,zoneTailControl,zoneAwardFactor,netRewardControl,netLimits,netRewardFactor,superZoneChance,zoneGroups,zoneGroupWeights,upgradeGuaranteedZone,bonusSpecialRates,zoneRules,ladderTables,ladderTableFor,ladderValues,sevenValues,sevenWeights,atZoneWeights,tuning,atMix,drawAtRare,atRoleRules,pickAtZone,resolveAtRole,rareRoles,rareTotal,rareMean,rareFactor,drawRare,roleProbabilities,bonusRoleProbabilities,preparationProbabilities,drawPreparationRole,zoneRoleWeights,zoneRoleMultiplier,paidBellChance,drawPreparation,zoneEntryScale,points,bonusTarget,payout,settleZone,prepareBet,oumaFreezeRate,baseZone,zoneName,zoneIds,names,defaults,direct,zoneWeights,pickZone,bonusSpecial,settingBias,biasFor,bonusSpecialFor,advanceBonus,drawPaidRole,drawBonus,config,normalize,enter,startZone,afterBonus,step,label};
+ return {aimColors,sevenAimRules,drawSevenAim,ladderWeightsFor,ladderGuaranteed,drawLadderRole,lossRewardControl,zoneTailControl,zoneAwardFactor,netRewardControl,netLimits,netRewardFactor,superZoneChance,zoneGroups,zoneGroupWeights,upgradeGuaranteedZone,bonusSpecialRates,zoneRules,ladderTables,ladderTableFor,ladderValues,sevenValues,sevenWeights,atZoneWeights,tuning,atMix,drawAtRare,atRoleRules,pickAtZone,resolveAtRole,rareRoles,rareTotal,rareMean,rareFactor,drawRare,roleProbabilities,bonusRoleProbabilities,preparationProbabilities,drawPreparationRole,zoneRoleWeights,zoneRoleMultiplier,paidBellChance,drawPreparation,zoneEntryScale,points,bonusTarget,payout,settleZone,prepareBet,oumaFreezeRate,baseZone,zoneName,zoneIds,names,defaults,direct,zoneWeights,pickZone,bonusSpecial,settingBias,biasFor,bonusSpecialFor,advanceBonus,drawPaidRole,drawBonus,config,normalize,enter,startZone,afterBonus,step,label};
 })();

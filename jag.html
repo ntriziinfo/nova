@@ -6540,8 +6540,10 @@ body{
 <script src="nova-results.js?v=20260909-result-image-84"></script>
 <link rel="stylesheet" href="nova-ladder-presentation.css?v=20260909-shutter-95">
 <script src="nova-ladder-presentation.js?v=20260909-shutter-95"></script>
-<script src="nova-art.js?v=20260909-result-image-84"></script>
-<script src="nova-balance.js?v=20260909-result-image-84"></script>
+<link rel="stylesheet" href="nova-aim-presentation.css?v=20260909-aim-96">
+<script src="nova-aim-presentation.js?v=20260909-aim-96"></script>
+<script src="nova-art.js?v=20260909-aim-96"></script>
+<script src="nova-balance.js?v=20260909-aim-96"></script>
 <script src="nova-normal.js?v=20260909-result-image-84"></script>
 <script src="nova-flow.js?v=20260908-state-nova-33"></script>
 <style>
@@ -11223,6 +11225,7 @@ body{
       return {
         normalInternal:artStep?.normalInternal,
         czLamp:artStep?.czLamp,
+        aim:artStep?.aim,
         flowBefore,
         flowAfter:artStep?.flow || (czEntry ? NovaFlow.enterCZ(result === "STRONG_CZ",settings.novaFlow) : flowBefore.phase==='art' ? flowBefore : (isNewBonusHit || isReadyBonus) ? NovaFlow.normalize(null) : bonusPendingAtStart ? flowBefore : NovaFlow.advance(flowBefore)),
         artMessage:artStep?.message || '',
@@ -12736,6 +12739,7 @@ body{
   function displayNovaResult(card){
     if(debugFastSpinActive)return;
     NovaLadder.hide();
+    NovaAim.hide();
     normalState.resultCard=card;NovaResults.show(card);
     pauseNormalBgm();
     stopAutoPlay('リザルト表示');stopSpeedToBonus('リザルト表示');
@@ -13594,6 +13598,7 @@ body{
     stopDebugFastSpin("初期化のため高速停止");
     stopSpeedToBonus("初期化のためSPEED停止");
     if(!confirm("統計と現在の状態を初期化しますか？")) return;
+    NovaAim.hide();
     stopAutoPlay("初期化のためオート停止");
     pauseNormalBgm();
     stopBattleBgm(false);
@@ -13656,6 +13661,7 @@ body{
   }
 
   function resetRuntimeForMorning(reason="朝一リセット"){
+    NovaAim.hide();
     stopDebugFastSpin(`${reason}のため高速停止`);
     stopSpeedToBonus(`${reason}のためSPEED停止`);
     stopAutoPlay(`${reason}のためAUTO停止`);
@@ -14929,7 +14935,7 @@ body{
     };
     playCzCountdownOnLever(resolved);
     currentSpin.manualBonusStop = false; // Fixed-G prototype: bonus starts on the next confirmed spin.
-    if(['toto','sora'].includes(normalState.flow?.zone))showOverlay('7・nebulaを狙え');
+    if(!debugFastSpinActive)NovaAim.bet(resolved.aim);
     if(!resolved.oumaFailed&&['urapi','ouma'].includes(normalState.flow?.zone))showOverlay('ノヴァを狙え');
     if(resolved.oumaFreeze)showOverlay('逢魔フリーズ！ 0G連・ノヴァを狙え');
     if(resolved.artReverse)showOverlay('逆回転！ '+resolved.flowAfter.award+'pt');
@@ -15052,6 +15058,7 @@ body{
     if(!options.visualReady&&currentSpin.visualStopping?.[i])return;
     const {grid, spec, result, lineRow} = currentSpin;
     const stopOrder = currentSpin.stopped.filter(Boolean).length + 1;
+    if(stopOrder===3)NovaAim.hide();
     const reversePushWrongFirst = isReversePushGuidedMiss(currentSpin) && stopOrder === 1 && i !== 2;
     let col = options.visualColumn || (currentSpin.manualBonusStop
       ? manualStopColumnForReel(i, currentSpin)
@@ -15908,6 +15915,7 @@ body{
   function startDebugFastSpin(){
     if(bonusConfirmSoundPlaying || bonusEndBgmPlaying)return;
     NovaLadder.hide();
+    NovaAim.hide();
     if(debugFastSpinActive) return;
     if(isCompleteTrialLocked() && !morningResetGame(true, "高速回転再開の朝一リセット")) return;
     if(!canPlayCompleteTrial()) return;
