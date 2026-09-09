@@ -15,12 +15,12 @@ test('each zone and target use exact color success boundaries, even above 2000pt
   }
  }
 });
-test('shared distribution converges to 60/35/5 and 20/80/100, in every zone',()=>{
+test('per-zone color distributions and color success rates converge',()=>{
  let seed=317;const rng=()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/4294967296);
  for(const id of ['toto','sora','ura_sora']){
   const s=a.startZone(a.enter(),id),counts={blue:[0,0],red:[0,0],rainbow:[0,0]};
   for(let i=0;i<100000;i++){const out=a.drawSevenAim(s,a.defaults,rng);counts[out.color][0]++;counts[out.color][1]+=out.result!=='MISS';}
-  for(const row of a.aimColors){const [n,win]=counts[row.color];assert.ok(Math.abs(n/100000-row.weight)<.01);assert.ok(Math.abs(win/n-row.hit)<.015);}
+  for(const row of a.aimColorsFor(s,a.defaults)){const [n,win]=counts[row.color];assert.ok(Math.abs(n/100000-row.weight)<.01);assert.ok(Math.abs(win/n-row.hit)<.015);}
  }
 });
 test('final game cue survives settlement and nebula resets five games with 10pt',()=>{

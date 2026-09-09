@@ -1,7 +1,7 @@
 /* AT payout-point rules. Decimal strings preserve unlimited exact awards. */
 globalThis.NovaArt=(()=>{
  const names={sosuke:'宗介',toto:'とと',urapi:'うらぴ',giru:'ギル',sora:'空',ouma:'逢魔'};
- const defaults={initial:150,payoutVersion:1,ladderSosuke:0.4,ladderGiru:0.5,ladderUraGiru:2/3,totoHit:0.35,totoReset:.02,soraUraHit:0.75,urapiSuper:0.49,oumaSuper:0.77,oumaUraSuper:0.98,rare:.03,big:.12,zone:.4,czArt:.25,soraHit:0.63,soraReset:.06,soraUraReset:.25,urapiFreeze:.1,oumaFreeze:.25,oumaUraFreeze:.65,direct1:1400,direct2:1320,direct3:1240,direct4:1160,direct5:1080,direct6:1000};
+ const defaults={initial:150,payoutVersion:1,ladderSosuke:0.4,ladderGiru:0.5,ladderUraGiru:2/3,totoHit:0.35,totoReset:.02,soraUraHit:0.75,soraUraRed:.715,urapiSuper:0.49,oumaSuper:0.77,oumaUraSuper:0.75,rare:.03,big:.12,zone:.4,czArt:.25,soraHit:0.63,soraReset:.06,soraUraReset:.25,urapiFreeze:.1,oumaFreeze:.25,oumaUraFreeze:.35,direct1:1400,direct2:1320,direct3:1240,direct4:1160,direct5:1080,direct6:1000};
  const zoneWeights=Object.freeze([[35,29,17,9,7,3],[34.5,29,17,9.5,7,3],[34,28.5,17.5,9.5,7.25,3.25],[33.5,28.5,17.5,9.5,7.5,3.5],[33,28,18,9.5,7.75,3.75],[32.5,27.5,18,10,8,4]].map(Object.freeze));
  const superZoneChance=.03;
  const zoneGroups={weak:['sosuke','toto','urapi'],strong:['giru','sora','ouma'],super:['ura_giru','ura_sora','ura_ouma']};
@@ -73,16 +73,17 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
  const sevenValues=[50,100,150,200,300,500];
  const sevenWeights={toto:[.65,.2,.08,.04,.02,.01],sora:[.4,.25,.15,.1,.07,.03],ura_sora:[.2,.2,.2,.15,.15,.1]};
  const aimColors=Object.freeze([{color:'blue',weight:.60,hit:.20},{color:'red',weight:.35,hit:.80},{color:'rainbow',weight:.05,hit:1}].map(Object.freeze));
- function sevenAimRules(s,c=defaults){const r=zoneRules(s,c),total=r.reset+Math.min(r.hit,1-r.reset),nebula=total?r.reset/total:0,hit=aimColors.reduce((n,row)=>n+row.weight*row.hit,0);return {nebula,reset:hit*nebula,hit:hit*(1-nebula)};}
+ function aimColorsFor(s,c=defaults){if(s.zone==='sora'&&s.ura){const red=Math.min(.95,c.soraUraRed??.35);return [{color:'blue',weight:.95-red,hit:.2},{color:'red',weight:red,hit:.8},{color:'rainbow',weight:.05,hit:1}];}return aimColors;}
+ function sevenAimRules(s,c=defaults){const r=zoneRules(s,c),total=r.reset+Math.min(r.hit,1-r.reset),nebula=total?r.reset/total:0,hit=aimColorsFor(s,c).reduce((n,row)=>n+row.weight*row.hit,0);return {nebula,reset:hit*nebula,hit:hit*(1-nebula)};}
  function drawSevenAim(s,c,rng=Math.random,forced=''){
   if(forced)return {symbol:forced==='NEBULA'?'nebula':'seven',color:forced==='BIG'||forced==='NEBULA'?'rainbow':'blue',result:forced,forced:true};
   const symbol=rng()<sevenAimRules(s,c).nebula?'nebula':'seven';
-  let roll=rng();const row=aimColors.find(r=>(roll-=r.weight)<0)||aimColors[2];
+  let roll=rng();const colors=aimColorsFor(s,c),row=colors.find(r=>(roll-=r.weight)<0)||colors[2];
   const hit=rng()<row.hit;
   return {symbol,color:row.color,result:hit?(symbol==='nebula'?'NEBULA':'BIG'):'MISS',forced:false};
  }
- const zoneTailControl={threshold:2000,factor:.01};
- function zoneAwardFactor(award,next=0){return integer(award)+integer(next)>=BigInt(zoneTailControl.threshold)?zoneTailControl.factor:1;}
+ const zoneTailControl={threshold:2000,factor:1};
+ function zoneAwardFactor(award,next=0){return 1;}
  function zoneRules(s,c=defaults){const id=(s.ura?'ura_':'')+s.zone;
   if(['sosuke','giru'].includes(s.zone))return {family:'ladder',success:s.zone==='sosuke'?c.ladderSosuke:s.ura?c.ladderUraGiru:c.ladderGiru};
   if(['toto','sora'].includes(s.zone))return {family:'seven',hit:s.zone==='toto'?c.totoHit:s.ura?c.soraUraHit:c.soraHit,reset:Math.min(.3,s.zone==='toto'?c.totoReset:s.ura?c.soraUraReset:c.soraReset)*zoneAwardFactor(s.award),weights:sevenWeights[id]};
@@ -176,11 +177,12 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
     if(!s.zoneLeft)finish();
    }else{
     result=free?'SUPER_NOVA':forced|| (rng()<rules.hit?'SUPER_NOVA':'MISS');
-    const minimum=s.zone==='urapi'?50:s.zone==='ouma'&&s.ura?500:0;
+    const minimum=s.zone==='urapi'?50:s.zone==='ouma'?(s.ura?500:100):0;
+    const guaranteeNoFreeze=s.zone==='ouma'&&!s.ura&&!free&&!s.zoneLeft&&integer(s.award)<100n&&result!=='SUPER_NOVA';
     if(!s.zoneLeft&&!free&&integer(s.award)<BigInt(minimum))result='SUPER_NOVA';
     if(result==='SUPER_NOVA'){const n=Math.max((rng()<rules.hundred?100:50)*rules.awardMultiplier,!s.zoneLeft&&!free?minimum-Number(s.award):0);if(!free&&!forced&&zoneAwardFactor(s.award,n)<1&&rng()>=zoneTailControl.factor){result='MISS';message='スーパーノヴァを狙え';}else{s.award=(integer(s.award)+BigInt(n)).toString();message=(free?'逢魔フリーズ！ 0G連 / ':'')+zoneName(s)+' スーパーノヴァ揃い ＋'+n+'pt';}}
     else message='スーパーノヴァを狙え';
-    s.oumaPending=['ouma','urapi'].includes(s.zone)&&result==='SUPER_NOVA';s.zero=false;
+    s.oumaPending=['ouma','urapi'].includes(s.zone)&&result==='SUPER_NOVA'&&!guaranteeNoFreeze;s.zero=false;
     if(!s.zoneLeft&&!s.oumaPending)finish();
    }
   }else{
@@ -195,5 +197,5 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
   return {atOutcome,aim,result,flow:s,message,internalBonus,reverse,oumaFreeze:freeOumaSpin,zoneSpin:!!value.zone||queuedEntered};
  }
  function label(v){const s=normalize(v);return `AT ${s.remaining}pt / 待機${s.sets}SET${s.entryStage?' / '+({seven:'赤7を狙え・減算停止',roulette:'ルーレット・減算停止',confirmed:zoneName(s.pendingZone)+'ゾーン確定'}[s.entryStage]):''}${s.zone?' / '+zoneName(s)+' '+(s.zero?'0G連':s.oumaPending?'BETで継続抽選':s.zoneLeft+'G'):''}${integer(s.stock)>0n?' / BIGストック '+s.stock:''}${s.zone?' / 獲得'+s.award+'pt':''}`;}
- return {aimColors,sevenAimRules,drawSevenAim,ladderWeightsFor,ladderGuaranteed,drawLadderRole,lossRewardControl,zoneTailControl,zoneAwardFactor,netRewardControl,netLimits,netRewardFactor,superZoneChance,zoneGroups,zoneGroupWeights,upgradeGuaranteedZone,bonusSpecialRates,zoneRules,ladderTables,ladderTableFor,ladderValues,sevenValues,sevenWeights,atZoneWeights,tuning,atMix,drawAtRare,atRoleRules,pickAtZone,resolveAtRole,rareRoles,rareTotal,rareMean,rareFactor,drawRare,roleProbabilities,bonusRoleProbabilities,preparationProbabilities,drawPreparationRole,zoneRoleWeights,zoneRoleMultiplier,paidBellChance,drawPreparation,zoneEntryScale,points,bonusTarget,payout,settleZone,prepareBet,oumaFreezeRate,baseZone,zoneName,zoneIds,names,defaults,direct,zoneWeights,pickZone,bonusSpecial,settingBias,biasFor,bonusSpecialFor,advanceBonus,drawPaidRole,drawBonus,config,normalize,enter,startZone,afterBonus,step,label};
+ return {aimColors,aimColorsFor,sevenAimRules,drawSevenAim,ladderWeightsFor,ladderGuaranteed,drawLadderRole,lossRewardControl,zoneTailControl,zoneAwardFactor,netRewardControl,netLimits,netRewardFactor,superZoneChance,zoneGroups,zoneGroupWeights,upgradeGuaranteedZone,bonusSpecialRates,zoneRules,ladderTables,ladderTableFor,ladderValues,sevenValues,sevenWeights,atZoneWeights,tuning,atMix,drawAtRare,atRoleRules,pickAtZone,resolveAtRole,rareRoles,rareTotal,rareMean,rareFactor,drawRare,roleProbabilities,bonusRoleProbabilities,preparationProbabilities,drawPreparationRole,zoneRoleWeights,zoneRoleMultiplier,paidBellChance,drawPreparation,zoneEntryScale,points,bonusTarget,payout,settleZone,prepareBet,oumaFreezeRate,baseZone,zoneName,zoneIds,names,defaults,direct,zoneWeights,pickZone,bonusSpecial,settingBias,biasFor,bonusSpecialFor,advanceBonus,drawPaidRole,drawBonus,config,normalize,enter,startZone,afterBonus,step,label};
 })();

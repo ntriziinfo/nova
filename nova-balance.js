@@ -37,7 +37,7 @@ globalThis.NovaBalance=(()=>{
   }
   const values=[50*r.awardMultiplier,100*r.awardMultiplier],weights=[1-r.hundred,r.hundred],mean=values.reduce((n,v,i)=>n+v*weights[i],0),freeze=a.oumaFreezeRate({...s,award:String(limit)},c),freeMean=mean*freeze/(1-freeze),V=new Map(),K=new Map();
   const get=(map,award,left)=>award>=limit?left*r.hit*a.zoneTailControl.factor*(mean+freeMean)+(map===K?freeMean:0):map.get(award)[left];
-  const minimum=s.zone==='urapi'?50:s.ura?500:0;
+  const minimum=s.zone==='urapi'?50:s.ura?500:100;
   for(let award=limit-50;award>=0;award-=50){
    const v=Array(6).fill(0),k=Array(6).fill(0);V.set(award,v);K.set(award,k);
    const f=a.oumaFreezeRate({...s,award:String(award)},c);
@@ -45,6 +45,7 @@ globalThis.NovaBalance=(()=>{
     if(left){
      const guarantee=left===1&&award<minimum,ns=values.map(n=>guarantee?Math.max(n,minimum-award):n),ps=ns.map((n,i)=>weights[i]*(guarantee?1:r.hit*a.zoneAwardFactor(award,n)));
      v[left]=(1-ps.reduce((a,b)=>a+b,0))*v[left-1]+ps.reduce((sum,p,i)=>sum+p*(ns[i]+get(K,award+ns[i],left-1)),0);
+     if(guarantee&&s.zone==='ouma'&&!s.ura)v[left]=weights.reduce((n,w,i)=>n+w*(ns[i]+r.hit*get(K,award+ns[i],0)),0);
     }
     k[left]=(1-f)*v[left]+f*values.reduce((n,v,i)=>n+weights[i]*(v+get(K,award+v,left)),0);
    }
