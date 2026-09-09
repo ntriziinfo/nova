@@ -1,0 +1,1125 @@
+{
+  "version": 113,
+  "status": "2000pt plus AT Lv5; higher setting-specific entry frequency",
+  "measurement": {
+    "gamesPerTrial": 30000,
+    "trialsPerSetting": 1000,
+    "fullGames": 180000000,
+    "rtp": "total actual payout / total actual BET; free replay debit is zero",
+    "win": "final net strictly positive",
+    "complete": "first session net +10000pt; all sessions are simulated to 30000G before cutting the actual-rule prefix"
+  },
+  "sourceHashes": {
+    "nova-art.js": "d51f4039efe11879c679f0df190c57da68b0ddaf9b8ae6c64ea03a6dedbbb39d",
+    "nova-flow.js": "3b9e17a4649d5b7e585266613c62f196306a2ccb774bf0ec0abdac6747d51dab",
+    "nova-normal.js": "39df842b56b59125873fc3d3bc265b5f5c8c4859efbd3b0012ee56ae522d0e5a",
+    "nova-balance.js": "2ccea9ccd1219d484eb0f40ad55a066bd0572d9c12073a72a0ccb08451e15590",
+    "research/burst112/production-model.mjs": "c1caaa079bd488e0412f786ca4e41fe406b617fe6d896b30ff219daae87b016c"
+  },
+  "settings": [
+    {
+      "setting": 1,
+      "sourceFile": "docs/burst113-verify-1.json",
+      "report": {
+        "setting": 1,
+        "tag": "verify",
+        "trials": 1000,
+        "award": 2000,
+        "entry": [
+          0.0012,
+          0.0023,
+          0.003,
+          0.0046,
+          0.0058,
+          0.0078
+        ],
+        "seedBase": 113900000,
+        "gamesPerTrial": 30000,
+        "games": 30000000,
+        "complete": 17,
+        "completeRate": 0.017,
+        "completeCI": [
+          0.010640599663218203,
+          0.027056184371235047
+        ],
+        "rtp": {
+          "bet": 66464823,
+          "paid": 62754934,
+          "value": 0.9441826693798613,
+          "ci": [
+            0.9391477031923936,
+            0.949217635567329
+          ]
+        },
+        "stoppedRtp": {
+          "bet": 66072567,
+          "paid": 62183729,
+          "value": 0.9411429254746527,
+          "ci": [
+            0.9370052733894026,
+            0.9452805775599028
+          ]
+        },
+        "stoppedGames": 29800977,
+        "ordinary": {
+          "completed": 81947,
+          "censored": 214,
+          "mean": 380.74930137771975,
+          "p50": 231,
+          "p90": 747,
+          "p99": 2301,
+          "over2000": 0.0134477162068166,
+          "over10000": 0.0001220300926208403
+        },
+        "burst": {
+          "completed": 27,
+          "censored": 2,
+          "mean": 17828,
+          "p50": 9240,
+          "p90": 53355,
+          "p99": 54975,
+          "over2000": 1,
+          "over10000": 0.4444444444444444
+        },
+        "burstAttempts": 50,
+        "burstWins": 29,
+        "atEntries": 82190,
+        "czEntries": 185182,
+        "normalGames": 17317200,
+        "elapsedSeconds": 479.472,
+        "sourceHashes": {
+          "nova-art.js": "67d1914b8da808e600dd79a8ed8249222ca47ff3a370a6db9ad85dce14b98aa4",
+          "nova-flow.js": "3b9e17a4649d5b7e585266613c62f196306a2ccb774bf0ec0abdac6747d51dab",
+          "nova-normal.js": "39df842b56b59125873fc3d3bc265b5f5c8c4859efbd3b0012ee56ae522d0e5a",
+          "nova-balance.js": "64b0791fd2f6135096bceaad9f6d242582960febc7844999e541e6f32c75ad76"
+        }
+      },
+      "stopped": {
+        "trials": 1000,
+        "wins": 176,
+        "winRate": 0.176,
+        "winRateCI": [
+          0.15364903702878677,
+          0.2008307932551943
+        ],
+        "draws": 0,
+        "losses": 824,
+        "mean": -3888.838,
+        "meanCI": [
+          -4170.899882503386,
+          -3606.7761174966145
+        ],
+        "min": -13882,
+        "p05": -10800.3,
+        "p25": -7186.5,
+        "median": -4183.5,
+        "p75": -1335.5,
+        "p95": 4528.949999999996,
+        "max": 10011,
+        "bands": [
+          {
+            "label": "−10,000pt未満",
+            "count": 75
+          },
+          {
+            "label": "−10,000〜−5,000pt未満",
+            "count": 354
+          },
+          {
+            "label": "−5,000〜0pt未満",
+            "count": 395
+          },
+          {
+            "label": "±0pt",
+            "count": 0
+          },
+          {
+            "label": "0超〜＋5,000pt未満",
+            "count": 135
+          },
+          {
+            "label": "＋5,000〜＋10,000pt未満",
+            "count": 24
+          },
+          {
+            "label": "＋10,000pt以上",
+            "count": 17
+          }
+        ]
+      },
+      "unlimited": {
+        "trials": 1000,
+        "wins": 176,
+        "winRate": 0.176,
+        "winRateCI": [
+          0.15364903702878677,
+          0.2008307932551943
+        ],
+        "draws": 0,
+        "losses": 824,
+        "mean": -3709.889,
+        "meanCI": [
+          -4049.2160545054066,
+          -3370.5619454945936
+        ],
+        "min": -13882,
+        "p05": -10800.3,
+        "p25": -7186.5,
+        "median": -4183.5,
+        "p75": -1335.5,
+        "p95": 4528.949999999996,
+        "max": 46034,
+        "bands": [
+          {
+            "label": "−10,000pt未満",
+            "count": 75
+          },
+          {
+            "label": "−10,000〜−5,000pt未満",
+            "count": 354
+          },
+          {
+            "label": "−5,000〜0pt未満",
+            "count": 395
+          },
+          {
+            "label": "±0pt",
+            "count": 0
+          },
+          {
+            "label": "0超〜＋5,000pt未満",
+            "count": 135
+          },
+          {
+            "label": "＋5,000〜＋10,000pt未満",
+            "count": 26
+          },
+          {
+            "label": "＋10,000pt以上",
+            "count": 15
+          }
+        ]
+      }
+    },
+    {
+      "setting": 2,
+      "sourceFile": "docs/burst113-refine-2.json",
+      "report": {
+        "setting": 2,
+        "tag": "refine",
+        "trials": 1000,
+        "award": 2000,
+        "entry": [
+          0.0012,
+          0.0028,
+          0.004,
+          0.0046,
+          0.0058,
+          0.0078
+        ],
+        "seedBase": 114900000,
+        "gamesPerTrial": 30000,
+        "games": 30000000,
+        "complete": 27,
+        "completeRate": 0.027,
+        "completeCI": [
+          0.018621256649289826,
+          0.03899898941343562
+        ],
+        "rtp": {
+          "bet": 66183594,
+          "paid": 63559946,
+          "value": 0.9603580307228404,
+          "ci": [
+            0.9540136919965923,
+            0.9667023694490886
+          ]
+        },
+        "stoppedRtp": {
+          "bet": 65507268,
+          "paid": 62498291,
+          "value": 0.954066516710787,
+          "ci": [
+            0.9498098094980122,
+            0.9583232239235618
+          ]
+        },
+        "stoppedGames": 29649161,
+        "ordinary": {
+          "completed": 81748,
+          "censored": 242,
+          "mean": 387.4179551793316,
+          "p50": 255,
+          "p90": 762,
+          "p99": 2331,
+          "over2000": 0.013957528012917747,
+          "over10000": 0.00008562900621421931
+        },
+        "burst": {
+          "completed": 46,
+          "censored": 10,
+          "mean": 19121.347826086956,
+          "p50": 10023,
+          "p90": 40704,
+          "p99": 85689,
+          "over2000": 1,
+          "over10000": 0.5217391304347826
+        },
+        "burstAttempts": 112,
+        "burstWins": 56,
+        "atEntries": 82046,
+        "czEntries": 184759,
+        "normalGames": 17111696,
+        "elapsedSeconds": 392.792,
+        "sourceHashes": {
+          "nova-art.js": "67d1914b8da808e600dd79a8ed8249222ca47ff3a370a6db9ad85dce14b98aa4",
+          "nova-flow.js": "3b9e17a4649d5b7e585266613c62f196306a2ccb774bf0ec0abdac6747d51dab",
+          "nova-normal.js": "39df842b56b59125873fc3d3bc265b5f5c8c4859efbd3b0012ee56ae522d0e5a",
+          "nova-balance.js": "64b0791fd2f6135096bceaad9f6d242582960febc7844999e541e6f32c75ad76"
+        }
+      },
+      "stopped": {
+        "trials": 1000,
+        "wins": 237,
+        "winRate": 0.237,
+        "winRateCI": [
+          0.21168091851549473,
+          0.26433203014094675
+        ],
+        "draws": 0,
+        "losses": 763,
+        "mean": -3008.977,
+        "meanCI": [
+          -3296.843578495533,
+          -2721.1104215044666
+        ],
+        "min": -15161,
+        "p05": -9886.85,
+        "p25": -6189.75,
+        "median": -3231.5,
+        "p75": -205,
+        "p95": 5022.199999999996,
+        "max": 10011,
+        "bands": [
+          {
+            "label": "−10,000pt未満",
+            "count": 47
+          },
+          {
+            "label": "−10,000〜−5,000pt未満",
+            "count": 287
+          },
+          {
+            "label": "−5,000〜0pt未満",
+            "count": 429
+          },
+          {
+            "label": "±0pt",
+            "count": 0
+          },
+          {
+            "label": "0超〜＋5,000pt未満",
+            "count": 185
+          },
+          {
+            "label": "＋5,000〜＋10,000pt未満",
+            "count": 25
+          },
+          {
+            "label": "＋10,000pt以上",
+            "count": 27
+          }
+        ]
+      },
+      "unlimited": {
+        "trials": 1000,
+        "wins": 237,
+        "winRate": 0.237,
+        "winRateCI": [
+          0.21168091851549473,
+          0.26433203014094675
+        ],
+        "draws": 0,
+        "losses": 763,
+        "mean": -2623.648,
+        "meanCI": [
+          -3047.5890605032287,
+          -2199.7069394967716
+        ],
+        "min": -15161,
+        "p05": -9886.85,
+        "p25": -6189.75,
+        "median": -3231.5,
+        "p75": -205,
+        "p95": 5013.25,
+        "max": 79353,
+        "bands": [
+          {
+            "label": "−10,000pt未満",
+            "count": 47
+          },
+          {
+            "label": "−10,000〜−5,000pt未満",
+            "count": 287
+          },
+          {
+            "label": "−5,000〜0pt未満",
+            "count": 429
+          },
+          {
+            "label": "±0pt",
+            "count": 0
+          },
+          {
+            "label": "0超〜＋5,000pt未満",
+            "count": 186
+          },
+          {
+            "label": "＋5,000〜＋10,000pt未満",
+            "count": 31
+          },
+          {
+            "label": "＋10,000pt以上",
+            "count": 20
+          }
+        ]
+      }
+    },
+    {
+      "setting": 3,
+      "sourceFile": "docs/burst113-refine-3.json",
+      "report": {
+        "setting": 3,
+        "tag": "refine",
+        "trials": 1000,
+        "award": 2000,
+        "entry": [
+          0.0012,
+          0.0028,
+          0.004,
+          0.0046,
+          0.0058,
+          0.0078
+        ],
+        "seedBase": 114900000,
+        "gamesPerTrial": 30000,
+        "games": 30000000,
+        "complete": 55,
+        "completeRate": 0.055,
+        "completeCI": [
+          0.04249722594783333,
+          0.07090871379405425
+        ],
+        "rtp": {
+          "bet": 65872131,
+          "paid": 64413309,
+          "value": 0.9778537299787675,
+          "ci": [
+            0.9685038008483972,
+            0.9872036591091379
+          ]
+        },
+        "stoppedRtp": {
+          "bet": 64394451,
+          "paid": 61952244,
+          "value": 0.9620742632001009,
+          "ci": [
+            0.9571946062556873,
+            0.9669539201445145
+          ]
+        },
+        "stoppedGames": 29215485,
+        "ordinary": {
+          "completed": 79805,
+          "censored": 211,
+          "mean": 398.1998997556544,
+          "p50": 261,
+          "p90": 783,
+          "p99": 2466,
+          "over2000": 0.01623958398596579,
+          "over10000": 0.0001253054319904768
+        },
+        "burst": {
+          "completed": 74,
+          "censored": 15,
+          "mean": 23253.527027027027,
+          "p50": 13722,
+          "p90": 58599,
+          "p99": 99402,
+          "over2000": 1,
+          "over10000": 0.5945945945945946
+        },
+        "burstAttempts": 222,
+        "burstWins": 89,
+        "atEntries": 80105,
+        "czEntries": 181789,
+        "normalGames": 16934430,
+        "elapsedSeconds": 401.765,
+        "sourceHashes": {
+          "nova-art.js": "67d1914b8da808e600dd79a8ed8249222ca47ff3a370a6db9ad85dce14b98aa4",
+          "nova-flow.js": "3b9e17a4649d5b7e585266613c62f196306a2ccb774bf0ec0abdac6747d51dab",
+          "nova-normal.js": "39df842b56b59125873fc3d3bc265b5f5c8c4859efbd3b0012ee56ae522d0e5a",
+          "nova-balance.js": "64b0791fd2f6135096bceaad9f6d242582960febc7844999e541e6f32c75ad76"
+        }
+      },
+      "stopped": {
+        "trials": 1000,
+        "wins": 289,
+        "winRate": 0.289,
+        "winRateCI": [
+          0.2617539675950579,
+          0.31786098360839893
+        ],
+        "draws": 0,
+        "losses": 711,
+        "mean": -2442.207,
+        "meanCI": [
+          -2768.6048624620053,
+          -2115.8091375379945
+        ],
+        "min": -15704,
+        "p05": -9737.15,
+        "p25": -6297.25,
+        "median": -3196.5,
+        "p75": 573,
+        "p95": 10000,
+        "max": 10011,
+        "bands": [
+          {
+            "label": "−10,000pt未満",
+            "count": 42
+          },
+          {
+            "label": "−10,000〜−5,000pt未満",
+            "count": 293
+          },
+          {
+            "label": "−5,000〜0pt未満",
+            "count": 376
+          },
+          {
+            "label": "±0pt",
+            "count": 0
+          },
+          {
+            "label": "0超〜＋5,000pt未満",
+            "count": 194
+          },
+          {
+            "label": "＋5,000〜＋10,000pt未満",
+            "count": 40
+          },
+          {
+            "label": "＋10,000pt以上",
+            "count": 55
+          }
+        ]
+      },
+      "unlimited": {
+        "trials": 1000,
+        "wins": 289,
+        "winRate": 0.289,
+        "winRateCI": [
+          0.2617539675950579,
+          0.31786098360839893
+        ],
+        "draws": 0,
+        "losses": 711,
+        "mean": -1458.822,
+        "meanCI": [
+          -2078.039910027312,
+          -839.6040899726877
+        ],
+        "min": -15704,
+        "p05": -9737.15,
+        "p25": -6297.25,
+        "median": -3196.5,
+        "p75": 573,
+        "p95": 8968.549999999987,
+        "max": 96976,
+        "bands": [
+          {
+            "label": "−10,000pt未満",
+            "count": 42
+          },
+          {
+            "label": "−10,000〜−5,000pt未満",
+            "count": 293
+          },
+          {
+            "label": "−5,000〜0pt未満",
+            "count": 376
+          },
+          {
+            "label": "±0pt",
+            "count": 0
+          },
+          {
+            "label": "0超〜＋5,000pt未満",
+            "count": 196
+          },
+          {
+            "label": "＋5,000〜＋10,000pt未満",
+            "count": 48
+          },
+          {
+            "label": "＋10,000pt以上",
+            "count": 45
+          }
+        ]
+      }
+    },
+    {
+      "setting": 4,
+      "sourceFile": "docs/burst113-verify-4.json",
+      "report": {
+        "setting": 4,
+        "tag": "verify",
+        "trials": 1000,
+        "award": 2000,
+        "entry": [
+          0.0012,
+          0.0023,
+          0.003,
+          0.0046,
+          0.0058,
+          0.0078
+        ],
+        "seedBase": 113900000,
+        "gamesPerTrial": 30000,
+        "games": 30000000,
+        "complete": 94,
+        "completeRate": 0.094,
+        "completeCI": [
+          0.07743389633418887,
+          0.11367354531796026
+        ],
+        "rtp": {
+          "bet": 65319288,
+          "paid": 66030059,
+          "value": 1.0108814872568728,
+          "ci": [
+            1.0010184723290245,
+            1.020744502184721
+          ]
+        },
+        "stoppedRtp": {
+          "bet": 63056871,
+          "paid": 62473927,
+          "value": 0.9907552659883806,
+          "ci": [
+            0.9855806966193085,
+            0.9959298353574527
+          ]
+        },
+        "stoppedGames": 28822285,
+        "ordinary": {
+          "completed": 79783,
+          "censored": 212,
+          "mean": 411.0461376483712,
+          "p50": 261,
+          "p90": 819,
+          "p99": 2664,
+          "over2000": 0.018362307759798455,
+          "over10000": 0.00015040798165022625
+        },
+        "burst": {
+          "completed": 117,
+          "censored": 21,
+          "mean": 19599.48717948718,
+          "p50": 12285,
+          "p90": 45291,
+          "p99": 72492,
+          "over2000": 1,
+          "over10000": 0.5555555555555556
+        },
+        "burstAttempts": 264,
+        "burstWins": 138,
+        "atEntries": 80133,
+        "czEntries": 180626,
+        "normalGames": 16532131,
+        "elapsedSeconds": 502.118,
+        "sourceHashes": {
+          "nova-art.js": "67d1914b8da808e600dd79a8ed8249222ca47ff3a370a6db9ad85dce14b98aa4",
+          "nova-flow.js": "3b9e17a4649d5b7e585266613c62f196306a2ccb774bf0ec0abdac6747d51dab",
+          "nova-normal.js": "39df842b56b59125873fc3d3bc265b5f5c8c4859efbd3b0012ee56ae522d0e5a",
+          "nova-balance.js": "64b0791fd2f6135096bceaad9f6d242582960febc7844999e541e6f32c75ad76"
+        }
+      },
+      "stopped": {
+        "trials": 1000,
+        "wins": 385,
+        "winRate": 0.385,
+        "winRateCI": [
+          0.35533515030579527,
+          0.41554503636907464
+        ],
+        "draws": 0,
+        "losses": 615,
+        "mean": -582.944,
+        "meanCI": [
+          -912.8877953521404,
+          -253.0002046478595
+        ],
+        "min": -13285,
+        "p05": -8149.65,
+        "p25": -4354.5,
+        "median": -1328,
+        "p75": 2446,
+        "p95": 10005,
+        "max": 10011,
+        "bands": [
+          {
+            "label": "−10,000pt未満",
+            "count": 22
+          },
+          {
+            "label": "−10,000〜−5,000pt未満",
+            "count": 180
+          },
+          {
+            "label": "−5,000〜0pt未満",
+            "count": 413
+          },
+          {
+            "label": "±0pt",
+            "count": 0
+          },
+          {
+            "label": "0超〜＋5,000pt未満",
+            "count": 223
+          },
+          {
+            "label": "＋5,000〜＋10,000pt未満",
+            "count": 68
+          },
+          {
+            "label": "＋10,000pt以上",
+            "count": 94
+          }
+        ]
+      },
+      "unlimited": {
+        "trials": 1000,
+        "wins": 385,
+        "winRate": 0.385,
+        "winRateCI": [
+          0.35533515030579527,
+          0.41554503636907464
+        ],
+        "draws": 0,
+        "losses": 615,
+        "mean": 710.771,
+        "meanCI": [
+          68.20768234706588,
+          1353.334317652934
+        ],
+        "min": -13285,
+        "p05": -8149.65,
+        "p25": -4354.5,
+        "median": -1328,
+        "p75": 2446,
+        "p95": 13818.949999999973,
+        "max": 84156,
+        "bands": [
+          {
+            "label": "−10,000pt未満",
+            "count": 22
+          },
+          {
+            "label": "−10,000〜−5,000pt未満",
+            "count": 180
+          },
+          {
+            "label": "−5,000〜0pt未満",
+            "count": 413
+          },
+          {
+            "label": "±0pt",
+            "count": 0
+          },
+          {
+            "label": "0超〜＋5,000pt未満",
+            "count": 226
+          },
+          {
+            "label": "＋5,000〜＋10,000pt未満",
+            "count": 82
+          },
+          {
+            "label": "＋10,000pt以上",
+            "count": 77
+          }
+        ]
+      }
+    },
+    {
+      "setting": 5,
+      "sourceFile": "docs/burst113-verify-5.json",
+      "report": {
+        "setting": 5,
+        "tag": "verify",
+        "trials": 1000,
+        "award": 2000,
+        "entry": [
+          0.0012,
+          0.0023,
+          0.003,
+          0.0046,
+          0.0058,
+          0.0078
+        ],
+        "seedBase": 113900000,
+        "gamesPerTrial": 30000,
+        "games": 30000000,
+        "complete": 132,
+        "completeRate": 0.132,
+        "completeCI": [
+          0.11242130181016353,
+          0.15439529554941994
+        ],
+        "rtp": {
+          "bet": 64926660,
+          "paid": 67254798,
+          "value": 1.0358579665117533,
+          "ci": [
+            1.0256225304261146,
+            1.046093402597392
+          ]
+        },
+        "stoppedRtp": {
+          "bet": 61802913,
+          "paid": 62718635,
+          "value": 1.0148168096866244,
+          "ci": [
+            1.009426027956512,
+            1.0202075914167368
+          ]
+        },
+        "stoppedGames": 28413571,
+        "ordinary": {
+          "completed": 79855,
+          "censored": 214,
+          "mean": 427.7851981716862,
+          "p50": 273,
+          "p90": 858,
+          "p99": 2919,
+          "over2000": 0.021326153653496962,
+          "over10000": 0.0002003631582242815
+        },
+        "burst": {
+          "completed": 117,
+          "censored": 40,
+          "mean": 16183.641025641025,
+          "p50": 10569,
+          "p90": 36624,
+          "p99": 68739,
+          "over2000": 1,
+          "over10000": 0.5213675213675214
+        },
+        "burstAttempts": 313,
+        "burstWins": 157,
+        "atEntries": 80226,
+        "czEntries": 180211,
+        "normalGames": 16244424,
+        "elapsedSeconds": 393.423,
+        "sourceHashes": {
+          "nova-art.js": "67d1914b8da808e600dd79a8ed8249222ca47ff3a370a6db9ad85dce14b98aa4",
+          "nova-flow.js": "3b9e17a4649d5b7e585266613c62f196306a2ccb774bf0ec0abdac6747d51dab",
+          "nova-normal.js": "39df842b56b59125873fc3d3bc265b5f5c8c4859efbd3b0012ee56ae522d0e5a",
+          "nova-balance.js": "64b0791fd2f6135096bceaad9f6d242582960febc7844999e541e6f32c75ad76"
+        }
+      },
+      "stopped": {
+        "trials": 1000,
+        "wins": 531,
+        "winRate": 0.531,
+        "winRateCI": [
+          0.5000096789361564,
+          0.5617530533514875
+        ],
+        "draws": 0,
+        "losses": 469,
+        "mean": 915.722,
+        "meanCI": [
+          589.3490605053698,
+          1242.0949394946301
+        ],
+        "min": -12513,
+        "p05": -6953.15,
+        "p25": -2930,
+        "median": 521,
+        "p75": 4161,
+        "p95": 10007,
+        "max": 10011,
+        "bands": [
+          {
+            "label": "−10,000pt未満",
+            "count": 10
+          },
+          {
+            "label": "−10,000〜−5,000pt未満",
+            "count": 113
+          },
+          {
+            "label": "−5,000〜0pt未満",
+            "count": 346
+          },
+          {
+            "label": "±0pt",
+            "count": 0
+          },
+          {
+            "label": "0超〜＋5,000pt未満",
+            "count": 316
+          },
+          {
+            "label": "＋5,000〜＋10,000pt未満",
+            "count": 83
+          },
+          {
+            "label": "＋10,000pt以上",
+            "count": 132
+          }
+        ]
+      },
+      "unlimited": {
+        "trials": 1000,
+        "wins": 530,
+        "winRate": 0.53,
+        "winRateCI": [
+          0.49900973970958434,
+          0.5607606463752323
+        ],
+        "draws": 0,
+        "losses": 470,
+        "mean": 2328.138,
+        "meanCI": [
+          1669.28840213598,
+          2986.98759786402
+        ],
+        "min": -12513,
+        "p05": -6953.15,
+        "p25": -2930,
+        "median": 491.5,
+        "p75": 4159.25,
+        "p95": 15746.549999999994,
+        "max": 100505,
+        "bands": [
+          {
+            "label": "−10,000pt未満",
+            "count": 10
+          },
+          {
+            "label": "−10,000〜−5,000pt未満",
+            "count": 113
+          },
+          {
+            "label": "−5,000〜0pt未満",
+            "count": 347
+          },
+          {
+            "label": "±0pt",
+            "count": 0
+          },
+          {
+            "label": "0超〜＋5,000pt未満",
+            "count": 316
+          },
+          {
+            "label": "＋5,000〜＋10,000pt未満",
+            "count": 114
+          },
+          {
+            "label": "＋10,000pt以上",
+            "count": 100
+          }
+        ]
+      }
+    },
+    {
+      "setting": 6,
+      "sourceFile": "docs/burst113-verify-6.json",
+      "report": {
+        "setting": 6,
+        "tag": "verify",
+        "trials": 1000,
+        "award": 2000,
+        "entry": [
+          0.0012,
+          0.0023,
+          0.003,
+          0.0046,
+          0.0058,
+          0.0078
+        ],
+        "seedBase": 113900000,
+        "gamesPerTrial": 30000,
+        "games": 30000000,
+        "complete": 201,
+        "completeRate": 0.201,
+        "completeCI": [
+          0.17732680168555334,
+          0.22696168366910827
+        ],
+        "rtp": {
+          "bet": 64229028,
+          "paid": 69457659,
+          "value": 1.0814060427630945,
+          "ci": [
+            1.0690292750441668,
+            1.0937828104820222
+          ]
+        },
+        "stoppedRtp": {
+          "bet": 59611788,
+          "paid": 62176249,
+          "value": 1.0430193605331886,
+          "ci": [
+            1.0370687906278553,
+            1.0489699304385218
+          ]
+        },
+        "stoppedGames": 27590624,
+        "ordinary": {
+          "completed": 78761,
+          "censored": 219,
+          "mean": 442.56351493759604,
+          "p50": 300,
+          "p90": 882,
+          "p99": 3087,
+          "over2000": 0.02395855816965249,
+          "over10000": 0.0002666294231916812
+        },
+        "burst": {
+          "completed": 175,
+          "censored": 61,
+          "mean": 18050.605714285713,
+          "p50": 12222,
+          "p90": 39963,
+          "p99": 71385,
+          "over2000": 1,
+          "over10000": 0.5942857142857143
+        },
+        "burstAttempts": 469,
+        "burstWins": 236,
+        "atEntries": 79216,
+        "czEntries": 176193,
+        "normalGames": 15759740,
+        "elapsedSeconds": 409.688,
+        "sourceHashes": {
+          "nova-art.js": "67d1914b8da808e600dd79a8ed8249222ca47ff3a370a6db9ad85dce14b98aa4",
+          "nova-flow.js": "3b9e17a4649d5b7e585266613c62f196306a2ccb774bf0ec0abdac6747d51dab",
+          "nova-normal.js": "39df842b56b59125873fc3d3bc265b5f5c8c4859efbd3b0012ee56ae522d0e5a",
+          "nova-balance.js": "64b0791fd2f6135096bceaad9f6d242582960febc7844999e541e6f32c75ad76"
+        }
+      },
+      "stopped": {
+        "trials": 1000,
+        "wins": 649,
+        "winRate": 0.649,
+        "winRateCI": [
+          0.618898642317261,
+          0.6779609419039948
+        ],
+        "draws": 0,
+        "losses": 351,
+        "mean": 2564.461,
+        "meanCI": [
+          2233.845560696681,
+          2895.0764393033187
+        ],
+        "min": -13381,
+        "p05": -6101.5,
+        "p25": -1427,
+        "median": 2207,
+        "p75": 7167.5,
+        "p95": 10008,
+        "max": 10011,
+        "bands": [
+          {
+            "label": "−10,000pt未満",
+            "count": 3
+          },
+          {
+            "label": "−10,000〜−5,000pt未満",
+            "count": 74
+          },
+          {
+            "label": "−5,000〜0pt未満",
+            "count": 274
+          },
+          {
+            "label": "±0pt",
+            "count": 0
+          },
+          {
+            "label": "0超〜＋5,000pt未満",
+            "count": 315
+          },
+          {
+            "label": "＋5,000〜＋10,000pt未満",
+            "count": 133
+          },
+          {
+            "label": "＋10,000pt以上",
+            "count": 201
+          }
+        ]
+      },
+      "unlimited": {
+        "trials": 1000,
+        "wins": 649,
+        "winRate": 0.649,
+        "winRateCI": [
+          0.618898642317261,
+          0.6779609419039948
+        ],
+        "draws": 0,
+        "losses": 351,
+        "mean": 5228.631,
+        "meanCI": [
+          4449.0114963219,
+          6008.2505036781
+        ],
+        "min": -13381,
+        "p05": -6101.5,
+        "p25": -1427,
+        "median": 2207,
+        "p75": 7043.25,
+        "p95": 29248.749999999967,
+        "max": 88612,
+        "bands": [
+          {
+            "label": "−10,000pt未満",
+            "count": 3
+          },
+          {
+            "label": "−10,000〜−5,000pt未満",
+            "count": 74
+          },
+          {
+            "label": "−5,000〜0pt未満",
+            "count": 274
+          },
+          {
+            "label": "±0pt",
+            "count": 0
+          },
+          {
+            "label": "0超〜＋5,000pt未満",
+            "count": 316
+          },
+          {
+            "label": "＋5,000〜＋10,000pt未満",
+            "count": 162
+          },
+          {
+            "label": "＋10,000pt以上",
+            "count": 171
+          }
+        ]
+      }
+    }
+  ]
+}

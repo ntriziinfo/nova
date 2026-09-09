@@ -1,0 +1,8 @@
+[
+ {"setting":1,"tag":"verify","trials":1000,"award":2000,"entry":[0.0012,0.0023,0.003,0.0046,0.0058,0.0078],"seedBase":113900000},
+ {"setting":2,"tag":"verify","trials":1000,"award":2000,"entry":[0.0012,0.0023,0.003,0.0046,0.0058,0.0078],"seedBase":113900000},
+ {"setting":3,"tag":"verify","trials":1000,"award":2000,"entry":[0.0012,0.0023,0.003,0.0046,0.0058,0.0078],"seedBase":113900000},
+ {"setting":4,"tag":"verify","trials":1000,"award":2000,"entry":[0.0012,0.0023,0.003,0.0046,0.0058,0.0078],"seedBase":113900000},
+ {"setting":5,"tag":"verify","trials":1000,"award":2000,"entry":[0.0012,0.0023,0.003,0.0046,0.0058,0.0078],"seedBase":113900000},
+ {"setting":6,"tag":"verify","trials":1000,"award":2000,"entry":[0.0012,0.0023,0.003,0.0046,0.0058,0.0078],"seedBase":113900000}
+]

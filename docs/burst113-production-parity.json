@@ -1,0 +1,46 @@
+{
+  "sourceHashes": {
+    "nova-art.js": "d51f4039efe11879c679f0df190c57da68b0ddaf9b8ae6c64ea03a6dedbbb39d",
+    "nova-balance.js": "2ccea9ccd1219d484eb0f40ad55a066bd0572d9c12073a72a0ccb08451e15590",
+    "nova-flow.js": "3b9e17a4649d5b7e585266613c62f196306a2ccb774bf0ec0abdac6747d51dab",
+    "nova-normal.js": "39df842b56b59125873fc3d3bc265b5f5c8c4859efbd3b0012ee56ae522d0e5a"
+  },
+  "reports": [
+    {
+      "setting": 1,
+      "trials": 9,
+      "games": 270000,
+      "matched": true
+    },
+    {
+      "setting": 2,
+      "trials": 9,
+      "games": 270000,
+      "matched": true
+    },
+    {
+      "setting": 3,
+      "trials": 8,
+      "games": 240000,
+      "matched": true
+    },
+    {
+      "setting": 4,
+      "trials": 9,
+      "games": 270000,
+      "matched": true
+    },
+    {
+      "setting": 5,
+      "trials": 9,
+      "games": 270000,
+      "matched": true
+    },
+    {
+      "setting": 6,
+      "trials": 8,
+      "games": 240000,
+      "matched": true
+    }
+  ]
+}

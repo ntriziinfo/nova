@@ -10,7 +10,7 @@ test('production burst is one three-game chance per new AT, with a 50% success r
   let s=initial;
   for(let g=0;g<3&&!s.burstWon;g++)s=a.step(s,{setting:6},rng).flow;
   wins+=s.burstWon;
-  assert.equal(s.remaining,s.burstWon?'8150':'150');
+  assert.equal(s.remaining,s.burstWon?'2150':'150');
   assert.equal(s.atLevel,s.burstWon?5:1);
   assert.equal(s.burstPending,false);assert.equal(s.burstLeft,0);
  }

@@ -17,9 +17,9 @@ globalThis.NovaArt=(()=>{
  const bonusPayout=(state,role)=>Math.min(payout(role),Math.max(0,bonusTarget()-(Number(state?.paid)||0)));
  // Initial levels are modest; the rare challenge is the route to Lv.5.
  const burstRules=Object.freeze({
-  version:1,games:3,success:.5,award:2000,
+  version:1,games:3,success:.5,award:8000,
   normalBoost:Object.freeze([.525,.53,.52,.535,.545,.555]),
-  entry:Object.freeze([.0012,.0028,.004,.0046,.0058,.0078]),
+  entry:Object.freeze([.0006,.00115,.00165,.0027,.0036,.0052]),
   roles:Object.freeze({WEAK_SUICA:.05,STRONG_SUICA:.5,CHANCE_A:.2,CHANCE_B:.2,WEAK_NOVA:.1,STRONG_NOVA:1})
  });
  function burstChance(role,setting){return (burstRules.roles[role]||0)*burstRules.entry[validSetting(setting)-1];}
@@ -190,7 +190,7 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
    const hit=rng()<1-Math.pow(1-burstRules.success,1/burstRules.games);s.burstLeft--;
    if(hit){s.burstLeft=0;s.burstWon=true;s.dryEligible=false;s.atLevel=5;s.remaining=(integer(s.remaining)+BigInt(burstRules.award)).toString();}
    const burstEvent=hit?'success':s.burstLeft?'continue':'failure';
-   return {result:hit?'NEBULA':'MISS',flow:s,burstEvent,zoneSpin:true,message:hit?`NOVA BURST！ ＋${burstRules.award.toLocaleString('en-US')}pt / AT Lv.5`:s.burstLeft?'爆発チャレンジ 残り'+s.burstLeft+'G':'爆発チャレンジ終了 / AT継続'};
+   return {result:hit?'NEBULA':'MISS',flow:s,burstEvent,zoneSpin:true,message:hit?'NOVA BURST！ ＋8,000pt / AT Lv.5':s.burstLeft?'爆発チャレンジ 残り'+s.burstLeft+'G':'爆発チャレンジ終了 / AT継続'};
   }
   if(s.entryStage==='seven'){s.entryStage='roulette';return {result:'BIG',flow:s,zoneSpin:true,message:'赤7揃い！ 特化ゾーンルーレット'};}
   if(s.entryStage==='roulette'){
