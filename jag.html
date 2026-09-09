@@ -6531,7 +6531,7 @@ body{
   .vertexConnectionBadge.offline{color:#ff8f9c;border-color:rgba(255,91,113,.65);background:rgba(52,9,17,.9)}
   .vertexConnectionBadge.legacy{color:#d4a6ff;border-color:rgba(185,109,255,.6)}
 </style>
-<link rel="stylesheet" href="nova-cabinet.css?v=20260909-result-image-84">
+<link rel="stylesheet" href="nova-cabinet.css?v=20260909-burst-112">
 <link rel="stylesheet" href="nova-artwork.css?v=20260909-bonus-110">
 <script src="nova-artwork.js?v=20260909-lamp-position-98" defer></script>
 <script src="nova-beat-lamps.js?v=20260909-result-image-84"></script>
@@ -6540,12 +6540,12 @@ body{
 <script src="nova-results.js?v=20260909-result-image-84"></script>
 <link rel="stylesheet" href="nova-ladder-presentation.css?v=20260909-shutter-95">
 <script src="nova-ladder-presentation.js?v=20260909-shutter-95"></script>
-<link rel="stylesheet" href="nova-aim-presentation.css?v=20260909-zone-111">
-<script src="nova-aim-presentation.js?v=20260909-zone-111"></script>
-<script src="nova-art.js?v=20260909-zone-111"></script>
-<script src="nova-balance.js?v=20260909-zone-111"></script>
-<script src="nova-normal.js?v=20260909-zone-111"></script>
-<script src="nova-flow.js?v=20260909-state-nova-111"></script>
+<link rel="stylesheet" href="nova-aim-presentation.css?v=20260909-burst-112">
+<script src="nova-aim-presentation.js?v=20260909-burst-112"></script>
+<script src="nova-art.js?v=20260909-burst-112"></script>
+<script src="nova-balance.js?v=20260909-burst-112"></script>
+<script src="nova-normal.js?v=20260909-burst-112"></script>
+<script src="nova-flow.js?v=20260909-burst-112"></script>
 <style>
 /* Fit the original nebula art to reel width; its transparent vertical margins
    no longer shrink the lettering to the cell height. Keep native proportions. */
@@ -9915,7 +9915,7 @@ body{
   function currentSetting(){ return SETTING[settings.setting] || SETTING[1]; }
   function targetRtp(){ return targetRtpFor(settings.setting); }
   function targetRtpText(settingNo = settings.setting){
-    if(A_TYPE_MODE) return (NovaBalance.profile(settingNo).target*100).toFixed(1)+"%（目標・仮調整）";
+    if(A_TYPE_MODE) return (NovaBalance.profile(settingNo).target*100).toFixed(1)+"%（3万G試算・停止込み）";
     const value = (targetRtpFor(settingNo) || 0) * 100;
     return A_TYPE_MODE ? `${value.toFixed(1)}%` : `${Math.round(value)}%`;
   }
@@ -10529,7 +10529,7 @@ body{
 
   function resetNormalCountersAfterArt(before,after){
     if(before?.phase!=='art'||after?.phase!=='normal')return;
-    normalState.internal=NovaNormal.afterArt(normalState.internal,before,after,settings.novaNormal);
+    normalState.internal=NovaNormal.afterArt(normalState.internal,before,after,{...settings.novaNormal,setting:settings.setting});
     normalState.sinceBonus=0;
   }
 
@@ -11231,8 +11231,9 @@ body{
         normalInternal:artStep?.normalInternal,
         czLamp:artStep?.czLamp,
         aim:artStep?.aim,
+        burstEvent:artStep?.burstEvent,
         flowBefore,
-        flowAfter:artStep?.flow || (czEntry ? NovaFlow.enterCZ(result === "STRONG_CZ",settings.novaFlow) : flowBefore.phase==='art' ? flowBefore : (isNewBonusHit || isReadyBonus) ? NovaFlow.normalize(null) : bonusPendingAtStart ? flowBefore : NovaFlow.advance(flowBefore)),
+        flowAfter:artStep?.flow || (czEntry ? NovaFlow.enterCZ(result === "STRONG_CZ",NovaFlow.forSetting(settings.novaFlow,settings.setting)) : flowBefore.phase==='art' ? flowBefore : (isNewBonusHit || isReadyBonus) ? NovaFlow.normalize(null) : bonusPendingAtStart ? flowBefore : NovaFlow.advance(flowBefore)),
         artMessage:artStep?.message || '',
         artReverse:!!(artStep?.reverse||artStep?.oumaFreeze),oumaFreeze:!!artStep?.oumaFreeze,
         zoneSpin,
@@ -11987,7 +11988,7 @@ body{
         bonusGuarantee.sets+=Number(normalState.prepSets)||0;
         bonusGuarantee.zones.push(...(normalState.prepZones||[]));
         normalState.prepSets=0;normalState.prepZones=[];normalState.prepLeft=0;normalState.prepConfirmed=false;
-        normalState.internal=initialNormalBonus?NovaNormal.afterBonus(bonusGuarantee.state):bonusGuarantee.state;
+        normalState.internal=initialNormalBonus?NovaNormal.afterBonus(bonusGuarantee.state,Math.random,settings.setting):bonusGuarantee.state;
         const bonusTarget = aTypeBonusTarget(bonusKind, premiumTargetBonus);
         const bonusLabel = NovaArt.bonusLabel(bonusTier);
         const hadPreviousBonus = (Number(stats.totalSessions) || 0) > 0;
@@ -13245,6 +13246,7 @@ body{
       flowStatus.textContent=session.active ? aTypeBonusLabel(session.bonusKind)+" 残り"+aTypeBonusRemainingNet()+"pt / AT獲得"+(session.bonusArtSets||0)+"SET" : normalModeLabel();
       flowStatus.dataset.phase=session.active?"bonus":NovaFlow.normalize(normalState.flow).phase;
       document.body.dataset.gamePhase=flowStatus.dataset.phase;
+      document.body.dataset.burst=session.active?'':normalState.flow?.burstWon?'won':normalState.flow?.burstLeft?'challenge':normalState.flow?.burstPending?'pending':'';
       document.body.dataset.atLevel=normalState.flow?.phase==='art'?NovaArt.atLevel(normalState.flow.atLevel):'';
       document.body.dataset.bonusTier=session.active?NovaArt.bonusTier(session.bonusTier):'';
       document.body.dataset.artZone=session.active?'':normalState.flow?.zone||'';
@@ -13900,7 +13902,7 @@ body{
     document.getElementById('saveFlowConfig').closest('details').after(normalPanel);
     document.getElementById('novaApplyInternal').onclick=()=>{if(isSpinning||session.active)return;normalState.internal=NovaNormal.normalize({mode:$('novaMode').value,games:$('novaModeGames').value,level:$('novaLevel').value,highLeft:$('novaLevel').value==='high'?10:0,impurity:$('novaImpurity').value});persistState();updateDisplay();};
     const artPanel=document.createElement('details');artPanel.id='novaArtConfig';
-    artPanel.innerHTML='<summary>AT・上乗せゾーン仮設定（9種類）</summary><p>AT初当たり時にLv.1〜5を1回抽選し、AT終了まで固定。セット継続・特化・ボーナス復帰・保存読込でも引き直しなし。通常／上位BIGの抽選とは独立。</p><p>ゾーン単体の累計上乗せptによる減衰なし。2000pt以上でも図柄揃い・nebula延長・フリーズ継続率は変わりません。</p><p>差枚による上乗せの増減は撤廃。ATの初期150pt・獲得済みpt・特化の保証は維持。更新前から消化中のATは従来の基本抽選を継続し、次のATから新振り分けを適用。</p><p>全ゾーン5G。段階式は1G目に最初の額を確保、残り4Gで上の段階へ挑戦。ハズレで終了し最高到達額のみ獲得。7揃い系・ノヴァ系は成立ごとに加算。</p>';
+    artPanel.innerHTML='<summary>AT・上乗せゾーン仮設定（9種類）</summary><p>AT初当たり時にLv.1〜3を1回抽選。通常AT中のレア役で1ATに1回まで爆発チャレンジを抽選し、3Gで成功期待度50%。成功すると＋8,000pt・Lv.5へ昇格し、AT終了まで継続。セット継続・特化・ボーナス復帰・保存読込でも引き直しなし。通常／上位BIGの抽選とは独立。</p><p>ゾーン単体の累計上乗せptによる減衰なし。2000pt以上でも図柄揃い・nebula延長・フリーズ継続率は変わりません。</p><p>差枚による上乗せの増減は撤廃。ATの初期150pt・獲得済みpt・特化の保証は維持。更新前から消化中のATは従来の基本抽選を継続し、次のATから新振り分けを適用。</p><p>全ゾーン5G。段階式は1G目に最初の額を確保、残り4Gで上の段階へ挑戦。ハズレで終了し最高到達額のみ獲得。7揃い系・ノヴァ系は成立ごとに加算。</p>';
     const levelTable=document.createElement('div');levelTable.innerHTML='<table><tr><th>設定</th>'+[1,2,3,4,5].map(l=>'<th>Lv.'+l+'</th>').join('')+'</tr>'+NovaArt.atLevelRules.weights.map((row,i)=>'<tr><td>'+(i+1)+'</td>'+row.map(p=>'<td>'+p.toFixed(1)+'%</td>').join('')+'</tr>').join('')+'</table><p>Lv.1からLv.5へ段階的にATレア役・直乗せ・特化抽選を優遇。レベルによる補正は全設定共通。強ノヴァは全レベルで特化確定。</p><table><tr><th>AT</th><th>レア役倍率</th><th>直乗せ倍率</th><th>弱ノヴァ低確／高確</th><th>弱特化</th><th>強特化</th><th>裏特化</th></tr>'+[1,2,3,4,5].map(l=>{const r=NovaArt.atLevelRules.levels[l];return '<tr><td>Lv.'+l+'</td><td>'+r.rare+'倍</td><td>'+r.direct+'倍</td><td>'+(Math.min(1,.5*r.weakNova)*100).toFixed(1)+'%／'+(Math.min(1,1.5*r.weakNova)*100).toFixed(1)+'%</td>'+r.groups.map(p=>'<td>'+p.toFixed(2)+'%</td>').join('')+'</tr>';}).join('')+'</table>';artPanel.append(levelTable);
     const artLabels={initial:'AT初期pt',ladderSosuke:'宗介 小役合算率',ladderGiru:'ギル 小役合算率',ladderUraGiru:'裏ギル 小役合算率',totoHit:'とと 7揃い率',totoReset:'とと nebula率',soraHit:'空 7揃い率',soraReset:'空 nebula率',soraUraRed:'裏空 赤ナビ振分率',soraUraHit:'裏空 7図柄選択用ウェイト',soraUraReset:'裏空 nebula率',urapiSuper:'うらぴ スーパーノヴァ率',oumaSuper:'逢魔 スーパーノヴァ率',oumaUraSuper:'裏逢魔 スーパーノヴァ率',urapiFreeze:'うらぴフリーズ継続率',oumaFreeze:'逢魔フリーズ継続率',oumaUraFreeze:'裏逢魔フリーズ継続率'};
     const zoneTable=document.createElement('div');zoneTable.innerHTML='<p>宗介・ギルは各5テーブル（各20%）、裏ギルは4テーブル（各25%）。同額の段階も突破で次へ進みます。<br>7揃い：50・100・150・200・300・500pt、nebulaで残り5Gへリセット。<br>スーパーノヴァ：通常50・100pt、裏逢魔100・200pt（フリーズ中も共通）。逢魔と裏逢魔はBETでフリーズ抽選、当選時は無料の自動0G連。</p><table><tr><th>設定（準備中抽選）</th>'+['弱上乗せ','強上乗せ','超上乗せ'].map(x=>'<th>'+x+'</th>').join('')+'</tr>'+[1,2,3,4,5,6].map(setting=>NovaArt.zoneGroupWeights(setting,false,true)).map((row,i)=>'<tr><td>'+(i+1)+'</td>'+row.map(p=>'<td>'+p.toFixed(2)+'%</td>').join('')+'</tr>').join('')+'</table><p>弱＝宗介・とと・うらぴ、強＝ギル・空・逢魔、超＝裏3種。強当選後の3%で超へ昇格（従来どおり）。各区分内は3種均等。キャラルーレット中のレア役でテーブル⑥⑦への昇格抽選あり。通常ATの抽選は上記のATレベルを参照。準備中の抽選は従来通り。</p>';artPanel.append(zoneTable);

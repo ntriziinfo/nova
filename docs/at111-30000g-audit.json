@@ -1,0 +1,44 @@
+[
+  {
+    "setting": 1,
+    "trials": 300,
+    "reach": 0.4066666666666667,
+    "uncappedRtp": 1.0967066219477692,
+    "cappedRtp": 0.9808140742964007
+  },
+  {
+    "setting": 2,
+    "trials": 300,
+    "reach": 0.44666666666666666,
+    "uncappedRtp": 1.1259968134710472,
+    "cappedRtp": 1.0012380580832818
+  },
+  {
+    "setting": 3,
+    "trials": 300,
+    "reach": 0.4633333333333333,
+    "uncappedRtp": 1.1719780081308901,
+    "cappedRtp": 1.0168222231707096
+  },
+  {
+    "setting": 4,
+    "trials": 300,
+    "reach": 0.5166666666666667,
+    "uncappedRtp": 1.2264148785378306,
+    "cappedRtp": 1.0409869571730643
+  },
+  {
+    "setting": 5,
+    "trials": 300,
+    "reach": 0.59,
+    "uncappedRtp": 1.285700769406857,
+    "cappedRtp": 1.0824648644018116
+  },
+  {
+    "setting": 6,
+    "trials": 300,
+    "reach": 0.7466666666666667,
+    "uncappedRtp": 1.4586457277430895,
+    "cappedRtp": 1.1794250771621042
+  }
+]

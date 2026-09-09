@@ -57,8 +57,6 @@ html { background:#08070a !important; background-image:none !important; }
 #novaFlowStatus[data-phase=cz]{color:#efa8ff;border-color:#ba63cd}
 #novaFlowStatus[data-phase=strong_cz]{color:#ffe087;border-color:#d1a035}
 #novaFlowStatus[data-phase=art]{color:#8ff8ff;border-color:#469ba4;font-size:12px;overflow-wrap:anywhere;line-height:17px;max-height:65px;overflow:auto}
-body[data-burst=pending] #novaFlowStatus,body[data-burst=challenge] #novaFlowStatus{color:#fff0ba;border-color:#ffc259;background:linear-gradient(110deg,#2c0f08,#481727);box-shadow:0 0 14px #ff722c66}
-body[data-burst=won] #novaFlowStatus{color:#fff3be;border-color:#ffe486;background:linear-gradient(110deg,#421832,#19205b,#143e44);box-shadow:0 0 18px #d375ff88;font-weight:900}
 body[data-art-zone=toto] .novaArtItem[data-artwork=toto] img{animation:none!important;filter:brightness(1.25) drop-shadow(0 0 12px var(--toto-lamp,#fff))!important}
 body[data-toto-color=blue]{--toto-lamp:#248aff}
 body[data-toto-color=yellow]{--toto-lamp:#ffff00}

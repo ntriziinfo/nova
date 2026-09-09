@@ -1,0 +1,1016 @@
+{
+  "status": "adopted: prioritize reach rate and lower RTP target (version112)",
+  "measurement": {
+    "gamesPerTrial": 30000,
+    "rtpContinuesAfterComplete": true,
+    "actualRuleRtpField": "stoppedRtp",
+    "reachTarget": "session net +10000pt within 30000G",
+    "ordinaryAtTarget": "gross paid points per AT; soft guideline, no hard cap"
+  },
+  "current": [
+    {
+      "maxGames": 30000,
+      "stopAtComplete": false,
+      "live": true,
+      "ordinary": {
+        "completed": 11754,
+        "mean": 1018.2544665645738,
+        "p50": 306,
+        "p90": 1611,
+        "p95": 3102,
+        "p99": 14379,
+        "over2000": 0.07861153649821337
+      },
+      "burst": {
+        "completed": 0,
+        "mean": null,
+        "over2000": null
+      },
+      "censoredOrdinary": 112,
+      "censoredBurst": 0,
+      "setting": 1,
+      "trials": 300,
+      "normalBoost": 0,
+      "entry": 0,
+      "kick": 0,
+      "pass": 0,
+      "weights": [
+        5,
+        15,
+        25,
+        25,
+        30
+      ],
+      "seedBase": 112300000,
+      "bet": 19189203,
+      "paid": 21044926,
+      "games": 9000000,
+      "rtp": 1.0967066219477692,
+      "rtpCI": [
+        1.0526956408317476,
+        1.1407176030637909
+      ],
+      "complete": 122,
+      "completeRate": 0.4066666666666667,
+      "completeCI": [
+        0.3526007999029206,
+        0.4630926403633234
+      ],
+      "normalGames": 4950375,
+      "czEntries": 34182,
+      "artEntries": 11866,
+      "normalPerCz": 144.82403019132877,
+      "nonAtPerAt": 503.72703522669815,
+      "burstAttempts": 0,
+      "burstWins": 0,
+      "sourceHashes": {
+        "nova-art.js": "01769107c1fd11ddc0c89a715d0ddbc8cc2bcdf287674b3fd165a44cc2d4924a",
+        "nova-flow.js": "a877360e6b1dbd050322c4046f9453a85748f1dd9d877113f80567eb9a41f108",
+        "nova-normal.js": "54734d9d1214b9c8e96857bc9d52a6cb881e37fa1f4520ce023455999fb2a2bd",
+        "nova-balance.js": "d747b6959fe06df36eb0dab1ddca3bb1a5627b517ad83790d20b970e4ead2556",
+        "scripts/burst112-trial-model.mjs": "5e090e7890b776a28b71145122abdb18aab055325933513b0582f5b74f51b3e7",
+        "research/burst112/session-model.mjs": "b9f19095dbc1a868063381b222ed87ec5c643d96630589459e61826bd527243e"
+      },
+      "elapsedSeconds": 176.357,
+      "completeByGame": {
+        "10000": 0.13333333333333333,
+        "20000": 0.2866666666666667,
+        "30000": 0.4066666666666667
+      },
+      "stoppedRtp": 0.9808140742964007,
+      "stoppedGames": 7115551,
+      "stoppedRtpCI": [
+        0.9569611312030357,
+        1.0046670173897656
+      ],
+      "path": "docs/burst112-live30k-1.json",
+      "reachedBeforeBurst": 122,
+      "sessionsWithBurst": 0
+    },
+    {
+      "maxGames": 30000,
+      "stopAtComplete": false,
+      "live": true,
+      "ordinary": {
+        "completed": 11364,
+        "mean": 1115.117212249208,
+        "p50": 312,
+        "p90": 1851,
+        "p95": 3645,
+        "p99": 16299,
+        "over2000": 0.09327701513551566
+      },
+      "burst": {
+        "completed": 0,
+        "mean": null,
+        "over2000": null
+      },
+      "censoredOrdinary": 112,
+      "censoredBurst": 0,
+      "setting": 2,
+      "trials": 300,
+      "normalBoost": 0,
+      "entry": 0,
+      "kick": 0,
+      "pass": 0,
+      "weights": [
+        4,
+        12,
+        24,
+        27,
+        33
+      ],
+      "seedBase": 112300000,
+      "bet": 19058355,
+      "paid": 21459647,
+      "games": 9000000,
+      "rtp": 1.1259968134710472,
+      "rtpCI": [
+        1.0839984335051147,
+        1.1679951934369797
+      ],
+      "complete": 134,
+      "completeRate": 0.44666666666666666,
+      "completeCI": [
+        0.39143616500447354,
+        0.5032458008619516
+      ],
+      "normalGames": 4854916,
+      "czEntries": 33517,
+      "artEntries": 11476,
+      "normalPerCz": 144.84936002625534,
+      "nonAtPerAt": 510.7642906936215,
+      "burstAttempts": 0,
+      "burstWins": 0,
+      "sourceHashes": {
+        "nova-art.js": "01769107c1fd11ddc0c89a715d0ddbc8cc2bcdf287674b3fd165a44cc2d4924a",
+        "nova-flow.js": "a877360e6b1dbd050322c4046f9453a85748f1dd9d877113f80567eb9a41f108",
+        "nova-normal.js": "54734d9d1214b9c8e96857bc9d52a6cb881e37fa1f4520ce023455999fb2a2bd",
+        "nova-balance.js": "d747b6959fe06df36eb0dab1ddca3bb1a5627b517ad83790d20b970e4ead2556",
+        "scripts/burst112-trial-model.mjs": "5e090e7890b776a28b71145122abdb18aab055325933513b0582f5b74f51b3e7",
+        "research/burst112/session-model.mjs": "b9f19095dbc1a868063381b222ed87ec5c643d96630589459e61826bd527243e"
+      },
+      "elapsedSeconds": 182.321,
+      "completeByGame": {
+        "10000": 0.13,
+        "20000": 0.2966666666666667,
+        "30000": 0.44666666666666666
+      },
+      "stoppedRtp": 1.0012380580832818,
+      "stoppedGames": 7066712,
+      "stoppedRtpCI": [
+        0.9782717305550058,
+        1.024204385611558
+      ],
+      "path": "docs/burst112-live30k-2.json",
+      "reachedBeforeBurst": 134,
+      "sessionsWithBurst": 0
+    },
+    {
+      "maxGames": 30000,
+      "stopAtComplete": false,
+      "live": true,
+      "ordinary": {
+        "completed": 10904,
+        "mean": 1163.3498716067497,
+        "p50": 312,
+        "p90": 1848,
+        "p95": 3795,
+        "p99": 16431,
+        "over2000": 0.09280997798972854
+      },
+      "burst": {
+        "completed": 0,
+        "mean": null,
+        "over2000": null
+      },
+      "censoredOrdinary": 117,
+      "censoredBurst": 0,
+      "setting": 3,
+      "trials": 300,
+      "normalBoost": 0,
+      "entry": 0,
+      "kick": 0,
+      "pass": 0,
+      "weights": [
+        3,
+        11,
+        24,
+        27,
+        35
+      ],
+      "seedBase": 112300000,
+      "bet": 18847875,
+      "paid": 22089295,
+      "games": 9000000,
+      "rtp": 1.1719780081308901,
+      "rtpCI": [
+        1.1229097114347057,
+        1.2210463048270745
+      ],
+      "complete": 139,
+      "completeRate": 0.4633333333333333,
+      "completeCI": [
+        0.40772488257071904,
+        0.5198689689624482
+      ],
+      "normalGames": 4710440,
+      "czEntries": 32558,
+      "artEntries": 11021,
+      "normalPerCz": 144.67842005037164,
+      "nonAtPerAt": 516.0286725342528,
+      "burstAttempts": 0,
+      "burstWins": 0,
+      "sourceHashes": {
+        "nova-art.js": "01769107c1fd11ddc0c89a715d0ddbc8cc2bcdf287674b3fd165a44cc2d4924a",
+        "nova-flow.js": "a877360e6b1dbd050322c4046f9453a85748f1dd9d877113f80567eb9a41f108",
+        "nova-normal.js": "54734d9d1214b9c8e96857bc9d52a6cb881e37fa1f4520ce023455999fb2a2bd",
+        "nova-balance.js": "d747b6959fe06df36eb0dab1ddca3bb1a5627b517ad83790d20b970e4ead2556",
+        "scripts/burst112-trial-model.mjs": "5e090e7890b776a28b71145122abdb18aab055325933513b0582f5b74f51b3e7",
+        "research/burst112/session-model.mjs": "b9f19095dbc1a868063381b222ed87ec5c643d96630589459e61826bd527243e"
+      },
+      "elapsedSeconds": 183.982,
+      "completeByGame": {
+        "10000": 0.19333333333333333,
+        "20000": 0.35,
+        "30000": 0.4633333333333333
+      },
+      "stoppedRtp": 1.0168222231707096,
+      "stoppedGames": 6733225,
+      "stoppedRtpCI": [
+        0.9916597791679466,
+        1.0419846671734725
+      ],
+      "path": "docs/burst112-live30k-3.json",
+      "reachedBeforeBurst": 139,
+      "sessionsWithBurst": 0
+    },
+    {
+      "maxGames": 30000,
+      "stopAtComplete": false,
+      "live": true,
+      "ordinary": {
+        "completed": 10671,
+        "mean": 1231.1034579701995,
+        "p50": 306,
+        "p90": 1887,
+        "p95": 4059,
+        "p99": 19335,
+        "over2000": 0.09521132040108705
+      },
+      "burst": {
+        "completed": 0,
+        "mean": null,
+        "over2000": null
+      },
+      "censoredOrdinary": 133,
+      "censoredBurst": 0,
+      "setting": 4,
+      "trials": 300,
+      "normalBoost": 0,
+      "entry": 0,
+      "kick": 0,
+      "pass": 0,
+      "weights": [
+        3,
+        9,
+        22,
+        28,
+        38
+      ],
+      "seedBase": 112300000,
+      "bet": 18622959,
+      "paid": 22839474,
+      "games": 9000000,
+      "rtp": 1.2264148785378306,
+      "rtpCI": [
+        1.1748649210113467,
+        1.2779648360643145
+      ],
+      "complete": 155,
+      "completeRate": 0.5166666666666667,
+      "completeCI": [
+        0.46026528666991656,
+        0.5726465989968257
+      ],
+      "normalGames": 4547876,
+      "czEntries": 31548,
+      "artEntries": 10804,
+      "normalPerCz": 144.15734753391658,
+      "nonAtPerAt": 508.8336727138097,
+      "burstAttempts": 0,
+      "burstWins": 0,
+      "sourceHashes": {
+        "nova-art.js": "01769107c1fd11ddc0c89a715d0ddbc8cc2bcdf287674b3fd165a44cc2d4924a",
+        "nova-flow.js": "a877360e6b1dbd050322c4046f9453a85748f1dd9d877113f80567eb9a41f108",
+        "nova-normal.js": "54734d9d1214b9c8e96857bc9d52a6cb881e37fa1f4520ce023455999fb2a2bd",
+        "nova-balance.js": "d747b6959fe06df36eb0dab1ddca3bb1a5627b517ad83790d20b970e4ead2556",
+        "scripts/burst112-trial-model.mjs": "5e090e7890b776a28b71145122abdb18aab055325933513b0582f5b74f51b3e7",
+        "research/burst112/session-model.mjs": "b9f19095dbc1a868063381b222ed87ec5c643d96630589459e61826bd527243e"
+      },
+      "elapsedSeconds": 156.263,
+      "completeByGame": {
+        "10000": 0.19,
+        "20000": 0.37333333333333335,
+        "30000": 0.5166666666666667
+      },
+      "stoppedRtp": 1.0409869571730643,
+      "stoppedGames": 6609323,
+      "stoppedRtpCI": [
+        1.015886092040551,
+        1.0660878223055776
+      ],
+      "path": "docs/burst112-live30k-4.json",
+      "reachedBeforeBurst": 155,
+      "sessionsWithBurst": 0
+    },
+    {
+      "maxGames": 30000,
+      "stopAtComplete": false,
+      "live": true,
+      "ordinary": {
+        "completed": 10311,
+        "mean": 1359.2307244690137,
+        "p50": 315,
+        "p90": 2214,
+        "p95": 4680,
+        "p99": 20262,
+        "over2000": 0.1084278925419455
+      },
+      "burst": {
+        "completed": 0,
+        "mean": null,
+        "over2000": null
+      },
+      "censoredOrdinary": 132,
+      "censoredBurst": 0,
+      "setting": 5,
+      "trials": 300,
+      "normalBoost": 0,
+      "entry": 0,
+      "kick": 0,
+      "pass": 0,
+      "weights": [
+        2,
+        7,
+        18,
+        28,
+        45
+      ],
+      "seedBase": 112300000,
+      "bet": 18369345,
+      "paid": 23617481,
+      "games": 9000000,
+      "rtp": 1.285700769406857,
+      "rtpCI": [
+        1.233103440274649,
+        1.338298098539065
+      ],
+      "complete": 177,
+      "completeRate": 0.59,
+      "completeCI": [
+        0.5335471696907381,
+        0.6441770129096693
+      ],
+      "normalGames": 4361960,
+      "czEntries": 30732,
+      "artEntries": 10443,
+      "normalPerCz": 141.93544188468047,
+      "nonAtPerAt": 505.84085033036484,
+      "burstAttempts": 0,
+      "burstWins": 0,
+      "sourceHashes": {
+        "nova-art.js": "01769107c1fd11ddc0c89a715d0ddbc8cc2bcdf287674b3fd165a44cc2d4924a",
+        "nova-flow.js": "a877360e6b1dbd050322c4046f9453a85748f1dd9d877113f80567eb9a41f108",
+        "nova-normal.js": "54734d9d1214b9c8e96857bc9d52a6cb881e37fa1f4520ce023455999fb2a2bd",
+        "nova-balance.js": "d747b6959fe06df36eb0dab1ddca3bb1a5627b517ad83790d20b970e4ead2556",
+        "scripts/burst112-trial-model.mjs": "5e090e7890b776a28b71145122abdb18aab055325933513b0582f5b74f51b3e7",
+        "research/burst112/session-model.mjs": "b9f19095dbc1a868063381b222ed87ec5c643d96630589459e61826bd527243e"
+      },
+      "elapsedSeconds": 161.202,
+      "completeByGame": {
+        "10000": 0.20333333333333334,
+        "20000": 0.43,
+        "30000": 0.59
+      },
+      "stoppedRtp": 1.0824648644018116,
+      "stoppedGames": 6204924,
+      "stoppedRtpCI": [
+        1.0552159527780018,
+        1.1097137760256213
+      ],
+      "path": "docs/burst112-live30k-5.json",
+      "reachedBeforeBurst": 177,
+      "sessionsWithBurst": 0
+    },
+    {
+      "maxGames": 30000,
+      "stopAtComplete": false,
+      "live": true,
+      "ordinary": {
+        "completed": 9379,
+        "mean": 1678.3616590254824,
+        "p50": 321,
+        "p90": 2682,
+        "p95": 6153,
+        "p99": 28281,
+        "over2000": 0.12794540995841774
+      },
+      "burst": {
+        "completed": 0,
+        "mean": null,
+        "over2000": null
+      },
+      "censoredOrdinary": 162,
+      "censoredBurst": 0,
+      "setting": 6,
+      "trials": 300,
+      "normalBoost": 0,
+      "entry": 0,
+      "kick": 0,
+      "pass": 0,
+      "weights": [
+        1,
+        3,
+        8,
+        23,
+        65
+      ],
+      "seedBase": 112300000,
+      "bet": 17680374,
+      "paid": 25789402,
+      "games": 9000000,
+      "rtp": 1.4586457277430895,
+      "rtpCI": [
+        1.400421176702189,
+        1.51687027878399
+      ],
+      "complete": 224,
+      "completeRate": 0.7466666666666667,
+      "completeCI": [
+        0.6945448785767366,
+        0.7925510292910473
+      ],
+      "normalGames": 3873471,
+      "czEntries": 27284,
+      "artEntries": 9541,
+      "normalPerCz": 141.9685896496115,
+      "nonAtPerAt": 491.91761869824967,
+      "burstAttempts": 0,
+      "burstWins": 0,
+      "path": "docs/burst112-live30k-6.json",
+      "stoppedRtp": 1.1794250771621042,
+      "stoppedRtpCI": [
+        1.148800965311137,
+        1.2100491890130713
+      ],
+      "stoppedGames": 5297322,
+      "completeByGame": {
+        "10000": 0.29333333333333333,
+        "20000": 0.5766666666666667,
+        "30000": 0.7466666666666667
+      },
+      "reachedBeforeBurst": 0,
+      "sessionsWithBurst": 0
+    }
+  ],
+  "trial": [
+    {
+      "maxGames": 30000,
+      "stopAtComplete": false,
+      "live": false,
+      "ordinary": {
+        "completed": 81829,
+        "mean": 381.42703686956946,
+        "p50": 252,
+        "p90": 753,
+        "p95": 1068,
+        "p99": 2277,
+        "over2000": 0.013234916716567477
+      },
+      "burst": {
+        "completed": 4,
+        "mean": 41833.5,
+        "p50": 34851,
+        "p90": 50874,
+        "p95": 50874,
+        "p99": 50874,
+        "over2000": 1
+      },
+      "censoredOrdinary": 234,
+      "censoredBurst": 9,
+      "setting": 1,
+      "trials": 1000,
+      "normalBoost": 0.525,
+      "entry": 0.0006,
+      "kick": 8000,
+      "pass": 0.5,
+      "weights": [
+        35,
+        45,
+        20,
+        0,
+        0
+      ],
+      "seedBase": 112900000,
+      "bet": 66430350,
+      "paid": 62836560,
+      "games": 30000000,
+      "rtp": 0.9459013839306883,
+      "rtpCI": [
+        0.9391343148656146,
+        0.9526684529957621
+      ],
+      "complete": 21,
+      "completeRate": 0.021,
+      "completeCI": [
+        0.013775634089646441,
+        0.03189053475611568
+      ],
+      "normalGames": 17287962,
+      "czEntries": 185080,
+      "artEntries": 82076,
+      "normalPerCz": 93.4080505727253,
+      "nonAtPerAt": 286.5399873288172,
+      "burstAttempts": 25,
+      "burstWins": 13,
+      "sourceHashes": {
+        "nova-art.js": "01769107c1fd11ddc0c89a715d0ddbc8cc2bcdf287674b3fd165a44cc2d4924a",
+        "nova-flow.js": "a877360e6b1dbd050322c4046f9453a85748f1dd9d877113f80567eb9a41f108",
+        "nova-normal.js": "54734d9d1214b9c8e96857bc9d52a6cb881e37fa1f4520ce023455999fb2a2bd",
+        "nova-balance.js": "d747b6959fe06df36eb0dab1ddca3bb1a5627b517ad83790d20b970e4ead2556",
+        "scripts/burst112-trial-model.mjs": "5e090e7890b776a28b71145122abdb18aab055325933513b0582f5b74f51b3e7",
+        "research/burst112/session-model.mjs": "b9f19095dbc1a868063381b222ed87ec5c643d96630589459e61826bd527243e"
+      },
+      "elapsedSeconds": 485.942,
+      "completeByGame": {
+        "10000": 0.004,
+        "20000": 0.015,
+        "30000": 0.021
+      },
+      "stoppedRtp": 0.9393169353185032,
+      "stoppedGames": 29720969,
+      "stoppedRtpCI": [
+        0.9352971465676106,
+        0.9433367240693958
+      ],
+      "path": "docs/burst112-verify30k-1.json",
+      "reachedBeforeBurst": 10,
+      "sessionsWithBurst": 13
+    },
+    {
+      "maxGames": 30000,
+      "stopAtComplete": false,
+      "live": false,
+      "ordinary": {
+        "completed": 81236,
+        "mean": 390.04715889507116,
+        "p50": 255,
+        "p90": 762,
+        "p95": 1104,
+        "p99": 2454,
+        "over2000": 0.015424196169186076
+      },
+      "burst": {
+        "completed": 14,
+        "mean": 43987.28571428572,
+        "p50": 33687,
+        "p90": 69288,
+        "p95": 92892,
+        "p99": 92892,
+        "over2000": 1
+      },
+      "censoredOrdinary": 199,
+      "censoredBurst": 18,
+      "setting": 2,
+      "trials": 1000,
+      "normalBoost": 0.53,
+      "entry": 0.00115,
+      "kick": 8000,
+      "pass": 0.5,
+      "weights": [
+        30,
+        45,
+        25,
+        0,
+        0
+      ],
+      "seedBase": 112900000,
+      "bet": 66105456,
+      "paid": 63712945,
+      "games": 30000000,
+      "rtp": 0.9638076621088583,
+      "rtpCI": [
+        0.9558341890933563,
+        0.9717811351243603
+      ],
+      "complete": 29,
+      "completeRate": 0.029,
+      "completeCI": [
+        0.02026631563648779,
+        0.04133862283189209
+      ],
+      "normalGames": 17074767,
+      "czEntries": 184046,
+      "artEntries": 81467,
+      "normalPerCz": 92.77445312584898,
+      "nonAtPerAt": 285.651564437134,
+      "burstAttempts": 60,
+      "burstWins": 32,
+      "sourceHashes": {
+        "nova-art.js": "01769107c1fd11ddc0c89a715d0ddbc8cc2bcdf287674b3fd165a44cc2d4924a",
+        "nova-flow.js": "a877360e6b1dbd050322c4046f9453a85748f1dd9d877113f80567eb9a41f108",
+        "nova-normal.js": "54734d9d1214b9c8e96857bc9d52a6cb881e37fa1f4520ce023455999fb2a2bd",
+        "nova-balance.js": "d747b6959fe06df36eb0dab1ddca3bb1a5627b517ad83790d20b970e4ead2556",
+        "scripts/burst112-trial-model.mjs": "5e090e7890b776a28b71145122abdb18aab055325933513b0582f5b74f51b3e7",
+        "research/burst112/session-model.mjs": "b9f19095dbc1a868063381b222ed87ec5c643d96630589459e61826bd527243e"
+      },
+      "elapsedSeconds": 490.698,
+      "completeByGame": {
+        "10000": 0.006,
+        "20000": 0.02,
+        "30000": 0.029
+      },
+      "stoppedRtp": 0.9526947230436706,
+      "stoppedGames": 29595809,
+      "stoppedRtpCI": [
+        0.9485101344208268,
+        0.9568793116665145
+      ],
+      "path": "docs/burst112-verify30k-2.json",
+      "reachedBeforeBurst": 5,
+      "sessionsWithBurst": 32
+    },
+    {
+      "maxGames": 30000,
+      "stopAtComplete": false,
+      "live": false,
+      "ordinary": {
+        "completed": 80086,
+        "mean": 398.56857628049846,
+        "p50": 255,
+        "p90": 789,
+        "p95": 1146,
+        "p99": 2511,
+        "over2000": 0.016207576854881004
+      },
+      "burst": {
+        "completed": 19,
+        "mean": 51951.15789473684,
+        "p50": 54924,
+        "p90": 67161,
+        "p95": 76053,
+        "p99": 76053,
+        "over2000": 1
+      },
+      "censoredOrdinary": 221,
+      "censoredBurst": 30,
+      "setting": 3,
+      "trials": 1000,
+      "normalBoost": 0.52,
+      "entry": 0.00165,
+      "kick": 8000,
+      "pass": 0.5,
+      "weights": [
+        25,
+        45,
+        30,
+        0,
+        0
+      ],
+      "seedBase": 112900000,
+      "bet": 65748162,
+      "paid": 64741704,
+      "games": 30000000,
+      "rtp": 0.9846922260731791,
+      "rtpCI": [
+        0.974087759732272,
+        0.9952966924140861
+      ],
+      "complete": 51,
+      "completeRate": 0.051,
+      "completeCI": [
+        0.03900075064262791,
+        0.06643580428795079
+      ],
+      "normalGames": 16849768,
+      "czEntries": 181667,
+      "artEntries": 80356,
+      "normalPerCz": 92.75084632872233,
+      "nonAtPerAt": 285.6568893424262,
+      "burstAttempts": 91,
+      "burstWins": 49,
+      "sourceHashes": {
+        "nova-art.js": "01769107c1fd11ddc0c89a715d0ddbc8cc2bcdf287674b3fd165a44cc2d4924a",
+        "nova-flow.js": "a877360e6b1dbd050322c4046f9453a85748f1dd9d877113f80567eb9a41f108",
+        "nova-normal.js": "54734d9d1214b9c8e96857bc9d52a6cb881e37fa1f4520ce023455999fb2a2bd",
+        "nova-balance.js": "d747b6959fe06df36eb0dab1ddca3bb1a5627b517ad83790d20b970e4ead2556",
+        "scripts/burst112-trial-model.mjs": "5e090e7890b776a28b71145122abdb18aab055325933513b0582f5b74f51b3e7",
+        "research/burst112/session-model.mjs": "b9f19095dbc1a868063381b222ed87ec5c643d96630589459e61826bd527243e"
+      },
+      "elapsedSeconds": 501.432,
+      "completeByGame": {
+        "10000": 0.017,
+        "20000": 0.032,
+        "30000": 0.051
+      },
+      "stoppedRtp": 0.9627518039475211,
+      "stoppedGames": 29274232,
+      "stoppedRtpCI": [
+        0.9580484544362956,
+        0.9674551534587467
+      ],
+      "path": "docs/burst112-verify30k-3.json",
+      "reachedBeforeBurst": 11,
+      "sessionsWithBurst": 48
+    },
+    {
+      "maxGames": 30000,
+      "stopAtComplete": false,
+      "live": false,
+      "ordinary": {
+        "completed": 79019,
+        "mean": 413.1737177134613,
+        "p50": 264,
+        "p90": 822,
+        "p95": 1215,
+        "p99": 2733,
+        "over2000": 0.018590465584226577
+      },
+      "burst": {
+        "completed": 23,
+        "mean": 50200.95652173913,
+        "p50": 50856,
+        "p90": 70905,
+        "p95": 83388,
+        "p99": 105264,
+        "over2000": 1
+      },
+      "censoredOrdinary": 212,
+      "censoredBurst": 61,
+      "setting": 4,
+      "trials": 1000,
+      "normalBoost": 0.535,
+      "entry": 0.0027,
+      "kick": 8000,
+      "pass": 0.5,
+      "weights": [
+        20,
+        40,
+        40,
+        0,
+        0
+      ],
+      "seedBase": 112900000,
+      "bet": 65002956,
+      "paid": 67132921,
+      "games": 30000000,
+      "rtp": 1.0327672021561605,
+      "rtpCI": [
+        1.018157108890496,
+        1.047377295421825
+      ],
+      "complete": 93,
+      "completeRate": 0.093,
+      "completeCI": [
+        0.07652345008781691,
+        0.11259164536150498
+      ],
+      "normalGames": 16307525,
+      "czEntries": 178731,
+      "artEntries": 79315,
+      "normalPerCz": 91.2406073932334,
+      "nonAtPerAt": 281.47410956313433,
+      "burstAttempts": 155,
+      "burstWins": 84,
+      "inputConfig": {
+        "normalBoost": 0.535,
+        "kick": 8000,
+        "entry": [
+          0.0006,
+          0.00115,
+          0.00165,
+          0.0027,
+          0.0036,
+          0.0052
+        ],
+        "seedBase": 112900000
+      },
+      "sourceHashes": {
+        "nova-art.js": "01769107c1fd11ddc0c89a715d0ddbc8cc2bcdf287674b3fd165a44cc2d4924a",
+        "nova-flow.js": "a877360e6b1dbd050322c4046f9453a85748f1dd9d877113f80567eb9a41f108",
+        "nova-normal.js": "54734d9d1214b9c8e96857bc9d52a6cb881e37fa1f4520ce023455999fb2a2bd",
+        "nova-balance.js": "d747b6959fe06df36eb0dab1ddca3bb1a5627b517ad83790d20b970e4ead2556",
+        "scripts/burst112-trial-model.mjs": "5e090e7890b776a28b71145122abdb18aab055325933513b0582f5b74f51b3e7",
+        "research/burst112/session-model.mjs": "b9f19095dbc1a868063381b222ed87ec5c643d96630589459e61826bd527243e"
+      },
+      "elapsedSeconds": 515.693,
+      "completeByGame": {
+        "10000": 0.023,
+        "20000": 0.059,
+        "30000": 0.093
+      },
+      "stoppedRtp": 0.9907433767293277,
+      "stoppedGames": 28773331,
+      "stoppedRtpCI": [
+        0.9855535128347663,
+        0.995933240623889
+      ],
+      "path": "docs/burst112-verify30k-4.json",
+      "reachedBeforeBurst": 22,
+      "sessionsWithBurst": 84
+    },
+    {
+      "maxGames": 30000,
+      "stopAtComplete": false,
+      "live": false,
+      "ordinary": {
+        "completed": 78635,
+        "mean": 429.426031665289,
+        "p50": 288,
+        "p90": 855,
+        "p95": 1284,
+        "p99": 2895,
+        "over2000": 0.0221148343612895
+      },
+      "burst": {
+        "completed": 35,
+        "mean": 56398.8,
+        "p50": 54105,
+        "p90": 82260,
+        "p95": 95298,
+        "p99": 102369,
+        "over2000": 1
+      },
+      "censoredOrdinary": 248,
+      "censoredBurst": 69,
+      "setting": 5,
+      "trials": 1000,
+      "normalBoost": 0.545,
+      "entry": 0.0036,
+      "kick": 8000,
+      "pass": 0.5,
+      "weights": [
+        15,
+        35,
+        50,
+        0,
+        0
+      ],
+      "seedBase": 112900000,
+      "bet": 64600632,
+      "paid": 68301920,
+      "games": 30000000,
+      "rtp": 1.0572949193438232,
+      "rtpCI": [
+        1.04330566969404,
+        1.0712841689936066
+      ],
+      "complete": 128,
+      "completeRate": 0.128,
+      "completeCI": [
+        0.10870719327761863,
+        0.15014001927065596
+      ],
+      "normalGames": 16031132,
+      "czEntries": 177198,
+      "artEntries": 78987,
+      "normalPerCz": 90.47016332012777,
+      "nonAtPerAt": 278.6625900464633,
+      "burstAttempts": 205,
+      "burstWins": 104,
+      "inputConfig": {
+        "normalBoost": 0.545,
+        "kick": 8000,
+        "entry": [
+          0.0006,
+          0.00115,
+          0.00165,
+          0.0027,
+          0.0036,
+          0.0052
+        ],
+        "seedBase": 112900000
+      },
+      "sourceHashes": {
+        "nova-art.js": "01769107c1fd11ddc0c89a715d0ddbc8cc2bcdf287674b3fd165a44cc2d4924a",
+        "nova-flow.js": "a877360e6b1dbd050322c4046f9453a85748f1dd9d877113f80567eb9a41f108",
+        "nova-normal.js": "54734d9d1214b9c8e96857bc9d52a6cb881e37fa1f4520ce023455999fb2a2bd",
+        "nova-balance.js": "d747b6959fe06df36eb0dab1ddca3bb1a5627b517ad83790d20b970e4ead2556",
+        "scripts/burst112-trial-model.mjs": "5e090e7890b776a28b71145122abdb18aab055325933513b0582f5b74f51b3e7",
+        "research/burst112/session-model.mjs": "b9f19095dbc1a868063381b222ed87ec5c643d96630589459e61826bd527243e"
+      },
+      "elapsedSeconds": 525.688,
+      "completeByGame": {
+        "10000": 0.026,
+        "20000": 0.062,
+        "30000": 0.128
+      },
+      "stoppedRtp": 1.0123599573785582,
+      "stoppedGames": 28546880,
+      "stoppedRtpCI": [
+        1.0069830296544453,
+        1.0177368851026711
+      ],
+      "path": "docs/burst112-verify30k-5.json",
+      "reachedBeforeBurst": 39,
+      "sessionsWithBurst": 101
+    },
+    {
+      "maxGames": 30000,
+      "stopAtComplete": false,
+      "live": false,
+      "ordinary": {
+        "completed": 76624,
+        "mean": 440.3157757360618,
+        "p50": 300,
+        "p90": 873,
+        "p95": 1341,
+        "p99": 3090,
+        "over2000": 0.024417936938818125
+      },
+      "burst": {
+        "completed": 59,
+        "mean": 57900.20338983051,
+        "p50": 51591,
+        "p90": 96291,
+        "p95": 113130,
+        "p99": 115716,
+        "over2000": 1
+      },
+      "censoredOrdinary": 238,
+      "censoredBurst": 96,
+      "setting": 6,
+      "trials": 1000,
+      "normalBoost": 0.555,
+      "entry": 0.0052,
+      "kick": 8000,
+      "pass": 0.5,
+      "weights": [
+        10,
+        30,
+        60,
+        0,
+        0
+      ],
+      "seedBase": 112900000,
+      "bet": 63640047,
+      "paid": 71363740,
+      "games": 30000000,
+      "rtp": 1.121365293774846,
+      "rtpCI": [
+        1.101607279039818,
+        1.141123308509874
+      ],
+      "complete": 188,
+      "completeRate": 0.188,
+      "completeCI": [
+        0.1649943095437335,
+        0.21339367517417424
+      ],
+      "normalGames": 15362566,
+      "czEntries": 171904,
+      "artEntries": 77017,
+      "normalPerCz": 89.36712351079673,
+      "nonAtPerAt": 274.9068647181791,
+      "burstAttempts": 299,
+      "burstWins": 155,
+      "inputConfig": {
+        "normalBoost": 0.555,
+        "kick": 8000,
+        "entry": [
+          0.0006,
+          0.00115,
+          0.00165,
+          0.0027,
+          0.0036,
+          0.0052
+        ],
+        "seedBase": 112900000
+      },
+      "sourceHashes": {
+        "nova-art.js": "01769107c1fd11ddc0c89a715d0ddbc8cc2bcdf287674b3fd165a44cc2d4924a",
+        "nova-flow.js": "a877360e6b1dbd050322c4046f9453a85748f1dd9d877113f80567eb9a41f108",
+        "nova-normal.js": "54734d9d1214b9c8e96857bc9d52a6cb881e37fa1f4520ce023455999fb2a2bd",
+        "nova-balance.js": "d747b6959fe06df36eb0dab1ddca3bb1a5627b517ad83790d20b970e4ead2556",
+        "scripts/burst112-trial-model.mjs": "5e090e7890b776a28b71145122abdb18aab055325933513b0582f5b74f51b3e7",
+        "research/burst112/session-model.mjs": "b9f19095dbc1a868063381b222ed87ec5c643d96630589459e61826bd527243e"
+      },
+      "elapsedSeconds": 539.081,
+      "completeByGame": {
+        "10000": 0.057,
+        "20000": 0.121,
+        "30000": 0.188
+      },
+      "stoppedRtp": 1.0383872963292449,
+      "stoppedGames": 27414908,
+      "stoppedRtpCI": [
+        1.0324674943501169,
+        1.0443070983083729
+      ],
+      "path": "docs/burst112-verify30k-6.json",
+      "reachedBeforeBurst": 52,
+      "sessionsWithBurst": 152
+    }
+  ]
+}

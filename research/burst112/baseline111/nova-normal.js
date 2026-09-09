@@ -7,7 +7,7 @@ globalThis.NovaNormal=(()=>{
  const gameZoneConfig={fakeRate:.5,preludeMin:3,preludeMax:8,ceilingBonusRate:.5};
  const atEndModeWeights={dry:[0,40,25,18,12,5,0],normal:[35,25,15,12,8,5,0]};
  function zonePoint(g){return g<=300?g>0&&g%50===0:g%100===0;}
- function zoneRate(value,setting){const s=normalize(value),g=s.games+1;if(g>=ceiling(s)||!zonePoint(g))return 0;const p=gameZoneRates[s.mode][g]??0;return p?p+(1-p)*NovaArt.initialHitBoost(setting):0;}
+ function zoneRate(value){const s=normalize(value),g=s.games+1;if(g>=ceiling(s)||!zonePoint(g))return 0;return gameZoneRates[s.mode][g]??0;}
  // Choose only presentations consistent with the supplied mode-hint table.
  // A main prelude at 150/250G is genuine; a failed main at 50G implies heaven.
  function preludePresentation(mode,g,hit,rng){
@@ -37,7 +37,6 @@ globalThis.NovaNormal=(()=>{
  function resetDistribution(setting=1){const row=resetImpurityWeights[Math.max(0,Math.min(5,Math.round(Number(setting)||1)-1))];return resetImpurityPoints.map((pt,i)=>({pt,weight:row[i]}));}
  function reset(rng=Math.random,setting=1){const row=resetDistribution(setting);return normalize({mode:'特殊',impurity:row[weighted(row.map(x=>x.weight),rng)].pt});}
  function normalize(v){const mode=['天国A','天国B'].includes(v?.mode)?'天国':v?.mode;return {prelude:v?.prelude&&['fake','cz','ceilingBonus','ceilingCz'].includes(v.prelude.kind)?{kind:v.prelude.kind,originG:Math.max(0,Math.floor(Number(v.prelude.originG)||0)),presentation:['pre','main'].includes(v.prelude.presentation)?v.prelude.presentation:'legacy',left:Math.max(0,Math.min(8,Math.floor(Number(v.prelude.left)||0)))}:null,ceilingHandled:!!v?.ceilingHandled,regStreak:Math.max(0,Math.floor(Number(v?.regStreak)||0)),morningCeiling:v?.morningCeiling===true,mode:modes.includes(mode)?mode:modes[0],games:Math.max(0,Math.floor(Number(v?.games)||0)),level:v?.level==='high'?'high':'low',highLeft:v?.level==='high'?Math.max(0,Math.floor(Number(v?.highLeft)||0)):0,impurity:Math.min(100,Math.max(0,Number(v?.impurity)||0))};}
- function modeWeights(row,setting){const bias=.8*NovaArt.initialHitBoost(setting);return row.map((w,i)=>w*(1-bias)+(i===5?100*bias:0));}
  function weighted(weights,rng){let n=rng()*weights.reduce((a,b)=>a+b,0);return Math.max(0,weights.findIndex(w=>(n-=w)<0));}
  function ceiling(v){return ceilings[modes.indexOf(normalize(v).mode)];}
  function favored(v){return zoneRate(v)>.1;}
@@ -73,17 +72,16 @@ globalThis.NovaNormal=(()=>{
  }
  function spin(value,flow,setting=1,options={},rng=Math.random,forced=''){
   if(forced==='STRONG_BELL')forced='BELL';
-  options={...options,cz:NovaFlow.forSetting(options.cz,setting)};
   const before=normalize(value),c=config(options.normal),result=forced||drawRole(setting,rng);
   flow=NovaFlow.rewrite(flow,result,options.cz,rng);
-  const state=advance(before,result,flow,c,rng),token={result,state,czFlow:flow,internalBonus:null,entry:'',direct:false,czOptions:options.cz};
+  const state=advance(before,result,flow,c,rng),token={result,state,czFlow:flow,internalBonus:null,entry:'',direct:false};
   const bonus=source=>({kind:'BIG',source,internalResult:'BIG'});
   if(forced==='FREEZE'){token.result='MISS';token.internalBonus={...bonus('フリーズ'),premiumBonus:true};return token;}
   if(!before.ceilingHandled&&before.games+1>=ceiling(before)){
    state.ceilingHandled=true;state.impurity=Math.min(100,state.impurity+c.ceilingGain*(ceiling(before)>=500?1:ceiling(before)>=300?.5:.1));
    state.prelude=prelude(rng()<gameZoneConfig.ceilingBonusRate?'ceilingBonus':'ceilingCz',rng,before.mode,ceiling(before));if(flow.phase==='normal')token.message=preludeLabel(state.prelude)+'開始';
   }else if(!state.prelude&&!state.ceilingHandled&&zonePoint(state.games)&&state.games<ceiling(before)){
-   const hit=rng()<zoneRate(before,setting),presentation=preludePresentation(before.mode,state.games,hit,rng);if(presentation!=='none'){state.prelude=prelude(hit?'cz':'fake',rng,before.mode,state.games,presentation);if(flow.phase==='normal')token.message=preludeLabel(state.prelude)+'開始';}
+   const hit=rng()<zoneRate(before),presentation=preludePresentation(before.mode,state.games,hit,rng);if(presentation!=='none'){state.prelude=prelude(hit?'cz':'fake',rng,before.mode,state.games,presentation);if(flow.phase==='normal')token.message=preludeLabel(state.prelude)+'開始';}
   }
   if(flow.phase==='normal'){
    if(before.prelude&&state.prelude&&before.prelude.kind===state.prelude.kind&&before.prelude.originG===state.prelude.originG){
@@ -115,10 +113,10 @@ globalThis.NovaNormal=(()=>{
   return token;
  }
  function claim(value,freeze=false,rng=Math.random){const state=normalize(value),zones=[];if(state.impurity>=100){state.impurity=0;zones.push(['urapi','giru','sora','ouma'][Math.min(3,Math.floor(rng()*4))]);}if(freeze)zones.push(['giru','sora','ouma'][Math.min(2,Math.floor(rng()*3))]);return {state,zones:zones.map(z=>NovaArt.upgradeGuaranteedZone(z,rng)),sets:zones.length?1:0};}
- function afterArt(value,before,after,options={},rng=Math.random){const s=normalize(value);if(before?.phase==='art'&&after?.phase==='normal'){s.games=0;s.prelude=null;s.ceilingHandled=false;s.mode=modes[weighted(modeWeights(after.dryAtEnd===true?atEndModeWeights.dry:atEndModeWeights.normal,options?.setting),rng)];if(after.dryAtEnd===true)s.impurity=Math.min(100,s.impurity+config(options).atDryGain);}return s;}
+ function afterArt(value,before,after,options={},rng=Math.random){const s=normalize(value);if(before?.phase==='art'&&after?.phase==='normal'){s.games=0;s.prelude=null;s.ceilingHandled=false;s.mode=modes[weighted(after.dryAtEnd===true?atEndModeWeights.dry:atEndModeWeights.normal,rng)];if(after.dryAtEnd===true)s.impurity=Math.min(100,s.impurity+config(options).atDryGain);}return s;}
  function bonusEnd(value,kind,after,options={}){const s=normalize(value),c=config(options);s.regStreak=0;s.impurity=Math.min(100,s.impurity+(after?.phase!=='art'?c.bonusFailureGain:0));return s;}
- function afterBonus(value,rng=Math.random,setting){const s=normalize(value);return {...s,prelude:null,ceilingHandled:false,morningCeiling:false,mode:modes[weighted(modeWeights(transitions[modes.indexOf(s.mode)],setting),rng)],games:0,level:'low',highLeft:0};}
+ function afterBonus(value,rng=Math.random){const s=normalize(value);return {...s,prelude:null,ceilingHandled:false,morningCeiling:false,mode:modes[weighted(transitions[modes.indexOf(s.mode)],rng)],games:0,level:'low',highLeft:0};}
  function drawRare(rng=Math.random){const keys=Object.keys(rare);return keys[weighted(keys.map(k=>rare[k].p),rng)];}
  const rareMean=Object.values(rare).reduce((s,r)=>s+r.p*r.pay,0)/Object.values(rare).reduce((s,r)=>s+r.p,0);
- return {modeWeights,gameZoneRates,gameZoneConfig,atEndModeWeights,zonePoint,preludePresentation,zoneRate,normalLabel,resetImpurityPoints,resetImpurityWeights,resetDistribution,reset,modes,ceilings,transitions,rare,rareMean,rareFactor,roleProbabilities,drawRare,defaults,config,normalize,ceiling,favored,multiplier,pay,drawRole,advance,spin,claim,afterArt,bonusEnd,afterBonus};
+ return {gameZoneRates,gameZoneConfig,atEndModeWeights,zonePoint,preludePresentation,zoneRate,normalLabel,resetImpurityPoints,resetImpurityWeights,resetDistribution,reset,modes,ceilings,transitions,rare,rareMean,rareFactor,roleProbabilities,drawRare,defaults,config,normalize,ceiling,favored,multiplier,pay,drawRole,advance,spin,claim,afterArt,bonusEnd,afterBonus};
 })();

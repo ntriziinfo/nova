@@ -1,5 +1,6 @@
-import fs from 'node:fs';import path from 'node:path';import vm from 'node:vm';import {fileURLToPath} from 'node:url';import {xoshiro128} from './zone-v2-rng.mjs';
-export const ROOT=path.dirname(fileURLToPath(import.meta.url));
+// Snapshot of the shared session simulator with per-AT episode observations.
+import fs from 'node:fs';import path from 'node:path';import vm from 'node:vm';import {fileURLToPath} from 'node:url';import {xoshiro128} from '../../scripts/zone-v2-rng.mjs';
+export const ROOT=path.dirname(fileURLToPath(new URL('../../scripts/zone-v2-model.mjs',import.meta.url)));
 export function loadModel(variant='..',cache=true){
  for(const f of ['nova-art.js','nova-balance.js','nova-flow.js','nova-normal.js']){
   let s=fs.readFileSync(path.join(ROOT,variant,f),'utf8');
@@ -23,11 +24,11 @@ export function simulate(setting,games,seed,options={}){
  let bonusG=0,bonusP=0,bonusFee=0,freezes=0,ceilings=0,release=0,normalGap=0,maxBonusGap=0;
  const counts={normal:0,cz:0,prep:0,align:0,bonus:0,at:0,zone:0,zero:0,BIG:0,REG:0,czEntries:0,strongEntries:0,czWins:0,artEntries:0,zoneEntries:0,gameCzEntries:0,ceilingCzEntries:0,rareCzEntries:0,backgroundCzEntries:0,highNormalG:0,favoredNormalG:0};
  const bonusMetrics={normal:{completed:0,nebulaWins:0},upper:{completed:0,nebulaWins:0}};
- const atLevelMetrics=Object.fromEntries([0,1,2,3,4,5].map(t=>[t,{entries:0,completed:0,completedPaid:0,completedNet:0,games:0}]));let treatmentStart=null;
+ const atEpisodes=[];const atLevelMetrics=Object.fromEntries([0,1,2,3,4,5].map(t=>[t,{entries:0,completed:0,completedPaid:0,completedNet:0,games:0}]));let treatmentStart=null;
  const atMetrics={eligible:0,high:0,zoneWins:0,directWins:0,directPoints:0,promotions:0,suica100:0,suica300:0};const blocks=[];let blockBet=0,blockPaid=0,blockPeak=0,firstComplete=null;
  const zones={},normalRoles={},normalPayout={bet:0,paid:0,games:0};
  const sessionEnd=Symbol('session end'),scale=NovaBalance.profile(setting).scale*(options.scaleMultiplier??1);
- const track=()=>{if(flow.phase==='art'&&!treatmentStart){const tier=flow.atLevel||0;treatmentStart={tier,paid,fee};atLevelMetrics[tier].entries++;}if(flow.phase!=='art'&&treatmentStart){const row=atLevelMetrics[treatmentStart.tier];row.completed++;row.completedPaid+=paid-treatmentStart.paid;row.completedNet+=paid-treatmentStart.paid-fee+treatmentStart.fee;treatmentStart=null;}const net=paid-fee;peak=Math.max(peak,net);maxDrawdown=Math.max(maxDrawdown,peak-net);if(artStart!==null)maxArtNet=Math.max(maxArtNet,net-artStart);if(options.recordBlocks)blockPeak=Math.max(blockPeak,net-(blockPaid-blockBet));if(!firstComplete&&net>=(options.completeLimitPt??19000))firstComplete={games:count,totalBet:fee,totalPaid:paid,net};};
+ const track=()=>{if(flow.phase==='art'&&!treatmentStart){const tier=flow.atLevel||0;treatmentStart={tier,paid,fee,burstWon:false};atLevelMetrics[tier].entries++;}if(treatmentStart&&flow.burstWon)treatmentStart.burstWon=true;if(flow.phase!=='art'&&treatmentStart){atEpisodes.push({level:treatmentStart.tier,paid:paid-treatmentStart.paid,net:paid-treatmentStart.paid-fee+treatmentStart.fee,burstWon:treatmentStart.burstWon,censored:false});const row=atLevelMetrics[treatmentStart.tier];row.completed++;row.completedPaid+=paid-treatmentStart.paid;row.completedNet+=paid-treatmentStart.paid-fee+treatmentStart.fee;treatmentStart=null;}const net=paid-fee;peak=Math.max(peak,net);maxDrawdown=Math.max(maxDrawdown,peak-net);if(artStart!==null)maxArtNet=Math.max(maxArtNet,net-artStart);if(options.recordBlocks)blockPeak=Math.max(blockPeak,net-(blockPaid-blockBet));if(!firstComplete&&net>=(options.completeLimitPt??19000))firstComplete={games:count,totalBet:fee,totalPaid:paid,net,burstWins:globalThis.Burst112?.wins||0};};
  const saveBlock=()=>{blocks.push({endGame:count,totalBet:fee-blockBet,totalPaid:paid-blockPaid,net:paid-blockPaid-fee+blockBet,peak:blockPeak});blockBet=fee;blockPaid=paid;blockPeak=0;};
  const bet=phase=>{track();if(options.stopAtComplete!==false&&options.completeLimitPt&&paid-fee>=options.completeLimitPt)throw sessionEnd;if(count>=games&&!cutoff)cutoff={games:count,totalBet:fee,totalPaid:paid,net:paid-fee,peak,phase};if(options.exactGames!==false&&!options.settleEnd&&count>=games)throw sessionEnd;if(options.recordBlocks&&count>0&&count%options.recordBlocks===0)saveBlock();count++;counts[phase]++;normalGap++;const charged=replay?0:3;fee+=charged;replay=false;return charged;};
  const zoneEntry=f=>{if(f.zone){counts.zoneEntries++;const name=(f.ura?'ura_':'')+f.zone;zones[name]=(zones[name]||0)+1;}};
@@ -38,13 +39,13 @@ export function simulate(setting,games,seed,options={}){
    const role=(a.drawPreparationRole||n.drawRole)(setting,rng),won=a.drawPreparation(role,setting,rng);bet('prep');paid+=n.pay(role);replay=role==='REPLAY';prep.sets+=won.sets;prep.zones.push(...won.zones);
   }
   bet('align');const claim=n.claim(state,freeze,rng);if(state.impurity===100)release++;
-  state=flow.phase==='art'?claim.state:n.afterBonus(claim.state,rng,setting);claim.zones.push(...prep.zones);let sets=claim.sets+prep.sets;
+  state=flow.phase==='art'?claim.state:n.afterBonus(claim.state,rng);claim.zones.push(...prep.zones);let sets=claim.sets+prep.sets;
   const tier=a.drawBonusTier?.(rng)||'normal';let nebula=false;
   for(let bonusPaid=0;bonusPaid<a.bonusTarget(kind);){
    const r=a.drawBonus(rng,setting,tier),pay=a.bonusPayout?a.bonusPayout({paid:bonusPaid},r):n.pay(r);bonusPaid+=pay;const before=fee;bet('bonus');bonusFee+=fee-before;paid+=pay;replay=r==='REPLAY';bonusG++;bonusP+=pay;track();if(r==='NEBULA'){sets++;nebula=true;}
   }
   bonusMetrics[tier].completed++;bonusMetrics[tier].nebulaWins+=nebula;
-  const before=flow;flow=a.afterBonus(flow,c,sets,rng);state=n.bonusEnd(state,kind,flow);state=n.afterArt(state,before,flow,{...options.normal,setting},rng);
+  const before=flow;flow=a.afterBonus(flow,c,sets,rng);state=n.bonusEnd(state,kind,flow);state=n.afterArt(state,before,flow,options.normal,rng);
   if(before.phase!=='art'&&flow.phase==='art')counts.artEntries++;
   if(flow.phase==='art'&&claim.zones.length){flow.queuedZones.push(...claim.zones);if(!flow.zone){flow=a.startZone(flow,flow.queuedZones.shift(),{...c,allowUra:true},rng);zoneEntry(flow);}}
  }
@@ -58,7 +59,7 @@ export function simulate(setting,games,seed,options={}){
    const s=a.step(flow,{...c,netPt:options.netGuard===false?0:paid-fee},rng);
    if(eligible){atMetrics.eligible++;if(flow.atHigh)atMetrics.high++;if(s.flow.entryStage==='seven')atMetrics.zoneWins++;}
    if(s.atOutcome){const o=s.atOutcome;if(o.promoted)atMetrics.promotions++;if(o.direct){atMetrics.directWins++;atMetrics.directPoints+=o.direct;if(s.result==='STRONG_SUICA'&&o.direct===100)atMetrics.suica100++;if(s.result==='STRONG_SUICA'&&o.direct===300)atMetrics.suica300++;}}if(!flow.zone&&s.flow.zone)zoneEntry(s.flow);
-   paid+=n.pay(s.result);if(s.result==='REPLAY')replay=true;state=n.afterArt(state,flow,s.flow,{...options.normal,setting},rng);flow=s.flow;if(s.internalBonus)bonus('BIG');continue;
+   paid+=n.pay(s.result);if(s.result==='REPLAY')replay=true;state=n.afterArt(state,flow,s.flow,options.normal,rng);flow=s.flow;if(s.internalBonus)bonus('BIG');continue;
   }
   const normal=flow.phase==='normal',charged=bet(normal?'normal':'cz');
   if(normal){counts.highNormalG+=state.level==='high';counts.favoredNormalG+=n.favored(state);}
@@ -71,5 +72,6 @@ export function simulate(setting,games,seed,options={}){
   else flow=NovaFlow.advance(t.czFlow);
  }}catch(e){if(e!==sessionEnd)throw e;}
  track();maxBonusGap=Math.max(maxBonusGap,normalGap);if(options.recordBlocks)saveBlock();
- return {atLevelMetrics,bonusMetrics,atMetrics,seed,setting,initialMode,cutoff:cutoff||{games:count,totalBet:fee,totalPaid:paid,net:paid-fee,peak,phase:flow.phase},games:count,totalBet:fee,totalPaid:paid,rtp:paid/fee,net:paid-fee,peak,maxDrawdown,maxNormalGames,maxBonusGap,maxArtNet,freezes,ceilings,release,bonusNet:(bonusP-bonusFee)/bonusG,counts,zones,normalRoles,normalPayout,endPhase:flow.phase,firstComplete,blocks:options.recordBlocks?blocks:undefined,unspentAtQuota:flow.phase==='art'?Number(flow.remaining||0)+Number(flow.sets||0)*c.initial+(flow.zone?Number(flow.award||0):0):0};
+ if(treatmentStart)atEpisodes.push({level:treatmentStart.tier,paid:paid-treatmentStart.paid,net:paid-treatmentStart.paid-fee+treatmentStart.fee,burstWon:treatmentStart.burstWon,censored:true});
+ return {atEpisodes,atLevelMetrics,bonusMetrics,atMetrics,seed,setting,initialMode,cutoff:cutoff||{games:count,totalBet:fee,totalPaid:paid,net:paid-fee,peak,phase:flow.phase},games:count,totalBet:fee,totalPaid:paid,rtp:paid/fee,net:paid-fee,peak,maxDrawdown,maxNormalGames,maxBonusGap,maxArtNet,freezes,ceilings,release,bonusNet:(bonusP-bonusFee)/bonusG,counts,zones,normalRoles,normalPayout,endPhase:flow.phase,firstComplete,blocks:options.recordBlocks?blocks:undefined,unspentAtQuota:flow.phase==='art'?Number(flow.remaining||0)+Number(flow.sets||0)*c.initial+(flow.zone?Number(flow.award||0):0):0};
 }

@@ -1,0 +1,48 @@
+{
+  "sourceHashes": {
+    "nova-art.js": "67d1914b8da808e600dd79a8ed8249222ca47ff3a370a6db9ad85dce14b98aa4",
+    "nova-normal.js": "39df842b56b59125873fc3d3bc265b5f5c8c4859efbd3b0012ee56ae522d0e5a",
+    "nova-flow.js": "3b9e17a4649d5b7e585266613c62f196306a2ccb774bf0ec0abdac6747d51dab",
+    "nova-balance.js": "64b0791fd2f6135096bceaad9f6d242582960febc7844999e541e6f32c75ad76",
+    "research/burst112/production-model.mjs": "6a88fdf908e61f8d851be6f2c50541a1235d4f9b4c5f8968ddc6f160d9024b5a"
+  },
+  "reports": [
+    {
+      "setting": 1,
+      "trials": 9,
+      "games": 270000,
+      "matched": true
+    },
+    {
+      "setting": 2,
+      "trials": 9,
+      "games": 270000,
+      "matched": true
+    },
+    {
+      "setting": 3,
+      "trials": 9,
+      "games": 270000,
+      "matched": true
+    },
+    {
+      "setting": 4,
+      "trials": 8,
+      "games": 240000,
+      "matched": true
+    },
+    {
+      "setting": 5,
+      "trials": 9,
+      "games": 270000,
+      "matched": true
+    },
+    {
+      "setting": 6,
+      "trials": 9,
+      "games": 270000,
+      "matched": true
+    }
+  ],
+  "all": false
+}

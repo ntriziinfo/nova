@@ -11,13 +11,6 @@ globalThis.NovaFlow = (() => {
       czChance:bounded(value.czChance,.4,0,1),strongChance:bounded(value.strongChance,.7,0,1),
       czDenom:bounded(value.czDenom,120,2,100000),strongDenom:bounded(value.strongDenom,600,2,100000)};
   }
-  function forSetting(value={},setting){
-    const cfg=config(value),b=NovaArt.initialHitBoost(setting);
-    // Keep explicit debug overrides and guaranteed/rare-CZ probabilities.
-    if(cfg.czChance===defaults.czChance)cfg.czChance=.4+.4*b;
-    if(cfg.strongChance===defaults.strongChance)cfg.strongChance=.7+.2*b;
-    return cfg;
-  }
   const rewriteRates=Object.freeze({WEAK_SUICA:.05,STRONG_SUICA:.50,CHANCE_A:3/14,CHANCE_B:3/14,WEAK_NOVA:.20,STRONG_NOVA:1});
   const lampConfidence=Object.freeze([.01,.05,.30,.60,.80,1]);
   function rewrite(value,role,options={},random=Math.random){
@@ -95,5 +88,5 @@ globalThis.NovaFlow = (() => {
     return s.phase==='rt'?`RT 残り${s.remaining}G / 純増1.2pt`:
       s.phase==='cz'?`CZ 残り${s.remaining}G`:s.phase==='strong_cz'?`強CZ 残り${s.remaining}G`:'通常';
   }
-  return Object.freeze({forSetting,defaults,rewriteRates,lampConfidence,lampWeights,drawLamp,lampAtStop,rewrite,rt,config,normalize,enterCZ,afterBonus,advance,drawEntry,drawRT,label});
+  return Object.freeze({defaults,rewriteRates,lampConfidence,lampWeights,drawLamp,lampAtStop,rewrite,rt,config,normalize,enterCZ,afterBonus,advance,drawEntry,drawRT,label});
 })();
