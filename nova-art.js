@@ -9,7 +9,12 @@ globalThis.NovaArt=(()=>{
  // Preserve the original 3% promotion of strong zones, applied once at selection.
  function upgradeGuaranteedZone(zone,rng=Math.random){return zoneGroups.strong.includes(zone)&&rng()<superZoneChance?'ura_'+zone:zone;}
  const points=g=>(integer(g)*11n+1n)/2n;
- const bonusTarget=kind=>kind==='MID'?75:150;
+ const bonusTarget=()=>100;
+ const bonusRules=Object.freeze({normal:Object.freeze({atChance:.52}),upper:Object.freeze({atChance:.80}),upperRate:.10});
+ const bonusTier=tier=>tier==='upper'?'upper':'normal';
+ const drawBonusTier=(rng=Math.random)=>rng()<bonusRules.upperRate?'upper':'normal';
+ const bonusLabel=tier=>bonusTier(tier)==='upper'?'上位BIG':'通常BIG';
+ const bonusPayout=(state,role)=>Math.min(payout(role),Math.max(0,bonusTarget()-(Number(state?.paid)||0)));
  // AT and bonus preparation own their role mix and rewards. Normal/CZ tuning must not affect them.
  const rareRoles=Object.freeze(Object.fromEntries(Object.entries({
   WEAK_SUICA:{p:0.01125,pay:6,preparation:.06},STRONG_SUICA:{p:0.0032500000000000003,pay:6,preparation:.3},
@@ -26,23 +31,35 @@ globalThis.NovaArt=(()=>{
  const preparationEntries=[1,2,3,4,5,6].map(s=>Object.entries(preparationProbabilities(s)));
  function drawPreparationRole(setting,rng=Math.random){let roll=rng();for(const [role,p]of preparationEntries[Math.max(0,Math.min(5,Math.round(Number(setting)||3)-1))])if((roll-=p)<0)return role;return 'MISS';}
  function drawPreparation(role,setting=1,rng=Math.random){const rare=rareRoles[role];let sets=0,zones=[];if(rare){if(rng()<rare.preparation)sets++;if(rng()<rare.preparation*.5){zones.push(pickZone(setting,rng));sets=Math.max(1,sets);}}return {sets,zones};}
- const bonusSpecial=.0125;
+ // Seven bell payouts (last one capped to 10pt) complete a 100pt BIG.
+ // Choose the per-game hazard so P(at least one NEBULA before seven bells)
+ // equals the tier's 52% / 80%. Half of the misses have no guide.
+ function bonusRoleProbabilities(setting,tier='normal'){
+  const hit=.45/(2-.45),ratio=(1-bonusRules[bonusTier(tier)].atChance)**(-1/7)-1;
+  const zero=4*ratio/(12*hit-3*ratio),NEBULA=zero*hit,MISS=zero-NEBULA,BELL=(4+3*zero)/12;
+  return {NEBULA,MISS,BELL,REPLAY:1-zero-BELL};
+ }
+ const bonusSpecial=bonusRoleProbabilities().NEBULA;
  const settingBias=[-2.7,-2.55,-2.27,-2.13,-1.8,-1.46];
  const biasFor=setting=>settingBias[Math.max(0,Math.min(5,Math.round(Number(setting)||1)-1))];
- // Zone v2 calibration: dedicated bonus NEBULA rates; normal/CZ and AT roles stay independent.
- const bonusSpecialRates=[0.05849463058977963,0.06016986125454101,0.06353023384823513,0.06259443571245721,0.06736560691665441,0.05608260376555219];
- const bonusSpecialFor=setting=>bonusSpecialRates[Math.max(0,Math.min(5,Math.round(Number(setting)||1)-1))];
+ const bonusSpecialRates=Array(6).fill(bonusSpecial);
+ const bonusSpecialFor=(setting,tier='normal')=>bonusRoleProbabilities(setting,tier).NEBULA;
  function advanceBonus(state,special=false,reward=0){const target=bonusTarget(state.bonusKind),paid=Number(state.paid)||0;return {bonusTarget:target,bonusPointsRemaining:Math.max(0,target-paid-Math.max(0,Number(reward)||0)),bonusArtSets:(Number(state.bonusArtSets)||0)+(paid<target&&special?1:0)};}
 
  // Replay has no payout and makes the next BET free: net = (bellPay-3)*P(bell) + (otherPay-3)*P(other).
  function paidBellChance(otherChance=0,bellPay=15,otherPay=0){return Math.max(0,Math.min(1,(4-otherChance*(otherPay-3))/((1-otherChance)*(bellPay-3))));}
  function drawPaidRole(zeroChance=0,bellPay=15,rng=Math.random){return rng()<paidBellChance(zeroChance,bellPay)?'BELL':'REPLAY';}
- function drawBonus(rng=Math.random,setting){const p=setting===undefined?bonusSpecial:bonusSpecialFor(setting);return rng()<p?'NEBULA':drawPaidRole(p,15,rng);}
+ function drawBonus(rng=Math.random,setting,tier='normal'){let roll=rng();for(const [role,p]of Object.entries(bonusRoleProbabilities(setting,tier)))if((roll-=p)<0)return role;return 'REPLAY';}
+ function bonusAim(result,rng=Math.random){
+  if(!['NEBULA','MISS'].includes(result))return null;
+  const success=result==='NEBULA',weights=aimColors.map(row=>row.weight*(success?row.hit:1-row.hit));
+  let roll=rng()*weights.reduce((a,b)=>a+b,0),index=weights.findIndex(w=>(roll-=w)<0);if(index<0)index=success?2:0;
+  return {symbol:'nebula',color:aimColors[index].color,result,guide:success||rng()<.5,forced:false};
+ }
 const tuning={"weak":128,"strong":1500,"other":1.15,"tilts":[-0.28,-0.28,-0.28,0.1,0.2,0.38]};
  function atMix(setting=3){const f=rareFactor(setting),r=Object.fromEntries(Object.entries(rareRoles).map(([role,v])=>[role,(role==='WEAK_NOVA'?1/tuning.weak:role==='STRONG_NOVA'?1/tuning.strong:v.p*.03/rareTotal*tuning.other)*f]));const chanceTotal=r.CHANCE_A+r.CHANCE_B;r.CHANCE_A=chanceTotal*(Math.max(1,Math.min(6,Math.round(Number(setting)||3)))%2?.4:.6);r.CHANCE_B=chanceTotal-r.CHANCE_A;const chance=Object.values(r).reduce((s,p)=>s+p,0),mean=Object.entries(r).reduce((s,[role,p])=>s+p*payout(role),0)/chance;return {r,chance,mean};}
  function drawAtRare(setting,rng){const {r,chance}=atMix(setting);let x=rng()*chance;for(const [role,p]of Object.entries(r))if((x-=p)<0)return role;return 'STRONG_NOVA';}
 function roleProbabilities(setting=3){const {r,chance,mean}=atMix(setting);r.BELL=(1-chance)*paidBellChance(chance,15,mean);r.REPLAY=1-chance-r.BELL;return r;}
- function bonusRoleProbabilities(setting){const NEBULA=setting===undefined?bonusSpecial:bonusSpecialFor(setting),BELL=(1-NEBULA)*paidBellChance(NEBULA,15);return {NEBULA,BELL,REPLAY:1-NEBULA-BELL};}
  const zoneEntryScale=[0.405,0.475,0.415,0.5,0.485,0.485];
  // Normalize by actual rare-role frequency, preserving the average AT zone entry rate.
  const zoneRoleWeights=Object.freeze({WEAK_SUICA:1,STRONG_SUICA:10,CHANCE_A:8/3,CHANCE_B:8/3,WEAK_NOVA:1,STRONG_NOVA:10});
@@ -197,5 +214,5 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
   return {atOutcome,aim,result,flow:s,message,internalBonus,reverse,oumaFreeze:freeOumaSpin,zoneSpin:!!value.zone||queuedEntered};
  }
  function label(v){const s=normalize(v);return `AT ${s.remaining}pt / 待機${s.sets}SET${s.entryStage?' / '+({seven:'赤7を狙え・減算停止',roulette:'ルーレット・減算停止',confirmed:zoneName(s.pendingZone)+'ゾーン確定'}[s.entryStage]):''}${s.zone?' / '+zoneName(s)+' '+(s.zero?'0G連':s.oumaPending?'BETで継続抽選':s.zoneLeft+'G'):''}${integer(s.stock)>0n?' / BIGストック '+s.stock:''}${s.zone?' / 獲得'+s.award+'pt':''}`;}
- return {aimColors,aimColorsFor,sevenAimRules,drawSevenAim,ladderWeightsFor,ladderGuaranteed,drawLadderRole,lossRewardControl,zoneTailControl,zoneAwardFactor,netRewardControl,netLimits,netRewardFactor,superZoneChance,zoneGroups,zoneGroupWeights,upgradeGuaranteedZone,bonusSpecialRates,zoneRules,ladderTables,ladderTableFor,ladderValues,sevenValues,sevenWeights,atZoneWeights,tuning,atMix,drawAtRare,atRoleRules,pickAtZone,resolveAtRole,rareRoles,rareTotal,rareMean,rareFactor,drawRare,roleProbabilities,bonusRoleProbabilities,preparationProbabilities,drawPreparationRole,zoneRoleWeights,zoneRoleMultiplier,paidBellChance,drawPreparation,zoneEntryScale,points,bonusTarget,payout,settleZone,prepareBet,oumaFreezeRate,baseZone,zoneName,zoneIds,names,defaults,direct,zoneWeights,pickZone,bonusSpecial,settingBias,biasFor,bonusSpecialFor,advanceBonus,drawPaidRole,drawBonus,config,normalize,enter,startZone,afterBonus,step,label};
+ return {bonusRules,bonusTier,drawBonusTier,bonusLabel,bonusPayout,bonusAim,aimColors,aimColorsFor,sevenAimRules,drawSevenAim,ladderWeightsFor,ladderGuaranteed,drawLadderRole,lossRewardControl,zoneTailControl,zoneAwardFactor,netRewardControl,netLimits,netRewardFactor,superZoneChance,zoneGroups,zoneGroupWeights,upgradeGuaranteedZone,bonusSpecialRates,zoneRules,ladderTables,ladderTableFor,ladderValues,sevenValues,sevenWeights,atZoneWeights,tuning,atMix,drawAtRare,atRoleRules,pickAtZone,resolveAtRole,rareRoles,rareTotal,rareMean,rareFactor,drawRare,roleProbabilities,bonusRoleProbabilities,preparationProbabilities,drawPreparationRole,zoneRoleWeights,zoneRoleMultiplier,paidBellChance,drawPreparation,zoneEntryScale,points,bonusTarget,payout,settleZone,prepareBet,oumaFreezeRate,baseZone,zoneName,zoneIds,names,defaults,direct,zoneWeights,pickZone,bonusSpecial,settingBias,biasFor,bonusSpecialFor,advanceBonus,drawPaidRole,drawBonus,config,normalize,enter,startZone,afterBonus,step,label};
 })();

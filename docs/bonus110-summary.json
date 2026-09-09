@@ -1,0 +1,176 @@
+{
+  "rules": {
+    "normal": {
+      "atChance": 0.52
+    },
+    "upper": {
+      "atChance": 0.8
+    },
+    "upperRate": 0.1
+  },
+  "summaries": [
+    {
+      "setting": 1,
+      "trials": 200,
+      "games": 2000000,
+      "rtp": 0.6609164807679307,
+      "ci95": [
+        0.6509966118783033,
+        0.6708363496575582
+      ],
+      "BIG": 6052,
+      "REG": 0,
+      "artEntries": 3386,
+      "czEntries": 9985,
+      "bonus": {
+        "normal": {
+          "completed": 5464,
+          "wins": 2769,
+          "atChance": 0.5067715959004392
+        },
+        "upper": {
+          "completed": 579,
+          "wins": 455,
+          "atChance": 0.7858376511226253
+        }
+      }
+    },
+    {
+      "setting": 2,
+      "trials": 200,
+      "games": 2000000,
+      "rtp": 0.6778229405489519,
+      "ci95": [
+        0.6671089443545343,
+        0.6885369367433695
+      ],
+      "BIG": 5977,
+      "REG": 0,
+      "artEntries": 3435,
+      "czEntries": 9906,
+      "bonus": {
+        "normal": {
+          "completed": 5315,
+          "wins": 2778,
+          "atChance": 0.5226716839134525
+        },
+        "upper": {
+          "completed": 642,
+          "wins": 513,
+          "atChance": 0.7990654205607477
+        }
+      }
+    },
+    {
+      "setting": 3,
+      "trials": 200,
+      "games": 2000000,
+      "rtp": 0.6747228138470789,
+      "ci95": [
+        0.6647011345289268,
+        0.684744493165231
+      ],
+      "BIG": 5922,
+      "REG": 0,
+      "artEntries": 3430,
+      "czEntries": 9994,
+      "bonus": {
+        "normal": {
+          "completed": 5348,
+          "wins": 2844,
+          "atChance": 0.531787584143605
+        },
+        "upper": {
+          "completed": 565,
+          "wins": 440,
+          "atChance": 0.7787610619469026
+        }
+      }
+    },
+    {
+      "setting": 4,
+      "trials": 200,
+      "games": 2000000,
+      "rtp": 0.6946606686076673,
+      "ci95": [
+        0.6837608089476913,
+        0.7055605282676433
+      ],
+      "BIG": 5973,
+      "REG": 0,
+      "artEntries": 3397,
+      "czEntries": 9995,
+      "bonus": {
+        "normal": {
+          "completed": 5408,
+          "wins": 2795,
+          "atChance": 0.5168269230769231
+        },
+        "upper": {
+          "completed": 556,
+          "wins": 458,
+          "atChance": 0.8237410071942446
+        }
+      }
+    },
+    {
+      "setting": 5,
+      "trials": 200,
+      "games": 2000000,
+      "rtp": 0.6992532173119884,
+      "ci95": [
+        0.689294323563157,
+        0.7092121110608198
+      ],
+      "BIG": 6002,
+      "REG": 0,
+      "artEntries": 3462,
+      "czEntries": 10012,
+      "bonus": {
+        "normal": {
+          "completed": 5417,
+          "wins": 2851,
+          "atChance": 0.5263060734724017
+        },
+        "upper": {
+          "completed": 569,
+          "wins": 459,
+          "atChance": 0.8066783831282952
+        }
+      }
+    },
+    {
+      "setting": 6,
+      "trials": 200,
+      "games": 2000000,
+      "rtp": 0.7146742927806895,
+      "ci95": [
+        0.7011199413413479,
+        0.7282286442200311
+      ],
+      "BIG": 5778,
+      "REG": 0,
+      "artEntries": 3345,
+      "czEntries": 9826,
+      "bonus": {
+        "normal": {
+          "completed": 5199,
+          "wins": 2744,
+          "atChance": 0.5277938065012503
+        },
+        "upper": {
+          "completed": 565,
+          "wins": 455,
+          "atChance": 0.8053097345132744
+        }
+      }
+    }
+  ],
+  "sourceHashes": {
+    "nova-normal.js": "54734d9d1214b9c8e96857bc9d52a6cb881e37fa1f4520ce023455999fb2a2bd",
+    "nova-art.js": "1066a392fae55ab254f83267eab02551cdd65f2cc407769276f8ab1df87873bc",
+    "nova-flow.js": "86c40c1cec4d14fb60451201bcf7a5ce1bdf7366795f3b5de292e81e3b880b0a",
+    "nova-balance.js": "d747b6959fe06df36eb0dab1ddca3bb1a5627b517ad83790d20b970e4ead2556",
+    "scripts/zone-v2-model.mjs": "f9fa4d4173642a4e863968cac1da6ead8afb421a3b7139f86afd59ac1e67ed27"
+  }
+}

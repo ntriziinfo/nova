@@ -9,11 +9,10 @@ test('ceiling rescue reaches cap before bonus claim',()=>{
  const t=n.spin({games:599,impurity:95},{phase:'normal'},1,{},()=>.99,'MISS');
  assert.equal(t.state.impurity,100);assert.equal(n.claim(t.state,false,()=>.5).sets,1);
 });
-test('bonus failure and consecutive REG stack, BIG resets streak, AT preserves streak',()=>{
- let s=n.bonusEnd({},'MID',{phase:'normal'});assert.equal(s.impurity,2);assert.equal(s.regStreak,1);
- s=n.bonusEnd(n.normalize(JSON.parse(JSON.stringify(s))),'MID',{phase:'normal'});assert.equal(s.impurity,6);
- s=n.bonusEnd(s,'MID',{phase:'art'});assert.equal(s.impurity,8);
- s=n.bonusEnd(s,'BIG',{phase:'art'});assert.equal(s.regStreak,0);assert.equal(s.impurity,8);
+test('bonus failure rescue remains; retired REG streaks no longer add points',()=>{
+ let s=n.bonusEnd({regStreak:4},'MID',{phase:'normal'});assert.equal(s.impurity,2);assert.equal(s.regStreak,0);
+ s=n.bonusEnd(n.normalize(JSON.parse(JSON.stringify(s))),'BIG',{phase:'normal'});assert.equal(s.impurity,4);
+ s=n.bonusEnd(s,'BIG',{phase:'art'});assert.equal(s.impurity,4);assert.equal(s.regStreak,0);
 });
 test('only single initial AT without rewards gains dry rescue',()=>{
  const end=s=>{let before;while(s.phase==='art'){before=s;s=a.step(s,{},()=>.99,'BELL').flow;}return n.afterArt({},before,s).impurity;};
