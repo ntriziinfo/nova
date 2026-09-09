@@ -8082,7 +8082,7 @@ body{
   let bellZakoLayer = null;
   const bellZakoTimers = [null, null, null];
   const oneShotSoundCache = new Map();
-  for(const src of ['assets/media/nova/shutter.wav','assets/media/nova/shutter-close.wav','assets/media/nova/ladder-final-award.wav']){const audio=new Audio(src);audio.preload='auto';oneShotSoundCache.set(src,audio);audio.load();}
+  for(const src of ['assets/media/nova/shutter.wav','assets/media/nova/shutter-close.wav','assets/media/nova/ladder-final-award.wav','assets/media/nova/ladder-final-award-under1000.wav']){const audio=new Audio(src);audio.preload='auto';oneShotSoundCache.set(src,audio);audio.load();}
   const resultEyecatchPreload = new Audio('assets/media/nova/result-eyecatch.wav');
   resultEyecatchPreload.preload='auto';resultEyecatchPreload.load();
   oneShotSoundCache.set('assets/media/nova/result-eyecatch.wav',resultEyecatchPreload);
@@ -16366,7 +16366,7 @@ body{
 
   function isLadderShutterSpin(){const flow=currentSpin?.resolved?.flowBefore;return NovaLadder.eligible(flow)&&flow.ladderRevealed;}
   function playSpinSound(){
-    const src=normalState.ladderAwardPresentation?.started?'assets/media/nova/ladder-final-award.wav':isLadderShutterSpin()?'assets/media/nova/shutter.wav':SPIN_SOUND_SRC;
+    const src=normalState.ladderAwardPresentation?.started?(Number(normalState.ladderAwardPresentation.card?.pt)>=1000?'assets/media/nova/ladder-final-award.wav':'assets/media/nova/ladder-final-award-under1000.wav'):isLadderShutterSpin()?'assets/media/nova/shutter.wav':SPIN_SOUND_SRC;
     playOneShotSound(src,sfxOutputVolume(),{allowDuringPremiumConfirm:true});
   }
   function playStrongNovaSound(result,resolved){
