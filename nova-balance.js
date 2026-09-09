@@ -14,7 +14,16 @@ globalThis.NovaBalance=(()=>{
     const row=Array(6).fill(0),rates=a.sevenAimRules({...s,award:String(award)},c);values.set(award,row);
     for(let left=1;left<=5;left++)row[left]=rates.reset*(10+get(5,award+10))+(1-rates.reset-rates.hit)*row[left-1]+rates.hit*a.sevenValues.reduce((n,v,i)=>n+r.weights[i]*(v+get(left-1,award+v)),0);
    }
-   return values.get(0)[5];
+   // Only paths that would finish without a seven receive one extra seven award.
+   const noSeven=new Map(),miss=1-tail.reset-tail.hit;
+   const tailP5=miss**5/(1-tail.reset*Array.from({length:5},(_,i)=>miss**i).reduce((x,y)=>x+y,0));
+   for(let award=limit-10;award>=0;award-=10){
+    const rates=a.sevenAimRules({...s,award:String(award)},c),row=[1];
+    const resetP=award+10>=limit?tailP5:noSeven.get(award+10)[5];
+    for(let left=1;left<=5;left++)row[left]=rates.reset*resetP+(1-rates.reset-rates.hit)*row[left-1];
+    noSeven.set(award,row);
+   }
+   return values.get(0)[5]+noSeven.get(0)[5]*mean;
   }
   const V=new Map(),K=new Map(),values=r.family==='seven'?a.sevenValues:[50*r.awardMultiplier,100*r.awardMultiplier],weights=r.family==='seven'?r.weights:[1-r.hundred,r.hundred],mean=values.reduce((v,n,i)=>v+n*weights[i],0),hit=Math.min(r.hit,1-(r.reset||0));
   const tailFreeze=s.zone==='ouma'?a.oumaFreezeRate({...s,award:String(limit)},c):0,freeMean=tailFreeze*mean/(1-tailFreeze);

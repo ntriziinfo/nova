@@ -24,7 +24,22 @@ test('shared distribution converges to 60/35/5 and 20/80/100, in every zone',()=
  }
 });
 test('final game cue survives settlement and nebula resets five games with 10pt',()=>{
- const s={...a.startZone(a.enter(),'sora'),zoneLeft:1};
+ const s={...a.startZone(a.enter(),'sora'),zoneLeft:1,sevenHits:1};
  const fail=a.step(s,{},seq(.5,.9,.1,.8));assert.equal(fail.flow.zone,'');assert.equal(fail.aim.color,'blue');
  const win=a.step(s,{},seq(.5,0,.97,.99));assert.equal(win.flow.zoneLeft,5);assert.equal(win.flow.award,'10');assert.equal(win.aim.symbol,'nebula');
+});
+
+test('each seven zone guarantees a first seven on its last failed game',()=>{
+ for(const id of ['toto','sora','ura_sora']){
+  let s=a.startZone(a.enter(),id),out;
+  for(let i=0;i<5;i++){out=a.step(s,{},()=>.1,'MISS');s=out.flow;if(i<4)assert.equal(out.result,'MISS');}
+  assert.equal(out.result,'BIG');assert.equal(out.aim.guaranteed,true);assert.equal(out.aim.color,'rainbow');assert.equal(s.sevenHits,1);assert.equal(s.zone,'');assert.ok(Number(s.award)>=50);
+ }
+});
+test('nebula resets retain the guarantee and a prior seven consumes it',()=>{
+ let s={...a.startZone(a.enter(),'sora'),zoneLeft:1};
+ let out=a.step(s,{},()=>.1,'NEBULA');assert.equal(out.result,'NEBULA');assert.equal(out.flow.zoneLeft,5);assert.equal(out.flow.sevenHits,0);
+ out=a.step({...out.flow,zoneLeft:1},{},()=>.1,'MISS');assert.equal(out.result,'BIG');
+ out=a.step({...a.startZone(a.enter(),'toto'),sevenHits:1,zoneLeft:1},{},()=>.1,'MISS');assert.equal(out.result,'MISS');
+ assert.equal(a.startZone(out.flow,'sora').sevenHits,0);
 });
