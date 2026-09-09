@@ -12835,6 +12835,12 @@ body{
       }
     }
 
+    if(resolved.comebackEvent){
+      showMessage(resolved.artMessage,normalModeLabel());log(resolved.artMessage);
+      if(resolved.comebackEvent==='entry')showOverlay('引き戻しゾーン');
+      if(resolved.comebackEvent==='success')showOverlay('AT復活！');
+      return;
+    }
     if(A_TYPE_MODE && (resolved.czEntry || resolved.rtCompleted || (resolved.czCompleted && !resolved.bonusHit))){
       if(resolved.artMessage){showMessage(resolved.artMessage,normalModeLabel());showOverlay(resolved.artMessage);log(resolved.artMessage);return;}
       const message=resolved.czEntry ? (result === "STRONG_CZ" ? "強CZ突入" : "CZ突入") : resolved.rtCompleted ? "RT終了" : "CZ失敗";
