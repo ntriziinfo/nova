@@ -58,10 +58,8 @@
   const fields={x:panel.querySelector('#novaArtX'),y:panel.querySelector('#novaArtY'),w:panel.querySelector('#novaArtW')};
   function render(id){
     const item=items.get(id),p=positions[id],img=item.querySelector('img');
-    const width=layer.clientWidth,height=layer.clientHeight;
-    const ratio=img.naturalWidth?img.naturalHeight/img.naturalWidth:1;
-    p.w=clamp(p.w,4,45); p.x=clamp(p.x,0,100-p.w);
-    p.y=clamp(p.y,0,Math.max(0,100-p.w*width*ratio/height));
+    // Rendering must not rewrite saved coordinates while cabinet dimensions load.
+    // Bounds are applied when editing/loading, not from a transient layer height.
     item.style.left=p.x+'%';item.style.top=p.y+'%';item.style.width=p.w+'%';
   }
   function sync(){

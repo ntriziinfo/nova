@@ -6533,17 +6533,17 @@ body{
 </style>
 <link rel="stylesheet" href="nova-cabinet.css?v=20260909-result-image-84">
 <link rel="stylesheet" href="nova-artwork.css?v=20260909-result-image-84">
-<script src="nova-artwork.js?v=20260909-result-image-84" defer></script>
+<script src="nova-artwork.js?v=20260909-lamp-position-98" defer></script>
 <script src="nova-beat-lamps.js?v=20260909-result-image-84"></script>
 <script src="nova-reel-motion.js?v=20260909-result-image-84"></script>
 <link rel="stylesheet" href="nova-results.css?v=20260909-result-image-84">
 <script src="nova-results.js?v=20260909-result-image-84"></script>
 <link rel="stylesheet" href="nova-ladder-presentation.css?v=20260909-shutter-95">
 <script src="nova-ladder-presentation.js?v=20260909-shutter-95"></script>
-<link rel="stylesheet" href="nova-aim-presentation.css?v=20260909-aim-97">
-<script src="nova-aim-presentation.js?v=20260909-aim-97"></script>
-<script src="nova-art.js?v=20260909-aim-97"></script>
-<script src="nova-balance.js?v=20260909-aim-97"></script>
+<link rel="stylesheet" href="nova-aim-presentation.css?v=20260909-aim-98">
+<script src="nova-aim-presentation.js?v=20260909-aim-98"></script>
+<script src="nova-art.js?v=20260909-aim-98"></script>
+<script src="nova-balance.js?v=20260909-aim-98"></script>
 <script src="nova-normal.js?v=20260909-result-image-84"></script>
 <script src="nova-flow.js?v=20260908-state-nova-33"></script>
 <style>
@@ -15015,7 +15015,7 @@ body{
     // オート/SPEED中だけ自動停止。手動時はストップ/左中右を押すまで止まらない。
     if(resolved.oumaFreeze){startOumaReverseAudio(currentSpin);}
     if(!resolved.oumaFreeze&&(autoPlay || speedModeSpinAtStart)){
-      const stopOrder = zoneActiveAtSpinStart ? [2,1,0] : [0,1,2];
+      const stopOrder = resolved.aim || zoneActiveAtSpinStart ? [2,1,0] : [0,1,2];
       stopOrder.forEach((i,idx)=>{
         const normalAutoStopDelay = autoStopDelayMs(idx);
         const delay = resolved.oumaFreeze ? spinWaitMs + 150 + idx * 300 : speedModeSpinAtStart ? speedModeStopDelay(i) : normalAutoStopDelay;
@@ -15062,8 +15062,17 @@ body{
     if(isRogiHighZoneSpin(currentSpin)) stopRogiStopEffect(true);
 
     if(!options.visualReady&&currentSpin.visualStopping?.[i])return;
+    if(currentSpin.resolved?.aim&&!options.visualReady){
+      currentSpin.aimStopOrder ||= [];
+      if(!currentSpin.aimStopOrder.includes(i))currentSpin.aimStopOrder.push(i);
+      const target=NovaAim.stopTarget(currentSpin.resolved.aim,currentSpin.result,currentSpin.aimStopOrder,i);
+      const symbol=currentSpin.resolved.aim.symbol==='seven'?'7':NEBULA_SYMBOL;
+      const column=getReelWindowFromStrip(i,symbol,target.onLine?1:0);
+      setGridColumn(currentSpin.grid,i,column);
+      currentSpin.lineRow=1;currentSpin.aimAligned=target.aligned;
+    }
     const {grid, spec, result, lineRow} = currentSpin;
-    const stopOrder = currentSpin.stopped.filter(Boolean).length + 1;
+    const stopOrder = currentSpin.resolved?.aim ? currentSpin.aimStopOrder.indexOf(i)+1 : currentSpin.stopped.filter(Boolean).length + 1;
     if(stopOrder===3)NovaAim.hide();
     const reversePushWrongFirst = isReversePushGuidedMiss(currentSpin) && stopOrder === 1 && i !== 2;
     let col = options.visualColumn || (currentSpin.manualBonusStop
@@ -15095,7 +15104,7 @@ body{
     syncCabinetControlState();
     showCzLamp(stopOrder,currentSpin.resolved);
     NovaLadder.stop(stopOrder);
-    if(stopOrder===3&&currentSpin.resolved?.aim?.symbol==='seven'&&currentSpin.result==='BIG'&&!currentSpin.aimWinPlayed&&!debugFastSpinActive){
+    if(currentSpin.stopped.every(Boolean)&&currentSpin.resolved?.aim?.symbol==='seven'&&currentSpin.result==='BIG'&&currentSpin.aimAligned&&!currentSpin.aimWinPlayed&&!debugFastSpinActive){
       currentSpin.aimWinPlayed=true;NovaAim.win(playAimSevenWinSound);
     }
     if(stopOrder===3 && currentSpin.resolved?.czLamp)playCzConfirmedSound(currentSpin.resolved);
@@ -15177,7 +15186,7 @@ body{
 
 
     // DZ/超DZ中は右→中→左、それ以外は左→中→右で全停止する。
-    const stopOrder = currentSpin.zoneActiveAtStart ? [2,1,0] : [0,1,2];
+    const stopOrder = currentSpin.resolved?.aim || currentSpin.zoneActiveAtStart ? [2,1,0] : [0,1,2];
     stopOrder.forEach((i,idx)=>{
       if(!currentSpin.stopped[i]){
         setTimeout(()=>stopSingleReel(i), idx * 180);

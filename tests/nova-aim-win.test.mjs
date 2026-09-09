@@ -31,3 +31,28 @@ test('consecutive wins create independent nonlooping audio instances',()=>{
  vm.runInContext(html.match(/  function playAimSevenWinSound\([^]*?\n  }/)[0],c);
  c.playAimSevenWinSound();c.playAimSevenWinSound();assert.equal(audios.length,2);assert.notEqual(audios[0],audios[1]);assert.equal(audios[0].loop,false);assert.equal(c.aimWinAudios.size,2);audios[0].onended();assert.equal(c.aimWinAudios.size,1);
 });
+const aimCode=fs.readFileSync('nova-aim-presentation.js','utf8');
+test('right first aligns both symbols; other orders miss while internal result stays intact',()=>{
+ const c=vm.createContext({});vm.runInContext(aimCode,c);
+ for(const symbol of ['seven','nebula'])for(const order of [[2,1,0],[2,0,1],[0,1,2],[0,2,1],[1,0,2],[1,2,0]]){
+  const result=symbol==='seven'?'BIG':'NEBULA';
+  const stops=order.map((index,n)=>c.NovaAim.stopTarget({symbol},result,order.slice(0,n+1),index));
+  assert.equal(stops.every(s=>s.onLine),order[0]===2);
+  assert.equal(stops.at(-1).aligned,order[0]===2);
+ }
+});
+test('reverse miss breaks on third stop, scissors left-middle is a two-stop confirmation',()=>{
+ const c=vm.createContext({});vm.runInContext(aimCode,c);
+ for(const symbol of ['seven','nebula']){
+  assert.deepEqual([2,1,0].map((index,n)=>c.NovaAim.stopTarget({symbol},'MISS',[2,1,0].slice(0,n+1),index).onLine),[true,true,false]);
+  assert.equal(c.NovaAim.stopTarget({symbol},'MISS',[2,0],0).onLine,false);
+  assert.equal(c.NovaAim.stopTarget({symbol},symbol==='seven'?'BIG':'NEBULA',[2,0],0).onLine,true);
+ }
+});
+test('artwork rendering preserves configured coordinates while dimensions are unavailable',()=>{
+ const source=fs.readFileSync('nova-artwork.js','utf8');
+ const render=source.match(/  function render\(id\){[^]*?\n  }/)[0];
+ const position={x:19.7667,y:34.0807,w:17.6},item={style:{},querySelector:()=>({naturalWidth:0})};
+ const c=vm.createContext({items:new Map([['urapi',item]]),positions:{urapi:position},layer:{clientWidth:1000,clientHeight:0}});
+ vm.runInContext(render,c);c.render('urapi');assert.equal(position.y,34.0807);assert.equal(item.style.top,'34.0807%');
+});

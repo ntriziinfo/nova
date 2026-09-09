@@ -36,6 +36,13 @@ globalThis.NovaAim=(()=>{
   host.dataset.aimActive='true';video.hidden=false;video.currentTime=0;layout();
   video.play().catch(()=>{ /* Remain on this cue's first frame if autoplay is blocked. */ });
  }
+ // Visual stop control does not redraw or cancel the internal award.
+ function stopTarget(aim,result,order,index){
+  const valid=order[0]===2,hit=result===(aim.symbol==='seven'?'BIG':'NEBULA');
+  const rank=order.indexOf(index)+1;
+  const onLine=valid&&hit || (rank<3 && !(valid&&!hit&&index===0));
+  return {onLine,aligned:valid&&hit,rank};
+ }
  function win(playSound){
   if(!init())return;
   hide();const token=++winToken;winLocked=true;clearTimeout(winTimer);
@@ -60,5 +67,5 @@ globalThis.NovaAim=(()=>{
   document.addEventListener('DOMContentLoaded',init);
   window.addEventListener('resize',layout);
  }
- return {bet,hide,layout,win,afterWin,reset,get busy(){return winLocked;}};
+ return {stopTarget,bet,hide,layout,win,afterWin,reset,get busy(){return winLocked;}};
 })();
