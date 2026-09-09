@@ -6540,11 +6540,11 @@ body{
 <script src="nova-results.js?v=20260909-result-image-84"></script>
 <link rel="stylesheet" href="nova-ladder-presentation.css?v=20260909-shutter-95">
 <script src="nova-ladder-presentation.js?v=20260909-shutter-95"></script>
-<link rel="stylesheet" href="nova-aim-presentation.css?v=20260909-zone-108">
-<script src="nova-aim-presentation.js?v=20260909-zone-108"></script>
-<script src="nova-art.js?v=20260909-zone-108"></script>
-<script src="nova-balance.js?v=20260909-zone-108"></script>
-<script src="nova-normal.js?v=20260909-result-image-84"></script>
+<link rel="stylesheet" href="nova-aim-presentation.css?v=20260909-zone-109">
+<script src="nova-aim-presentation.js?v=20260909-zone-109"></script>
+<script src="nova-art.js?v=20260909-zone-109"></script>
+<script src="nova-balance.js?v=20260909-zone-109"></script>
+<script src="nova-normal.js?v=20260909-zone-109"></script>
 <script src="nova-flow.js?v=20260908-state-nova-33"></script>
 <style>
 /* Fit the original nebula art to reel width; its transparent vertical margins
@@ -13887,7 +13887,7 @@ body{
     const forceSelect=document.getElementById('forceResult');
     for(const [value,label] of [['ART','AT突入'],['FREEZE','フリーズ'],...Object.keys(NovaNormal.rare).filter(k=>!isNovaResult(k)).map(k=>[k,RESULT[k].name]),['RARE','ATレア役'],...NovaArt.zoneIds.map(k=>['ZONE_'+k,NovaArt.zoneName(k)+'ゾーン'])]){const option=document.createElement('option');option.value=value;option.textContent=label;forceSelect.append(option);}
     const normalPanel=document.createElement('details');normalPanel.id='novaNormalConfig';
-    normalPanel.innerHTML='<summary>内部モード・穢れ・状態（仮設定）</summary><output id="novaInternalStatus"></output><label>通常モード<select id="novaMode">'+NovaNormal.modes.map(x=>'<option>'+x+'</option>').join('')+'</select></label><label>天井カウンター<input id="novaModeGames" type="number" min="0" max="600" value="0"></label><label>内部状態<select id="novaLevel"><option value="low">低確</option><option value="high">高確</option></select></label><label>穢れpt<input id="novaImpurity" type="number" min="0" max="100" value="0"></label><button id="novaApplyInternal" type="button">内部状態を適用</button><p>朝一リセットは特殊モード（200G＋前兆）。規定GゾーンはCZまたはガセ前兆。天井恩恵はBIG／突破確定CZを各50%。リセット時の穢れは50pt中心の低pt寄り振り分け。高設定ほど75pt以上を小幅に優遇。初当たりボーナス開始時にモード移行。穢れ100ptは次のボーナスで消費し、AT＋特化ゾーンを予約。フリーズは通常スーパーノヴァ目の1/2。</p>';
+    normalPanel.innerHTML='<summary>内部モード・穢れ・状態（仮設定）</summary><output id="novaInternalStatus"></output><label>通常モード<select id="novaMode">'+NovaNormal.modes.map(x=>'<option>'+x+'</option>').join('')+'</select></label><label>天井カウンター<input id="novaModeGames" type="number" min="0" max="600" value="0"></label><label>内部状態<select id="novaLevel"><option value="low">低確</option><option value="high">高確</option></select></label><label>穢れpt<input id="novaImpurity" type="number" min="0" max="100" value="0"></label><button id="novaApplyInternal" type="button">内部状態を適用</button><p>朝一リセットは特殊モード（200G＋前兆）。規定GゾーンはCZまたはガセ前兆。天井恩恵はBIG／突破確定CZを各50%。リセット時の穢れは50pt中心の低pt寄り振り分け。高設定ほど75pt以上を小幅に優遇。初当たりボーナス開始時・AT終了時にモード移行。AT駆け抜け後は通常B以上。ざわつき／NOVA前兆の出方でモードを示唆。穢れ100ptは次のボーナスで消費し、AT＋特化ゾーンを予約。フリーズは通常スーパーノヴァ目の1/2。</p>';
     const resetTable=document.createElement('div');resetTable.innerHTML='<table><tr><th>設定</th>'+NovaNormal.resetImpurityPoints.map(pt=>'<th>'+pt+'pt</th>').join('')+'</tr>'+NovaNormal.resetImpurityWeights.map((row,i)=>'<tr><td>'+(i+1)+'</td>'+row.map(w=>'<td>'+w+'%</td>').join('')+'</tr>').join('')+'</table>';normalPanel.append(resetTable);
     const nc=NovaNormal.config(settings.novaNormal);for(const [k,v]of Object.entries(nc).filter(([k])=>!['highMultiplier','bandMultiplier'].includes(k))){const label=document.createElement('label');label.textContent=({highMultiplier:'高確CZ倍率',bandMultiplier:'優遇区間CZ倍率',downMiss:'ハズレ降格率',downReplay:'リプレイ降格率',czFailureGain:'CZ失敗の穢れpt',bonusFailureGain:'ボーナスAT非突入の穢れpt',atDryGain:'AT駆け抜けの穢れpt',ceilingGain:'600G天井の穢れpt（300Gは半分・100G以下は1割）',regChainGain:'REG連続の穢れpt',superDenom:'通常スーパーノヴァ目分母'})[k];const input=document.createElement('input');input.type='number';input.step='any';input.value=v;input.dataset.normalConfig=k;label.append(input);normalPanel.append(label);}
     const saveNormal=document.createElement('button');saveNormal.textContent='通常設定を保存';saveNormal.onclick=()=>{const c={};normalPanel.querySelectorAll('[data-normal-config]').forEach(x=>c[x.dataset.normalConfig]=x.valueAsNumber);settings.novaNormal=NovaNormal.config(c);persistState();};normalPanel.append(saveNormal);

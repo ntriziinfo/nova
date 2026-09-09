@@ -7,7 +7,7 @@ const a=ctx.NovaArt,n=ctx.NovaNormal;
 const normal={mode:'通常B',games:245,impurity:78,level:'high'};
 test('ART final game resets normal ceiling count and next normal game is 1G',()=>{
  const before={...a.enter(),remaining:'1'},after=a.step(before,{},()=>.99,'BELL').flow;
- const state=n.afterArt(normal,before,after);
+ const state=n.afterArt(normal,before,after,{},()=>0);
  assert.equal(state.games,0);assert.equal(state.mode,'通常B');assert.equal(state.impurity,80);assert.equal(state.level,'high');
  assert.equal(n.spin(state,after,1,{scale:0},()=>.99,'MISS').state.games,1);
  assert.equal(normal.games,245);

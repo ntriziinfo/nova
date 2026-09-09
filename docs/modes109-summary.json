@@ -1,0 +1,101 @@
+{
+  "summaries": [
+    {
+      "setting": 1,
+      "trials": 1000,
+      "games": 10000000,
+      "rtp": 0.7815830047759944,
+      "gameCZ": 25195,
+      "ceilingCZ": 3269,
+      "rareCZ": 17734,
+      "wins": 8,
+      "ci95": [
+        0.7765274090551908,
+        0.786638600496798
+      ],
+      "gameShare": 0.6161305684228755
+    },
+    {
+      "setting": 2,
+      "trials": 1000,
+      "games": 10000000,
+      "rtp": 0.792997320161201,
+      "gameCZ": 25029,
+      "ceilingCZ": 3210,
+      "rareCZ": 18101,
+      "wins": 12,
+      "ci95": [
+        0.7878400684765341,
+        0.7981545718458678
+      ],
+      "gameShare": 0.6093871385412171
+    },
+    {
+      "setting": 3,
+      "trials": 1000,
+      "games": 10000000,
+      "rtp": 0.8106262946943184,
+      "gameCZ": 24996,
+      "ceilingCZ": 3159,
+      "rareCZ": 18326,
+      "wins": 12,
+      "ci95": [
+        0.8055783217455385,
+        0.8156742676430982
+      ],
+      "gameShare": 0.6057313741098513
+    },
+    {
+      "setting": 4,
+      "trials": 1000,
+      "games": 10000000,
+      "rtp": 0.8290506989538137,
+      "gameCZ": 24614,
+      "ceilingCZ": 3071,
+      "rareCZ": 18430,
+      "wins": 37,
+      "ci95": [
+        0.8236358102833539,
+        0.8344655876242735
+      ],
+      "gameShare": 0.6003469586902309
+    },
+    {
+      "setting": 5,
+      "trials": 1000,
+      "games": 10000000,
+      "rtp": 0.8537361993171252,
+      "gameCZ": 23957,
+      "ceilingCZ": 2941,
+      "rareCZ": 18141,
+      "wins": 72,
+      "ci95": [
+        0.8481036905168919,
+        0.8593687081173584
+      ],
+      "gameShare": 0.5972157463531605
+    },
+    {
+      "setting": 6,
+      "trials": 1000,
+      "games": 10000000,
+      "rtp": 0.8378035212466888,
+      "gameCZ": 24688,
+      "ceilingCZ": 3012,
+      "rareCZ": 18919,
+      "wins": 66,
+      "ci95": [
+        0.8316084091660587,
+        0.8439986333273188
+      ],
+      "gameShare": 0.5941783393037173
+    }
+  ],
+  "sourceHashes": {
+    "nova-normal.js": "20c040e1353dbf23158fad16d231f84921a0f428c92c7788386ac5466dc093d1",
+    "nova-art.js": "f7efee040fe39b39d05fef4d9b96bb7a4caa2464dd91d0cf2593c6ba0c1a7b42",
+    "nova-flow.js": "86c40c1cec4d14fb60451201bcf7a5ce1bdf7366795f3b5de292e81e3b880b0a",
+    "nova-balance.js": "d747b6959fe06df36eb0dab1ddca3bb1a5627b517ad83790d20b970e4ead2556",
+    "scripts/zone-v2-model.mjs": "3377288e4854268c2f61c29b502b7d4e7bba12ebb46961485d357bd2ba154f97"
+  }
+}

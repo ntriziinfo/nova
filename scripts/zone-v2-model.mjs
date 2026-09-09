@@ -40,7 +40,7 @@ export function simulate(setting,games,seed,options={}){
   for(let bonusPaid=0;bonusPaid<a.bonusTarget(kind);){
    const r=a.drawBonus(rng,setting),pay=n.pay(r);bonusPaid+=pay;const before=fee;bet('bonus');bonusFee+=fee-before;paid+=pay;replay=r==='REPLAY';bonusG++;bonusP+=pay;track();if(r==='NEBULA')sets++;
   }
-  const before=flow;flow=a.afterBonus(flow,c,sets);state=n.bonusEnd(state,kind,flow);state=n.afterArt(state,before,flow);
+  const before=flow;flow=a.afterBonus(flow,c,sets);state=n.bonusEnd(state,kind,flow);state=n.afterArt(state,before,flow,options.normal,rng);
   if(before.phase!=='art'&&flow.phase==='art')counts.artEntries++;
   if(flow.phase==='art'&&claim.zones.length){flow.queuedZones.push(...claim.zones);if(!flow.zone){flow=a.startZone(flow,flow.queuedZones.shift(),{...c,allowUra:true},rng);zoneEntry(flow);}}
  }
@@ -53,7 +53,7 @@ export function simulate(setting,games,seed,options={}){
    const s=a.step(flow,{...c,netPt:options.netGuard===false?0:paid-fee},rng);
    if(eligible){atMetrics.eligible++;if(flow.atHigh)atMetrics.high++;if(s.flow.entryStage==='seven')atMetrics.zoneWins++;}
    if(s.atOutcome){const o=s.atOutcome;if(o.promoted)atMetrics.promotions++;if(o.direct){atMetrics.directWins++;atMetrics.directPoints+=o.direct;if(s.result==='STRONG_SUICA'&&o.direct===100)atMetrics.suica100++;if(s.result==='STRONG_SUICA'&&o.direct===300)atMetrics.suica300++;}}if(!flow.zone&&s.flow.zone)zoneEntry(s.flow);
-   paid+=n.pay(s.result);if(s.result==='REPLAY')replay=true;state=n.afterArt(state,flow,s.flow);flow=s.flow;if(s.internalBonus)bonus('BIG');continue;
+   paid+=n.pay(s.result);if(s.result==='REPLAY')replay=true;state=n.afterArt(state,flow,s.flow,options.normal,rng);flow=s.flow;if(s.internalBonus)bonus('BIG');continue;
   }
   const normal=flow.phase==='normal',charged=bet(normal?'normal':'cz');
   if(normal){counts.highNormalG+=state.level==='high';counts.favoredNormalG+=n.favored(state);}
