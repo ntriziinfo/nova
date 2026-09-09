@@ -20,9 +20,9 @@ test('last game rewrite awards success and does not add CZ failure impurity',()=
  const loss={phase:'cz',remaining:1,success:false,winProbability:.4};
  const t=n.spin({games:0},loss,1,{},()=>0,'STRONG_NOVA');
  assert.equal(t.czFlow.success,true);assert.equal(t.direct,false);assert.ok(t.internalBonus);
- assert.equal(t.state.impurity,n.rare.STRONG_NOVA.gain);
+ assert.equal(t.state.impurity,0);
  const fail=n.spin({games:0},loss,1,{},()=>.99,'MISS');
- assert.equal(fail.direct,false);assert.equal(fail.internalBonus,null);assert.equal(fail.state.impurity,10);
+ assert.equal(fail.direct,false);assert.equal(fail.internalBonus,null);assert.equal(fail.state.impurity,1);
 });
 test('Bayes lamp weights reproduce all six final confidences for ordinary and strong CZ',()=>{
  for(const p of [.4,.7,.43,.775,.95]){

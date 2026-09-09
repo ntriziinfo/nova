@@ -8,7 +8,7 @@ const normal={mode:'通常B',games:245,impurity:78,level:'high'};
 test('ART final game resets normal ceiling count and next normal game is 1G',()=>{
  const before={...a.enter(),remaining:'1'},after=a.step(before,{},()=>.99,'BELL').flow;
  const state=n.afterArt(normal,before,after);
- assert.equal(state.games,0);assert.equal(state.mode,'通常B');assert.equal(state.impurity,78);assert.equal(state.level,'high');
+ assert.equal(state.games,0);assert.equal(state.mode,'通常B');assert.equal(state.impurity,80);assert.equal(state.level,'high');
  assert.equal(n.spin(state,after,1,{scale:0},()=>.99,'MISS').state.games,1);
  assert.equal(normal.games,245);
 });
@@ -27,6 +27,6 @@ test('bonus at ART boundary resets only when it returns to normal, not when a se
 test('live transition resets displayed and internal counters without changing lifetime statistics',()=>{
  const source=fs.readFileSync('jag.html','utf8');
  const helper=source.match(/  function resetNormalCountersAfterArt\([^]*?\n  }/)[0];
- vm.runInContext('var normalState={sinceBonus:295,internal:{games:245,impurity:78,mode:"通常B"}};var stats={totalSpins:1500};'+helper+';resetNormalCountersAfterArt({phase:"art"},{phase:"normal"});',ctx);
+ vm.runInContext('var settings={novaNormal:{}};var normalState={sinceBonus:295,internal:{games:245,impurity:78,mode:"通常B"}};var stats={totalSpins:1500};'+helper+';resetNormalCountersAfterArt({phase:"art"},{phase:"normal"});',ctx);
  assert.equal(ctx.normalState.sinceBonus,0);assert.equal(ctx.normalState.internal.games,0);assert.equal(ctx.stats.totalSpins,1500);
 });

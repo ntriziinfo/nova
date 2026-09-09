@@ -40,7 +40,7 @@ export function simulate(setting,games,seed,options={}){
   for(let bonusPaid=0;bonusPaid<a.bonusTarget(kind);){
    const r=a.drawBonus(rng,setting),pay=n.pay(r);bonusPaid+=pay;const before=fee;bet('bonus');bonusFee+=fee-before;paid+=pay;replay=r==='REPLAY';bonusG++;bonusP+=pay;track();if(r==='NEBULA')sets++;
   }
-  const before=flow;flow=a.afterBonus(flow,c,sets);state=n.afterArt(state,before,flow);
+  const before=flow;flow=a.afterBonus(flow,c,sets);state=n.bonusEnd(state,kind,flow);state=n.afterArt(state,before,flow);
   if(before.phase!=='art'&&flow.phase==='art')counts.artEntries++;
   if(flow.phase==='art'&&claim.zones.length){flow.queuedZones.push(...claim.zones);if(!flow.zone){flow=a.startZone(flow,flow.queuedZones.shift(),{...c,allowUra:true},rng);zoneEntry(flow);}}
  }

@@ -6540,10 +6540,10 @@ body{
 <script src="nova-results.js?v=20260909-result-image-84"></script>
 <link rel="stylesheet" href="nova-ladder-presentation.css?v=20260909-shutter-95">
 <script src="nova-ladder-presentation.js?v=20260909-shutter-95"></script>
-<link rel="stylesheet" href="nova-aim-presentation.css?v=20260909-zone-106">
-<script src="nova-aim-presentation.js?v=20260909-zone-106"></script>
-<script src="nova-art.js?v=20260909-zone-106"></script>
-<script src="nova-balance.js?v=20260909-zone-106"></script>
+<link rel="stylesheet" href="nova-aim-presentation.css?v=20260909-zone-107">
+<script src="nova-aim-presentation.js?v=20260909-zone-107"></script>
+<script src="nova-art.js?v=20260909-zone-107"></script>
+<script src="nova-balance.js?v=20260909-zone-107"></script>
 <script src="nova-normal.js?v=20260909-result-image-84"></script>
 <script src="nova-flow.js?v=20260908-state-nova-33"></script>
 <style>
@@ -10526,7 +10526,7 @@ body{
 
   function resetNormalCountersAfterArt(before,after){
     if(before?.phase!=='art'||after?.phase!=='normal')return;
-    normalState.internal=NovaNormal.afterArt(normalState.internal,before,after);
+    normalState.internal=NovaNormal.afterArt(normalState.internal,before,after,settings.novaNormal);
     normalState.sinceBonus=0;
   }
 
@@ -11377,6 +11377,7 @@ body{
       if(settings.at150Version!==45){settings.novaArt={...settings.novaArt,...{"initial":150,"ladderSosuke":0.7,"ladderGiru":0.95,"ladderUraGiru":0.98,"totoHit":0.35,"soraHit":0.63,"soraUraHit":0.75,"urapiSuper":0.49,"oumaSuper":0.77,"oumaUraSuper":0.98,"payoutVersion":1}};settings.completeLimitPt=10000;settings.at150Version=45;}
       if(settings.ladderGuaranteeVersion!==57){settings.novaArt={...settings.novaArt,ladderSosuke:.4,ladderGiru:.5,ladderUraGiru:2/3};settings.ladderGuaranteeVersion=57;}
       if(settings.zoneBalanceVersion!==105){settings.novaArt={...settings.novaArt,oumaUraSuper:.75,oumaUraFreeze:.35,soraUraHit:.75,soraUraReset:.25,soraUraRed:.715};settings.zoneBalanceVersion=105;}
+      if(settings.rescueVersion!==107){settings.novaNormal={...settings.novaNormal,czFailureGain:1,bonusFailureGain:2,atDryGain:2,ceilingGain:10,regChainGain:2};settings.rescueVersion=107;}
       settings.completeLimitPt = Math.max(1, Math.round(Number(settings.completeLimitPt) || DEFAULT_COMPLETE_LIMIT_PT));
       settings.title = normalizeMachineTitle(settings.title);
       if(!SETTING[settings.setting]) settings.setting = 1;
@@ -12158,6 +12159,7 @@ body{
     const aTypeEnd = isATypeBonusActive();
     const aTypeNet = aTypeEnd ? aTypeBonusNet() : 0;
     const resultPayout = aTypeEnd ? aTypeNet : session.paid;
+    const endedBonusKind=session.bonusKind;
     const wonArtSets=Number(session.bonusArtSets)||0;
     const wonZones=Array.isArray(session.bonusZones)?session.bonusZones:[];
     const profit = session.paid - (Number(session.cost) || 0);
@@ -12225,6 +12227,7 @@ body{
     if(aTypeEnd){
       const beforeBonusResume=normalState.flow;
       normalState.flow = NovaFlow.afterBonus(normalState.flow,settings.novaArt,wonArtSets);
+      normalState.internal=NovaNormal.bonusEnd(normalState.internal,endedBonusKind,normalState.flow,settings.novaNormal);
       resetNormalCountersAfterArt(beforeBonusResume,normalState.flow);
       if(normalState.flow.phase==='art'&&!Number.isFinite(normalState.resultAtStartPaid))normalState.resultAtStartPaid=Number(stats.totalPaid)||0;
       if(normalState.flow.phase==='art' && wonZones.length){
@@ -13886,7 +13889,7 @@ body{
     const normalPanel=document.createElement('details');normalPanel.id='novaNormalConfig';
     normalPanel.innerHTML='<summary>内部モード・穢れ・状態（仮設定）</summary><output id="novaInternalStatus"></output><label>通常モード<select id="novaMode">'+NovaNormal.modes.map(x=>'<option>'+x+'</option>').join('')+'</select></label><label>天井カウンター<input id="novaModeGames" type="number" min="0" max="600" value="0"></label><label>内部状態<select id="novaLevel"><option value="low">低確</option><option value="high">高確</option></select></label><label>穢れpt<input id="novaImpurity" type="number" min="0" max="100" value="0"></label><button id="novaApplyInternal" type="button">内部状態を適用</button><p>朝一リセット後は初回ボーナスまで天井99G。リセット時の穢れは50pt中心の低pt寄り振り分け。高設定ほど75pt以上を小幅に優遇。初当たりボーナス開始時にモード移行。穢れ100ptは次のボーナスで消費し、AT＋特化ゾーンを予約。フリーズは通常スーパーノヴァ目の1/2。</p>';
     const resetTable=document.createElement('div');resetTable.innerHTML='<table><tr><th>設定</th>'+NovaNormal.resetImpurityPoints.map(pt=>'<th>'+pt+'pt</th>').join('')+'</tr>'+NovaNormal.resetImpurityWeights.map((row,i)=>'<tr><td>'+(i+1)+'</td>'+row.map(w=>'<td>'+w+'%</td>').join('')+'</tr>').join('')+'</table>';normalPanel.append(resetTable);
-    const nc=NovaNormal.config(settings.novaNormal);for(const [k,v]of Object.entries(nc).filter(([k])=>!['highMultiplier','bandMultiplier'].includes(k))){const label=document.createElement('label');label.textContent=({highMultiplier:'高確CZ倍率',bandMultiplier:'優遇区間CZ倍率',downMiss:'ハズレ降格率',downReplay:'リプレイ降格率',czFailureGain:'CZ失敗の穢れpt',hundredGain:'100Gごとの穢れpt',superDenom:'通常スーパーノヴァ目分母'})[k];const input=document.createElement('input');input.type='number';input.step='any';input.value=v;input.dataset.normalConfig=k;label.append(input);normalPanel.append(label);}
+    const nc=NovaNormal.config(settings.novaNormal);for(const [k,v]of Object.entries(nc).filter(([k])=>!['highMultiplier','bandMultiplier'].includes(k))){const label=document.createElement('label');label.textContent=({highMultiplier:'高確CZ倍率',bandMultiplier:'優遇区間CZ倍率',downMiss:'ハズレ降格率',downReplay:'リプレイ降格率',czFailureGain:'CZ失敗の穢れpt',bonusFailureGain:'ボーナスAT非突入の穢れpt',atDryGain:'AT駆け抜けの穢れpt',ceilingGain:'600G天井の穢れpt（300Gは半分・100G以下は1割）',regChainGain:'REG連続の穢れpt',superDenom:'通常スーパーノヴァ目分母'})[k];const input=document.createElement('input');input.type='number';input.step='any';input.value=v;input.dataset.normalConfig=k;label.append(input);normalPanel.append(label);}
     const saveNormal=document.createElement('button');saveNormal.textContent='通常設定を保存';saveNormal.onclick=()=>{const c={};normalPanel.querySelectorAll('[data-normal-config]').forEach(x=>c[x.dataset.normalConfig]=x.valueAsNumber);settings.novaNormal=NovaNormal.config(c);persistState();};normalPanel.append(saveNormal);
     document.getElementById('saveFlowConfig').closest('details').after(normalPanel);
     document.getElementById('novaApplyInternal').onclick=()=>{if(isSpinning||session.active)return;normalState.internal=NovaNormal.normalize({mode:$('novaMode').value,games:$('novaModeGames').value,level:$('novaLevel').value,highLeft:$('novaLevel').value==='high'?10:0,impurity:$('novaImpurity').value});persistState();updateDisplay();};
