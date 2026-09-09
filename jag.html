@@ -8742,7 +8742,7 @@ body{
   }
 
   function applyAudioOutputVolumes(){
-    for(const audio of aimWinAudios)audio.volume=sfxOutputVolume();
+    for(const audio of aimWinAudios)audio.volume=sfxOutputVolume()*(audio.aimFadeGain??1);
     if(oumaIntroAudio)oumaIntroAudio.volume=sfxOutputVolumeForSource(SFX_OUTPUT_SCALE,'assets/media/nova/uuufa.wav');
     if(oumaReverseAudio)oumaReverseAudio.volume=sfxOutputVolumeForSource(SFX_OUTPUT_SCALE,"assets/media/nova/ouma-reverse-v2.wav");
     applyBgmOutputVolumes();
@@ -14782,6 +14782,7 @@ body{
     const speedModeSpinAtStart = speedToBonusActive && speedModeSpinRequest && normalActiveAtSpinStart;
     const spinWaitMs = spinWaitMsForMode(speedModeSpinAtStart);
 
+    fadeAimWinSoundsOnBet();
     isSpinning = true;
     if(normalState.resultCard){normalState.resultCard=null;NovaResults.hide();}
     jagLastGamePayout = 0;
@@ -16131,12 +16132,23 @@ body{
     o.stop(ctx.currentTime+delay+dur+.04);
   }
 
+  function fadeAimWinSoundsOnBet(){
+    for(const audio of aimWinAudios){
+      if(audio.paused||audio.ended||audio.aimFadeTimer!==undefined)continue;
+      const started=performance.now();audio.aimFadeGain=1;
+      audio.aimFadeTimer=setInterval(()=>{
+        audio.aimFadeGain=Math.max(0,1-(performance.now()-started)/3000);
+        audio.volume=sfxOutputVolume()*audio.aimFadeGain;
+        if(audio.aimFadeGain===0){audio.pause();clearInterval(audio.aimFadeTimer);aimWinAudios.delete(audio);}
+      },50);
+    }
+  }
   function playAimSevenWinSound(symbol='seven'){
     if(debugFastSpinActive)return;
     const src='assets/media/nova/aim/'+(symbol==='nebula'?'nebula':'seven')+'-win.wav';
     const audio=oneShotSoundCache.get(src).cloneNode(true);
     audio.loop=false;audio.volume=sfxOutputVolume();aimWinAudios.add(audio);
-    audio.onended=audio.onerror=()=>aimWinAudios.delete(audio);
+    audio.onended=audio.onerror=()=>{clearInterval(audio.aimFadeTimer);aimWinAudios.delete(audio);};
     audio.play().catch(()=>aimWinAudios.delete(audio));
   }
   window.addEventListener('nova-aim-unlocked',()=>{updateDisplay();if(autoPlay)queueAutoStep(50);});
