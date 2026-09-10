@@ -6546,6 +6546,9 @@ body{
 <script src="nova-balance.js?v=20260910-balance-120"></script>
 <script src="nova-normal.js?v=20260910-balance-120"></script>
 <script src="nova-flow.js?v=20260909-comeback-114"></script>
+<link rel="stylesheet" href="nova-audit.css?v=20260910-audit-121">
+<script src="nova-audit.js?v=20260910-audit-121"></script>
+<script src="nova-audit-ui.js?v=20260910-audit-121"></script>
 <link rel="stylesheet" href="nova-comeback-presentation.css?v=20260909-comeback-114">
 <script src="nova-comeback-presentation.js?v=20260909-comeback-114"></script>
 <style>
@@ -7959,6 +7962,37 @@ body{
   let speedModeSpinRequest = false;
   let speedFrameOffHold = false;
   let debugFastSpinActive = false;
+  let novaAuditRecorder = null;
+  let novaAuditView = null;
+
+  function auditSnapshot(){
+    if(!stats.auditRunId)stats.auditRunId=crypto.randomUUID();
+    return {run:stats.auditRunId,game:Number(stats.totalSpins)||0,bet:Number(stats.totalFee)||0,paid:Number(stats.totalPaid)||0,setting:settings.setting,
+      flow:normalState.flow||{phase:'normal'},internal:normalState.internal||{},replayFree:!!normalState.replayFree,complete:!!completeTrialState.locked,
+      bonus:{active:isATypeBonusActive(),phase:session.phase,tier:session.bonusTier,paid:session.paid,sets:session.bonusArtSets,zones:session.bonusZones,target:session.bonusTarget,pending:!!normalState.bonusPending,source:normalState.bonusSource,prepLeft:normalState.prepLeft,prepSets:normalState.prepSets,prepZones:normalState.prepZones,premium:session.premiumBonus||normalState.premiumBonus,pointsRemaining:session.bonusPointsRemaining},
+      config:{balance:120,audit:121,setting:settings.setting,fee:SPIN_COST,completeLimitPt:settings.completeLimitPt,oddsMultiplier:settings.oddsMultiplier,art:settings.novaArt,normal:settings.novaNormal,cz:settings.novaFlow}};
+  }
+  function auditCapture(detail={kind:'checkpoint'}){
+    if(!novaAuditRecorder)return;
+    try{novaAuditRecorder.record(auditSnapshot(),detail);}catch(e){const el=$('novaAuditStatus');if(el)el.textContent='履歴記録エラー：'+e.message;}
+  }
+  function auditSpinDetail(result,resolved){
+    return {kind:'spin',result,message:resolved.artMessage||'',mode:debugFastSpinActive?'fast':autoPlay?'auto':speedToBonusActive?'speed':'manual',forced:pendingForceResult||'',
+      aim:resolved.aim,burstEvent:resolved.burstEvent,burstReward:resolved.burstReward,comebackEvent:resolved.comebackEvent,atOutcome:resolved.atOutcome,
+      artSetWon:resolved.artSetWon,oumaFreeze:resolved.oumaFreeze,czLamp:resolved.czLamp,bonusHit:resolved.bonusHit,bonusSource:resolved.bonusSource,
+      pressOrder:debugFastSpinActive?'simulation':currentSpin?.auditPressOrder,stopOrder:debugFastSpinActive?'simulation':currentSpin?.auditStopOrder,grid:debugFastSpinActive?undefined:currentSpin?.auditGrid,visualResult:!debugFastSpinActive&&NovaAim.hasGuide(resolved.aim)&&currentSpin?.aimAligned===false?'MISS':result,
+      flowBefore:resolved.flowBefore,flowAfter:resolved.flowAfter,manualLineupMiss:resolved.manualLineupMiss,bonusWaitSpin:resolved.bonusWaitSpin,czEntry:resolved.czEntry,czCompleted:resolved.czCompleted};
+  }
+  function setupPlayAudit(){
+    novaAuditRecorder=new NovaAudit.Recorder({scope:STORAGE_KEY});
+    auditCapture({kind:'checkpoint'});
+    novaAuditView=NovaAuditUI.mount(novaAuditRecorder,{currentRun:()=>stats.auditRunId,roleName:id=>RESULT[id]?.name||id,graph:slumpGraph,host:document.querySelector('.slumpStats').parentNode,gameAtX:x=>{
+      const rect=slumpGraph.getBoundingClientRect(),points=getSlumpWindow(stats.slumpHistory).points,first=Number(points[0]?.spin)||0,last=Number(points.at(-1)?.spin)||first;
+      return Math.round(first+Math.max(0,Math.min(1,(x-rect.left-44)/Math.max(1,rect.width-58)))*(last-first));
+    }});
+    const flushAudit=()=>{auditCapture();novaAuditRecorder.journal();void novaAuditRecorder.flush();};
+    window.addEventListener('pagehide',flushAudit);document.addEventListener('visibilitychange',()=>{if(document.hidden)flushAudit();});
+  }
   let debugFastTimer = null;
   let debugFastSpinCount = 0;
   let debugOneClickSimActive = false;
@@ -10666,7 +10700,11 @@ body{
   }
 
   function countTotalSpinIfNeeded(aTypeBonusActiveAtSpinStart=false){
-    if(A_TYPE_MODE&&!session.active&&normalState.flow?.phase==='art')normalState.flow=NovaArt.prepareBet(normalState.flow,{...settings.novaArt,setting:settings.setting});
+    auditCapture();
+    if(A_TYPE_MODE&&!session.active&&normalState.flow?.phase==='art'){
+      normalState.flow=NovaArt.prepareBet(normalState.flow,{...settings.novaArt,setting:settings.setting});
+      auditCapture();
+    }
     if(!session.active && normalState.flow?.zero)return false;
     if(A_TYPE_MODE && aTypeBonusActiveAtSpinStart) return false;
     stats.totalSpins = (Number(stats.totalSpins) || 0) + 1;
@@ -11262,6 +11300,8 @@ body{
         czLamp:artStep?.czLamp,
         aim:artStep?.aim,
         burstEvent:artStep?.burstEvent,
+        burstReward:artStep?.burstReward,
+        atOutcome:artStep?.atOutcome,
         comebackEvent:artStep?.comebackEvent,
         flowBefore,
         flowAfter:artStep?.flow || (czEntry ? NovaFlow.enterCZ(result === "STRONG_CZ",NovaFlow.forSetting(settings.novaFlow,settings.setting)) : flowBefore.phase==='art' ? flowBefore : (isNewBonusHit || isReadyBonus) ? NovaFlow.normalize(null) : bonusPendingAtStart ? flowBefore : NovaFlow.advance(flowBefore)),
@@ -11579,6 +11619,7 @@ body{
   }
 
   function persistState(){
+    auditCapture();
     const savedAt = Date.now();
     const runtimeState = runtimeStateForStorage();
     const preferencesOk = safeStorageSet(PREFERENCES_STORAGE_KEY, JSON.stringify({savedAt, settings}));
@@ -12156,6 +12197,7 @@ body{
   }
 
   function startBonusSessionNow(options={}){
+    try{
     const hasExplicitOptions = options && Object.keys(options).length > 0;
     const startOptions = hasExplicitOptions
       ? {...options}
@@ -12169,6 +12211,7 @@ body{
     const started = startSession(startOptions);
     if(started) scheduleNextAuto();
     return started;
+    }finally{auditCapture({kind:'transition',message:'ボーナス開始処理'});}
   }
 
   function queueBonusSessionStart(delayMs=450, options={}){
@@ -12196,6 +12239,7 @@ body{
   }
 
   function finishSession(){
+    try{
     const aTypeEnd = isATypeBonusActive();
     const aTypeNet = aTypeEnd ? aTypeBonusNet() : 0;
     const resultPayout = aTypeEnd ? aTypeNet : session.paid;
@@ -12325,6 +12369,7 @@ body{
       showOverlay(normalState.flow.phase === "art" ? "AT" : "ボーナス終了");
     }
     updateDisplay();
+    }finally{auditCapture({kind:'transition',message:'ボーナス終了処理'});}
   }
 
   function consumeContinuationStockForBattle(){
@@ -12777,7 +12822,7 @@ body{
   }
 
   function fastAtAuditMessage(result, resolved){
-    if(!resolved?.artMessage || !/ゾーン終了|特化ゾーン確定|次のATセット|AT終了|直乗せ|ゾーン獲得/.test(resolved.artMessage))return '';
+    if(!resolved?.artMessage || !/ゾーン終了|特化ゾーン確定|次のATセット|AT終了|直乗せ|ゾーン獲得|チャレンジ|NOVA BURST/.test(resolved.artMessage))return '';
     const f=resolved.flowAfter;
     return `[FAST][AT] ${result} / ${resolved.artMessage} / 残り${f?.remaining ?? 0}pt / 待機${f?.sets ?? 0}SET`;
   }
@@ -12793,6 +12838,7 @@ body{
     playLockedBonusConfirmSound('assets/media/nova/result-eyecatch.wav',bgmOutputVolume(BGM_OUTPUT_SCALE));
   }
   function applyNormalResult(result, resolved, lineRow=1){
+    try{
     if(typeof debugFastSpinActive!=='undefined' && debugFastSpinActive){const audit=fastAtAuditMessage(result,resolved);if(audit)log(`${audit} / ${stats.totalSpins}G`);}
     const completedLadderPresentation=normalState.ladderAwardPresentation?.started?normalState.ladderAwardPresentation:null;
     playStrongNovaSound(result,resolved);
@@ -13059,9 +13105,11 @@ body{
     if(result === "MISS"){
       playLoseSound();
     }
+    }finally{auditCapture(auditSpinDetail(result,resolved));}
   }
 
   function applyResult(result, resolved, lineRow=1){
+    try{
     playStrongNovaSound(result,resolved);
     playWeakNovaSound(result,resolved);
     if(A_TYPE_MODE && result==="REPLAY")normalState.replayFree=true;
@@ -13231,6 +13279,7 @@ body{
       : `${session.setNo || 1}SET / ${phaseText} / STOCK${session.stockSets || 0} / 継続${formatRate(session.continuationRate)}`;
     showMessage("ハズレ", [zoneRollText, battleText].filter(Boolean).join(" / "));
     playLoseSound();
+    }finally{auditCapture(auditSpinDetail(result,resolved));}
   }
 
   function syncCabinetControlState(){
@@ -15119,6 +15168,7 @@ body{
     if(isRogiHighZoneSpin(currentSpin)) stopRogiStopEffect(true);
 
     if(!options.visualReady&&currentSpin.visualStopping?.[i])return;
+    if(!options.visualReady)(currentSpin.auditPressOrder ||= []).push(i);
     if(NovaAim.hasGuide(currentSpin.resolved?.aim)&&!options.visualReady){
       currentSpin.aimStopOrder ||= [];
       if(!currentSpin.aimStopOrder.includes(i))currentSpin.aimStopOrder.push(i);
@@ -15156,6 +15206,9 @@ body{
     const label = i === 1 ? spec.label : "";
 
     stopReel(i, col, label, spec.cls, currentSpin.manualBonusStop || result === "MISS" ? null : lineRow, stopOrder);
+    (currentSpin.auditStopOrder ||= []).push(i);
+    currentSpin.auditGrid ||= [[],[],[]];
+    for(let row=0;row<3;row++)currentSpin.auditGrid[row][i]=col[row];
     currentSpin.stopped[i] = true;
     if(currentSpin.stopped.every(Boolean)){
       if(NovaAim.hasGuide(currentSpin.resolved?.aim)&&!currentSpin.aimAligned&&!debugFastSpinActive){
@@ -15416,6 +15469,7 @@ body{
     syncCabinetControlState();
 
     if(resolved.oumaFailed){
+      auditCapture({kind:'zero-failure',result:'MISS',message:'逢魔フリーズ 継続失敗（0G）'});
       $('resultText').textContent='逢魔フリーズ 継続失敗 / ハズレ（0G）';
       if(normalState.pendingZoneResult){displayNovaResult(normalState.pendingZoneResult);normalState.pendingZoneResult=null;}
       persistState();updateDisplay();playNormalBgm();
@@ -17026,6 +17080,8 @@ body{
   loadLayoutEdit();
   applySettings();
   setup();
+  setupPlayAudit();
+  persistState();
   connectAdminCommands();
   reels.forEach((_,i)=>setRandomReel(i));
   showMessage("READY",A_TYPE_MODE?`BIG ${NovaArt.bonusTarget()}pt / AT初期${settings.novaArt.initial}pt / 設定${settings.setting}`:`1回転${SPIN_COST}pt / BB・RB完全告知 / 設定${settings.setting}`);

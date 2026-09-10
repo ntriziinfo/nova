@@ -1,0 +1,16 @@
+{
+  "silent": true,
+  "isolated": true,
+  "records": 30001,
+  "spins": 30000,
+  "bet": 90000,
+  "paid": 150000,
+  "lastSeq": 30001,
+  "rangeRows": 2001,
+  "rangeBet": 6003,
+  "rangePaid": 10005,
+  "activeJournalUntouched": true,
+  "recoveredRows": 30002,
+  "recoveredGame": 30001,
+  "conflictPreservesBoth": true
+}

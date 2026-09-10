@@ -1,0 +1,21 @@
+{
+  "silent": true,
+  "isolated": true,
+  "fastSpins": 2400,
+  "spinRecords": 2400,
+  "totalRecords": 2439,
+  "reloadPreservesRows": true,
+  "resetPreservesOldRun": true,
+  "csvRangeRecords": 489,
+  "graphIntervalSelection": true,
+  "manualStopOrderAndGrid": true,
+  "manualAndAutoChallengeRewards": true,
+  "forcedFlags": true,
+  "journalReplayIdempotent": true,
+  "bothChallengeRewardsRecorded": true,
+  "sameGameOrderPreserved": true,
+  "configChangesRecorded": true,
+  "failedStorageExport": true,
+  "concurrentWriterConflictVisible": true,
+  "pageErrors": []
+}
