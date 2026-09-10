@@ -1,0 +1,8 @@
+[
+ {"tag":"pilot","setting":1,"trials":300,"seedBase":116100000,"weights":[47,45,8,0,0]},
+ {"tag":"pilot","setting":2,"trials":300,"seedBase":116100000,"weights":[42,45,13,0,0]},
+ {"tag":"pilot","setting":3,"trials":300,"seedBase":116100000,"weights":[37,45,18,0,0]},
+ {"tag":"pilot","setting":4,"trials":300,"seedBase":116100000,"weights":[32,40,28,0,0]},
+ {"tag":"pilot","setting":5,"trials":300,"seedBase":116100000,"weights":[27,35,38,0,0]},
+ {"tag":"pilot","setting":6,"trials":300,"seedBase":116100000,"weights":[22,30,48,0,0]}
+]

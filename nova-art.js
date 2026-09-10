@@ -61,8 +61,8 @@ globalThis.NovaArt=(()=>{
  // Draw once at an AT initial entry; only challenge success promotes the level.
  const atLevelRules=Object.freeze({
   weights:Object.freeze([
-   [35,45,20,0,0],[30,45,25,0,0],[25,45,30,0,0],
-   [20,40,40,0,0],[15,35,50,0,0],[10,30,60,0,0]
+   [47,45,8,0,0],[42,45,13,0,0],[37,45,18,0,0],
+   [32,40,28,0,0],[29,35,36,0,0],[26,30,44,0,0]
   ].map(row=>Object.freeze(row))),
   levels:Object.freeze([
    Object.freeze({rare:1,direct:1,weakNova:1,groups:null}),

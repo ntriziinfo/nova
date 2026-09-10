@@ -1,0 +1,91 @@
+{
+  "commit": "793aa7f8d30d889818d7d5ea7971bf8e024d04cd",
+  "sourceHashes": {
+    "nova-art.js": "113a188031b405904c3a599ca81ff17e235f2972d56570867685739146c36fcc",
+    "nova-balance.js": "3d4149cb60eb8e89a24269f975b158c62dc8fa7025e7844ff605a80a42baca98",
+    "nova-flow.js": "3b9e17a4649d5b7e585266613c62f196306a2ccb774bf0ec0abdac6747d51dab",
+    "nova-normal.js": "39df842b56b59125873fc3d3bc265b5f5c8c4859efbd3b0012ee56ae522d0e5a",
+    "research/burst112/production-model.mjs": "dad01c02771a7225bbdee99558942158341e2336e3bb24bc2b5696367aad7afa"
+  },
+  "startedAt": "2026-09-10T00:45:45.777Z",
+  "jobs": [
+    {
+      "tag": "pilot",
+      "setting": 1,
+      "trials": 300,
+      "seedBase": 116100000,
+      "weights": [
+        47,
+        45,
+        8,
+        0,
+        0
+      ]
+    },
+    {
+      "tag": "pilot",
+      "setting": 2,
+      "trials": 300,
+      "seedBase": 116100000,
+      "weights": [
+        42,
+        45,
+        13,
+        0,
+        0
+      ]
+    },
+    {
+      "tag": "pilot",
+      "setting": 3,
+      "trials": 300,
+      "seedBase": 116100000,
+      "weights": [
+        37,
+        45,
+        18,
+        0,
+        0
+      ]
+    },
+    {
+      "tag": "pilot",
+      "setting": 4,
+      "trials": 300,
+      "seedBase": 116100000,
+      "weights": [
+        32,
+        40,
+        28,
+        0,
+        0
+      ]
+    },
+    {
+      "tag": "pilot",
+      "setting": 5,
+      "trials": 300,
+      "seedBase": 116100000,
+      "weights": [
+        27,
+        35,
+        38,
+        0,
+        0
+      ]
+    },
+    {
+      "tag": "pilot",
+      "setting": 6,
+      "trials": 300,
+      "seedBase": 116100000,
+      "weights": [
+        22,
+        30,
+        48,
+        0,
+        0
+      ]
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+[
+ {"tag":"verify","setting":1,"trials":1000,"seedBase":116900000},
+ {"tag":"verify","setting":2,"trials":1000,"seedBase":116900000},
+ {"tag":"verify","setting":3,"trials":1000,"seedBase":116900000},
+ {"tag":"verify","setting":4,"trials":1000,"seedBase":116900000},
+ {"tag":"verify","setting":5,"trials":1000,"seedBase":116900000},
+ {"tag":"verify","setting":6,"trials":1000,"seedBase":116900000}
+]
