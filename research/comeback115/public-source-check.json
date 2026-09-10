@@ -1,0 +1,29 @@
+{
+  "commit": "ac80f4204a23c3a53c8d83a9ca36baa74776336f",
+  "checks": [
+    {
+      "file": "nova-art.js",
+      "publicSourceMatches": true,
+      "simulationSourceHash": "113a188031b405904c3a599ca81ff17e235f2972d56570867685739146c36fcc",
+      "normalizedPublicSha256": "0b175491316e0f1b7fbd7fb7a252d411b358cc9a96f78c1846d72b8af9b1f029"
+    },
+    {
+      "file": "nova-balance.js",
+      "publicSourceMatches": true,
+      "simulationSourceHash": "5558f24f0321a372327f1ad28f4a855423c0eb7ebb2d84106cdf438e6602c50a",
+      "normalizedPublicSha256": "847d6fae6336a2742c335d9ac8bd43a11bd0b20c0909dbfabe8ce689d231c6c3"
+    },
+    {
+      "file": "nova-flow.js",
+      "publicSourceMatches": true,
+      "simulationSourceHash": "3b9e17a4649d5b7e585266613c62f196306a2ccb774bf0ec0abdac6747d51dab",
+      "normalizedPublicSha256": "b186c61ec3710e16f682fd5f13030207d0fb80fc5d26120d049b8197d6af43fc"
+    },
+    {
+      "file": "nova-normal.js",
+      "publicSourceMatches": true,
+      "simulationSourceHash": "39df842b56b59125873fc3d3bc265b5f5c8c4859efbd3b0012ee56ae522d0e5a",
+      "normalizedPublicSha256": "9ae7f4b4c096b6c07b5ec481437688d4ab0e0cad3a66f876e3c675d80f6975cc"
+    }
+  ]
+}

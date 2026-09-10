@@ -1,0 +1,41 @@
+{
+  "version": 115,
+  "commit": "ac80f4204a23c3a53c8d83a9ca36baa74776336f",
+  "startedAt": "2026-09-10T00:03:18.250Z",
+  "trialsPerSetting": 1000,
+  "gamesPerTrial": 30000,
+  "seedBase": 115900000,
+  "sourceHashes": {
+    "nova-art.js": "113a188031b405904c3a599ca81ff17e235f2972d56570867685739146c36fcc",
+    "nova-balance.js": "5558f24f0321a372327f1ad28f4a855423c0eb7ebb2d84106cdf438e6602c50a",
+    "nova-flow.js": "3b9e17a4649d5b7e585266613c62f196306a2ccb774bf0ec0abdac6747d51dab",
+    "nova-normal.js": "39df842b56b59125873fc3d3bc265b5f5c8c4859efbd3b0012ee56ae522d0e5a",
+    "research/burst112/production-model.mjs": "dad01c02771a7225bbdee99558942158341e2336e3bb24bc2b5696367aad7afa"
+  },
+  "sources": [
+    {
+      "setting": 1,
+      "file": "docs/comeback115-run-1.json"
+    },
+    {
+      "setting": 2,
+      "file": "docs/comeback115-run-2.json"
+    },
+    {
+      "setting": 3,
+      "file": "docs/comeback115-run-3.json"
+    },
+    {
+      "setting": 4,
+      "file": "docs/comeback115-run-4.json"
+    },
+    {
+      "setting": 5,
+      "file": "docs/comeback115-run-5.json"
+    },
+    {
+      "setting": 6,
+      "file": "docs/comeback115-run-6.json"
+    }
+  ]
+}
