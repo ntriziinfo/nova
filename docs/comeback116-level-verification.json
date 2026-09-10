@@ -1,0 +1,74 @@
+{
+  "commit": "84f4436cc294fb18b135af2129e4370eb57299bc",
+  "onlyGameplayChange": "initial AT level weights",
+  "comparisonCommit": "793aa7f8d30d889818d7d5ea7971bf8e024d04cd",
+  "existingLevelsPreserved": true,
+  "samples": [
+    {
+      "setting": 1,
+      "counts": [
+        4700,
+        4500,
+        800,
+        0,
+        0
+      ],
+      "total": 10000
+    },
+    {
+      "setting": 2,
+      "counts": [
+        4200,
+        4500,
+        1300,
+        0,
+        0
+      ],
+      "total": 10000
+    },
+    {
+      "setting": 3,
+      "counts": [
+        3700,
+        4500,
+        1800,
+        0,
+        0
+      ],
+      "total": 10000
+    },
+    {
+      "setting": 4,
+      "counts": [
+        3200,
+        4000,
+        2800,
+        0,
+        0
+      ],
+      "total": 10000
+    },
+    {
+      "setting": 5,
+      "counts": [
+        2900,
+        3500,
+        3600,
+        0,
+        0
+      ],
+      "total": 10000
+    },
+    {
+      "setting": 6,
+      "counts": [
+        2900,
+        3500,
+        3600,
+        0,
+        0
+      ],
+      "total": 10000
+    }
+  ]
+}

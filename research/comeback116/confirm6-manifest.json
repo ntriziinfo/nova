@@ -1,0 +1,19 @@
+{
+  "commit": "84f4436cc294fb18b135af2129e4370eb57299bc",
+  "sourceHashes": {
+    "nova-art.js": "f3c18c79ba16202eb25285fb57a33896b1cb73dd89c33b79bc2b8484a1d01ed6",
+    "nova-balance.js": "d60a7361caabe07a5a6333de21deb65f7233c2075f2181340fe9d69f8eec006d",
+    "nova-flow.js": "3b9e17a4649d5b7e585266613c62f196306a2ccb774bf0ec0abdac6747d51dab",
+    "nova-normal.js": "39df842b56b59125873fc3d3bc265b5f5c8c4859efbd3b0012ee56ae522d0e5a",
+    "research/burst112/production-model.mjs": "dad01c02771a7225bbdee99558942158341e2336e3bb24bc2b5696367aad7afa"
+  },
+  "startedAt": "2026-09-10T00:59:54.995Z",
+  "jobs": [
+    {
+      "tag": "confirm6",
+      "setting": 6,
+      "trials": 1000,
+      "seedBase": 117900000
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+import fs from 'node:fs';
+import vm from 'node:vm';
+import assert from 'node:assert/strict';
+import {execFileSync} from 'node:child_process';
+const commit=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+const manifest=JSON.parse(fs.readFileSync('research/comeback116/selected-data.json'));
+const normalize=s=>s.replace(/\r\n/g,'\n');
+const files=['jag.html','nova-art.js','nova-balance.js','nova-flow.js','nova-normal.js','docs/comeback116-summary.json','docs/comeback116-rtp-report.md'];
+const sources=Object.fromEntries(await Promise.all(files.map(async file=>{
+ const r=await fetch(`https://nova-eta-jet-30.vercel.app/${file}?verify=${commit}`);
+ assert.equal(r.status,200,file);const source=normalize(await r.text());
+ assert.equal(source,normalize(fs.readFileSync(file,'utf8')),file+' differs from local');
+ return [file,source];
+})));
+for(const file of ['nova-art.js','nova-flow.js','nova-normal.js'])assert.equal(sources[file],normalize(execFileSync('git',['show',`${manifest.commit}:${file}`],{encoding:'utf8'})),file+' differs from simulation');
+const ctx=vm.createContext({A_TYPE_MODE:true,settings:{setting:1}});
+for(const f of ['nova-art.js','nova-balance.js'])vm.runInContext(sources[f],ctx);
+const prior=vm.createContext({NovaArt:ctx.NovaArt});
+vm.runInContext(execFileSync('git',['show',`${manifest.commit}:nova-balance.js`],{encoding:'utf8'}),prior);
+for(let s=1;s<=6;s++)for(const k of ['scale','directDenom','czDenom','strongDenom'])assert.equal(ctx.NovaBalance.profile(s)[k],prior.NovaBalance.profile(s)[k]);
+const fn=sources['jag.html'].match(/  function targetRtpText\([^]*?\n  }/)[0];
+vm.runInContext(fn,ctx);
+const summary=JSON.parse(sources['docs/comeback116-summary.json']);
+const labels=summary.settings.map(r=>{
+ const label=ctx.targetRtpText(r.setting);
+ assert.equal(label,(r.report.stoppedRtp.value*100).toFixed(1)+'%（3万G試算・停止込み）');return label;
+});
+assert(sources['jag.html'].includes('nova-art.js?v=20260910-comeback-116'));
+assert(sources['jag.html'].includes('nova-balance.js?v=20260910-comeback-116-rtp'));
+const result={commit,simulationCommit:manifest.commit,filesMatched:files,simulationGameplayMatches:true,labels,status:'passed'};
+fs.writeFileSync('research/comeback116/public-source-check.json',JSON.stringify(result,null,2)+'\n');
+console.log(JSON.stringify(result,null,2));
