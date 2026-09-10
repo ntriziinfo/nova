@@ -1,0 +1,8 @@
+[
+ {"tag":"control","setting":1,"trials":300,"seedBase":117100000},
+ {"tag":"control","setting":6,"trials":300,"seedBase":117100000},
+ {"tag":"base285","setting":1,"trials":300,"seedBase":117100000,"base":28.5,"burstFactor":0.5},
+ {"tag":"base285","setting":6,"trials":300,"seedBase":117100000,"base":28.5,"burstFactor":0.5},
+ {"tag":"base290","setting":1,"trials":300,"seedBase":117100000,"base":29,"burstFactor":0.25},
+ {"tag":"base290","setting":6,"trials":300,"seedBase":117100000,"base":29,"burstFactor":0.25}
+]

@@ -1,0 +1,44 @@
+[
+  {
+    "tag": "verify",
+    "setting": 1,
+    "trials": 1000,
+    "seedBase": 116900000,
+    "baselineFile": "docs/comeback116-verify-1.json"
+  },
+  {
+    "tag": "verify",
+    "setting": 2,
+    "trials": 1000,
+    "seedBase": 116900000,
+    "baselineFile": "docs/comeback116-verify-2.json"
+  },
+  {
+    "tag": "verify",
+    "setting": 3,
+    "trials": 1000,
+    "seedBase": 116900000,
+    "baselineFile": "docs/comeback116-verify-3.json"
+  },
+  {
+    "tag": "verify",
+    "setting": 4,
+    "trials": 1000,
+    "seedBase": 116900000,
+    "baselineFile": "docs/comeback116-verify-4.json"
+  },
+  {
+    "tag": "verify",
+    "setting": 5,
+    "trials": 1000,
+    "seedBase": 116900000,
+    "baselineFile": "docs/comeback116-verify-5.json"
+  },
+  {
+    "tag": "verify",
+    "setting": 6,
+    "trials": 1000,
+    "seedBase": 117900000,
+    "baselineFile": "docs/comeback116-confirm6-6.json"
+  }
+]

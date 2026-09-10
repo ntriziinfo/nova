@@ -19,7 +19,7 @@ globalThis.NovaArt=(()=>{
  const burstRules=Object.freeze({
   version:1,games:3,success:.5,award:2000,
   normalBoost:Object.freeze([.525,.53,.52,.535,.545,.555]),
-  entry:Object.freeze([.00108,.00205,.0026,.0029,.00377,.00377]),
+  entry:Object.freeze([.00027,.0005125,.00065,.000725,.0009425,.0009425]),
   roles:Object.freeze({WEAK_SUICA:.05,STRONG_SUICA:.5,CHANCE_A:.2,CHANCE_B:.2,WEAK_NOVA:.1,STRONG_NOVA:1})
  });
  function burstChance(role,setting){return (burstRules.roles[role]||0)*burstRules.entry[validSetting(setting)-1];}
