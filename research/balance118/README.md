@@ -2,7 +2,7 @@
 
 Approved targets are in `targets.json`: 30,000G first net +10,000pt reach 2/4/6/10/15/20%, stopped actual-payout/actual-BET RTP 95/96.5/98/102/107/114%. Both must pass. A finite-sample acceptance margin is disclosed separately from the exact design targets.
 
-The prior v117 adjustment was rejected and public gameplay was restored by commit `4440af6`. The v118 candidate is committed locally at `49d5ea5`; it must not be pushed before independent validation passes. Candidate parameters are in `selected.json` and `final-candidate.json`.
+The prior v117 adjustment was rejected and public gameplay was restored by commit `4440af6`. The first v118 candidate was committed at `49d5ea5`. Final gameplay was applied at `e56613f` after the scoped confirmations below. `docs/balance118-final-summary.json` records both objectives passing for all settings: 30,000G × 3,000 trials per setting, 540 million selected validation games. The rejected 270 million validation games remain separate. Parameters are in `selected.json` and `final-candidate-2.json`; `final-candidate.json` retains the first candidate.
 
 ## Procedure
 
@@ -10,8 +10,8 @@ The prior v117 adjustment was rejected and public gameplay was restored by commi
 2. `verify.json` fixes six independent 3,000-trial holdouts at seed base 218900000. `check-seeds.mjs` proves no training seed is reused and all holdout seeds are unique. Cache only deterministic lamp-weight/AT-role arithmetic; `verify-cache.mjs` demonstrates identical whole trajectories with caches disabled.
 3. `node research/balance118/run.mjs research/balance118/verify.json` writes the raw holdouts. Keep the runtime source files unchanged while workers are running; every worker verifies their hashes at completion.
 4. `node research/balance118/report.mjs verify` checks every row, computes stopped/unstopped estimates separately, and evaluates both objectives. An unsuccessful candidate must not be published.
-5. `node research/balance118/verify-production.mjs verify` reruns normal/burst/complete examples without any cache and checks direct complete stopping against recorded prefixes.
-6. Only after all settings pass, `finalize.mjs verify` updates displayed RTP from measurements (not target values). Run relevant tests, commit explicit files, push, wait for Vercel READY and run `verify-public.mjs verify` to compare public files and gameplay to the measured commit.
+5. After applying the confirmed profiles, `node research/balance118/report.mjs final` validates source parity and both goals. `node research/balance118/verify-production.mjs final` reruns normal/burst/complete examples without any cache and checks direct complete stopping against recorded prefixes. All 34 complete 30,000G traces and six direct-stop prefixes matched.
+6. Only after all settings pass, `finalize.mjs final` updates displayed RTP from measurements (not target values). Run relevant tests, commit explicit files, push, wait for Vercel READY and run `verify-public.mjs final` to compare public files and gameplay to the measured commit.
 
 ## Rejected first holdout and scoped confirmation
 

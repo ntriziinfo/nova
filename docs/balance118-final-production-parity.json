@@ -1,0 +1,72 @@
+{
+  "commit": "e56613fe9a84a2b1d2f588232a6e7992bef90d0a",
+  "cache": false,
+  "reports": [
+    {
+      "setting": 1,
+      "trials": 6,
+      "games": 180000,
+      "matched": true,
+      "directStop": {
+        "seed": 319475143,
+        "games": 21524,
+        "matched": true
+      }
+    },
+    {
+      "setting": 2,
+      "trials": 6,
+      "games": 180000,
+      "matched": true,
+      "directStop": {
+        "seed": 219139601,
+        "games": 26555,
+        "matched": true
+      }
+    },
+    {
+      "setting": 3,
+      "trials": 5,
+      "games": 150000,
+      "matched": true,
+      "directStop": {
+        "seed": 219200009,
+        "games": 26102,
+        "matched": true
+      }
+    },
+    {
+      "setting": 4,
+      "trials": 6,
+      "games": 180000,
+      "matched": true,
+      "directStop": {
+        "seed": 319387121,
+        "games": 15953,
+        "matched": true
+      }
+    },
+    {
+      "setting": 5,
+      "trials": 6,
+      "games": 180000,
+      "matched": true,
+      "directStop": {
+        "seed": 219542557,
+        "games": 4363,
+        "matched": true
+      }
+    },
+    {
+      "setting": 6,
+      "trials": 5,
+      "games": 150000,
+      "matched": true,
+      "directStop": {
+        "seed": 419539613,
+        "games": 3784,
+        "matched": true
+      }
+    }
+  ]
+}
