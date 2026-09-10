@@ -1,0 +1,57 @@
+{
+  "shared": {
+    "initial": 300,
+    "bonus": 50,
+    "base": 38.5,
+    "replay": 0.53,
+    "pointShare": 0.7,
+    "awards": [
+      0.6,
+      0.3,
+      0.1
+    ],
+    "levels": [
+      0.6,
+      0.25,
+      0.15
+    ],
+    "ura": [
+      1,
+      1,
+      1
+    ]
+  },
+  "explanation": "初回の独立検証で設定2・3・4の停止込み機械割が範囲外だったため、設定別の初当たり補正を修正し、設定3はチャレンジ係数も調整して、別シードで各3,000試行を再検証した。変更していない設定1・5・6は最初の検証を採用。各設定の全試行を集計し、修正前のデータを最終値へ混ぜない。",
+  "jobs": [
+    {
+      "setting": 1,
+      "file": "docs/balance120-verify-1.json",
+      "manifest": "research/balance120/verify12-manifest.json"
+    },
+    {
+      "setting": 2,
+      "file": "docs/balance120-confirm-2.json",
+      "manifest": "research/balance120/verify256-manifest.json"
+    },
+    {
+      "setting": 3,
+      "file": "docs/balance120-confirm-3.json",
+      "manifest": "research/balance120/confirm34-manifest.json"
+    },
+    {
+      "setting": 4,
+      "file": "docs/balance120-confirm-4.json",
+      "manifest": "research/balance120/confirm34-manifest.json"
+    },
+    {
+      "setting": 5,
+      "file": "docs/balance120-verify-5.json",
+      "manifest": "research/balance120/verify256-manifest.json"
+    },
+    {
+      "setting": 6,
+      "file": "docs/balance120-verify-6.json",
+      "manifest": "research/balance120/verify256-manifest.json"
+    }
+  ]
+}

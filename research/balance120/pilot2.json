@@ -1,0 +1,6 @@
+[
+ {"tag":"p2","setting":1,"boost":0.125,"entry":0.025,"trials":200,"seedBase":520200000},
+ {"tag":"p2","setting":6,"boost":0.3,"entry":0.12,"trials":200,"seedBase":520200000},
+ {"tag":"p2-b30","setting":6,"base":30,"boost":0.3,"entry":0.12,"trials":200,"seedBase":520200000},
+ {"tag":"p2-i500","setting":6,"initial":500,"boost":0.3,"entry":0.12,"trials":200,"seedBase":520200000}
+]

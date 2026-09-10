@@ -1,0 +1,6 @@
+[
+ {"tag":"p3-b35","setting":1,"initial":300,"base":35,"replay":0.4,"boost":0.125,"entry":0.02,"trials":300,"seedBase":520300000},
+ {"tag":"p3-b35","setting":6,"initial":300,"base":35,"replay":0.4,"boost":0.45,"entry":0.06,"trials":300,"seedBase":520300000},
+ {"tag":"p3-b40","setting":1,"initial":300,"base":40,"replay":0.45,"boost":0.04,"entry":0.02,"trials":300,"seedBase":520300000},
+ {"tag":"p3-b40","setting":6,"initial":300,"base":40,"replay":0.45,"boost":0.3,"entry":0.06,"trials":300,"seedBase":520300000}
+]

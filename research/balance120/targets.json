@@ -1,0 +1,10 @@
+{
+ "gamesPerTrial":30000,
+ "completeLimitPt":10000,
+ "rtp":[0.95,0.965,0.98,1.02,1.07,1.14],
+ "reach":[0.02,0.04,0.06,0.10,0.15,0.20],
+ "evaluation":{"maxRtpError":0.005,"maxReachError":[0.0075,0.01,0.01,0.015,0.015,0.015],"holdoutTrialsPerSetting":3000,"requireIndependentSeeds":true,"requireBothMetrics":true},
+ "definitions":{"reach":"First net +10000pt within 30000 counted games","rtp":"Total actual payouts / total actual BET, stopped at first complete or 30000G; replay grants free next BET"},
+ "preserve":{"recoveryGames":5,"rareRecoveryChance":1,"burstGames":3,"burstSuccess":0.5,"burstOncePerAt":true,"netDependentSuppression":false,"ordinaryAtHardCap":false,"zoneGuarantees":true},
+ "requestedChanges":{"bonusPt":50,"higherInitialAt":true,"weightedBurstAwards":[500,1000,2000],"nonGuaranteedLv5":true,"uraZoneChallenge":true}
+}

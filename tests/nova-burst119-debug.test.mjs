@@ -2,7 +2,6 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
-import {execFileSync} from 'node:child_process';
 import {loadModel} from '../scripts/zone-v2-model.mjs';
 
 const html=fs.readFileSync('jag.html','utf8');
@@ -24,12 +23,12 @@ test('one-shot burst flag survives pending and active BIG, then is consumed once
  c.forceResult='BELL';c.bonusActive=true;assert.equal(c.takeForcedResult(),'BELL');assert.equal(c.forceResult,'');
 });
 
-test('normal-screen selection creates 150pt AT and a full three-game challenge with random success',()=>{
+test('normal-screen selection creates the configured initial AT and a full three-game challenge with random success',()=>{
  const c=context();assert.equal(c.drawNormalResult(),'MISS');const t=c.pendingArtStep;
- assert.equal(t.flow.remaining,'150');assert.equal(t.flow.burstPending,true);assert.equal(t.flow.burstUsed,true);assert.equal(t.zoneSpin,true);
+ assert.equal(t.flow.remaining,String(NovaArt.defaults.initial));assert.equal(t.flow.burstPending,true);assert.equal(t.flow.burstUsed,true);assert.equal(t.zoneSpin,true);
  let s=t.flow;for(let i=0;i<3;i++){const next=NovaArt.step(s,{setting:6},()=>.99999);assert.equal(next.burstEvent,i===2?'failure':'continue');s=next.flow;}
- assert.equal(s.remaining,'150');assert.equal(s.burstWon,false);assert.equal(s.burstLeft,0);
- const won=NovaArt.step(t.flow,{setting:6},()=>0);assert.equal(won.burstEvent,'success');assert.equal(won.flow.remaining,'2150');assert.equal(won.flow.atLevel,5);
+ assert.equal(s.remaining,String(NovaArt.defaults.initial));assert.equal(s.burstWon,false);assert.equal(s.burstLeft,0);
+ const won=NovaArt.step(t.flow,{setting:6},()=>0);assert.equal(won.burstEvent,'success');assert.equal(won.flow.remaining,String(NovaArt.defaults.initial+500));assert.equal(won.flow.atLevel,t.flow.atLevel);
 });
 
 test('existing quota and stocks survive; active zone finishes before the queued challenge',()=>{
@@ -47,8 +46,11 @@ test('forced retry escapes recovery or previous challenge without discarding ear
  assert.equal(a.step(t.flow,{setting:6},()=>.99999).flow.burstLeft,2);assert.equal(base.comebackLeft,2);
 });
 
-test('manual and AUTO/simulation spin paths share flag consumption; measured gameplay is unchanged',()=>{
+test('manual and AUTO/simulation spin paths share both challenge flags',()=>{
  assert.equal((html.match(/pendingForceResult = takeForcedResult\(\);/g)||[]).length,2);
  assert(html.includes("['BURST','爆発チャレンジ（3G・成功抽選）']"));
- for(const file of ['nova-art.js','nova-normal.js','nova-flow.js','nova-balance.js'])assert.equal(fs.readFileSync(file,'utf8').replace(/\r\n/g,'\n'),execFileSync('git',['show',`b17a4d6:${file}`],{encoding:'utf8'}).replace(/\r\n/g,'\n'),file);
+ assert(html.includes("['URA_CHALLENGE','裏上乗せゾーン獲得チャレンジ（3G・成功抽選）']"));
+ const c=context();c.forceResult='URA_CHALLENGE';c.normalState.bonusPending=true;assert.equal(c.takeForcedResult(),'');c.normalState.bonusPending=false;assert.equal(c.takeForcedResult(),'URA_CHALLENGE');
+ c.pendingForceResult='URA_CHALLENGE';c.drawNormalResult();assert.equal(c.pendingArtStep.flow.burstType,'ura');
+ const won=NovaArt.step(c.pendingArtStep.flow,{setting:6},()=>0);assert.equal(won.burstReward.zone,'ura_giru');assert.equal(won.flow.remaining,String(NovaArt.defaults.initial));
 });

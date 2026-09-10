@@ -1,0 +1,4 @@
+[
+ {"tag":"verify","setting":3,"initial":300,"base":38.5,"replay":0.53,"boost":0.030,"entry":0.145,"trials":3000,"seedBase":530000000},
+ {"tag":"verify","setting":4,"initial":300,"base":38.5,"replay":0.53,"boost":0.042,"entry":0.21,"trials":3000,"seedBase":530000000}
+]

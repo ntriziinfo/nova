@@ -1,0 +1,50 @@
+{
+  "commit": "be2fbb9fb5bbf8b4ac931910163cdee76595a7fc",
+  "sourceHashes": {
+    "nova-art.js": "4492aa262d03c0fce40d57217bf90e04c02cefd76919a2007dbc55c321d177b1",
+    "nova-normal.js": "f6196d2e1d114c3907c3a5cd2c792c4514bc9bac24c534b378652cd3f54ebbd1",
+    "nova-flow.js": "3b9e17a4649d5b7e585266613c62f196306a2ccb774bf0ec0abdac6747d51dab",
+    "nova-balance.js": "2ec90b848969b73904054e5de2577e379a5c48dc5332c597596a255f076e8fb2",
+    "research/balance120/model.mjs": "683b71ec3a97e870f5ec88ac3f3887e2afc9fcc8c319cbd1f70da6eacadc75b3",
+    "research/balance120/trial.mjs": "1d38119a41996a4a182765eedbee7379f2bc48caf48f44ccf8a5096a51e54d73",
+    "research/burst112/production-model.mjs": "dad01c02771a7225bbdee99558942158341e2336e3bb24bc2b5696367aad7afa",
+    "research/balance118/cache-mix.mjs": "4b0563730212ec0b8b6e802f9f3073ea74016012557aa9faa1eb11249e5e52ed"
+  },
+  "started": "2026-09-10T03:03:03.946Z",
+  "jobs": [
+    {
+      "tag": "p2",
+      "setting": 1,
+      "boost": 0.125,
+      "entry": 0.025,
+      "trials": 200,
+      "seedBase": 520200000
+    },
+    {
+      "tag": "p2",
+      "setting": 6,
+      "boost": 0.3,
+      "entry": 0.12,
+      "trials": 200,
+      "seedBase": 520200000
+    },
+    {
+      "tag": "p2-b30",
+      "setting": 6,
+      "base": 30,
+      "boost": 0.3,
+      "entry": 0.12,
+      "trials": 200,
+      "seedBase": 520200000
+    },
+    {
+      "tag": "p2-i500",
+      "setting": 6,
+      "initial": 500,
+      "boost": 0.3,
+      "entry": 0.12,
+      "trials": 200,
+      "seedBase": 520200000
+    }
+  ]
+}

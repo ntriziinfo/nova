@@ -1,0 +1,27 @@
+{
+  "version": 120,
+  "silent": true,
+  "isolated": true,
+  "actualRuntime": true,
+  "initial": 300,
+  "manualFailure": "failure",
+  "autoFailure": "failure",
+  "pointReward": {
+    "type": "points",
+    "points": 2000,
+    "level": 4,
+    "promoted": true
+  },
+  "uraReward": {
+    "type": "ura",
+    "zone": "ura_sora",
+    "points": 0,
+    "level": 4
+  },
+  "enteredZone": "sora",
+  "enteredUra": true,
+  "migratedInitial": 300,
+  "preservedRemaining": "777",
+  "preservedLevel": 5,
+  "pageErrors": []
+}

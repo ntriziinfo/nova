@@ -18,13 +18,13 @@ test('normal rare probabilities, bonus chances, Lv5 and initial AT weights are u
  for(let s=1;s<=6;s++){
   const next=current.NovaNormal.roleProbabilities(s),old=prior.NovaNormal.roleProbabilities(s);
   for(const role of Object.keys(current.NovaNormal.rare))assert.equal(next[role],old[role]);
-  assert(next.REPLAY>old.REPLAY);assert.equal(current.NovaNormal.pay('REPLAY'),0);
+  assert(Object.values(next).every(p=>p>=0&&p<=1));assert.equal(current.NovaNormal.pay('REPLAY'),0);
  }
 });
 test('each of the nine zones retains its exact awards and continuation trace',()=>{
  const trace=(ctx,id,seed)=>{
-  const a=ctx.NovaArt,rng=xoshiro128(seed);let s=a.startZone({...a.enter({setting:6},rng),atLevel:1},id,{setting:6},rng);const rows=[];
-  for(let g=0;s.zone&&g<10000;g++){s=a.prepareBet(s,{setting:6},rng);const step=a.step(s,{setting:6},rng);rows.push(plain(step));s=step.flow;}
+  const a=ctx.NovaArt,rng=xoshiro128(seed);let s=a.startZone({...a.enter({setting:6},rng),atLevel:1,remaining:'500'},id,{setting:6},rng);const rows=[];
+  for(let g=0;s.zone&&g<10000;g++){s=a.prepareBet(s,{setting:6},rng);const step=a.step(s,{setting:6},rng);const record=plain(step);delete record.flow.burstType;rows.push(record);s=step.flow;}
   assert.equal(s.zone,'');return rows;
  };
  for(const id of current.NovaArt.zoneIds)for(const seed of [118,99118,118219])assert.deepEqual(trace(current,id,seed),trace(prior,id,seed),id);

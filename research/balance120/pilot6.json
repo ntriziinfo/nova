@@ -1,0 +1,8 @@
+[
+ {"tag":"p6","setting":1,"initial":300,"base":38,"replay":0.53,"boost":0.04,"entry":0.07,"trials":600,"seedBase":520600000},
+ {"tag":"p6","setting":2,"initial":300,"base":38,"replay":0.53,"boost":0.03,"entry":0.11,"trials":600,"seedBase":520600000},
+ {"tag":"p6","setting":3,"initial":300,"base":38,"replay":0.53,"boost":0.025,"entry":0.16,"trials":600,"seedBase":520600000},
+ {"tag":"p6","setting":4,"initial":300,"base":38,"replay":0.53,"boost":0.05,"entry":0.20,"trials":600,"seedBase":520600000},
+ {"tag":"p6","setting":5,"initial":300,"base":38,"replay":0.53,"boost":0.10,"entry":0.21,"trials":600,"seedBase":520600000},
+ {"tag":"p6","setting":6,"initial":300,"base":38,"replay":0.53,"boost":0.16,"entry":0.22,"trials":600,"seedBase":520600000}
+]

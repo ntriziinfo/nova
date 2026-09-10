@@ -1,0 +1,4 @@
+[
+ {"tag":"p9-a","setting":6,"initial":300,"base":38.5,"replay":0.53,"boost":0.216,"entry":0.04,"trials":600,"seedBase":520900000},
+ {"tag":"p9-b","setting":6,"initial":300,"base":38.5,"replay":0.53,"boost":0.199,"entry":0.07,"trials":600,"seedBase":520900000}
+]

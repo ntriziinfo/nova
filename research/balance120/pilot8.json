@@ -1,0 +1,4 @@
+[
+ {"tag":"p8","setting":5,"initial":300,"base":38.5,"replay":0.53,"boost":0.078,"entry":0.205,"trials":800,"seedBase":520800000},
+ {"tag":"p8","setting":6,"initial":300,"base":38.5,"replay":0.53,"boost":0.201,"entry":0.11,"trials":800,"seedBase":520800000}
+]

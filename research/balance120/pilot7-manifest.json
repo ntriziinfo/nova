@@ -1,0 +1,82 @@
+{
+  "commit": "be2fbb9fb5bbf8b4ac931910163cdee76595a7fc",
+  "sourceHashes": {
+    "nova-art.js": "4492aa262d03c0fce40d57217bf90e04c02cefd76919a2007dbc55c321d177b1",
+    "nova-normal.js": "f6196d2e1d114c3907c3a5cd2c792c4514bc9bac24c534b378652cd3f54ebbd1",
+    "nova-flow.js": "3b9e17a4649d5b7e585266613c62f196306a2ccb774bf0ec0abdac6747d51dab",
+    "nova-balance.js": "2ec90b848969b73904054e5de2577e379a5c48dc5332c597596a255f076e8fb2",
+    "research/balance120/model.mjs": "b382d035cba27c053d8015a36b6af3ae31f156cf4d1d17f8493c3a6956e236e5",
+    "research/balance120/trial.mjs": "848995a0abf6b6755cafc0a183bd3df555f14bbc410b8e7ca23ef989a6013ba5",
+    "research/burst112/production-model.mjs": "dad01c02771a7225bbdee99558942158341e2336e3bb24bc2b5696367aad7afa",
+    "research/balance118/cache-mix.mjs": "4b0563730212ec0b8b6e802f9f3073ea74016012557aa9faa1eb11249e5e52ed"
+  },
+  "started": "2026-09-10T03:19:04.855Z",
+  "jobs": [
+    {
+      "tag": "p7",
+      "setting": 1,
+      "initial": 300,
+      "base": 38.5,
+      "replay": 0.53,
+      "boost": 0.04,
+      "entry": 0.07,
+      "trials": 600,
+      "seedBase": 520700000
+    },
+    {
+      "tag": "p7",
+      "setting": 2,
+      "initial": 300,
+      "base": 38.5,
+      "replay": 0.53,
+      "boost": 0.03,
+      "entry": 0.11,
+      "trials": 600,
+      "seedBase": 520700000
+    },
+    {
+      "tag": "p7",
+      "setting": 3,
+      "initial": 300,
+      "base": 38.5,
+      "replay": 0.53,
+      "boost": 0.025,
+      "entry": 0.16,
+      "trials": 600,
+      "seedBase": 520700000
+    },
+    {
+      "tag": "p7",
+      "setting": 4,
+      "initial": 300,
+      "base": 38.5,
+      "replay": 0.53,
+      "boost": 0.05,
+      "entry": 0.2,
+      "trials": 600,
+      "seedBase": 520700000
+    },
+    {
+      "tag": "p7",
+      "setting": 5,
+      "initial": 300,
+      "base": 38.5,
+      "replay": 0.53,
+      "boost": 0.1,
+      "entry": 0.21,
+      "trials": 600,
+      "seedBase": 520700000
+    },
+    {
+      "tag": "p7",
+      "setting": 6,
+      "initial": 300,
+      "base": 38.5,
+      "replay": 0.53,
+      "boost": 0.16,
+      "entry": 0.22,
+      "trials": 600,
+      "seedBase": 520700000
+    }
+  ]
+}

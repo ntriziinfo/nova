@@ -1,0 +1,14 @@
+import fs from 'node:fs';
+import vm from 'node:vm';
+import assert from 'node:assert/strict';
+import {execFileSync} from 'node:child_process';
+import {evaluate} from './evaluate.mjs';
+const commit=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),files=['jag.html','nova-art.js','nova-normal.js','nova-flow.js','nova-balance.js','docs/balance120-final-summary.json','docs/balance120-final-report.md'],norm=s=>s.replace(/\r\n/g,'\n');
+const sources=Object.fromEntries(await Promise.all(files.map(async f=>{const response=await fetch('https://nova-eta-jet-30.vercel.app/'+f+'?verify='+commit);assert.equal(response.status,200,f);const source=norm(await response.text());assert.equal(source,norm(fs.readFileSync(f,'utf8')),f);return [f,source];})));
+const ctx=vm.createContext({A_TYPE_MODE:true,settings:{setting:1}});for(const f of ['nova-art.js','nova-balance.js'])vm.runInContext(sources[f],ctx);
+vm.runInContext(sources['jag.html'].match(/  function targetRtpText\([^]*?\n  }/)[0],ctx);
+const summary=JSON.parse(sources['docs/balance120-final-summary.json']);assert(summary.allPass);
+const labels=summary.settings.map(s=>{assert(evaluate(s.report,{holdout:true}).pass);const text=ctx.targetRtpText(s.setting);assert.equal(text,(s.report.stoppedRtp.value*100).toFixed(1)+'%（3万G試算・停止込み）');return text;});
+for(const f of ['nova-art.js','nova-balance.js','nova-normal.js'])assert(sources['jag.html'].includes(f+'?v=20260910-balance-120'));
+assert(sources['jag.html'].includes('URA_CHALLENGE'));assert.equal(ctx.NovaArt.bonusTarget(),50);assert.equal(ctx.NovaArt.defaults.initial,300);
+const result={commit,matched:files,labels,bonus:50,initial:300,bothObjectivesPass:true};fs.writeFileSync('research/balance120/public-source-check.json',JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result,null,2));

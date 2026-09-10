@@ -1,0 +1,6 @@
+[
+ {"tag":"baseline","setting":1,"baseline":true,"trials":200,"seedBase":520100000},
+ {"tag":"baseline","setting":6,"baseline":true,"trials":200,"seedBase":520100000},
+ {"tag":"p1","setting":1,"boost":0.125,"entry":0.025,"trials":200,"seedBase":520100000},
+ {"tag":"p1","setting":6,"boost":0.3,"entry":0.12,"trials":200,"seedBase":520100000}
+]

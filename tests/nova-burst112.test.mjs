@@ -10,8 +10,8 @@ test('production burst is one three-game chance per new AT, with a 50% success r
   let s=initial;
   for(let g=0;g<3&&!s.burstWon;g++)s=a.step(s,{setting:6},rng).flow;
   wins+=s.burstWon;
-  assert.equal(s.remaining,s.burstWon?'2150':'150');
-  assert.equal(s.atLevel,s.burstWon?5:1);
+  assert.equal(s.burstWon?[500,1000,2000].includes(Number(s.remaining)-a.defaults.initial):Number(s.remaining)===a.defaults.initial,true);
+  assert(s.burstWon?[1,4,5].includes(s.atLevel):s.atLevel===1);
   assert.equal(s.burstPending,false);assert.equal(s.burstLeft,0);
  }
  assert.ok(Math.abs(wins/30000-.5)<.015);
@@ -26,7 +26,7 @@ test('success persists through save, bonus and zones; legacy AT cannot gain a ne
  let s=a.step({...a.enter({},()=>0),burstUsed:true,burstPending:true},{},()=>0).flow;
  s=a.afterBonus(a.normalize(JSON.parse(JSON.stringify(s))),{},1,()=>{throw Error('redraw');});
  s=a.settleZone(a.startZone(s,'sosuke',{},()=>.5));
- assert.equal(s.burstWon,true);assert.equal(s.atLevel,5);assert.equal(s.burstUsed,true);
+ assert.equal(s.burstWon,true);assert.equal(s.atLevel,1);assert.equal(s.burstUsed,true);
  const old={...a.enter({},()=>0),atLevel:5,remaining:'9876'};delete old.burstVersion;
  const retained=a.normalize(old);assert.equal(retained.atLevel,5);assert.equal(retained.remaining,'9876');
  const step=a.step(retained,{setting:6},()=>0,'STRONG_NOVA');

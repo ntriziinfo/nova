@@ -1,0 +1,78 @@
+{
+  "commit": "be2fbb9fb5bbf8b4ac931910163cdee76595a7fc",
+  "results": [
+    {
+      "setting": 1,
+      "seeds": [
+        530100003,
+        530107922,
+        530210869,
+        530274221
+      ],
+      "cachedAndUncachedMatch": true,
+      "immediateCompleteStopMatches": true,
+      "stopSeed": 530131679
+    },
+    {
+      "setting": 2,
+      "seeds": [
+        540200006,
+        540207925,
+        540271277,
+        540295034
+      ],
+      "cachedAndUncachedMatch": true,
+      "immediateCompleteStopMatches": true,
+      "stopSeed": 540302953
+    },
+    {
+      "setting": 3,
+      "seeds": [
+        540300009,
+        540307928,
+        540315847,
+        540363361
+      ],
+      "cachedAndUncachedMatch": true,
+      "immediateCompleteStopMatches": true,
+      "stopSeed": 540300009
+    },
+    {
+      "setting": 4,
+      "seeds": [
+        540400012,
+        540407931,
+        540423769,
+        540677177
+      ],
+      "cachedAndUncachedMatch": true,
+      "immediateCompleteStopMatches": true,
+      "stopSeed": 540502959
+    },
+    {
+      "setting": 5,
+      "seeds": [
+        530500015,
+        530507934,
+        530579205,
+        530888046
+      ],
+      "cachedAndUncachedMatch": true,
+      "immediateCompleteStopMatches": true,
+      "stopSeed": 530547529
+    },
+    {
+      "setting": 6,
+      "seeds": [
+        530600018,
+        530607937,
+        530615856,
+        530631694,
+        530655451
+      ],
+      "cachedAndUncachedMatch": true,
+      "immediateCompleteStopMatches": true,
+      "stopSeed": 530671289
+    }
+  ]
+}
