@@ -45,10 +45,10 @@ globalThis.NovaNormal=(()=>{
  function pay(role){return rare[role]?.pay??(role==='BELL'?15:role==='REPLAY'?0:0);}
  function rareFactor(setting=3){return 1+.016*(Math.max(1,Math.min(6,Math.round(Number(setting)||3)))-3);}
  function roleProbabilities(setting=3){const frequent=1+.004*(Math.max(1,Math.min(6,Math.round(Number(setting)||3)))-3),r=Object.fromEntries(Object.entries(rare).map(([k,v])=>[k,v.p*rareFactor(setting)]));
-  // Normal/CZ base is 29 games per 50pt; rare roles and replay rates are unchanged.
+  // Adopted volatility profile: normal/CZ base is 27.5 games per 50pt.
   const chanceTotal=r.CHANCE_A+r.CHANCE_B;r.CHANCE_A=chanceTotal*(Math.max(1,Math.min(6,Math.round(Number(setting)||3)))%2?.4:.6);r.CHANCE_B=chanceTotal-r.CHANCE_A;
   const rarePay=Object.entries(r).reduce((sum,[role,p])=>sum+p*pay(role),0);
-  r.REPLAY=frequent/7.452119;r.BELL=(3*(1-r.REPLAY)-rarePay-50/29)/15;r.MISS=1-Object.values(r).reduce((a,b)=>a+b,0);return r;}
+  r.REPLAY=frequent/7.452119;r.BELL=(3*(1-r.REPLAY)-rarePay-50/27.5)/15;r.MISS=1-Object.values(r).reduce((a,b)=>a+b,0);return r;}
  const roleEntries=[1,2,3,4,5,6].map(s=>Object.entries(roleProbabilities(s)));
  function drawRole(setting,rng=Math.random){let r=rng();for(const [role,p]of roleEntries[Math.max(0,Math.min(5,Math.round(Number(setting)||3)-1))]){r-=p;if(r<0)return role;}return 'MISS';}
  const stateRoles=['WEAK_SUICA','STRONG_SUICA','CHANCE_A','CHANCE_B'];
