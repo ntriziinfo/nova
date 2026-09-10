@@ -1,0 +1,15 @@
+{
+  "baseline": "90f739d8cbb49680acf66d17eb4e71f22d1ced7d",
+  "coreMatches": true,
+  "cacheTagsUpdated": true,
+  "commit": "4440af6b06ef150f854fd9678d1c2962e6bbab37",
+  "publicFiles": [
+    "nova-art.js",
+    "nova-balance.js",
+    "nova-flow.js",
+    "nova-normal.js",
+    "jag.html",
+    "docs/balance117-rtp-report.md"
+  ],
+  "publicMatches": true
+}

@@ -1,0 +1,6 @@
+[
+  {"tag":"p1-l1-b70","setting":6,"trials":120,"seedBase":118100000,"boost":0.70,"weights":[100,0,0,0,0]},
+  {"tag":"p1-l1-b85","setting":6,"trials":120,"seedBase":118100000,"boost":0.85,"weights":[100,0,0,0,0]},
+  {"tag":"p1-l1-b100","setting":6,"trials":120,"seedBase":118100000,"boost":1,"weights":[100,0,0,0,0]},
+  {"tag":"p1-mix-b70","setting":6,"trials":120,"seedBase":118100000,"boost":0.70}
+]

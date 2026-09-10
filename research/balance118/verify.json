@@ -1,0 +1,38 @@
+[
+  {
+    "setting": 1,
+    "tag": "verify",
+    "trials": 3000,
+    "seedBase": 218900000
+  },
+  {
+    "setting": 2,
+    "tag": "verify",
+    "trials": 3000,
+    "seedBase": 218900000
+  },
+  {
+    "setting": 3,
+    "tag": "verify",
+    "trials": 3000,
+    "seedBase": 218900000
+  },
+  {
+    "setting": 4,
+    "tag": "verify",
+    "trials": 3000,
+    "seedBase": 218900000
+  },
+  {
+    "setting": 5,
+    "tag": "verify",
+    "trials": 3000,
+    "seedBase": 218900000
+  },
+  {
+    "setting": 6,
+    "tag": "verify",
+    "trials": 3000,
+    "seedBase": 218900000
+  }
+]

@@ -1,0 +1,29 @@
+{
+  "passed": true,
+  "reports": [
+    {
+      "setting": 1,
+      "cache": true,
+      "trials": 3,
+      "seconds": 0.352
+    },
+    {
+      "setting": 1,
+      "cache": false,
+      "trials": 3,
+      "seconds": 0.63
+    },
+    {
+      "setting": 6,
+      "cache": true,
+      "trials": 3,
+      "seconds": 0.288
+    },
+    {
+      "setting": 6,
+      "cache": false,
+      "trials": 3,
+      "seconds": 0.601
+    }
+  ]
+}

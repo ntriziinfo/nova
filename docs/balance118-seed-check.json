@@ -1,0 +1,6 @@
+{
+  "trainingSeeds": 13800,
+  "holdoutSeeds": 18000,
+  "disjoint": true,
+  "uniqueHoldout": true
+}

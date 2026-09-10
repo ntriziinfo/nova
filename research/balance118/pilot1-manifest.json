@@ -1,0 +1,63 @@
+{
+  "commit": "4440af6b06ef150f854fd9678d1c2962e6bbab37",
+  "sourceHashes": {
+    "nova-art.js": "43ebb0264adfb6be6be4d6fa832302677501732283ad04dfe44d6b76c784d1f0",
+    "nova-balance.js": "3e20c068bf882207acd42376d0c1ab5c58fd193923ba00e9f3b55230d12be36f",
+    "nova-flow.js": "3b9e17a4649d5b7e585266613c62f196306a2ccb774bf0ec0abdac6747d51dab",
+    "nova-normal.js": "0f56dcee90b47bf5a0758046419402ab35e274e7d802c151a986745897199334",
+    "research/burst112/production-model.mjs": "dad01c02771a7225bbdee99558942158341e2336e3bb24bc2b5696367aad7afa",
+    "research/balance118/trial.mjs": "9cd50ba6744364f98e0b3afd089416983f6158ea4e9dd68c0f4a855a36e04515"
+  },
+  "started": "2026-09-10T01:35:28.842Z",
+  "jobs": [
+    {
+      "tag": "p1-l1-b70",
+      "setting": 6,
+      "trials": 120,
+      "seedBase": 118100000,
+      "boost": 0.7,
+      "weights": [
+        100,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "tag": "p1-l1-b85",
+      "setting": 6,
+      "trials": 120,
+      "seedBase": 118100000,
+      "boost": 0.85,
+      "weights": [
+        100,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "tag": "p1-l1-b100",
+      "setting": 6,
+      "trials": 120,
+      "seedBase": 118100000,
+      "boost": 1,
+      "weights": [
+        100,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "tag": "p1-mix-b70",
+      "setting": 6,
+      "trials": 120,
+      "seedBase": 118100000,
+      "boost": 0.7
+    }
+  ]
+}

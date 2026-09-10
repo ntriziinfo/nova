@@ -18,8 +18,8 @@ globalThis.NovaArt=(()=>{
  // Initial levels are modest; the rare challenge is the route to Lv.5.
  const burstRules=Object.freeze({
   version:1,games:3,success:.5,award:2000,
-  normalBoost:Object.freeze([.525,.53,.52,.535,.545,.555]),
-  entry:Object.freeze([.00108,.00205,.0026,.0029,.00377,.00377]),
+  normalBoost:Object.freeze([0.122,0.125,0.126,0.158,0.205,0.305]),
+  entry:Object.freeze([0.0085,0.011,0.016,0.0255,0.0295,0.0305]),
   roles:Object.freeze({WEAK_SUICA:.05,STRONG_SUICA:.5,CHANCE_A:.2,CHANCE_B:.2,WEAK_NOVA:.1,STRONG_NOVA:1})
  });
  function burstChance(role,setting){return (burstRules.roles[role]||0)*burstRules.entry[validSetting(setting)-1];}
@@ -66,8 +66,7 @@ globalThis.NovaArt=(()=>{
   ].map(row=>Object.freeze(row))),
   levels:Object.freeze([
    Object.freeze({rare:1,direct:1,weakNova:1,groups:null}),
-   ...[ [1,.65,.6,90], [1.2,.85,.85,75], [1.4,1.1,1.1,58],
-        [1.6,1.3,1.35,42], [1.8,1.5,1.6,25] ].map(([rare,direct,weakNova,weak])=>Object.freeze({rare,direct,weakNova,groups:Object.freeze([weak,(100-weak)*.97,(100-weak)*.03])}))
+   ...[[0.5,0.65,0.35,98],[0.65,0.85,0.45,95],[0.8,1.1,0.6,90],[1.3,1.3,0.9,60],[1.8,1.5,1.6,25]].map(([rare,direct,weakNova,weak])=>Object.freeze({rare,direct,weakNova,groups:Object.freeze([weak,(100-weak)*.97,(100-weak)*.03])}))
   ])
  });
  const atLevel=value=>Number.isInteger(value)&&value>=1&&value<=5?value:0;

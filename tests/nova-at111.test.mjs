@@ -34,7 +34,9 @@ test('all five AT levels survive sets, bonus resume, zone transitions and saved 
   s=a.afterBonus(s,{setting:6},1,()=>{throw Error('AT was redrawn');});assert.equal(s.atLevel,level);
   s=a.startZone(s,'sosuke',{setting:3},()=>.5);assert.equal(s.atLevel,level);
   s=a.settleZone(a.normalize(plain(s)));assert.equal(s.atLevel,level);
-  const ended=a.step({...s,remaining:'1',sets:'0'},{setting:3},()=>.99,'BELL').flow;
+  let ended=a.step({...s,remaining:'1',sets:'0'},{setting:3},()=>.99,'BELL').flow;
+  assert.equal(ended.phase,'art');assert.equal(ended.comebackLeft,5);assert.equal(ended.atLevel,level);
+  for(let i=0;i<5;i++)ended=a.step(ended,{setting:3},()=>.99,'MISS').flow;
   assert.equal(ended.phase,'normal');assert.equal(ended.atLevel,undefined);
  }
  const old=a.normalize({phase:'art',payoutVersion:1,remaining:'999',sets:'2'});
@@ -48,7 +50,7 @@ test('level role mixes normalize, retain net 4pt/G and preserve BIG chances',()=
   assert.ok(Math.abs(Object.values(row).reduce((s,p)=>s+p,0)-1)<1e-12);
   const net=Object.entries(row).reduce((s,[k,p])=>s+a.payout(k)*p,0)-3*(1-row.REPLAY);
   assert.ok(Math.abs(net-4)<1e-12);
-  assert.ok(Math.abs(row.WEAK_NOVA/base.WEAK_NOVA-a.atLevelRules.levels[level].rare)<1e-12);
+  assert.ok(Math.abs(row.WEAK_NOVA/base.WEAK_NOVA-a.atLevelRules.levels[level].rare/a.atLevelRules.levels[1].rare)<1e-12);
   assert.equal(a.bonusRules.normal.atChance,.52);assert.equal(a.bonusRules.upper.atChance,.8);
  }
 });
