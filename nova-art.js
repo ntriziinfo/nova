@@ -26,16 +26,13 @@ globalThis.NovaArt=(()=>{
  function initialHitBoost(setting){return setting==null?0:burstRules.normalBoost[validSetting(setting)-1];}
  // Five paid games after the final AT quota. Revival retains the same AT level.
  const comebackRules=Object.freeze({games:5,
-  rare:Object.freeze([.18,.20,.22,.24,.26,.26]),
+  guaranteedRoles:Object.freeze(['WEAK_SUICA','STRONG_SUICA','CHANCE_A','CHANCE_B','WEAK_NOVA','STRONG_NOVA','SUPER_NOVA']),
   common:Object.freeze({MISS:.001,BELL:.01,REPLAY:.01}),
-  rareWeights:Object.freeze({WEAK_SUICA:1,STRONG_SUICA:3,CHANCE_A:2,CHANCE_B:2,WEAK_NOVA:4}),
   superDenom:32768
  });
  function comebackChance(role,setting=1,options={}){
-  if(['STRONG_NOVA','SUPER_NOVA','FREEZE'].includes(role))return 1;
-  if(comebackRules.common[role]!=null)return comebackRules.common[role];
-  const rate=Number.isFinite(options.comebackRare)?options.comebackRare:comebackRules.rare[validSetting(setting)-1];
-  return Math.max(0,Math.min(.95,rate*(comebackRules.rareWeights[role]||0)));
+  if(comebackRules.guaranteedRoles.includes(role)||role==='FREEZE')return 1;
+  return comebackRules.common[role]??0;
  }
  function comebackRoleProbabilities(setting=1){
   const row={...NovaNormal.roleProbabilities(setting)},superRate=1/comebackRules.superDenom;

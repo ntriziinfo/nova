@@ -6542,8 +6542,8 @@ body{
 <script src="nova-ladder-presentation.js?v=20260909-shutter-95"></script>
 <link rel="stylesheet" href="nova-aim-presentation.css?v=20260909-comeback-114">
 <script src="nova-aim-presentation.js?v=20260909-comeback-114"></script>
-<script src="nova-art.js?v=20260909-comeback-114"></script>
-<script src="nova-balance.js?v=20260909-comeback-114"></script>
+<script src="nova-art.js?v=20260910-comeback-115"></script>
+<script src="nova-balance.js?v=20260910-comeback-115"></script>
 <script src="nova-normal.js?v=20260909-comeback-114"></script>
 <script src="nova-flow.js?v=20260909-comeback-114"></script>
 <link rel="stylesheet" href="nova-comeback-presentation.css?v=20260909-comeback-114">
@@ -9917,7 +9917,7 @@ body{
   function currentSetting(){ return SETTING[settings.setting] || SETTING[1]; }
   function targetRtp(){ return targetRtpFor(settings.setting); }
   function targetRtpText(settingNo = settings.setting){
-    if(A_TYPE_MODE) return (NovaBalance.profile(settingNo).target*100).toFixed(1)+"%（3万G試算・停止込み）";
+    if(A_TYPE_MODE){const profile=NovaBalance.profile(settingNo);return profile.verifiedModel?(profile.target*100).toFixed(1)+"%（3万G試算・停止込み）":"未集計（変更前"+(profile.target*100).toFixed(1)+"%）";}
     const value = (targetRtpFor(settingNo) || 0) * 100;
     return A_TYPE_MODE ? `${value.toFixed(1)}%` : `${Math.round(value)}%`;
   }
