@@ -1,0 +1,52 @@
+{
+  "jobs": [
+    {
+      "setting": 1,
+      "file": "docs/balance118-confirm-1.json",
+      "manifest": "research/balance118/confirm-manifest.json"
+    },
+    {
+      "setting": 2,
+      "file": "docs/balance118-verify-2.json",
+      "manifest": "research/balance118/verify-manifest.json"
+    },
+    {
+      "setting": 3,
+      "file": "docs/balance118-verify-3.json",
+      "manifest": "research/balance118/verify-manifest.json"
+    },
+    {
+      "setting": 4,
+      "file": "docs/balance118-confirm-4.json",
+      "manifest": "research/balance118/confirm-manifest.json"
+    },
+    {
+      "setting": 5,
+      "file": "docs/balance118-verify-5.json",
+      "manifest": "research/balance118/verify-manifest.json"
+    },
+    {
+      "setting": 6,
+      "file": "docs/balance118-confirm6-6.json",
+      "manifest": "research/balance118/confirm6-manifest.json"
+    }
+  ],
+  "rejected": [
+    {
+      "setting": 1,
+      "file": "docs/balance118-verify-1.json",
+      "manifest": "research/balance118/verify-manifest.json"
+    },
+    {
+      "setting": 4,
+      "file": "docs/balance118-verify-4.json",
+      "manifest": "research/balance118/verify-manifest.json"
+    },
+    {
+      "setting": 6,
+      "file": "docs/balance118-verify-6.json",
+      "manifest": "research/balance118/verify-manifest.json"
+    }
+  ],
+  "explanation": "初回の独立検証では設定1・4・6が採用範囲を外れたため、その設定だけ初当たり強化係数と爆発突入係数を修正し、別シードで各3,000試行を再検証した。設定2・3・5は条件を変更せず最初の3,000試行を使用。各設定の全試行を採用し、不採用データは最終結果に混ぜず別に保存。最終コードと各採用データの当該設定の係数・それ以外の共通コードが一致することを検証する。"
+}

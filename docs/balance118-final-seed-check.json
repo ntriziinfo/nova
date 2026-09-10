@@ -1,0 +1,6 @@
+{
+  "trainingAndRejectedSeeds": 22800,
+  "selectedSeeds": 18000,
+  "independentFromTuning": true,
+  "uniqueSelectedSeeds": true
+}

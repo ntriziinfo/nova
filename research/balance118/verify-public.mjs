@@ -1,0 +1,24 @@
+import fs from 'node:fs';
+import vm from 'node:vm';
+import assert from 'node:assert/strict';
+import {execFileSync} from 'node:child_process';
+import {evaluate} from './evaluate.mjs';
+const tag=process.argv[2]??'verify',commit=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+const manifest=tag==='final'?{commit:JSON.parse(fs.readFileSync('docs/balance118-final-summary.json')).commit}:JSON.parse(fs.readFileSync(`research/balance118/${tag}-manifest.json`));
+const normalize=s=>s.replace(/\r\n/g,'\n');
+const files=['jag.html','nova-art.js','nova-balance.js','nova-flow.js','nova-normal.js',`docs/balance118-${tag}-summary.json`,`docs/balance118-${tag}-report.md`];
+const sources=Object.fromEntries(await Promise.all(files.map(async f=>{
+ const response=await fetch(`https://nova-eta-jet-30.vercel.app/${f}?verify=${commit}`);assert.equal(response.status,200,f);
+ const text=normalize(await response.text());assert.equal(text,normalize(fs.readFileSync(f,'utf8')),f+' differs from local');return [f,text];
+})));
+for(const f of ['nova-art.js','nova-normal.js','nova-flow.js'])assert.equal(sources[f],normalize(execFileSync('git',['show',`${manifest.commit}:${f}`],{encoding:'utf8'})),f+' differs from validated gameplay');
+const ctx=vm.createContext({A_TYPE_MODE:true,settings:{setting:1}});
+for(const f of ['nova-art.js','nova-balance.js'])vm.runInContext(sources[f],ctx);
+const old=vm.createContext({NovaArt:ctx.NovaArt});vm.runInContext(execFileSync('git',['show',`${manifest.commit}:nova-balance.js`],{encoding:'utf8'}),old);
+for(let s=1;s<=6;s++)for(const k of ['scale','directDenom','czDenom','strongDenom'])assert.equal(ctx.NovaBalance.profile(s)[k],old.NovaBalance.profile(s)[k]);
+vm.runInContext(sources['jag.html'].match(/  function targetRtpText\([^]*?\n  }/)[0],ctx);
+const summary=JSON.parse(sources[`docs/balance118-${tag}-summary.json`]);assert(summary.allPass);
+const labels=summary.settings.map(s=>{assert(evaluate(s.report,{holdout:true}).pass);const label=ctx.targetRtpText(s.setting);assert.equal(label,(s.report.stoppedRtp.value*100).toFixed(1)+'%（3万G試算・停止込み）');return label;});
+for(const f of ['nova-art.js','nova-balance.js','nova-normal.js'])assert(sources['jag.html'].includes(f+'?v=20260910-balance-118'));
+const result={commit,simulationCommit:manifest.commit,matched:files,gameplayMatchesSimulation:true,bothObjectivesPass:true,labels};
+fs.writeFileSync('research/balance118/public-source-check.json',JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result,null,2));

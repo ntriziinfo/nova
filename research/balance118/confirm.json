@@ -1,0 +1,18 @@
+[
+  {
+    "setting": 1,
+    "tag": "confirm",
+    "trials": 3000,
+    "seedBase": 318900000,
+    "boost": 0.125,
+    "entry": 0.0055
+  },
+  {
+    "setting": 4,
+    "tag": "confirm",
+    "trials": 3000,
+    "seedBase": 318900000,
+    "boost": 0.16,
+    "entry": 0.021
+  }
+]

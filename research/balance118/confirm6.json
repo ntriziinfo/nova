@@ -1,0 +1,10 @@
+[
+  {
+    "setting": 6,
+    "tag": "confirm6",
+    "trials": 3000,
+    "seedBase": 418900000,
+    "boost": 0.3,
+    "entry": 0.0295
+  }
+]

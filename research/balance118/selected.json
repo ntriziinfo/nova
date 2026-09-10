@@ -1,5 +1,5 @@
 {
-  "sourceConfig": "research/balance118/final-candidate.json",
+  "sourceConfig": "research/balance118/final-candidate-2.json",
   "base": 50,
   "replay": 0.55,
   "levels": [
@@ -35,19 +35,19 @@
     ]
   ],
   "boosts": [
-    0.122,
+    0.125,
     0.125,
     0.126,
-    0.158,
+    0.16,
     0.205,
-    0.305
+    0.3
   ],
   "entries": [
-    0.0085,
+    0.0055,
     0.011,
     0.016,
-    0.0255,
+    0.021,
     0.0295,
-    0.0305
+    0.0295
   ]
 }

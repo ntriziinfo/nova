@@ -1,0 +1,31 @@
+{
+  "commit": "49d5ea50a4fcf54fa7fadfee2e1a0f91d3c718a1",
+  "sourceHashes": {
+    "nova-art.js": "80572ed4bdf4231fc95dea6067fb2faf28b0f1bf87abc3b4196f04d55aa05888",
+    "nova-balance.js": "3e20c068bf882207acd42376d0c1ab5c58fd193923ba00e9f3b55230d12be36f",
+    "nova-flow.js": "3b9e17a4649d5b7e585266613c62f196306a2ccb774bf0ec0abdac6747d51dab",
+    "nova-normal.js": "f6196d2e1d114c3907c3a5cd2c792c4514bc9bac24c534b378652cd3f54ebbd1",
+    "research/burst112/production-model.mjs": "dad01c02771a7225bbdee99558942158341e2336e3bb24bc2b5696367aad7afa",
+    "research/balance118/trial.mjs": "83f6748f44a1cf4e5cd8b5d70ce068cce082433d48caa3bdf024473432be45fc",
+    "research/balance118/cache-mix.mjs": "4b0563730212ec0b8b6e802f9f3073ea74016012557aa9faa1eb11249e5e52ed"
+  },
+  "started": "2026-09-10T02:10:07.073Z",
+  "jobs": [
+    {
+      "setting": 1,
+      "tag": "confirm",
+      "trials": 3000,
+      "seedBase": 318900000,
+      "boost": 0.125,
+      "entry": 0.0055
+    },
+    {
+      "setting": 4,
+      "tag": "confirm",
+      "trials": 3000,
+      "seedBase": 318900000,
+      "boost": 0.16,
+      "entry": 0.021
+    }
+  ]
+}

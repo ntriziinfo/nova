@@ -2,10 +2,12 @@ import fs from 'node:fs';
 import assert from 'node:assert/strict';
 import {execFileSync} from 'node:child_process';
 import {loadModel,simulate} from '../burst112/production-model.mjs';
+import {dataJob,verifySettingRuntime} from './selected-data.mjs';
 loadModel(undefined,false);
 const tag=process.argv[2]??'verify',reports=[];
 for(let setting=1;setting<=6;setting++){
- const {rows}=JSON.parse(fs.readFileSync(`docs/balance118-${tag}-${setting}.json`));
+ const job=dataJob(tag,setting),{rows,report}=JSON.parse(fs.readFileSync(job.file));
+ if(tag==='final')verifySettingRuntime(report,job);
  const selected=[...new Map([...rows.slice(0,2),...rows.filter(r=>r.burst.wins).slice(0,2),...rows.filter(r=>r.burst.attempts&&!r.burst.wins).slice(0,2)].map(r=>[r.seed,r])).values()];
  for(const expected of selected){
   const actual=simulate(setting,30000,expected.seed,{rng:'xoshiro128',completeLimitPt:10000,stopAtComplete:false});

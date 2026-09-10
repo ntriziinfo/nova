@@ -18,8 +18,8 @@ globalThis.NovaArt=(()=>{
  // Initial levels are modest; the rare challenge is the route to Lv.5.
  const burstRules=Object.freeze({
   version:1,games:3,success:.5,award:2000,
-  normalBoost:Object.freeze([0.122,0.125,0.126,0.158,0.205,0.305]),
-  entry:Object.freeze([0.0085,0.011,0.016,0.0255,0.0295,0.0305]),
+  normalBoost:Object.freeze([0.125,0.125,0.126,0.16,0.205,0.3]),
+  entry:Object.freeze([0.0055,0.011,0.016,0.021,0.0295,0.0295]),
   roles:Object.freeze({WEAK_SUICA:.05,STRONG_SUICA:.5,CHANCE_A:.2,CHANCE_B:.2,WEAK_NOVA:.1,STRONG_NOVA:1})
  });
  function burstChance(role,setting){return (burstRules.roles[role]||0)*burstRules.entry[validSetting(setting)-1];}
