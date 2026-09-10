@@ -1,0 +1,154 @@
+{
+  "simulationCommit": "e56613fe9a84a2b1d2f588232a6e7992bef90d0a",
+  "successPerChallenge": 0.5,
+  "successPerGame": 0.2062994740159002,
+  "games": 3,
+  "award": 2000,
+  "levelAfterSuccess": 5,
+  "settings": [
+    {
+      "setting": 1,
+      "fullGames": 90000000,
+      "attempts": 255,
+      "wins": 137,
+      "observedGamesPerAttempt": 352941.17647058825,
+      "observedGamesPerWin": 656934.3065693431,
+      "observedSuccess": 0.5372549019607843,
+      "roleChances": {
+        "WEAK_SUICA": 0.000275,
+        "STRONG_SUICA": 0.00275,
+        "CHANCE_A": 0.0011,
+        "CHANCE_B": 0.0011,
+        "WEAK_NOVA": 0.00055,
+        "STRONG_NOVA": 0.0055
+      },
+      "eligibleChanceByLevel": [
+        0.00001873563735875706,
+        0.000024356328566384185,
+        0.0000299770197740113,
+        0.00004871265713276837,
+        0.00006744829449152541
+      ]
+    },
+    {
+      "setting": 2,
+      "fullGames": 90000000,
+      "attempts": 558,
+      "wins": 283,
+      "observedGamesPerAttempt": 161290.32258064515,
+      "observedGamesPerWin": 318021.20141342754,
+      "observedSuccess": 0.507168458781362,
+      "roleChances": {
+        "WEAK_SUICA": 0.00055,
+        "STRONG_SUICA": 0.0055,
+        "CHANCE_A": 0.0022,
+        "CHANCE_B": 0.0022,
+        "WEAK_NOVA": 0.0011,
+        "STRONG_NOVA": 0.011
+      },
+      "eligibleChanceByLevel": [
+        0.00003747127471751412,
+        0.00004871265713276837,
+        0.0000599540395480226,
+        0.00009742531426553674,
+        0.00013489658898305083
+      ]
+    },
+    {
+      "setting": 3,
+      "fullGames": 90000000,
+      "attempts": 809,
+      "wins": 387,
+      "observedGamesPerAttempt": 111248.45488257108,
+      "observedGamesPerWin": 232558.13953488372,
+      "observedSuccess": 0.4783683559950556,
+      "roleChances": {
+        "WEAK_SUICA": 0.0008,
+        "STRONG_SUICA": 0.008,
+        "CHANCE_A": 0.0032,
+        "CHANCE_B": 0.0032,
+        "WEAK_NOVA": 0.0016,
+        "STRONG_NOVA": 0.016
+      },
+      "eligibleChanceByLevel": [
+        0.00005450367231638418,
+        0.00007085477401129944,
+        0.00008720587570621469,
+        0.00014170954802259888,
+        0.00019621322033898308
+      ]
+    },
+    {
+      "setting": 4,
+      "fullGames": 90000000,
+      "attempts": 1110,
+      "wins": 562,
+      "observedGamesPerAttempt": 81081.08108108108,
+      "observedGamesPerWin": 160142.3487544484,
+      "observedSuccess": 0.5063063063063064,
+      "roleChances": {
+        "WEAK_SUICA": 0.0010500000000000002,
+        "STRONG_SUICA": 0.0105,
+        "CHANCE_A": 0.004200000000000001,
+        "CHANCE_B": 0.004200000000000001,
+        "WEAK_NOVA": 0.0021000000000000003,
+        "STRONG_NOVA": 0.021
+      },
+      "eligibleChanceByLevel": [
+        0.00007153606991525424,
+        0.00009299689088983051,
+        0.0001144577118644068,
+        0.00018599378177966102,
+        0.00025752985169491527
+      ]
+    },
+    {
+      "setting": 5,
+      "fullGames": 90000000,
+      "attempts": 1632,
+      "wins": 827,
+      "observedGamesPerAttempt": 55147.05882352941,
+      "observedGamesPerWin": 108827.08585247883,
+      "observedSuccess": 0.5067401960784313,
+      "roleChances": {
+        "WEAK_SUICA": 0.001475,
+        "STRONG_SUICA": 0.01475,
+        "CHANCE_A": 0.0059,
+        "CHANCE_B": 0.0059,
+        "WEAK_NOVA": 0.00295,
+        "STRONG_NOVA": 0.0295
+      },
+      "eligibleChanceByLevel": [
+        0.00010049114583333334,
+        0.00013063848958333332,
+        0.00016078583333333334,
+        0.00026127697916666665,
+        0.000361768125
+      ]
+    },
+    {
+      "setting": 6,
+      "fullGames": 90000000,
+      "attempts": 1815,
+      "wins": 929,
+      "observedGamesPerAttempt": 49586.776859504134,
+      "observedGamesPerWin": 96878.3638320775,
+      "observedSuccess": 0.5118457300275482,
+      "roleChances": {
+        "WEAK_SUICA": 0.001475,
+        "STRONG_SUICA": 0.01475,
+        "CHANCE_A": 0.0059,
+        "CHANCE_B": 0.0059,
+        "WEAK_NOVA": 0.00295,
+        "STRONG_NOVA": 0.0295
+      },
+      "eligibleChanceByLevel": [
+        0.00010049114583333334,
+        0.00013063848958333335,
+        0.00016078583333333334,
+        0.0002612769791666667,
+        0.000361768125
+      ]
+    }
+  ]
+}
