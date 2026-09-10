@@ -62,7 +62,7 @@ globalThis.NovaArt=(()=>{
  const atLevelRules=Object.freeze({
   weights:Object.freeze([
    [47,45,8,0,0],[42,45,13,0,0],[37,45,18,0,0],
-   [32,40,28,0,0],[29,35,36,0,0],[26,30,44,0,0]
+   [32,40,28,0,0],[29,35,36,0,0],[29,35,36,0,0]
   ].map(row=>Object.freeze(row))),
   levels:Object.freeze([
    Object.freeze({rare:1,direct:1,weakNova:1,groups:null}),

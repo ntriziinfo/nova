@@ -1,0 +1,49 @@
+{
+  "commit": "4662e31ad53d5c546197720b3b1676ba65a8102d",
+  "sourceHashes": {
+    "nova-art.js": "2356fc1d53695eae27e91a940784a1f75bea6a2bb454f0e251053f0ca27994a6",
+    "nova-balance.js": "d60a7361caabe07a5a6333de21deb65f7233c2075f2181340fe9d69f8eec006d",
+    "nova-flow.js": "3b9e17a4649d5b7e585266613c62f196306a2ccb774bf0ec0abdac6747d51dab",
+    "nova-normal.js": "39df842b56b59125873fc3d3bc265b5f5c8c4859efbd3b0012ee56ae522d0e5a",
+    "research/burst112/production-model.mjs": "dad01c02771a7225bbdee99558942158341e2336e3bb24bc2b5696367aad7afa"
+  },
+  "startedAt": "2026-09-10T00:51:12.932Z",
+  "jobs": [
+    {
+      "tag": "verify",
+      "setting": 1,
+      "trials": 1000,
+      "seedBase": 116900000
+    },
+    {
+      "tag": "verify",
+      "setting": 2,
+      "trials": 1000,
+      "seedBase": 116900000
+    },
+    {
+      "tag": "verify",
+      "setting": 3,
+      "trials": 1000,
+      "seedBase": 116900000
+    },
+    {
+      "tag": "verify",
+      "setting": 4,
+      "trials": 1000,
+      "seedBase": 116900000
+    },
+    {
+      "tag": "verify",
+      "setting": 5,
+      "trials": 1000,
+      "seedBase": 116900000
+    },
+    {
+      "tag": "verify",
+      "setting": 6,
+      "trials": 1000,
+      "seedBase": 116900000
+    }
+  ]
+}
