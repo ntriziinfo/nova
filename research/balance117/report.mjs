@@ -1,0 +1,40 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+import {loadModel} from '../burst112/production-model.mjs';
+import {distribution} from '../burst113/distribution.mjs';
+import {compare} from './compare.mjs';
+loadModel();
+const manifest=JSON.parse(fs.readFileSync('research/balance117/verify-manifest.json'));
+const parity=JSON.parse(fs.readFileSync('docs/balance117-production-parity.json'));
+assert.equal(parity.commit,manifest.commit);assert.equal(parity.complete,true);
+const settings=manifest.jobs.map(c=>{
+ const file=`docs/balance117-${c.tag}-${c.setting}.json`,d=JSON.parse(fs.readFileSync(file)),before=JSON.parse(fs.readFileSync(c.baselineFile));
+ assert.equal(d.rows.length,1000);assert.equal(d.report.games,30000000);assert.deepEqual(d.report.sourceHashes,manifest.sourceHashes);
+ const {values,...stopped}=distribution(d.rows,true),{values:uv,...unlimited}=distribution(d.rows,false);
+ const {values:bv,...baselineStopped}=distribution(before.rows,true);
+ const comeback={entries:0,games:0,wins:0,roles:{}};
+ for(const row of d.rows){for(const k of ['entries','games','wins'])comeback[k]+=row.comeback[k];for(const [role,v]of Object.entries(row.comeback.roles)){const r=comeback.roles[role]??={games:0,wins:0};r.games+=v.games;r.wins+=v.wins;}}
+ for(const role of NovaArt.comebackRules.guaranteedRoles){const r=comeback.roles[role];if(r)assert.equal(r.games,r.wins);}
+ const perGame=Object.entries(NovaArt.comebackRoleProbabilities(c.setting)).reduce((n,[role,p])=>n+p*NovaArt.comebackChance(role,c.setting),0);
+ return {setting:c.setting,sourceFile:file,baselineFile:c.baselineFile,baselineReport:before.report,baselineStopped,report:d.report,stopped,unlimited,change:compare(before,d),comeback,comebackTheory:1-(1-perGame)**5};
+});
+const pilot=['control','base285','base290'].flatMap(tag=>[1,6].map(setting=>JSON.parse(fs.readFileSync(`docs/balance117-${tag}-${setting}.json`)).report));
+const summary={version:117,commit:manifest.commit,generatedAt:new Date().toISOString(),measurement:{gamesPerTrial:30000,trialsPerSetting:1000,fullGames:180000000,pilotGames:54000000,rtp:'sum of actual payouts divided by sum of actual BET; replay makes next BET free',complete:'first net +10000pt or 30000G; full trajectories retain the stopped prefix',reset:'special mode and setting-dependent reset impurity at the start of every trial',operation:'model play, correct instructed stop order',seeds:'same seed for each paired v116/v117 trial; disjoint from candidate-selection pilot',selection:'fixed candidate before verification; all 1000 prespecified pairs per setting'},sourceHashes:manifest.sourceHashes,pilot,verification:parity,settings};
+fs.writeFileSync('docs/balance117-summary.json',JSON.stringify(summary,null,2)+'\n');
+const pct=x=>(x*100).toFixed(2)+'%',ci=x=>x.map(pct).join('〜'),pp=x=>(x>=0?'+':'')+(x*100).toFixed(2),signed=x=>(x>=0?'+':'')+Math.round(x).toLocaleString('en-US');
+let md='# コイン持ち改善と爆発突入頻度の調整（v117）\n\n';
+md+='差枚＋10,000pt到達率を同程度に保ちながら機械割を上げる目的で、通常・CZのコイン持ちを27.5G／50ptから29G／50ptへ変更し、通常AT中の各レア役での爆発チャレンジ突入抽選値を従来の1/4にした。突入回数の実測比は、AT中の滞在時間・抽選対象役の回数や標本誤差にも左右される。\n\n';
+md+='初期150pt、引き戻し中のレア役100%、初回ATレベル振り分け、各ATレベルの性能、爆発成功率50%、成功時＋2000ptとLv.5は維持。通常・CZのベルを増やし、その分ハズレを減らした。レア役・リプレイの確率は変更していない。引き戻しの通常役確率も通常時の役テーブルを参照するため、ベル増加に伴うごく小さな復活率変化は試算へ含まれる。差枚による確率調整や新しい出玉上限は導入していない。\n\n';
+md+='## 計算条件\n\n各設定30,000G×1,000回、採用候補の確認計1億8,000万G。各試行は設定変更直後の特殊モード・設定別の初期穢れから開始。正しいナビ操作を前提とする。差枚＋10,000ptの初回到達時点を保存し、同じ軌跡を30,000Gまで続けて停止なしの比較値も算出した。到達率は払い出し累計ではなく、途中で一度でも差枚＋10,000ptに達した割合。機械割は総払い出し÷総実BETで、リプレイ後は無料BET。\n\n';
+md+='予備試算は設定1・6の各300回で、変更前／28.5G・突入1/2／29G・突入1/4を比較（計5,400万G）。確認試算には候補選定用と異なるシードを使い、既存v116の全1,000試行と同じシードで対応を取った。全試行を採用し、予備試算は最終結果へ混ぜていない。\n\n';
+md+='95%区間は機械割が試行単位の比率推定、単独の到達率がWilson区間、変更前後の差が対応する試行の差から算出した区間。到達率の差の区間が0を含んでも、確率が厳密に同一である証明にはならない。これは30,000G条件のシミュレーション値であり、無限期間の定常機械割や型式試験への適合判定ではない。\n\n';
+md+='## 変更前後の比較\n\n機械割・勝率はコンプリート停止込み。差はパーセントポイント。\n\n|設定|旧機械割|新機械割|差|旧到達率|新到達率|到達率の差|旧勝率|新勝率|\n|---|---:|---:|---:|---:|---:|---:|---:|---:|\n';
+for(const s of settings)md+=`|${s.setting}|${pct(s.baselineReport.stoppedRtp.value)}|${pct(s.report.stoppedRtp.value)}|${pp(s.change.rtp.value)}|${pct(s.baselineReport.completeRate)}|${pct(s.report.completeRate)}|${pp(s.change.reach.value)}|${pct(s.baselineStopped.winRate)}|${pct(s.stopped.winRate)}|\n`;
+md+='\n## 誤差と停止なしの比較\n\n|設定|新機械割95%区間|機械割の差95%区間（ポイント）|新到達率95%区間|到達率の差95%区間（ポイント）|停止なし機械割|停止込み平均差枚|\n|---|---|---|---|---|---:|---:|\n';
+for(const s of settings)md+=`|${s.setting}|${ci(s.report.stoppedRtp.ci)}|${s.change.rtp.ci.map(pp).join('〜')}|${ci(s.report.completeCI)}|${s.change.reach.ci.map(pp).join('〜')}|${pct(s.report.rtp.value)}|${signed(s.stopped.mean)}pt|\n`;
+md+='\n## 爆発チャレンジと引き戻し\n\n回数は停止後も含めた各設定3,000万Gの集計。\n\n|設定|旧爆発突入回数|新爆発突入回数|新爆発成功回数|5G引き戻し率・理論|5G引き戻し率・実測|\n|---|---:|---:|---:|---:|---:|\n';
+for(const s of settings)md+=`|${s.setting}|${s.baselineReport.burstAttempts}|${s.report.burstAttempts}|${s.report.burstWins}|${pct(s.comebackTheory)}|${pct(s.comeback.wins/s.comeback.entries)}|\n`;
+md+='\n## 再現と検証\n\n- 計算元コミット：`'+manifest.commit+'`。実行中のソースハッシュ一致を確認。\n- 実行条件：`research/balance117/verify.json`、記録：`research/balance117/verify-manifest.json`。\n- 実行：`node research/balance117/run.mjs research/balance117/verify.json`。\n- 集計：`node research/balance117/report.mjs`。元データは `docs/balance117-verify-1.json`〜`docs/balance117-verify-6.json` と各条件が参照するv116ファイル（大容量のためローカル保存）。\n- 集計データ：`docs/balance117-summary.json`。予備試算も分けて記録。\n';
+md+='\nキャッシュ最適化なしの本体コアで、全設定計'+parity.reports.reduce((n,r)=>n+r.trials,0)+'試行・'+parity.reports.reduce((n,r)=>n+r.games,0).toLocaleString('en-US')+'GのBET・払い出し・演出抽選・引き戻し・到達時点の収支が一致。各設定1例は実際に到達時点で打ち切って確認。全レア役の引き戻し成立回数と復活回数も一致した。\n';
+fs.writeFileSync('docs/balance117-rtp-report.md',md);
+console.log(JSON.stringify(settings.map(s=>({s:s.setting,rtp:s.report.stoppedRtp.value,rtpDiff:s.change.rtp,reach:s.report.completeRate,reachDiff:s.change.reach,win:s.stopped.winRate,net:s.stopped.mean})),null,2));

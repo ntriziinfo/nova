@@ -1,0 +1,56 @@
+{
+  "baseline": "90f739d8cbb49680acf66d17eb4e71f22d1ced7d",
+  "verified": true,
+  "unchanged": [
+    "rare role probabilities",
+    "replay probabilities",
+    "initial AT level weights",
+    "AT level performance",
+    "comeback guarantees",
+    "initial 150pt"
+  ],
+  "rows": [
+    {
+      "setting": 1,
+      "bellBefore": 0.04689865875737742,
+      "bellAfter": 0.053168251233866454,
+      "burstBefore": 0.00108,
+      "burstAfter": 0.00027
+    },
+    {
+      "setting": 2,
+      "bellBefore": 0.04670426674112537,
+      "bellAfter": 0.052973859217614404,
+      "burstBefore": 0.00205,
+      "burstAfter": 0.0005125
+    },
+    {
+      "setting": 3,
+      "bellBefore": 0.04650987472487335,
+      "bellAfter": 0.05277946720136238,
+      "burstBefore": 0.0026,
+      "burstAfter": 0.00065
+    },
+    {
+      "setting": 4,
+      "bellBefore": 0.046315482708621326,
+      "bellAfter": 0.05258507518511036,
+      "burstBefore": 0.0029,
+      "burstAfter": 0.000725
+    },
+    {
+      "setting": 5,
+      "bellBefore": 0.04612109069236931,
+      "bellAfter": 0.05239068316885834,
+      "burstBefore": 0.00377,
+      "burstAfter": 0.0009425
+    },
+    {
+      "setting": 6,
+      "bellBefore": 0.04592669867611729,
+      "bellAfter": 0.052196291152606315,
+      "burstBefore": 0.00377,
+      "burstAfter": 0.0009425
+    }
+  ]
+}

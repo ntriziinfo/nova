@@ -1,0 +1,55 @@
+{
+  "commit": "7e220655f09f6bb040fd3b5ef3b8acfad61b12d4",
+  "sourceHashes": {
+    "nova-art.js": "6fd92b8f624dfe6d1a98a7685702cacf85a696e1f72c57452eead6670c7fff1f",
+    "nova-balance.js": "3721a08893d1b541ae5622f99c6e1c82702da0f61375e3e3f39bd427a66ab457",
+    "nova-flow.js": "3b9e17a4649d5b7e585266613c62f196306a2ccb774bf0ec0abdac6747d51dab",
+    "nova-normal.js": "a16dd163ddd29ec0c800002499f85891047c511b6d28d1665a761e92230cd5ce",
+    "research/burst112/production-model.mjs": "dad01c02771a7225bbdee99558942158341e2336e3bb24bc2b5696367aad7afa"
+  },
+  "startedAt": "2026-09-10T01:12:41.796Z",
+  "jobs": [
+    {
+      "tag": "verify",
+      "setting": 1,
+      "trials": 1000,
+      "seedBase": 116900000,
+      "baselineFile": "docs/comeback116-verify-1.json"
+    },
+    {
+      "tag": "verify",
+      "setting": 2,
+      "trials": 1000,
+      "seedBase": 116900000,
+      "baselineFile": "docs/comeback116-verify-2.json"
+    },
+    {
+      "tag": "verify",
+      "setting": 3,
+      "trials": 1000,
+      "seedBase": 116900000,
+      "baselineFile": "docs/comeback116-verify-3.json"
+    },
+    {
+      "tag": "verify",
+      "setting": 4,
+      "trials": 1000,
+      "seedBase": 116900000,
+      "baselineFile": "docs/comeback116-verify-4.json"
+    },
+    {
+      "tag": "verify",
+      "setting": 5,
+      "trials": 1000,
+      "seedBase": 116900000,
+      "baselineFile": "docs/comeback116-verify-5.json"
+    },
+    {
+      "tag": "verify",
+      "setting": 6,
+      "trials": 1000,
+      "seedBase": 117900000,
+      "baselineFile": "docs/comeback116-confirm6-6.json"
+    }
+  ]
+}

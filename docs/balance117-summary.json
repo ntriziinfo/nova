@@ -1,0 +1,3670 @@
+{
+  "version": 117,
+  "commit": "7e220655f09f6bb040fd3b5ef3b8acfad61b12d4",
+  "generatedAt": "2026-09-10T01:21:11.510Z",
+  "measurement": {
+    "gamesPerTrial": 30000,
+    "trialsPerSetting": 1000,
+    "fullGames": 180000000,
+    "pilotGames": 54000000,
+    "rtp": "sum of actual payouts divided by sum of actual BET; replay makes next BET free",
+    "complete": "first net +10000pt or 30000G; full trajectories retain the stopped prefix",
+    "reset": "special mode and setting-dependent reset impurity at the start of every trial",
+    "operation": "model play, correct instructed stop order",
+    "seeds": "same seed for each paired v116/v117 trial; disjoint from candidate-selection pilot",
+    "selection": "fixed candidate before verification; all 1000 prespecified pairs per setting"
+  },
+  "sourceHashes": {
+    "nova-art.js": "6fd92b8f624dfe6d1a98a7685702cacf85a696e1f72c57452eead6670c7fff1f",
+    "nova-balance.js": "3721a08893d1b541ae5622f99c6e1c82702da0f61375e3e3f39bd427a66ab457",
+    "nova-flow.js": "3b9e17a4649d5b7e585266613c62f196306a2ccb774bf0ec0abdac6747d51dab",
+    "nova-normal.js": "a16dd163ddd29ec0c800002499f85891047c511b6d28d1665a761e92230cd5ce",
+    "research/burst112/production-model.mjs": "dad01c02771a7225bbdee99558942158341e2336e3bb24bc2b5696367aad7afa"
+  },
+  "pilot": [
+    {
+      "tag": "control",
+      "setting": 1,
+      "trials": 300,
+      "seedBase": 117100000,
+      "sourceHashes": {
+        "nova-art.js": "f3c18c79ba16202eb25285fb57a33896b1cb73dd89c33b79bc2b8484a1d01ed6",
+        "nova-balance.js": "627155986584afd981e74586b8bfeade69d55468b99905caff568f3ec42e8bd8",
+        "nova-flow.js": "3b9e17a4649d5b7e585266613c62f196306a2ccb774bf0ec0abdac6747d51dab",
+        "nova-normal.js": "39df842b56b59125873fc3d3bc265b5f5c8c4859efbd3b0012ee56ae522d0e5a",
+        "research/burst112/production-model.mjs": "dad01c02771a7225bbdee99558942158341e2336e3bb24bc2b5696367aad7afa"
+      },
+      "entry": [
+        0.00108,
+        0.00205,
+        0.0026,
+        0.0029,
+        0.00377,
+        0.00377
+      ],
+      "award": 2000,
+      "comebackRules": {
+        "games": 5,
+        "guaranteedRoles": [
+          "WEAK_SUICA",
+          "STRONG_SUICA",
+          "CHANCE_A",
+          "CHANCE_B",
+          "WEAK_NOVA",
+          "STRONG_NOVA",
+          "SUPER_NOVA"
+        ],
+        "common": {
+          "MISS": 0.001,
+          "BELL": 0.01,
+          "REPLAY": 0.01
+        },
+        "superDenom": 32768
+      },
+      "weights": [
+        47,
+        45,
+        8,
+        0,
+        0
+      ],
+      "gamesPerTrial": 30000,
+      "games": 9000000,
+      "complete": 5,
+      "completeRate": 0.016666666666666666,
+      "completeCI": [
+        0.0071393720427721935,
+        0.038415943621705605
+      ],
+      "rtp": {
+        "bet": 19789128,
+        "paid": 19182681,
+        "value": 0.9693545364909459,
+        "ci": [
+          0.9592877844885316,
+          0.9794212884933603
+        ]
+      },
+      "stoppedRtp": {
+        "bet": 19710267,
+        "paid": 19013426,
+        "value": 0.9646457858739306,
+        "ci": [
+          0.9574627463749372,
+          0.9718288253729239
+        ]
+      },
+      "stoppedGames": 8953860,
+      "ordinary": {
+        "completed": 23564,
+        "censored": 81,
+        "mean": 426.46469190290276,
+        "p50": 306,
+        "p90": 861,
+        "p99": 2325,
+        "over2000": 0.014938041079612968,
+        "over10000": 0.00008487523340689187
+      },
+      "burst": {
+        "completed": 5,
+        "censored": 5,
+        "mean": 10444.8,
+        "p50": 7881,
+        "p90": 8199,
+        "p99": 8199,
+        "over2000": 1,
+        "over10000": 0.2
+      },
+      "burstAttempts": 17,
+      "burstWins": 10,
+      "atEntries": 23655,
+      "czEntries": 53325,
+      "normalGames": 4999810,
+      "reachWithoutBurst": 0.0033333333333333335,
+      "elapsedSeconds": 79.027
+    },
+    {
+      "tag": "control",
+      "setting": 6,
+      "trials": 300,
+      "seedBase": 117100000,
+      "sourceHashes": {
+        "nova-art.js": "f3c18c79ba16202eb25285fb57a33896b1cb73dd89c33b79bc2b8484a1d01ed6",
+        "nova-balance.js": "627155986584afd981e74586b8bfeade69d55468b99905caff568f3ec42e8bd8",
+        "nova-flow.js": "3b9e17a4649d5b7e585266613c62f196306a2ccb774bf0ec0abdac6747d51dab",
+        "nova-normal.js": "39df842b56b59125873fc3d3bc265b5f5c8c4859efbd3b0012ee56ae522d0e5a",
+        "research/burst112/production-model.mjs": "dad01c02771a7225bbdee99558942158341e2336e3bb24bc2b5696367aad7afa"
+      },
+      "entry": [
+        0.00108,
+        0.00205,
+        0.0026,
+        0.0029,
+        0.00377,
+        0.00377
+      ],
+      "award": 2000,
+      "comebackRules": {
+        "games": 5,
+        "guaranteedRoles": [
+          "WEAK_SUICA",
+          "STRONG_SUICA",
+          "CHANCE_A",
+          "CHANCE_B",
+          "WEAK_NOVA",
+          "STRONG_NOVA",
+          "SUPER_NOVA"
+        ],
+        "common": {
+          "MISS": 0.001,
+          "BELL": 0.01,
+          "REPLAY": 0.01
+        },
+        "superDenom": 32768
+      },
+      "weights": [
+        29,
+        35,
+        36,
+        0,
+        0
+      ],
+      "gamesPerTrial": 30000,
+      "games": 9000000,
+      "complete": 56,
+      "completeRate": 0.18666666666666668,
+      "completeCI": [
+        0.14663682127589442,
+        0.23461972818935325
+      ],
+      "rtp": {
+        "bet": 19263735,
+        "paid": 20760522,
+        "value": 1.0776997295695772,
+        "ci": [
+          1.0593411290513302,
+          1.0960583300878242
+        ]
+      },
+      "stoppedRtp": {
+        "bet": 18106935,
+        "paid": 19116707,
+        "value": 1.0557671411533758,
+        "ci": [
+          1.0461231064115801,
+          1.0654111758951714
+        ]
+      },
+      "stoppedGames": 8416264,
+      "ordinary": {
+        "completed": 23029,
+        "censored": 82,
+        "mean": 493.3372269746841,
+        "p50": 306,
+        "p90": 990,
+        "p99": 3333,
+        "over2000": 0.027834469581831604,
+        "over10000": 0.00021711754744018413
+      },
+      "burst": {
+        "completed": 21,
+        "censored": 12,
+        "mean": 21226.714285714286,
+        "p50": 16581,
+        "p90": 50853,
+        "p99": 50952,
+        "over2000": 1,
+        "over10000": 0.6190476190476191
+      },
+      "burstAttempts": 65,
+      "burstWins": 33,
+      "atEntries": 23144,
+      "czEntries": 51897,
+      "normalGames": 4629399,
+      "reachWithoutBurst": 0.12,
+      "elapsedSeconds": 86.887
+    },
+    {
+      "tag": "base285",
+      "setting": 1,
+      "trials": 300,
+      "seedBase": 117100000,
+      "base": 28.5,
+      "burstFactor": 0.5,
+      "sourceHashes": {
+        "nova-art.js": "f3c18c79ba16202eb25285fb57a33896b1cb73dd89c33b79bc2b8484a1d01ed6",
+        "nova-balance.js": "627155986584afd981e74586b8bfeade69d55468b99905caff568f3ec42e8bd8",
+        "nova-flow.js": "3b9e17a4649d5b7e585266613c62f196306a2ccb774bf0ec0abdac6747d51dab",
+        "nova-normal.js": "39df842b56b59125873fc3d3bc265b5f5c8c4859efbd3b0012ee56ae522d0e5a",
+        "research/burst112/production-model.mjs": "dad01c02771a7225bbdee99558942158341e2336e3bb24bc2b5696367aad7afa"
+      },
+      "entry": [
+        0.00054,
+        0.001025,
+        0.0013,
+        0.00145,
+        0.001885,
+        0.001885
+      ],
+      "award": 2000,
+      "comebackRules": {
+        "games": 5,
+        "guaranteedRoles": [
+          "WEAK_SUICA",
+          "STRONG_SUICA",
+          "CHANCE_A",
+          "CHANCE_B",
+          "WEAK_NOVA",
+          "STRONG_NOVA",
+          "SUPER_NOVA"
+        ],
+        "common": {
+          "MISS": 0.001,
+          "BELL": 0.01,
+          "REPLAY": 0.01
+        },
+        "superDenom": 32768
+      },
+      "weights": [
+        47,
+        45,
+        8,
+        0,
+        0
+      ],
+      "gamesPerTrial": 30000,
+      "games": 9000000,
+      "complete": 2,
+      "completeRate": 0.006666666666666667,
+      "completeCI": [
+        0.0018301100329710784,
+        0.023978074231461442
+      ],
+      "rtp": {
+        "bet": 19848438,
+        "paid": 19348693,
+        "value": 0.9748219482056976,
+        "ci": [
+          0.9682956111949222,
+          0.9813482852164729
+        ]
+      },
+      "stoppedRtp": {
+        "bet": 19817283,
+        "paid": 19316171,
+        "value": 0.9747133852809187,
+        "ci": [
+          0.9682180174600058,
+          0.9812087531018315
+        ]
+      },
+      "stoppedGames": 8985561,
+      "ordinary": {
+        "completed": 23775,
+        "censored": 75,
+        "mean": 418.61047318611986,
+        "p50": 300,
+        "p90": 834,
+        "p99": 2232,
+        "over2000": 0.013796004206098843,
+        "over10000": 0
+      },
+      "burst": {
+        "completed": 4,
+        "censored": 0,
+        "mean": 6027.75,
+        "p50": 4974,
+        "p90": 7245,
+        "p99": 7245,
+        "over2000": 1,
+        "over10000": 0
+      },
+      "burstAttempts": 11,
+      "burstWins": 4,
+      "atEntries": 23854,
+      "czEntries": 53798,
+      "normalGames": 5042200,
+      "reachWithoutBurst": 0.006666666666666667,
+      "elapsedSeconds": 78.373
+    },
+    {
+      "tag": "base285",
+      "setting": 6,
+      "trials": 300,
+      "seedBase": 117100000,
+      "base": 28.5,
+      "burstFactor": 0.5,
+      "sourceHashes": {
+        "nova-art.js": "f3c18c79ba16202eb25285fb57a33896b1cb73dd89c33b79bc2b8484a1d01ed6",
+        "nova-balance.js": "627155986584afd981e74586b8bfeade69d55468b99905caff568f3ec42e8bd8",
+        "nova-flow.js": "3b9e17a4649d5b7e585266613c62f196306a2ccb774bf0ec0abdac6747d51dab",
+        "nova-normal.js": "39df842b56b59125873fc3d3bc265b5f5c8c4859efbd3b0012ee56ae522d0e5a",
+        "research/burst112/production-model.mjs": "dad01c02771a7225bbdee99558942158341e2336e3bb24bc2b5696367aad7afa"
+      },
+      "entry": [
+        0.00054,
+        0.001025,
+        0.0013,
+        0.00145,
+        0.001885,
+        0.001885
+      ],
+      "award": 2000,
+      "comebackRules": {
+        "games": 5,
+        "guaranteedRoles": [
+          "WEAK_SUICA",
+          "STRONG_SUICA",
+          "CHANCE_A",
+          "CHANCE_B",
+          "WEAK_NOVA",
+          "STRONG_NOVA",
+          "SUPER_NOVA"
+        ],
+        "common": {
+          "MISS": 0.001,
+          "BELL": 0.01,
+          "REPLAY": 0.01
+        },
+        "superDenom": 32768
+      },
+      "weights": [
+        29,
+        35,
+        36,
+        0,
+        0
+      ],
+      "gamesPerTrial": 30000,
+      "games": 9000000,
+      "complete": 63,
+      "completeRate": 0.21,
+      "completeCI": [
+        0.16772109488365303,
+        0.25961209451503364
+      ],
+      "rtp": {
+        "bet": 19247076,
+        "paid": 21147396,
+        "value": 1.0987329192236786,
+        "ci": [
+          1.078285752797081,
+          1.119180085650276
+        ]
+      },
+      "stoppedRtp": {
+        "bet": 17917836,
+        "paid": 19218422,
+        "value": 1.0725861091707727,
+        "ci": [
+          1.0630885823240819,
+          1.0820836360174635
+        ]
+      },
+      "stoppedGames": 8326677,
+      "ordinary": {
+        "completed": 23229,
+        "censored": 80,
+        "mean": 490.00891127469976,
+        "p50": 306,
+        "p90": 1014,
+        "p99": 3144,
+        "over2000": 0.02681992337164751,
+        "over10000": 0.00021524818115286926
+      },
+      "burst": {
+        "completed": 16,
+        "censored": 10,
+        "mean": 24929.8125,
+        "p50": 11109,
+        "p90": 49509,
+        "p99": 78846,
+        "over2000": 1,
+        "over10000": 0.5625
+      },
+      "burstAttempts": 51,
+      "burstWins": 26,
+      "atEntries": 23335,
+      "czEntries": 52032,
+      "normalGames": 4615731,
+      "reachWithoutBurst": 0.15,
+      "elapsedSeconds": 85.716
+    },
+    {
+      "tag": "base290",
+      "setting": 1,
+      "trials": 300,
+      "seedBase": 117100000,
+      "base": 29,
+      "burstFactor": 0.25,
+      "sourceHashes": {
+        "nova-art.js": "f3c18c79ba16202eb25285fb57a33896b1cb73dd89c33b79bc2b8484a1d01ed6",
+        "nova-balance.js": "627155986584afd981e74586b8bfeade69d55468b99905caff568f3ec42e8bd8",
+        "nova-flow.js": "3b9e17a4649d5b7e585266613c62f196306a2ccb774bf0ec0abdac6747d51dab",
+        "nova-normal.js": "39df842b56b59125873fc3d3bc265b5f5c8c4859efbd3b0012ee56ae522d0e5a",
+        "research/burst112/production-model.mjs": "dad01c02771a7225bbdee99558942158341e2336e3bb24bc2b5696367aad7afa"
+      },
+      "entry": [
+        0.00027,
+        0.0005125,
+        0.00065,
+        0.000725,
+        0.0009425,
+        0.0009425
+      ],
+      "award": 2000,
+      "comebackRules": {
+        "games": 5,
+        "guaranteedRoles": [
+          "WEAK_SUICA",
+          "STRONG_SUICA",
+          "CHANCE_A",
+          "CHANCE_B",
+          "WEAK_NOVA",
+          "STRONG_NOVA",
+          "SUPER_NOVA"
+        ],
+        "common": {
+          "MISS": 0.001,
+          "BELL": 0.01,
+          "REPLAY": 0.01
+        },
+        "superDenom": 32768
+      },
+      "weights": [
+        47,
+        45,
+        8,
+        0,
+        0
+      ],
+      "gamesPerTrial": 30000,
+      "games": 9000000,
+      "complete": 7,
+      "completeRate": 0.023333333333333334,
+      "completeCI": [
+        0.01134751559829571,
+        0.04737255433287896
+      ],
+      "rtp": {
+        "bet": 19810380,
+        "paid": 19627128,
+        "value": 0.9907496978856539,
+        "ci": [
+          0.9834218766157868,
+          0.998077519155521
+        ]
+      },
+      "stoppedRtp": {
+        "bet": 19680297,
+        "paid": 19487452,
+        "value": 0.9902011133266942,
+        "ci": [
+          0.9830375671360996,
+          0.9973646595172889
+        ]
+      },
+      "stoppedGames": 8939528,
+      "ordinary": {
+        "completed": 23714,
+        "censored": 68,
+        "mean": 427.2781057603104,
+        "p50": 306,
+        "p90": 852,
+        "p99": 2385,
+        "over2000": 0.015391751707851902,
+        "over10000": 0.000042169182761238085
+      },
+      "burst": {
+        "completed": 0,
+        "censored": 0,
+        "mean": null,
+        "over2000": null,
+        "over10000": null
+      },
+      "burstAttempts": 2,
+      "burstWins": 0,
+      "atEntries": 23782,
+      "czEntries": 53623,
+      "normalGames": 5016297,
+      "reachWithoutBurst": 0.023333333333333334,
+      "elapsedSeconds": 68.013
+    },
+    {
+      "tag": "base290",
+      "setting": 6,
+      "trials": 300,
+      "seedBase": 117100000,
+      "base": 29,
+      "burstFactor": 0.25,
+      "sourceHashes": {
+        "nova-art.js": "f3c18c79ba16202eb25285fb57a33896b1cb73dd89c33b79bc2b8484a1d01ed6",
+        "nova-balance.js": "627155986584afd981e74586b8bfeade69d55468b99905caff568f3ec42e8bd8",
+        "nova-flow.js": "3b9e17a4649d5b7e585266613c62f196306a2ccb774bf0ec0abdac6747d51dab",
+        "nova-normal.js": "39df842b56b59125873fc3d3bc265b5f5c8c4859efbd3b0012ee56ae522d0e5a",
+        "research/burst112/production-model.mjs": "dad01c02771a7225bbdee99558942158341e2336e3bb24bc2b5696367aad7afa"
+      },
+      "entry": [
+        0.00027,
+        0.0005125,
+        0.00065,
+        0.000725,
+        0.0009425,
+        0.0009425
+      ],
+      "award": 2000,
+      "comebackRules": {
+        "games": 5,
+        "guaranteedRoles": [
+          "WEAK_SUICA",
+          "STRONG_SUICA",
+          "CHANCE_A",
+          "CHANCE_B",
+          "WEAK_NOVA",
+          "STRONG_NOVA",
+          "SUPER_NOVA"
+        ],
+        "common": {
+          "MISS": 0.001,
+          "BELL": 0.01,
+          "REPLAY": 0.01
+        },
+        "superDenom": 32768
+      },
+      "weights": [
+        29,
+        35,
+        36,
+        0,
+        0
+      ],
+      "gamesPerTrial": 30000,
+      "games": 9000000,
+      "complete": 56,
+      "completeRate": 0.18666666666666668,
+      "completeCI": [
+        0.14663682127589442,
+        0.23461972818935325
+      ],
+      "rtp": {
+        "bet": 19378914,
+        "paid": 20879789,
+        "value": 1.0774488704578595,
+        "ci": [
+          1.0675313386505199,
+          1.0873664022651992
+        ]
+      },
+      "stoppedRtp": {
+        "bet": 18178431,
+        "paid": 19509338,
+        "value": 1.073213524313512,
+        "ci": [
+          1.064258926509633,
+          1.0821681221173909
+        ]
+      },
+      "stoppedGames": 8433983,
+      "ordinary": {
+        "completed": 23607,
+        "censored": 90,
+        "mean": 488.3536662854238,
+        "p50": 306,
+        "p90": 1002,
+        "p99": 3072,
+        "over2000": 0.025797432964798576,
+        "over10000": 0.00021180158427585037
+      },
+      "burst": {
+        "completed": 8,
+        "censored": 0,
+        "mean": 19818.375,
+        "p50": 13653,
+        "p90": 37794,
+        "p99": 37794,
+        "over2000": 1,
+        "over10000": 0.625
+      },
+      "burstAttempts": 17,
+      "burstWins": 8,
+      "atEntries": 23705,
+      "czEntries": 52687,
+      "normalGames": 4713713,
+      "reachWithoutBurst": 0.16666666666666666,
+      "elapsedSeconds": 70.845
+    }
+  ],
+  "verification": {
+    "commit": "7e220655f09f6bb040fd3b5ef3b8acfad61b12d4",
+    "cache": false,
+    "complete": true,
+    "reports": [
+      {
+        "setting": 1,
+        "trials": 6,
+        "games": 180000,
+        "matched": true,
+        "directStop": {
+          "seed": 118045311,
+          "games": 27570,
+          "matched": true
+        }
+      },
+      {
+        "setting": 2,
+        "trials": 5,
+        "games": 150000,
+        "matched": true,
+        "directStop": {
+          "seed": 117107925,
+          "games": 18337,
+          "matched": true
+        }
+      },
+      {
+        "setting": 3,
+        "trials": 6,
+        "games": 180000,
+        "matched": true,
+        "directStop": {
+          "seed": 117231685,
+          "games": 7796,
+          "matched": true
+        }
+      },
+      {
+        "setting": 4,
+        "trials": 6,
+        "games": 180000,
+        "matched": true,
+        "directStop": {
+          "seed": 117339607,
+          "games": 29895,
+          "matched": true
+        }
+      },
+      {
+        "setting": 5,
+        "trials": 6,
+        "games": 180000,
+        "matched": true,
+        "directStop": {
+          "seed": 117415853,
+          "games": 17385,
+          "matched": true
+        }
+      },
+      {
+        "setting": 6,
+        "trials": 6,
+        "games": 180000,
+        "matched": true,
+        "directStop": {
+          "seed": 118579208,
+          "games": 17101,
+          "matched": true
+        }
+      }
+    ]
+  },
+  "settings": [
+    {
+      "setting": 1,
+      "sourceFile": "docs/balance117-verify-1.json",
+      "baselineFile": "docs/comeback116-verify-1.json",
+      "baselineReport": {
+        "tag": "verify",
+        "setting": 1,
+        "trials": 1000,
+        "seedBase": 116900000,
+        "sourceHashes": {
+          "nova-art.js": "2356fc1d53695eae27e91a940784a1f75bea6a2bb454f0e251053f0ca27994a6",
+          "nova-balance.js": "d60a7361caabe07a5a6333de21deb65f7233c2075f2181340fe9d69f8eec006d",
+          "nova-flow.js": "3b9e17a4649d5b7e585266613c62f196306a2ccb774bf0ec0abdac6747d51dab",
+          "nova-normal.js": "39df842b56b59125873fc3d3bc265b5f5c8c4859efbd3b0012ee56ae522d0e5a",
+          "research/burst112/production-model.mjs": "dad01c02771a7225bbdee99558942158341e2336e3bb24bc2b5696367aad7afa"
+        },
+        "entry": [
+          0.00108,
+          0.00205,
+          0.0026,
+          0.0029,
+          0.00377,
+          0.00377
+        ],
+        "award": 2000,
+        "comebackRules": {
+          "games": 5,
+          "guaranteedRoles": [
+            "WEAK_SUICA",
+            "STRONG_SUICA",
+            "CHANCE_A",
+            "CHANCE_B",
+            "WEAK_NOVA",
+            "STRONG_NOVA",
+            "SUPER_NOVA"
+          ],
+          "common": {
+            "MISS": 0.001,
+            "BELL": 0.01,
+            "REPLAY": 0.01
+          },
+          "superDenom": 32768
+        },
+        "weights": [
+          47,
+          45,
+          8,
+          0,
+          0
+        ],
+        "gamesPerTrial": 30000,
+        "games": 30000000,
+        "complete": 17,
+        "completeRate": 0.017,
+        "completeCI": [
+          0.010640599663218203,
+          0.027056184371235047
+        ],
+        "rtp": {
+          "bet": 66085941,
+          "paid": 63542670,
+          "value": 0.9615157027120186,
+          "ci": [
+            0.9565973241481416,
+            0.9664340812758956
+          ]
+        },
+        "stoppedRtp": {
+          "bet": 65721141,
+          "paid": 63022068,
+          "value": 0.9589314342549227,
+          "ci": [
+            0.954936666283735,
+            0.9629262022261104
+          ]
+        },
+        "stoppedGames": 29815528,
+        "ordinary": {
+          "completed": 78631,
+          "censored": 235,
+          "mean": 422.4378934516921,
+          "p50": 300,
+          "p90": 843,
+          "p99": 2295,
+          "over2000": 0.013760476148084089,
+          "over10000": 0.00005087052180437741
+        },
+        "burst": {
+          "completed": 20,
+          "censored": 4,
+          "mean": 19980,
+          "p50": 11262,
+          "p90": 43287,
+          "p99": 47190,
+          "over2000": 1,
+          "over10000": 0.65
+        },
+        "burstAttempts": 44,
+        "burstWins": 24,
+        "atEntries": 78890,
+        "czEntries": 178502,
+        "normalGames": 16750275,
+        "comeback": {
+          "entries": 94065,
+          "games": 438407,
+          "wins": 15397,
+          "roles": {
+            "MISS": {
+              "games": 345470,
+              "wins": 359
+            },
+            "REPLAY": {
+              "games": 58061,
+              "wins": 547
+            },
+            "BELL": {
+              "games": 20602,
+              "wins": 217
+            },
+            "WEAK_SUICA": {
+              "games": 4734,
+              "wins": 4734
+            },
+            "CHANCE_A": {
+              "games": 1997,
+              "wins": 1997
+            },
+            "CHANCE_B": {
+              "games": 2936,
+              "wins": 2936
+            },
+            "WEAK_NOVA": {
+              "games": 3337,
+              "wins": 3337
+            },
+            "STRONG_SUICA": {
+              "games": 1079,
+              "wins": 1079
+            },
+            "STRONG_NOVA": {
+              "games": 173,
+              "wins": 173
+            },
+            "SUPER_NOVA": {
+              "games": 18,
+              "wins": 18
+            }
+          }
+        },
+        "reachWithoutBurst": 0.008,
+        "elapsedSeconds": 240.407
+      },
+      "baselineStopped": {
+        "trials": 1000,
+        "wins": 239,
+        "winRate": 0.239,
+        "winRateCI": [
+          0.21359749233628916,
+          0.2664001487258067
+        ],
+        "draws": 0,
+        "losses": 761,
+        "mean": -2699.073,
+        "meanCI": [
+          -2967.202555435999,
+          -2430.943444564001
+        ],
+        "min": -13544,
+        "p05": -9662.25,
+        "p25": -5586,
+        "median": -2788.5,
+        "p75": -131,
+        "p95": 4941.949999999999,
+        "max": 10011,
+        "bands": [
+          {
+            "label": "−10,000pt未満",
+            "count": 38
+          },
+          {
+            "label": "−10,000〜−5,000pt未満",
+            "count": 248
+          },
+          {
+            "label": "−5,000〜0pt未満",
+            "count": 475
+          },
+          {
+            "label": "±0pt",
+            "count": 0
+          },
+          {
+            "label": "0超〜＋5,000pt未満",
+            "count": 194
+          },
+          {
+            "label": "＋5,000〜＋10,000pt未満",
+            "count": 28
+          },
+          {
+            "label": "＋10,000pt以上",
+            "count": 17
+          }
+        ]
+      },
+      "report": {
+        "tag": "verify",
+        "setting": 1,
+        "trials": 1000,
+        "seedBase": 116900000,
+        "baselineFile": "docs/comeback116-verify-1.json",
+        "sourceHashes": {
+          "nova-art.js": "6fd92b8f624dfe6d1a98a7685702cacf85a696e1f72c57452eead6670c7fff1f",
+          "nova-balance.js": "3721a08893d1b541ae5622f99c6e1c82702da0f61375e3e3f39bd427a66ab457",
+          "nova-flow.js": "3b9e17a4649d5b7e585266613c62f196306a2ccb774bf0ec0abdac6747d51dab",
+          "nova-normal.js": "a16dd163ddd29ec0c800002499f85891047c511b6d28d1665a761e92230cd5ce",
+          "research/burst112/production-model.mjs": "dad01c02771a7225bbdee99558942158341e2336e3bb24bc2b5696367aad7afa"
+        },
+        "entry": [
+          0.00027,
+          0.0005125,
+          0.00065,
+          0.000725,
+          0.0009425,
+          0.0009425
+        ],
+        "award": 2000,
+        "comebackRules": {
+          "games": 5,
+          "guaranteedRoles": [
+            "WEAK_SUICA",
+            "STRONG_SUICA",
+            "CHANCE_A",
+            "CHANCE_B",
+            "WEAK_NOVA",
+            "STRONG_NOVA",
+            "SUPER_NOVA"
+          ],
+          "common": {
+            "MISS": 0.001,
+            "BELL": 0.01,
+            "REPLAY": 0.01
+          },
+          "superDenom": 32768
+        },
+        "weights": [
+          47,
+          45,
+          8,
+          0,
+          0
+        ],
+        "gamesPerTrial": 30000,
+        "games": 30000000,
+        "complete": 15,
+        "completeRate": 0.015,
+        "completeCI": [
+          0.00911089683719635,
+          0.02460119479160246
+        ],
+        "rtp": {
+          "bet": 66141273,
+          "paid": 65242054,
+          "value": 0.9864045707133577,
+          "ci": [
+            0.9823244950857598,
+            0.9904846463409557
+          ]
+        },
+        "stoppedRtp": {
+          "bet": 65903352,
+          "paid": 64972431,
+          "value": 0.9858744514239579,
+          "ci": [
+            0.9819128115129631,
+            0.9898360913349528
+          ]
+        },
+        "stoppedGames": 29887835,
+        "ordinary": {
+          "completed": 78530,
+          "censored": 256,
+          "mean": 425.3375779956705,
+          "p50": 303,
+          "p90": 846,
+          "p99": 2337,
+          "over2000": 0.014516745192919903,
+          "over10000": 0.00005093594804533299
+        },
+        "burst": {
+          "completed": 4,
+          "censored": 2,
+          "mean": 15173.25,
+          "p50": 6201,
+          "p90": 19089,
+          "p99": 19089,
+          "over2000": 1,
+          "over10000": 0.5
+        },
+        "burstAttempts": 12,
+        "burstWins": 6,
+        "atEntries": 78792,
+        "czEntries": 178609,
+        "normalGames": 16790105,
+        "reachWithoutBurst": 0.011,
+        "elapsedSeconds": 260.399
+      },
+      "stopped": {
+        "trials": 1000,
+        "wins": 390,
+        "winRate": 0.39,
+        "winRateCI": [
+          0.36024486930243227,
+          0.42059704838657375
+        ],
+        "draws": 0,
+        "losses": 610,
+        "mean": -930.921,
+        "meanCI": [
+          -1193.4991118479936,
+          -668.3428881520065
+        ],
+        "min": -15078,
+        "p05": -7335.3,
+        "p25": -3977,
+        "median": -1132,
+        "p75": 1897.5,
+        "p95": 6204.999999999998,
+        "max": 10010,
+        "bands": [
+          {
+            "label": "−10,000pt未満",
+            "count": 11
+          },
+          {
+            "label": "−10,000〜−5,000pt未満",
+            "count": 152
+          },
+          {
+            "label": "−5,000〜0pt未満",
+            "count": 447
+          },
+          {
+            "label": "±0pt",
+            "count": 0
+          },
+          {
+            "label": "0超〜＋5,000pt未満",
+            "count": 298
+          },
+          {
+            "label": "＋5,000〜＋10,000pt未満",
+            "count": 77
+          },
+          {
+            "label": "＋10,000pt以上",
+            "count": 15
+          }
+        ]
+      },
+      "unlimited": {
+        "trials": 1000,
+        "wins": 390,
+        "winRate": 0.39,
+        "winRateCI": [
+          0.36024486930243227,
+          0.42059704838657375
+        ],
+        "draws": 0,
+        "losses": 610,
+        "mean": -899.219,
+        "meanCI": [
+          -1170.0208172286518,
+          -628.4171827713483
+        ],
+        "min": -15078,
+        "p05": -7335.3,
+        "p25": -3977,
+        "median": -1132,
+        "p75": 1897.5,
+        "p95": 6204.999999999998,
+        "max": 28866,
+        "bands": [
+          {
+            "label": "−10,000pt未満",
+            "count": 11
+          },
+          {
+            "label": "−10,000〜−5,000pt未満",
+            "count": 152
+          },
+          {
+            "label": "−5,000〜0pt未満",
+            "count": 447
+          },
+          {
+            "label": "±0pt",
+            "count": 0
+          },
+          {
+            "label": "0超〜＋5,000pt未満",
+            "count": 298
+          },
+          {
+            "label": "＋5,000〜＋10,000pt未満",
+            "count": 82
+          },
+          {
+            "label": "＋10,000pt以上",
+            "count": 10
+          }
+        ]
+      },
+      "change": {
+        "trials": 1000,
+        "rtp": {
+          "value": 0.026943017169035244,
+          "ci": [
+            0.022081748727313055,
+            0.03180428561075743
+          ]
+        },
+        "reach": {
+          "value": -0.002,
+          "ci": [
+            -0.012740017764491029,
+            0.008740017764491029
+          ]
+        },
+        "win": {
+          "value": 0.151,
+          "ci": [
+            0.11483072166748295,
+            0.18716927833251704
+          ]
+        },
+        "net": {
+          "value": 1768.152,
+          "ci": [
+            1443.5351516143992,
+            2092.768848385601
+          ]
+        }
+      },
+      "comeback": {
+        "entries": 93563,
+        "games": 436653,
+        "wins": 15014,
+        "roles": {
+          "MISS": {
+            "games": 341448,
+            "wins": 316
+          },
+          "BELL": {
+            "games": 23440,
+            "wins": 214
+          },
+          "REPLAY": {
+            "games": 57845,
+            "wins": 564
+          },
+          "WEAK_NOVA": {
+            "games": 3270,
+            "wins": 3270
+          },
+          "WEAK_SUICA": {
+            "games": 4629,
+            "wins": 4629
+          },
+          "CHANCE_B": {
+            "games": 2813,
+            "wins": 2813
+          },
+          "CHANCE_A": {
+            "games": 1935,
+            "wins": 1935
+          },
+          "STRONG_SUICA": {
+            "games": 1067,
+            "wins": 1067
+          },
+          "STRONG_NOVA": {
+            "games": 194,
+            "wins": 194
+          },
+          "SUPER_NOVA": {
+            "games": 12,
+            "wins": 12
+          }
+        }
+      },
+      "comebackTheory": 0.1615709694900791
+    },
+    {
+      "setting": 2,
+      "sourceFile": "docs/balance117-verify-2.json",
+      "baselineFile": "docs/comeback116-verify-2.json",
+      "baselineReport": {
+        "tag": "verify",
+        "setting": 2,
+        "trials": 1000,
+        "seedBase": 116900000,
+        "sourceHashes": {
+          "nova-art.js": "2356fc1d53695eae27e91a940784a1f75bea6a2bb454f0e251053f0ca27994a6",
+          "nova-balance.js": "d60a7361caabe07a5a6333de21deb65f7233c2075f2181340fe9d69f8eec006d",
+          "nova-flow.js": "3b9e17a4649d5b7e585266613c62f196306a2ccb774bf0ec0abdac6747d51dab",
+          "nova-normal.js": "39df842b56b59125873fc3d3bc265b5f5c8c4859efbd3b0012ee56ae522d0e5a",
+          "research/burst112/production-model.mjs": "dad01c02771a7225bbdee99558942158341e2336e3bb24bc2b5696367aad7afa"
+        },
+        "entry": [
+          0.00108,
+          0.00205,
+          0.0026,
+          0.0029,
+          0.00377,
+          0.00377
+        ],
+        "award": 2000,
+        "comebackRules": {
+          "games": 5,
+          "guaranteedRoles": [
+            "WEAK_SUICA",
+            "STRONG_SUICA",
+            "CHANCE_A",
+            "CHANCE_B",
+            "WEAK_NOVA",
+            "STRONG_NOVA",
+            "SUPER_NOVA"
+          ],
+          "common": {
+            "MISS": 0.001,
+            "BELL": 0.01,
+            "REPLAY": 0.01
+          },
+          "superDenom": 32768
+        },
+        "weights": [
+          42,
+          45,
+          13,
+          0,
+          0
+        ],
+        "gamesPerTrial": 30000,
+        "games": 30000000,
+        "complete": 45,
+        "completeRate": 0.045,
+        "completeCI": [
+          0.033799334842846314,
+          0.05968314287076907
+        ],
+        "rtp": {
+          "bet": 65605236,
+          "paid": 64948350,
+          "value": 0.9899872930873993,
+          "ci": [
+            0.9826390981868894,
+            0.9973354879879092
+          ]
+        },
+        "stoppedRtp": {
+          "bet": 64545801,
+          "paid": 63324073,
+          "value": 0.9810719213167717,
+          "ci": [
+            0.9764991891416284,
+            0.985644653491915
+          ]
+        },
+        "stoppedGames": 29452043,
+        "ordinary": {
+          "completed": 78097,
+          "censored": 254,
+          "mean": 436.96056186537254,
+          "p50": 306,
+          "p90": 876,
+          "p99": 2469,
+          "over2000": 0.01619780529341716,
+          "over10000": 0.00008963212415329654
+        },
+        "burst": {
+          "completed": 41,
+          "censored": 15,
+          "mean": 19531.243902439026,
+          "p50": 13521,
+          "p90": 35412,
+          "p99": 85971,
+          "over2000": 1,
+          "over10000": 0.6341463414634146
+        },
+        "burstAttempts": 111,
+        "burstWins": 56,
+        "atEntries": 78407,
+        "czEntries": 176525,
+        "normalGames": 16420060,
+        "comeback": {
+          "entries": 93491,
+          "games": 435384,
+          "wins": 15338,
+          "roles": {
+            "MISS": {
+              "games": 342814,
+              "wins": 367
+            },
+            "BELL": {
+              "games": 20404,
+              "wins": 216
+            },
+            "REPLAY": {
+              "games": 57972,
+              "wins": 561
+            },
+            "CHANCE_A": {
+              "games": 2791,
+              "wins": 2791
+            },
+            "WEAK_SUICA": {
+              "games": 4764,
+              "wins": 4764
+            },
+            "CHANCE_B": {
+              "games": 1946,
+              "wins": 1946
+            },
+            "WEAK_NOVA": {
+              "games": 3418,
+              "wins": 3418
+            },
+            "STRONG_SUICA": {
+              "games": 1097,
+              "wins": 1097
+            },
+            "STRONG_NOVA": {
+              "games": 167,
+              "wins": 167
+            },
+            "SUPER_NOVA": {
+              "games": 11,
+              "wins": 11
+            }
+          }
+        },
+        "reachWithoutBurst": 0.016,
+        "elapsedSeconds": 248.106
+      },
+      "baselineStopped": {
+        "trials": 1000,
+        "wins": 373,
+        "winRate": 0.373,
+        "winRateCI": [
+          0.3435655079201235,
+          0.4034065243208197
+        ],
+        "draws": 0,
+        "losses": 627,
+        "mean": -1221.728,
+        "meanCI": [
+          -1521.4623639382335,
+          -921.9936360617666
+        ],
+        "min": -13423,
+        "p05": -8487.1,
+        "p25": -4595.75,
+        "median": -1427,
+        "p75": 1654,
+        "p95": 8448.399999999987,
+        "max": 10011,
+        "bands": [
+          {
+            "label": "−10,000pt未満",
+            "count": 28
+          },
+          {
+            "label": "−10,000〜−5,000pt未満",
+            "count": 192
+          },
+          {
+            "label": "−5,000〜0pt未満",
+            "count": 407
+          },
+          {
+            "label": "±0pt",
+            "count": 0
+          },
+          {
+            "label": "0超〜＋5,000pt未満",
+            "count": 267
+          },
+          {
+            "label": "＋5,000〜＋10,000pt未満",
+            "count": 61
+          },
+          {
+            "label": "＋10,000pt以上",
+            "count": 45
+          }
+        ]
+      },
+      "report": {
+        "tag": "verify",
+        "setting": 2,
+        "trials": 1000,
+        "seedBase": 116900000,
+        "baselineFile": "docs/comeback116-verify-2.json",
+        "sourceHashes": {
+          "nova-art.js": "6fd92b8f624dfe6d1a98a7685702cacf85a696e1f72c57452eead6670c7fff1f",
+          "nova-balance.js": "3721a08893d1b541ae5622f99c6e1c82702da0f61375e3e3f39bd427a66ab457",
+          "nova-flow.js": "3b9e17a4649d5b7e585266613c62f196306a2ccb774bf0ec0abdac6747d51dab",
+          "nova-normal.js": "a16dd163ddd29ec0c800002499f85891047c511b6d28d1665a761e92230cd5ce",
+          "research/burst112/production-model.mjs": "dad01c02771a7225bbdee99558942158341e2336e3bb24bc2b5696367aad7afa"
+        },
+        "entry": [
+          0.00027,
+          0.0005125,
+          0.00065,
+          0.000725,
+          0.0009425,
+          0.0009425
+        ],
+        "award": 2000,
+        "comebackRules": {
+          "games": 5,
+          "guaranteedRoles": [
+            "WEAK_SUICA",
+            "STRONG_SUICA",
+            "CHANCE_A",
+            "CHANCE_B",
+            "WEAK_NOVA",
+            "STRONG_NOVA",
+            "SUPER_NOVA"
+          ],
+          "common": {
+            "MISS": 0.001,
+            "BELL": 0.01,
+            "REPLAY": 0.01
+          },
+          "superDenom": 32768
+        },
+        "weights": [
+          42,
+          45,
+          13,
+          0,
+          0
+        ],
+        "gamesPerTrial": 30000,
+        "games": 30000000,
+        "complete": 46,
+        "completeRate": 0.046,
+        "completeCI": [
+          0.03466231280457309,
+          0.06081251111186951
+        ],
+        "rtp": {
+          "bet": 65707041,
+          "paid": 66476677,
+          "value": 1.011713143497057,
+          "ci": [
+            1.006321618908265,
+            1.0171046680858489
+          ]
+        },
+        "stoppedRtp": {
+          "bet": 64867935,
+          "paid": 65410043,
+          "value": 1.0083571027812124,
+          "ci": [
+            1.0041604862643092,
+            1.0125537192981156
+          ]
+        },
+        "stoppedGames": 29592923,
+        "ordinary": {
+          "completed": 78287,
+          "censored": 229,
+          "mean": 442.1635265114259,
+          "p50": 306,
+          "p90": 882,
+          "p99": 2562,
+          "over2000": 0.017538033134492318,
+          "over10000": 0.00008941458990637015
+        },
+        "burst": {
+          "completed": 14,
+          "censored": 6,
+          "mean": 19813.071428571428,
+          "p50": 8733,
+          "p90": 36312,
+          "p99": 38994,
+          "over2000": 1,
+          "over10000": 0.5
+        },
+        "burstAttempts": 30,
+        "burstWins": 20,
+        "atEntries": 78536,
+        "czEntries": 177141,
+        "normalGames": 16485058,
+        "reachWithoutBurst": 0.033,
+        "elapsedSeconds": 263.527
+      },
+      "stopped": {
+        "trials": 1000,
+        "wins": 528,
+        "winRate": 0.528,
+        "winRateCI": [
+          0.49701023296209834,
+          0.5587754607170637
+        ],
+        "draws": 0,
+        "losses": 472,
+        "mean": 542.108,
+        "meanCI": [
+          271.46690923161435,
+          812.7490907683855
+        ],
+        "min": -12955,
+        "p05": -6238.6,
+        "p25": -2469.5,
+        "median": 305.5,
+        "p75": 3284.25,
+        "p95": 8735.54999999998,
+        "max": 10011,
+        "bands": [
+          {
+            "label": "−10,000pt未満",
+            "count": 5
+          },
+          {
+            "label": "−10,000〜−5,000pt未満",
+            "count": 91
+          },
+          {
+            "label": "−5,000〜0pt未満",
+            "count": 376
+          },
+          {
+            "label": "±0pt",
+            "count": 0
+          },
+          {
+            "label": "0超〜＋5,000pt未満",
+            "count": 372
+          },
+          {
+            "label": "＋5,000〜＋10,000pt未満",
+            "count": 110
+          },
+          {
+            "label": "＋10,000pt以上",
+            "count": 46
+          }
+        ]
+      },
+      "unlimited": {
+        "trials": 1000,
+        "wins": 528,
+        "winRate": 0.528,
+        "winRateCI": [
+          0.49701023296209834,
+          0.5587754607170637
+        ],
+        "draws": 0,
+        "losses": 472,
+        "mean": 769.636,
+        "meanCI": [
+          416.3999204839391,
+          1122.8720795160607
+        ],
+        "min": -12955,
+        "p05": -6238.6,
+        "p25": -2469.5,
+        "median": 305.5,
+        "p75": 3284.25,
+        "p95": 8275.9,
+        "max": 74250,
+        "bands": [
+          {
+            "label": "−10,000pt未満",
+            "count": 5
+          },
+          {
+            "label": "−10,000〜−5,000pt未満",
+            "count": 91
+          },
+          {
+            "label": "−5,000〜0pt未満",
+            "count": 376
+          },
+          {
+            "label": "±0pt",
+            "count": 0
+          },
+          {
+            "label": "0超〜＋5,000pt未満",
+            "count": 373
+          },
+          {
+            "label": "＋5,000〜＋10,000pt未満",
+            "count": 125
+          },
+          {
+            "label": "＋10,000pt以上",
+            "count": 30
+          }
+        ]
+      },
+      "change": {
+        "trials": 1000,
+        "rtp": {
+          "value": 0.0272851814644407,
+          "ci": [
+            0.021997467356021275,
+            0.032572895572860125
+          ]
+        },
+        "reach": {
+          "value": 0.001,
+          "ci": [
+            -0.01575451199146272,
+            0.01775451199146272
+          ]
+        },
+        "win": {
+          "value": 0.155,
+          "ci": [
+            0.11563480752773633,
+            0.19436519247226366
+          ]
+        },
+        "net": {
+          "value": 1763.836,
+          "ci": [
+            1419.7394766852835,
+            2107.9325233147165
+          ]
+        }
+      },
+      "comeback": {
+        "entries": 93742,
+        "games": 436591,
+        "wins": 15429,
+        "roles": {
+          "MISS": {
+            "games": 341088,
+            "wins": 348
+          },
+          "BELL": {
+            "games": 23244,
+            "wins": 231
+          },
+          "REPLAY": {
+            "games": 58002,
+            "wins": 593
+          },
+          "CHANCE_A": {
+            "games": 2903,
+            "wins": 2903
+          },
+          "CHANCE_B": {
+            "games": 2008,
+            "wins": 2008
+          },
+          "WEAK_SUICA": {
+            "games": 4760,
+            "wins": 4760
+          },
+          "WEAK_NOVA": {
+            "games": 3338,
+            "wins": 3338
+          },
+          "STRONG_SUICA": {
+            "games": 1069,
+            "wins": 1069
+          },
+          "STRONG_NOVA": {
+            "games": 165,
+            "wins": 165
+          },
+          "SUPER_NOVA": {
+            "games": 14,
+            "wins": 14
+          }
+        }
+      },
+      "comebackTheory": 0.1638732490392002
+    },
+    {
+      "setting": 3,
+      "sourceFile": "docs/balance117-verify-3.json",
+      "baselineFile": "docs/comeback116-verify-3.json",
+      "baselineReport": {
+        "tag": "verify",
+        "setting": 3,
+        "trials": 1000,
+        "seedBase": 116900000,
+        "sourceHashes": {
+          "nova-art.js": "2356fc1d53695eae27e91a940784a1f75bea6a2bb454f0e251053f0ca27994a6",
+          "nova-balance.js": "d60a7361caabe07a5a6333de21deb65f7233c2075f2181340fe9d69f8eec006d",
+          "nova-flow.js": "3b9e17a4649d5b7e585266613c62f196306a2ccb774bf0ec0abdac6747d51dab",
+          "nova-normal.js": "39df842b56b59125873fc3d3bc265b5f5c8c4859efbd3b0012ee56ae522d0e5a",
+          "research/burst112/production-model.mjs": "dad01c02771a7225bbdee99558942158341e2336e3bb24bc2b5696367aad7afa"
+        },
+        "entry": [
+          0.00108,
+          0.00205,
+          0.0026,
+          0.0029,
+          0.00377,
+          0.00377
+        ],
+        "award": 2000,
+        "comebackRules": {
+          "games": 5,
+          "guaranteedRoles": [
+            "WEAK_SUICA",
+            "STRONG_SUICA",
+            "CHANCE_A",
+            "CHANCE_B",
+            "WEAK_NOVA",
+            "STRONG_NOVA",
+            "SUPER_NOVA"
+          ],
+          "common": {
+            "MISS": 0.001,
+            "BELL": 0.01,
+            "REPLAY": 0.01
+          },
+          "superDenom": 32768
+        },
+        "weights": [
+          37,
+          45,
+          18,
+          0,
+          0
+        ],
+        "gamesPerTrial": 30000,
+        "games": 30000000,
+        "complete": 44,
+        "completeRate": 0.044,
+        "completeCI": [
+          0.03293803969043349,
+          0.058552091820354674
+        ],
+        "rtp": {
+          "bet": 65515647,
+          "paid": 65142774,
+          "value": 0.9943086420256217,
+          "ci": [
+            0.9868703678652019,
+            1.0017469161860415
+          ]
+        },
+        "stoppedRtp": {
+          "bet": 64454889,
+          "paid": 63438704,
+          "value": 0.9842341672483526,
+          "ci": [
+            0.9796867225478072,
+            0.9887816119488979
+          ]
+        },
+        "stoppedGames": 29442740,
+        "ordinary": {
+          "completed": 76788,
+          "censored": 245,
+          "mean": 448.7708626347867,
+          "p50": 306,
+          "p90": 903,
+          "p99": 2646,
+          "over2000": 0.01894827316768245,
+          "over10000": 0.00010418294525186227
+        },
+        "burst": {
+          "completed": 54,
+          "censored": 13,
+          "mean": 20856.777777777777,
+          "p50": 11772,
+          "p90": 48147,
+          "p99": 89043,
+          "over2000": 1,
+          "over10000": 0.5925925925925926
+        },
+        "burstAttempts": 129,
+        "burstWins": 67,
+        "atEntries": 77100,
+        "czEntries": 174506,
+        "normalGames": 16396858,
+        "comeback": {
+          "entries": 92235,
+          "games": 429193,
+          "wins": 15380,
+          "roles": {
+            "MISS": {
+              "games": 337350,
+              "wins": 359
+            },
+            "WEAK_SUICA": {
+              "games": 4719,
+              "wins": 4719
+            },
+            "CHANCE_B": {
+              "games": 2804,
+              "wins": 2804
+            },
+            "BELL": {
+              "games": 19862,
+              "wins": 214
+            },
+            "REPLAY": {
+              "games": 57758,
+              "wins": 584
+            },
+            "WEAK_NOVA": {
+              "games": 3368,
+              "wins": 3368
+            },
+            "STRONG_SUICA": {
+              "games": 1153,
+              "wins": 1153
+            },
+            "CHANCE_A": {
+              "games": 1985,
+              "wins": 1985
+            },
+            "STRONG_NOVA": {
+              "games": 183,
+              "wins": 183
+            },
+            "SUPER_NOVA": {
+              "games": 11,
+              "wins": 11
+            }
+          }
+        },
+        "reachWithoutBurst": 0.009,
+        "elapsedSeconds": 248.873
+      },
+      "baselineStopped": {
+        "trials": 1000,
+        "wins": 391,
+        "winRate": 0.391,
+        "winRateCI": [
+          0.3612272120461715,
+          0.42160705184566183
+        ],
+        "draws": 0,
+        "losses": 609,
+        "mean": -1016.185,
+        "meanCI": [
+          -1313.1328900953386,
+          -719.2371099046612
+        ],
+        "min": -14851,
+        "p05": -8357.8,
+        "p25": -4260.25,
+        "median": -1378.5,
+        "p75": 1895,
+        "p95": 8275.399999999987,
+        "max": 10011,
+        "bands": [
+          {
+            "label": "−10,000pt未満",
+            "count": 17
+          },
+          {
+            "label": "−10,000〜−5,000pt未満",
+            "count": 180
+          },
+          {
+            "label": "−5,000〜0pt未満",
+            "count": 412
+          },
+          {
+            "label": "±0pt",
+            "count": 0
+          },
+          {
+            "label": "0超〜＋5,000pt未満",
+            "count": 283
+          },
+          {
+            "label": "＋5,000〜＋10,000pt未満",
+            "count": 64
+          },
+          {
+            "label": "＋10,000pt以上",
+            "count": 44
+          }
+        ]
+      },
+      "report": {
+        "tag": "verify",
+        "setting": 3,
+        "trials": 1000,
+        "seedBase": 116900000,
+        "baselineFile": "docs/comeback116-verify-3.json",
+        "sourceHashes": {
+          "nova-art.js": "6fd92b8f624dfe6d1a98a7685702cacf85a696e1f72c57452eead6670c7fff1f",
+          "nova-balance.js": "3721a08893d1b541ae5622f99c6e1c82702da0f61375e3e3f39bd427a66ab457",
+          "nova-flow.js": "3b9e17a4649d5b7e585266613c62f196306a2ccb774bf0ec0abdac6747d51dab",
+          "nova-normal.js": "a16dd163ddd29ec0c800002499f85891047c511b6d28d1665a761e92230cd5ce",
+          "research/burst112/production-model.mjs": "dad01c02771a7225bbdee99558942158341e2336e3bb24bc2b5696367aad7afa"
+        },
+        "entry": [
+          0.00027,
+          0.0005125,
+          0.00065,
+          0.000725,
+          0.0009425,
+          0.0009425
+        ],
+        "award": 2000,
+        "comebackRules": {
+          "games": 5,
+          "guaranteedRoles": [
+            "WEAK_SUICA",
+            "STRONG_SUICA",
+            "CHANCE_A",
+            "CHANCE_B",
+            "WEAK_NOVA",
+            "STRONG_NOVA",
+            "SUPER_NOVA"
+          ],
+          "common": {
+            "MISS": 0.001,
+            "BELL": 0.01,
+            "REPLAY": 0.01
+          },
+          "superDenom": 32768
+        },
+        "weights": [
+          37,
+          45,
+          18,
+          0,
+          0
+        ],
+        "gamesPerTrial": 30000,
+        "games": 30000000,
+        "complete": 41,
+        "completeRate": 0.041,
+        "completeCI": [
+          0.03036480400090244,
+          0.055148288901404066
+        ],
+        "rtp": {
+          "bet": 65669484,
+          "paid": 66471606,
+          "value": 1.0122145317907478,
+          "ci": [
+            1.0075378726186264,
+            1.0168911909628693
+          ]
+        },
+        "stoppedRtp": {
+          "bet": 64831251,
+          "paid": 65517843,
+          "value": 1.0105904481158323,
+          "ci": [
+            1.006327482355326,
+            1.0148534138763385
+          ]
+        },
+        "stoppedGames": 29604788,
+        "ordinary": {
+          "completed": 77530,
+          "censored": 273,
+          "mean": 452.32098542499676,
+          "p50": 306,
+          "p90": 909,
+          "p99": 2673,
+          "over2000": 0.019295756481362055,
+          "over10000": 0.00009028763059460854
+        },
+        "burst": {
+          "completed": 13,
+          "censored": 4,
+          "mean": 11938.846153846154,
+          "p50": 6522,
+          "p90": 21330,
+          "p99": 28878,
+          "over2000": 1,
+          "over10000": 0.38461538461538464
+        },
+        "burstAttempts": 37,
+        "burstWins": 17,
+        "atEntries": 77820,
+        "czEntries": 176082,
+        "normalGames": 16497399,
+        "reachWithoutBurst": 0.037,
+        "elapsedSeconds": 263.839
+      },
+      "stopped": {
+        "trials": 1000,
+        "wins": 539,
+        "winRate": 0.539,
+        "winRateCI": [
+          0.508013659504653,
+          0.5696878424056085
+        ],
+        "draws": 0,
+        "losses": 461,
+        "mean": 686.592,
+        "meanCI": [
+          412.1656203523458,
+          961.0183796476542
+        ],
+        "min": -11542,
+        "p05": -6454.05,
+        "p25": -2380.5,
+        "median": 410.5,
+        "p75": 3536.25,
+        "p95": 9019.699999999997,
+        "max": 10011,
+        "bands": [
+          {
+            "label": "−10,000pt未満",
+            "count": 4
+          },
+          {
+            "label": "−10,000〜−5,000pt未満",
+            "count": 89
+          },
+          {
+            "label": "−5,000〜0pt未満",
+            "count": 368
+          },
+          {
+            "label": "±0pt",
+            "count": 0
+          },
+          {
+            "label": "0超〜＋5,000pt未満",
+            "count": 369
+          },
+          {
+            "label": "＋5,000〜＋10,000pt未満",
+            "count": 129
+          },
+          {
+            "label": "＋10,000pt以上",
+            "count": 41
+          }
+        ]
+      },
+      "unlimited": {
+        "trials": 1000,
+        "wins": 539,
+        "winRate": 0.539,
+        "winRateCI": [
+          0.508013659504653,
+          0.5696878424056085
+        ],
+        "draws": 0,
+        "losses": 461,
+        "mean": 802.122,
+        "meanCI": [
+          495.94532247037756,
+          1108.2986775296224
+        ],
+        "min": -11542,
+        "p05": -6454.05,
+        "p25": -2380.5,
+        "median": 410.5,
+        "p75": 3536.25,
+        "p95": 8470.349999999997,
+        "max": 51783,
+        "bands": [
+          {
+            "label": "−10,000pt未満",
+            "count": 4
+          },
+          {
+            "label": "−10,000〜−5,000pt未満",
+            "count": 89
+          },
+          {
+            "label": "−5,000〜0pt未満",
+            "count": 368
+          },
+          {
+            "label": "±0pt",
+            "count": 0
+          },
+          {
+            "label": "0超〜＋5,000pt未満",
+            "count": 369
+          },
+          {
+            "label": "＋5,000〜＋10,000pt未満",
+            "count": 144
+          },
+          {
+            "label": "＋10,000pt以上",
+            "count": 26
+          }
+        ]
+      },
+      "change": {
+        "trials": 1000,
+        "rtp": {
+          "value": 0.026356280867479764,
+          "ci": [
+            0.020759726698924997,
+            0.031952835036034535
+          ]
+        },
+        "reach": {
+          "value": -0.003,
+          "ci": [
+            -0.020428585174396132,
+            0.014428585174396134
+          ]
+        },
+        "win": {
+          "value": 0.148,
+          "ci": [
+            0.10714302402176454,
+            0.18885697597823545
+          ]
+        },
+        "net": {
+          "value": 1702.777,
+          "ci": [
+            1339.59579485098,
+            2065.95820514902
+          ]
+        }
+      },
+      "comeback": {
+        "entries": 93086,
+        "games": 432804,
+        "wins": 15527,
+        "roles": {
+          "REPLAY": {
+            "games": 58026,
+            "wins": 588
+          },
+          "MISS": {
+            "games": 337541,
+            "wins": 326
+          },
+          "BELL": {
+            "games": 22851,
+            "wins": 227
+          },
+          "CHANCE_B": {
+            "games": 2923,
+            "wins": 2923
+          },
+          "WEAK_NOVA": {
+            "games": 3409,
+            "wins": 3409
+          },
+          "STRONG_SUICA": {
+            "games": 1172,
+            "wins": 1172
+          },
+          "WEAK_SUICA": {
+            "games": 4782,
+            "wins": 4782
+          },
+          "CHANCE_A": {
+            "games": 1922,
+            "wins": 1922
+          },
+          "STRONG_NOVA": {
+            "games": 165,
+            "wins": 165
+          },
+          "SUPER_NOVA": {
+            "games": 13,
+            "wins": 13
+          }
+        }
+      },
+      "comebackTheory": 0.16617046826306925
+    },
+    {
+      "setting": 4,
+      "sourceFile": "docs/balance117-verify-4.json",
+      "baselineFile": "docs/comeback116-verify-4.json",
+      "baselineReport": {
+        "tag": "verify",
+        "setting": 4,
+        "trials": 1000,
+        "seedBase": 116900000,
+        "sourceHashes": {
+          "nova-art.js": "2356fc1d53695eae27e91a940784a1f75bea6a2bb454f0e251053f0ca27994a6",
+          "nova-balance.js": "d60a7361caabe07a5a6333de21deb65f7233c2075f2181340fe9d69f8eec006d",
+          "nova-flow.js": "3b9e17a4649d5b7e585266613c62f196306a2ccb774bf0ec0abdac6747d51dab",
+          "nova-normal.js": "39df842b56b59125873fc3d3bc265b5f5c8c4859efbd3b0012ee56ae522d0e5a",
+          "research/burst112/production-model.mjs": "dad01c02771a7225bbdee99558942158341e2336e3bb24bc2b5696367aad7afa"
+        },
+        "entry": [
+          0.00108,
+          0.00205,
+          0.0026,
+          0.0029,
+          0.00377,
+          0.00377
+        ],
+        "award": 2000,
+        "comebackRules": {
+          "games": 5,
+          "guaranteedRoles": [
+            "WEAK_SUICA",
+            "STRONG_SUICA",
+            "CHANCE_A",
+            "CHANCE_B",
+            "WEAK_NOVA",
+            "STRONG_NOVA",
+            "SUPER_NOVA"
+          ],
+          "common": {
+            "MISS": 0.001,
+            "BELL": 0.01,
+            "REPLAY": 0.01
+          },
+          "superDenom": 32768
+        },
+        "weights": [
+          32,
+          40,
+          28,
+          0,
+          0
+        ],
+        "gamesPerTrial": 30000,
+        "games": 30000000,
+        "complete": 119,
+        "completeRate": 0.119,
+        "completeCI": [
+          0.10037486818688018,
+          0.14054122853594941
+        ],
+        "rtp": {
+          "bet": 64921923,
+          "paid": 66937863,
+          "value": 1.031051760435377,
+          "ci": [
+            1.0231217514269568,
+            1.0389817694437973
+          ]
+        },
+        "stoppedRtp": {
+          "bet": 62283081,
+          "paid": 63447986,
+          "value": 1.0187033939441756,
+          "ci": [
+            1.013511856999086,
+            1.0238949308892653
+          ]
+        },
+        "stoppedGames": 28696338,
+        "ordinary": {
+          "completed": 76798,
+          "censored": 277,
+          "mean": 469.51992239381235,
+          "p50": 306,
+          "p90": 942,
+          "p99": 2973,
+          "over2000": 0.02384176671267481,
+          "over10000": 0.00015625406911638323
+        },
+        "burst": {
+          "completed": 71,
+          "censored": 24,
+          "mean": 19244.11267605634,
+          "p50": 11670,
+          "p90": 43722,
+          "p99": 97359,
+          "over2000": 1,
+          "over10000": 0.5915492957746479
+        },
+        "burstAttempts": 185,
+        "burstWins": 95,
+        "atEntries": 77170,
+        "czEntries": 173819,
+        "normalGames": 15961047,
+        "comeback": {
+          "entries": 92444,
+          "games": 429933,
+          "wins": 15558,
+          "roles": {
+            "REPLAY": {
+              "games": 58205,
+              "wins": 579
+            },
+            "MISS": {
+              "games": 337388,
+              "wins": 328
+            },
+            "WEAK_NOVA": {
+              "games": 3436,
+              "wins": 3436
+            },
+            "CHANCE_A": {
+              "games": 2937,
+              "wins": 2937
+            },
+            "CHANCE_B": {
+              "games": 1928,
+              "wins": 1928
+            },
+            "BELL": {
+              "games": 19882,
+              "wins": 193
+            },
+            "WEAK_SUICA": {
+              "games": 4807,
+              "wins": 4807
+            },
+            "STRONG_NOVA": {
+              "games": 167,
+              "wins": 167
+            },
+            "STRONG_SUICA": {
+              "games": 1173,
+              "wins": 1173
+            },
+            "SUPER_NOVA": {
+              "games": 10,
+              "wins": 10
+            }
+          }
+        },
+        "reachWithoutBurst": 0.063,
+        "elapsedSeconds": 255.281
+      },
+      "baselineStopped": {
+        "trials": 1000,
+        "wins": 548,
+        "winRate": 0.548,
+        "winRateCI": [
+          0.5170276548750816,
+          0.5786049628606249
+        ],
+        "draws": 0,
+        "losses": 452,
+        "mean": 1164.905,
+        "meanCI": [
+          848.8621684364689,
+          1480.947831563531
+        ],
+        "min": -13050,
+        "p05": -6583.6,
+        "p25": -2373.75,
+        "median": 665.5,
+        "p75": 4882.75,
+        "p95": 10005,
+        "max": 10011,
+        "bands": [
+          {
+            "label": "−10,000pt未満",
+            "count": 5
+          },
+          {
+            "label": "−10,000〜−5,000pt未満",
+            "count": 101
+          },
+          {
+            "label": "−5,000〜0pt未満",
+            "count": 346
+          },
+          {
+            "label": "±0pt",
+            "count": 0
+          },
+          {
+            "label": "0超〜＋5,000pt未満",
+            "count": 306
+          },
+          {
+            "label": "＋5,000〜＋10,000pt未満",
+            "count": 123
+          },
+          {
+            "label": "＋10,000pt以上",
+            "count": 119
+          }
+        ]
+      },
+      "report": {
+        "tag": "verify",
+        "setting": 4,
+        "trials": 1000,
+        "seedBase": 116900000,
+        "baselineFile": "docs/comeback116-verify-4.json",
+        "sourceHashes": {
+          "nova-art.js": "6fd92b8f624dfe6d1a98a7685702cacf85a696e1f72c57452eead6670c7fff1f",
+          "nova-balance.js": "3721a08893d1b541ae5622f99c6e1c82702da0f61375e3e3f39bd427a66ab457",
+          "nova-flow.js": "3b9e17a4649d5b7e585266613c62f196306a2ccb774bf0ec0abdac6747d51dab",
+          "nova-normal.js": "a16dd163ddd29ec0c800002499f85891047c511b6d28d1665a761e92230cd5ce",
+          "research/burst112/production-model.mjs": "dad01c02771a7225bbdee99558942158341e2336e3bb24bc2b5696367aad7afa"
+        },
+        "entry": [
+          0.00027,
+          0.0005125,
+          0.00065,
+          0.000725,
+          0.0009425,
+          0.0009425
+        ],
+        "award": 2000,
+        "comebackRules": {
+          "games": 5,
+          "guaranteedRoles": [
+            "WEAK_SUICA",
+            "STRONG_SUICA",
+            "CHANCE_A",
+            "CHANCE_B",
+            "WEAK_NOVA",
+            "STRONG_NOVA",
+            "SUPER_NOVA"
+          ],
+          "common": {
+            "MISS": 0.001,
+            "BELL": 0.01,
+            "REPLAY": 0.01
+          },
+          "superDenom": 32768
+        },
+        "weights": [
+          32,
+          40,
+          28,
+          0,
+          0
+        ],
+        "gamesPerTrial": 30000,
+        "games": 30000000,
+        "complete": 110,
+        "completeRate": 0.11,
+        "completeCI": [
+          0.0920790698498625,
+          0.13090591104752214
+        ],
+        "rtp": {
+          "bet": 65151357,
+          "paid": 67948981,
+          "value": 1.0429403795841121,
+          "ci": [
+            1.0369611173063074,
+            1.0489196418619169
+          ]
+        },
+        "stoppedRtp": {
+          "bet": 62935302,
+          "paid": 65360435,
+          "value": 1.0385337469263276,
+          "ci": [
+            1.0338314180659183,
+            1.043236075786737
+          ]
+        },
+        "stoppedGames": 28948379,
+        "ordinary": {
+          "completed": 77668,
+          "censored": 275,
+          "mean": 472.42232322191893,
+          "p50": 306,
+          "p90": 954,
+          "p99": 2964,
+          "over2000": 0.02345882474120616,
+          "over10000": 0.00021888036256888295
+        },
+        "burst": {
+          "completed": 11,
+          "censored": 4,
+          "mean": 35278.90909090909,
+          "p50": 20196,
+          "p90": 75531,
+          "p99": 75531,
+          "over2000": 1,
+          "over10000": 0.7272727272727273
+        },
+        "burstAttempts": 36,
+        "burstWins": 15,
+        "atEntries": 77958,
+        "czEntries": 175652,
+        "normalGames": 16117694,
+        "reachWithoutBurst": 0.101,
+        "elapsedSeconds": 268.954
+      },
+      "stopped": {
+        "trials": 1000,
+        "wins": 691,
+        "winRate": 0.691,
+        "winRateCI": [
+          0.6616744854525756,
+          0.7188636392874233
+        ],
+        "draws": 0,
+        "losses": 309,
+        "mean": 2425.133,
+        "meanCI": [
+          2141.628274136248,
+          2708.6377258637517
+        ],
+        "min": -11163,
+        "p05": -4891.65,
+        "p25": -851,
+        "median": 2236,
+        "p75": 5755,
+        "p95": 10006,
+        "max": 10011,
+        "bands": [
+          {
+            "label": "−10,000pt未満",
+            "count": 2
+          },
+          {
+            "label": "−10,000〜−5,000pt未満",
+            "count": 43
+          },
+          {
+            "label": "−5,000〜0pt未満",
+            "count": 264
+          },
+          {
+            "label": "±0pt",
+            "count": 0
+          },
+          {
+            "label": "0超〜＋5,000pt未満",
+            "count": 394
+          },
+          {
+            "label": "＋5,000〜＋10,000pt未満",
+            "count": 187
+          },
+          {
+            "label": "＋10,000pt以上",
+            "count": 110
+          }
+        ]
+      },
+      "unlimited": {
+        "trials": 1000,
+        "wins": 691,
+        "winRate": 0.691,
+        "winRateCI": [
+          0.6616744854525756,
+          0.7188636392874233
+        ],
+        "draws": 0,
+        "losses": 309,
+        "mean": 2797.624,
+        "meanCI": [
+          2412.218052032921,
+          3183.0299479670784
+        ],
+        "min": -11163,
+        "p05": -4891.65,
+        "p25": -851,
+        "median": 2236,
+        "p75": 5706.5,
+        "p95": 11263.799999999997,
+        "max": 91126,
+        "bands": [
+          {
+            "label": "−10,000pt未満",
+            "count": 2
+          },
+          {
+            "label": "−10,000〜−5,000pt未満",
+            "count": 43
+          },
+          {
+            "label": "−5,000〜0pt未満",
+            "count": 264
+          },
+          {
+            "label": "±0pt",
+            "count": 0
+          },
+          {
+            "label": "0超〜＋5,000pt未満",
+            "count": 395
+          },
+          {
+            "label": "＋5,000〜＋10,000pt未満",
+            "count": 216
+          },
+          {
+            "label": "＋10,000pt以上",
+            "count": 80
+          }
+        ]
+      },
+      "change": {
+        "trials": 1000,
+        "rtp": {
+          "value": 0.019830352982151966,
+          "ci": [
+            0.013742172881779004,
+            0.02591853308252493
+          ]
+        },
+        "reach": {
+          "value": -0.009,
+          "ci": [
+            -0.03448663962155835,
+            0.01648663962155835
+          ]
+        },
+        "win": {
+          "value": 0.143,
+          "ci": [
+            0.1052517065914862,
+            0.18074829340851378
+          ]
+        },
+        "net": {
+          "value": 1260.228,
+          "ci": [
+            890.8469084405333,
+            1629.6090915594668
+          ]
+        }
+      },
+      "comeback": {
+        "entries": 93695,
+        "games": 435543,
+        "wins": 16003,
+        "roles": {
+          "REPLAY": {
+            "games": 58991,
+            "wins": 627
+          },
+          "MISS": {
+            "games": 338970,
+            "wins": 374
+          },
+          "WEAK_SUICA": {
+            "games": 5005,
+            "wins": 5005
+          },
+          "BELL": {
+            "games": 22828,
+            "wins": 248
+          },
+          "CHANCE_A": {
+            "games": 2922,
+            "wins": 2922
+          },
+          "CHANCE_B": {
+            "games": 1981,
+            "wins": 1981
+          },
+          "WEAK_NOVA": {
+            "games": 3486,
+            "wins": 3486
+          },
+          "STRONG_NOVA": {
+            "games": 171,
+            "wins": 171
+          },
+          "STRONG_SUICA": {
+            "games": 1178,
+            "wins": 1178
+          },
+          "SUPER_NOVA": {
+            "games": 11,
+            "wins": 11
+          }
+        }
+      },
+      "comebackTheory": 0.1684626355080805
+    },
+    {
+      "setting": 5,
+      "sourceFile": "docs/balance117-verify-5.json",
+      "baselineFile": "docs/comeback116-verify-5.json",
+      "baselineReport": {
+        "tag": "verify",
+        "setting": 5,
+        "trials": 1000,
+        "seedBase": 116900000,
+        "sourceHashes": {
+          "nova-art.js": "2356fc1d53695eae27e91a940784a1f75bea6a2bb454f0e251053f0ca27994a6",
+          "nova-balance.js": "d60a7361caabe07a5a6333de21deb65f7233c2075f2181340fe9d69f8eec006d",
+          "nova-flow.js": "3b9e17a4649d5b7e585266613c62f196306a2ccb774bf0ec0abdac6747d51dab",
+          "nova-normal.js": "39df842b56b59125873fc3d3bc265b5f5c8c4859efbd3b0012ee56ae522d0e5a",
+          "research/burst112/production-model.mjs": "dad01c02771a7225bbdee99558942158341e2336e3bb24bc2b5696367aad7afa"
+        },
+        "entry": [
+          0.00108,
+          0.00205,
+          0.0026,
+          0.0029,
+          0.00377,
+          0.00377
+        ],
+        "award": 2000,
+        "comebackRules": {
+          "games": 5,
+          "guaranteedRoles": [
+            "WEAK_SUICA",
+            "STRONG_SUICA",
+            "CHANCE_A",
+            "CHANCE_B",
+            "WEAK_NOVA",
+            "STRONG_NOVA",
+            "SUPER_NOVA"
+          ],
+          "common": {
+            "MISS": 0.001,
+            "BELL": 0.01,
+            "REPLAY": 0.01
+          },
+          "superDenom": 32768
+        },
+        "weights": [
+          29,
+          35,
+          36,
+          0,
+          0
+        ],
+        "gamesPerTrial": 30000,
+        "games": 30000000,
+        "complete": 147,
+        "completeRate": 0.147,
+        "completeCI": [
+          0.12640360474203105,
+          0.1702981856599607
+        ],
+        "rtp": {
+          "bet": 64502832,
+          "paid": 68147633,
+          "value": 1.0565060616253252,
+          "ci": [
+            1.0486154530860248,
+            1.0643966701646257
+          ]
+        },
+        "stoppedRtp": {
+          "bet": 61386594,
+          "paid": 64020423,
+          "value": 1.042905605741866,
+          "ci": [
+            1.0377164368441132,
+            1.0480947746396188
+          ]
+        },
+        "stoppedGames": 28458103,
+        "ordinary": {
+          "completed": 77050,
+          "censored": 261,
+          "mean": 488.3946268656716,
+          "p50": 306,
+          "p90": 987,
+          "p99": 3150,
+          "over2000": 0.02693056456846204,
+          "over10000": 0.0003244646333549643
+        },
+        "burst": {
+          "completed": 80,
+          "censored": 21,
+          "mean": 18097.875,
+          "p50": 11655,
+          "p90": 36705,
+          "p99": 74268,
+          "over2000": 1,
+          "over10000": 0.6
+        },
+        "burstAttempts": 223,
+        "burstWins": 101,
+        "atEntries": 77412,
+        "czEntries": 173011,
+        "normalGames": 15662728,
+        "comeback": {
+          "entries": 93141,
+          "games": 432186,
+          "wins": 15998,
+          "roles": {
+            "REPLAY": {
+              "games": 58523,
+              "wins": 556
+            },
+            "MISS": {
+              "games": 338712,
+              "wins": 343
+            },
+            "BELL": {
+              "games": 20053,
+              "wins": 201
+            },
+            "WEAK_NOVA": {
+              "games": 3595,
+              "wins": 3595
+            },
+            "WEAK_SUICA": {
+              "games": 4934,
+              "wins": 4934
+            },
+            "CHANCE_B": {
+              "games": 3102,
+              "wins": 3102
+            },
+            "STRONG_SUICA": {
+              "games": 1169,
+              "wins": 1169
+            },
+            "STRONG_NOVA": {
+              "games": 170,
+              "wins": 170
+            },
+            "CHANCE_A": {
+              "games": 1920,
+              "wins": 1920
+            },
+            "SUPER_NOVA": {
+              "games": 8,
+              "wins": 8
+            }
+          }
+        },
+        "reachWithoutBurst": 0.087,
+        "elapsedSeconds": 207.133
+      },
+      "baselineStopped": {
+        "trials": 1000,
+        "wins": 695,
+        "winRate": 0.695,
+        "winRateCI": [
+          0.6657622874602453,
+          0.7227452220910624
+        ],
+        "draws": 0,
+        "losses": 305,
+        "mean": 2633.829,
+        "meanCI": [
+          2332.9557994952875,
+          2934.702200504713
+        ],
+        "min": -11232,
+        "p05": -5514.75,
+        "p25": -615.75,
+        "median": 2419.5,
+        "p75": 6048.25,
+        "p95": 10007,
+        "max": 10011,
+        "bands": [
+          {
+            "label": "−10,000pt未満",
+            "count": 6
+          },
+          {
+            "label": "−10,000〜−5,000pt未満",
+            "count": 55
+          },
+          {
+            "label": "−5,000〜0pt未満",
+            "count": 244
+          },
+          {
+            "label": "±0pt",
+            "count": 0
+          },
+          {
+            "label": "0超〜＋5,000pt未満",
+            "count": 376
+          },
+          {
+            "label": "＋5,000〜＋10,000pt未満",
+            "count": 172
+          },
+          {
+            "label": "＋10,000pt以上",
+            "count": 147
+          }
+        ]
+      },
+      "report": {
+        "tag": "verify",
+        "setting": 5,
+        "trials": 1000,
+        "seedBase": 116900000,
+        "baselineFile": "docs/comeback116-verify-5.json",
+        "sourceHashes": {
+          "nova-art.js": "6fd92b8f624dfe6d1a98a7685702cacf85a696e1f72c57452eead6670c7fff1f",
+          "nova-balance.js": "3721a08893d1b541ae5622f99c6e1c82702da0f61375e3e3f39bd427a66ab457",
+          "nova-flow.js": "3b9e17a4649d5b7e585266613c62f196306a2ccb774bf0ec0abdac6747d51dab",
+          "nova-normal.js": "a16dd163ddd29ec0c800002499f85891047c511b6d28d1665a761e92230cd5ce",
+          "research/burst112/production-model.mjs": "dad01c02771a7225bbdee99558942158341e2336e3bb24bc2b5696367aad7afa"
+        },
+        "entry": [
+          0.00027,
+          0.0005125,
+          0.00065,
+          0.000725,
+          0.0009425,
+          0.0009425
+        ],
+        "award": 2000,
+        "comebackRules": {
+          "games": 5,
+          "guaranteedRoles": [
+            "WEAK_SUICA",
+            "STRONG_SUICA",
+            "CHANCE_A",
+            "CHANCE_B",
+            "WEAK_NOVA",
+            "STRONG_NOVA",
+            "SUPER_NOVA"
+          ],
+          "common": {
+            "MISS": 0.001,
+            "BELL": 0.01,
+            "REPLAY": 0.01
+          },
+          "superDenom": 32768
+        },
+        "weights": [
+          29,
+          35,
+          36,
+          0,
+          0
+        ],
+        "gamesPerTrial": 30000,
+        "games": 30000000,
+        "complete": 160,
+        "completeRate": 0.16,
+        "completeCI": [
+          0.138584892534484,
+          0.1840173985042616
+        ],
+        "rtp": {
+          "bet": 64737924,
+          "paid": 69178840,
+          "value": 1.0685983690178265,
+          "ci": [
+            1.0620516776167739,
+            1.075145060418879
+          ]
+        },
+        "stoppedRtp": {
+          "bet": 61590897,
+          "paid": 65391343,
+          "value": 1.0617046704158246,
+          "ci": [
+            1.0570213233598422,
+            1.066388017471807
+          ]
+        },
+        "stoppedGames": 28493673,
+        "ordinary": {
+          "completed": 77800,
+          "censored": 288,
+          "mean": 488.1146143958869,
+          "p50": 306,
+          "p90": 990,
+          "p99": 3162,
+          "over2000": 0.02681233933161954,
+          "over10000": 0.0002570694087403599
+        },
+        "burst": {
+          "completed": 17,
+          "censored": 7,
+          "mean": 20141.117647058825,
+          "p50": 9528,
+          "p90": 24756,
+          "p99": 44835,
+          "over2000": 1,
+          "over10000": 0.47058823529411764
+        },
+        "burstAttempts": 51,
+        "burstWins": 24,
+        "atEntries": 78112,
+        "czEntries": 174070,
+        "normalGames": 15828231,
+        "reachWithoutBurst": 0.143,
+        "elapsedSeconds": 204.863
+      },
+      "stopped": {
+        "trials": 1000,
+        "wins": 803,
+        "winRate": 0.803,
+        "winRateCI": [
+          0.7772086517608134,
+          0.8264722476958342
+        ],
+        "draws": 0,
+        "losses": 197,
+        "mean": 3800.446,
+        "meanCI": [
+          3536.206417683358,
+          4064.685582316642
+        ],
+        "min": -10662,
+        "p05": -3603.65,
+        "p25": 690.75,
+        "median": 3884.5,
+        "p75": 6922,
+        "p95": 10007,
+        "max": 10011,
+        "bands": [
+          {
+            "label": "−10,000pt未満",
+            "count": 1
+          },
+          {
+            "label": "−10,000〜−5,000pt未満",
+            "count": 21
+          },
+          {
+            "label": "−5,000〜0pt未満",
+            "count": 175
+          },
+          {
+            "label": "±0pt",
+            "count": 0
+          },
+          {
+            "label": "0超〜＋5,000pt未満",
+            "count": 398
+          },
+          {
+            "label": "＋5,000〜＋10,000pt未満",
+            "count": 245
+          },
+          {
+            "label": "＋10,000pt以上",
+            "count": 160
+          }
+        ]
+      },
+      "unlimited": {
+        "trials": 1000,
+        "wins": 803,
+        "winRate": 0.803,
+        "winRateCI": [
+          0.7772086517608134,
+          0.8264722476958342
+        ],
+        "draws": 0,
+        "losses": 197,
+        "mean": 4440.916,
+        "meanCI": [
+          4024.1421910500226,
+          4857.689808949977
+        ],
+        "min": -10662,
+        "p05": -3603.65,
+        "p25": 690.75,
+        "median": 3884.5,
+        "p75": 6922,
+        "p95": 13096.049999999997,
+        "max": 92500,
+        "bands": [
+          {
+            "label": "−10,000pt未満",
+            "count": 1
+          },
+          {
+            "label": "−10,000〜−5,000pt未満",
+            "count": 21
+          },
+          {
+            "label": "−5,000〜0pt未満",
+            "count": 175
+          },
+          {
+            "label": "±0pt",
+            "count": 0
+          },
+          {
+            "label": "0超〜＋5,000pt未満",
+            "count": 398
+          },
+          {
+            "label": "＋5,000〜＋10,000pt未満",
+            "count": 280
+          },
+          {
+            "label": "＋10,000pt以上",
+            "count": 125
+          }
+        ]
+      },
+      "change": {
+        "trials": 1000,
+        "rtp": {
+          "value": 0.018799064673958643,
+          "ci": [
+            0.01262879498814978,
+            0.024969334359767507
+          ]
+        },
+        "reach": {
+          "value": 0.013,
+          "ci": [
+            -0.016140925914650724,
+            0.042140925914650726
+          ]
+        },
+        "win": {
+          "value": 0.108,
+          "ci": [
+            0.07257532943152649,
+            0.14342467056847352
+          ]
+        },
+        "net": {
+          "value": 1166.617,
+          "ci": [
+            810.3921721751062,
+            1522.8418278248937
+          ]
+        }
+      },
+      "comeback": {
+        "entries": 94014,
+        "games": 436215,
+        "wins": 16179,
+        "roles": {
+          "MISS": {
+            "games": 339082,
+            "wins": 348
+          },
+          "REPLAY": {
+            "games": 59133,
+            "wins": 600
+          },
+          "WEAK_SUICA": {
+            "games": 4960,
+            "wins": 4960
+          },
+          "BELL": {
+            "games": 22979,
+            "wins": 210
+          },
+          "CHANCE_A": {
+            "games": 2015,
+            "wins": 2015
+          },
+          "STRONG_SUICA": {
+            "games": 1206,
+            "wins": 1206
+          },
+          "WEAK_NOVA": {
+            "games": 3540,
+            "wins": 3540
+          },
+          "CHANCE_B": {
+            "games": 3105,
+            "wins": 3105
+          },
+          "STRONG_NOVA": {
+            "games": 183,
+            "wins": 183
+          },
+          "SUPER_NOVA": {
+            "games": 12,
+            "wins": 12
+          }
+        }
+      },
+      "comebackTheory": 0.1707497591114442
+    },
+    {
+      "setting": 6,
+      "sourceFile": "docs/balance117-verify-6.json",
+      "baselineFile": "docs/comeback116-confirm6-6.json",
+      "baselineReport": {
+        "tag": "confirm6",
+        "setting": 6,
+        "trials": 1000,
+        "seedBase": 117900000,
+        "sourceHashes": {
+          "nova-art.js": "f3c18c79ba16202eb25285fb57a33896b1cb73dd89c33b79bc2b8484a1d01ed6",
+          "nova-balance.js": "d60a7361caabe07a5a6333de21deb65f7233c2075f2181340fe9d69f8eec006d",
+          "nova-flow.js": "3b9e17a4649d5b7e585266613c62f196306a2ccb774bf0ec0abdac6747d51dab",
+          "nova-normal.js": "39df842b56b59125873fc3d3bc265b5f5c8c4859efbd3b0012ee56ae522d0e5a",
+          "research/burst112/production-model.mjs": "dad01c02771a7225bbdee99558942158341e2336e3bb24bc2b5696367aad7afa"
+        },
+        "entry": [
+          0.00108,
+          0.00205,
+          0.0026,
+          0.0029,
+          0.00377,
+          0.00377
+        ],
+        "award": 2000,
+        "comebackRules": {
+          "games": 5,
+          "guaranteedRoles": [
+            "WEAK_SUICA",
+            "STRONG_SUICA",
+            "CHANCE_A",
+            "CHANCE_B",
+            "WEAK_NOVA",
+            "STRONG_NOVA",
+            "SUPER_NOVA"
+          ],
+          "common": {
+            "MISS": 0.001,
+            "BELL": 0.01,
+            "REPLAY": 0.01
+          },
+          "superDenom": 32768
+        },
+        "weights": [
+          29,
+          35,
+          36,
+          0,
+          0
+        ],
+        "gamesPerTrial": 30000,
+        "games": 30000000,
+        "complete": 173,
+        "completeRate": 0.173,
+        "completeCI": [
+          0.15081885011185353,
+          0.19768394156364588
+        ],
+        "rtp": {
+          "bet": 64323273,
+          "paid": 68755425,
+          "value": 1.068904329541813,
+          "ci": [
+            1.0593496262620954,
+            1.0784590328215307
+          ]
+        },
+        "stoppedRtp": {
+          "bet": 60540723,
+          "paid": 63581342,
+          "value": 1.050224358899711,
+          "ci": [
+            1.0448038323592286,
+            1.0556448854401936
+          ]
+        },
+        "stoppedGames": 28112049,
+        "ordinary": {
+          "completed": 77103,
+          "censored": 282,
+          "mean": 486.0174312283569,
+          "p50": 306,
+          "p90": 984,
+          "p99": 3204,
+          "over2000": 0.026276539174869978,
+          "over10000": 0.0002723629430761449
+        },
+        "burst": {
+          "completed": 100,
+          "censored": 19,
+          "mean": 18629.85,
+          "p50": 11469,
+          "p90": 46077,
+          "p99": 65934,
+          "over2000": 1,
+          "over10000": 0.58
+        },
+        "burstAttempts": 232,
+        "burstWins": 119,
+        "atEntries": 77504,
+        "czEntries": 172650,
+        "normalGames": 15532807,
+        "comeback": {
+          "entries": 93324,
+          "games": 433268,
+          "wins": 16103,
+          "roles": {
+            "MISS": {
+              "games": 339491,
+              "wins": 343
+            },
+            "REPLAY": {
+              "games": 58977,
+              "wins": 602
+            },
+            "BELL": {
+              "games": 19807,
+              "wins": 165
+            },
+            "WEAK_NOVA": {
+              "games": 3533,
+              "wins": 3533
+            },
+            "WEAK_SUICA": {
+              "games": 4960,
+              "wins": 4960
+            },
+            "STRONG_SUICA": {
+              "games": 1246,
+              "wins": 1246
+            },
+            "CHANCE_A": {
+              "games": 2937,
+              "wins": 2937
+            },
+            "CHANCE_B": {
+              "games": 2107,
+              "wins": 2107
+            },
+            "STRONG_NOVA": {
+              "games": 200,
+              "wins": 200
+            },
+            "SUPER_NOVA": {
+              "games": 10,
+              "wins": 10
+            }
+          }
+        },
+        "reachWithoutBurst": 0.096,
+        "elapsedSeconds": 184.852
+      },
+      "baselineStopped": {
+        "trials": 1000,
+        "wins": 702,
+        "winRate": 0.702,
+        "winRateCI": [
+          0.6729220295046439,
+          0.7295319034664542
+        ],
+        "draws": 0,
+        "losses": 298,
+        "mean": 3040.619,
+        "meanCI": [
+          2735.6676294687404,
+          3345.57037053126
+        ],
+        "min": -10886,
+        "p05": -4862.75,
+        "p25": -741.25,
+        "median": 2882,
+        "p75": 7339.75,
+        "p95": 10007,
+        "max": 10011,
+        "bands": [
+          {
+            "label": "−10,000pt未満",
+            "count": 2
+          },
+          {
+            "label": "−10,000〜−5,000pt未満",
+            "count": 47
+          },
+          {
+            "label": "−5,000〜0pt未満",
+            "count": 249
+          },
+          {
+            "label": "±0pt",
+            "count": 0
+          },
+          {
+            "label": "0超〜＋5,000pt未満",
+            "count": 338
+          },
+          {
+            "label": "＋5,000〜＋10,000pt未満",
+            "count": 191
+          },
+          {
+            "label": "＋10,000pt以上",
+            "count": 173
+          }
+        ]
+      },
+      "report": {
+        "tag": "verify",
+        "setting": 6,
+        "trials": 1000,
+        "seedBase": 117900000,
+        "baselineFile": "docs/comeback116-confirm6-6.json",
+        "sourceHashes": {
+          "nova-art.js": "6fd92b8f624dfe6d1a98a7685702cacf85a696e1f72c57452eead6670c7fff1f",
+          "nova-balance.js": "3721a08893d1b541ae5622f99c6e1c82702da0f61375e3e3f39bd427a66ab457",
+          "nova-flow.js": "3b9e17a4649d5b7e585266613c62f196306a2ccb774bf0ec0abdac6747d51dab",
+          "nova-normal.js": "a16dd163ddd29ec0c800002499f85891047c511b6d28d1665a761e92230cd5ce",
+          "research/burst112/production-model.mjs": "dad01c02771a7225bbdee99558942158341e2336e3bb24bc2b5696367aad7afa"
+        },
+        "entry": [
+          0.00027,
+          0.0005125,
+          0.00065,
+          0.000725,
+          0.0009425,
+          0.0009425
+        ],
+        "award": 2000,
+        "comebackRules": {
+          "games": 5,
+          "guaranteedRoles": [
+            "WEAK_SUICA",
+            "STRONG_SUICA",
+            "CHANCE_A",
+            "CHANCE_B",
+            "WEAK_NOVA",
+            "STRONG_NOVA",
+            "SUPER_NOVA"
+          ],
+          "common": {
+            "MISS": 0.001,
+            "BELL": 0.01,
+            "REPLAY": 0.01
+          },
+          "superDenom": 32768
+        },
+        "weights": [
+          29,
+          35,
+          36,
+          0,
+          0
+        ],
+        "gamesPerTrial": 30000,
+        "games": 30000000,
+        "complete": 187,
+        "completeRate": 0.187,
+        "completeCI": [
+          0.16404741574204446,
+          0.21234822277303605
+        ],
+        "rtp": {
+          "bet": 64678920,
+          "paid": 69326567,
+          "value": 1.0718572140660356,
+          "ci": [
+            1.0662135073471495,
+            1.0775009207849218
+          ]
+        },
+        "stoppedRtp": {
+          "bet": 60973344,
+          "paid": 65061008,
+          "value": 1.0670401807058507,
+          "ci": [
+            1.0621643973546695,
+            1.071915964057032
+          ]
+        },
+        "stoppedGames": 28249545,
+        "ordinary": {
+          "completed": 78390,
+          "censored": 270,
+          "mean": 486.5907003444317,
+          "p50": 306,
+          "p90": 981,
+          "p99": 3177,
+          "over2000": 0.02662329378747289,
+          "over10000": 0.0002296211251435132
+        },
+        "burst": {
+          "completed": 21,
+          "censored": 5,
+          "mean": 17460.571428571428,
+          "p50": 8784,
+          "p90": 45582,
+          "p99": 50454,
+          "over2000": 1,
+          "over10000": 0.47619047619047616
+        },
+        "burstAttempts": 58,
+        "burstWins": 26,
+        "atEntries": 78686,
+        "czEntries": 175755,
+        "normalGames": 15770416,
+        "reachWithoutBurst": 0.167,
+        "elapsedSeconds": 203.831
+      },
+      "stopped": {
+        "trials": 1000,
+        "wins": 812,
+        "winRate": 0.812,
+        "winRateCI": [
+          0.7866063248258259,
+          0.8350056904562666
+        ],
+        "draws": 0,
+        "losses": 188,
+        "mean": 4087.664,
+        "meanCI": [
+          3818.8869348326502,
+          4356.441065167351
+        ],
+        "min": -8648,
+        "p05": -3318.35,
+        "p25": 998.5,
+        "median": 4083.5,
+        "p75": 7865.5,
+        "p95": 10008,
+        "max": 10011,
+        "bands": [
+          {
+            "label": "−10,000pt未満",
+            "count": 0
+          },
+          {
+            "label": "−10,000〜−5,000pt未満",
+            "count": 19
+          },
+          {
+            "label": "−5,000〜0pt未満",
+            "count": 169
+          },
+          {
+            "label": "±0pt",
+            "count": 0
+          },
+          {
+            "label": "0超〜＋5,000pt未満",
+            "count": 388
+          },
+          {
+            "label": "＋5,000〜＋10,000pt未満",
+            "count": 237
+          },
+          {
+            "label": "＋10,000pt以上",
+            "count": 187
+          }
+        ]
+      },
+      "unlimited": {
+        "trials": 1000,
+        "wins": 812,
+        "winRate": 0.812,
+        "winRateCI": [
+          0.7866063248258259,
+          0.8350056904562666
+        ],
+        "draws": 0,
+        "losses": 188,
+        "mean": 4647.647,
+        "meanCI": [
+          4289.070317278646,
+          5006.223682721354
+        ],
+        "min": -8648,
+        "p05": -3318.35,
+        "p25": 998.5,
+        "median": 4083.5,
+        "p75": 7730.5,
+        "p95": 13346.05,
+        "max": 43056,
+        "bands": [
+          {
+            "label": "−10,000pt未満",
+            "count": 0
+          },
+          {
+            "label": "−10,000〜−5,000pt未満",
+            "count": 19
+          },
+          {
+            "label": "−5,000〜0pt未満",
+            "count": 169
+          },
+          {
+            "label": "±0pt",
+            "count": 0
+          },
+          {
+            "label": "0超〜＋5,000pt未満",
+            "count": 388
+          },
+          {
+            "label": "＋5,000〜＋10,000pt未満",
+            "count": 284
+          },
+          {
+            "label": "＋10,000pt以上",
+            "count": 140
+          }
+        ]
+      },
+      "change": {
+        "trials": 1000,
+        "rtp": {
+          "value": 0.016815821806139608,
+          "ci": [
+            0.010406762298683491,
+            0.023224881313595725
+          ]
+        },
+        "reach": {
+          "value": 0.014,
+          "ci": [
+            -0.01760794375641188,
+            0.045607943756411876
+          ]
+        },
+        "win": {
+          "value": 0.11,
+          "ci": [
+            0.07536772553766599,
+            0.144632274462334
+          ]
+        },
+        "net": {
+          "value": 1047.045,
+          "ci": [
+            689.7034875322904,
+            1404.3865124677097
+          ]
+        }
+      },
+      "comeback": {
+        "entries": 94767,
+        "games": 440089,
+        "wins": 16343,
+        "roles": {
+          "REPLAY": {
+            "games": 59538,
+            "wins": 565
+          },
+          "MISS": {
+            "games": 342280,
+            "wins": 324
+          },
+          "WEAK_NOVA": {
+            "games": 3530,
+            "wins": 3530
+          },
+          "CHANCE_B": {
+            "games": 2093,
+            "wins": 2093
+          },
+          "STRONG_SUICA": {
+            "games": 1252,
+            "wins": 1252
+          },
+          "WEAK_SUICA": {
+            "games": 5117,
+            "wins": 5117
+          },
+          "BELL": {
+            "games": 23049,
+            "wins": 232
+          },
+          "CHANCE_A": {
+            "games": 3035,
+            "wins": 3035
+          },
+          "STRONG_NOVA": {
+            "games": 180,
+            "wins": 180
+          },
+          "SUPER_NOVA": {
+            "games": 15,
+            "wins": 15
+          }
+        }
+      },
+      "comebackTheory": 0.17303184740119282
+    }
+  ]
+}
