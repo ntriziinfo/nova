@@ -1,0 +1,16 @@
+[
+  {
+    "setting": 1,
+    "games": 30000,
+    "paid": 42318,
+    "bet": 47478,
+    "identical": true
+  },
+  {
+    "setting": 6,
+    "games": 30000,
+    "paid": 49644,
+    "bet": 45744,
+    "identical": true
+  }
+]

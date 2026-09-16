@@ -10,7 +10,7 @@ test('50pt BIG has valid payouts and exactly the tier AT chance before four bell
   assert(Math.abs(1-(p.BELL/(p.BELL+p.NEBULA))**4-a.bonusRules[tier].atChance)<1e-12);
   let paid=0;for(let i=0;i<4;i++)paid+=a.bonusPayout({paid},'BELL');assert.equal(paid,50);assert.equal(a.bonusPayout({paid},'BELL'),0);
  }
- assert.equal(a.defaults.initial,300);assert.equal(a.comebackRules.games,5);for(const r of a.comebackRules.guaranteedRoles)assert.equal(a.comebackChance(r,6),1);
+ assert.equal(a.defaults.initial,150);assert.equal(a.comebackRules.games,5);for(const r of a.comebackRules.guaranteedRoles)assert.equal(a.comebackChance(r,6),1);
 });
 test('ura reward guarantees one of the three ura zones and no automatic level promotion',()=>{
  loadCandidate({setting:6});const a=NovaArt;

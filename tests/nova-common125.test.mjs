@@ -3,13 +3,11 @@ import assert from 'node:assert/strict';
 import {loadModel} from '../scripts/zone-v2-model.mjs';
 import {xoshiro128} from '../scripts/zone-v2-rng.mjs';
 
-test('AT entry has no performance lottery, including legacy level-weight overrides',()=>{
- loadModel();const a=NovaArt,rng=()=>{throw Error('AT entry consumed a lottery');};
+test('entry quota is independent of discarded AT level weights',()=>{
+ loadModel();const a=NovaArt;
  for(let setting=1;setting<=6;setting++){
-  const s=a.enter({setting,atLevelWeights:[0,0,0,0,100]},rng);
-  assert.equal(s.remaining,'300');assert(!('atLevel' in s));
-  const bonus=a.afterBonus({phase:'normal'},{setting},2,rng);
-  assert.equal(bonus.remaining,'300');assert.equal(bonus.sets,'1');assert(!('atLevel' in bonus));
+  const ordinary=a.enter({setting},()=>.99),old=a.enter({setting,atLevelWeights:[0,0,0,0,100]},()=>.99);
+  assert.deepEqual(old,ordinary);assert(!('atLevel' in old));
  }
  assert.equal(a.atLevelRules,undefined);assert.equal(a.drawAtLevel,undefined);
 });
@@ -17,7 +15,7 @@ test('AT entry has no performance lottery, including legacy level-weight overrid
 test('old Lv5 and other saved levels produce the same ordinary AT outcomes',()=>{
  loadModel();const a=NovaArt;
  for(const role of Object.keys(a.rareRoles).concat('BELL','REPLAY'))for(let setting=1;setting<=6;setting++){
-  const run=level=>a.step({...a.enter({setting}),atLevel:level,remaining:'9876',burstUsed:true},{setting},xoshiro128(125),role);
+  const run=level=>a.step({...a.enter({setting},()=>.5),atLevel:level,remaining:'9876',burstUsed:true},{setting},xoshiro128(125),role);
   for(const level of [0,1,2,3,4,5])assert.deepEqual(run(level),run(undefined));
  }
 });
@@ -38,7 +36,7 @@ test('shared AT probabilities are valid with net four pt and no level dependence
 test('retiring an unawarded point challenge preserves quota, sets, stock and queued zones',()=>{
  loadModel();const a=NovaArt;
  for(const burstLeft of [0,1,3]){
-  const old={...a.enter(),burstVersion:1,burstType:'points',burstPending:true,burstLeft,burstWon:true,burstUsed:true,atLevel:5,remaining:'98765432109876543210',sets:'2',stock:'3',queuedZones:['ura_sora']};
+  const old={...a.enter({},()=>.5),burstVersion:1,burstType:'points',burstPending:true,burstLeft,burstWon:true,burstUsed:true,atLevel:5,remaining:'98765432109876543210',sets:'2',stock:'3',queuedZones:['ura_sora']};
   const s=a.normalize(old);assert.equal(s.remaining,old.remaining);assert.equal(s.sets,'2');assert.equal(s.stock,'3');assert.deepEqual(s.queuedZones,['ura_sora']);
   assert.equal(s.burstLeft,0);assert.equal(s.burstPending,false);assert.equal(s.burstWon,false);assert(!('atLevel' in s));assert.deepEqual(a.normalize(s),s);
  }
@@ -46,7 +44,7 @@ test('retiring an unawarded point challenge preserves quota, sets, stock and que
 
 test('existing ura challenge progress and earned rewards survive the migration',()=>{
  loadModel();const a=NovaArt;
- const s=a.normalize({...a.enter(),burstVersion:1,burstType:'ura',burstLeft:2,burstUsed:true,remaining:'777',atLevel:5});
+ const s=a.normalize({...a.enter({},()=>.5),burstVersion:1,burstType:'ura',burstLeft:2,burstUsed:true,remaining:'777',atLevel:5});
  assert.equal(s.burstLeft,2);assert.equal(s.burstUsed,true);
  const win=a.step(s,{},()=>0);assert.equal(win.burstEvent,'success');assert.equal(win.flow.remaining,'777');assert.equal(win.burstReward.type,'ura');assert.equal(win.burstReward.points,0);
  const saved=a.normalize(JSON.parse(JSON.stringify(win.flow))),entered=a.prepareBet(saved,{},()=>.5);
@@ -56,6 +54,6 @@ test('existing ura challenge progress and earned rewards survive the migration',
 
 test('2000pt is no cap or reward-damping threshold',()=>{
  loadModel();const a=NovaArt;
- const run=netPt=>a.step({...a.enter(),remaining:'9999',burstUsed:true},{setting:6,netPt},xoshiro128(125),'STRONG_NOVA');
+ const run=netPt=>a.step({...a.enter({},()=>.5),remaining:'9999',burstUsed:true},{setting:6,netPt},xoshiro128(125),'STRONG_NOVA');
  assert.deepEqual(run(-10000),run(10000));assert.equal(a.netRewardControl.enabled,false);assert.equal(a.zoneTailControl.factor,1);
 });

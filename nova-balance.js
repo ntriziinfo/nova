@@ -1,12 +1,12 @@
 /* Normal AT only, net 4pt/G: current zone rules and estimates are in docs/zone-v2.md. */
 globalThis.NovaBalance=(()=>{
- // v125 measured estimates with one common AT and ura-zone challenges only.
+ // v126 measured estimates; full results are in docs/start126-report.md.
  // +10,000pt stop or 30,000G cutoff; 1,000 independent holdout trials/setting.
- const targets=[0.954392,0.972260,0.990637,1.032068,1.070743,1.092388];
+ const targets=[0.960904,0.97752,0.999537,1.046691,1.077627,1.097035];
  const normal=[[354.112628,570.311235,6.592194,128,7.464630],[335.340933,496.870459,6.554256,192,7.482946],[318.675842,391.096799,6.455407,124,7.452119],[295.728558,359.759320,6.248231,184,7.301746],[288.226978,283.780845,6.120643,120,7.250883],[276.519476,276.524590,5.897360,176,7.245667]];
  // Exact reward recursion: 50pt grid below the threshold, translation-invariant tail above it.
  function zoneMean(id,options={}){
-  const a=NovaArt,c=a.config(options),s=a.startZone(a.enter(),id,{...c,setting:options.setting},()=>.5),r=a.zoneRules(s,c),limit=a.zoneTailControl.threshold;
+  const a=NovaArt,c=a.config(options),s=a.startZone(a.enter({},()=>.5),id,{...c,setting:options.setting},()=>.5),r=a.zoneRules(s,c),limit=a.zoneTailControl.threshold;
   if(r.family==='ladder'){
    const weights=a.ladderWeightsFor(s),tables=a.ladderTableFor(s);
    const tableMean=l=>{let reach=1,value=l[0];for(let i=1;i<l.length;i++){reach*=a.ladderGuaranteed({...s,ladder:l,award:String(l[i-1])})?1:r.success;value+=(l[i]-l[i-1])*reach;}return value;};
@@ -56,7 +56,7 @@ globalThis.NovaBalance=(()=>{
  }
  const giruMean=(setting,ura=false)=>zoneMean(ura?'ura_giru':'giru',{setting});
  // Entry scales fitted with the normal-mode / ceiling / impurity / freeze simulation.
- function profile(setting){const i=Math.max(0,Math.min(5,Math.round(Number(setting)||1)-1)),scale=.21*(1+.12*NovaArt.settingBias[i]);return {setting:i+1,target:targets[i],scale,directDenom:NovaArt.defaults['direct'+(i+1)]/scale,czDenom:120/scale,strongDenom:600/scale,verifiedModel:'common125-30000g-complete-stop',previousVerifiedModel:'balance120-30000g-complete-stop'};}
+ function profile(setting){const i=Math.max(0,Math.min(5,Math.round(Number(setting)||1)-1)),scale=.21*(1+.12*NovaArt.settingBias[i]);return {setting:i+1,target:targets[i],scale,directDenom:NovaArt.defaults['direct'+(i+1)]/scale,czDenom:120/scale,strongDenom:600/scale,verifiedModel:'start126-30000g-complete-stop',previousVerifiedModel:'common125-30000g-complete-stop'};}
  const profiles=targets.map((_,i)=>profile(i+1));
  return {targets,normal,profiles,profile,giruMean,zoneMean};
 })();

@@ -1,0 +1,16 @@
+{
+  "initial2000": true,
+  "entryQuotaTable": true,
+  "oldSetQuotaPreserved": true,
+  "silent": true,
+  "isolated": true,
+  "manualFailure": true,
+  "manualSuccess": true,
+  "autoSuccess": true,
+  "fastAuditRecords": 2906,
+  "commonAtRecords": 672,
+  "oldLevelAndPointChallengeRetired": true,
+  "earnedQuotaAndStocksPreserved": true,
+  "oldForceFlagsCleared": true,
+  "pageErrors": []
+}

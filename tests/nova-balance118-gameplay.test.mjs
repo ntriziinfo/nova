@@ -24,7 +24,7 @@ test('normal rare probabilities and bonus chances are retained after level remov
 test('each of the nine zones retains its exact awards and continuation trace',()=>{
  const trace=(ctx,id,seed)=>{
   const a=ctx.NovaArt,rng=xoshiro128(seed);let s=a.startZone({...a.enter({setting:6},()=>.5),atLevel:1,remaining:'500'},id,{setting:6},rng);const rows=[];
-  for(let g=0;s.zone&&g<10000;g++){s=a.prepareBet(s,{setting:6},rng);const step=a.step(s,{setting:6},rng);const record=plain(step);delete record.flow.burstType;delete record.flow.burstVersion;delete record.flow.atLevel;rows.push(record);s=step.flow;}
+  for(let g=0;s.zone&&g<10000;g++){s=a.prepareBet(s,{setting:6},rng);const step=a.step(s,{setting:6},rng);const record=plain(step);delete record.flow.burstType;delete record.flow.burstVersion;delete record.flow.atLevel;delete record.flow.entryQuota;delete record.flow.setQuota;rows.push(record);s=step.flow;}
   assert.equal(s.zone,'');return rows;
  };
  for(const id of current.NovaArt.zoneIds)for(const seed of [118,99118,118219])assert.deepEqual(trace(current,id,seed),trace(prior,id,seed),id);
