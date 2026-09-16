@@ -52,7 +52,7 @@ globalThis.NovaLadder=(()=>{
   if(!init())return;
   const character=root.querySelector('.novaLadderCharacter');
   const id=flow.zone==='sosuke'?'sosuke':'giru1';
-  if(character.dataset.character!==id){character.dataset.character=id;character.src=`assets/illustrations/originals/${id}.png`;}
+  if(character.dataset.character!==id){character.dataset.character=id;character.src=`assets/illustrations/lamps-20260916/${id}.png`;}
   character.dataset.ura=String(!!flow.ura);
   const next=[flow.zone,flow.ura,flow.ladder.join(','),flow.ladderIndex,flow.ladderRevealed].join(':');
   if(next===key){layout();return;}

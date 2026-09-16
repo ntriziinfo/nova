@@ -26,7 +26,7 @@
   const items=new Map();
   for(const id of originals){
     const item=document.createElement('div'); item.className='novaArtItem'; item.dataset.artwork=id;
-    const img=document.createElement('img'); img.src=`assets/illustrations/originals/${id}.png`; img.alt=id; img.draggable=false;
+    const img=document.createElement('img'); img.src=`assets/illustrations/lamps-20260916/${id}.png`; img.alt=id; img.draggable=false;
     img.addEventListener('load',()=>render(id));
     item.append(img); layer.append(item); items.set(id,item);
   }

@@ -1,6 +1,6 @@
 .novaArtLayer{position:absolute;inset:0 auto auto 0;width:100%;height:var(--jag-cabinet-height);z-index:48;pointer-events:none}
-.novaArtItem{position:absolute;margin:0;padding:0;pointer-events:none}
-.novaArtItem img{display:block;width:100%;height:auto;max-width:none;pointer-events:none;user-select:none}
+.novaArtItem{position:absolute;margin:0;padding:0;pointer-events:none;aspect-ratio:var(--lamp-aspect,1)}
+.novaArtItem img{position:absolute;left:var(--lamp-left,0%);top:var(--lamp-top,0%);display:block;width:var(--lamp-width,100%);height:auto;max-width:none;pointer-events:none;user-select:none}
 .novaArtLayer[data-lamp=dim] img{filter:brightness(.24) saturate(.7)}
 .novaArtLayer[data-lamp=blink] img{animation:novaIllustrationBlink 1.4s ease-in-out infinite}
 .novaArtLayer[data-lamp=rainbow] img{animation:novaIllustrationRainbow 4.2s linear infinite}
@@ -60,3 +60,12 @@ body[data-game-phase=bonus][data-bonus-tier=upper] .novaArtLayer .novaArtItem im
 .novaArtItem[data-artwork=sora1]{--music-index:3}
 .novaArtItem[data-artwork=toto]{--music-index:4}
 .novaArtItem[data-artwork=sosuke]{--music-index:5}
+
+/* Fit the supplied transparent originals into the existing lamp slots. Saved
+ * coordinates and the source pixels are unchanged; padding differs by artwork. */
+.novaArtItem[data-artwork=giru1]{--lamp-aspect:2000/2000;--lamp-width:85.47356%;--lamp-left:4.61485%;--lamp-top:8.11380%}
+.novaArtItem[data-artwork=ouma1]{--lamp-aspect:2000/2000;--lamp-width:85.47764%;--lamp-left:8.56472%;--lamp-top:6.81969%}
+.novaArtItem[data-artwork=sora1]{--lamp-aspect:2000/2000;--lamp-width:86.20876%;--lamp-left:4.00763%;--lamp-top:6.44992%}
+.novaArtItem[data-artwork=sosuke]{--lamp-aspect:1189/1516;--lamp-width:117.83998%;--lamp-left:-7.64038%;--lamp-top:4.44753%}
+.novaArtItem[data-artwork=toto]{--lamp-aspect:972/1334;--lamp-width:144.95685%;--lamp-left:-25.40687%;--lamp-top:-2.43210%}
+.novaArtItem[data-artwork=urapi]{--lamp-aspect:2000/2000;--lamp-width:80.28846%;--lamp-left:10.76731%;--lamp-top:9.14255%}
