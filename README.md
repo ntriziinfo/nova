@@ -1,4 +1,4 @@
-最新のATレベル・機械割試算は [ATレベル5段階111](docs/at111-report.md)、ボーナス仕様は [BIG一本化110](docs/bonus110-report.md)、通常モードは [モード・前兆109](docs/modes109-report.md) を参照してください。[払い出しpt管理](PAYOUT-MANAGEMENT.md) は管理方式と旧仕様の記録です。
+最新仕様は [共通AT・30,000G試算125](docs/common125-report.md) を参照してください。ATレベルと直接pt報酬チャレンジを廃止し、裏ゾーン獲得チャレンジを継続しています。BIG50pt・AT初期300pt。以前の [ATレベル5段階111](docs/at111-report.md) と [払い出しpt管理](PAYOUT-MANAGEMENT.md) は旧仕様の記録です。通常モードは [モード・前兆109](docs/modes109-report.md) を基礎に、最新レポートの補正を適用しています。
 
 # NOVA
 

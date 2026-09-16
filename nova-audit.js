@@ -7,7 +7,7 @@ globalThis.NovaAudit=(()=>{
     const out=[],a=before?.flow||{},b=after.flow||{};
     if(!before)out.push('記録開始（以前の内訳は未記録）');
     else{
-      if(a.phase!=='art'&&b.phase==='art')out.push('AT開始 / Lv.'+b.atLevel+' / 残り'+b.remaining+'pt');
+      if(a.phase!=='art'&&b.phase==='art')out.push('AT開始'+(b.atLevel?' / Lv.'+b.atLevel:'')+' / 残り'+b.remaining+'pt');
       if(a.phase==='art'&&b.phase!=='art')out.push(after.bonus.active?'ATからBIGへ':'AT終了');
       if(a.phase!==b.phase&&['cz','strong_cz'].includes(b.phase))out.push(b.phase==='cz'?'CZ開始':'強CZ開始');
       if(['cz','strong_cz'].includes(a.phase)&&a.phase!==b.phase)out.push('CZ終了'+(after.bonus.pending?' / BIG当選':''));
@@ -21,6 +21,7 @@ globalThis.NovaAudit=(()=>{
       if(!a.burstPending&&b.burstPending)out.push(b.burstType==='ura'?'裏チャレンジ獲得':'爆発チャレンジ獲得');
       if(!a.comebackLeft&&b.comebackLeft)out.push('引き戻し5G開始');
       if(a.atLevel&&b.atLevel&&a.atLevel!==b.atLevel)out.push('AT Lv.'+a.atLevel+' → Lv.'+b.atLevel);
+      if(a.atLevel&&!b.atLevel&&b.phase==='art')out.push('共通ATへ移行（旧レベルを廃止）');
       if(before.internal?.mode!==after.internal?.mode)out.push('内部モード '+(after.internal?.mode||''));
       if(before.internal?.impurity!==after.internal?.impurity)out.push('穢れ '+(after.internal?.impurity??0)+'pt');
       if(before.setting!==after.setting)out.push('設定変更：'+before.setting+' → '+after.setting);

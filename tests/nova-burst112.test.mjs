@@ -10,8 +10,8 @@ test('production burst is one three-game chance per new AT, with a 50% success r
   let s=initial;
   for(let g=0;g<3&&!s.burstWon;g++)s=a.step(s,{setting:6},rng).flow;
   wins+=s.burstWon;
-  assert.equal(s.burstWon?[500,1000,2000].includes(Number(s.remaining)-a.defaults.initial):Number(s.remaining)===a.defaults.initial,true);
-  assert(s.burstWon?[1,4,5].includes(s.atLevel):s.atLevel===1);
+  assert.equal(Number(s.remaining),a.defaults.initial);if(s.burstWon)assert(a.zoneGroups.super.includes(s.pendingZone));
+  assert.equal(s.atLevel,undefined);
   assert.equal(s.burstPending,false);assert.equal(s.burstLeft,0);
  }
  assert.ok(Math.abs(wins/30000-.5)<.015);
@@ -21,17 +21,17 @@ test('production burst is one three-game chance per new AT, with a 50% success r
  assert.equal(next.flow.burstPending,false);assert.equal(next.flow.burstUsed,true);
 });
 
-test('success persists through save, bonus and zones; legacy AT cannot gain a new burst',()=>{
+test('success persists through save, bonus and zones; legacy AT receives common rules without losing quota',()=>{
  loadModel();const a=NovaArt;
  let s=a.step({...a.enter({},()=>0),burstUsed:true,burstPending:true},{},()=>0).flow;
  s=a.afterBonus(a.normalize(JSON.parse(JSON.stringify(s))),{},1,()=>{throw Error('redraw');});
  s=a.settleZone(a.startZone(s,'sosuke',{},()=>.5));
- assert.equal(s.burstWon,true);assert.equal(s.atLevel,1);assert.equal(s.burstUsed,true);
+ assert.equal(s.burstWon,true);assert.equal(s.atLevel,undefined);assert.equal(s.burstUsed,true);
  const old={...a.enter({},()=>0),atLevel:5,remaining:'9876'};delete old.burstVersion;
- const retained=a.normalize(old);assert.equal(retained.atLevel,5);assert.equal(retained.remaining,'9876');
+ const retained=a.normalize(old);assert.equal(retained.atLevel,undefined);assert.equal(retained.remaining,'9876');
  const step=a.step(retained,{setting:6},()=>0,'STRONG_NOVA');
- assert.equal(step.flow.burstPending,false);assert.equal(step.flow.entryStage,'seven');
- assert.equal(a.enter({},()=>0).burstVersion,1);assert.equal(a.enter({},()=>0).burstUsed,false);
+ assert.equal(step.flow.burstPending,true);assert.equal(step.flow.entryStage,'seven');
+ assert.equal(a.enter({},()=>0).burstVersion,2);assert.equal(a.enter({},()=>0).burstUsed,false);
 });
 
 test('last-quota trigger and preexisting zone are preserved without net-dependent adjustment',()=>{
@@ -58,7 +58,7 @@ test('normal/CZ setting profile retains forbidden zones, mode hints and guarante
   assert.ok(Math.abs(n.zoneRate({mode:'通常A',games:199},setting)-(.55+.45*b))<1e-12);
   assert.equal(n.afterBonus({mode:'天国準備'},()=>.1,setting).mode,'天国');
   for(let j=0;j<100;j++)assert.notEqual(n.afterArt({}, {phase:'art'}, {phase:'normal',dryAtEnd:true},{setting},()=>j/100).mode,'通常A');
-  assert.equal(a.enter({setting},()=>.999999).atLevel,3);
+  assert.equal(a.enter({setting},()=>.999999).atLevel,undefined);
  }
  assert.equal(a.bonusRules.normal.atChance,.52);assert.equal(a.bonusRules.upper.atChance,.8);
 });

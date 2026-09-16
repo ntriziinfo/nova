@@ -1,0 +1,7 @@
+baseline/
+*.log
+qa-*.png
+p[123]*-?.json
+verify-?.json
+update-*.mjs
+baseline-tests.mjs

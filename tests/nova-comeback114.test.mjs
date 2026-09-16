@@ -43,12 +43,12 @@ test('every drawn role is eligible, with the configured marginal probability',()
 test('win lights the selected zone and revives from its award without a free 150pt',()=>{
  loadModel();const a=NovaArt;
  const base={...a.beginComeback(a.enter({},()=>0)),comebackLeft:1,comebackLamp:'sosuke',atLevel:5,burstWon:true,burstUsed:true};
- const won=a.step(base,{},()=>0,'REPLAY');assert.equal(won.comebackEvent,'success');assert.equal(won.flow.remaining,'0');assert.equal(won.flow.atLevel,5);assert.equal(won.flow.burstUsed,true);
+ const won=a.step(base,{},()=>0,'REPLAY');assert.equal(won.comebackEvent,'success');assert.equal(won.flow.remaining,'0');assert.equal(won.flow.atLevel,undefined);assert.equal(won.flow.burstUsed,true);
  assert.equal(base.comebackLeft,1);assert.equal(base.comebackConfirmed,false);
  assert.equal(won.flow.pendingZone,'sosuke');assert.equal(won.flow.comebackConfirmed,true);
  const reload=a.normalize(JSON.parse(JSON.stringify(won.flow)));assert.deepEqual(reload,won.flow);
  const entered=a.prepareBet(reload,{},()=>0);assert.equal(entered.zone,'sosuke');assert.equal(entered.comebackLeft,0);assert.equal(entered.comebackConfirmed,false);
- const finished=a.settleZone({...entered,award:'100'});assert.equal(finished.remaining,'100');assert.equal(finished.atLevel,5);
+ const finished=a.settleZone({...entered,award:'100'});assert.equal(finished.remaining,'100');assert.equal(finished.atLevel,undefined);
 });
 
 test('every rare role guarantees revival on all five games and settings, including after reload',()=>{
@@ -60,7 +60,7 @@ test('every rare role guarantees revival on all five games and settings, includi
   const won=a.step(restored,{setting,comebackRare:0},()=>1-Number.EPSILON,role);
   assert.equal(won.comebackEvent,'success',`${setting}/${left}/${role}`);
   assert.equal(won.flow.comebackConfirmed,true);assert.equal(won.flow.comebackLeft,0);
-  assert.equal(won.flow.atLevel,5);assert.equal(won.flow.burstUsed,true);
+  assert.equal(won.flow.atLevel,undefined);assert.equal(won.flow.burstUsed,true);
   if(!['STRONG_NOVA','SUPER_NOVA'].includes(role))assert.equal(won.flow.pendingZone,'toto');
  }
  const ready={...a.beginComeback(a.enter({},()=>0)),comebackLamp:'toto'};
@@ -85,8 +85,8 @@ test('strong NOVA promotes weak lamps to upper zones; SUPER NOVA awards an ura z
 
 test('a bonus interruption preserves unused comeback games or uses its awarded AT set',()=>{
  loadModel();const a=NovaArt,base={...a.beginComeback(a.enter({},()=>0)),comebackLeft:3,atLevel:5};
- const lost=a.afterBonus(base,{},0,()=>0);assert.equal(lost.comebackLeft,3);assert.equal(lost.atLevel,5);
- const won=a.afterBonus(base,{},1,()=>0);assert.equal(won.comebackLeft,0);assert.equal(won.remaining,String(a.defaults.initial));assert.equal(won.atLevel,5);
+ const lost=a.afterBonus(base,{},0,()=>0);assert.equal(lost.comebackLeft,3);assert.equal(lost.atLevel,undefined);
+ const won=a.afterBonus(base,{},1,()=>0);assert.equal(won.comebackLeft,0);assert.equal(won.remaining,String(a.defaults.initial));assert.equal(won.atLevel,undefined);
 });
 
 test('existing set stock and reserved zones are consumed before end recovery',()=>{

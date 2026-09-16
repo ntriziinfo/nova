@@ -1,0 +1,13 @@
+{
+  "silent": true,
+  "isolated": true,
+  "manualFailure": true,
+  "manualSuccess": true,
+  "autoSuccess": true,
+  "fastAuditRecords": 2670,
+  "commonAtRecords": 658,
+  "oldLevelAndPointChallengeRetired": true,
+  "earnedQuotaAndStocksPreserved": true,
+  "oldForceFlagsCleared": true,
+  "pageErrors": []
+}

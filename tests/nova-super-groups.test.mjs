@@ -3,7 +3,7 @@ const ctx=vm.createContext({});for(const f of ['nova-art.js','nova-balance.js','
 test('group lottery retains original strong share and its 3 percent super promotion',()=>{
  for(let setting=1;setting<=6;setting++)for(const boost of [false,true])for(const preparation of [false,true]){
   const original=a.zoneWeights[setting-1].map((w,i)=>w*(boost&&i>=3?2:1)*Math.exp((preparation?0:a.tuning.tilts[setting-1])*i));
-  const strong=original.slice(3).reduce((s,v)=>s+v,0)/original.reduce((s,v)=>s+v,0)*100;
+  const common=a.commonAtRules.groups.map((v,i)=>v*(boost&&i>0?2:1));const strong=preparation?original.slice(3).reduce((s,v)=>s+v,0)/original.reduce((s,v)=>s+v,0)*100:common.slice(1).reduce((s,v)=>s+v,0)/common.reduce((s,v)=>s+v,0)*100;
   const groups=a.zoneGroupWeights(setting,boost,preparation),row=a.atZoneWeights(setting,boost,preparation);
   assert.ok(Math.abs(groups[0]-(100-strong))<1e-10);assert.ok(Math.abs(groups[2]-strong*.03)<1e-10);
   assert.ok(Math.abs(groups[1]-strong*.97)<1e-10);assert.ok(Math.abs(row.reduce((s,v)=>s+v,0)-100)<1e-10);
