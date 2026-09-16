@@ -7,4 +7,4 @@ test('ART natural and forced Giru entries preserve the selected setting',()=>{
   assert.equal(natural.flow.pendingZone,'giru');assert.equal(natural.flow.entryStage,'seven');assert.equal(natural.flow.giruSetting,6);
  }
 });
-test('AT NOVA entry preserves quota through bonus interruption',()=>{const t=a.step(a.enter(),{setting:3},()=>.5,'STRONG_NOVA');assert.equal(t.flow.entryStage,'seven');assert.equal(a.afterBonus(t.flow).remaining,'150');assert.equal(t.internalBonus,null);});
+test('AT NOVA entry preserves quota through bonus interruption',()=>{const initial=a.enter({},()=>.5);const t=a.step(initial,{setting:3},()=>.5,'STRONG_NOVA');assert.equal(t.flow.entryStage,'seven');assert.equal(a.afterBonus(t.flow).remaining,initial.remaining);assert.equal(t.internalBonus,null);});

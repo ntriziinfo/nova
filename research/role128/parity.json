@@ -1,0 +1,18 @@
+[
+  {
+    "setting": 1,
+    "seed": 128999001,
+    "games": 30000,
+    "paid": 40909,
+    "bet": 47115,
+    "identical": true
+  },
+  {
+    "setting": 6,
+    "seed": 128999006,
+    "games": 17136,
+    "paid": 35500,
+    "bet": 25497,
+    "identical": true
+  }
+]

@@ -26,7 +26,7 @@ test('six-setting ura entry rates are valid and keep 50% success',()=>{
   for(const role of Object.keys(a.burstRules.roles))assert.ok(a.burstChance(role,s)<=1);
   assert.equal(a.burstChance('BELL',s),0);assert.equal(a.burstChance('REPLAY',s),0);
   assert.equal(a.enter({setting:s},()=>.99999).atLevel,undefined);
-  assert.equal(a.enter({setting:s},()=>0).remaining,String(a.defaults.initial));
+  assert.equal(a.enter({setting:s},()=>0).remaining,String(a.drawEntryQuota({},()=>0)));
  }
  const html=fs.readFileSync('jag.html','utf8');assert.match(html,/直接pt報酬とレベル昇格は廃止/);assert.doesNotMatch(html,/成功すると＋8,000pt/);
 });

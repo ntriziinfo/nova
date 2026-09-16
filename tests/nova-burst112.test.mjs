@@ -10,7 +10,7 @@ test('production burst is one three-game chance per new AT, with a 50% success r
   let s=initial;
   for(let g=0;g<3&&!s.burstWon;g++)s=a.step(s,{setting:6},rng).flow;
   wins+=s.burstWon;
-  assert.equal(Number(s.remaining),a.defaults.initial);if(s.burstWon)assert(a.zoneGroups.super.includes(s.pendingZone));
+  assert.equal(s.remaining,initial.remaining);if(s.burstWon)assert(a.zoneGroups.super.includes(s.pendingZone));
   assert.equal(s.atLevel,undefined);
   assert.equal(s.burstPending,false);assert.equal(s.burstLeft,0);
  }
@@ -47,16 +47,16 @@ test('last-quota trigger and preexisting zone are preserved without net-dependen
  assert.deepEqual(run(-10000),run(10000));
 });
 
-test('normal/CZ setting profile retains forbidden zones, mode hints and guaranteed CZ',()=>{
+test('normal/CZ setting profile uses role lotteries, common ceiling and guaranteed CZ',()=>{
  loadModel();const a=NovaArt,n=NovaNormal,f=NovaFlow;
  for(let setting=1;setting<=6;setting++){
-  const b=a.initialHitBoost(setting),cfg=f.forSetting({},setting);
-  assert.equal(cfg.czChance,.4+.4*b);assert.equal(cfg.strongChance,.7+.2*b);
+  const cfg=f.forSetting({},setting);
+  assert(cfg.czChance>=.55&&cfg.czChance<=.64);assert(cfg.strongChance>=.77&&cfg.strongChance<=.82);
   assert.equal(f.forSetting({strongChance:1},setting).strongChance,1);
   assert.equal(f.forSetting(cfg,setting).czChance,cfg.czChance);
   assert.equal(n.zoneRate({mode:'通常A',games:99},setting),0);
-  assert.ok(Math.abs(n.zoneRate({mode:'通常A',games:199},setting)-(.55+.45*b))<1e-12);
-  assert.equal(n.afterBonus({mode:'天国準備'},()=>.1,setting).mode,'天国');
+  assert.equal(n.zoneRate({mode:'通常A',games:199},setting),0);
+  assert.equal(n.afterBonus({mode:'天国準備'},()=>.1,setting).mode,'通常');
   for(let j=0;j<100;j++)assert.notEqual(n.afterArt({}, {phase:'art'}, {phase:'normal',dryAtEnd:true},{setting},()=>j/100).mode,'通常A');
   assert.equal(a.enter({setting},()=>.999999).atLevel,undefined);
  }

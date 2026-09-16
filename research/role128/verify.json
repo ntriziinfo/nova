@@ -1,0 +1,50 @@
+[
+  {
+    "tag": "final",
+    "setting": 1,
+    "seedBase": 148600000,
+    "trials": 1000
+  },
+  {
+    "tag": "final",
+    "setting": 2,
+    "seedBase": 148600000,
+    "trials": 1000
+  },
+  {
+    "tag": "final",
+    "setting": 3,
+    "seedBase": 148600000,
+    "trials": 1000
+  },
+  {
+    "tag": "final",
+    "setting": 4,
+    "seedBase": 148600000,
+    "trials": 1000
+  },
+  {
+    "tag": "final",
+    "setting": 5,
+    "seedBase": 148600000,
+    "trials": 1000
+  },
+  {
+    "tag": "final",
+    "setting": 6,
+    "seedBase": 148600000,
+    "trials": 1000
+  },
+  {
+    "tag": "final-b",
+    "setting": 6,
+    "seedBase": 168600000,
+    "trials": 1000
+  },
+  {
+    "tag": "final-c",
+    "setting": 6,
+    "seedBase": 188600000,
+    "trials": 1000
+  }
+]

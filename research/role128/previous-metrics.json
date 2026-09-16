@@ -1,0 +1,85 @@
+{
+  "baseline": "3e99d5f56377a6cb961de0a520e16b8ea0e72173",
+  "settings": [
+    {
+      "setting": 1,
+      "trials": 1000,
+      "netMean": 369.06959282618953,
+      "meanMaxDrawdown": 6213.787,
+      "sources": [
+        {
+          "file": "research/start126/verify-1.json",
+          "sha256": "7fe5250a998bd47307be18bf3d67d65055fe36a8fe6aca41e382bf193d877c7f"
+        }
+      ]
+    },
+    {
+      "setting": 2,
+      "trials": 1000,
+      "netMean": 372.31618505338076,
+      "meanMaxDrawdown": 5900.209,
+      "sources": [
+        {
+          "file": "research/start126/verify-2.json",
+          "sha256": "63e64b0b457e56de981c49db1d4ba6b58aa7f6968ef40f84823be3316cd7d1e9"
+        }
+      ]
+    },
+    {
+      "setting": 3,
+      "trials": 1000,
+      "netMean": 377.1332137408893,
+      "meanMaxDrawdown": 5411.753,
+      "sources": [
+        {
+          "file": "research/start126/verify-3.json",
+          "sha256": "e5e8f27abad8a8a2e51f5b16a63d10a59e2fefb85d943ac857d53bc3130bba2c"
+        }
+      ]
+    },
+    {
+      "setting": 4,
+      "trials": 1000,
+      "netMean": 379.4932562353885,
+      "meanMaxDrawdown": 4540.156,
+      "sources": [
+        {
+          "file": "research/start126/verify-4.json",
+          "sha256": "a08038eac01531276d2fa6ca83ab2215a31381583ba7cff3ea3b6e8a2235e9ca"
+        }
+      ]
+    },
+    {
+      "setting": 5,
+      "trials": 1000,
+      "netMean": 379.3630516202573,
+      "meanMaxDrawdown": 4058.786,
+      "sources": [
+        {
+          "file": "research/start126/verify-5.json",
+          "sha256": "df26f9d2aac3c4c199568cf94ec2e87ecd7e48ad69560fa396cda3bce5bfb035"
+        }
+      ]
+    },
+    {
+      "setting": 6,
+      "trials": 3000,
+      "netMean": 365.9470928523252,
+      "meanMaxDrawdown": 3016.6336666666666,
+      "sources": [
+        {
+          "file": "research/s6-127/verify-a-6.json",
+          "sha256": "c3e29b212a68e3fa369f3716883e1a29a27eae7f3db6e441dc34694055848872"
+        },
+        {
+          "file": "research/s6-127/verify-b-6.json",
+          "sha256": "806b4bc2d97688b0707975d13ee54fb0e1bd9cc01109a4a1aa5ca293dfda7ee6"
+        },
+        {
+          "file": "research/s6-127/verify-c-6.json",
+          "sha256": "fb06ffd2e15a87d8d8e526da0228b8ff0db45a46d6eb251c8c9ec6454119b789"
+        }
+      ]
+    }
+  ]
+}

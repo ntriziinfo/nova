@@ -12,10 +12,10 @@ globalThis.NovaFlow = (() => {
       czDenom:bounded(value.czDenom,120,2,100000),strongDenom:bounded(value.strongDenom,600,2,100000)};
   }
   function forSetting(value={},setting){
-    const cfg=config(value),b=NovaArt.initialHitBoost(setting);
+    const cfg=config(value),i=Math.max(0,Math.min(5,Math.round(Number(setting)||1)-1));
     // Keep explicit debug overrides and guaranteed/rare-CZ probabilities.
-    if(cfg.czChance===defaults.czChance)cfg.czChance=.4+.4*b;
-    if(cfg.strongChance===defaults.strongChance)cfg.strongChance=.7+.2*b;
+    if(cfg.czChance===defaults.czChance)cfg.czChance=[.5504,.556,.5588,.5792,.5932,.6336][i];
+    if(cfg.strongChance===defaults.strongChance)cfg.strongChance=[.7752,.778,.7794,.7896,.7966,.8168][i];
     return cfg;
   }
   const rewriteRates=Object.freeze({WEAK_SUICA:.05,STRONG_SUICA:.50,CHANCE_A:3/14,CHANCE_B:3/14,WEAK_NOVA:.20,STRONG_NOVA:1});

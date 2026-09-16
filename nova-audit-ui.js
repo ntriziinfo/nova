@@ -10,7 +10,7 @@ globalThis.NovaAuditUI=(()=>{
       <p id="novaAuditSummary" role="status"></p><div class="novaAuditExports"><button type="button" id="novaAuditJson">この試打をJSON保存</button><button type="button" id="novaAuditCsv">指定区間をCSV保存</button></div>
       <nav><button type="button" id="novaAuditPrev">前の200件</button><span id="novaAuditPage"></span><button type="button" id="novaAuditNext">次の200件</button><button type="button" id="novaAuditLatest">末尾へ</button></nav>
       <div class="novaAuditTable"><table><thead><tr><th>G / 記録番号</th><th>状態・出来事</th><th>出目</th><th>実BET</th><th>実払出</th><th>累計差枚</th><th>AT残り / Lv</th></tr></thead><tbody id="novaAuditRows"></tbody></table></div>
-      <details><summary>選んだ記録の詳細</summary><pre id="novaAuditDetail">行を選択すると、内部モード・特化テーブル・ナビ・強制フラグなどの記録を表示します。</pre></details>`;
+      <details><summary>選んだ記録の詳細</summary><pre id="novaAuditDetail">行を選択すると、内部状態・特化テーブル・ナビ・強制フラグなどの記録を表示します。</pre></details>`;
     document.body.append(dialog);const $=s=>dialog.querySelector(s);let offset=0,matches=0,revision=0;
     const range=()=>({from:Math.max(0,Number($('#novaAuditFrom').value)||0),to:$('#novaAuditTo').value===''?Infinity:Math.max(0,Number($('#novaAuditTo').value)||0),important:$('#novaAuditImportant').checked,offset,limit:200});
     const tell=({error,pending,saving})=>{status.textContent=error||((pending||saving)?'履歴保存中':'履歴保存済み');button.textContent=error?'全履歴（保存エラー）':'全履歴・区間の内訳';status.classList.toggle('auditError',!!error);};recorder.onStatus=tell;recorder.notify();

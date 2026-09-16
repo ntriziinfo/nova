@@ -1,0 +1,20 @@
+{
+  "initial1000": true,
+  "rareRoleCz": true,
+  "no50GZone": true,
+  "common800GCeiling": true,
+  "legacyNormalMigration": true,
+  "entryQuotaTable": true,
+  "oldSetQuotaPreserved": true,
+  "silent": true,
+  "isolated": true,
+  "manualFailure": true,
+  "manualSuccess": true,
+  "autoSuccess": true,
+  "fastAuditRecords": 1738,
+  "commonAtRecords": 470,
+  "oldLevelAndPointChallengeRetired": true,
+  "earnedQuotaAndStocksPreserved": true,
+  "oldForceFlagsCleared": true,
+  "pageErrors": []
+}
