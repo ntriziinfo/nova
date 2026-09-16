@@ -2,7 +2,14 @@ import test from 'node:test';import assert from 'node:assert/strict';import fs f
 const ctx=vm.createContext({});for(const f of ['nova-art.js','nova-balance.js'])vm.runInContext(fs.readFileSync(f,'utf8'),ctx);const a=ctx.NovaArt,b=ctx.NovaBalance;
 test('profiles show measured complete-stop RTP for entry-quota AT',()=>{
  const report=JSON.parse(fs.readFileSync('docs/start126-summary.json','utf8'));
- for(let i=0;i<6;i++){const p=b.profile(i+1);assert.equal(p.target,b.targets[i]);assert.equal(p.verifiedModel,"start126-30000g-complete-stop");assert.equal(p.previousVerifiedModel,"common125-30000g-complete-stop");assert.ok(Math.abs(p.target-report.settings[i].stoppedRtp.value)<1e-6);assert.ok(p.scale>0);}
+ const latest=JSON.parse(fs.readFileSync('docs/s6-127-summary.json','utf8')).setting6;
+ for(let i=0;i<6;i++){
+  const p=b.profile(i+1),evidence=i===5?latest:report.settings[i];
+  assert.equal(p.target,b.targets[i]);
+  assert.equal(p.verifiedModel,i===5?'s6-127-30000g-complete-stop':'start126-30000g-complete-stop');
+  assert.equal(p.previousVerifiedModel,i===5?'start126-30000g-complete-stop':'common125-30000g-complete-stop');
+  assert.ok(Math.abs(p.target-evidence.stoppedRtp.value)<1e-6);assert.ok(p.scale>0);
+ }
 });
 
 test('common AT evidence keeps session and episode denominators separate',()=>{

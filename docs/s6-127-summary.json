@@ -1,0 +1,397 @@
+{
+  "generatedAt": "2026-09-16T08:12:53.340Z",
+  "baseline": "8d95cfff19f69a2348572650d7c2ae04ff0e5d0f",
+  "method": "Setting 6 production core; 3000 independent holdout trials, maximum 30000G, stop at cumulative net +10000pt. RTP=actual payouts/actual charged bets. Completed AT payout includes zones and 5G revival; unfinished AT is counted separately. RNG xoshiro128; seed=seedBase+6*100003+i*7919, i=0..999 per batch. Session-clustered 95% intervals for RTP and AT mean; Wilson interval for reach.",
+  "change": {
+    "setting": 6,
+    "normalBoost": [
+      0.536,
+      0.584
+    ],
+    "unchangedSettings": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "entryQuotaUnchanged": true,
+    "atPerformanceUnchanged": true
+  },
+  "jobs": [
+    {
+      "tag": "verify-a",
+      "seedBase": 187600000,
+      "setting": 6,
+      "trials": 1000
+    },
+    {
+      "tag": "verify-b",
+      "seedBase": 207600000,
+      "setting": 6,
+      "trials": 1000
+    },
+    {
+      "tag": "verify-c",
+      "seedBase": 227600000,
+      "setting": 6,
+      "trials": 1000
+    }
+  ],
+  "parity": {
+    "baseline": "8d95cfff19f69a2348572650d7c2ae04ff0e5d0f",
+    "unchanged": [
+      {
+        "setting": 1,
+        "seed": 127990001,
+        "games": 30000,
+        "paid": 38624,
+        "bet": 47460,
+        "identical": true
+      },
+      {
+        "setting": 2,
+        "seed": 127990002,
+        "games": 30000,
+        "paid": 41201,
+        "bet": 46869,
+        "identical": true
+      },
+      {
+        "setting": 3,
+        "seed": 127990003,
+        "games": 19965,
+        "paid": 40054,
+        "bet": 30045,
+        "identical": true
+      },
+      {
+        "setting": 4,
+        "seed": 127990004,
+        "games": 30000,
+        "paid": 46754,
+        "bet": 46872,
+        "identical": true
+      },
+      {
+        "setting": 5,
+        "seed": 127990005,
+        "games": 29499,
+        "paid": 54630,
+        "bet": 44625,
+        "identical": true
+      }
+    ],
+    "cacheParity": {
+      "setting": 6,
+      "seed": 127999006,
+      "games": 30000,
+      "paid": 54285,
+      "bet": 46173,
+      "identical": true
+    }
+  },
+  "previous": {
+    "tag": "verify",
+    "setting": 6,
+    "trials": 1000,
+    "seedBase": 126600000,
+    "gamesPerTrial": 30000,
+    "games": 28626022,
+    "complete": 176,
+    "completeRate": 0.176,
+    "completeCI": [
+      0.15364903702878677,
+      0.2008307932551943
+    ],
+    "rtp": {
+      "bet": 43920192,
+      "paid": 48181968,
+      "value": 1.097034548482848,
+      "ci": [
+        1.090672556514835,
+        1.1033965404508612
+      ]
+    },
+    "stoppedRtp": {
+      "bet": 43920192,
+      "paid": 48181968,
+      "value": 1.097034548482848,
+      "ci": [
+        1.090672556514835,
+        1.1033965404508612
+      ]
+    },
+    "stoppedGames": 28626022,
+    "ordinary": {
+      "completed": 76063,
+      "censored": 398,
+      "mean": 483.4448549228929,
+      "p50": 306,
+      "p90": 993,
+      "p99": 2823,
+      "over2000": 0.04401614451178628,
+      "over10000": 0
+    },
+    "burst": {
+      "completed": 441,
+      "censored": 21,
+      "mean": 2503.612244897959,
+      "p50": 2145,
+      "p90": 4371,
+      "p99": 6792,
+      "over2000": 0.5306122448979592,
+      "over10000": 0
+    },
+    "burstAttempts": 952,
+    "burstWins": 462,
+    "atEntries": 76923,
+    "czEntries": 173258,
+    "normalGames": 15790469,
+    "distribution": [
+      {
+        "lo": 0,
+        "hi": 500,
+        "count": 55123,
+        "rate": 0.7205244170239464
+      },
+      {
+        "lo": 500,
+        "hi": 1000,
+        "count": 13436,
+        "rate": 0.17562480393182056
+      },
+      {
+        "lo": 1000,
+        "hi": 2000,
+        "count": 4363,
+        "rate": 0.05702969779357942
+      },
+      {
+        "lo": 2000,
+        "hi": 3000,
+        "count": 2876,
+        "rate": 0.03759280560493569
+      },
+      {
+        "lo": 3000,
+        "hi": 4000,
+        "count": 538,
+        "rate": 0.007032312035971975
+      },
+      {
+        "lo": 4000,
+        "hi": 10000,
+        "count": 168,
+        "rate": 0.0021959636097458957
+      },
+      {
+        "lo": 10000,
+        "hi": null,
+        "count": 0,
+        "rate": 0
+      }
+    ],
+    "episodes": {
+      "completed": 76504,
+      "censored": 419,
+      "mean": 495.0899168670919,
+      "reach2000": 0.04738504738504738,
+      "mid": 0.044625117640907666
+    },
+    "win": 0.83,
+    "seconds": 208.318,
+    "sourceHashes": {
+      "nova-art.js": "10d1b79ade08645d00f42ea291f62a67faab8db96925301920ee82930c5c138b",
+      "nova-balance.js": "b23e0021b5b64b771d76a981a61fdfebf8d1822efff7780db1e1b2ca8c609ad3",
+      "nova-flow.js": "3b9e17a4649d5b7e585266613c62f196306a2ccb774bf0ec0abdac6747d51dab",
+      "nova-normal.js": "5d103651c8dcfe4550669a49ff195230e5d6a725cca1258c6976a4b83a2b7896"
+    },
+    "canonicalSourceHashes": {
+      "nova-art.js": "84aeaad86fc939f59e2edb6f18e23cc82f29509d095e42c859d403d0ae9030b5",
+      "nova-balance.js": "a65fbf4516028ac673cf6e67e1cd1807736c960a24a925a00109b9a8fb94bfaf",
+      "nova-flow.js": "b186c61ec3710e16f682fd5f13030207d0fb80fc5d26120d049b8197d6af43fc",
+      "nova-normal.js": "5d103651c8dcfe4550669a49ff195230e5d6a725cca1258c6976a4b83a2b7896"
+    },
+    "meanCI": [
+      491.0694504326824,
+      499.11038330150143
+    ],
+    "median": 306,
+    "atFirstDenom": 372.1386581386581,
+    "normalAtDenom": 205.2763022763023,
+    "czNormalDenom": 91.13846979648848,
+    "netMean": 4261.776,
+    "netDistribution": [
+      {
+        "lo": null,
+        "hi": -10000,
+        "count": 0
+      },
+      {
+        "lo": -10000,
+        "hi": -5000,
+        "count": 15
+      },
+      {
+        "lo": -5000,
+        "hi": 0,
+        "count": 155
+      },
+      {
+        "lo": 0,
+        "hi": 2000,
+        "count": 137
+      },
+      {
+        "lo": 2000,
+        "hi": 5000,
+        "count": 249
+      },
+      {
+        "lo": 5000,
+        "hi": 10000,
+        "count": 268
+      },
+      {
+        "lo": 10000,
+        "hi": null,
+        "count": 176
+      }
+    ],
+    "prior": {
+      "mean": 819.524281446379,
+      "rtp": 1.0923880201742806,
+      "reach": 0.176,
+      "atFirstDenom": 584.1501378254211
+    },
+    "rawFile": "research/start126/verify-6.json"
+  },
+  "setting6": {
+    "tag": "s6-127-holdout",
+    "setting": 6,
+    "seedBases": [
+      187600000,
+      207600000,
+      227600000
+    ],
+    "trials": 3000,
+    "gamesPerTrial": 30000,
+    "games": 83260073,
+    "complete": 858,
+    "completeRate": 0.286,
+    "completeCI": [
+      0.2701110566244073,
+      0.30243631072012905
+    ],
+    "rtp": {
+      "bet": 127422966,
+      "paid": 145019251,
+      "value": 1.1380935129072416,
+      "ci": [
+        1.1343291065241368,
+        1.1418579192903464
+      ]
+    },
+    "stoppedRtp": {
+      "bet": 127422966,
+      "paid": 145019251,
+      "value": 1.1380935129072416,
+      "ci": [
+        1.1343291065241368,
+        1.1418579192903464
+      ]
+    },
+    "stoppedGames": 83260073,
+    "ordinary": {
+      "completed": 229764,
+      "censored": 1398,
+      "mean": 479.1854337494124,
+      "p50": 306,
+      "p90": 984,
+      "p99": 2802,
+      "over2000": 0.04340105499556066,
+      "over10000": 0
+    },
+    "burst": {
+      "completed": 1528,
+      "censored": 78,
+      "mean": 2495.446335078534,
+      "p50": 2139,
+      "p90": 4293,
+      "p99": 6552,
+      "over2000": 0.5412303664921466,
+      "over10000": 0
+    },
+    "burstAttempts": 3125,
+    "burstWins": 1606,
+    "atEntries": 232768,
+    "czEntries": 513810,
+    "normalGames": 44690287,
+    "episodes": {
+      "completed": 231292,
+      "censored": 1476,
+      "mean": 492.5055946595645,
+      "meanCI": [
+        490.3106492330034,
+        494.7005400861256
+      ],
+      "median": 306
+    },
+    "distribution": [
+      {
+        "lo": 0,
+        "hi": 500,
+        "count": 167383,
+        "rate": 0.7236869411825744
+      },
+      {
+        "lo": 500,
+        "hi": 1000,
+        "count": 40011,
+        "rate": 0.17298912197568442
+      },
+      {
+        "lo": 1000,
+        "hi": 2000,
+        "count": 13099,
+        "rate": 0.056634038358438686
+      },
+      {
+        "lo": 2000,
+        "hi": 3000,
+        "count": 8767,
+        "rate": 0.037904467080573476
+      },
+      {
+        "lo": 3000,
+        "hi": 4000,
+        "count": 1538,
+        "rate": 0.0066496030991128096
+      },
+      {
+        "lo": 4000,
+        "hi": 10000,
+        "count": 494,
+        "rate": 0.002135828303616208
+      },
+      {
+        "lo": 10000,
+        "hi": null,
+        "count": 0,
+        "rate": 0
+      }
+    ],
+    "win": 0.9213333333333333,
+    "atFirstDenom": 357.6955294542205,
+    "normalAtDenom": 191.9949778320044,
+    "czNormalDenom": 86.97823514528717,
+    "netMean": 5865.428333333333,
+    "canonicalSourceHashes": {
+      "nova-art.js": "9a299f41b621da5ac83f901c6a4a324452e0fa2073010a1cc4749b623f02ecc3",
+      "nova-balance.js": "4a144a58c3941ca82e4ade1ec2a8478a49c9df907aad0f6c014b82e2998fa728",
+      "nova-flow.js": "b186c61ec3710e16f682fd5f13030207d0fb80fc5d26120d049b8197d6af43fc",
+      "nova-normal.js": "5d103651c8dcfe4550669a49ff195230e5d6a725cca1258c6976a4b83a2b7896"
+    }
+  }
+}

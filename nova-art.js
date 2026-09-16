@@ -19,7 +19,7 @@ globalThis.NovaArt=(()=>{
  const burstRules=Object.freeze({
   version:2,games:3,success:.5,
   uraWeights:Object.freeze([1,1,1]),
-  normalBoost:Object.freeze([0.376,0.39,0.397,0.448,0.483,0.536]),
+  normalBoost:Object.freeze([0.376,0.39,0.397,0.448,0.483,0.584]),
   entry:Object.freeze([0.0225,0.033,0.0465,0.063,0.0615,0.021]),
   roles:Object.freeze({WEAK_SUICA:.05,STRONG_SUICA:.5,CHANCE_A:.2,CHANCE_B:.2,WEAK_NOVA:.1,STRONG_NOVA:1})
  });

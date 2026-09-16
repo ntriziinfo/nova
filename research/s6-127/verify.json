@@ -1,0 +1,20 @@
+[
+  {
+    "tag": "verify-a",
+    "seedBase": 187600000,
+    "setting": 6,
+    "trials": 1000
+  },
+  {
+    "tag": "verify-b",
+    "seedBase": 207600000,
+    "setting": 6,
+    "trials": 1000
+  },
+  {
+    "tag": "verify-c",
+    "seedBase": 227600000,
+    "setting": 6,
+    "trials": 1000
+  }
+]

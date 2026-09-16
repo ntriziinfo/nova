@@ -6542,8 +6542,8 @@ body{
 <script src="nova-ladder-presentation.js?v=20260916-lamps-122"></script>
 <link rel="stylesheet" href="nova-aim-presentation.css?v=20260909-comeback-114">
 <script src="nova-aim-presentation.js?v=20260909-comeback-114"></script>
-<script src="nova-art.js?v=20260916-start-126"></script>
-<script src="nova-balance.js?v=20260916-start-126"></script>
+<script src="nova-art.js?v=20260916-s6-127"></script>
+<script src="nova-balance.js?v=20260916-s6-127"></script>
 <script src="nova-normal.js?v=20260916-start-126"></script>
 <script src="nova-flow.js?v=20260909-comeback-114"></script>
 <link rel="stylesheet" href="nova-audit.css?v=20260910-audit-121">
@@ -7970,7 +7970,7 @@ body{
     return {run:stats.auditRunId,game:Number(stats.totalSpins)||0,bet:Number(stats.totalFee)||0,paid:Number(stats.totalPaid)||0,setting:settings.setting,
       flow:normalState.flow||{phase:'normal'},internal:normalState.internal||{},replayFree:!!normalState.replayFree,complete:!!completeTrialState.locked,
       bonus:{active:isATypeBonusActive(),phase:session.phase,tier:session.bonusTier,paid:session.paid,sets:session.bonusArtSets,zones:session.bonusZones,target:session.bonusTarget,pending:!!normalState.bonusPending,source:normalState.bonusSource,prepLeft:normalState.prepLeft,prepSets:normalState.prepSets,prepZones:normalState.prepZones,premium:session.premiumBonus||normalState.premiumBonus,pointsRemaining:session.bonusPointsRemaining},
-      config:{balance:126,audit:121,setting:settings.setting,fee:SPIN_COST,completeLimitPt:settings.completeLimitPt,oddsMultiplier:settings.oddsMultiplier,art:settings.novaArt,commonAt:NovaArt.commonAtRules,entryQuota:NovaArt.entryQuotaRules,uraChallenge:NovaArt.burstRules,normal:settings.novaNormal,cz:settings.novaFlow}};
+      config:{balance:127,audit:121,setting:settings.setting,fee:SPIN_COST,completeLimitPt:settings.completeLimitPt,oddsMultiplier:settings.oddsMultiplier,art:settings.novaArt,commonAt:NovaArt.commonAtRules,entryQuota:NovaArt.entryQuotaRules,uraChallenge:NovaArt.burstRules,normal:settings.novaNormal,cz:settings.novaFlow}};
   }
   function auditCapture(detail={kind:'checkpoint'}){
     if(!novaAuditRecorder)return;

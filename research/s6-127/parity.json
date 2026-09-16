@@ -1,0 +1,53 @@
+{
+  "baseline": "8d95cfff19f69a2348572650d7c2ae04ff0e5d0f",
+  "unchanged": [
+    {
+      "setting": 1,
+      "seed": 127990001,
+      "games": 30000,
+      "paid": 38624,
+      "bet": 47460,
+      "identical": true
+    },
+    {
+      "setting": 2,
+      "seed": 127990002,
+      "games": 30000,
+      "paid": 41201,
+      "bet": 46869,
+      "identical": true
+    },
+    {
+      "setting": 3,
+      "seed": 127990003,
+      "games": 19965,
+      "paid": 40054,
+      "bet": 30045,
+      "identical": true
+    },
+    {
+      "setting": 4,
+      "seed": 127990004,
+      "games": 30000,
+      "paid": 46754,
+      "bet": 46872,
+      "identical": true
+    },
+    {
+      "setting": 5,
+      "seed": 127990005,
+      "games": 29499,
+      "paid": 54630,
+      "bet": 44625,
+      "identical": true
+    }
+  ],
+  "cacheParity": {
+    "setting": 6,
+    "seed": 127999006,
+    "games": 30000,
+    "paid": 54285,
+    "bet": 46173,
+    "identical": true
+  }
+}
