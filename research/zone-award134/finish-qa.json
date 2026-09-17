@@ -1,0 +1,123 @@
+{
+  "silent": true,
+  "isolated": true,
+  "checks": [
+    {
+      "label": "auto-resumes-after-final-result",
+      "config": {
+        "zone": "ouma",
+        "role": "MISS",
+        "final": true
+      },
+      "shows": [
+        {
+          "pt": 50,
+          "zoneAward": 50,
+          "stopped": [
+            true,
+            true,
+            true
+          ],
+          "moving": [
+            false,
+            false,
+            false
+          ],
+          "zero": false,
+          "time": 4335.699999928474
+        }
+      ],
+      "results": [
+        {
+          "time": 5335.199999928474,
+          "card": {
+            "kind": "zone",
+            "character": "ouma",
+            "color": "red",
+            "pt": "100"
+          }
+        }
+      ],
+      "sounds": 0,
+      "flow": {
+        "initialStage": "",
+        "initialWait": 0,
+        "initialPlan": [],
+        "initialIndex": 0,
+        "entryQuota": "750",
+        "setQuota": "150",
+        "comebackLeft": 0,
+        "comebackLamp": "",
+        "comebackConfirmed": false,
+        "burstVersion": 2,
+        "burstType": "ura",
+        "burstUsed": true,
+        "burstPending": false,
+        "burstLeft": 0,
+        "burstWon": false,
+        "dryEligible": false,
+        "rouletteTable": 0,
+        "sevenHits": 2,
+        "zoneVersion": 2,
+        "ladder": [],
+        "ladderIndex": 0,
+        "ladderRevealed": false,
+        "atHigh": false,
+        "atHighLeft": 0,
+        "entryStage": "",
+        "pendingZone": "",
+        "payoutVersion": 1,
+        "queuedZones": [],
+        "phase": "art",
+        "remaining": "850",
+        "zone": "",
+        "ura": false,
+        "zoneLeft": 0,
+        "award": "100",
+        "initialAward": "0",
+        "stock": "0",
+        "zoneSets": "0",
+        "zoneZones": "0",
+        "sets": "0",
+        "oumaPending": false,
+        "zero": false,
+        "color": "white",
+        "awardTier": 4,
+        "giruVersion": 0,
+        "giruBase": 0,
+        "giruContinues": 0,
+        "giruSetting": 1
+      }
+    },
+    {
+      "label": "reset-cancels-deferred-result",
+      "config": {
+        "zone": "ouma",
+        "role": "MISS",
+        "final": true
+      },
+      "shows": [
+        {
+          "pt": 50,
+          "zoneAward": 50,
+          "stopped": [
+            true,
+            true,
+            true
+          ],
+          "moving": [
+            false,
+            false,
+            false
+          ],
+          "zero": false,
+          "time": 5853.600000023842
+        }
+      ],
+      "results": [],
+      "sounds": 0
+    }
+  ],
+  "pageErrors": [],
+  "missingAssets": []
+}

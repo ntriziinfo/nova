@@ -1,0 +1,1441 @@
+{
+  "silent": true,
+  "isolated": true,
+  "checks": [
+    {
+      "label": "sosuke",
+      "config": {
+        "zone": "sosuke"
+      },
+      "shows": [
+        {
+          "pt": 250,
+          "zoneAward": 250,
+          "stopped": [
+            true,
+            true,
+            true
+          ],
+          "moving": [
+            false,
+            false,
+            false
+          ],
+          "zero": false,
+          "time": 12028.899999976158
+        }
+      ],
+      "results": [],
+      "sounds": 0,
+      "flow": {
+        "initialStage": "",
+        "initialWait": 0,
+        "initialPlan": [],
+        "initialIndex": 0,
+        "entryQuota": "750",
+        "setQuota": "150",
+        "comebackLeft": 0,
+        "comebackLamp": "",
+        "comebackConfirmed": false,
+        "burstVersion": 2,
+        "burstType": "ura",
+        "burstUsed": true,
+        "burstPending": false,
+        "burstLeft": 0,
+        "burstWon": false,
+        "dryEligible": false,
+        "rouletteTable": 0,
+        "sevenHits": 0,
+        "zoneVersion": 2,
+        "ladder": [
+          50,
+          100,
+          350,
+          500,
+          1000
+        ],
+        "ladderIndex": 2,
+        "ladderRevealed": true,
+        "atHigh": false,
+        "atHighLeft": 0,
+        "entryStage": "",
+        "pendingZone": "",
+        "payoutVersion": 1,
+        "queuedZones": [],
+        "phase": "art",
+        "remaining": "750",
+        "zone": "sosuke",
+        "ura": false,
+        "zoneLeft": 2,
+        "award": "350",
+        "initialAward": "50",
+        "stock": "0",
+        "zoneSets": "0",
+        "zoneZones": "0",
+        "sets": "0",
+        "oumaPending": false,
+        "zero": false,
+        "color": "white",
+        "awardTier": 4,
+        "giruVersion": 0,
+        "giruBase": 0,
+        "giruContinues": 0,
+        "giruSetting": 1
+      }
+    },
+    {
+      "label": "giru",
+      "config": {
+        "zone": "giru"
+      },
+      "shows": [
+        {
+          "pt": 250,
+          "zoneAward": 250,
+          "stopped": [
+            true,
+            true,
+            true
+          ],
+          "moving": [
+            false,
+            false,
+            false
+          ],
+          "zero": false,
+          "time": 10055.100000023842
+        }
+      ],
+      "results": [],
+      "sounds": 0,
+      "flow": {
+        "initialStage": "",
+        "initialWait": 0,
+        "initialPlan": [],
+        "initialIndex": 0,
+        "entryQuota": "750",
+        "setQuota": "150",
+        "comebackLeft": 0,
+        "comebackLamp": "",
+        "comebackConfirmed": false,
+        "burstVersion": 2,
+        "burstType": "ura",
+        "burstUsed": true,
+        "burstPending": false,
+        "burstLeft": 0,
+        "burstWon": false,
+        "dryEligible": false,
+        "rouletteTable": 0,
+        "sevenHits": 0,
+        "zoneVersion": 2,
+        "ladder": [
+          50,
+          100,
+          350,
+          500,
+          1000
+        ],
+        "ladderIndex": 2,
+        "ladderRevealed": true,
+        "atHigh": false,
+        "atHighLeft": 0,
+        "entryStage": "",
+        "pendingZone": "",
+        "payoutVersion": 1,
+        "queuedZones": [],
+        "phase": "art",
+        "remaining": "750",
+        "zone": "giru",
+        "ura": false,
+        "zoneLeft": 2,
+        "award": "350",
+        "initialAward": "100",
+        "stock": "0",
+        "zoneSets": "0",
+        "zoneZones": "0",
+        "sets": "0",
+        "oumaPending": false,
+        "zero": false,
+        "color": "white",
+        "awardTier": 4,
+        "giruVersion": 0,
+        "giruBase": 0,
+        "giruContinues": 0,
+        "giruSetting": 1
+      }
+    },
+    {
+      "label": "ura_giru",
+      "config": {
+        "zone": "ura_giru"
+      },
+      "shows": [
+        {
+          "pt": 250,
+          "zoneAward": 250,
+          "stopped": [
+            true,
+            true,
+            true
+          ],
+          "moving": [
+            false,
+            false,
+            false
+          ],
+          "zero": false,
+          "time": 6983.399999976158
+        }
+      ],
+      "results": [],
+      "sounds": 0,
+      "flow": {
+        "initialStage": "",
+        "initialWait": 0,
+        "initialPlan": [],
+        "initialIndex": 0,
+        "entryQuota": "750",
+        "setQuota": "150",
+        "comebackLeft": 0,
+        "comebackLamp": "",
+        "comebackConfirmed": false,
+        "burstVersion": 2,
+        "burstType": "ura",
+        "burstUsed": true,
+        "burstPending": false,
+        "burstLeft": 0,
+        "burstWon": false,
+        "dryEligible": false,
+        "rouletteTable": 0,
+        "sevenHits": 0,
+        "zoneVersion": 2,
+        "ladder": [
+          50,
+          100,
+          350,
+          500,
+          1000
+        ],
+        "ladderIndex": 2,
+        "ladderRevealed": true,
+        "atHigh": false,
+        "atHighLeft": 0,
+        "entryStage": "",
+        "pendingZone": "",
+        "payoutVersion": 1,
+        "queuedZones": [],
+        "phase": "art",
+        "remaining": "750",
+        "zone": "giru",
+        "ura": true,
+        "zoneLeft": 2,
+        "award": "350",
+        "initialAward": "300",
+        "stock": "0",
+        "zoneSets": "0",
+        "zoneZones": "0",
+        "sets": "0",
+        "oumaPending": false,
+        "zero": false,
+        "color": "white",
+        "awardTier": 4,
+        "giruVersion": 0,
+        "giruBase": 0,
+        "giruContinues": 0,
+        "giruSetting": 1
+      }
+    },
+    {
+      "label": "toto",
+      "config": {
+        "zone": "toto"
+      },
+      "shows": [
+        {
+          "pt": 150,
+          "zoneAward": 150,
+          "stopped": [
+            true,
+            true,
+            true
+          ],
+          "moving": [
+            false,
+            false,
+            false
+          ],
+          "zero": false,
+          "time": 6624.800000071526
+        }
+      ],
+      "results": [],
+      "sounds": 0,
+      "flow": {
+        "initialStage": "",
+        "initialWait": 0,
+        "initialPlan": [],
+        "initialIndex": 0,
+        "entryQuota": "750",
+        "setQuota": "150",
+        "comebackLeft": 0,
+        "comebackLamp": "",
+        "comebackConfirmed": false,
+        "burstVersion": 2,
+        "burstType": "ura",
+        "burstUsed": true,
+        "burstPending": false,
+        "burstLeft": 0,
+        "burstWon": false,
+        "dryEligible": false,
+        "rouletteTable": 0,
+        "sevenHits": 3,
+        "zoneVersion": 2,
+        "ladder": [],
+        "ladderIndex": 0,
+        "ladderRevealed": false,
+        "atHigh": false,
+        "atHighLeft": 0,
+        "entryStage": "",
+        "pendingZone": "",
+        "payoutVersion": 1,
+        "queuedZones": [],
+        "phase": "art",
+        "remaining": "750",
+        "zone": "toto",
+        "ura": false,
+        "zoneLeft": 2,
+        "award": "250",
+        "initialAward": "0",
+        "stock": "0",
+        "zoneSets": "0",
+        "zoneZones": "0",
+        "sets": "0",
+        "oumaPending": false,
+        "zero": false,
+        "color": "white",
+        "awardTier": 4,
+        "giruVersion": 0,
+        "giruBase": 0,
+        "giruContinues": 0,
+        "giruSetting": 1
+      }
+    },
+    {
+      "label": "sora",
+      "config": {
+        "zone": "sora"
+      },
+      "shows": [
+        {
+          "pt": 300,
+          "zoneAward": 300,
+          "stopped": [
+            true,
+            true,
+            true
+          ],
+          "moving": [
+            false,
+            false,
+            false
+          ],
+          "zero": false,
+          "time": 6616.399999976158
+        }
+      ],
+      "results": [],
+      "sounds": 0,
+      "flow": {
+        "initialStage": "",
+        "initialWait": 0,
+        "initialPlan": [],
+        "initialIndex": 0,
+        "entryQuota": "750",
+        "setQuota": "150",
+        "comebackLeft": 0,
+        "comebackLamp": "",
+        "comebackConfirmed": false,
+        "burstVersion": 2,
+        "burstType": "ura",
+        "burstUsed": true,
+        "burstPending": false,
+        "burstLeft": 0,
+        "burstWon": false,
+        "dryEligible": false,
+        "rouletteTable": 0,
+        "sevenHits": 3,
+        "zoneVersion": 2,
+        "ladder": [],
+        "ladderIndex": 0,
+        "ladderRevealed": false,
+        "atHigh": false,
+        "atHighLeft": 0,
+        "entryStage": "",
+        "pendingZone": "",
+        "payoutVersion": 1,
+        "queuedZones": [],
+        "phase": "art",
+        "remaining": "750",
+        "zone": "sora",
+        "ura": false,
+        "zoneLeft": 2,
+        "award": "400",
+        "initialAward": "0",
+        "stock": "0",
+        "zoneSets": "0",
+        "zoneZones": "0",
+        "sets": "0",
+        "oumaPending": false,
+        "zero": false,
+        "color": "white",
+        "awardTier": 4,
+        "giruVersion": 0,
+        "giruBase": 0,
+        "giruContinues": 0,
+        "giruSetting": 1
+      }
+    },
+    {
+      "label": "ura_sora",
+      "config": {
+        "zone": "ura_sora"
+      },
+      "shows": [
+        {
+          "pt": 300,
+          "zoneAward": 300,
+          "stopped": [
+            true,
+            true,
+            true
+          ],
+          "moving": [
+            false,
+            false,
+            false
+          ],
+          "zero": false,
+          "time": 8146.299999952316
+        }
+      ],
+      "results": [],
+      "sounds": 0,
+      "flow": {
+        "initialStage": "",
+        "initialWait": 0,
+        "initialPlan": [],
+        "initialIndex": 0,
+        "entryQuota": "750",
+        "setQuota": "150",
+        "comebackLeft": 0,
+        "comebackLamp": "",
+        "comebackConfirmed": false,
+        "burstVersion": 2,
+        "burstType": "ura",
+        "burstUsed": true,
+        "burstPending": false,
+        "burstLeft": 0,
+        "burstWon": false,
+        "dryEligible": false,
+        "rouletteTable": 0,
+        "sevenHits": 3,
+        "zoneVersion": 2,
+        "ladder": [],
+        "ladderIndex": 0,
+        "ladderRevealed": false,
+        "atHigh": false,
+        "atHighLeft": 0,
+        "entryStage": "",
+        "pendingZone": "",
+        "payoutVersion": 1,
+        "queuedZones": [],
+        "phase": "art",
+        "remaining": "750",
+        "zone": "sora",
+        "ura": true,
+        "zoneLeft": 2,
+        "award": "400",
+        "initialAward": "0",
+        "stock": "0",
+        "zoneSets": "0",
+        "zoneZones": "0",
+        "sets": "0",
+        "oumaPending": false,
+        "zero": false,
+        "color": "white",
+        "awardTier": 4,
+        "giruVersion": 0,
+        "giruBase": 0,
+        "giruContinues": 0,
+        "giruSetting": 1
+      }
+    },
+    {
+      "label": "urapi",
+      "config": {
+        "zone": "urapi"
+      },
+      "shows": [
+        {
+          "pt": 50,
+          "zoneAward": 50,
+          "stopped": [
+            true,
+            true,
+            true
+          ],
+          "moving": [
+            false,
+            false,
+            false
+          ],
+          "zero": false,
+          "time": 8972.800000071526
+        }
+      ],
+      "results": [],
+      "sounds": 0,
+      "flow": {
+        "initialStage": "",
+        "initialWait": 0,
+        "initialPlan": [],
+        "initialIndex": 0,
+        "entryQuota": "750",
+        "setQuota": "150",
+        "comebackLeft": 0,
+        "comebackLamp": "",
+        "comebackConfirmed": false,
+        "burstVersion": 2,
+        "burstType": "ura",
+        "burstUsed": true,
+        "burstPending": false,
+        "burstLeft": 0,
+        "burstWon": false,
+        "dryEligible": false,
+        "rouletteTable": 0,
+        "sevenHits": 2,
+        "zoneVersion": 2,
+        "ladder": [],
+        "ladderIndex": 0,
+        "ladderRevealed": false,
+        "atHigh": false,
+        "atHighLeft": 0,
+        "entryStage": "",
+        "pendingZone": "",
+        "payoutVersion": 1,
+        "queuedZones": [],
+        "phase": "art",
+        "remaining": "750",
+        "zone": "urapi",
+        "ura": false,
+        "zoneLeft": 2,
+        "award": "150",
+        "initialAward": "0",
+        "stock": "0",
+        "zoneSets": "0",
+        "zoneZones": "0",
+        "sets": "0",
+        "oumaPending": true,
+        "zero": false,
+        "color": "white",
+        "awardTier": 4,
+        "giruVersion": 0,
+        "giruBase": 0,
+        "giruContinues": 0,
+        "giruSetting": 1
+      }
+    },
+    {
+      "label": "ouma",
+      "config": {
+        "zone": "ouma"
+      },
+      "shows": [
+        {
+          "pt": 50,
+          "zoneAward": 50,
+          "stopped": [
+            true,
+            true,
+            true
+          ],
+          "moving": [
+            false,
+            false,
+            false
+          ],
+          "zero": false,
+          "time": 6224.699999928474
+        }
+      ],
+      "results": [],
+      "sounds": 0,
+      "flow": {
+        "initialStage": "",
+        "initialWait": 0,
+        "initialPlan": [],
+        "initialIndex": 0,
+        "entryQuota": "750",
+        "setQuota": "150",
+        "comebackLeft": 0,
+        "comebackLamp": "",
+        "comebackConfirmed": false,
+        "burstVersion": 2,
+        "burstType": "ura",
+        "burstUsed": true,
+        "burstPending": false,
+        "burstLeft": 0,
+        "burstWon": false,
+        "dryEligible": false,
+        "rouletteTable": 0,
+        "sevenHits": 2,
+        "zoneVersion": 2,
+        "ladder": [],
+        "ladderIndex": 0,
+        "ladderRevealed": false,
+        "atHigh": false,
+        "atHighLeft": 0,
+        "entryStage": "",
+        "pendingZone": "",
+        "payoutVersion": 1,
+        "queuedZones": [],
+        "phase": "art",
+        "remaining": "750",
+        "zone": "ouma",
+        "ura": false,
+        "zoneLeft": 2,
+        "award": "150",
+        "initialAward": "0",
+        "stock": "0",
+        "zoneSets": "0",
+        "zoneZones": "0",
+        "sets": "0",
+        "oumaPending": true,
+        "zero": false,
+        "color": "white",
+        "awardTier": 4,
+        "giruVersion": 0,
+        "giruBase": 0,
+        "giruContinues": 0,
+        "giruSetting": 1
+      }
+    },
+    {
+      "label": "ura_ouma",
+      "config": {
+        "zone": "ura_ouma"
+      },
+      "shows": [
+        {
+          "pt": 100,
+          "zoneAward": 100,
+          "stopped": [
+            true,
+            true,
+            true
+          ],
+          "moving": [
+            false,
+            false,
+            false
+          ],
+          "zero": false,
+          "time": 8446.299999952316
+        }
+      ],
+      "results": [],
+      "sounds": 0,
+      "flow": {
+        "initialStage": "",
+        "initialWait": 0,
+        "initialPlan": [],
+        "initialIndex": 0,
+        "entryQuota": "750",
+        "setQuota": "150",
+        "comebackLeft": 0,
+        "comebackLamp": "",
+        "comebackConfirmed": false,
+        "burstVersion": 2,
+        "burstType": "ura",
+        "burstUsed": true,
+        "burstPending": false,
+        "burstLeft": 0,
+        "burstWon": false,
+        "dryEligible": false,
+        "rouletteTable": 0,
+        "sevenHits": 2,
+        "zoneVersion": 2,
+        "ladder": [],
+        "ladderIndex": 0,
+        "ladderRevealed": false,
+        "atHigh": false,
+        "atHighLeft": 0,
+        "entryStage": "",
+        "pendingZone": "",
+        "payoutVersion": 1,
+        "queuedZones": [],
+        "phase": "art",
+        "remaining": "750",
+        "zone": "ouma",
+        "ura": true,
+        "zoneLeft": 2,
+        "award": "200",
+        "initialAward": "0",
+        "stock": "0",
+        "zoneSets": "0",
+        "zoneZones": "0",
+        "sets": "0",
+        "oumaPending": true,
+        "zero": false,
+        "color": "white",
+        "awardTier": 4,
+        "giruVersion": 0,
+        "giruBase": 0,
+        "giruContinues": 0,
+        "giruSetting": 1
+      }
+    },
+    {
+      "label": "nebula",
+      "config": {
+        "zone": "sora",
+        "role": "NEBULA"
+      },
+      "shows": [
+        {
+          "pt": 10,
+          "zoneAward": 10,
+          "stopped": [
+            true,
+            true,
+            true
+          ],
+          "moving": [
+            false,
+            false,
+            false
+          ],
+          "zero": false,
+          "time": 6769.799999952316
+        }
+      ],
+      "results": [],
+      "sounds": 0,
+      "flow": {
+        "initialStage": "",
+        "initialWait": 0,
+        "initialPlan": [],
+        "initialIndex": 0,
+        "entryQuota": "750",
+        "setQuota": "150",
+        "comebackLeft": 0,
+        "comebackLamp": "",
+        "comebackConfirmed": false,
+        "burstVersion": 2,
+        "burstType": "ura",
+        "burstUsed": true,
+        "burstPending": false,
+        "burstLeft": 0,
+        "burstWon": false,
+        "dryEligible": false,
+        "rouletteTable": 0,
+        "sevenHits": 2,
+        "zoneVersion": 2,
+        "ladder": [],
+        "ladderIndex": 0,
+        "ladderRevealed": false,
+        "atHigh": false,
+        "atHighLeft": 0,
+        "entryStage": "",
+        "pendingZone": "",
+        "payoutVersion": 1,
+        "queuedZones": [],
+        "phase": "art",
+        "remaining": "750",
+        "zone": "sora",
+        "ura": false,
+        "zoneLeft": 5,
+        "award": "110",
+        "initialAward": "0",
+        "stock": "0",
+        "zoneSets": "0",
+        "zoneZones": "0",
+        "sets": "0",
+        "oumaPending": false,
+        "zero": false,
+        "color": "white",
+        "awardTier": 4,
+        "giruVersion": 0,
+        "giruBase": 0,
+        "giruContinues": 0,
+        "giruSetting": 1
+      }
+    },
+    {
+      "label": "miss",
+      "config": {
+        "zone": "sora",
+        "role": "MISS"
+      },
+      "shows": [],
+      "results": [],
+      "sounds": 0,
+      "flow": {
+        "initialStage": "",
+        "initialWait": 0,
+        "initialPlan": [],
+        "initialIndex": 0,
+        "entryQuota": "750",
+        "setQuota": "150",
+        "comebackLeft": 0,
+        "comebackLamp": "",
+        "comebackConfirmed": false,
+        "burstVersion": 2,
+        "burstType": "ura",
+        "burstUsed": true,
+        "burstPending": false,
+        "burstLeft": 0,
+        "burstWon": false,
+        "dryEligible": false,
+        "rouletteTable": 0,
+        "sevenHits": 2,
+        "zoneVersion": 2,
+        "ladder": [],
+        "ladderIndex": 0,
+        "ladderRevealed": false,
+        "atHigh": false,
+        "atHighLeft": 0,
+        "entryStage": "",
+        "pendingZone": "",
+        "payoutVersion": 1,
+        "queuedZones": [],
+        "phase": "art",
+        "remaining": "750",
+        "zone": "sora",
+        "ura": false,
+        "zoneLeft": 2,
+        "award": "100",
+        "initialAward": "0",
+        "stock": "0",
+        "zoneSets": "0",
+        "zoneZones": "0",
+        "sets": "0",
+        "oumaPending": false,
+        "zero": false,
+        "color": "white",
+        "awardTier": 4,
+        "giruVersion": 0,
+        "giruBase": 0,
+        "giruContinues": 0,
+        "giruSetting": 1
+      }
+    },
+    {
+      "label": "final-guarantee",
+      "config": {
+        "zone": "ouma",
+        "role": "MISS",
+        "final": true
+      },
+      "shows": [
+        {
+          "pt": 50,
+          "zoneAward": 50,
+          "stopped": [
+            true,
+            true,
+            true
+          ],
+          "moving": [
+            false,
+            false,
+            false
+          ],
+          "zero": false,
+          "time": 7200.400000095367
+        }
+      ],
+      "results": [
+        {
+          "time": 8202.700000047684,
+          "card": {
+            "kind": "zone",
+            "character": "ouma",
+            "color": "red",
+            "pt": "100"
+          }
+        }
+      ],
+      "sounds": 0,
+      "flow": {
+        "initialStage": "",
+        "initialWait": 0,
+        "initialPlan": [],
+        "initialIndex": 0,
+        "entryQuota": "750",
+        "setQuota": "150",
+        "comebackLeft": 0,
+        "comebackLamp": "",
+        "comebackConfirmed": false,
+        "burstVersion": 2,
+        "burstType": "ura",
+        "burstUsed": true,
+        "burstPending": false,
+        "burstLeft": 0,
+        "burstWon": false,
+        "dryEligible": false,
+        "rouletteTable": 0,
+        "sevenHits": 2,
+        "zoneVersion": 2,
+        "ladder": [],
+        "ladderIndex": 0,
+        "ladderRevealed": false,
+        "atHigh": false,
+        "atHighLeft": 0,
+        "entryStage": "",
+        "pendingZone": "",
+        "payoutVersion": 1,
+        "queuedZones": [],
+        "phase": "art",
+        "remaining": "850",
+        "zone": "",
+        "ura": false,
+        "zoneLeft": 0,
+        "award": "100",
+        "initialAward": "0",
+        "stock": "0",
+        "zoneSets": "0",
+        "zoneZones": "0",
+        "sets": "0",
+        "oumaPending": false,
+        "zero": false,
+        "color": "white",
+        "awardTier": 4,
+        "giruVersion": 0,
+        "giruBase": 0,
+        "giruContinues": 0,
+        "giruSetting": 1
+      }
+    },
+    {
+      "label": "initial-auto-giru",
+      "config": {
+        "zone": "giru",
+        "initial": true
+      },
+      "shows": [
+        {
+          "pt": 50,
+          "zoneAward": 50,
+          "stopped": [
+            true,
+            true,
+            true
+          ],
+          "moving": [
+            false,
+            false,
+            false
+          ],
+          "zero": false,
+          "time": 6289.899999976158
+        },
+        {
+          "pt": 100,
+          "zoneAward": 100,
+          "stopped": [
+            true,
+            true,
+            true
+          ],
+          "moving": [
+            false,
+            false,
+            false
+          ],
+          "zero": false,
+          "time": 7065.899999976158
+        },
+        {
+          "pt": 150,
+          "zoneAward": 150,
+          "stopped": [
+            true,
+            true,
+            true
+          ],
+          "moving": [
+            false,
+            false,
+            false
+          ],
+          "zero": false,
+          "time": 9059.100000023842
+        },
+        {
+          "pt": 200,
+          "zoneAward": 200,
+          "stopped": [
+            true,
+            true,
+            true
+          ],
+          "moving": [
+            false,
+            false,
+            false
+          ],
+          "zero": false,
+          "time": 11059.600000023842
+        },
+        {
+          "pt": 250,
+          "zoneAward": 250,
+          "stopped": [
+            true,
+            true,
+            true
+          ],
+          "moving": [
+            false,
+            false,
+            false
+          ],
+          "zero": false,
+          "time": 13059.899999976158
+        }
+      ],
+      "results": [],
+      "sounds": 0,
+      "flow": {
+        "initialStage": "",
+        "initialWait": 0,
+        "initialPlan": [],
+        "initialIndex": 0,
+        "entryQuota": "750",
+        "setQuota": "150",
+        "comebackLeft": 0,
+        "comebackLamp": "",
+        "comebackConfirmed": false,
+        "burstVersion": 2,
+        "burstType": "ura",
+        "burstUsed": true,
+        "burstPending": false,
+        "burstLeft": 0,
+        "burstWon": false,
+        "dryEligible": true,
+        "rouletteTable": 0,
+        "sevenHits": 0,
+        "zoneVersion": 2,
+        "ladder": [
+          50,
+          150,
+          300,
+          500,
+          750
+        ],
+        "ladderIndex": 4,
+        "ladderRevealed": true,
+        "atHigh": false,
+        "atHighLeft": 0,
+        "entryStage": "",
+        "pendingZone": "",
+        "payoutVersion": 1,
+        "queuedZones": [],
+        "phase": "art",
+        "remaining": "750",
+        "zone": "",
+        "ura": false,
+        "zoneLeft": 0,
+        "award": "750",
+        "initialAward": "50",
+        "stock": "0",
+        "zoneSets": "0",
+        "zoneZones": "0",
+        "sets": "0",
+        "oumaPending": false,
+        "zero": false,
+        "color": "white",
+        "awardTier": 4,
+        "giruVersion": 0,
+        "giruBase": 0,
+        "giruContinues": 0,
+        "giruSetting": 1
+      }
+    },
+    {
+      "label": "initial-auto-sora",
+      "config": {
+        "zone": "sora",
+        "initial": true
+      },
+      "shows": [
+        {
+          "pt": 50,
+          "zoneAward": 50,
+          "stopped": [
+            true,
+            true,
+            true
+          ],
+          "moving": [
+            false,
+            false,
+            false
+          ],
+          "zero": false,
+          "time": 4934.100000023842
+        },
+        {
+          "pt": 100,
+          "zoneAward": 100,
+          "stopped": [
+            true,
+            true,
+            true
+          ],
+          "moving": [
+            false,
+            false,
+            false
+          ],
+          "zero": false,
+          "time": 9370.799999952316
+        },
+        {
+          "pt": 150,
+          "zoneAward": 150,
+          "stopped": [
+            true,
+            true,
+            true
+          ],
+          "moving": [
+            false,
+            false,
+            false
+          ],
+          "zero": false,
+          "time": 13492
+        },
+        {
+          "pt": 200,
+          "zoneAward": 200,
+          "stopped": [
+            true,
+            true,
+            true
+          ],
+          "moving": [
+            false,
+            false,
+            false
+          ],
+          "zero": false,
+          "time": 17284.799999952316
+        },
+        {
+          "pt": 250,
+          "zoneAward": 250,
+          "stopped": [
+            true,
+            true,
+            true
+          ],
+          "moving": [
+            false,
+            false,
+            false
+          ],
+          "zero": false,
+          "time": 21503.799999952316
+        }
+      ],
+      "results": [],
+      "sounds": 0,
+      "flow": {
+        "initialStage": "",
+        "initialWait": 0,
+        "initialPlan": [],
+        "initialIndex": 0,
+        "entryQuota": "750",
+        "setQuota": "150",
+        "comebackLeft": 0,
+        "comebackLamp": "",
+        "comebackConfirmed": false,
+        "burstVersion": 2,
+        "burstType": "ura",
+        "burstUsed": true,
+        "burstPending": false,
+        "burstLeft": 0,
+        "burstWon": false,
+        "dryEligible": true,
+        "rouletteTable": 0,
+        "sevenHits": 5,
+        "zoneVersion": 2,
+        "ladder": [],
+        "ladderIndex": 0,
+        "ladderRevealed": false,
+        "atHigh": false,
+        "atHighLeft": 0,
+        "entryStage": "",
+        "pendingZone": "",
+        "payoutVersion": 1,
+        "queuedZones": [],
+        "phase": "art",
+        "remaining": "750",
+        "zone": "",
+        "ura": false,
+        "zoneLeft": 0,
+        "award": "750",
+        "initialAward": "0",
+        "stock": "0",
+        "zoneSets": "0",
+        "zoneZones": "0",
+        "sets": "0",
+        "oumaPending": false,
+        "zero": false,
+        "color": "white",
+        "awardTier": 4,
+        "giruVersion": 0,
+        "giruBase": 0,
+        "giruContinues": 0,
+        "giruSetting": 1
+      }
+    },
+    {
+      "label": "initial-auto-ouma",
+      "config": {
+        "zone": "ouma",
+        "initial": true
+      },
+      "shows": [
+        {
+          "pt": 50,
+          "zoneAward": 50,
+          "stopped": [
+            true,
+            true,
+            true
+          ],
+          "moving": [
+            false,
+            false,
+            false
+          ],
+          "zero": false,
+          "time": 5392.100000023842
+        },
+        {
+          "pt": 100,
+          "zoneAward": 100,
+          "stopped": [
+            true,
+            true,
+            true
+          ],
+          "moving": [
+            false,
+            false,
+            false
+          ],
+          "zero": false,
+          "time": 7141.199999928474
+        },
+        {
+          "pt": 150,
+          "zoneAward": 150,
+          "stopped": [
+            true,
+            true,
+            true
+          ],
+          "moving": [
+            false,
+            false,
+            false
+          ],
+          "zero": false,
+          "time": 8853.600000023842
+        },
+        {
+          "pt": 200,
+          "zoneAward": 200,
+          "stopped": [
+            true,
+            true,
+            true
+          ],
+          "moving": [
+            false,
+            false,
+            false
+          ],
+          "zero": false,
+          "time": 10450.899999976158
+        },
+        {
+          "pt": 250,
+          "zoneAward": 250,
+          "stopped": [
+            true,
+            true,
+            true
+          ],
+          "moving": [
+            false,
+            false,
+            false
+          ],
+          "zero": false,
+          "time": 12194.199999928474
+        }
+      ],
+      "results": [],
+      "sounds": 0,
+      "flow": {
+        "initialStage": "",
+        "initialWait": 0,
+        "initialPlan": [],
+        "initialIndex": 0,
+        "entryQuota": "750",
+        "setQuota": "150",
+        "comebackLeft": 0,
+        "comebackLamp": "",
+        "comebackConfirmed": false,
+        "burstVersion": 2,
+        "burstType": "ura",
+        "burstUsed": true,
+        "burstPending": false,
+        "burstLeft": 0,
+        "burstWon": false,
+        "dryEligible": true,
+        "rouletteTable": 0,
+        "sevenHits": 0,
+        "zoneVersion": 2,
+        "ladder": [],
+        "ladderIndex": 0,
+        "ladderRevealed": false,
+        "atHigh": false,
+        "atHighLeft": 0,
+        "entryStage": "",
+        "pendingZone": "",
+        "payoutVersion": 1,
+        "queuedZones": [],
+        "phase": "art",
+        "remaining": "750",
+        "zone": "",
+        "ura": false,
+        "zoneLeft": 0,
+        "award": "750",
+        "initialAward": "0",
+        "stock": "0",
+        "zoneSets": "0",
+        "zoneZones": "0",
+        "sets": "0",
+        "oumaPending": false,
+        "zero": false,
+        "color": "white",
+        "awardTier": 4,
+        "giruVersion": 0,
+        "giruBase": 0,
+        "giruContinues": 0,
+        "giruSetting": 1
+      }
+    },
+    {
+      "label": "zero-auto",
+      "config": {
+        "zone": "ouma",
+        "zero": true
+      },
+      "shows": [
+        {
+          "pt": 50,
+          "zoneAward": 50,
+          "stopped": [
+            true,
+            true,
+            true
+          ],
+          "moving": [
+            false,
+            false,
+            false
+          ],
+          "zero": false,
+          "time": 5314.799999952316
+        },
+        {
+          "pt": 50,
+          "zoneAward": 50,
+          "stopped": [
+            true,
+            true,
+            true
+          ],
+          "moving": [
+            false,
+            false,
+            false
+          ],
+          "zero": true,
+          "time": 10811.5
+        }
+      ],
+      "results": [],
+      "sounds": 0,
+      "flow": {
+        "initialStage": "",
+        "initialWait": 0,
+        "initialPlan": [],
+        "initialIndex": 0,
+        "entryQuota": "750",
+        "setQuota": "150",
+        "comebackLeft": 0,
+        "comebackLamp": "",
+        "comebackConfirmed": false,
+        "burstVersion": 2,
+        "burstType": "ura",
+        "burstUsed": true,
+        "burstPending": false,
+        "burstLeft": 0,
+        "burstWon": false,
+        "dryEligible": false,
+        "rouletteTable": 0,
+        "sevenHits": 2,
+        "zoneVersion": 2,
+        "ladder": [],
+        "ladderIndex": 0,
+        "ladderRevealed": false,
+        "atHigh": false,
+        "atHighLeft": 0,
+        "entryStage": "",
+        "pendingZone": "",
+        "payoutVersion": 1,
+        "queuedZones": [],
+        "phase": "art",
+        "remaining": "750",
+        "zone": "ouma",
+        "ura": false,
+        "zoneLeft": 2,
+        "award": "200",
+        "initialAward": "0",
+        "stock": "0",
+        "zoneSets": "0",
+        "zoneZones": "0",
+        "sets": "0",
+        "oumaPending": true,
+        "zero": false,
+        "color": "white",
+        "awardTier": 4,
+        "giruVersion": 0,
+        "giruBase": 0,
+        "giruContinues": 0,
+        "giruSetting": 1
+      }
+    }
+  ],
+  "pageErrors": [],
+  "missingAssets": []
+}

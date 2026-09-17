@@ -6543,11 +6543,11 @@ body{
 <script src="nova-ladder-presentation.js?v=20260917-initial-131"></script>
 <link rel="stylesheet" href="nova-bell-navi.css?v=20260917-bell-132">
 <script src="nova-bell-navi.js?v=20260917-bell-132"></script>
-<link rel="stylesheet" href="nova-direct-award.css?v=20260917-direct-133">
-<script src="nova-direct-award.js?v=20260917-direct-133"></script>
+<link rel="stylesheet" href="nova-direct-award.css?v=20260917-zone-award-134">
+<script src="nova-direct-award.js?v=20260917-zone-award-134"></script>
 <link rel="stylesheet" href="nova-aim-presentation.css?v=20260909-comeback-114">
 <script src="nova-aim-presentation.js?v=20260917-background-129"></script>
-<script src="nova-art.js?v=20260917-initial-131"></script>
+<script src="nova-art.js?v=20260917-zone-award-134"></script>
 <script src="nova-balance.js?v=20260917-initial-131"></script>
 <script src="nova-normal.js?v=20260916-role-128"></script>
 <script src="nova-flow.js?v=20260916-role-128"></script>
@@ -7995,7 +7995,7 @@ body{
   }
   function auditSpinDetail(result,resolved){
     return {kind:'spin',result,message:resolved.artMessage||'',mode:debugFastSpinActive?'fast':autoPlay?'auto':speedToBonusActive?'speed':'manual',forced:pendingForceResult||'',
-      aim:resolved.aim,burstEvent:resolved.burstEvent,burstReward:resolved.burstReward,comebackEvent:resolved.comebackEvent,atOutcome:resolved.atOutcome,
+      aim:resolved.aim,burstEvent:resolved.burstEvent,burstReward:resolved.burstReward,comebackEvent:resolved.comebackEvent,atOutcome:resolved.atOutcome,zoneAward:resolved.zoneAward,
       artSetWon:resolved.artSetWon,oumaFreeze:resolved.oumaFreeze,czLamp:resolved.czLamp,bonusHit:resolved.bonusHit,bonusSource:resolved.bonusSource,
       bellNaviOrder:currentSpin?.bellNaviOrder,
       pressOrder:debugFastSpinActive?'simulation':currentSpin?.auditPressOrder,stopOrder:debugFastSpinActive?'simulation':currentSpin?.auditStopOrder,grid:debugFastSpinActive?undefined:currentSpin?.auditGrid,visualResult:!debugFastSpinActive&&NovaAim.hasGuide(resolved.aim)&&currentSpin?.aimAligned===false?'MISS':result,
@@ -11324,6 +11324,7 @@ body{
         burstEvent:artStep?.burstEvent,
         burstReward:artStep?.burstReward,
         atOutcome:artStep?.atOutcome,
+        zoneAward:artStep?.zoneAward||0,
         comebackEvent:artStep?.comebackEvent,
         flowBefore,
         flowAfter:artStep?.flow || (czEntry ? NovaFlow.enterCZ(result === "STRONG_CZ",NovaFlow.forSetting(settings.novaFlow,settings.setting)) : flowBefore.phase==='art' ? flowBefore : (isNewBonusHit || isReadyBonus) ? NovaFlow.normalize(null) : bonusPendingAtStart ? flowBefore : NovaFlow.advance(flowBefore)),
@@ -12640,7 +12641,7 @@ body{
   }
 
   function playNormalBgm(){
-    if(normalState.resultCard || normalState.pendingZoneResult || normalState.ladderAwardPresentation){pauseNormalBgm();return;}
+    if(normalState.resultCard || normalState.pendingZoneResult || normalState.ladderAwardPresentation || NovaDirectAward.busy){pauseNormalBgm();return;}
     if(debugFastSpinActive) return;
     if(session.active) return;
     if(bonusConfirmBgmHold && !session.active) return;
@@ -12858,6 +12859,8 @@ body{
   function displayNovaResult(card){
     if(debugFastSpinActive)return;
     if(NovaAim.busy){pauseNormalBgm();NovaAim.afterWin(()=>displayNovaResult(card));return;}
+    if(NovaDirectAward.deferResult(()=>displayNovaResult(card))){pauseNormalBgm();return;}
+    NovaDirectAward.clear();
     NovaLadder.hide();
     NovaAim.hide();
     normalState.resultCard=card;NovaResults.show(card);
@@ -14839,7 +14842,7 @@ body{
   }
 
   async function spin(options={}){
-    if(NovaLadder.busy||NovaAim.busy)return;
+    if(NovaLadder.busy||NovaAim.busy||NovaDirectAward.busy)return;
     if(NovaResults.editing)return;
     if(normalState.flow?.phase==='art'&&!Number.isFinite(normalState.resultAtStartPaid))normalState.resultAtStartPaid=Number(stats.totalPaid)||0;
     if(!oumaPresentation&&!isSpinning&&!debugFastSpinActive&&['ouma','urapi'].includes(normalState.flow?.zone)&&normalState.flow.oumaPending){scheduleOumaZeroChain();return;}
@@ -15255,7 +15258,7 @@ body{
     if(currentSpin.stopped.every(Boolean)){
       if(!debugFastSpinActive&&!speedToBonusActive&&NovaDirectAward.show(currentSpin.resolved)){
         $("overlay").classList.remove("show");
-        playOneShotSound('assets/media/nova/direct-award.wav',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
+        if(NovaDirectAward.directAmount(currentSpin.resolved))playOneShotSound('assets/media/nova/direct-award.wav',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
       }
       if(NovaAim.hasGuide(currentSpin.resolved?.aim)&&!currentSpin.aimAligned&&!debugFastSpinActive){
         NovaAim.fail(()=>playOneShotSound('assets/media/nova/ouma-fail.wav',sfxOutputVolume(),{allowDuringPremiumConfirm:true}));
@@ -15477,6 +15480,7 @@ body{
     if(oumaPresentation?.stage!=='bet')return;
     const presentation=oumaPresentation,previous=presentation.previous;
     if(normalState.flow!==previous){clearOumaPresentation();return;}
+    NovaDirectAward.clear();
     document.getElementById('machine').dataset.oumaNovaShake='';
     presentation.stage='lift';$('spinBtn').disabled=true;
     const machine=document.getElementById('machine');machine.dataset.oumaFreeze='lift';

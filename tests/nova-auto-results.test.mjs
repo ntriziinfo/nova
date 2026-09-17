@@ -8,7 +8,7 @@ function setup(autoPlay=true){
  const calls=[],after=[];
  const c=vm.createContext({autoPlay,A_TYPE_MODE:true,debugFastSpinActive:false,normalState:{},session:{active:false},
   bonusEndBgmPlaying:false,bonusConfirmSoundPlaying:false,oumaPresentation:null,isSpinning:false,
-  NovaAim:{busy:false,hide(){},afterWin:callback=>after.push(callback)},NovaLadder:{hide(){}},NovaResults:{show:card=>calls.push(['show',card])},
+  NovaDirectAward:{deferResult:()=>false,clear(){}},NovaAim:{busy:false,hide(){},afterWin:callback=>after.push(callback)},NovaLadder:{hide(){}},NovaResults:{show:card=>calls.push(['show',card])},
   pauseNormalBgm(){},stopAutoPlay:reason=>{c.autoPlay=false;calls.push(['stop',reason]);},stopSpeedToBonus(){},
   playLockedBonusConfirmSound:src=>{c.bonusConfirmSoundPlaying=true;calls.push(['sound',src]);},bgmOutputVolume:()=>.5,BGM_OUTPUT_SCALE:1,
   canPlayCompleteTrial:()=>true,isRogiThirdStopHoldActive:()=>false,queueAutoStep:()=>calls.push(['poll']),autoPollDelayMs:()=>75,autoDelayMs:()=>250,
