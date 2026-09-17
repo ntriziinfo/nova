@@ -1,0 +1,26 @@
+{
+  "createdAt": "2026-09-17T06:00:53.044Z",
+  "commit": "64a82b9cacdc476f776c9dc0de2c548614190654",
+  "sources": {
+    "nova-art.js": "47904ff434f8bf661c9e0ef752ff97cf5d5aeb5a37394f40fda502866e822d89",
+    "nova-balance.js": "b7360552dead7a58597108a6ea87e28ce76ece3d125cc7c21d2fb459abdbb6a9",
+    "nova-flow.js": "56150e4cdcd68cfee31cbb506392fd39bca7126177312fae36d3aaff7c5c0aaf",
+    "nova-normal.js": "54da7cefdfd12cd12f49f4e9c50e0be6e771735b4fc38f505d140fbcc4fef58d",
+    "jag.html": "cd61a1a21688c3d42fe2f352fd8c85ee7354e79ab1ea65adf683b28dfb13368e",
+    "scripts/zone-v2-model.mjs": "364cefa7f26ce33b80cfc917f36bfb213450f48f40644c604008d726024873d9",
+    "scripts/zone-v2-rng.mjs": "1e43bfc48d40e6df2bc33681d5562a7d308c50cb70e8450d34bc0853a2f2bf80"
+  },
+  "candidate": {
+    "czScale": 0.519
+  },
+  "cacheIdentical": true,
+  "twentyThousandPrefixIdentical": true,
+  "completePrefixIdentical": true,
+  "otherSettingsIdentical": [
+    1,
+    2,
+    3,
+    5,
+    6
+  ]
+}

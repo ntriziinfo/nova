@@ -1,0 +1,38 @@
+[
+  {
+    "tag": "holdout-498-1",
+    "czScale": 0.498,
+    "trials": 1000,
+    "seedBase": 1401000000
+  },
+  {
+    "tag": "holdout-498-2",
+    "czScale": 0.498,
+    "trials": 1000,
+    "seedBase": 1411000000
+  },
+  {
+    "tag": "holdout-498-3",
+    "czScale": 0.498,
+    "trials": 1000,
+    "seedBase": 1421000000
+  },
+  {
+    "tag": "holdout-498-4",
+    "czScale": 0.498,
+    "trials": 1000,
+    "seedBase": 1431000000
+  },
+  {
+    "tag": "holdout-498-5",
+    "czScale": 0.498,
+    "trials": 1000,
+    "seedBase": 1441000000
+  },
+  {
+    "tag": "holdout-498-6",
+    "czScale": 0.498,
+    "trials": 1000,
+    "seedBase": 1451000000
+  }
+]

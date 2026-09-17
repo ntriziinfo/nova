@@ -1,0 +1,58 @@
+{
+  "createdAt": "2026-09-17T06:11:32.979Z",
+  "beforeCommit": "64a82b9cacdc476f776c9dc0de2c548614190654",
+  "normalOnlyChanges": "lottery metadata version and setting 4 CZ scale",
+  "checks": [
+    {
+      "setting": 1,
+      "otherSettingIdentical": true
+    },
+    {
+      "setting": 2,
+      "otherSettingIdentical": true
+    },
+    {
+      "setting": 3,
+      "otherSettingIdentical": true
+    },
+    {
+      "setting": 5,
+      "otherSettingIdentical": true
+    },
+    {
+      "setting": 6,
+      "otherSettingIdentical": true
+    },
+    {
+      "setting": 4,
+      "appliedRulesMatchMeasuredCandidate": true,
+      "cacheIdentical": true,
+      "twentyThousandPrefixIdentical": true
+    },
+    {
+      "setting": 4,
+      "seed": 1401966118,
+      "completedAt": 17376,
+      "stoppedPrefixIdentical": true
+    },
+    {
+      "setting": 4,
+      "seed": 1401071271,
+      "completedAt": 25318,
+      "stoppedPrefixIdentical": true
+    },
+    {
+      "setting": 4,
+      "seed": 1401000000,
+      "completedAt": null,
+      "stoppedPrefixIdentical": true
+    }
+  ],
+  "sources": {
+    "nova-art.js": "47904ff434f8bf661c9e0ef752ff97cf5d5aeb5a37394f40fda502866e822d89",
+    "nova-balance.js": "b1daccd9d750f9775571382c6d6bd1a33b140e6939845c10f40aab9f9a1cdd35",
+    "nova-flow.js": "56150e4cdcd68cfee31cbb506392fd39bca7126177312fae36d3aaff7c5c0aaf",
+    "nova-normal.js": "2428ba6f4be990cb60ead1d3535cbd0ff470277f4d990b49fbe3a34a21bf0795",
+    "jag.html": "ef9b7684ee66902f78e36277a136a890187bdc5e133c9ea15e8526900e3fee5c"
+  }
+}

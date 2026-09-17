@@ -1,6 +1,6 @@
 /* Internal normal-play rules. No supplied image or audio is processed. */
 globalThis.NovaNormal=(()=>{
- const lotteryRules=Object.freeze({version:128,ceilingGames:800,czScale:Object.freeze([.502,.510,.522,.532,.552,.616])});
+ const lotteryRules=Object.freeze({version:140,ceilingGames:800,czScale:Object.freeze([.502,.510,.522,.498,.552,.616])});
  // A/B/heaven and game-count zones are retired; a single common ceiling remains.
  const modes=['通常'],ceilings=[lotteryRules.ceilingGames],transitions=[[100]],gameZoneRates={通常:{}},atEndModeWeights={dry:[100],normal:[100]};
  const gameZoneConfig={fakeRate:0,preludeMin:3,preludeMax:8,ceilingBonusRate:.5};

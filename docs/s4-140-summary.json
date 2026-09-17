@@ -1,0 +1,473 @@
+{
+  "generatedAt": "2026-09-17T06:10:49.360Z",
+  "setting": 4,
+  "czScale": 0.498,
+  "previousCzScale": 0.532,
+  "relativeChange": -0.06390977443609025,
+  "options": {
+    "rng": "xoshiro128",
+    "exactGames": true,
+    "completeLimitPt": 10000,
+    "stopAtComplete": false,
+    "recordBlocks": 10000
+  },
+  "sourceHashes": {
+    "nova-art.js": "47904ff434f8bf661c9e0ef752ff97cf5d5aeb5a37394f40fda502866e822d89",
+    "nova-balance.js": "b7360552dead7a58597108a6ea87e28ce76ece3d125cc7c21d2fb459abdbb6a9",
+    "nova-flow.js": "56150e4cdcd68cfee31cbb506392fd39bca7126177312fae36d3aaff7c5c0aaf",
+    "nova-normal.js": "54da7cefdfd12cd12f49f4e9c50e0be6e771735b4fc38f505d140fbcc4fef58d"
+  },
+  "modelHashes": {
+    "scripts/zone-v2-model.mjs": "364cefa7f26ce33b80cfc917f36bfb213450f48f40644c604008d726024873d9",
+    "scripts/zone-v2-rng.mjs": "1e43bfc48d40e6df2bc33681d5562a7d308c50cb70e8450d34bc0853a2f2bf80"
+  },
+  "jobs": [
+    {
+      "tag": "holdout-498-1",
+      "czScale": 0.498,
+      "trials": 1000,
+      "seedBase": 1401000000
+    },
+    {
+      "tag": "holdout-498-2",
+      "czScale": 0.498,
+      "trials": 1000,
+      "seedBase": 1411000000
+    },
+    {
+      "tag": "holdout-498-3",
+      "czScale": 0.498,
+      "trials": 1000,
+      "seedBase": 1421000000
+    },
+    {
+      "tag": "holdout-498-4",
+      "czScale": 0.498,
+      "trials": 1000,
+      "seedBase": 1431000000
+    },
+    {
+      "tag": "holdout-498-5",
+      "czScale": 0.498,
+      "trials": 1000,
+      "seedBase": 1441000000
+    },
+    {
+      "tag": "holdout-498-6",
+      "czScale": 0.498,
+      "trials": 1000,
+      "seedBase": 1451000000
+    }
+  ],
+  "pilots": [
+    {
+      "config": {
+        "tag": "pilot-baseline",
+        "czScale": 0.532,
+        "trials": 600,
+        "seedBase": 1400100000
+      },
+      "summary": {
+        "horizons": {
+          "20000": {
+            "full": {
+              "trials": 600,
+              "games": 12000000,
+              "bet": 18431553,
+              "paid": 19014591,
+              "rtp": 1.0316326030693128,
+              "ci95": [
+                1.0200815216688963,
+                1.0431836844697293
+              ],
+              "win": 0.5966666666666667,
+              "netMean": 971.73
+            },
+            "stopped": {
+              "trials": 600,
+              "games": 11891214,
+              "bet": 18264993,
+              "paid": 18832967,
+              "rtp": 1.0310963163248954,
+              "ci95": [
+                1.0196030874274944,
+                1.0425895452222964
+              ],
+              "win": 0.5966666666666667,
+              "netMean": 946.6233333333333
+            },
+            "completeRate": 0.041666666666666664
+          },
+          "30000": {
+            "full": {
+              "trials": 600,
+              "games": 18000000,
+              "bet": 27629670,
+              "paid": 28637725,
+              "rtp": 1.0364845110346956,
+              "ci95": [
+                1.0269322309499065,
+                1.0460367911194848
+              ],
+              "win": 0.6183333333333333,
+              "netMean": 1680.0916666666667
+            },
+            "stopped": {
+              "trials": 600,
+              "games": 17448229,
+              "bet": 26783691,
+              "paid": 27747773,
+              "rtp": 1.035995113593567,
+              "ci95": [
+                1.0264082199535962,
+                1.0455820072335378
+              ],
+              "win": 0.6183333333333333,
+              "netMean": 1606.8033333333333
+            },
+            "completeRate": 0.11666666666666667
+          }
+        },
+        "counts": {
+          "normal": 11356505,
+          "cz": 835490,
+          "prep": 130493,
+          "align": 37273,
+          "bonus": 395256,
+          "at": 5049263,
+          "zone": 195720,
+          "zero": 4638,
+          "BIG": 37279,
+          "REG": 0,
+          "czEntries": 46916,
+          "strongEntries": 6369,
+          "czWins": 35104,
+          "artEntries": 21395,
+          "zoneEntries": 41198,
+          "gameCzEntries": 0,
+          "ceilingCzEntries": 1813,
+          "rareCzEntries": 51472,
+          "backgroundCzEntries": 0,
+          "highNormalG": 1133578,
+          "favoredNormalG": 0
+        },
+        "czDenom": 213.12761565168435,
+        "czSuccess": 0.658797034812799,
+        "atDenom": 530.8018228558075
+      }
+    },
+    {
+      "config": {
+        "tag": "pilot-519",
+        "czScale": 0.519,
+        "trials": 600,
+        "seedBase": 1400100000
+      },
+      "summary": {
+        "horizons": {
+          "20000": {
+            "full": {
+              "trials": 600,
+              "games": 12000000,
+              "bet": 18449100,
+              "paid": 18804278,
+              "rtp": 1.0192517792195825,
+              "ci95": [
+                1.0079115595539814,
+                1.0305919988851837
+              ],
+              "win": 0.55,
+              "netMean": 591.9633333333334
+            },
+            "stopped": {
+              "trials": 600,
+              "games": 11926041,
+              "bet": 18336708,
+              "paid": 18679861,
+              "rtp": 1.0187139916281591,
+              "ci95": [
+                1.0074491722551695,
+                1.0299788110011487
+              ],
+              "win": 0.55,
+              "netMean": 571.9216666666666
+            },
+            "completeRate": 0.028333333333333332
+          },
+          "30000": {
+            "full": {
+              "trials": 600,
+              "games": 18000000,
+              "bet": 27651675,
+              "paid": 28367878,
+              "rtp": 1.0259008902715658,
+              "ci95": [
+                1.0165694211000473,
+                1.0352323594430843
+              ],
+              "win": 0.5666666666666667,
+              "netMean": 1193.6716666666666
+            },
+            "stopped": {
+              "trials": 600,
+              "games": 17571455,
+              "bet": 26994405,
+              "paid": 27682238,
+              "rtp": 1.0254805764379693,
+              "ci95": [
+                1.016151107753971,
+                1.0348100451219675
+              ],
+              "win": 0.5666666666666667,
+              "netMean": 1146.3883333333333
+            },
+            "completeRate": 0.08833333333333333
+          }
+        },
+        "counts": {
+          "normal": 11428605,
+          "cz": 823230,
+          "prep": 129163,
+          "align": 36911,
+          "bonus": 391427,
+          "at": 4997044,
+          "zone": 193620,
+          "zero": 4541,
+          "BIG": 36915,
+          "REG": 0,
+          "czEntries": 46084,
+          "strongEntries": 6469,
+          "czWins": 34647,
+          "artEntries": 21194,
+          "zoneEntries": 40736,
+          "gameCzEntries": 0,
+          "ceilingCzEntries": 1884,
+          "rareCzEntries": 50669,
+          "backgroundCzEntries": 0,
+          "highNormalG": 1146275,
+          "favoredNormalG": 0
+        },
+        "czDenom": 217.46817498525297,
+        "czSuccess": 0.6592773010104085,
+        "atDenom": 539.2377559686704
+      }
+    },
+    {
+      "config": {
+        "tag": "pilot-506",
+        "czScale": 0.506,
+        "trials": 600,
+        "seedBase": 1400100000
+      },
+      "summary": {
+        "horizons": {
+          "20000": {
+            "full": {
+              "trials": 600,
+              "games": 12000000,
+              "bet": 18462054,
+              "paid": 18616540,
+              "rtp": 1.0083677579970245,
+              "ci95": [
+                0.9970396688091513,
+                1.0196958471848976
+              ],
+              "win": 0.5283333333333333,
+              "netMean": 257.4766666666667
+            },
+            "stopped": {
+              "trials": 600,
+              "games": 11934148,
+              "bet": 18361845,
+              "paid": 18509236,
+              "rtp": 1.0080270256066315,
+              "ci95": [
+                0.9967295560523259,
+                1.019324495160937
+              ],
+              "win": 0.5283333333333333,
+              "netMean": 245.65166666666667
+            },
+            "completeRate": 0.025
+          },
+          "30000": {
+            "full": {
+              "trials": 600,
+              "games": 18000000,
+              "bet": 27667887,
+              "paid": 28132878,
+              "rtp": 1.0168061623209608,
+              "ci95": [
+                1.0075020558871517,
+                1.0261102687547698
+              ],
+              "win": 0.5416666666666666,
+              "netMean": 774.985
+            },
+            "stopped": {
+              "trials": 600,
+              "games": 17622494,
+              "bet": 27088668,
+              "paid": 27539404,
+              "rtp": 1.0166392825221233,
+              "ci95": [
+                1.0072820953630084,
+                1.0259964696812383
+              ],
+              "win": 0.5416666666666666,
+              "netMean": 751.2266666666667
+            },
+            "completeRate": 0.08333333333333333
+          }
+        },
+        "counts": {
+          "normal": 11493206,
+          "cz": 810790,
+          "prep": 127776,
+          "align": 36517,
+          "bonus": 387386,
+          "at": 4952203,
+          "zone": 192122,
+          "zero": 4469,
+          "BIG": 36521,
+          "REG": 0,
+          "czEntries": 45231,
+          "strongEntries": 6559,
+          "czWins": 34202,
+          "artEntries": 20964,
+          "zoneEntries": 40437,
+          "gameCzEntries": 0,
+          "ceilingCzEntries": 1951,
+          "rareCzEntries": 49839,
+          "backgroundCzEntries": 0,
+          "highNormalG": 1160690,
+          "favoredNormalG": 0
+        },
+        "czDenom": 221.91940529059664,
+        "czSuccess": 0.660397760185364,
+        "atDenom": 548.2353558481205
+      }
+    }
+  ],
+  "summary": {
+    "horizons": {
+      "20000": {
+        "full": {
+          "trials": 6000,
+          "games": 120000000,
+          "bet": 184699167,
+          "paid": 185203168,
+          "rtp": 1.0027287670441958,
+          "ci95": [
+            0.9993204434991682,
+            1.0061370905892235
+          ],
+          "win": 0.49433333333333335,
+          "netMean": 84.00016666666667
+        },
+        "stopped": {
+          "trials": 6000,
+          "games": 119440443,
+          "bet": 183846510,
+          "paid": 184267566,
+          "rtp": 1.0022902583247297,
+          "ci95": [
+            0.9989014191486528,
+            1.0056790975008068
+          ],
+          "win": 0.49433333333333335,
+          "netMean": 70.176
+        },
+        "completeRate": 0.022166666666666668
+      },
+      "30000": {
+        "full": {
+          "trials": 6000,
+          "games": 180000000,
+          "bet": 276955008,
+          "paid": 278533017,
+          "rtp": 1.0056977088495183,
+          "ci95": [
+            1.0029138951315497,
+            1.0084815225674868
+          ],
+          "win": 0.5043333333333333,
+          "netMean": 263.0015
+        },
+        "stopped": {
+          "trials": 6000,
+          "games": 177088702,
+          "bet": 272495133,
+          "paid": 273854605,
+          "rtp": 1.004988977179273,
+          "ci95": [
+            1.0022151490976523,
+            1.0077628052608938
+          ],
+          "win": 0.5043333333333333,
+          "netMean": 226.57866666666666
+        },
+        "completeRate": 0.059
+      }
+    },
+    "counts": {
+      "normal": 115606160,
+      "cz": 8068505,
+      "prep": 1274467,
+      "align": 364242,
+      "bonus": 3864365,
+      "at": 48927181,
+      "zone": 1895080,
+      "zero": 44334,
+      "BIG": 364294,
+      "REG": 0,
+      "czEntries": 447978,
+      "strongEntries": 66925,
+      "czWins": 340954,
+      "artEntries": 207351,
+      "zoneEntries": 399672,
+      "gameCzEntries": 0,
+      "ceilingCzEntries": 19780,
+      "rareCzEntries": 495123,
+      "backgroundCzEntries": 0,
+      "highNormalG": 11684049,
+      "favoredNormalG": 0
+    },
+    "czDenom": 224.5202688661748,
+    "czSuccess": 0.6621713215887264,
+    "atDenom": 557.538473409822
+  },
+  "roleRates": [
+    {
+      "role": "WEAK_SUICA",
+      "low": 0.02988,
+      "high": 0.05976
+    },
+    {
+      "role": "STRONG_SUICA",
+      "low": 0.2988,
+      "high": 0.5976
+    },
+    {
+      "role": "CHANCE_A",
+      "low": 0.1067142857142857,
+      "high": 0.2134285714285714
+    },
+    {
+      "role": "CHANCE_B",
+      "low": 0.1067142857142857,
+      "high": 0.2134285714285714
+    },
+    {
+      "role": "WEAK_NOVA",
+      "low": 0.1494,
+      "high": 0.2988
+    },
+    {
+      "role": "STRONG_NOVA",
+      "low": 1,
+      "high": 1
+    }
+  ],
+  "method": "Independent fresh starts, 30000 total paid/replay games including BIG per trial; 20000G checkpoint from the first two 10000G blocks. Full runs continue past complete; stopped totals use the exact prefix at first net +10000pt. Only actual payout and charged BET count; replay BETs free, 0G chains excluded, ending unspent AT quota excluded. Ratio of pooled payout / pooled bets; 95% cluster-by-trial confidence interval. Pilot seeds excluded from holdout validation."
+}
