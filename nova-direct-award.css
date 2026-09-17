@@ -1,0 +1,8 @@
+/* Share the reel layout variables so zoom and position adjustments always match. */
+#novaDirectAward{position:absolute;left:var(--layout-reels-x);top:var(--layout-reels-y);width:var(--layout-reels-w);height:var(--layout-reels-h);z-index:45;display:grid;place-items:center;pointer-events:none;user-select:none;background:transparent;overflow:hidden}
+#novaDirectAward[hidden],#novaDirectAward [hidden]{display:none!important}
+#novaDirectAward img{position:absolute;inset:0;display:block;width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;object-fit:fill!important}
+#novaDirectAward.show img,#novaDirectAward.show span{animation:novaDirectAwardIn 220ms cubic-bezier(.16,.8,.25,1) both}
+#novaDirectAward span{font:900 italic clamp(40px,9vw,150px)/1 system-ui;color:#ffe56b;-webkit-text-stroke:2px #7e1600;text-shadow:3px 3px #140400}
+@keyframes novaDirectAwardIn{from{transform:scale(.72);opacity:.2}to{transform:scale(1);opacity:1}}
+@media(prefers-reduced-motion:reduce){#novaDirectAward.show img,#novaDirectAward.show span{animation:none}}

@@ -6543,6 +6543,8 @@ body{
 <script src="nova-ladder-presentation.js?v=20260917-initial-131"></script>
 <link rel="stylesheet" href="nova-bell-navi.css?v=20260917-bell-132">
 <script src="nova-bell-navi.js?v=20260917-bell-132"></script>
+<link rel="stylesheet" href="nova-direct-award.css?v=20260917-direct-133">
+<script src="nova-direct-award.js?v=20260917-direct-133"></script>
 <link rel="stylesheet" href="nova-aim-presentation.css?v=20260909-comeback-114">
 <script src="nova-aim-presentation.js?v=20260917-background-129"></script>
 <script src="nova-art.js?v=20260917-initial-131"></script>
@@ -12946,7 +12948,9 @@ body{
       return;
     }
     if(resolved.artMessage && !resolved.bonusHit && !resolved.aTypeBonusReady){
-      showMessage(resolved.artMessage,normalModeLabel());log(resolved.artMessage);showOverlay(resolved.artMessage);return;
+      showMessage(resolved.artMessage,normalModeLabel());log(resolved.artMessage);
+      if(!NovaDirectAward.amount(resolved))showOverlay(resolved.artMessage);
+      return;
     }
     if(resolved.manualLineupMiss){
       jagChanceHold = true;
@@ -13732,6 +13736,7 @@ body{
     if(!confirm("統計と現在の状態を初期化しますか？")) return;
     NovaAim.reset();
     NovaBellNavi.clear();
+    NovaDirectAward.clear();
     stopAutoPlay("初期化のためオート停止");
     pauseNormalBgm();
     stopBattleBgm(false);
@@ -13796,6 +13801,7 @@ body{
   function resetRuntimeForMorning(reason="朝一リセット"){
     NovaAim.reset();
     NovaBellNavi.clear();
+    NovaDirectAward.clear();
     stopDebugFastSpin(`${reason}のため高速停止`);
     stopSpeedToBonus(`${reason}のためSPEED停止`);
     stopAutoPlay(`${reason}のためAUTO停止`);
@@ -14919,6 +14925,7 @@ body{
     const spinWaitMs = spinWaitMsForMode(speedModeSpinAtStart);
 
     fadeAimWinSoundsOnBet();
+    NovaDirectAward.clear();
     isSpinning = true;
     if(normalState.resultCard){normalState.resultCard=null;NovaResults.hide();}
     jagLastGamePayout = 0;
@@ -15246,6 +15253,7 @@ body{
     currentSpin.stopped[i] = true;
     NovaBellNavi.stop(currentSpin);
     if(currentSpin.stopped.every(Boolean)){
+      if(!debugFastSpinActive&&!speedToBonusActive&&NovaDirectAward.show(currentSpin.resolved))$("overlay").classList.remove("show");
       if(NovaAim.hasGuide(currentSpin.resolved?.aim)&&!currentSpin.aimAligned&&!debugFastSpinActive){
         NovaAim.fail(()=>playOneShotSound('assets/media/nova/ouma-fail.wav',sfxOutputVolume(),{allowDuringPremiumConfirm:true}));
       }else NovaAim.hide();
@@ -16001,6 +16009,7 @@ body{
     readSettings();
     speedToBonusCount = 0;
     speedToBonusActive = true;
+    NovaDirectAward.clear();
     setSpeedFrameOffHold(true);
     updateSpeedToBonusUi();
     playNormalBgm();
@@ -16103,6 +16112,7 @@ body{
     readSettings();
     debugFastSpinCount = 0;
     debugFastSpinActive = true;
+    NovaDirectAward.clear();
     updateDebugFastUi();
     log(`[FAST] 高速回転開始 ${DEBUG_FAST_SPINS_PER_SECOND}G/s`);
     debugFastTimer = setInterval(runDebugFastBatch, DEBUG_FAST_INTERVAL_MS);
