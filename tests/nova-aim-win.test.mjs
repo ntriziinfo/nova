@@ -84,7 +84,8 @@ test('suppressed miss cue never opens video',()=>{
 test('cue dismissal runs after real reel landing, not button acceptance',()=>{
  const html=fs.readFileSync('jag.html','utf8');const stop=html.slice(html.indexOf('  function stopSingleReel(i,'),html.indexOf('  function stopAllReels()'));
  assert.equal(stop.slice(0,stop.indexOf('await NovaReelMotion.stop')).includes('NovaAim.hide()'),false);
- assert.match(stop,/currentSpin.stopped\[i\] = true;\s*if\(currentSpin.stopped.every\(Boolean\)\)\{/);
+ const landed=stop.indexOf('currentSpin.stopped[i] = true;'),finished=stop.indexOf('if(currentSpin.stopped.every(Boolean)){',landed);
+ assert.ok(landed>=0&&finished>landed);assert.ok(stop.indexOf('else NovaAim.hide();')>finished);
  assert.ok(stop.indexOf('NovaAim.fail(')>stop.indexOf('currentSpin.stopped[i] = true'));
  assert.ok(stop.indexOf('NovaAim.win(')>stop.indexOf('currentSpin.stopped[i] = true'));
 });

@@ -1,0 +1,108 @@
+{
+  "url": "http://127.0.0.1:52657/jag.html?debug=1",
+  "silent": true,
+  "isolated": true,
+  "renderingSuspended": true,
+  "results": [
+    {
+      "label": "giru",
+      "autoContinued": true,
+      "completed": 6,
+      "results": [
+        {
+          "card": {
+            "kind": "zone",
+            "character": "giru",
+            "color": "red",
+            "pt": "200"
+          },
+          "at": 12046,
+          "completed": 4
+        }
+      ],
+      "eyeEnded": 1,
+      "afterResultSpins": 2,
+      "freezes": 0,
+      "czExited": false,
+      "czOutcome": null,
+      "afterCzSpins": 0,
+      "violations": [],
+      "pageErrors": []
+    },
+    {
+      "label": "sora",
+      "autoContinued": true,
+      "completed": 8,
+      "results": [
+        {
+          "card": {
+            "kind": "zone",
+            "character": "sora",
+            "color": "red",
+            "pt": "210"
+          },
+          "at": 24458.600000023842,
+          "completed": 7
+        }
+      ],
+      "eyeEnded": 1,
+      "afterResultSpins": 2,
+      "freezes": 0,
+      "czExited": false,
+      "czOutcome": null,
+      "afterCzSpins": 0,
+      "violations": [],
+      "pageErrors": []
+    },
+    {
+      "label": "ouma",
+      "autoContinued": true,
+      "completed": 10,
+      "results": [
+        {
+          "card": {
+            "kind": "zone",
+            "character": "ouma",
+            "color": "red",
+            "pt": "200"
+          },
+          "at": 43170.700000047684,
+          "completed": 8
+        }
+      ],
+      "eyeEnded": 1,
+      "afterResultSpins": 2,
+      "freezes": 2,
+      "czExited": false,
+      "czOutcome": null,
+      "afterCzSpins": 0,
+      "violations": [],
+      "pageErrors": []
+    },
+    {
+      "label": "comeback",
+      "autoContinued": true,
+      "completed": 7,
+      "results": [
+        {
+          "card": {
+            "kind": "at",
+            "character": "sosuke",
+            "color": "red",
+            "pt": "0"
+          },
+          "at": 11484.300000071526,
+          "completed": 5
+        }
+      ],
+      "eyeEnded": 1,
+      "afterResultSpins": 2,
+      "freezes": 0,
+      "czExited": false,
+      "czOutcome": null,
+      "afterCzSpins": 0,
+      "violations": [],
+      "pageErrors": []
+    }
+  ]
+}

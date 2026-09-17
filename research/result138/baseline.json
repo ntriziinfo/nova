@@ -1,0 +1,13 @@
+{
+  "cold": {
+    "ms": 1.2000000476837158,
+    "loading": "true",
+    "hidden": false,
+    "artVisibility": "hidden",
+    "background": "rgb(0, 0, 0)",
+    "pt": ""
+  },
+  "requests": [
+    "/assets/results/sora-blue.png"
+  ]
+}

@@ -11,10 +11,23 @@ globalThis.NovaResults=(()=>{
   return null;
  }
  const defaults={x:22,y:34,w:56,h:23,imageX:0,imageY:0,scale:100,numberX:7,numberY:54,numberW:36,numberH:10,font:9};
- let positions={},root,card,art,num,panel,select,preview=false,active=null,imageRequest=0;
+ const images=new Map();
+ let positions={},root,card,art,num,fallback,panel,select,preview=false,active=null,imageRequest=0;
  try{positions=JSON.parse(localStorage.getItem('nova_result_layout_v1'))||{};}catch{}
  const key=()=>active?active.character+'-'+active.color:'sosuke-red';
  const layout=()=>({...defaults,...positions[key()]});
+ function loadImage(character,color){
+  const src=`assets/results/${character}-${color}.png`,cached=images.get(src);
+  if(cached&&!cached.failed)return cached;
+  const img=new Image();img.draggable=false;img.decoding='async';
+  const entry={img,ready:false,failed:false};images.set(src,entry);
+  entry.loaded=new Promise(resolve=>{
+   const finish=ready=>{entry.ready=ready;entry.failed=!ready;resolve(entry);};
+   img.onload=()=>{Promise.resolve().then(()=>img.decode?.()).then(()=>finish(true),()=>finish(img.naturalWidth>0));};
+   img.onerror=()=>finish(false);img.src=src;
+  });
+  return entry;
+ }
  function apply(){if(!active||!root)return;const p=layout();card.style.cssText=`left:${p.x}%;top:${p.y}%;width:${p.w}%;height:${p.h}%;`;
   const cw=card.clientWidth,ch=card.clientHeight,img=art.querySelector('img'),ratio=img.naturalWidth&&img.naturalHeight?img.naturalWidth/img.naturalHeight:1510/1365;
   const ah=Math.min(ch,cw/ratio)*p.scale/100,aw=ah*ratio;
@@ -23,8 +36,10 @@ globalThis.NovaResults=(()=>{
  }
  function init(){if(root)return;const machine=document.getElementById('machine');if(!machine)return;
   root=document.createElement('div');root.className='novaResultsLayer';root.hidden=true;
-  root.innerHTML='<div class="novaResultCard"><div class="novaResultArt"><img draggable="false" alt=""><output class="novaResultNumber"></output></div></div>';
-  machine.append(root);card=root.firstElementChild;art=card.firstElementChild;num=art.querySelector('output');
+  root.innerHTML='<div class="novaResultCard"><div class="novaResultArt"><img draggable="false" alt=""><output class="novaResultNumber"></output></div><div class="novaResultFallback" role="status"><strong>RESULT</strong><span></span><output></output></div></div>';
+  machine.append(root);card=root.firstElementChild;art=card.firstElementChild;num=art.querySelector('output');fallback=card.querySelector('.novaResultFallback');
+  // Decode all twelve unchanged result images before a third-stop result needs them.
+  for(const character of chars)for(const color of ['red','blue'])loadImage(character,color);
   const button=document.createElement('button');button.id='novaResultAdjust';button.textContent='リザルト調整';document.body.append(button);
   panel=document.createElement('dialog');panel.className='novaResultSettings';panel.innerHTML='<h3>リザルト配置</h3><label>確認画像 <select id="novaResultSelect"></select></label><div class="novaResultFields"></div><button type="button" id="novaResultReset">この画像を初期位置へ</button> <button type="button" id="novaResultClose">閉じる</button><p>変更はこのブラウザに画像別で自動保存します。画像は縦横比を維持します。</p>';document.body.append(panel);
   select=panel.querySelector('select');select.innerHTML=chars.flatMap(id=>['red','blue'].map(c=>`<option value="${id}-${c}">${names[id]}・${c==='red'?'赤':'青'}</option>`)).join('');
@@ -41,16 +56,17 @@ globalThis.NovaResults=(()=>{
  function show(value){
   init();if(!root)return;
   const request=++imageRequest;active=value;root.hidden=false;root.dataset.loading='true';
-  const img=new Image();img.draggable=false;
-  img.alt=`${names[value.character]} ${value.kind==='at'?'AT総獲得':'上乗せ'} ${value.pt}pt`;
-  img.onload=()=>{
+  const label=`${names[value.character]} ${value.kind==='at'?'AT総獲得':'上乗せ'}`;
+  num.textContent=String(value.pt);num.setAttribute('aria-label',value.pt+'pt');
+  fallback.querySelector('span').textContent=label;fallback.querySelector('output').textContent=value.pt+'pt';
+  const entry=loadImage(value.character,value.color);
+  const reveal=()=>{
    if(request!==imageRequest||active!==value)return;
-   art.querySelector('img').replaceWith(img);
-   num.textContent=String(value.pt);num.setAttribute('aria-label',value.pt+'pt');
+   if(!entry.ready)return; // A failed/slow request keeps the readable RESULT and pt.
+   entry.img.alt=`${label} ${value.pt}pt`;art.querySelector('img').replaceWith(entry.img);
    apply();delete root.dataset.loading;
   };
-  img.src=`assets/results/${value.character}-${value.color}.png`;
-  apply();
+  apply();if(entry.ready)reveal();else entry.loaded.then(reveal);
  }
  function hide(){imageRequest++;if(root)root.hidden=true;active=null;}
  if(typeof document!=='undefined')document.addEventListener('DOMContentLoaded',init);

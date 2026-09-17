@@ -1,0 +1,25 @@
+{
+  "cold": {
+    "ms": 17,
+    "loading": "true",
+    "hidden": false,
+    "artVisibility": "hidden",
+    "background": "rgba(0, 0, 0, 0)",
+    "fallback": "RESULT\n空 上乗せ\n750pt",
+    "pt": "750"
+  },
+  "warm": {
+    "ms": 1,
+    "hidden": false,
+    "artVisibility": "visible",
+    "background": "rgb(0, 0, 0)",
+    "fallback": "RESULT空 上乗せ800pt",
+    "pt": "800"
+  },
+  "preloadedImages": 12,
+  "staleSwitchIgnored": true,
+  "hideCancelsPending": true,
+  "errors": [],
+  "silent": true,
+  "isolated": true
+}

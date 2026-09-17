@@ -1,6 +1,12 @@
 .novaResultsLayer{position:absolute;left:0;top:0;width:100%;height:var(--jag-cabinet-height);z-index:90;pointer-events:none}
 .novaResultsLayer[hidden]{display:none!important}
 .novaResultsLayer[data-loading=true] .novaResultArt{visibility:hidden}
+.novaResultsLayer[data-loading=true] .novaResultCard{background:transparent}
+.novaResultFallback{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:6px;border:1px solid #e9c36d;border-radius:8px;background:linear-gradient(135deg,#25112ef2,#101c38f2);color:#fff;text-align:center}
+.novaResultsLayer[data-loading=true] .novaResultFallback{display:flex}
+.novaResultFallback strong{color:#ffe3a0;font-size:clamp(18px,2vw,32px);letter-spacing:.12em}
+.novaResultFallback span{font-size:clamp(11px,1.2vw,18px)}
+.novaResultFallback output{color:#ffdc72;font-size:clamp(24px,3.2vw,52px);font-weight:bold;max-width:95%;overflow:hidden;white-space:nowrap}
 .novaResultCard{position:absolute;background:#000;overflow:hidden}
 .novaResultArt{position:absolute}
 .novaResultArt>img{width:100%;height:100%;display:block;max-width:none;filter:none!important}
