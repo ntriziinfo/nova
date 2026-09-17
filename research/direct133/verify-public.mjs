@@ -3,11 +3,11 @@ import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {createRequire} from 'node:module';
 const base='https://nova-eta-jet-30.vercel.app',amounts=[10,20,30,50,100,300];
-const files=['jag.html','nova-direct-award.js','nova-direct-award.css',...amounts.map(n=>'assets/design/nova-direct-pt-v1/direct-plus-'+n+'pt.png')];
+const files=['jag.html','nova-direct-award.js','nova-direct-award.css','assets/media/nova/direct-award.wav',...amounts.map(n=>'assets/design/nova-direct-pt-v1/direct-plus-'+n+'pt.png')];
 const hash=b=>createHash('sha256').update(b).digest('hex');
 const sources=await Promise.all(files.map(async file=>{
  const response=await fetch(base+'/'+file+'?direct133='+Date.now(),{headers:{'Cache-Control':'no-cache'}});assert.equal(response.status,200,file);
- const remote=Buffer.from(await response.arrayBuffer()),local=fs.readFileSync(file),normalize=b=>file.endsWith('.png')?b:b.toString('utf8').replace(/\r\n/g,'\n');
+ const remote=Buffer.from(await response.arrayBuffer()),local=fs.readFileSync(file),normalize=b=>/\.(png|wav)$/.test(file)?b:b.toString('utf8').replace(/\r\n/g,'\n');
  assert.equal(hash(normalize(remote)),hash(normalize(local)),file);return {file,matches:true};
 }));
 const require=createRequire(import.meta.url),{chromium}=require('C:/Users/nitro/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright');

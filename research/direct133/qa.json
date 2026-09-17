@@ -177,6 +177,64 @@
       }
     },
     {
+      "sounds": [
+        {
+          "pt": 10,
+          "visible": true,
+          "loop": false,
+          "volume": 0.35,
+          "time": 6744.700000047684,
+          "played": true,
+          "duration": 2.47898
+        },
+        {
+          "pt": 20,
+          "visible": true,
+          "loop": false,
+          "volume": 0.35,
+          "time": 9673,
+          "played": true,
+          "duration": 2.47898
+        },
+        {
+          "pt": 30,
+          "visible": true,
+          "loop": false,
+          "volume": 0.35,
+          "time": 12126.700000047684,
+          "played": true,
+          "duration": 2.47898
+        },
+        {
+          "pt": 50,
+          "visible": true,
+          "loop": false,
+          "volume": 0.35,
+          "time": 14856,
+          "played": true,
+          "duration": 2.47898
+        },
+        {
+          "pt": 100,
+          "visible": true,
+          "loop": false,
+          "volume": 0.35,
+          "time": 17056.899999976158,
+          "played": true,
+          "duration": 2.47898
+        },
+        {
+          "pt": 300,
+          "visible": true,
+          "loop": false,
+          "volume": 0.35,
+          "time": 19282.899999976158,
+          "played": true,
+          "duration": 2.47898
+        }
+      ]
+    },
+    {
       "adjusted": {
         "award": {
           "x": 203.59375,
@@ -234,7 +292,7 @@
             false,
             false
           ],
-          "time": 23673.800000071526
+          "time": 23575.5
         },
         {
           "pt": 100,
@@ -248,7 +306,27 @@
             false,
             false
           ],
-          "time": 25195.100000023842
+          "time": 25293.600000023842
+        }
+      ],
+      "autoSounds": [
+        {
+          "pt": 20,
+          "visible": true,
+          "loop": false,
+          "volume": 0.35,
+          "time": 23575.700000047684,
+          "played": true,
+          "duration": 2.47898
+        },
+        {
+          "pt": 100,
+          "visible": true,
+          "loop": false,
+          "volume": 0.35,
+          "time": 25293.800000071526,
+          "played": true,
+          "duration": 2.47898
         }
       ]
     }

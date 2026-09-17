@@ -13,7 +13,19 @@ await page.route('**/*',async route=>{
  const types={'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json','.png':'image/png','.webp':'image/webp','.jpg':'image/jpeg','.svg':'image/svg+xml','.mp4':'video/mp4','.wav':'audio/wav'};
  try{await route.fulfill({status:200,contentType:types[path.extname(file)]||'application/octet-stream',body:fs.readFileSync(file)});}catch{missing.push(u.pathname);await route.abort();}
 });
-await page.addInitScript(()=>{const play=HTMLMediaElement.prototype.play;HTMLMediaElement.prototype.play=function(){this.muted=true;return play.call(this);};});
+await page.addInitScript(()=>{
+ window.directSounds=[];
+ const play=HTMLMediaElement.prototype.play;
+ HTMLMediaElement.prototype.play=function(){
+  this.muted=true;
+  if(this.src.includes('/nova/direct-award.wav')){
+   const root=document.querySelector('#novaDirectAward'),event={pt:Number(root.dataset.pt),visible:!root.hidden,loop:this.loop,volume:this.volume,time:performance.now(),played:false};
+   directSounds.push(event);const promise=play.call(this);
+   promise.then(()=>{event.played=true;event.duration=this.duration;},e=>event.error=e.message);return promise;
+  }
+  return play.call(this);
+ };
+});
 async function ready(){await page.waitForSelector('#novaDirectAward',{state:'attached'});}
 async function hooks(){await page.evaluate(()=>{
  window.qa={amount:10,spins:[],shows:[],sequence:null,stopAt:0,holdThird:false};
@@ -76,17 +88,20 @@ try{
   if(amount===10||amount===300)await page.screenshot({path:'research/direct133/plus-'+amount+'.png'});
  }
  const shows=await page.evaluate(()=>qa.shows);for(const show of shows){assert.deepEqual(show.stopped,[true,true,true]);assert.deepEqual(show.moving,[false,false,false]);}
+ const sounds=await page.evaluate(()=>directSounds);assert.equal(sounds.length,6);
+ sounds.forEach((sound,i)=>{assert.equal(sound.pt,shows[i].pt);assert(sound.visible&&sound.played);assert(!sound.loop);assert(sound.duration>0);assert(sound.volume>0);assert(Math.abs(sound.time-shows[i].time)<50);});checks.push({sounds});
  // Reels moved and resized by the layout editor's variables: overlay follows automatically.
  await page.evaluate(()=>{for(const [key,value]of Object.entries({'--layout-reels-x':'16%','--layout-reels-y':'29%','--layout-reels-w':'68%','--layout-reels-h':'24%'}))document.documentElement.style.setProperty(key,value);});
  checks.push({adjusted:await geometry()});
  await page.setViewportSize({width:900,height:900});checks.push({narrow:await geometry()});
  await page.evaluate(()=>{for(const key of ['--layout-reels-x','--layout-reels-y','--layout-reels-w','--layout-reels-h'])document.documentElement.style.removeProperty(key);});await page.setViewportSize({width:1440,height:1080});
  // No award on ordinary bell; the next valid BET clears the held award.
- await page.evaluate(()=>qa.amount=0);await bet();assert(await page.locator('#novaDirectAward').isHidden());for(const i of [0,1,2])await stop(i);await complete();assert(await page.locator('#novaDirectAward').isHidden());
+ await page.evaluate(()=>qa.amount=0);await bet();assert(await page.locator('#novaDirectAward').isHidden());for(const i of [0,1,2])await stop(i);await complete();assert(await page.locator('#novaDirectAward').isHidden());assert.equal(await page.evaluate(()=>directSounds.length),6);
  // AUTO keeps advancing across consecutive direct awards and a no-award spin.
  await page.evaluate(()=>{qa.spins=[];qa.shows=[];qa.sequence=[20,100,0];qa.stopAt=3;});await page.locator('#quickAutoBtn').click();
  await page.waitForFunction(()=>qa.spins.length===3&&qa.spins.at(-1).finishing&&document.querySelector('#quickAutoBtn').textContent==='AUTO',{},{timeout:60000});
- const auto=await page.evaluate(()=>qa.shows);assert.deepEqual(auto.map(x=>x.pt),[20,100]);for(const show of auto){assert.deepEqual(show.stopped,[true,true,true]);assert.deepEqual(show.moving,[false,false,false]);}assert(await page.locator('#novaDirectAward').isHidden());checks.push({auto});
+ const auto=await page.evaluate(()=>qa.shows);assert.deepEqual(auto.map(x=>x.pt),[20,100]);for(const show of auto){assert.deepEqual(show.stopped,[true,true,true]);assert.deepEqual(show.moving,[false,false,false]);}assert(await page.locator('#novaDirectAward').isHidden());
+ const autoSounds=await page.evaluate(()=>directSounds.slice(6));assert.deepEqual(autoSounds.map(x=>x.pt),[20,100]);autoSounds.forEach((sound,i)=>{assert(sound.visible&&sound.played&&!sound.loop);assert(Math.abs(sound.time-auto[i].time)<50);});checks.push({auto,autoSounds});
  // Reset explicitly clears a held win; nothing is restored by a reload.
  await page.evaluate(()=>{qa.sequence=null;qa.amount=50;});await bet();for(const i of [0,1,2])await stop(i);await complete();assert(await page.locator('#novaDirectAward').isVisible());
  await page.locator('#resetBtn').evaluate(el=>el.click());assert(await page.locator('#novaDirectAward').isHidden());
