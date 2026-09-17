@@ -34,7 +34,7 @@ globalThis.NovaArt=(()=>{
  // Five paid games after the final AT quota. All rare roles guarantee revival.
  const comebackRules=Object.freeze({games:5,totalChance:.20,
   guaranteedRoles:Object.freeze(['WEAK_SUICA','STRONG_SUICA','CHANCE_A','CHANCE_B','WEAK_NOVA','STRONG_NOVA','SUPER_NOVA']),
-  bellRate:1/50,highMissChance:.002,
+  bellRate:1/50,highMissChance:.002,parityHintPerZone:.01,
   superDenom:32768
  });
  const comebackCommonChances=new Map();
@@ -56,9 +56,17 @@ globalThis.NovaArt=(()=>{
   return comebackCommonChances.get(key)[role];
  }
  function comebackRoleProbabilities(setting=1){
-  const row={...NovaNormal.roleProbabilities(setting)},superRate=1/comebackRules.superDenom;
-  // Recovery-only bell mix: move probability from MISS, preserving all rares and replays.
-  row.MISS-=superRate+comebackRules.bellRate-row.BELL;row.BELL=comebackRules.bellRate;
+  const key=validSetting(setting),row={...NovaNormal.roleProbabilities(key)},superRate=1/comebackRules.superDenom;
+  const perGame=1-(1-comebackRules.totalChance)**(1/comebackRules.games);
+  const parityPerGame=comebackRules.parityHintPerZone*perGame/comebackRules.totalChance;
+  const missChance=key>=4?comebackRules.highMissChance:0;
+  // Increase recovery-only rare frequency so odd/even confirmation occurs in 1% of zones.
+  // Solve q = rare + parity + MISS*missChance, with MISS = 1 - rare - bell - replay.
+  const rareTarget=(perGame-parityPerGame-missChance*(1-comebackRules.bellRate-row.REPLAY))/(1-missChance);
+  const roles=comebackRules.guaranteedRoles.filter(role=>role!=='SUPER_NOVA');
+  const factor=(rareTarget-superRate)/roles.reduce((sum,role)=>sum+row[role],0);
+  for(const role of roles)row[role]*=factor;
+  row.BELL=comebackRules.bellRate;row.MISS=1-rareTarget-row.BELL-row.REPLAY;
   return {SUPER_NOVA:superRate,...row};
  }
  function drawComebackRole(setting,rng){let roll=rng();for(const [role,p] of Object.entries(comebackRoleProbabilities(setting)))if((roll-=p)<0)return role;return 'MISS';}

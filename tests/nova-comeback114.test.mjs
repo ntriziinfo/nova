@@ -98,22 +98,40 @@ test('the fifth game still draws common-role revival after four losses and a rel
  }
 });
 
-test('only comeback uses a 1/50 bell; rare/replay frequencies and normal role tables stay intact',()=>{
+test('only comeback boosts rare frequency, keeping its bell/replay/premium mix and other phases intact',()=>{
  loadModel();const a=NovaArt,n=NovaNormal;
  for(let setting=1;setting<=6;setting++){
-  const normal=n.roleProbabilities(setting),before={...normal},row=a.comebackRoleProbabilities(setting);
+  const normal=n.roleProbabilities(setting),before={...normal},at=a.roleProbabilities(setting),prep=a.preparationProbabilities(setting),row=a.comebackRoleProbabilities(setting);
   assert.equal(row.BELL,1/50);assert.equal(row.REPLAY,normal.REPLAY);
-  for(const role of Object.keys(n.rare))assert.equal(row[role],normal[role]);
+  const factor=row.WEAK_SUICA/normal.WEAK_SUICA;
+  for(const role of Object.keys(n.rare)){
+   assert(row[role]>normal[role],`${setting}/${role}`);
+   assert(Math.abs(row[role]/normal[role]-factor)<1e-12);
+  }
   assert.equal(row.SUPER_NOVA,1/32768);
-  assert.ok(Math.abs(row.MISS-(normal.MISS-(1/50-normal.BELL)-1/32768))<1e-12);
+  assert(row.MISS>0&&row.MISS<normal.MISS);
   assert.ok(Object.values(row).every(p=>p>=0&&p<=1));
   assert.ok(Math.abs(Object.values(row).reduce((x,y)=>x+y,0)-1)<1e-12);
   assert.deepEqual(n.roleProbabilities(setting),before);
+  assert.deepEqual(a.roleProbabilities(setting),at);assert.deepEqual(a.preparationProbabilities(setting),prep);
+  assert.equal(at.MISS??0,0);
   let cumulative=0;
   for(const [role,p]of Object.entries(row)){
    assert.equal(a.drawComebackRole(setting,()=>cumulative+p/2),role);
    cumulative+=p;
   }
+ }
+});
+
+test('odd/even role confirmation occurs in exactly one percent of complete comeback zones',()=>{
+ loadModel();const a=NovaArt;
+ for(let setting=1;setting<=6;setting++){
+  const row=a.comebackRoleProbabilities(setting),role=setting%2?'BELL':'REPLAY';
+  const fail=Object.entries(row).reduce((sum,[r,p])=>sum+p*(1-a.comebackChance(r,setting)),0);
+  const reachedGames=Array.from({length:5},(_,i)=>fail**i).reduce((sum,p)=>sum+p,0);
+  assert(Math.abs(row[role]*a.comebackChance(role,setting)*reachedGames-.01)<1e-12);
+  assert.equal(a.comebackChance(setting%2?'REPLAY':'BELL',setting),0);
+  assert.equal(a.comebackChance('MISS',setting),setting>=4?.002:0);
  }
 });
 
