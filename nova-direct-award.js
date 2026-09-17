@@ -10,7 +10,8 @@ globalThis.NovaDirectAward=(()=>{
  }
  function amount(resolved){
   const zone=Number(resolved?.zoneAward);
-  return directAmount(resolved)+(Number.isSafeInteger(zone)&&zone>0?zone:0);
+  const ladder=['sosuke','giru','ura_giru'].includes(resolved?.flowBefore?.zone)||['sosuke','giru','ura_giru'].includes(resolved?.flowAfter?.zone);
+  return directAmount(resolved)+(!ladder&&Number.isSafeInteger(zone)&&zone>0?zone:0);
  }
  function init(){
   if(root)return true;

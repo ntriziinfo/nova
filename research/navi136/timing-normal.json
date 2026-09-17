@@ -1,0 +1,1653 @@
+{
+  "config": {
+    "normal": true
+  },
+  "setting": 3,
+  "autoDelay": 0.5,
+  "games": 180,
+  "elapsedSeconds": 274.45029999995234,
+  "perHour": 2361.083227091071,
+  "perEightHours": 18888.665816728568,
+  "groups": {
+    "normal": {
+      "count": 180,
+      "seconds": 274.4502999999522,
+      "averageSeconds": 1.5247238888886234
+    }
+  },
+  "pageErrors": [],
+  "missingAssets": [],
+  "silent": true,
+  "isolated": true,
+  "rows": [
+    {
+      "start": 13429.300000071526,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 14578.899999976158
+    },
+    {
+      "start": 14918.100000023842,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 16399.5
+    },
+    {
+      "start": 16746.800000071526,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 18104.700000047684
+    },
+    {
+      "start": 18367.600000023842,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 19999.899999976158
+    },
+    {
+      "start": 20254.899999976158,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 21266.600000023842
+    },
+    {
+      "start": 21528.5,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 23383.399999976158
+    },
+    {
+      "start": 23674.200000047684,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 25061.899999976158
+    },
+    {
+      "start": 25319.399999976158,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 26572.800000071526
+    },
+    {
+      "start": 26830.100000023842,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 27840.5
+    },
+    {
+      "start": 28094.600000023842,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 29484
+    },
+    {
+      "start": 29739.300000071526,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 30725.800000071526
+    },
+    {
+      "start": 30981.800000071526,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 32319.600000023842
+    },
+    {
+      "start": 32576.100000023842,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 33677.10000002384
+    },
+    {
+      "start": 33936.89999997616,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 34932
+    },
+    {
+      "start": 35190.5,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 36721.700000047684
+    },
+    {
+      "start": 36977.5,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 38074.60000002384
+    },
+    {
+      "start": 38334.39999997616,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 39974.5
+    },
+    {
+      "start": 40238,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 41842.39999997616
+    },
+    {
+      "start": 42098.300000071526,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 43152.700000047684
+    },
+    {
+      "start": 43408.300000071526,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 44938.10000002384
+    },
+    {
+      "start": 45251.5,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 46679.800000071526
+    },
+    {
+      "start": 46937.300000071526,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 48435.800000071526
+    },
+    {
+      "start": 48690.39999997616,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 50270.39999997616
+    },
+    {
+      "start": 50534.5,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 51577
+    },
+    {
+      "start": 51837,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 52874.700000047684
+    },
+    {
+      "start": 53135.700000047684,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 54780.200000047684
+    },
+    {
+      "start": 55036.5,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 56599.5
+    },
+    {
+      "start": 56861.60000002384,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 58265.89999997616
+    },
+    {
+      "start": 58556.800000071526,
+      "zero": false,
+      "result": "WEAK_NOVA",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 60111.10000002384
+    },
+    {
+      "start": 60392,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 61911.10000002384
+    },
+    {
+      "start": 62171.200000047684,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 63674.10000002384
+    },
+    {
+      "start": 63930.800000071526,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 65261.300000071526
+    },
+    {
+      "start": 65527.300000071526,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 67189.10000002384
+    },
+    {
+      "start": 67447.89999997616,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 68587.5
+    },
+    {
+      "start": 68842.20000004768,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 69852.80000007153
+    },
+    {
+      "start": 70108,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 71108.10000002384
+    },
+    {
+      "start": 71368.70000004768,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 73004.5
+    },
+    {
+      "start": 73261.39999997616,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 74271.70000004768
+    },
+    {
+      "start": 74532.20000004768,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 75685.10000002384
+    },
+    {
+      "start": 75943.10000002384,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 77360.10000002384
+    },
+    {
+      "start": 77616.30000007153,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 78625
+    },
+    {
+      "start": 78883.30000007153,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 79887.89999997616
+    },
+    {
+      "start": 80144.80000007153,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 81164.39999997616
+    },
+    {
+      "start": 81419.5,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 83083.30000007153
+    },
+    {
+      "start": 83346.5,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 84501
+    },
+    {
+      "start": 84758.89999997616,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 86357.70000004768
+    },
+    {
+      "start": 86611.89999997616,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 87613.60000002384
+    },
+    {
+      "start": 87873,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 89302.10000002384
+    },
+    {
+      "start": 89558.10000002384,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 90546.39999997616
+    },
+    {
+      "start": 90805.5,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 92328.30000007153
+    },
+    {
+      "start": 92585.70000004768,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 94093.80000007153
+    },
+    {
+      "start": 94350.70000004768,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 95344.10000002384
+    },
+    {
+      "start": 95606.70000004768,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 96612.20000004768
+    },
+    {
+      "start": 96871.5,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 98135.39999997616
+    },
+    {
+      "start": 98391.20000004768,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 99389.80000007153
+    },
+    {
+      "start": 99647.80000007153,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 100651.10000002384
+    },
+    {
+      "start": 100907.89999997616,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 102272.20000004768
+    },
+    {
+      "start": 102529.89999997616,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 103915.60000002384
+    },
+    {
+      "start": 104170.39999997616,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 105172.70000004768
+    },
+    {
+      "start": 105432.30000007153,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 106951.30000007153
+    },
+    {
+      "start": 107210.10000002384,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 108221.20000004768
+    },
+    {
+      "start": 108479.80000007153,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 109535.10000002384
+    },
+    {
+      "start": 109794,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 110980.5
+    },
+    {
+      "start": 111236.80000007153,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 112240.80000007153
+    },
+    {
+      "start": 112498.60000002384,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 113768.70000004768
+    },
+    {
+      "start": 114027.5,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 115131.30000007153
+    },
+    {
+      "start": 115386,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 116849.20000004768
+    },
+    {
+      "start": 117108.89999997616,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 118099.10000002384
+    },
+    {
+      "start": 118358.20000004768,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 119626.70000004768
+    },
+    {
+      "start": 119882.10000002384,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 120877.5
+    },
+    {
+      "start": 121134.80000007153,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 122669.5
+    },
+    {
+      "start": 122924.60000002384,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 124375.39999997616
+    },
+    {
+      "start": 124630.60000002384,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 126029
+    },
+    {
+      "start": 126286.80000007153,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 127274.80000007153
+    },
+    {
+      "start": 127530.10000002384,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 128525.70000004768
+    },
+    {
+      "start": 128789.39999997616,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 129790.5
+    },
+    {
+      "start": 130046.39999997616,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 131040.89999997616
+    },
+    {
+      "start": 131298.80000007153,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 132304.10000002384
+    },
+    {
+      "start": 132559.10000002384,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 134022.20000004768
+    },
+    {
+      "start": 134282.10000002384,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 135919.20000004768
+    },
+    {
+      "start": 136173.60000002384,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 137207.39999997616
+    },
+    {
+      "start": 137465.10000002384,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 138539.80000007153
+    },
+    {
+      "start": 138797.30000007153,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 139805.89999997616
+    },
+    {
+      "start": 140065.89999997616,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 141132.5
+    },
+    {
+      "start": 141398.5,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 142468.10000002384
+    },
+    {
+      "start": 142728.5,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 144330.60000002384
+    },
+    {
+      "start": 144593.30000007153,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 146243.89999997616
+    },
+    {
+      "start": 146513.80000007153,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 147978.30000007153
+    },
+    {
+      "start": 148233.39999997616,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 149940.5
+    },
+    {
+      "start": 150197.39999997616,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 151291.80000007153
+    },
+    {
+      "start": 151548.60000002384,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 152553.39999997616
+    },
+    {
+      "start": 152809.89999997616,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 154178.89999997616
+    },
+    {
+      "start": 154457.20000004768,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 155886.39999997616
+    },
+    {
+      "start": 156142.89999997616,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 157468.60000002384
+    },
+    {
+      "start": 157742.39999997616,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 158754
+    },
+    {
+      "start": 159009.10000002384,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 160544.70000004768
+    },
+    {
+      "start": 160804.10000002384,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 161805.30000007153
+    },
+    {
+      "start": 162059.89999997616,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 163058.70000004768
+    },
+    {
+      "start": 163314.70000004768,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 164309.80000007153
+    },
+    {
+      "start": 164567,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 165918.20000004768
+    },
+    {
+      "start": 166174.60000002384,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 167171.10000002384
+    },
+    {
+      "start": 167430.60000002384,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 168982.60000002384
+    },
+    {
+      "start": 169238.30000007153,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 170868.70000004768
+    },
+    {
+      "start": 171125.80000007153,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 172383.89999997616
+    },
+    {
+      "start": 172642.60000002384,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 174151.39999997616
+    },
+    {
+      "start": 174409.10000002384,
+      "zero": false,
+      "result": "WEAK_SUICA",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 175767.60000002384
+    },
+    {
+      "start": 176022.80000007153,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 177595.70000004768
+    },
+    {
+      "start": 177857.5,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 178866.30000007153
+    },
+    {
+      "start": 179122.60000002384,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 180142.70000004768
+    },
+    {
+      "start": 180398.10000002384,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 181982
+    },
+    {
+      "start": 182237.60000002384,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 183823.30000007153
+    },
+    {
+      "start": 184079.70000004768,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 185599.60000002384
+    },
+    {
+      "start": 185855.20000004768,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 186846
+    },
+    {
+      "start": 187102.10000002384,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 188714.39999997616
+    },
+    {
+      "start": 188970.20000004768,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 190308.60000002384
+    },
+    {
+      "start": 190566,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 192129.30000007153
+    },
+    {
+      "start": 192385.60000002384,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 193382.39999997616
+    },
+    {
+      "start": 193637.60000002384,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 194906.80000007153
+    },
+    {
+      "start": 195164.20000004768,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 196473.80000007153
+    },
+    {
+      "start": 196732.39999997616,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 197734.80000007153
+    },
+    {
+      "start": 197992.20000004768,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 199436.39999997616
+    },
+    {
+      "start": 199698.39999997616,
+      "zero": false,
+      "result": "WEAK_SUICA",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 200812.70000004768
+    },
+    {
+      "start": 201068.30000007153,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 202330.20000004768
+    },
+    {
+      "start": 202586.30000007153,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 203593.89999997616
+    },
+    {
+      "start": 203850.10000002384,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 204863.30000007153
+    },
+    {
+      "start": 205118.80000007153,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 206126.80000007153
+    },
+    {
+      "start": 206381.70000004768,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 208046.39999997616
+    },
+    {
+      "start": 208306.80000007153,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 209322.5
+    },
+    {
+      "start": 209579.5,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 210720
+    },
+    {
+      "start": 210975.89999997616,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 211974.60000002384
+    },
+    {
+      "start": 212340.10000002384,
+      "zero": false,
+      "result": "STRONG_SUICA",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 213666.89999997616
+    },
+    {
+      "start": 213922.70000004768,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 215545.60000002384
+    },
+    {
+      "start": 215804.10000002384,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 216802.60000002384
+    },
+    {
+      "start": 217105.10000002384,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 218242.30000007153
+    },
+    {
+      "start": 218505.89999997616,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 219665.70000004768
+    },
+    {
+      "start": 219923.39999997616,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 221340.89999997616
+    },
+    {
+      "start": 221597,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 222586.30000007153
+    },
+    {
+      "start": 222843,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 224487.60000002384
+    },
+    {
+      "start": 224753.20000004768,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 225896.5
+    },
+    {
+      "start": 226152.30000007153,
+      "zero": false,
+      "result": "WEAK_SUICA",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 227361.70000004768
+    },
+    {
+      "start": 227619.89999997616,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 229082.60000002384
+    },
+    {
+      "start": 229337.89999997616,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 230917.5
+    },
+    {
+      "start": 231172.20000004768,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 232209.10000002384
+    },
+    {
+      "start": 232464,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 233694.60000002384
+    },
+    {
+      "start": 233950.30000007153,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 234946.89999997616
+    },
+    {
+      "start": 235214.70000004768,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 236260.20000004768
+    },
+    {
+      "start": 236517.10000002384,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 238132.89999997616
+    },
+    {
+      "start": 238398.80000007153,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 239607.80000007153
+    },
+    {
+      "start": 239863.20000004768,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 240864.60000002384
+    },
+    {
+      "start": 241124.60000002384,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 242823.60000002384
+    },
+    {
+      "start": 243077.60000002384,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 244094.5
+    },
+    {
+      "start": 244353.20000004768,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 245362.70000004768
+    },
+    {
+      "start": 245622.60000002384,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 246974.80000007153
+    },
+    {
+      "start": 247232.39999997616,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 248237.20000004768
+    },
+    {
+      "start": 248510.20000004768,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 249526.89999997616
+    },
+    {
+      "start": 249786.80000007153,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 251447.10000002384
+    },
+    {
+      "start": 251707.70000004768,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 253337.89999997616
+    },
+    {
+      "start": 253619,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 255234.60000002384
+    },
+    {
+      "start": 255489.5,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 256723.20000004768
+    },
+    {
+      "start": 256979.10000002384,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 257966.89999997616
+    },
+    {
+      "start": 258223,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 259213.60000002384
+    },
+    {
+      "start": 259469.10000002384,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 260846.70000004768
+    },
+    {
+      "start": 261105.60000002384,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 262137.5
+    },
+    {
+      "start": 262400.3000000715,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 263978.8000000715
+    },
+    {
+      "start": 264234.7000000477,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 265319.39999997616
+    },
+    {
+      "start": 265576.3000000715,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 266564.89999997616
+    },
+    {
+      "start": 266823.60000002384,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 267819.89999997616
+    },
+    {
+      "start": 268074,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 269543.10000002384
+    },
+    {
+      "start": 269799.2000000477,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 270910.10000002384
+    },
+    {
+      "start": 271165.10000002384,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 272366.10000002384
+    },
+    {
+      "start": 272620.60000002384,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 274041.5
+    },
+    {
+      "start": 274298,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 275879
+    },
+    {
+      "start": 276133.7000000477,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 277841.8000000715
+    },
+    {
+      "start": 278096.89999997616,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 279635.39999997616
+    },
+    {
+      "start": 279903.89999997616,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 280911
+    },
+    {
+      "start": 281170.5,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 282175
+    },
+    {
+      "start": 282433.7000000477,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 283431.10000002384
+    },
+    {
+      "start": 283686,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 284673.39999997616
+    },
+    {
+      "start": 284930.2000000477,
+      "zero": false,
+      "result": "REPLAY",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 285935.7000000477
+    },
+    {
+      "start": 286190.7000000477,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 287625
+    },
+    {
+      "start": 287879.60000002384,
+      "zero": false,
+      "result": "MISS",
+      "phase": "normal",
+      "zone": "",
+      "initial": "",
+      "finish": 289156.60000002384
+    }
+  ]
+}

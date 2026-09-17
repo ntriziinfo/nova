@@ -1,0 +1,175 @@
+{
+  "silent": true,
+  "isolated": true,
+  "checks": [
+    {
+      "role": "WEAK_SUICA",
+      "color": "green",
+      "mark": "!",
+      "roll": 0.1,
+      "bellSounds": 0
+    },
+    {
+      "role": "STRONG_SUICA",
+      "color": "green",
+      "mark": "!",
+      "roll": 0.8,
+      "bellSounds": 0
+    },
+    {
+      "role": "STRONG_SUICA",
+      "color": "green",
+      "mark": "!!",
+      "roll": 0.1,
+      "bellSounds": 0
+    },
+    {
+      "role": "CHANCE_A",
+      "color": "purple",
+      "mark": "!",
+      "roll": 0.1,
+      "bellSounds": 0
+    },
+    {
+      "role": "CHANCE_B",
+      "color": "purple",
+      "mark": "!",
+      "roll": 0.8,
+      "bellSounds": 0
+    },
+    {
+      "role": "CHANCE_B",
+      "color": "purple",
+      "mark": "!!",
+      "roll": 0.1,
+      "bellSounds": 0
+    },
+    {
+      "role": "WEAK_NOVA",
+      "color": "red",
+      "mark": "!",
+      "roll": 0.1,
+      "bellSounds": 0
+    },
+    {
+      "role": "STRONG_NOVA",
+      "color": "red",
+      "mark": "!",
+      "roll": 0.8,
+      "bellSounds": 0
+    },
+    {
+      "role": "STRONG_NOVA",
+      "color": "red",
+      "mark": "!!",
+      "roll": 0.1,
+      "bellSounds": 0
+    },
+    {
+      "role": "SUPER_NOVA",
+      "color": "red",
+      "mark": "!!",
+      "roll": 0.8,
+      "bellSounds": 0
+    },
+    {
+      "bellOrder": [
+        2,
+        0,
+        1
+      ],
+      "sounds": 1
+    },
+    {
+      "autoRare": true,
+      "pressOrder": [
+        0,
+        1,
+        2
+      ],
+      "landOrder": [
+        0,
+        1,
+        2
+      ]
+    },
+    {
+      "zone": "sosuke",
+      "shows": [
+        {
+          "shown": false,
+          "amount": 0,
+          "zoneAward": 250,
+          "stopped": [
+            true,
+            true,
+            true
+          ]
+        }
+      ],
+      "award": "350",
+      "shutterVisible": true,
+      "overlayVisible": false
+    },
+    {
+      "zone": "giru",
+      "shows": [
+        {
+          "shown": false,
+          "amount": 0,
+          "zoneAward": 250,
+          "stopped": [
+            true,
+            true,
+            true
+          ]
+        }
+      ],
+      "award": "350",
+      "shutterVisible": true,
+      "overlayVisible": false
+    },
+    {
+      "zone": "ura_giru",
+      "shows": [
+        {
+          "shown": false,
+          "amount": 0,
+          "zoneAward": 250,
+          "stopped": [
+            true,
+            true,
+            true
+          ]
+        }
+      ],
+      "award": "350",
+      "shutterVisible": true,
+      "overlayVisible": false
+    },
+    {
+      "zone": "sora",
+      "shows": [
+        {
+          "shown": true,
+          "amount": 300,
+          "zoneAward": 300,
+          "stopped": [
+            true,
+            true,
+            true
+          ]
+        }
+      ],
+      "award": "400",
+      "shutterVisible": false,
+      "overlayVisible": false
+    },
+    {
+      "adjustmentPreview": true,
+      "sounds": 0
+    }
+  ],
+  "errors": [],
+  "missing": []
+}

@@ -6542,9 +6542,9 @@ body{
 <link rel="stylesheet" href="nova-ladder-presentation.css?v=20260917-initial-131">
 <script src="nova-ladder-presentation.js?v=20260917-initial-131"></script>
 <link rel="stylesheet" href="nova-bell-navi.css?v=20260917-bell-132">
-<script src="nova-bell-navi.js?v=20260917-bell-132"></script>
+<script src="nova-bell-navi.js?v=20260917-navi-136"></script>
 <link rel="stylesheet" href="nova-direct-award.css?v=20260917-zone-award-134">
-<script src="nova-direct-award.js?v=20260917-zone-award-134"></script>
+<script src="nova-direct-award.js?v=20260917-navi-136"></script>
 <link rel="stylesheet" href="nova-aim-presentation.css?v=20260909-comeback-114">
 <script src="nova-aim-presentation.js?v=20260917-background-129"></script>
 <script src="nova-art.js?v=20260917-zone-award-134"></script>
@@ -7997,7 +7997,7 @@ body{
     return {kind:'spin',result,message:resolved.artMessage||'',mode:debugFastSpinActive?'fast':autoPlay?'auto':speedToBonusActive?'speed':'manual',forced:pendingForceResult||'',
       aim:resolved.aim,burstEvent:resolved.burstEvent,burstReward:resolved.burstReward,comebackEvent:resolved.comebackEvent,atOutcome:resolved.atOutcome,zoneAward:resolved.zoneAward,
       artSetWon:resolved.artSetWon,oumaFreeze:resolved.oumaFreeze,czLamp:resolved.czLamp,bonusHit:resolved.bonusHit,bonusSource:resolved.bonusSource,
-      bellNaviOrder:currentSpin?.bellNaviOrder,
+      bellNaviOrder:currentSpin?.bellNaviOrder,rareNavi:currentSpin?.rareNavi,
       pressOrder:debugFastSpinActive?'simulation':currentSpin?.auditPressOrder,stopOrder:debugFastSpinActive?'simulation':currentSpin?.auditStopOrder,grid:debugFastSpinActive?undefined:currentSpin?.auditGrid,visualResult:!debugFastSpinActive&&NovaAim.hasGuide(resolved.aim)&&currentSpin?.aimAligned===false?'MISS':result,
       flowBefore:resolved.flowBefore,flowAfter:resolved.flowAfter,manualLineupMiss:resolved.manualLineupMiss,bonusWaitSpin:resolved.bonusWaitSpin,czEntry:resolved.czEntry,czCompleted:resolved.czCompleted};
   }
@@ -12952,7 +12952,8 @@ body{
     }
     if(resolved.artMessage && !resolved.bonusHit && !resolved.aTypeBonusReady){
       showMessage(resolved.artMessage,normalModeLabel());log(resolved.artMessage);
-      if(!NovaDirectAward.amount(resolved))showOverlay(resolved.artMessage);
+      const ladderGain=Number(resolved.zoneAward)>0&&(NovaLadder.eligible(resolved.flowBefore)||NovaLadder.eligible(resolved.flowAfter));
+      if(!NovaDirectAward.amount(resolved)&&!ladderGain)showOverlay(resolved.artMessage);
       return;
     }
     if(resolved.manualLineupMiss){
