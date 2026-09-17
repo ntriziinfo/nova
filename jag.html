@@ -12843,7 +12843,8 @@ body{
     NovaAim.hide();
     normalState.resultCard=card;NovaResults.show(card);
     pauseNormalBgm();
-    stopAutoPlay('リザルト表示');stopSpeedToBonus('リザルト表示');
+    // Keep AUTO selected; its audio gate waits for the complete eyecatch before BET.
+    stopSpeedToBonus('リザルト表示');
     playLockedBonusConfirmSound('assets/media/nova/result-eyecatch.wav',bgmOutputVolume(BGM_OUTPUT_SCALE));
   }
   function applyNormalResult(result, resolved, lineRow=1){

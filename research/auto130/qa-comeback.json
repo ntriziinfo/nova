@@ -1,0 +1,33 @@
+{
+  "url": "http://127.0.0.1:50951/jag.html?debug=1",
+  "silent": true,
+  "isolated": true,
+  "renderingSuspended": true,
+  "results": [
+    {
+      "label": "comeback",
+      "autoContinued": true,
+      "completed": 7,
+      "results": [
+        {
+          "card": {
+            "kind": "at",
+            "character": "ouma",
+            "color": "blue",
+            "pt": "0"
+          },
+          "at": 12494.599999904633,
+          "completed": 5
+        }
+      ],
+      "eyeEnded": 1,
+      "afterResultSpins": 2,
+      "freezes": 0,
+      "czExited": false,
+      "czOutcome": null,
+      "afterCzSpins": 0,
+      "violations": [],
+      "pageErrors": []
+    }
+  ]
+}

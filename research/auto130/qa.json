@@ -1,0 +1,276 @@
+{
+  "url": "http://127.0.0.1:51773/jag.html?debug=1",
+  "silent": true,
+  "isolated": true,
+  "renderingSuspended": true,
+  "results": [
+    {
+      "label": "sosuke",
+      "autoContinued": true,
+      "completed": 6,
+      "results": [
+        {
+          "card": {
+            "kind": "zone",
+            "character": "sosuke",
+            "color": "red",
+            "pt": "50"
+          },
+          "at": 12477,
+          "completed": 4
+        }
+      ],
+      "eyeEnded": 1,
+      "afterResultSpins": 2,
+      "freezes": 0,
+      "czExited": false,
+      "afterCzSpins": 0,
+      "violations": [],
+      "pageErrors": []
+    },
+    {
+      "label": "giru",
+      "autoContinued": true,
+      "completed": 6,
+      "results": [
+        {
+          "card": {
+            "kind": "zone",
+            "character": "giru",
+            "color": "red",
+            "pt": "200"
+          },
+          "at": 13304.100000023842,
+          "completed": 4
+        }
+      ],
+      "eyeEnded": 1,
+      "afterResultSpins": 2,
+      "freezes": 0,
+      "czExited": false,
+      "afterCzSpins": 0,
+      "violations": [],
+      "pageErrors": []
+    },
+    {
+      "label": "ura_giru",
+      "autoContinued": true,
+      "completed": 6,
+      "results": [
+        {
+          "card": {
+            "kind": "zone",
+            "character": "giru",
+            "color": "blue",
+            "pt": "500"
+          },
+          "at": 12937.399999976158,
+          "completed": 4
+        }
+      ],
+      "eyeEnded": 1,
+      "afterResultSpins": 2,
+      "freezes": 0,
+      "czExited": false,
+      "afterCzSpins": 0,
+      "violations": [],
+      "pageErrors": []
+    },
+    {
+      "label": "toto",
+      "autoContinued": true,
+      "completed": 8,
+      "results": [
+        {
+          "card": {
+            "kind": "zone",
+            "character": "toto",
+            "color": "red",
+            "pt": "60"
+          },
+          "at": 20672.5,
+          "completed": 7
+        }
+      ],
+      "eyeEnded": 1,
+      "afterResultSpins": 2,
+      "freezes": 0,
+      "czExited": false,
+      "afterCzSpins": 0,
+      "violations": [],
+      "pageErrors": []
+    },
+    {
+      "label": "sora",
+      "autoContinued": true,
+      "completed": 8,
+      "results": [
+        {
+          "card": {
+            "kind": "zone",
+            "character": "sora",
+            "color": "red",
+            "pt": "210"
+          },
+          "at": 22940,
+          "completed": 7
+        }
+      ],
+      "eyeEnded": 1,
+      "afterResultSpins": 2,
+      "freezes": 0,
+      "czExited": false,
+      "afterCzSpins": 0,
+      "violations": [],
+      "pageErrors": []
+    },
+    {
+      "label": "ura_sora",
+      "autoContinued": true,
+      "completed": 8,
+      "results": [
+        {
+          "card": {
+            "kind": "zone",
+            "character": "sora",
+            "color": "blue",
+            "pt": "510"
+          },
+          "at": 20139.799999952316,
+          "completed": 7
+        }
+      ],
+      "eyeEnded": 1,
+      "afterResultSpins": 2,
+      "freezes": 0,
+      "czExited": false,
+      "afterCzSpins": 0,
+      "violations": [],
+      "pageErrors": []
+    },
+    {
+      "label": "urapi",
+      "autoContinued": true,
+      "completed": 10,
+      "results": [
+        {
+          "card": {
+            "kind": "zone",
+            "character": "urapi",
+            "color": "blue",
+            "pt": "150"
+          },
+          "at": 42190.799999952316,
+          "completed": 8
+        }
+      ],
+      "eyeEnded": 1,
+      "afterResultSpins": 2,
+      "freezes": 2,
+      "czExited": false,
+      "afterCzSpins": 0,
+      "violations": [],
+      "pageErrors": []
+    },
+    {
+      "label": "ouma",
+      "autoContinued": true,
+      "completed": 10,
+      "results": [
+        {
+          "card": {
+            "kind": "zone",
+            "character": "ouma",
+            "color": "blue",
+            "pt": "200"
+          },
+          "at": 42513.799999952316,
+          "completed": 8
+        }
+      ],
+      "eyeEnded": 1,
+      "afterResultSpins": 2,
+      "freezes": 2,
+      "czExited": false,
+      "afterCzSpins": 0,
+      "violations": [],
+      "pageErrors": []
+    },
+    {
+      "label": "ura_ouma",
+      "autoContinued": true,
+      "completed": 10,
+      "results": [
+        {
+          "card": {
+            "kind": "zone",
+            "character": "ouma",
+            "color": "red",
+            "pt": "900"
+          },
+          "at": 41810.300000071526,
+          "completed": 8
+        }
+      ],
+      "eyeEnded": 1,
+      "afterResultSpins": 2,
+      "freezes": 2,
+      "czExited": false,
+      "afterCzSpins": 0,
+      "violations": [],
+      "pageErrors": []
+    },
+    {
+      "label": "cz-failure",
+      "autoContinued": true,
+      "completed": 23,
+      "results": [],
+      "eyeEnded": 0,
+      "afterResultSpins": 0,
+      "freezes": 0,
+      "czExited": true,
+      "afterCzSpins": 3,
+      "violations": [],
+      "pageErrors": []
+    },
+    {
+      "label": "cz-success",
+      "autoContinued": true,
+      "completed": 18,
+      "results": [],
+      "eyeEnded": 0,
+      "afterResultSpins": 0,
+      "freezes": 0,
+      "czExited": true,
+      "afterCzSpins": 3,
+      "violations": [],
+      "pageErrors": []
+    },
+    {
+      "label": "strong_cz-failure",
+      "autoContinued": true,
+      "completed": 23,
+      "results": [],
+      "eyeEnded": 0,
+      "afterResultSpins": 0,
+      "freezes": 0,
+      "czExited": true,
+      "afterCzSpins": 3,
+      "violations": [],
+      "pageErrors": []
+    },
+    {
+      "label": "strong_cz-success",
+      "autoContinued": true,
+      "completed": 18,
+      "results": [],
+      "eyeEnded": 0,
+      "afterResultSpins": 0,
+      "freezes": 0,
+      "czExited": true,
+      "afterCzSpins": 3,
+      "violations": [],
+      "pageErrors": []
+    }
+  ]
+}
