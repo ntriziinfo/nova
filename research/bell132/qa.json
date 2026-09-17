@@ -1,0 +1,163 @@
+{
+  "silent": true,
+  "isolated": true,
+  "checks": [
+    {
+      "manual": [
+        0,
+        1,
+        2
+      ]
+    },
+    {
+      "manual": [
+        0,
+        2,
+        1
+      ]
+    },
+    {
+      "manual": [
+        1,
+        0,
+        2
+      ]
+    },
+    {
+      "manual": [
+        1,
+        2,
+        0
+      ]
+    },
+    {
+      "manual": [
+        2,
+        0,
+        1
+      ]
+    },
+    {
+      "manual": [
+        2,
+        1,
+        0
+      ]
+    },
+    {
+      "auto": [
+        {
+          "guide": [
+            0,
+            1,
+            2
+          ],
+          "stops": [
+            0,
+            1,
+            2
+          ],
+          "reward": 15
+        },
+        {
+          "guide": [
+            0,
+            2,
+            1
+          ],
+          "stops": [
+            0,
+            2,
+            1
+          ],
+          "reward": 15
+        },
+        {
+          "guide": [
+            1,
+            0,
+            2
+          ],
+          "stops": [
+            1,
+            0,
+            2
+          ],
+          "reward": 15
+        },
+        {
+          "guide": [
+            1,
+            2,
+            0
+          ],
+          "stops": [
+            1,
+            2,
+            0
+          ],
+          "reward": 15
+        },
+        {
+          "guide": [
+            2,
+            0,
+            1
+          ],
+          "stops": [
+            2,
+            0,
+            1
+          ],
+          "reward": 15
+        },
+        {
+          "guide": [
+            2,
+            1,
+            0
+          ],
+          "stops": [
+            2,
+            1,
+            0
+          ],
+          "reward": 15
+        }
+      ]
+    },
+    {
+      "takeover": [
+        2,
+        0,
+        1
+      ]
+    },
+    {
+      "layout": {
+        "before": {
+          "x": 267.90625,
+          "y": 511.859375,
+          "width": 518.390625,
+          "height": 39.390625
+        },
+        "after": {
+          "x": 283.453125,
+          "y": 496.828125,
+          "width": 466.546875,
+          "height": 44.0625
+        },
+        "restored": {
+          "x": 283.453125,
+          "y": 496.828125,
+          "width": 466.546875,
+          "height": 44.0625
+        },
+        "persisted": true,
+        "resetToSavedDefault": true
+      }
+    }
+  ],
+  "pageErrors": [],
+  "missingAssets": []
+}

@@ -1,0 +1,9 @@
+.novaBellNavi{position:absolute;z-index:60;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));pointer-events:none}
+.novaBellNavi[hidden]{display:none!important}
+.novaBellNaviItem{position:relative;min-width:0;overflow:hidden;filter:brightness(.95);transition:opacity 80ms linear}
+/* Original 2034x773 sprite: three 678px cells, visible strip y=250..490. */
+.novaBellNaviItem img{position:absolute;max-width:none!important;width:300%!important;height:322.083333%!important;top:-104.166667%;object-fit:fill!important;pointer-events:none;user-select:none}
+.novaBellNaviItem[data-next=true]{filter:brightness(1.2) drop-shadow(0 0 3px #ffda4c)}
+.novaBellNaviItem[data-stopped=true]{opacity:0}
+.novaBellNavi[data-preview=true]{outline:1px dashed #ffe470;outline-offset:2px}
+#bellNaviAdjustBtn{position:fixed;left:12px;bottom:94px;z-index:10001;padding:10px 12px;border:1px solid #b7943d;border-radius:7px;background:#221b2a;color:#ffe694;font-weight:bold;cursor:pointer}

@@ -6541,6 +6541,8 @@ body{
 <script src="nova-results.js?v=20260909-result-image-84"></script>
 <link rel="stylesheet" href="nova-ladder-presentation.css?v=20260917-initial-131">
 <script src="nova-ladder-presentation.js?v=20260917-initial-131"></script>
+<link rel="stylesheet" href="nova-bell-navi.css?v=20260917-bell-132">
+<script src="nova-bell-navi.js?v=20260917-bell-132"></script>
 <link rel="stylesheet" href="nova-aim-presentation.css?v=20260909-comeback-114">
 <script src="nova-aim-presentation.js?v=20260917-background-129"></script>
 <script src="nova-art.js?v=20260917-initial-131"></script>
@@ -6679,6 +6681,17 @@ body{
             </div>
           </div>
           <div class="layoutEditorGroups">
+            <div class="layoutEditGroup" id="bellNaviLayoutGroup">
+              <div class="layoutEditGroupTitle">ベルナビ（リール基準・調整中は常時表示）</div>
+              <div class="layoutEditRows">
+                <label class="layoutEditRow"><span>X</span><input class="layoutEditInput" aria-label="ナビX" type="range" min="-50" max="50" step="0.1" data-layout-target="navi" data-layout-prop="x"><b class="layoutEditValue" data-layout-view="navi-x"></b></label>
+                <label class="layoutEditRow"><span>Y</span><input class="layoutEditInput" aria-label="ナビY" type="range" min="-50" max="50" step="0.1" data-layout-target="navi" data-layout-prop="y"><b class="layoutEditValue" data-layout-view="navi-y"></b></label>
+                <label class="layoutEditRow"><span>幅</span><input class="layoutEditInput" aria-label="ナビ幅" type="range" min="40" max="160" step="0.1" data-layout-target="navi" data-layout-prop="w"><b class="layoutEditValue" data-layout-view="navi-w"></b></label>
+                <label class="layoutEditRow"><span>高さ</span><input class="layoutEditInput" aria-label="ナビ高さ" type="range" min="3" max="30" step="0.1" data-layout-target="navi" data-layout-prop="h"><b class="layoutEditValue" data-layout-view="navi-h"></b></label>
+                <label class="layoutEditRow"><span>間隔</span><input class="layoutEditInput" aria-label="ナビ間隔" type="range" min="0" max="10" step="0.1" data-layout-target="navi" data-layout-prop="gap"><b class="layoutEditValue" data-layout-view="navi-gap"></b></label>
+              </div>
+              <small>変更は自動保存。「今を標準」でRESET時の位置も保存します。</small>
+            </div>
             <div class="layoutEditGroup">
               <div class="layoutEditGroupTitle">REEL</div>
               <div class="layoutEditRows">
@@ -7982,6 +7995,7 @@ body{
     return {kind:'spin',result,message:resolved.artMessage||'',mode:debugFastSpinActive?'fast':autoPlay?'auto':speedToBonusActive?'speed':'manual',forced:pendingForceResult||'',
       aim:resolved.aim,burstEvent:resolved.burstEvent,burstReward:resolved.burstReward,comebackEvent:resolved.comebackEvent,atOutcome:resolved.atOutcome,
       artSetWon:resolved.artSetWon,oumaFreeze:resolved.oumaFreeze,czLamp:resolved.czLamp,bonusHit:resolved.bonusHit,bonusSource:resolved.bonusSource,
+      bellNaviOrder:currentSpin?.bellNaviOrder,
       pressOrder:debugFastSpinActive?'simulation':currentSpin?.auditPressOrder,stopOrder:debugFastSpinActive?'simulation':currentSpin?.auditStopOrder,grid:debugFastSpinActive?undefined:currentSpin?.auditGrid,visualResult:!debugFastSpinActive&&NovaAim.hasGuide(resolved.aim)&&currentSpin?.aimAligned===false?'MISS':result,
       flowBefore:resolved.flowBefore,flowAfter:resolved.flowAfter,manualLineupMiss:resolved.manualLineupMiss,bonusWaitSpin:resolved.bonusWaitSpin,czEntry:resolved.czEntry,czCompleted:resolved.czCompleted};
   }
@@ -8217,6 +8231,7 @@ body{
   const BG_ORANGE_LOGO_ANCHOR_X = 964;
   const BG_LOGO_LOWER_ANCHOR_Y = 742;
   const LAYOUT_DEFAULTS = Object.freeze({
+    navi:{...NovaBellNavi.defaults},
     reels:{x:22.7, y:41.4, w:54.0, h:37.4, gap:0.2},
     chance:{x:22.0, y:85.8, w:11.9, h:11.0},
     credit:{x:38.0, y:85.8, w:12.2, h:11.0},
@@ -8520,6 +8535,7 @@ body{
       });
     });
     syncLayoutEditInputs();
+    NovaBellNavi.layout();
     if(saveValue) safeStorageSet(LAYOUT_EDIT_STORAGE_KEY, JSON.stringify(layoutEditState));
   }
 
@@ -8570,6 +8586,7 @@ body{
       layoutEditToggleBtn.setAttribute("aria-expanded", layoutEditOpen ? "true" : "false");
     }
     document.body.classList.toggle("layoutEditOpen", layoutEditOpen);
+    NovaBellNavi.preview(layoutEditOpen);
   }
 
   function changePageZoom(delta){
@@ -13714,6 +13731,7 @@ body{
     stopSpeedToBonus("初期化のためSPEED停止");
     if(!confirm("統計と現在の状態を初期化しますか？")) return;
     NovaAim.reset();
+    NovaBellNavi.clear();
     stopAutoPlay("初期化のためオート停止");
     pauseNormalBgm();
     stopBattleBgm(false);
@@ -13777,6 +13795,7 @@ body{
 
   function resetRuntimeForMorning(reason="朝一リセット"){
     NovaAim.reset();
+    NovaBellNavi.clear();
     stopDebugFastSpin(`${reason}のため高速停止`);
     stopSpeedToBonus(`${reason}のためSPEED停止`);
     stopAutoPlay(`${reason}のためAUTO停止`);
@@ -15057,6 +15076,7 @@ body{
     };
     playCzCountdownOnLever(resolved);
     currentSpin.manualBonusStop = false; // Fixed-G prototype: bonus starts on the next confirmed spin.
+    if(!debugFastSpinActive)NovaBellNavi.begin(currentSpin);
     if(!debugFastSpinActive){
       if(resolved.aim)resolved.aim.guide ??= NovaAim.drawGuide(resolved.aim);
       NovaAim.bet(resolved.aim);
@@ -15135,7 +15155,7 @@ body{
     // オート/SPEED中だけ自動停止。手動時はストップ/左中右を押すまで止まらない。
     if(resolved.oumaFreeze){startOumaReverseAudio(currentSpin);}
     if(!resolved.oumaFreeze&&(autoPlay || speedModeSpinAtStart)){
-      const stopOrder = resolved.aim || zoneActiveAtSpinStart ? [2,1,0] : [0,1,2];
+      const stopOrder = NovaBellNavi.stopOrder(currentSpin);
       stopOrder.forEach((i,idx)=>{
         const normalAutoStopDelay = autoStopDelayMs(idx);
         const delay = resolved.oumaFreeze ? spinWaitMs + 150 + idx * 300 : speedModeSpinAtStart ? speedModeStopDelay(i) : normalAutoStopDelay;
@@ -15224,6 +15244,7 @@ body{
     currentSpin.auditGrid ||= [[],[],[]];
     for(let row=0;row<3;row++)currentSpin.auditGrid[row][i]=col[row];
     currentSpin.stopped[i] = true;
+    NovaBellNavi.stop(currentSpin);
     if(currentSpin.stopped.every(Boolean)){
       if(NovaAim.hasGuide(currentSpin.resolved?.aim)&&!currentSpin.aimAligned&&!debugFastSpinActive){
         NovaAim.fail(()=>playOneShotSound('assets/media/nova/ouma-fail.wav',sfxOutputVolume(),{allowDuringPremiumConfirm:true}));
@@ -15315,8 +15336,8 @@ body{
     }
 
 
-    // DZ/超DZ中は右→中→左、それ以外は左→中→右で全停止する。
-    const stopOrder = currentSpin.resolved?.aim || currentSpin.zoneActiveAtStart ? [2,1,0] : [0,1,2];
+    // Follow the current bell guide, including AUTO enabled after BET.
+    const stopOrder = NovaBellNavi.stopOrder(currentSpin);
     stopOrder.forEach((i,idx)=>{
       if(!currentSpin.stopped[i]){
         setTimeout(()=>stopSingleReel(i), idx * 180);
@@ -15470,6 +15491,7 @@ body{
 
   function finishSpin(result, resolved, lineRow=1){
     if(!isSpinning || (currentSpin && currentSpin.finishing)) return;
+    NovaBellNavi.clear();
     if(spinWaitTimer){
       clearTimeout(spinWaitTimer);
       spinWaitTimer = null;
@@ -16806,6 +16828,10 @@ body{
         applyPagePan(true);
       });
     }
+    const bellNaviAdjustBtn=document.createElement('button');
+    bellNaviAdjustBtn.id='bellNaviAdjustBtn';bellNaviAdjustBtn.type='button';bellNaviAdjustBtn.textContent='ナビ調整';
+    bellNaviAdjustBtn.addEventListener('click',()=>{setLayoutEditorOpen(!layoutEditOpen);if(layoutEditOpen)layoutEditorPanel.scrollTop=0;});
+    document.body.append(bellNaviAdjustBtn);
     if(layoutEditToggleBtn){
       layoutEditToggleBtn.addEventListener("click", e=>{
         e.stopPropagation();
