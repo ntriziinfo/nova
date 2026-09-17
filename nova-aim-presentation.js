@@ -1,8 +1,9 @@
 /* Per-spin presentation only. The draw in NovaArt owns color, symbol and result. */
 globalThis.NovaAim=(()=>{
+ const {setTimeout,clearTimeout}=globalThis.NovaClock||globalThis;
  let host,root,active=null;
  const videos=new Map();
- let winLocked=false,winTimer=null,winToken=0,afterWinCallbacks=[];
+ let winLocked=false,winTimer=null,winToken=0,afterWinCallbacks=[],pendingStart=null;
  function init(){
   if(root)return true;
   host=document.getElementById('machine');if(!host)return false;
@@ -64,7 +65,7 @@ globalThis.NovaAim=(()=>{
   host.dataset.aimActive='true';video.hidden=false;video.currentTime=0;layout();
   let started=false;
   const start=()=>{
-   if(started||token!==winToken)return;started=true;video.onplaying=null;video.onerror=null;
+   if(started||token!==winToken)return;started=true;pendingStart=null;video.onplaying=null;video.onerror=null;
    playSound();
    winTimer=setTimeout(()=>{
     if(token!==winToken)return;winLocked=false;
@@ -72,13 +73,17 @@ globalThis.NovaAim=(()=>{
     window.dispatchEvent(new Event('nova-aim-unlocked'));
    },3000);
   };
-  video.onplaying=start;video.onerror=start;
+  pendingStart=start;video.onplaying=start;video.onerror=start;
   video.play().catch(start);
+  // Hidden muted videos may defer playback until visible. Keep the award's
+  // sound and three-second input lock progressing independently of that frame.
+  if(document.hidden)start();
  }
  function afterWin(fn){if(winLocked)afterWinCallbacks.push(fn);else fn();}
- function reset(){winToken++;clearTimeout(winTimer);winLocked=false;afterWinCallbacks=[];for(const video of videos.values()){video.onplaying=null;video.onerror=null;}hide();}
+ function reset(){winToken++;pendingStart=null;clearTimeout(winTimer);winLocked=false;afterWinCallbacks=[];for(const video of videos.values()){video.onplaying=null;video.onerror=null;}hide();}
  if(typeof document!=='undefined'){
   document.addEventListener('DOMContentLoaded',init);
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)pendingStart?.();});
   window.addEventListener('resize',layout);
  }
  return {hasGuide,drawGuide,stopTarget,bet,hide,layout,fail,win,afterWin,reset,get busy(){return winLocked;}};

@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
-function setup(){let now=0,id=0;const tasks=new Map();const win={offsetWidth:100,classList:{add(){},remove(){}},getBoundingClientRect:()=>({width:100,height:90}),append(x){this.layer=x;}};const ctx=vm.createContext({performance:{now:()=>now},requestAnimationFrame:f=>{tasks.set(++id,f);return id},cancelAnimationFrame:i=>tasks.delete(i),document:{createElement:()=>({style:{},children:[],setAttribute(){},append(x){this.children.push(x);this.firstElementChild ||=x;},getBoundingClientRect(){return {height:parseFloat(this.style.height)}},remove(){}})}});vm.runInContext(fs.readFileSync('nova-reel-motion.js','utf8'),ctx);return {a:ctx.NovaReelMotion,win,reel:{querySelector:()=>win},tick(ms){now+=ms;const run=[...tasks.values()];tasks.clear();run.forEach(f=>f(now));}};}
+function setup(){let now=0,id=0;const tasks=new Map(),timers=new Map();const win={offsetWidth:100,classList:{add(){},remove(){}},getBoundingClientRect:()=>({width:100,height:90}),append(x){this.layer=x;}};const ctx=vm.createContext({performance:{now:()=>now},setTimeout(f,ms){timers.set(++id,{f,due:now+ms});return id;},clearTimeout:i=>timers.delete(i),requestAnimationFrame:f=>{tasks.set(++id,f);return id},cancelAnimationFrame:i=>tasks.delete(i),document:{createElement:()=>({style:{},children:[],setAttribute(){},append(x){this.children.push(x);this.firstElementChild ||=x;},getBoundingClientRect(){return {height:parseFloat(this.style.height)}},remove(){}})}});vm.runInContext(fs.readFileSync('nova-reel-motion.js','utf8'),ctx);return {a:ctx.NovaReelMotion,win,reel:{querySelector:()=>win},tick(ms,render=true){now+=ms;for(const [key,t] of [...timers])if(t.due<=now){timers.delete(key);t.f();}if(render){const run=[...tasks.values()];tasks.clear();run.forEach(f=>f(now));}},timers};}
 test('normal and reverse land by moving the same strip, without replacing symbols',async()=>{for(const reverse of [false,true]){const t=setup(),strip=['A','B','C','D','E'];t.a.start(0,t.reel,strip,0,reverse,s=>s);const layer=t.win.layer,html=layer.children.map(x=>x.innerHTML);t.tick(55);const start=parseFloat(layer.style.transform.match(/translateY\(([-.\d]+)/)[1]);const done=t.a.stop(0,['C','D','E']);t.tick(100);const moving=parseFloat(layer.style.transform.match(/translateY\(([-.\d]+)/)[1]);assert.ok(reverse?moving<start:moving>start);t.tick(5000);assert.equal(await done,true);assert.equal(t.a.top(0),2);assert.deepEqual(layer.children.map(x=>x.innerHTML),html);t.a.clear(0);assert.equal(t.a.has(0),false);}});
 test('reset cancels a queued landing instead of resuming an old spin',async()=>{const t=setup();t.a.start(0,t.reel,['A','B','C'],0,false,s=>s);const pending=t.a.stop(0,['B','C','A']);t.a.clearAll();assert.equal(await pending,false);t.tick(5000);assert.equal(t.a.has(0),false);});
 
@@ -45,4 +45,23 @@ test('immediate common-role stop lands without advancing time and remains stoppe
 test('only bell and replay request immediate landing',()=>{
  const html=fs.readFileSync('jag.html','utf8');
  assert.match(html,/NovaReelMotion.stop\(i,col,\{immediate:\['BELL','REPLAY'\].includes\(spin.result\)&&!spin.manualBonusStop\}\)/);
+});
+
+test('landing completes without any animation frame and cannot settle again on return',async()=>{
+ for(const reverse of [false,true]){
+  const t=setup();t.a.start(0,t.reel,['A','B','C','D','E'],0,reverse,s=>s);
+  let settled=0;const done=t.a.stop(0,['C','D','E']).then(value=>{settled++;return value;});
+  t.tick(299,false);await Promise.resolve();assert.equal(settled,0);
+  t.tick(500,false);assert.equal(await done,true);assert.equal(t.a.top(0),2);
+  const transform=t.win.layer.style.transform;t.tick(1000);assert.equal(settled,1);assert.equal(t.win.layer.style.transform,transform);
+  assert.equal(t.timers.size,0);
+ }
+});
+test('hidden reverse uses the audio clock and cancels pending callbacks on reset',()=>{
+ const t=setup();let audio=0,landed=0;const strip=['A','B','C'];
+ for(let i=0;i<3;i++)t.a.startSynced(i,t.reel,strip,['B','C','A'],true,s=>s,()=>audio,4400,()=>landed++);
+ t.tick(10000,false);assert.equal(landed,0);audio=4.4;t.tick(50,false);assert.equal(landed,3);
+ t.tick(5000);assert.equal(landed,3);assert.equal(t.timers.size,0);
+ t.a.startSynced(0,t.reel,strip,['B','C','A'],true,s=>s,()=>audio,4400,()=>landed++);
+ t.a.clearAll();t.tick(10000,false);assert.equal(landed,3);assert.equal(t.timers.size,0);
 });

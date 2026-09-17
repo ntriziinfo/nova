@@ -1,0 +1,27 @@
+{
+  "url": "http://127.0.0.1:63590/jag.html?debug=1",
+  "silent": true,
+  "isolated": true,
+  "throttling": "animation frames and native timer callbacks suspended; real Worker running",
+  "normalHiddenCompleted": 8,
+  "stopAndRestore": true,
+  "wins": [
+    {
+      "symbol": "seven",
+      "lockMs": 3005.0999999046326
+    },
+    {
+      "symbol": "nebula",
+      "lockMs": 3003.6999999284744
+    }
+  ],
+  "hiddenAimMiss": true,
+  "hiddenShutter": true,
+  "hiddenOumaFreeze": {
+    "freezes": 1,
+    "completed": 3
+  },
+  "restartAndRestore": true,
+  "workers": 5,
+  "pageErrors": []
+}

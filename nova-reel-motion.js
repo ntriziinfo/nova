@@ -1,8 +1,15 @@
 /* One continuous symbol strip for spinning and landing. Original image assets are reused. */
 globalThis.NovaReelMotion=(()=>{
+ const {setTimeout,clearTimeout}=globalThis.NovaClock||globalThis;
  const rotationMs=750;
  const active=new Map(),mod=(n,m)=>(n%m+m)%m;
- function clear(i){const s=active.get(i);if(!s)return;cancelAnimationFrame(s.raf);s.layer.remove();s.win.classList.remove('novaMotionActive');active.delete(i);s.resolve?.(false);}
+ function clear(i){const s=active.get(i);if(!s)return;cancelAnimationFrame(s.raf);clearTimeout(s.timer);s.layer.remove();s.win.classList.remove('novaMotionActive');active.delete(i);s.resolve?.(false);}
+ function finishLanding(i,s){
+  if(active.get(i)!==s||s.complete)return;
+  s.complete=true;cancelAnimationFrame(s.raf);clearTimeout(s.timer);s.raf=0;
+  s.pos=s.landing.to;s.layer.style.transform=`translateY(${-s.pos*s.h}px)`;
+  const resolve=s.resolve;s.resolve=null;resolve(true);
+ }
  function start(i,reel,strip,top,reverse,html,sync=null){
   clear(i);const win=reel.querySelector('.window'),scale=win.getBoundingClientRect().width/win.offsetWidth||1,h=win.getBoundingClientRect().height/3/(win.getBoundingClientRect().width/win.offsetWidth||1),layer=document.createElement('div');
   layer.className='novaMovingStrip';layer.setAttribute('aria-hidden','true');
@@ -10,17 +17,27 @@ globalThis.NovaReelMotion=(()=>{
   win.append(layer);win.classList.add('novaMotionActive');
   const cellHeight=layer.firstElementChild.getBoundingClientRect().height/scale;
   const s={win,layer,strip,h:cellHeight,stepMs:rotationMs/strip.length,pos:strip.length+mod(top,strip.length),direction:reverse?1:-1,last:performance.now(),raf:0};active.set(i,s);
-  function frame(now){if(active.get(i)!==s)return;
-   if(sync){
+  function syncPosition(){
+   if(active.get(i)!==s||s.complete)return;
     const elapsed=Math.min(sync.duration,Math.max(0,sync.clock()*1000));
     s.pos=strip.length+mod(top+s.direction*(sync.steps===undefined?elapsed/s.stepMs:sync.steps*elapsed/sync.duration),strip.length);
     s.layer.style.transform=`translateY(${-s.pos*s.h}px)`;
-    if(elapsed>=sync.duration){s.raf=0;sync.done();return;}
+    if(elapsed>=sync.duration){s.complete=true;cancelAnimationFrame(s.raf);clearTimeout(s.timer);s.raf=0;sync.done();}
+    return sync.duration-elapsed;
+  }
+  function checkSync(){
+   const remaining=syncPosition();
+   if(remaining>0)s.timer=setTimeout(checkSync,Math.max(1,Math.ceil(Math.min(50,remaining))));
+  }
+  function frame(now){if(active.get(i)!==s||s.complete)return;
+   if(sync){
+    syncPosition();if(s.complete)return;
    }
-   else if(s.landing){const t=Math.min(1,(now-s.landing.time)/s.landing.duration);s.pos=s.landing.from+(s.landing.to-s.landing.from)*t;if(t===1){s.layer.style.transform=`translateY(${-s.pos*s.h}px)`;s.raf=0;const resolve=s.resolve;s.resolve=null;resolve(true);return;}}
+   else if(s.landing){const t=Math.min(1,(now-s.landing.time)/s.landing.duration);s.pos=s.landing.from+(s.landing.to-s.landing.from)*t;if(t===1){finishLanding(i,s);return;}}
    else{s.pos=strip.length+mod(s.pos-strip.length+s.direction*(now-s.last)/s.stepMs,strip.length);}
    s.last=now;s.layer.style.transform=`translateY(${-s.pos*s.h}px)`;s.raf=requestAnimationFrame(frame);
   }s.layer.style.transform=`translateY(${-s.pos*s.h}px)`;s.raf=requestAnimationFrame(frame);
+  if(sync)s.timer=setTimeout(checkSync,50);
  }
  function startSynced(i,reel,strip,column,reverse,html,clock,duration,done,initialTop){
   const target=strip.findIndex((_,n)=>column.every((v,j)=>strip[(n+j)%strip.length]===v));
@@ -46,12 +63,15 @@ globalThis.NovaReelMotion=(()=>{
   if(!distances.length)throw new Error('Stop column is absent from reel strip '+i);
   const distance=Math.min(...distances);
   if(options.immediate){
-   cancelAnimationFrame(s.raf);s.raf=0;
+   cancelAnimationFrame(s.raf);s.raf=0;s.complete=true;
    s.pos+=s.direction*distance;s.layer.style.transform=`translateY(${-s.pos*s.h}px)`;
    return Promise.resolve(true);
   }
-  if(distance<1e-9){cancelAnimationFrame(s.raf);s.layer.style.transform=`translateY(${-s.pos*s.h}px)`;return Promise.resolve(true);}
-  return new Promise(resolve=>{s.resolve=resolve;s.landing={from:s.pos,to:s.pos+s.direction*distance,time:now,duration:distance*s.stepMs};});
+  if(distance<1e-9){cancelAnimationFrame(s.raf);s.complete=true;s.layer.style.transform=`translateY(${-s.pos*s.h}px)`;return Promise.resolve(true);}
+  return new Promise(resolve=>{
+   s.resolve=resolve;s.landing={from:s.pos,to:s.pos+s.direction*distance,time:now,duration:distance*s.stepMs};
+   s.timer=setTimeout(()=>finishLanding(i,s),Math.ceil(s.landing.duration));
+  });
  }
 
  return {rotationMs,startSynced,distance,start,stop,clear,has:i=>active.has(i),top:i=>{const s=active.get(i);return s?mod(Math.round(s.pos),s.strip.length):null;},clearAll:()=>[...active.keys()].forEach(clear)};

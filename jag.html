@@ -6535,13 +6535,14 @@ body{
 <link rel="stylesheet" href="nova-artwork.css?v=20260916-lamps-122">
 <script src="nova-artwork.js?v=20260916-lamps-122" defer></script>
 <script src="nova-beat-lamps.js?v=20260909-result-image-84"></script>
-<script src="nova-reel-motion.js?v=20260909-common-stop-101"></script>
+<script src="nova-clock.js?v=20260917-background-129"></script>
+<script src="nova-reel-motion.js?v=20260917-background-129"></script>
 <link rel="stylesheet" href="nova-results.css?v=20260909-result-image-84">
 <script src="nova-results.js?v=20260909-result-image-84"></script>
 <link rel="stylesheet" href="nova-ladder-presentation.css?v=20260909-shutter-95">
-<script src="nova-ladder-presentation.js?v=20260916-lamps-122"></script>
+<script src="nova-ladder-presentation.js?v=20260917-background-129"></script>
 <link rel="stylesheet" href="nova-aim-presentation.css?v=20260909-comeback-114">
-<script src="nova-aim-presentation.js?v=20260909-comeback-114"></script>
+<script src="nova-aim-presentation.js?v=20260917-background-129"></script>
 <script src="nova-art.js?v=20260916-role-128"></script>
 <script src="nova-balance.js?v=20260916-role-128"></script>
 <script src="nova-normal.js?v=20260916-role-128"></script>
@@ -7252,6 +7253,7 @@ body{
 <script>
 (function(){
   "use strict";
+  const {setTimeout,clearTimeout,setInterval,clearInterval}=NovaClock;
 
   const bootParams = new URLSearchParams(location.search);
   const bootMachineId = bootParams.get("machine") || "standalone";
@@ -10809,8 +10811,8 @@ body{
     return isCompleteTrialLocked();
   }
 
-  function canPlayCompleteTrial(){
-    if(typeof oumaPresentation!=='undefined'&&oumaPresentation)return false;
+  function canPlayCompleteTrial({allowOumaPresentation=false}={}){
+    if(!allowOumaPresentation&&typeof oumaPresentation!=='undefined'&&oumaPresentation)return false;
     if(bonusConfirmSoundPlaying || bonusEndBgmPlaying)return false;
     if(!isCompleteTrialLocked()) return true;
     stopAutoPlay("COMPLETE中のためAUTO停止");
@@ -15746,10 +15748,11 @@ body{
       if($("resultText")) $("resultText").textContent = "ボーナス終了BGM中...";
       return;
     }
-    if(!canPlayCompleteTrial()) return;
+    if(!canPlayCompleteTrial({allowOumaPresentation:true})) return;
     stopSpeedToBonus("AUTO開始のためSPEED停止");
     readSettings();
     autoPlay = true;
+    NovaClock.setBackgroundEnabled(true);
     startAutoWatchdog();
     updateAutoUi();
     log(A_TYPE_MODE ? "オート開始" : "オートAT開始");
@@ -15799,7 +15802,7 @@ body{
     autoWatchdogTimer = setInterval(()=>{
       if(!autoPlay) return;
       if(autoTimer || isSpinning || bonusEndBgmPlaying || bonusConfirmSoundPlaying || pendingAtStartTimer) return;
-      if(!canPlayCompleteTrial()) return;
+      if(!canPlayCompleteTrial({allowOumaPresentation:true})) return;
       queueAutoStep(autoScaledDelayMs(100));
     }, 500);
   }
@@ -15819,6 +15822,7 @@ body{
       autoTimer = null;
     }
     stopAutoWatchdog();
+    NovaClock.setBackgroundEnabled(false);
     updateAutoUi();
     if(reason) log(reason);
   }
@@ -15842,7 +15846,7 @@ body{
       queueAutoStep(autoPollDelayMs());
       return;
     }
-    if(!canPlayCompleteTrial()) return;
+    if(!canPlayCompleteTrial({allowOumaPresentation:true})) return;
     if(oumaPresentation){
       if(oumaPresentation.stage==='bet')resolveOumaChallenge();
       queueAutoStep(autoPollDelayMs());
@@ -15883,7 +15887,7 @@ body{
       queueAutoStep(autoPollDelayMs());
       return;
     }
-    if(!canPlayCompleteTrial()) return;
+    if(!canPlayCompleteTrial({allowOumaPresentation:true})) return;
     if(isRogiThirdStopHoldActive()){
       queueAutoStep(autoPollDelayMs());
       return;

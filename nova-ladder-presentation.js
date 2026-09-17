@@ -1,5 +1,6 @@
 /* Visual presentation only; NovaArt remains the owner of all draws and awards. */
 globalThis.NovaLadder=(()=>{
+ const {setTimeout,clearTimeout}=globalThis.NovaClock||globalThis;
  const eligible=f=>f?.phase==='art'&&['sosuke','giru'].includes(f.zone)&&Array.isArray(f.ladder)&&f.ladder.length>0;
  const values=[50,100,200,300,500,1000,2000,3000],images=new Map();
  let host,root,upper,lower,amount,key='',timer,unlock,locked=false,token=0;

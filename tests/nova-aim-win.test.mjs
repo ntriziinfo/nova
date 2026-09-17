@@ -3,11 +3,11 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
 function setup(){
- const elements=[],timers=new Map();let id=0;
+ const elements=[],timers=new Map(),listeners={};let id=0;
  const host={dataset:{},append(){},querySelector(){return null;}};
- const context=vm.createContext({document:{getElementById:()=>host,addEventListener(){},createElement(tag){const e={tag,style:{},dataset:{},append(){},setAttribute(){},pause(){this.paused=true;},play(){this.paused=false;return Promise.resolve();}};elements.push(e);return e;}},window:{addEventListener(){},dispatchEvent(){}},Event:class{},setTimeout(fn,ms){timers.set(++id,{fn,ms});return id;},clearTimeout(id){timers.delete(id);}});
+ const context=vm.createContext({document:{hidden:false,getElementById:()=>host,addEventListener(name,fn){listeners[name]=fn;},createElement(tag){const e={tag,style:{},dataset:{},append(){},setAttribute(){},pause(){this.paused=true;},play(){this.paused=false;return Promise.resolve();}};elements.push(e);return e;}},window:{addEventListener(){},dispatchEvent(){}},Event:class{},setTimeout(fn,ms){timers.set(++id,{fn,ms});return id;},clearTimeout(id){timers.delete(id);}});
  vm.runInContext(fs.readFileSync('nova-aim-presentation.js','utf8'),context);
- return {aim:context.NovaAim,elements,timers};
+ return {aim:context.NovaAim,elements,timers,hide(){context.document.hidden=true;listeners.visibilitychange();}};
 }
 test('win locks from playback for 3 seconds, plays once and defers result',()=>{
  const {aim,elements,timers}=setup();let sounds=0,results=0;
@@ -24,6 +24,21 @@ test('reset cancels pending playback and result callbacks',()=>{
  aim.win(()=>sounds++);const start=elements.at(-1).onplaying;start();
  aim.afterWin(()=>results++);const timer=[...timers.values()][0];aim.reset();timer.fn();start();
  assert.equal(aim.busy,false);assert.equal(results,0);assert.equal(sounds,1);
+});
+
+test('hidden seven and nebula wins keep the full lock without waiting for video playback',()=>{
+ for(const symbol of ['seven','nebula'])for(const hiddenBefore of [true,false]){
+  const t=setup();let sounds=0,results=0;if(hiddenBefore)t.hide();
+  t.aim.win(()=>sounds++,symbol);t.aim.afterWin(()=>results++);
+  if(!hiddenBefore){assert.equal(sounds,0);t.hide();}
+  assert.equal(sounds,1);assert.equal(results,0);assert.equal(t.aim.busy,true);
+  const timer=[...t.timers.values()][0];assert.equal(timer.ms,3000);timer.fn();
+  assert.equal(t.aim.busy,false);assert.equal(results,1);t.hide();assert.equal(sounds,1);
+ }
+});
+test('reset while waiting for visible playback cannot start an old sound when hidden',()=>{
+ const t=setup();let sounds=0;t.aim.win(()=>sounds++);t.aim.reset();t.hide();
+ assert.equal(sounds,0);assert.equal(t.aim.busy,false);assert.equal(t.timers.size,0);
 });
 test('consecutive wins create independent nonlooping audio instances',()=>{
  const html=fs.readFileSync('jag.html','utf8'),audios=[];
