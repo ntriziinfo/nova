@@ -25,7 +25,7 @@ test('one-shot burst flag survives pending and active BIG, then is consumed once
 
 test('normal-screen selection creates the configured initial AT and a full three-game challenge with random success',()=>{
  const c=context();assert.equal(c.drawNormalResult(),'MISS');const t=c.pendingArtStep;
- assert.equal(t.flow.remaining,t.flow.entryQuota);assert([500,750,1000].includes(Number(t.flow.remaining)));assert.equal(t.flow.burstPending,true);assert.equal(t.flow.burstUsed,true);assert.equal(t.zoneSpin,true);
+ assert.equal(t.flow.remaining,t.flow.entryQuota);assert(NovaArt.entryQuotaRules.values.includes(Number(t.flow.remaining)));assert.equal(t.flow.burstPending,true);assert.equal(t.flow.burstUsed,true);assert.equal(t.zoneSpin,true);
  let s=t.flow;for(let i=0;i<3;i++){const next=NovaArt.step(s,{setting:6},()=>.99999);assert.equal(next.burstEvent,i===2?'failure':'continue');s=next.flow;}
  assert.equal(s.remaining,t.flow.remaining);assert.equal(s.burstWon,false);assert.equal(s.burstLeft,0);
  const won=NovaArt.step(t.flow,{setting:6},()=>0);assert.equal(won.burstEvent,'success');assert.equal(won.flow.remaining,t.flow.remaining);assert.equal(won.flow.atLevel,t.flow.atLevel);

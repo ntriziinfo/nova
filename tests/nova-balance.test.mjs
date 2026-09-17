@@ -1,12 +1,12 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
 const ctx=vm.createContext({});for(const f of ['nova-art.js','nova-balance.js'])vm.runInContext(fs.readFileSync(f,'utf8'),ctx);const a=ctx.NovaArt,b=ctx.NovaBalance;
-test('profiles show measured complete-stop RTP for entry-quota AT',()=>{
+test('profiles label the previous RTP as unverified for the new initial-zone flow',()=>{
  const report=JSON.parse(fs.readFileSync('docs/role128-summary.json','utf8'));
  for(let i=0;i<6;i++){
   const p=b.profile(i+1),evidence=report.settings[i];
   assert.equal(p.target,b.targets[i]);
-  assert.equal(p.verifiedModel,'role128-30000g-complete-stop');
-  assert.equal(p.previousVerifiedModel,i===5?'s6-127-30000g-complete-stop':'start126-30000g-complete-stop');
+  assert.equal(p.verifiedModel,'');
+  assert.equal(p.previousVerifiedModel,'role128-30000g-complete-stop');
   assert.ok(Math.abs(p.target-evidence.stoppedRtp.value)<1e-6);assert.ok(p.scale>0);
  }
 });
@@ -34,7 +34,9 @@ test('BIG finishes by gross payout and do not guarantee ART',()=>{
 });
 test('specials award sets without consuming points; sets continue at the configured initial quota',()=>{
  let bonus={bonusKind:'BIG',paid:0,bonusArtSets:0};for(let i=0;i<2;i++)bonus={...bonus,...a.advanceBonus(bonus,true,0)};
- assert.equal(bonus.bonusArtSets,2);let flow=a.afterBonus(null,{},2,()=>.5);assert.equal(flow.remaining,String(a.drawEntryQuota({},()=>.5)));assert.equal(flow.sets,'1');
+ assert.equal(bonus.bonusArtSets,2);let flow=a.afterBonus(null,{},2,()=>.5);assert.equal(flow.remaining,'0');assert.equal(flow.sets,'1');
+ while(flow.initialStage)flow=a.step(flow,{},()=>.5).flow;
+ assert.equal(flow.remaining,String(a.drawEntryQuota({},()=>.5)));
  flow={...flow,remaining:'3'};flow=a.step(flow,{rare:0},()=>.99,'BELL').flow;assert.equal(flow.remaining,String(a.defaults.initial));assert.equal(flow.sets,'0');
  flow={...flow,remaining:'3'};flow=a.step(flow,{rare:0},()=>.99,'BELL').flow;assert.equal(flow.phase,'art');assert.equal(flow.comebackLeft,5);
  const held=a.afterBonus({...a.enter(),remaining:'17',sets:'2'}, {},1);assert.equal(held.remaining,'17');assert.equal(held.sets,'3');

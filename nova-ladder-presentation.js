@@ -3,11 +3,16 @@ globalThis.NovaLadder=(()=>{
  const {setTimeout,clearTimeout}=globalThis.NovaClock||globalThis;
  const eligible=f=>f?.phase==='art'&&['sosuke','giru'].includes(f.zone)&&Array.isArray(f.ladder)&&f.ladder.length>0;
  const values=[50,100,200,300,500,1000,2000,3000],images=new Map();
- let host,root,upper,lower,amount,key='',timer,unlock,locked=false,token=0;
+ let host,root,upper,lower,amount,amountText,key='',timer,unlock,locked=false,token=0;
+ function setAmount(points){
+  const known=values.includes(Number(points));amount.hidden=!known;amountText.hidden=known;
+  if(known)amount.src=`assets/ladder/${points}.png`;else amount.removeAttribute('src');
+  amount.alt=`確保 ${points}pt`;amountText.textContent=points+'pt';
+ }
  function init(){if(root)return true;host=document.getElementById('machine');if(!host)return false;
   root=document.createElement('div');root.className='novaLadderPresentation';root.hidden=true;
-  root.innerHTML='<div class="novaLadderTable"></div><img class="novaLadderAmount" alt=""><img class="novaLadderCharacter" alt=""><div class="novaLadderDoor"><img class="novaLadderIntegrated" alt=""></div>';
-  host.append(root);amount=root.querySelector('.novaLadderAmount');upper=root.querySelector('.novaLadderDoor');
+  root.innerHTML='<div class="novaLadderTable"></div><img class="novaLadderAmount" alt=""><output class="novaLadderAmount novaLadderNumber" hidden></output><img class="novaLadderCharacter" alt=""><div class="novaLadderDoor"><div class="novaLadderShutterFace"><img class="novaLadderIntegrated" alt=""><output class="novaLadderShutterNumber" hidden></output></div></div>';
+  host.append(root);amount=root.querySelector('img.novaLadderAmount');amountText=root.querySelector('output.novaLadderAmount');upper=root.querySelector('.novaLadderDoor');
   for(const n of values){const img=new Image();img.src=`assets/ladder/${n}.png`;images.set(String(n),img);const shutter=new Image();shutter.src=`assets/ladder/shutter-${n}.png`;images.set(`shutter-${n}`,shutter);}
   return true;
  }
@@ -43,7 +48,7 @@ globalThis.NovaLadder=(()=>{
  function open(points,promote=false){
   const request=++token;clearTimeout(timer);clearTimeout(unlock);locked=promote;
   root.hidden=false;host.dataset.ladderActive='true';
-  amount.src=`assets/ladder/${points}.png`;amount.alt=`確保 ${points}pt`;amount.style.visibility='visible';
+  setAmount(points);amount.style.visibility='visible';
   root.dataset.stage=promote?'promote':'open';
   if(promote)closeThenReveal('open');
  }
@@ -61,7 +66,7 @@ globalThis.NovaLadder=(()=>{
   key=next;layout();root.hidden=false;host.dataset.ladderActive='true';
   root.dataset.index=flow.ladderIndex||0;
   const table=root.querySelector('.novaLadderTable');table.replaceChildren();
-  flow.ladder.forEach((pt,i)=>{const item=document.createElement('div');item.className='novaLadderTableItem';item.dataset.current=String(i===(flow.ladderIndex||0));const img=new Image();img.src=`assets/ladder/${pt}.png`;img.alt=`${i+1}段階 ${pt}pt`;item.append(img);table.append(item);});
+  flow.ladder.forEach((pt,i)=>{const item=document.createElement('div');item.className='novaLadderTableItem';item.dataset.current=String(i===(flow.ladderIndex||0));if(values.includes(Number(pt))){const img=new Image();img.src=`assets/ladder/${pt}.png`;img.alt=`${i+1}段階 ${pt}pt`;item.append(img);}else{item.classList.add('novaLadderTableNumber');item.textContent=pt+'pt';}table.append(item);});
   open(String(flow.award||flow.ladder[0]),promote);
   if(!flow.ladderRevealed||(!promote&&flow.ladderIndex===0))root.dataset.stage='table';
  }
@@ -72,7 +77,9 @@ globalThis.NovaLadder=(()=>{
   token++;clearTimeout(timer);clearTimeout(unlock);locked=false;
   if(!flow.ladderRevealed){root.dataset.stage='table';return;}
   const target=flow.ladder[Math.min(flow.ladder.length-1,(flow.ladderIndex||0)+1)];
-  const img=root.querySelector('.novaLadderIntegrated');img.src=`assets/ladder/shutter-${target}.png`;img.alt=`昇格チャレンジ ${target}pt`;
+  const img=root.querySelector('.novaLadderIntegrated'),number=root.querySelector('.novaLadderShutterNumber'),custom=!values.includes(Number(target));
+  img.src=custom?'assets/ladder/outlaw-shutter.png':`assets/ladder/shutter-${target}.png`;img.alt=`昇格チャレンジ ${target}pt`;
+  upper.dataset.custom=String(custom);number.hidden=!custom;number.textContent=target+'pt';
   if(root.dataset.stage==='table'){root.dataset.stage='open';void upper.offsetHeight;}
   root.dataset.stop='0';root.dataset.stage='challenge';
  }
@@ -89,7 +96,7 @@ globalThis.NovaLadder=(()=>{
   token++;clearTimeout(timer);clearTimeout(unlock);locked=false;
   root.hidden=false;host.dataset.ladderActive='true';layout();root.dataset.stage=stage;
   amount.onload=()=>{amount.style.visibility='visible';};
-  amount.src=`assets/ladder/${points}.png`;amount.alt=`獲得 ${points}pt`;amount.dataset.final=String(points);amount.style.visibility='visible';
+  setAmount(points);amount.alt=`獲得 ${points}pt`;amount.dataset.final=String(points);amount.style.visibility='visible';
   if(!started&&promoted)closeThenReveal('settled');
  }
  if(typeof document!=='undefined'){document.addEventListener('DOMContentLoaded',init);window.addEventListener('resize',()=>{if(root&&!root.hidden)layout();});}

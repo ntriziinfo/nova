@@ -46,7 +46,7 @@ export function simulate(setting,games,seed,options={}){
   bonusMetrics[tier].completed++;bonusMetrics[tier].nebulaWins+=nebula;
   const before=flow;flow=a.afterBonus(flow,c,sets,rng);state=n.bonusEnd(state,kind,flow);state=n.afterArt(state,before,flow,{...options.normal,setting},rng);
   if(before.phase!=='art'&&flow.phase==='art')counts.artEntries++;
-  if(flow.phase==='art'&&claim.zones.length){flow.queuedZones.push(...claim.zones);if(!flow.zone){flow=a.startZone(flow,flow.queuedZones.shift(),{...c,allowUra:true},rng);zoneEntry(flow);}}
+  if(flow.phase==='art'&&claim.zones.length){flow.queuedZones.push(...claim.zones);if(!flow.zone&&!flow.initialStage){flow=a.startZone(flow,flow.queuedZones.shift(),{...c,allowUra:true},rng);zoneEntry(flow);}}
  }
  try{while(count<games||(options.settleEnd&&flow.phase==='art')){
   track();if(options.stopAtComplete!==false&&options.completeLimitPt&&paid-fee>=options.completeLimitPt)throw sessionEnd;if(flow.phase==='art'&&artStart===null)artStart=paid-fee;else if(flow.phase!=='art')artStart=null;
@@ -66,7 +66,7 @@ export function simulate(setting,games,seed,options={}){
   if(normal){normalRoles[t.result]=(normalRoles[t.result]||0)+1;normalPayout.bet+=charged;normalPayout.paid+=n.pay(t.result);normalPayout.games++;}
   if(t.result==='SUPER_NOVA'){const freeze=rng()<.5;if(freeze)freezes++;flow={phase:'normal'};bonus('BIG',freeze);}
   else if(t.internalBonus){if(t.internalBonus.source.includes('天井'))ceilings++;else counts.czWins++;flow={phase:'normal'};bonus(t.internalBonus.kind);}
-  else if(t.direct){flow=a.enter(c,rng);counts.artEntries++;}
+  else if(t.direct){flow=(a.enterInitial||a.enter)(c,rng);counts.artEntries++;}
   else if(t.entry){if(t.entry==='STRONG_CZ')counts.strongEntries++;else counts.czEntries++;if(t.entrySource==='game')counts.gameCzEntries++;if(t.entrySource==='ceiling')counts.ceilingCzEntries++;if(t.entrySource==='rare')counts.rareCzEntries++;else if(t.entrySource==='background')counts.backgroundCzEntries++;flow=NovaFlow.enterCZ(t.entry==='STRONG_CZ',t.czOptions??options.cz,rng);}
   else flow=NovaFlow.advance(t.czFlow);
  }}catch(e){if(e!==sessionEnd)throw e;}

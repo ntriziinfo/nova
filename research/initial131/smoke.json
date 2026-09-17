@@ -1,0 +1,47 @@
+{
+  "purpose": "Progression smoke test, not an RTP estimate",
+  "reports": [
+    {
+      "setting": 1,
+      "games": 30000,
+      "initialZonesCompleted": 33,
+      "preparationGames": 99,
+      "endPhase": "cz"
+    },
+    {
+      "setting": 2,
+      "games": 30000,
+      "initialZonesCompleted": 36,
+      "preparationGames": 108,
+      "endPhase": "art"
+    },
+    {
+      "setting": 3,
+      "games": 30000,
+      "initialZonesCompleted": 43,
+      "preparationGames": 129,
+      "endPhase": "art"
+    },
+    {
+      "setting": 4,
+      "games": 30000,
+      "initialZonesCompleted": 38,
+      "preparationGames": 114,
+      "endPhase": "normal"
+    },
+    {
+      "setting": 5,
+      "games": 30000,
+      "initialZonesCompleted": 34,
+      "preparationGames": 102,
+      "endPhase": "normal"
+    },
+    {
+      "setting": 6,
+      "games": 30000,
+      "initialZonesCompleted": 41,
+      "preparationGames": 123,
+      "endPhase": "art"
+    }
+  ]
+}

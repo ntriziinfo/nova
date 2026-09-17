@@ -1,0 +1,32 @@
+{
+  "silent": true,
+  "isolated": true,
+  "cases": [
+    {
+      "zone": "sosuke",
+      "bonusEnd": true,
+      "wait3": true,
+      "seven": true,
+      "roulette": true,
+      "reload": true,
+      "quota": 750
+    },
+    {
+      "zone": "giru",
+      "auto": true,
+      "quota": 750
+    },
+    {
+      "zone": "sora",
+      "auto": true,
+      "quota": 750
+    },
+    {
+      "zone": "ouma",
+      "auto": true,
+      "quota": 750
+    }
+  ],
+  "pageErrors": [],
+  "missingAssets": []
+}

@@ -7,7 +7,9 @@ globalThis.NovaAudit=(()=>{
     const out=[],a=before?.flow||{},b=after.flow||{};
     if(!before)out.push('記録開始（以前の内訳は未記録）');
     else{
-      if(a.phase!=='art'&&b.phase==='art')out.push('AT開始'+(b.atLevel?' / Lv.'+b.atLevel:'')+' / 残り'+b.remaining+'pt'+(b.entryQuota&&b.entryQuota!=='0'?' / 初期抽選'+b.entryQuota+'pt':''));
+      if(a.phase!=='art'&&b.phase==='art')out.push((b.initialStage?'AT準備開始':'AT開始')+(b.atLevel?' / Lv.'+b.atLevel:'')+' / 残り'+b.remaining+'pt'+(b.entryQuota&&b.entryQuota!=='0'?' / 初期抽選'+b.entryQuota+'pt':''));
+      if(a.initialStage&&!b.initialStage&&b.phase==='art')out.push('初期pt決定 / '+b.entryQuota+'pt / AT開始');
+      if(a.initialStage==='wait'&&b.initialStage==='entry')out.push('AT準備終了 / 赤7待機');
       if(a.phase==='art'&&b.phase!=='art')out.push(after.bonus.active?'ATからBIGへ':'AT終了');
       if(a.phase!==b.phase&&['cz','strong_cz'].includes(b.phase))out.push(b.phase==='cz'?'CZ開始':'強CZ開始');
       if(['cz','strong_cz'].includes(a.phase)&&a.phase!==b.phase)out.push('CZ終了'+(after.bonus.pending?' / BIG当選':''));
