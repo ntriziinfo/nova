@@ -1,0 +1,66 @@
+{
+  "images": [
+    {
+      "file": "navi-green-single.png",
+      "color": "green",
+      "mark": "!",
+      "width": 2034,
+      "height": 773,
+      "pngColorType": 6,
+      "cells": 3
+    },
+    {
+      "file": "navi-green-double.png",
+      "color": "green",
+      "mark": "!!",
+      "width": 2035,
+      "height": 773,
+      "pngColorType": 6,
+      "cells": 3
+    },
+    {
+      "file": "navi-purple-single.png",
+      "color": "purple",
+      "mark": "!",
+      "width": 2034,
+      "height": 773,
+      "pngColorType": 6,
+      "cells": 3
+    },
+    {
+      "file": "navi-purple-double.png",
+      "color": "purple",
+      "mark": "!!",
+      "width": 2033,
+      "height": 773,
+      "pngColorType": 6,
+      "cells": 3
+    },
+    {
+      "file": "navi-red-single.png",
+      "color": "red",
+      "mark": "!",
+      "width": 2034,
+      "height": 773,
+      "pngColorType": 6,
+      "cells": 3
+    },
+    {
+      "file": "navi-red-double.png",
+      "color": "red",
+      "mark": "!!",
+      "width": 2034,
+      "height": 773,
+      "pngColorType": 6,
+      "cells": 3
+    }
+  ],
+  "audio": {
+    "source": "audiostock_1181985.wav",
+    "path": "assets/media/nova/bell-navi.wav",
+    "bytes": 295544,
+    "sha256": "aee9b35d22ecff0153f8c2480c32b8af3034aa7d5ccaa7ff37f69bdf44696433",
+    "duration": 1.0260416666666667,
+    "unchangedSource": true
+  }
+}
