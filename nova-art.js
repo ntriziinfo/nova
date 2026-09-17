@@ -34,28 +34,32 @@ globalThis.NovaArt=(()=>{
  // Five paid games after the final AT quota. All rare roles guarantee revival.
  const comebackRules=Object.freeze({games:5,totalChance:.20,
   guaranteedRoles:Object.freeze(['WEAK_SUICA','STRONG_SUICA','CHANCE_A','CHANCE_B','WEAK_NOVA','STRONG_NOVA','SUPER_NOVA']),
-  commonWeights:Object.freeze({MISS:1,BELL:10,REPLAY:10}),
+  bellRate:1/50,highMissChance:.002,
   superDenom:32768
  });
- const comebackCommonScales=new Map();
+ const comebackCommonChances=new Map();
  function comebackChance(role,setting=1,options={}){
   if(comebackRules.guaranteedRoles.includes(role)||role==='FREEZE')return 1;
-  const weight=comebackRules.commonWeights[role];if(!weight)return 0;
+  if(!['BELL','REPLAY','MISS'].includes(role))return 0;
   const key=validSetting(setting);
-  if(!comebackCommonScales.has(key)){
+  if(!comebackCommonChances.has(key)){
    const row=comebackRoleProbabilities(key);
    const guaranteed=comebackRules.guaranteedRoles.reduce((sum,role)=>sum+(row[role]||0),0);
-   const common=Object.entries(comebackRules.commonWeights).reduce((sum,[role,w])=>sum+row[role]*w,0);
-   // Calibrate the five-game total, including guaranteed rares, against each setting's role mix.
-   // Keep the existing BELL/REPLAY : MISS ratio of 10 : 1. No session results affect these odds.
+   const chances={BELL:0,REPLAY:0,MISS:key>=4?comebackRules.highMissChance:0};
+   // BELL revival certifies odd settings; REPLAY certifies even; MISS certifies 4/5/6.
+   // Allocate the remaining probability after rare guarantees and MISS to keep the 5G total at 20%.
    const perGame=1-(1-comebackRules.totalChance)**(1/comebackRules.games);
-   comebackCommonScales.set(key,(perGame-guaranteed)/common);
+   const eligible=key%2?'BELL':'REPLAY';
+   chances[eligible]=(perGame-guaranteed-row.MISS*chances.MISS)/row[eligible];
+   comebackCommonChances.set(key,Object.freeze(chances));
   }
-  return weight*comebackCommonScales.get(key);
+  return comebackCommonChances.get(key)[role];
  }
  function comebackRoleProbabilities(setting=1){
   const row={...NovaNormal.roleProbabilities(setting)},superRate=1/comebackRules.superDenom;
-  row.MISS-=superRate;return {SUPER_NOVA:superRate,...row};
+  // Recovery-only bell mix: move probability from MISS, preserving all rares and replays.
+  row.MISS-=superRate+comebackRules.bellRate-row.BELL;row.BELL=comebackRules.bellRate;
+  return {SUPER_NOVA:superRate,...row};
  }
  function drawComebackRole(setting,rng){let roll=rng();for(const [role,p] of Object.entries(comebackRoleProbabilities(setting)))if((roll-=p)<0)return role;return 'MISS';}
  function beginComeback(value){return {...normalize(value),comebackLeft:comebackRules.games,comebackLamp:'',comebackConfirmed:false,remaining:'0'};}

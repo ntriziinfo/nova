@@ -28,10 +28,10 @@ test('a pending lamp is chosen once per BET and misses choose a new lamp next ga
  assert.notEqual(a.prepareBet(miss.flow,{},()=>.999).comebackLamp,'sosuke');
 });
 
-test('every drawn role is eligible, with the configured marginal probability',()=>{
+test('each role follows its configured probability, including ineligible common roles',()=>{
  loadModel();const a=NovaArt,probs=a.comebackRoleProbabilities(6);
  assert.ok(Math.abs(Object.values(probs).reduce((a,b)=>a+b,0)-1)<1e-12);
- for(const role of Object.keys(probs))assert.ok(a.comebackChance(role,6)>0,role);
+ for(const role of Object.keys(probs))assert.ok(a.comebackChance(role,6)>=0&&a.comebackChance(role,6)<=1,role);
  const ready={...a.beginComeback(a.enter({},()=>0)),comebackLamp:'toto'};
  for(const role of ['MISS','BELL','REPLAY','WEAK_SUICA','STRONG_SUICA','CHANCE_A','CHANCE_B','WEAK_NOVA']){
   const rng=xoshiro128(114);let hits=0;const count=20000;
@@ -43,7 +43,7 @@ test('every drawn role is eligible, with the configured marginal probability',()
 test('win lights the selected zone and revives from its award without a free 150pt',()=>{
  loadModel();const a=NovaArt;
  const base={...a.beginComeback(a.enter({},()=>0)),comebackLeft:1,comebackLamp:'sosuke',atLevel:5,burstWon:true,burstUsed:true};
- const won=a.step(base,{},()=>0,'REPLAY');assert.equal(won.comebackEvent,'success');assert.equal(won.flow.remaining,'0');assert.equal(won.flow.atLevel,undefined);assert.equal(won.flow.burstUsed,true);
+ const won=a.step(base,{setting:2},()=>0,'REPLAY');assert.equal(won.comebackEvent,'success');assert.equal(won.flow.remaining,'0');assert.equal(won.flow.atLevel,undefined);assert.equal(won.flow.burstUsed,true);
  assert.equal(base.comebackLeft,1);assert.equal(base.comebackConfirmed,false);
  assert.equal(won.flow.pendingZone,'sosuke');assert.equal(won.flow.comebackConfirmed,true);
  const reload=a.normalize(JSON.parse(JSON.stringify(won.flow)));assert.deepEqual(reload,won.flow);
@@ -65,19 +65,22 @@ test('every rare role guarantees revival on all five games and settings, includi
  }
  const ready={...a.beginComeback(a.enter({},()=>0)),comebackLamp:'toto'};
  for(let setting=1;setting<=6;setting++)for(const role of ['MISS','BELL','REPLAY']){
-  const p=a.comebackChance(role,setting);assert(p>0&&p<1);
-  assert.equal(a.step(ready,{setting},()=>p-Number.EPSILON,role).comebackEvent,'success');
+  const eligible=role==='MISS'?setting>=4:role==='BELL'?setting%2===1:setting%2===0;
+  const p=a.comebackChance(role,setting);assert(p>=0&&p<1);
+  assert.equal(p>0,eligible,`${setting}/${role}`);
+  if(eligible)assert.equal(a.step(ready,{setting},()=>p-Number.EPSILON,role).comebackEvent,'success');
+  else assert.equal(a.step(ready,{setting},()=>0,role).comebackEvent,'continue');
   assert.equal(a.step(ready,{setting},()=>p,role).comebackEvent,'continue');
  }
 });
 
-test('each setting revives exactly 20 percent over five games, with every role included',()=>{
+test('each setting revives exactly 20 percent over five games, including role restrictions and rare guarantees',()=>{
  loadModel();const a=NovaArt;
  for(let setting=1;setting<=6;setting++){
   const row=a.comebackRoleProbabilities(setting);
   const missPerGame=Object.entries(row).reduce((sum,[role,p])=>sum+p*(1-a.comebackChance(role,setting)),0);
   assert.ok(Math.abs((1-missPerGame**5)-.20)<1e-12,`setting ${setting}`);
-  for(const role of ['BELL','REPLAY','MISS'])assert(a.comebackChance(role,setting)>0);
+  assert(a.comebackChance(setting%2?'BELL':'REPLAY',setting)>0);
  }
 });
 
@@ -88,8 +91,29 @@ test('the fifth game still draws common-role revival after four losses and a rel
   for(let g=0;g<4;g++)s=a.step(s,{setting},()=>.999999,role).flow;
   s=a.normalize(JSON.parse(JSON.stringify(s)));assert.equal(s.comebackLeft,1);
   const won=a.step(s,{setting},()=>0,role);
-  assert.equal(won.comebackEvent,'success');assert.equal(won.flow.entryStage,'confirmed');
-  assert.equal(won.flow.comebackLeft,0);assert.equal(won.flow.remaining,'0');
+  const eligible=role==='MISS'?setting>=4:role==='BELL'?setting%2===1:setting%2===0;
+  assert.equal(won.comebackEvent,eligible?'success':'failure');
+  assert.equal(won.flow.phase,eligible?'art':'normal');
+  if(eligible){assert.equal(won.flow.entryStage,'confirmed');assert.equal(won.flow.comebackLeft,0);assert.equal(won.flow.remaining,'0');}
+ }
+});
+
+test('only comeback uses a 1/50 bell; rare/replay frequencies and normal role tables stay intact',()=>{
+ loadModel();const a=NovaArt,n=NovaNormal;
+ for(let setting=1;setting<=6;setting++){
+  const normal=n.roleProbabilities(setting),before={...normal},row=a.comebackRoleProbabilities(setting);
+  assert.equal(row.BELL,1/50);assert.equal(row.REPLAY,normal.REPLAY);
+  for(const role of Object.keys(n.rare))assert.equal(row[role],normal[role]);
+  assert.equal(row.SUPER_NOVA,1/32768);
+  assert.ok(Math.abs(row.MISS-(normal.MISS-(1/50-normal.BELL)-1/32768))<1e-12);
+  assert.ok(Object.values(row).every(p=>p>=0&&p<=1));
+  assert.ok(Math.abs(Object.values(row).reduce((x,y)=>x+y,0)-1)<1e-12);
+  assert.deepEqual(n.roleProbabilities(setting),before);
+  let cumulative=0;
+  for(const [role,p]of Object.entries(row)){
+   assert.equal(a.drawComebackRole(setting,()=>cumulative+p/2),role);
+   cumulative+=p;
+  }
  }
 });
 
