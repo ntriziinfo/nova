@@ -32,14 +32,26 @@ globalThis.NovaArt=(()=>{
  }
  function burstChance(role,setting){return (burstRules.roles[role]||0)*burstRules.entry[validSetting(setting)-1];}
  // Five paid games after the final AT quota. All rare roles guarantee revival.
- const comebackRules=Object.freeze({games:5,
+ const comebackRules=Object.freeze({games:5,totalChance:.20,
   guaranteedRoles:Object.freeze(['WEAK_SUICA','STRONG_SUICA','CHANCE_A','CHANCE_B','WEAK_NOVA','STRONG_NOVA','SUPER_NOVA']),
-  common:Object.freeze({MISS:.001,BELL:.01,REPLAY:.01}),
+  commonWeights:Object.freeze({MISS:1,BELL:10,REPLAY:10}),
   superDenom:32768
  });
+ const comebackCommonScales=new Map();
  function comebackChance(role,setting=1,options={}){
   if(comebackRules.guaranteedRoles.includes(role)||role==='FREEZE')return 1;
-  return comebackRules.common[role]??0;
+  const weight=comebackRules.commonWeights[role];if(!weight)return 0;
+  const key=validSetting(setting);
+  if(!comebackCommonScales.has(key)){
+   const row=comebackRoleProbabilities(key);
+   const guaranteed=comebackRules.guaranteedRoles.reduce((sum,role)=>sum+(row[role]||0),0);
+   const common=Object.entries(comebackRules.commonWeights).reduce((sum,[role,w])=>sum+row[role]*w,0);
+   // Calibrate the five-game total, including guaranteed rares, against each setting's role mix.
+   // Keep the existing BELL/REPLAY : MISS ratio of 10 : 1. No session results affect these odds.
+   const perGame=1-(1-comebackRules.totalChance)**(1/comebackRules.games);
+   comebackCommonScales.set(key,(perGame-guaranteed)/common);
+  }
+  return weight*comebackCommonScales.get(key);
  }
  function comebackRoleProbabilities(setting=1){
   const row={...NovaNormal.roleProbabilities(setting)},superRate=1/comebackRules.superDenom;

@@ -64,9 +64,32 @@ test('every rare role guarantees revival on all five games and settings, includi
   if(!['STRONG_NOVA','SUPER_NOVA'].includes(role))assert.equal(won.flow.pendingZone,'toto');
  }
  const ready={...a.beginComeback(a.enter({},()=>0)),comebackLamp:'toto'};
- for(const [role,p] of [['MISS',.001],['BELL',.01],['REPLAY',.01]]){
-  assert.equal(a.step(ready,{},()=>p-Number.EPSILON,role).comebackEvent,'success');
-  assert.equal(a.step(ready,{},()=>p,role).comebackEvent,'continue');
+ for(let setting=1;setting<=6;setting++)for(const role of ['MISS','BELL','REPLAY']){
+  const p=a.comebackChance(role,setting);assert(p>0&&p<1);
+  assert.equal(a.step(ready,{setting},()=>p-Number.EPSILON,role).comebackEvent,'success');
+  assert.equal(a.step(ready,{setting},()=>p,role).comebackEvent,'continue');
+ }
+});
+
+test('each setting revives exactly 20 percent over five games, with every role included',()=>{
+ loadModel();const a=NovaArt;
+ for(let setting=1;setting<=6;setting++){
+  const row=a.comebackRoleProbabilities(setting);
+  const missPerGame=Object.entries(row).reduce((sum,[role,p])=>sum+p*(1-a.comebackChance(role,setting)),0);
+  assert.ok(Math.abs((1-missPerGame**5)-.20)<1e-12,`setting ${setting}`);
+  for(const role of ['BELL','REPLAY','MISS'])assert(a.comebackChance(role,setting)>0);
+ }
+});
+
+test('the fifth game still draws common-role revival after four losses and a reload',()=>{
+ loadModel();const a=NovaArt;
+ for(let setting=1;setting<=6;setting++)for(const role of ['BELL','REPLAY','MISS']){
+  let s=a.beginComeback(a.enter({setting},()=>0));
+  for(let g=0;g<4;g++)s=a.step(s,{setting},()=>.999999,role).flow;
+  s=a.normalize(JSON.parse(JSON.stringify(s)));assert.equal(s.comebackLeft,1);
+  const won=a.step(s,{setting},()=>0,role);
+  assert.equal(won.comebackEvent,'success');assert.equal(won.flow.entryStage,'confirmed');
+  assert.equal(won.flow.comebackLeft,0);assert.equal(won.flow.remaining,'0');
  }
 });
 
