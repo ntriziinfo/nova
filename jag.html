@@ -6545,8 +6545,8 @@ body{
 <script src="nova-bell-navi.js?v=20260917-navi-136"></script>
 <link rel="stylesheet" href="nova-direct-award.css?v=20260917-zone-award-134">
 <script src="nova-direct-award.js?v=20260917-navi-136"></script>
-<link rel="stylesheet" href="nova-aim-presentation.css?v=20260909-comeback-114">
-<script src="nova-aim-presentation.js?v=20260919-bonus-nebula-win"></script>
+<link rel="stylesheet" href="nova-aim-presentation.css?v=20260919-zone-entry-seven">
+<script src="nova-aim-presentation.js?v=20260919-zone-entry-seven"></script>
 <script src="nova-art.js?v=20260918-initial-ladder-147"></script>
 <script src="nova-balance.js?v=20260918-initial-ladder-147"></script>
 <script src="nova-normal.js?v=20260917-s4-140"></script>
@@ -15092,11 +15092,7 @@ body{
     if(!debugFastSpinActive&&NovaBellNavi.begin(currentSpin)){
       playOneShotSound('assets/media/nova/bell-navi.wav',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
     }
-    if(!debugFastSpinActive){
-      if(resolved.aim)resolved.aim.guide ??= NovaAim.drawGuide(resolved.aim);
-      NovaAim.bet(resolved.aim);
-      if(NovaAim.hasGuide(resolved.aim))playOneShotSound('assets/media/nova/aim/cue-'+resolved.aim.color+'.wav',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
-    }
+    playAimBetPresentation(resolved);
     if(!resolved.oumaFailed&&['urapi','ouma'].includes(normalState.flow?.zone))showOverlay('ノヴァを狙え');
     if(resolved.oumaFreeze)showOverlay(NovaArt.zoneName(normalState.flow)+'フリーズ！ 0G連・ノヴァを狙え');
     if(resolved.artReverse)showOverlay('逆回転！ '+resolved.flowAfter.award+'pt');
@@ -15372,6 +15368,14 @@ body{
     setReelColumn(i, columnSymbols, label, cls, lineRow);
     stopBtns[i].disabled = true;
     playStopSound(i, stopOrder);
+  }
+
+  function playAimBetPresentation(resolved){
+    if(debugFastSpinActive)return;
+    if(resolved.aim)resolved.aim.guide ??= NovaAim.drawGuide(resolved.aim);
+    const entryCue=NovaAim.bet(resolved.aim,resolved);
+    if(entryCue)playOneShotSound('assets/media/nova/aim_seven_sosuke.wav',voiceOutputVolume(),{allowDuringPremiumConfirm:true});
+    else if(NovaAim.hasGuide(resolved.aim))playOneShotSound('assets/media/nova/aim/cue-'+resolved.aim.color+'.wav',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
   }
 
   function playZoneInternalConfirmedSound(resolved){

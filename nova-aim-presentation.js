@@ -16,6 +16,7 @@ globalThis.NovaAim=(()=>{
   }
   const nebulaWin=document.createElement('video');nebulaWin.muted=true;nebulaWin.loop=false;nebulaWin.playsInline=true;nebulaWin.preload='auto';nebulaWin.hidden=true;nebulaWin.src='assets/media/nova/aim/nebula-win.mp4';root.append(nebulaWin);videos.set('nebula-win',nebulaWin);
   const bonusNebulaWin=document.createElement('video');bonusNebulaWin.muted=true;bonusNebulaWin.loop=false;bonusNebulaWin.playsInline=true;bonusNebulaWin.preload='auto';bonusNebulaWin.hidden=true;bonusNebulaWin.src='assets/media/nova/aim/bonus-nebula-win.mp4';root.append(bonusNebulaWin);videos.set('bonus-nebula-win',bonusNebulaWin);
+  const entrySeven=document.createElement('video');entrySeven.muted=true;entrySeven.loop=true;entrySeven.playsInline=true;entrySeven.preload='auto';entrySeven.hidden=true;entrySeven.src='assets/media/nova/aim/zone-entry-seven.webm';entrySeven.setAttribute('aria-label','777を狙え！');root.append(entrySeven);videos.set('zone-entry-seven',entrySeven);
   const win=document.createElement('video');win.muted=true;win.loop=false;win.playsInline=true;win.preload='auto';win.hidden=true;win.src='assets/media/nova/aim/seven-win.mp4?v=20260918-rainbow-144';root.append(win);videos.set('win',win);
   return true;
  }
@@ -30,16 +31,19 @@ globalThis.NovaAim=(()=>{
  }
  function hide(){
   if(active){active.pause();active.hidden=true;active=null;}
-  if(root){root.hidden=true;delete root.dataset.failed;delete host.dataset.aimActive;}
+  if(root){root.hidden=true;delete root.dataset.failed;delete root.dataset.zoneEntry;delete host.dataset.aimActive;}
  }
  function hasGuide(aim){return !!aim&&aim.guide!==false;}
  function drawGuide(aim,rng=Math.random){return aim.result!=='MISS'||rng()<.5;}
- function bet(aim){
-  hide();if(!hasGuide(aim)||!init())return;
-  const video=videos.get(aim.symbol+':'+aim.color);if(!video)return;
-  active=video;root.dataset.color=aim.color;root.dataset.symbol=aim.symbol;root.hidden=false;
+ function bet(aim,resolved={}){
+  hide();
+  const entry=resolved.flowBefore?.phase==='art'&&resolved.flowBefore.entryStage==='seven'&&resolved.flowAfter?.entryStage==='roulette';
+  if((!entry&&!hasGuide(aim))||!init())return false;
+  const video=videos.get(entry?'zone-entry-seven':aim.symbol+':'+aim.color);if(!video)return false;
+  active=video;root.dataset.color=entry?'entry':aim.color;root.dataset.symbol=entry?'seven':aim.symbol;root.dataset.zoneEntry=String(entry);root.hidden=false;
   host.dataset.aimActive='true';video.hidden=false;video.currentTime=0;layout();
   video.play().catch(()=>{ /* Remain on this cue's first frame if autoplay is blocked. */ });
+  return entry;
  }
  // Visual stop control does not redraw or cancel the internal award.
  function stopTarget(aim,result,order,index){

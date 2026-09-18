@@ -110,6 +110,35 @@ test('nebula win uses dedicated silent video and same 3 second lock',()=>{
  video.onplaying();assert.equal(sounds,1);const timer=[...timers.values()][0];assert.equal(timer.ms,3000);timer.fn();assert.equal(aim.busy,false);
 });
 
+test('zone entry loops the supplied cue until the reels finish, for initial and regular entries',()=>{
+ for(const initialStage of ['', 'entry']){
+  const {aim,elements}=setup();
+  assert.equal(aim.bet(null,{flowBefore:{phase:'art',entryStage:'seven',initialStage},flowAfter:{phase:'art',entryStage:'roulette'}}),true);
+  const video=elements.find(e=>e.src==='assets/media/nova/aim/zone-entry-seven.webm');
+  assert.equal(video.hidden,false);assert.equal(video.loop,true);assert.equal(video.muted,true);assert.equal(video.currentTime,0);assert.equal(video.paused,false);
+  assert.equal(elements[0].dataset.zoneEntry,'true');assert.equal(aim.busy,false);
+  aim.hide();assert.equal(video.hidden,true);assert.equal(video.paused,true);assert.equal(elements[0].dataset.zoneEntry,undefined);
+  assert.equal(aim.bet(null,{flowBefore:{phase:'art',entryStage:'roulette'},flowAfter:{phase:'art',entryStage:'confirmed'}}),false);
+  assert.equal(video.hidden,true);
+ }
+});
+
+test('zone entry plays the existing aim-seven voice once on BET; colored zone cues keep their own audio',()=>{
+ const t=setup(),sounds=[];
+ const context=vm.createContext({NovaAim:t.aim,debugFastSpinActive:false,voiceOutputVolume:()=>.6,sfxOutputVolume:()=>.4,playOneShotSound:(src,volume)=>sounds.push({src,volume})});
+ const html=fs.readFileSync('jag.html','utf8');
+ vm.runInContext(html.match(/  function playAimBetPresentation\([^]*?\n  }/)[0],context);
+ context.playAimBetPresentation({flowBefore:{phase:'art',entryStage:'seven'},flowAfter:{phase:'art',entryStage:'roulette'}});
+ assert.deepEqual(sounds,[{src:'assets/media/nova/aim_seven_sosuke.wav',volume:.6}]);
+ context.playAimBetPresentation({aim:{symbol:'seven',color:'red',guide:true},flowBefore:{phase:'art',zone:'toto'}});
+ assert.deepEqual(sounds[1],{src:'assets/media/nova/aim/cue-red.wav',volume:.4});
+ const entry=t.elements.find(e=>e.src?.endsWith('zone-entry-seven.webm'));
+ assert.equal(entry.hidden,true);assert.equal(entry.paused,true);assert.equal(t.elements[0].dataset.zoneEntry,'false');
+ context.playAimBetPresentation({flowBefore:{phase:'art'},flowAfter:{phase:'art',entryStage:'seven'}});assert.equal(sounds.length,2);
+ context.debugFastSpinActive=true;
+ context.playAimBetPresentation({flowBefore:{phase:'art',entryStage:'seven'},flowAfter:{phase:'art',entryStage:'roulette'}});assert.equal(sounds.length,2);
+});
+
 test('bonus nebula confirmation switches back to the original video for character zones',()=>{
  const {aim,elements,timers}=setup();let sounds=0;
  aim.win(()=>sounds++,'nebula',{aTypeBonusGame:true});

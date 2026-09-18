@@ -4,3 +4,5 @@
 #machine[data-aim-active] .novaArtLayer{visibility:hidden}
 
 .novaAimPresentation[data-failed="true"] video{filter:grayscale(1)}
+.novaAimPresentation[data-zone-entry="true"]{background:transparent}
+.novaAimPresentation[data-zone-entry="true"] video{object-fit:contain;transform:scale(1.8)}
