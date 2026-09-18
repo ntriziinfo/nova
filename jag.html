@@ -8138,7 +8138,7 @@ body{
   const bellZakoTimers = [null, null, null];
   const aimWinAudios=new Set();
   const oneShotSoundCache = new Map();
-  for(const src of ['assets/media/nova/bell-navi.wav','assets/media/nova/direct-award.wav','assets/media/nova/weak-nova.wav','assets/media/nova/aim/nebula-win.wav','assets/media/nova/aim/seven-win.wav','assets/media/nova/aim/cue-blue.wav','assets/media/nova/aim/cue-red.wav','assets/media/nova/aim/cue-rainbow.wav','assets/media/nova/shutter.wav','assets/media/nova/shutter-close.wav','assets/media/nova/ladder-final-award.wav','assets/media/nova/ladder-final-award-under1000.wav']){const audio=new Audio(src);audio.preload='auto';oneShotSoundCache.set(src,audio);audio.load();}
+  for(const src of ['assets/media/nova/bell-navi.wav','assets/media/nova/direct-award.wav','assets/media/nova/weak-nova.wav','assets/media/nova/aim/nebula-win.wav','assets/media/nova/aim/bonus-nebula-win.wav','assets/media/nova/aim/seven-win.wav','assets/media/nova/aim/cue-blue.wav','assets/media/nova/aim/cue-red.wav','assets/media/nova/aim/cue-rainbow.wav','assets/media/nova/shutter.wav','assets/media/nova/shutter-close.wav','assets/media/nova/ladder-final-award.wav','assets/media/nova/ladder-final-award-under1000.wav']){const audio=new Audio(src);audio.preload='auto';oneShotSoundCache.set(src,audio);audio.load();}
   const resultEyecatchPreload = new Audio('assets/media/nova/result-eyecatch.wav');
   resultEyecatchPreload.preload='auto';resultEyecatchPreload.load();
   oneShotSoundCache.set('assets/media/nova/result-eyecatch.wav',resultEyecatchPreload);
@@ -15272,8 +15272,9 @@ body{
     NovaLadder.stop(stopOrder);
     if(currentSpin.stopped.every(Boolean)&&NovaAim.hasGuide(currentSpin.resolved?.aim)&&['BIG','NEBULA'].includes(currentSpin.result)&&currentSpin.aimAligned&&!currentSpin.aimWinPlayed&&!debugFastSpinActive){
       currentSpin.aimWinPlayed=true;
-      const symbol=currentSpin.resolved.aim.symbol;
-      NovaAim.win(()=>playAimSevenWinSound(symbol),symbol,currentSpin.resolved);
+      const resolved=currentSpin.resolved;
+      const symbol=resolved.aim.symbol;
+      NovaAim.win(()=>playAimSevenWinSound(symbol,resolved),symbol,resolved);
     }
     if(stopOrder===3 && currentSpin.resolved?.czLamp)playCzConfirmedSound(currentSpin.resolved);
     if(stopOrder===3)showZoneRoulette(currentSpin.resolved?.flowAfter);
@@ -16315,9 +16316,10 @@ body{
       },50);
     }
   }
-  function playAimSevenWinSound(symbol='seven'){
+  function playAimSevenWinSound(symbol='seven',resolved={}){
     if(debugFastSpinActive)return;
-    const src='assets/media/nova/aim/'+(symbol==='nebula'?'nebula':'seven')+'-win.wav';
+    const name=symbol==='nebula'?(resolved.aTypeBonusGame?'bonus-nebula':'nebula'):'seven';
+    const src='assets/media/nova/aim/'+name+'-win.wav';
     const audio=oneShotSoundCache.get(src).cloneNode(true);
     audio.loop=false;audio.volume=sfxOutputVolume();aimWinAudios.add(audio);
     audio.onended=audio.onerror=()=>{clearInterval(audio.aimFadeTimer);aimWinAudios.delete(audio);};
