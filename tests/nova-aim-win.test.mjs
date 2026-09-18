@@ -5,7 +5,7 @@ import vm from 'node:vm';
 function setup(){
  const elements=[],timers=new Map(),listeners={};let id=0;
  const host={dataset:{},append(){},querySelector(){return null;}};
- const context=vm.createContext({document:{hidden:false,getElementById:()=>host,addEventListener(name,fn){listeners[name]=fn;},createElement(tag){const e={tag,style:{},dataset:{},append(){},setAttribute(){},pause(){this.paused=true;},play(){this.paused=false;return Promise.resolve();}};elements.push(e);return e;}},window:{addEventListener(){},dispatchEvent(){}},Event:class{},setTimeout(fn,ms){timers.set(++id,{fn,ms});return id;},clearTimeout(id){timers.delete(id);}});
+ const context=vm.createContext({document:{hidden:false,getElementById:()=>host,addEventListener(name,fn){listeners[name]=fn;},createElement(tag){const e={tag,currentTime:0,style:{},dataset:{},append(){},setAttribute(){},pause(){this.paused=true;},play(){this.paused=false;return Promise.resolve();}};elements.push(e);return e;}},window:{addEventListener(){},dispatchEvent(){}},Event:class{},setTimeout(fn,ms){timers.set(++id,{fn,ms});return id;},clearTimeout(id){timers.delete(id);}});
  vm.runInContext(fs.readFileSync('nova-aim-presentation.js','utf8'),context);
  return {aim:context.NovaAim,elements,timers,hide(){context.document.hidden=true;listeners.visibilitychange();}};
 }
@@ -114,13 +114,24 @@ test('zone entry loops the supplied cue until the reels finish, for initial and 
  for(const initialStage of ['', 'entry']){
   const {aim,elements}=setup();
   assert.equal(aim.bet(null,{flowBefore:{phase:'art',entryStage:'seven',initialStage},flowAfter:{phase:'art',entryStage:'roulette'}}),true);
-  const video=elements.find(e=>e.src==='assets/media/nova/aim/zone-entry-seven.webm');
+  const video=elements.find(e=>e.src?.includes('/zone-entry-seven.webm'));
   assert.equal(video.hidden,false);assert.equal(video.loop,true);assert.equal(video.muted,true);assert.equal(video.currentTime,0);assert.equal(video.paused,false);
   assert.equal(elements[0].dataset.zoneEntry,'true');assert.equal(aim.busy,false);
   aim.hide();assert.equal(video.hidden,true);assert.equal(video.paused,true);assert.equal(elements[0].dataset.zoneEntry,undefined);
   assert.equal(aim.bet(null,{flowBefore:{phase:'art',entryStage:'roulette'},flowAfter:{phase:'art',entryStage:'confirmed'}}),false);
   assert.equal(video.hidden,true);
  }
+});
+
+test('cue rewinds while hidden and reuses the prepared first frame on the next BET',()=>{
+ const {aim,elements}=setup();
+ const entry={flowBefore:{phase:'art',entryStage:'seven'},flowAfter:{phase:'art',entryStage:'roulette'}};
+ aim.bet(null,entry);
+ const video=elements.find(e=>e.src?.includes('/zone-entry-seven.webm'));
+ let time=1.5;const seeks=[];
+ Object.defineProperty(video,'currentTime',{get:()=>time,set(value){seeks.push({value,hidden:this.hidden,paused:this.paused});time=value;}});
+ aim.hide();assert.deepEqual(seeks,[{value:0,hidden:true,paused:true}]);
+ aim.bet(null,entry);assert.equal(seeks.length,1);assert.equal(video.paused,false);assert.equal(video.hidden,false);
 });
 
 test('zone entry plays the existing aim-seven voice once on BET; colored zone cues keep their own audio',()=>{
@@ -132,7 +143,7 @@ test('zone entry plays the existing aim-seven voice once on BET; colored zone cu
  assert.deepEqual(sounds,[{src:'assets/media/nova/aim_seven_sosuke.wav',volume:.6}]);
  context.playAimBetPresentation({aim:{symbol:'seven',color:'red',guide:true},flowBefore:{phase:'art',zone:'toto'}});
  assert.deepEqual(sounds[1],{src:'assets/media/nova/aim/cue-red.wav',volume:.4});
- const entry=t.elements.find(e=>e.src?.endsWith('zone-entry-seven.webm'));
+ const entry=t.elements.find(e=>e.src?.includes('/zone-entry-seven.webm'));
  assert.equal(entry.hidden,true);assert.equal(entry.paused,true);assert.equal(t.elements[0].dataset.zoneEntry,'false');
  context.playAimBetPresentation({flowBefore:{phase:'art'},flowAfter:{phase:'art',entryStage:'seven'}});assert.equal(sounds.length,2);
  context.debugFastSpinActive=true;

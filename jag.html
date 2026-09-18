@@ -6546,7 +6546,7 @@ body{
 <link rel="stylesheet" href="nova-direct-award.css?v=20260917-zone-award-134">
 <script src="nova-direct-award.js?v=20260917-navi-136"></script>
 <link rel="stylesheet" href="nova-aim-presentation.css?v=20260919-zone-entry-seven">
-<script src="nova-aim-presentation.js?v=20260919-zone-entry-seven"></script>
+<script src="nova-aim-presentation.js?v=20260919-fast-start"></script>
 <script src="nova-art.js?v=20260918-initial-ladder-147"></script>
 <script src="nova-balance.js?v=20260918-initial-ladder-147"></script>
 <script src="nova-normal.js?v=20260917-s4-140"></script>
@@ -15151,7 +15151,7 @@ body{
       const machine=document.getElementById('machine');machine.dataset.oumaFailDim='true';
       clearTimeout(oumaFailDimTimer);
       oumaFailDimTimer=setTimeout(()=>{machine.dataset.oumaFailDim='';oumaFailDimTimer=null;},900);
-    }else if(!resolved.oumaFreeze)playSpinSound();
+    }else if(!resolved.oumaFreeze)playSpinSound(resolved);
     playZoneInternalConfirmedSound(resolved);
     ensureBattleBgmContinuing();
     ensureBarBgmContinuing();
@@ -16596,7 +16596,11 @@ body{
   }
 
   function isLadderShutterSpin(){const flow=currentSpin?.resolved?.flowBefore;return NovaLadder.eligible(flow)&&flow.ladderRevealed;}
-  function playSpinSound(){
+  function playSpinSound(resolved){
+    if(resolved?.flowBefore?.phase==='art'&&resolved.flowBefore.entryStage==='roulette'){
+      playOneShotSound('assets/media/nova/aim/bonus-nebula-win.wav',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
+      return;
+    }
     const src=normalState.ladderAwardPresentation?.started?(Number(normalState.ladderAwardPresentation.card?.pt)>=1000?'assets/media/nova/ladder-final-award.wav':'assets/media/nova/ladder-final-award-under1000.wav'):isLadderShutterSpin()?'assets/media/nova/shutter.wav':SPIN_SOUND_SRC;
     playOneShotSound(src,sfxOutputVolume(),{allowDuringPremiumConfirm:true});
   }

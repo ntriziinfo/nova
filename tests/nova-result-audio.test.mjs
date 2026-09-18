@@ -1,6 +1,19 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
 const html=fs.readFileSync('jag.html','utf8');
 const fn=name=>html.match(new RegExp('  function '+name+'\\([^]*?\\n  }'))[0];
+
+test('roulette BET uses NOVA RUSH confirmation once instead of normal start audio',()=>{
+ const sounds=[];const c=vm.createContext({normalState:{},isLadderShutterSpin:()=>false,SPIN_SOUND_SRC:'normal.wav',sfxOutputVolume:()=>.5,playOneShotSound:src=>sounds.push(src)});
+ vm.runInContext(fn('playSpinSound'),c);
+ for(const initialStage of ['', 'entry']){
+  sounds.length=0;c.playSpinSound({flowBefore:{phase:'art',entryStage:'roulette',initialStage},flowAfter:{phase:'art',entryStage:'confirmed'}});
+  assert.deepEqual(sounds,['assets/media/nova/aim/bonus-nebula-win.wav']);
+ }
+ sounds.length=0;
+ c.playSpinSound({flowBefore:{phase:'art',entryStage:'seven'},flowAfter:{phase:'art',entryStage:'roulette'}});
+ c.playSpinSound({flowBefore:{phase:'art',entryStage:'confirmed'}});
+ assert.deepEqual(sounds,['normal.wav','normal.wav']);
+});
 test('background music stays paused through result callbacks and resumes after result dismissal',()=>{
  let plays=0,pauses=0;const c=vm.createContext({NovaDirectAward:{busy:false},normalState:{resultCard:{kind:'zone'}},debugFastSpinActive:false,session:{active:false},bonusConfirmBgmHold:false,barBgmActive:false,battleBgmActive:false,bgm:{paused:true,play(){plays++;return Promise.resolve();}},pauseNormalBgm(){pauses++;},ensureNormalBgmSource:()=> 'at.wav',bgmOutputVolumeForSource:()=>.5,BGM_OUTPUT_SCALE:1,getAudio(){}});
  vm.runInContext(fn('playNormalBgm'),c);c.playNormalBgm();c.playNormalBgm();assert.equal(plays,0);assert.equal(pauses,2);
