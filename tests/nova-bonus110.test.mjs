@@ -38,7 +38,7 @@ test('100000 actual BIGs per tier reproduce AT expectations; shown cue colors re
  }
 });
 test('live bonus resolver uses the same payout cap, NEBULA guide and AT award',()=>{
- const html=fs.readFileSync('jag.html','utf8'),ctx=vm.createContext({NovaArt:a,NovaNormal:n,A_TYPE_MODE:true,session:{bonusKind:'BIG',bonusTier:'upper',paid:45,active:true,phase:'a_type_bonus'},pendingForceResult:'NEBULA',settings:{setting:6},isNovaResult:()=>false});
+ const html=fs.readFileSync('jag.html','utf8'),ctx=vm.createContext({NovaArt:a,NovaNormal:n,A_TYPE_MODE:true,session:{bonusKind:'BIG',bonusTier:'upper',paid:45,active:true,phase:'a_type_bonus'},normalState:{flow:{phase:'normal'}},pendingForceResult:'NEBULA',settings:{setting:6},isNovaResult:()=>false});
  for(const name of ['normalizeATypeBonusKind','isATypeBonusActive','aTypeBonusTarget','isATypeBonusComplete','drawATypeBonusResult','resolveATypeBonusOutcome']){
   const source=html.match(new RegExp('  function '+name+'\\([^]*?\\n  }'))[0];vm.runInContext(source,ctx);
  }

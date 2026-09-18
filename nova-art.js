@@ -147,10 +147,16 @@ globalThis.NovaArt=(()=>{
  // Bell payouts are capped to the BIG target.
  // Choose the per-game hazard so P(at least one NEBULA before the required bells)
  // equals the tier's 52% / 80%. Half of the misses have no guide.
- function bonusRoleProbabilities(setting,tier='normal'){
+ // Only additional wins after AT is secured are reduced. First-hit AT odds,
+ // bell/replay frequencies and the 50pt BIG payout remain unchanged.
+ const bonusStockRules=Object.freeze({version:146,factors:Object.freeze([0.705,0.705,0.705,0.705,0.705,0.6825])});
+ const bonusStockFactor=setting=>bonusStockRules.factors[validSetting(setting)-1];
+ const bonusStockEligible=(state,flow)=>flow?.phase==='art'||integer(state?.bonusArtSets)>0n;
+ function bonusRoleProbabilities(setting,tier='normal',stockEligible=false){
   const hit=.5,ratio=(1-bonusRules[bonusTier(tier)].atChance)**(-1/Math.ceil(bonusTarget()/15))-1;
   const zero=4*ratio/(12*hit-3*ratio),NEBULA=zero*hit,MISS=zero-NEBULA,BELL=(4+3*zero)/12;
-  return {NEBULA,MISS,BELL,REPLAY:1-zero-BELL};
+  const factor=stockEligible?bonusStockFactor(setting):1;
+  return {NEBULA:NEBULA*factor,MISS:MISS+NEBULA*(1-factor),BELL,REPLAY:1-zero-BELL};
  }
  const bonusSpecial=bonusRoleProbabilities().NEBULA;
  const settingBias=[-2.7,-2.55,-2.27,-2.13,-1.8,-1.46];
@@ -167,10 +173,14 @@ globalThis.NovaArt=(()=>{
  // Replay has no payout and makes the next BET free: net = (bellPay-3)*P(bell) + (otherPay-3)*P(other).
  function paidBellChance(otherChance=0,bellPay=15,otherPay=0){return Math.max(0,Math.min(1,(4-otherChance*(otherPay-3))/((1-otherChance)*(bellPay-3))));}
  function drawPaidRole(zeroChance=0,bellPay=15,rng=Math.random){return rng()<paidBellChance(zeroChance,bellPay)?'BELL':'REPLAY';}
- function drawBonus(rng=Math.random,setting,tier='normal'){let roll=rng();for(const [role,p]of Object.entries(bonusRoleProbabilities(setting,tier)))if((roll-=p)<0)return role;return 'REPLAY';}
- function bonusAim(result,rng=Math.random){
+ function drawBonus(rng=Math.random,setting,tier='normal',stockEligible=false){let roll=rng();for(const [role,p]of Object.entries(bonusRoleProbabilities(setting,tier,stockEligible)))if((roll-=p)<0)return role;return 'REPLAY';}
+ function bonusAim(result,rng=Math.random,setting=1,stockEligible=false){
   if(!['NEBULA','MISS'].includes(result))return null;
-  const colors=[{color:'blue',weight:43/180,hit:.2},{color:'red',weight:128/180,hit:.8},{color:'rainbow',weight:.05,hit:1}],success=result==='NEBULA',weights=colors.map(row=>row.weight*(success?row.hit:1-row.hit));
+  // Half of misses still have a guide. Adjust the color mix to its new guided
+  // success prior, preserving blue/red/rainbow confidence at 20/80/100%.
+  const factor=stockEligible?bonusStockFactor(setting):1,guidedHit=2*factor/(2+factor);
+  const red=factor===1?128/180:(guidedHit-.24)/.6;
+  const colors=[{color:'blue',weight:factor===1?43/180:.95-red,hit:.2},{color:'red',weight:red,hit:.8},{color:'rainbow',weight:.05,hit:1}],success=result==='NEBULA',weights=colors.map(row=>row.weight*(success?row.hit:1-row.hit));
   let roll=rng()*weights.reduce((a,b)=>a+b,0),index=weights.findIndex(w=>(roll-=w)<0);if(index<0)index=success?2:0;
   return {symbol:'nebula',color:colors[index].color,result,guide:success||rng()<.5,forced:false};
  }
@@ -366,5 +376,5 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
   return {atOutcome,aim,zoneAward,result,flow:s,message,internalBonus,reverse,oumaFreeze:freeOumaSpin,zoneSpin:!!value.zone||queuedEntered};
  }
  function label(v){const s=normalize(v);if(s.initialStage)return s.initialStage==='wait'?'AT準備中 / 残り'+s.initialWait+'G':s.initialStage==='entry'?'初期pt獲得ゾーン / '+({seven:'赤7を狙え！',roulette:'キャラルーレット',confirmed:zoneName(s.pendingZone)+'ゾーン確定'}[s.entryStage]||'準備中'):'初期pt獲得 / '+zoneName(s)+' 残り'+s.zoneLeft+'G / 確保'+s.award+'pt';if(s.comebackLeft)return '引き戻しゾーン 残り'+s.comebackLeft+'G / ランプ点灯でAT復活';if(s.comebackConfirmed)return '引き戻し成功！ '+zoneName(s.pendingZone)+'ゾーン / AT復活';return (s.burstWon?('裏チャレンジ成功 / '):s.burstLeft?challengeName(s)+' 残り'+s.burstLeft+'G / ':s.burstPending?challengeName(s)+'待機 / ':'')+`AT ${s.remaining}pt / 特化ストック${integer(s.sets)+BigInt(s.queuedZones.length)}個${s.entryStage?' / '+({seven:'赤7を狙え・減算停止',roulette:'ルーレット・減算停止',confirmed:zoneName(s.pendingZone)+'ゾーン確定'}[s.entryStage]):''}${s.zone?' / '+zoneName(s)+' '+(s.zero?'0G連':s.oumaPending?'BETで継続抽選':s.zoneLeft+'G'):''}${integer(s.stock)>0n?' / BIGストック '+s.stock:''}${s.zone?' / 獲得'+s.award+'pt':''}`;}
- return {entryQuotaRules,drawEntryQuota,enterInitial,challengeName,burstReward,comebackRules,comebackChance,comebackRoleProbabilities,drawComebackRole,beginComeback,prepareComeback,stepComeback,burstRules,burstChance,commonAtRules,bonusRules,bonusTier,drawBonusTier,bonusLabel,bonusPayout,bonusAim,aimColors,aimColorsFor,sevenAimRules,drawSevenAim,ladderWeightsFor,ladderGuaranteed,drawLadderRole,lossRewardControl,zoneTailControl,zoneAwardFactor,netRewardControl,netLimits,netRewardFactor,superZoneChance,zoneGroups,zoneGroupWeights,upgradeGuaranteedZone,bonusSpecialRates,zoneRules,ladderTables,ladderTableFor,ladderValues,sevenValues,sevenWeights,atZoneWeights,tuning,atMix,drawAtRare,atRoleRules,pickAtZone,resolveAtRole,rareRoles,rareTotal,rareMean,rareFactor,drawRare,roleProbabilities,bonusRoleProbabilities,preparationProbabilities,drawPreparationRole,zoneRoleWeights,zoneRoleMultiplier,paidBellChance,drawPreparation,zoneEntryScale,points,bonusTarget,payout,settleZone,prepareBet,oumaFreezeRate,baseZone,zoneName,zoneIds,names,defaults,direct,zoneWeights,pickZone,bonusSpecial,settingBias,biasFor,bonusSpecialFor,advanceBonus,bonusStockLabel,drawPaidRole,drawBonus,config,normalize,enter,startZone,afterBonus,step,label};
+ return {entryQuotaRules,drawEntryQuota,enterInitial,challengeName,burstReward,comebackRules,comebackChance,comebackRoleProbabilities,drawComebackRole,beginComeback,prepareComeback,stepComeback,burstRules,burstChance,commonAtRules,bonusRules,bonusTier,drawBonusTier,bonusLabel,bonusPayout,bonusAim,aimColors,aimColorsFor,sevenAimRules,drawSevenAim,ladderWeightsFor,ladderGuaranteed,drawLadderRole,lossRewardControl,zoneTailControl,zoneAwardFactor,netRewardControl,netLimits,netRewardFactor,superZoneChance,zoneGroups,zoneGroupWeights,upgradeGuaranteedZone,bonusSpecialRates,zoneRules,ladderTables,ladderTableFor,ladderValues,sevenValues,sevenWeights,atZoneWeights,tuning,atMix,drawAtRare,atRoleRules,pickAtZone,resolveAtRole,rareRoles,rareTotal,rareMean,rareFactor,drawRare,roleProbabilities,bonusRoleProbabilities,preparationProbabilities,drawPreparationRole,zoneRoleWeights,zoneRoleMultiplier,paidBellChance,drawPreparation,zoneEntryScale,points,bonusTarget,payout,settleZone,prepareBet,oumaFreezeRate,baseZone,zoneName,zoneIds,names,defaults,direct,zoneWeights,pickZone,bonusSpecial,settingBias,biasFor,bonusSpecialFor,advanceBonus,bonusStockLabel,bonusStockRules,bonusStockFactor,bonusStockEligible,drawPaidRole,drawBonus,config,normalize,enter,startZone,afterBonus,step,label};
 })();
