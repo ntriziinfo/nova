@@ -6546,7 +6546,7 @@ body{
 <link rel="stylesheet" href="nova-direct-award.css?v=20260917-zone-award-134">
 <script src="nova-direct-award.js?v=20260917-navi-136"></script>
 <link rel="stylesheet" href="nova-aim-presentation.css?v=20260909-comeback-114">
-<script src="nova-aim-presentation.js?v=20260918-seven-win-144"></script>
+<script src="nova-aim-presentation.js?v=20260919-bonus-nebula-win"></script>
 <script src="nova-art.js?v=20260918-initial-ladder-147"></script>
 <script src="nova-balance.js?v=20260918-initial-ladder-147"></script>
 <script src="nova-normal.js?v=20260917-s4-140"></script>
@@ -15275,7 +15275,7 @@ body{
     if(currentSpin.stopped.every(Boolean)&&NovaAim.hasGuide(currentSpin.resolved?.aim)&&['BIG','NEBULA'].includes(currentSpin.result)&&currentSpin.aimAligned&&!currentSpin.aimWinPlayed&&!debugFastSpinActive){
       currentSpin.aimWinPlayed=true;
       const symbol=currentSpin.resolved.aim.symbol;
-      NovaAim.win(()=>playAimSevenWinSound(symbol),symbol);
+      NovaAim.win(()=>playAimSevenWinSound(symbol),symbol,currentSpin.resolved);
     }
     if(stopOrder===3 && currentSpin.resolved?.czLamp)playCzConfirmedSound(currentSpin.resolved);
     if(stopOrder===3)showZoneRoulette(currentSpin.resolved?.flowAfter);

@@ -15,6 +15,7 @@ globalThis.NovaAim=(()=>{
    root.append(video);videos.set(symbol+':'+color,video);
   }
   const nebulaWin=document.createElement('video');nebulaWin.muted=true;nebulaWin.loop=false;nebulaWin.playsInline=true;nebulaWin.preload='auto';nebulaWin.hidden=true;nebulaWin.src='assets/media/nova/aim/nebula-win.mp4';root.append(nebulaWin);videos.set('nebula-win',nebulaWin);
+  const bonusNebulaWin=document.createElement('video');bonusNebulaWin.muted=true;bonusNebulaWin.loop=false;bonusNebulaWin.playsInline=true;bonusNebulaWin.preload='auto';bonusNebulaWin.hidden=true;bonusNebulaWin.src='assets/media/nova/aim/bonus-nebula-win.mp4';root.append(bonusNebulaWin);videos.set('bonus-nebula-win',bonusNebulaWin);
   const win=document.createElement('video');win.muted=true;win.loop=false;win.playsInline=true;win.preload='auto';win.hidden=true;win.src='assets/media/nova/aim/seven-win.mp4?v=20260918-rainbow-144';root.append(win);videos.set('win',win);
   return true;
  }
@@ -58,10 +59,11 @@ globalThis.NovaAim=(()=>{
    window.dispatchEvent(new Event('nova-aim-unlocked'));
   },650);
  }
- function win(playSound,symbol='seven'){
+ function win(playSound,symbol='seven',resolved={}){
   if(!init())return;
   hide();const token=++winToken;winLocked=true;clearTimeout(winTimer);
-  const video=videos.get(symbol==='nebula'?'nebula-win':'win');active=video;root.hidden=false;root.dataset.symbol=symbol;root.dataset.color='win';
+  const key=symbol==='nebula'?(resolved.aTypeBonusGame?'bonus-nebula-win':'nebula-win'):'win';
+  const video=videos.get(key);active=video;root.hidden=false;root.dataset.symbol=symbol;root.dataset.color='win';
   host.dataset.aimActive='true';video.hidden=false;video.currentTime=0;layout();
   let started=false;
   const start=()=>{

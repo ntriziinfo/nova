@@ -109,6 +109,25 @@ test('nebula win uses dedicated silent video and same 3 second lock',()=>{
  assert.equal(elements[0].dataset.symbol,'nebula');assert.equal(aim.busy,true);
  video.onplaying();assert.equal(sounds,1);const timer=[...timers.values()][0];assert.equal(timer.ms,3000);timer.fn();assert.equal(aim.busy,false);
 });
+
+test('bonus nebula confirmation switches back to the original video for character zones',()=>{
+ const {aim,elements,timers}=setup();let sounds=0;
+ aim.win(()=>sounds++,'nebula',{aTypeBonusGame:true});
+ const bonusVideo=elements.find(e=>e.src==='assets/media/nova/aim/bonus-nebula-win.mp4');
+ const zoneVideo=elements.find(e=>e.src==='assets/media/nova/aim/nebula-win.mp4');
+ assert.equal(bonusVideo.hidden,false);assert.equal(zoneVideo.hidden,true);
+ assert.equal(bonusVideo.muted,true);assert.equal(bonusVideo.loop,false);
+ bonusVideo.onplaying();assert.equal(sounds,1);assert.equal(aim.busy,true);
+ const timer=[...timers.values()][0];assert.equal(timer.ms,3000);timer.fn();assert.equal(aim.busy,false);
+ for(const zone of ['toto','sora','ura_sora']){
+  aim.win(()=>sounds++,'nebula',{zoneSpin:true,flowBefore:{phase:'art',zone}});
+  assert.equal(bonusVideo.hidden,true);assert.equal(bonusVideo.paused,true);assert.equal(zoneVideo.hidden,false);
+  aim.reset();
+ }
+ aim.win(()=>{},'seven',{aTypeBonusGame:true});
+ assert.equal(elements.find(e=>e.src?.includes('/seven-win.mp4')).hidden,false);
+ assert.equal(bonusVideo.hidden,true);
+});
 test('nebula audio uses dedicated source and continues independently from video',()=>{
  const html=fs.readFileSync('jag.html','utf8');let played=0;const audio={play(){played++;return Promise.resolve();}};
  const c=vm.createContext({debugFastSpinActive:false,aimWinAudios:new Set(),clearInterval(){},sfxOutputVolume:()=>.5,oneShotSoundCache:new Map([['assets/media/nova/aim/nebula-win.wav',{cloneNode:()=>audio}]])});
