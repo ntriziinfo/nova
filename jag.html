@@ -12876,6 +12876,7 @@ body{
     const completedLadderPresentation=normalState.ladderAwardPresentation?.started?normalState.ladderAwardPresentation:null;
     playStrongNovaSound(result,resolved);
     playWeakNovaSound(result,resolved);
+    playChanceSound(result,resolved);
     if(A_TYPE_MODE && result==="REPLAY")normalState.replayFree=true;
     if(A_TYPE_MODE && resolved.aTypeBonusReady)jagChainBonusHandoff=true;
     if(A_TYPE_MODE && resolved.normalInternal)normalState.internal=NovaNormal.normalize(resolved.normalInternal);
@@ -13148,6 +13149,7 @@ body{
     try{
     playStrongNovaSound(result,resolved);
     playWeakNovaSound(result,resolved);
+    playChanceSound(result,resolved);
     if(A_TYPE_MODE && result==="REPLAY")normalState.replayFree=true;
     const info = RESULT[result];
     showCzLamp(3,resolved);
@@ -13303,7 +13305,7 @@ body{
       }else{
         if(stockAdd > 0) showOverlay("+" + stockAdd + "SET");
         confetti(30);
-        playWinSound(false);
+        if(!resolved.chanceSoundPlayed)playWinSound(false);
       }
       return;
     }
@@ -16605,6 +16607,11 @@ body{
     if(result!=='STRONG_NOVA' || resolved?.strongNovaSoundPlayed)return;
     if(resolved)resolved.strongNovaSoundPlayed=true;
     playOneShotSound('assets/media/nova/strong_nova.wav',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
+  }
+  function playChanceSound(result,resolved){
+    if(!['CHANCE_A','CHANCE_B'].includes(result)||resolved?.chanceSoundPlayed)return;
+    if(resolved)resolved.chanceSoundPlayed=true;
+    playWinSound(false);
   }
   function czThirdStopSound(resolved,previousStage){
     if(!resolved?.czLamp)return '';
