@@ -2,12 +2,12 @@ import test from 'node:test';import assert from 'node:assert/strict';import fs f
 const html=fs.readFileSync('jag.html','utf8');
 const fn=name=>html.match(new RegExp('  function '+name+'\\([^]*?\\n  }'))[0];
 
-test('roulette BET uses NOVA RUSH confirmation once instead of normal start audio',()=>{
+test('roulette BET uses the SE and delayed voice mix once instead of normal start audio',()=>{
  const sounds=[];const c=vm.createContext({normalState:{},isLadderShutterSpin:()=>false,SPIN_SOUND_SRC:'normal.wav',sfxOutputVolume:()=>.5,playOneShotSound:src=>sounds.push(src)});
  vm.runInContext(fn('playSpinSound'),c);
  for(const initialStage of ['', 'entry']){
   sounds.length=0;c.playSpinSound({flowBefore:{phase:'art',entryStage:'roulette',initialStage},flowAfter:{phase:'art',entryStage:'confirmed'}});
-  assert.deepEqual(sounds,['assets/media/nova/aim/bonus-nebula-win.wav']);
+  assert.deepEqual(sounds,['assets/media/nova/aim/zone-roulette-confirm.wav']);
  }
  sounds.length=0;
  c.playSpinSound({flowBefore:{phase:'art',entryStage:'seven'},flowAfter:{phase:'art',entryStage:'roulette'}});
