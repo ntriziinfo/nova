@@ -1,6 +1,6 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
 const ctx=vm.createContext({});for(const f of ['nova-art.js','nova-balance.js'])vm.runInContext(fs.readFileSync(f,'utf8'),ctx);const a=ctx.NovaArt,b=ctx.NovaBalance;
-test('bonus stock calibration has current RTP evidence, preserving historical targets separately',()=>{
+test('initial character restriction keeps prior RTP evidence explicitly historical',()=>{
  const report=JSON.parse(fs.readFileSync('docs/role128-summary.json','utf8'));
  const current=JSON.parse(fs.readFileSync('docs/bonus-stock146-validation.json','utf8'));
  const measured=JSON.parse(fs.readFileSync('docs/s4-140-summary.json','utf8')).summary.horizons[30000].stopped;
@@ -9,11 +9,11 @@ test('bonus stock calibration has current RTP evidence, preserving historical ta
  for(let i=0;i<6;i++){
   const p=b.profile(i+1),evidence=report.settings[i];
   assert.equal(p.target,b.targets[i]);
-  assert.equal(p.verifiedModel,'bonus-stock146-30000g-complete-stop');
+  assert.equal(p.verifiedModel,'');
   const fresh=current.validation.summary[i].models.tuned.stopped;
   assert.equal(fresh.trials,i===5?2048:1024);assert.equal(fresh.rtp,fresh.paid/fresh.bet);
   assert.equal(p.measuredRtp,fresh.rtp);
-  assert.equal(p.previousVerifiedModel,i===3?'s4-140-30000g-complete-stop':'role128-30000g-complete-stop');
+  assert.equal(p.previousVerifiedModel,'bonus-stock146-30000g-complete-stop');
   assert.ok(Math.abs(p.target-(i===3?measured.rtp:evidence.stoppedRtp.value))<1e-6);assert.ok(p.scale>0);
  }
 });

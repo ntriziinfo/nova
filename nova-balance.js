@@ -1,7 +1,8 @@
 /* Normal AT only, net 4pt/G: current zone rules and estimates are in docs/zone-v2.md. */
 globalThis.NovaBalance=(()=>{
  // Prior S4: docs/s4-140-report.md, 6,000 independent 30,000G trials, +10,000pt stop.
- // Keep historical targets separate from v146 measurements; neither controls payout.
+ // v147 changes initial character frequencies and incidental reel payouts.
+ // Preserve v146 measurements as historical until the new mix is measured.
  const targets=[0.955124,0.979594,1.005842,1.004989,1.078051,1.138476];
  // docs/bonus-stock146-report.md: 30,000G, S1-5 1,024 trials, S6 2,048 trials; +10,000pt stop.
  const measuredRtp=[0.9602188684834841,0.9757030796953386,1.000431372155164,1.0123011321870161,1.0662271410142707,1.129729852858886];
@@ -58,7 +59,7 @@ globalThis.NovaBalance=(()=>{
  }
  const giruMean=(setting,ura=false)=>zoneMean(ura?'ura_giru':'giru',{setting});
  // Entry scales fitted with the normal-mode / ceiling / impurity / freeze simulation.
- function profile(setting){const i=Math.max(0,Math.min(5,Math.round(Number(setting)||1)-1)),scale=.21*(1+.12*NovaArt.settingBias[i]);return {setting:i+1,target:targets[i],measuredRtp:measuredRtp[i],scale,directDenom:NovaArt.defaults['direct'+(i+1)]/scale,czDenom:120/scale,strongDenom:600/scale,verifiedModel:'bonus-stock146-30000g-complete-stop',previousVerifiedModel:i===3?'s4-140-30000g-complete-stop':'role128-30000g-complete-stop'};}
+ function profile(setting){const i=Math.max(0,Math.min(5,Math.round(Number(setting)||1)-1)),scale=.21*(1+.12*NovaArt.settingBias[i]);return {setting:i+1,target:targets[i],measuredRtp:measuredRtp[i],scale,directDenom:NovaArt.defaults['direct'+(i+1)]/scale,czDenom:120/scale,strongDenom:600/scale,verifiedModel:'',previousVerifiedModel:'bonus-stock146-30000g-complete-stop'};}
  const profiles=targets.map((_,i)=>profile(i+1));
  return {targets,normal,profiles,profile,giruMean,zoneMean};
 })();

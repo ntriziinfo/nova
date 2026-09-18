@@ -12,3 +12,14 @@ test('confirmation stops cycling and lights the selected character including ura
  ctx.showZoneRoulette({entryStage:'confirmed',pendingZone:'ura_giru'});assert.equal(panel.textContent,'裏ギルゾーン確定！');assert.equal(body.dataset.zoneRouletteLamp,'giru1');assert.equal(timers.size,0);
  ctx.showZoneRoulette(null);assert.equal(panel.hidden,true);assert.equal(body.dataset.zoneRouletteLamp,'');
 });
+
+test('initial roulette omits ladder characters for unsupported amounts, ordinary roulette keeps them',()=>{
+ for(const quota of [300,350,500,750,1000,1200]){
+  ctx.showZoneRoulette({entryStage:'roulette',initialStage:'entry',entryQuota:String(quota)});
+  const seen=new Set();for(let i=0;i<12;i++){seen.add(body.dataset.zoneRouletteLamp);[...timers.values()][0]();}
+  const allowed=[300,500,1000].includes(quota);
+  assert.equal(seen.has('sosuke'),allowed);assert.equal(seen.has('giru1'),allowed);
+  for(const id of ['toto','urapi','sora1','ouma1'])assert.ok(seen.has(id));
+ }
+ ctx.showZoneRoulette(null);
+});
