@@ -8139,7 +8139,8 @@ body{
   const aimWinAudios=new Set();
   const oneShotSoundCache = new Map();
   const BELL_NAVI_VOICE_SRCS=['assets/media/nova/navi-left-sosuke.wav','assets/media/nova/navi-center-sosuke.wav','assets/media/nova/navi-right-sosuke.wav'];
-  for(const src of BELL_NAVI_VOICE_SRCS){const audio=new Audio(src);audio.preload='auto';oneShotSoundCache.set(src,audio);audio.load();}
+  const BELL_NAVI_COMPLETE_VOICE_SRC='assets/media/nova/navi-complete-sosuke.wav';
+  for(const src of [...BELL_NAVI_VOICE_SRCS,BELL_NAVI_COMPLETE_VOICE_SRC]){const audio=new Audio(src);audio.preload='auto';oneShotSoundCache.set(src,audio);audio.load();}
   for(const src of ['assets/media/nova/bell-navi.wav','assets/media/nova/direct-award.wav','assets/media/nova/weak-nova.wav','assets/media/nova/aim/nebula-win.wav','assets/media/nova/aim/bonus-nebula-win.wav','assets/media/nova/aim/zone-roulette-confirm.wav?v=20260919-roulette-voice','assets/media/nova/aim/seven-win.wav','assets/media/nova/aim/cue-blue.wav','assets/media/nova/aim/cue-red.wav','assets/media/nova/aim/cue-rainbow.wav','assets/media/nova/shutter.wav','assets/media/nova/shutter-close.wav','assets/media/nova/ladder-final-award.wav','assets/media/nova/ladder-final-award-under1000.wav']){const audio=new Audio(src);audio.preload='auto';oneShotSoundCache.set(src,audio);audio.load();}
   const resultEyecatchPreload = new Audio('assets/media/nova/result-eyecatch.wav');
   resultEyecatchPreload.preload='auto';resultEyecatchPreload.load();
@@ -15380,9 +15381,9 @@ body{
   function playBellNaviVoice(spin){
     if(debugFastSpinActive||speedToBonusActive||!spin?.bellNaviOrder)return;
     const stopped=spin.stopped||[],stage=stopped.filter(Boolean).length;
-    if(stage>=3||spin.bellNaviVoiceStage===stage)return;
+    if(stage>3||spin.bellNaviVoiceStage===stage)return;
     const reel=spin.bellNaviOrder.find(i=>!stopped[i]);
-    const src=BELL_NAVI_VOICE_SRCS[reel];
+    const src=stage===3?BELL_NAVI_COMPLETE_VOICE_SRC:BELL_NAVI_VOICE_SRCS[reel];
     if(!src)return;
     spin.bellNaviVoiceStage=stage;
     playOneShotSound(src,voiceOutputVolume(),{allowDuringPremiumConfirm:true});

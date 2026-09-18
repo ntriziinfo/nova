@@ -34,11 +34,11 @@ test('AUTO and takeover reuse the committed nav order without another random dra
 function voiceHarness(){
  const sounds=[],html=fs.readFileSync('jag.html','utf8');
  const c=vm.createContext({debugFastSpinActive:false,speedToBonusActive:false,voiceOutputVolume:()=>.6,playOneShotSound:(src,volume)=>sounds.push({src,volume})});
- vm.runInContext(html.match(/  const BELL_NAVI_VOICE_SRCS=[^\n]+/)[0]+'\n'+html.match(/  function playBellNaviVoice\([^]*?\n  }/)[0],c);
+ vm.runInContext(html.match(/  const BELL_NAVI_VOICE_SRCS=[^\n]+/)[0]+'\n'+html.match(/  const BELL_NAVI_COMPLETE_VOICE_SRC=[^\n]+/)[0]+'\n'+html.match(/  function playBellNaviVoice\([^]*?\n  }/)[0],c);
  return {c,sounds};
 }
 
-test('all six numbered orders announce BET, first and second landing exactly once for manual and AUTO',()=>{
+test('all six numbered orders announce directions then celebrate third landing exactly once for manual and AUTO',()=>{
  const sources=['left','center','right'].map(side=>'assets/media/nova/navi-'+side+'-sosuke.wav');
  for(let pick=0;pick<6;pick++)for(const autoStopAtStart of [false,true]){
   const {c,sounds}=voiceHarness(),spin={...bell(),autoStopAtStart,bellNaviOrder:copy(n.drawOrder(()=>(pick+.5)/6)),stopped:[false,false,false]};
@@ -48,13 +48,14 @@ test('all six numbered orders announce BET, first and second landing exactly onc
    assert.equal(sounds.length,index+1);assert.deepEqual(sounds[index],{src:sources[order[index]],volume:.6});
    spin.stopped[order[index]]=true;c.playBellNaviVoice(spin);c.playBellNaviVoice(spin);
   }
-  assert.equal(sounds.length,3);
+  assert.equal(sounds.length,4);
+  assert.deepEqual(sounds[3],{src:'assets/media/nova/navi-complete-sosuke.wav',volume:.6});
  }
 });
 
 test('voice follows the remaining displayed guide after wrong order, and stays silent without numbered navigation',()=>{
  const {c,sounds}=voiceHarness();
- for(const spin of [bell(),{rareNavi:{color:'red',mark:'!!'},stopped:[false,false,false]},null])c.playBellNaviVoice(spin);
+ for(const spin of [bell(),{...bell(),stopped:[true,true,true]},{rareNavi:{color:'red',mark:'!!'},stopped:[false,false,false]},{rareNavi:{color:'red',mark:'!!'},stopped:[true,true,true]},null])c.playBellNaviVoice(spin);
  assert.equal(sounds.length,0);
  const spin={...bell(),bellNaviOrder:[2,0,1],stopped:[true,false,false]};
  c.playBellNaviVoice(spin);assert.equal(sounds[0].src,'assets/media/nova/navi-right-sosuke.wav');
