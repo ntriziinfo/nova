@@ -20,13 +20,13 @@ test('all settings draw the same initial quota distribution with valid weights',
  }
 });
 
-test('extra sets keep their awarded quota, including old saved 300pt sets',()=>{
+test('saved extra stocks become special zones without granting legacy 150/300pt quotas',()=>{
  loadModel();const a=NovaArt;
  const legacy=a.normalize({phase:'art',payoutVersion:1,remaining:'1',sets:'2',burstVersion:2});
  assert.equal(legacy.setQuota,'300');
- const oldNext=a.step(legacy,{},()=>.999,'BELL');assert.equal(oldNext.flow.remaining,'300');assert.equal(oldNext.flow.sets,'1');
+ const oldNext=a.step(legacy,{},()=>.999,'BELL');assert.equal(oldNext.flow.remaining,'1');assert.equal(oldNext.flow.sets,'1');assert.equal(oldNext.flow.entryStage,'roulette');
  const fresh={...a.enter({},()=>.5),remaining:'1',sets:'2'};
- const next=a.step(fresh,{},()=>.999,'BELL');assert.equal(next.flow.remaining,'150');assert.equal(next.flow.sets,'1');assert.equal(next.flow.entryQuota,'750');
+ const next=a.step(fresh,{},()=>.999,'BELL');assert.equal(next.flow.remaining,'1');assert.equal(next.flow.sets,'1');assert.equal(next.flow.entryQuota,'750');assert.equal(next.flow.entryStage,'roulette');
 });
 
 test('entry quota never caps or changes later role rewards',()=>{

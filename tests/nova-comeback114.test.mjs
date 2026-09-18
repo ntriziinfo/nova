@@ -148,16 +148,17 @@ test('strong NOVA promotes weak lamps to upper zones; SUPER NOVA awards an ura z
  assert.equal(a.step(ura,{},()=>0,'FREEZE').result,'SUPER_NOVA');
 });
 
-test('a bonus interruption preserves unused comeback games or uses its awarded AT set',()=>{
+test('a bonus interruption preserves unused comeback games or revives with a special-zone stock',()=>{
  loadModel();const a=NovaArt,base={...a.beginComeback(a.enter({},()=>0)),comebackLeft:3,atLevel:5};
  const lost=a.afterBonus(base,{},0,()=>0);assert.equal(lost.comebackLeft,3);assert.equal(lost.atLevel,undefined);
- const won=a.afterBonus(base,{},1,()=>0);assert.equal(won.comebackLeft,0);assert.equal(won.remaining,String(a.defaults.initial));assert.equal(won.atLevel,undefined);
+ const won=a.afterBonus(base,{},1,()=>0);assert.equal(won.comebackLeft,0);assert.equal(won.remaining,'0');assert.equal(won.sets,'1');assert.equal(won.atLevel,undefined);
+ const next=a.step(won,{},()=>0);assert.equal(next.result,'BIG');assert.equal(next.flow.entryStage,'roulette');assert.equal(next.flow.comebackLeft,0);
 });
 
 test('existing set stock and reserved zones are consumed before end recovery',()=>{
  loadModel();const a=NovaArt;
  const base={...a.enter({},()=>0),remaining:'1',sets:'1'};
- const next=a.step(base,{},()=>.99,'BELL');assert.equal(next.flow.remaining,String(a.defaults.initial));assert.equal(next.flow.sets,'0');assert.equal(next.flow.comebackLeft,0);
+ const next=a.step(base,{},()=>.99,'BELL');assert.equal(next.result,'BIG');assert.equal(next.flow.entryStage,'roulette');assert.equal(next.flow.remaining,'1');assert.equal(next.flow.sets,'0');assert.equal(next.flow.comebackLeft,0);
  const reserved=a.step({...base,sets:'0',queuedZones:['toto']},{},()=>.99);assert.equal(reserved.flow.zone,'toto');assert.equal(reserved.flow.comebackLeft,0);
 });
 

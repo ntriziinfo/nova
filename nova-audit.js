@@ -14,9 +14,10 @@ globalThis.NovaAudit=(()=>{
       if(a.phase!==b.phase&&['cz','strong_cz'].includes(b.phase))out.push(b.phase==='cz'?'CZ開始':'強CZ開始');
       if(['cz','strong_cz'].includes(a.phase)&&a.phase!==b.phase)out.push('CZ終了'+(after.bonus.pending?' / BIG当選':''));
       if(!before.bonus.active&&after.bonus.active)out.push((after.bonus.tier==='upper'?'上位':'通常')+'BIG開始');
-      if(before.bonus.active&&!after.bonus.active)out.push('BIG終了 / 払出'+before.bonus.paid+'pt / AT獲得'+before.bonus.sets+'SET');
+      if(before.bonus.active&&!after.bonus.active)out.push('BIG終了 / 払出'+before.bonus.paid+'pt / '+(a.phase!=='art'&&num(before.bonus.sets)>0?'AT確定 / ':'')+'特化獲得'+(Math.max(0,num(before.bonus.sets)-(a.phase==='art'?0:1))+(before.bonus.zones?.length||0))+'個');
       if(!before.bonus.pending&&after.bonus.pending)out.push('BIG当選 / '+(after.bonus.source||''));
-      if(num(after.bonus.prepSets)>num(before.bonus.prepSets))out.push('BIG準備中 AT＋'+(num(after.bonus.prepSets)-num(before.bonus.prepSets))+'SET');
+      if(num(after.bonus.prepSets)>num(before.bonus.prepSets))out.push('BIG準備中 AT権利／特化ストック＋'+(num(after.bonus.prepSets)-num(before.bonus.prepSets))+'個');
+      if(num(a.sets)>num(b.sets)&&b.entryStage==='seven')out.push('特化ストック消化 / 赤7待機 / 残り'+b.sets+'個');
       if((after.bonus.prepZones?.length||0)>(before.bonus.prepZones?.length||0))out.push('BIG準備中 特化予約：'+after.bonus.prepZones.slice(before.bonus.prepZones?.length||0).join('・'));
       if(zone(a)!==zone(b)){if(zone(a))out.push(zone(a)+'ゾーン終了 / 確保'+(b.award??a.award??0)+'pt');if(zone(b))out.push(zone(b)+'ゾーン開始');}
       if(a.oumaPending&&!b.oumaPending)out.push(zone(a)+' フリーズ'+(b.zero?'当選 / 0G連':'非当選'));
@@ -32,7 +33,7 @@ globalThis.NovaAudit=(()=>{
     if(detail.burstEvent)out.push((after.flow?.burstType==='ura'?'裏チャレンジ':'爆発チャレンジ')+' '+({success:'成功',failure:'失敗',continue:'継続'}[detail.burstEvent]||detail.burstEvent));
     if(detail.burstReward?.type==='points')out.push('報酬＋'+detail.burstReward.points+'pt / '+(detail.burstReward.promoted?'Lv.'+detail.burstReward.level+'へ昇格':'昇格なし'));
     if(detail.burstReward?.type==='ura')out.push('裏ゾーン獲得：'+detail.burstReward.zone);
-    if(detail.artSetWon)out.push('ネビュラ揃い / AT＋1SET');
+    if(detail.artSetWon)out.push('ネビュラ揃い / '+(a.phase==='art'||num(after.bonus.sets)>1?'上乗せ特化ゾーン獲得':'AT確定'));
     if(detail.oumaFreeze)out.push('逢魔フリーズ');
     if(detail.aim)out.push((detail.aim.guide!==false?'狙え '+detail.aim.color:'ナビなし')+' / 内部'+detail.aim.result+' / 停止結果'+(detail.visualResult||detail.result));
     if(detail.message)out.push(detail.message);

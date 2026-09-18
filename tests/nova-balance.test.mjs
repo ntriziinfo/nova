@@ -35,12 +35,14 @@ test('BIG finishes by gross payout and do not guarantee ART',()=>{
   assert.equal(a.afterBonus(null,{},s.bonusArtSets).phase,'normal');
  }
 });
-test('specials award sets without consuming points; sets continue at the configured initial quota',()=>{
+test('bonus specials reserve ordinary zones after the first AT entitlement, without adding fixed points',()=>{
  let bonus={bonusKind:'BIG',paid:0,bonusArtSets:0};for(let i=0;i<2;i++)bonus={...bonus,...a.advanceBonus(bonus,true,0)};
  assert.equal(bonus.bonusArtSets,2);let flow=a.afterBonus(null,{},2,()=>.5);assert.equal(flow.remaining,'0');assert.equal(flow.sets,'1');
  while(flow.initialStage)flow=a.step(flow,{},()=>.5).flow;
  assert.equal(flow.remaining,String(a.drawEntryQuota({},()=>.5)));
- flow={...flow,remaining:'3'};flow=a.step(flow,{rare:0},()=>.99,'BELL').flow;assert.equal(flow.remaining,String(a.defaults.initial));assert.equal(flow.sets,'0');
+ flow={...flow,remaining:'3'};const entry=a.step(flow,{},()=>0);flow=entry.flow;assert.equal(entry.result,'BIG');assert.equal(flow.remaining,'3');assert.equal(flow.sets,'0');assert.equal(flow.entryStage,'roulette');
+ flow=a.step(flow,{},()=>.99,'MISS').flow;flow=a.prepareBet(flow,{},()=>0);assert.equal(flow.zone,'sosuke');assert.equal(flow.initialStage,'');
+ flow=a.step(flow,{},()=>.99).flow;flow=a.step(flow,{},()=>.99,'MISS').flow;assert.equal(flow.remaining,'53');assert.equal(flow.zone,'');
  flow={...flow,remaining:'3'};flow=a.step(flow,{rare:0},()=>.99,'BELL').flow;assert.equal(flow.phase,'art');assert.equal(flow.comebackLeft,5);
  const held=a.afterBonus({...a.enter(),remaining:'17',sets:'2'}, {},1);assert.equal(held.remaining,'17');assert.equal(held.sets,'3');
 });
