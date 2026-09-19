@@ -8152,6 +8152,9 @@ body{
     'assets/media/jag/cz_remaining_3.wav?v=count2','assets/media/jag/cz_remaining_2.wav?v=count2','assets/media/jag/cz_last.wav?v=count2'
   ]);
   const CHARACTER_VOICE_KEYS=new Set(CHARACTER_VOICE_SRCS.map(normalizedAudioSourceKey));
+  const CHARACTER_VOICE_BOOST_DB=10;
+  const characterVoiceConnections=new WeakMap();
+  let characterVoiceBus=null;
   for(const src of CHARACTER_VOICE_SRCS){const audio=new Audio(src);audio.preload='auto';oneShotSoundCache.set(src,audio);audio.load();}
   for(const src of ['assets/media/nova/bell-navi.wav','assets/media/nova/direct-award.wav','assets/media/nova/weak-nova.wav','assets/media/nova/aim/nebula-win.wav','assets/media/nova/aim/seven-win.wav','assets/media/nova/aim/cue-blue.wav','assets/media/nova/aim/cue-red.wav','assets/media/nova/aim/cue-rainbow.wav','assets/media/nova/shutter.wav','assets/media/nova/shutter-close.wav','assets/media/nova/ladder-final-award.wav','assets/media/nova/ladder-final-award-under1000.wav']){const audio=new Audio(src);audio.preload='auto';oneShotSoundCache.set(src,audio);audio.load();}
   const resultEyecatchPreload = new Audio('assets/media/nova/result-eyecatch.wav');
@@ -8631,6 +8634,40 @@ body{
   function voiceOutputVolume(scale=1){
     return audioOutputVolume(settings.voiceVolume, scale);
   }
+
+  function resumeCharacterVoiceAudio(){
+    const ctx=getAudio();
+    if(ctx.state!=="running")ctx.resume().catch(()=>{});
+    return ctx;
+  }
+
+  function prepareCharacterVoiceAudio(audio,src){
+    if(!CHARACTER_VOICE_KEYS.has(normalizedAudioSourceKey(src)))return;
+    const ctx=resumeCharacterVoiceAudio();
+    if(!characterVoiceBus){
+      const gain=ctx.createGain(),limiter=ctx.createDynamicsCompressor();
+      gain.gain.value=10**(CHARACTER_VOICE_BOOST_DB/20);
+      limiter.threshold.value=-1;limiter.knee.value=0;limiter.ratio.value=20;
+      limiter.attack.value=0;limiter.release.value=.05;
+      gain.connect(limiter);limiter.connect(ctx.destination);
+      characterVoiceBus=gain;
+    }
+    let connection=characterVoiceConnections.get(audio);
+    if(!connection){
+      connection={source:ctx.createMediaElementSource(audio),connected:false};
+      characterVoiceConnections.set(audio,connection);
+    }
+    if(!connection.connected){connection.source.connect(characterVoiceBus);connection.connected=true;}
+  }
+
+  function releaseCharacterVoiceAudio(audio){
+    const connection=characterVoiceConnections.get(audio);
+    if(connection?.connected){connection.source.disconnect();connection.connected=false;}
+  }
+
+  // Unlock during user input so AUTO and delayed continuation lines use the same bus.
+  window.addEventListener('pointerdown',resumeCharacterVoiceAudio,{capture:true,passive:true});
+  window.addEventListener('keydown',resumeCharacterVoiceAudio,{capture:true});
 
   function soundOutputVolume(src, volume){
     return CHARACTER_VOICE_KEYS.has(normalizedAudioSourceKey(src))?voiceOutputVolume():applyAudioSourceOutputScale(volume,src);
@@ -16386,7 +16423,7 @@ body{
       audio.aimFadeTimer=setInterval(()=>{
         audio.aimFadeGain=Math.max(0,1-(performance.now()-started)/3000);
         audio.volume=aimWinOutputVolume(audio);
-        if(audio.aimFadeGain===0){audio.pause();clearInterval(audio.aimFadeTimer);aimWinAudios.delete(audio);}
+        if(audio.aimFadeGain===0){audio.pause();clearInterval(audio.aimFadeTimer);aimWinAudios.delete(audio);releaseCharacterVoiceAudio(audio);}
       },50);
     }
   }
@@ -16396,8 +16433,9 @@ body{
     const src='assets/media/nova/aim/'+name+'-win.wav';
     const audio=oneShotSoundCache.get(src).cloneNode(true);
     audio.aimSoundSrc=src;audio.loop=false;audio.volume=aimWinOutputVolume(audio);aimWinAudios.add(audio);
-    audio.onended=audio.onerror=()=>{clearInterval(audio.aimFadeTimer);aimWinAudios.delete(audio);};
-    audio.play().catch(()=>aimWinAudios.delete(audio));
+    prepareCharacterVoiceAudio(audio,src);
+    audio.onended=audio.onerror=()=>{clearInterval(audio.aimFadeTimer);aimWinAudios.delete(audio);releaseCharacterVoiceAudio(audio);};
+    audio.play().catch(()=>{aimWinAudios.delete(audio);releaseCharacterVoiceAudio(audio);});
   }
   window.addEventListener('nova-aim-unlocked',()=>{updateDisplay();if(autoPlay)queueAutoStep(50);});
   function playOneShotSound(src, volume=sfxOutputVolume(), options={}){
@@ -16418,6 +16456,7 @@ body{
       }
       audio.currentTime = 0;
       audio.volume = soundOutputVolume(src, volume);
+      prepareCharacterVoiceAudio(audio,src);
       const p = audio.play();
       if(p && typeof p.catch === "function") p.catch(()=>{});
     }catch(e){}
@@ -16563,6 +16602,7 @@ body{
       }
       audio.currentTime = 0;
       audio.volume = soundOutputVolume(src, volume);
+      prepareCharacterVoiceAudio(audio,src);
       audio.onended = finish;
       audio.onerror = finish;
       if(!A_TYPE_MODE)bonusConfirmSoundTimer = setTimeout(finish, 8000);
