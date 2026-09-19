@@ -64,7 +64,7 @@ test('reset while waiting for visible playback cannot start an old sound when hi
 });
 test('consecutive wins create independent nonlooping audio instances',()=>{
  const html=fs.readFileSync('jag.html','utf8'),audios=[];
- const c=vm.createContext({debugFastSpinActive:false,aimWinAudios:new Set(),clearInterval(){},sfxOutputVolume:()=>.5,oneShotSoundCache:new Map([['assets/media/nova/aim/seven-win.wav',{cloneNode(){const a={play(){return Promise.resolve();}};audios.push(a);return a;}}]])});
+ const c=vm.createContext({debugFastSpinActive:false,aimWinAudios:new Set(),clearInterval(){},aimWinOutputVolume:()=>.5,oneShotSoundCache:new Map([['assets/media/nova/aim/seven-win.wav',{cloneNode(){const a={play(){return Promise.resolve();}};audios.push(a);return a;}}]])});
  vm.runInContext(html.match(/  function playAimSevenWinSound\([^]*?\n  }/)[0],c);
  c.playAimSevenWinSound();c.playAimSevenWinSound();assert.equal(audios.length,2);assert.notEqual(audios[0],audios[1]);assert.equal(audios[0].loop,false);assert.equal(c.aimWinAudios.size,2);audios[0].onended();assert.equal(c.aimWinAudios.size,1);
 });
@@ -194,13 +194,13 @@ test('bonus nebula confirmation switches back to the original video for characte
 });
 test('nebula audio uses dedicated source and continues independently from video',()=>{
  const html=fs.readFileSync('jag.html','utf8');let played=0;const audio={play(){played++;return Promise.resolve();}};
- const c=vm.createContext({debugFastSpinActive:false,aimWinAudios:new Set(),clearInterval(){},sfxOutputVolume:()=>.5,oneShotSoundCache:new Map([['assets/media/nova/aim/nebula-win.wav',{cloneNode:()=>audio}]])});
+ const c=vm.createContext({debugFastSpinActive:false,aimWinAudios:new Set(),clearInterval(){},aimWinOutputVolume:()=>.5,oneShotSoundCache:new Map([['assets/media/nova/aim/nebula-win.wav',{cloneNode:()=>audio}]])});
  vm.runInContext(html.match(/  function playAimSevenWinSound\([^]*?\n  }/)[0],c);c.playAimSevenWinSound('nebula');assert.equal(played,1);assert.equal(audio.loop,false);assert.equal(c.aimWinAudios.has(audio),true);
 });
 
 test('BET fades existing win sound over three seconds and repeat BET does not restart',()=>{
  const html=fs.readFileSync('jag.html','utf8');let now=0,frame,id=0;const audio={paused:false,ended:false,volume:.5,pause(){this.paused=true;}};
- const c=vm.createContext({aimWinAudios:new Set([audio]),performance:{now:()=>now},sfxOutputVolume:()=>.5,setInterval(fn){frame=fn;return ++id;},clearInterval(){}});
+ const c=vm.createContext({aimWinAudios:new Set([audio]),performance:{now:()=>now},aimWinOutputVolume:a=>.5*(a.aimFadeGain??1),setInterval(fn){frame=fn;return ++id;},clearInterval(){}});
  vm.runInContext(html.match(/  function fadeAimWinSoundsOnBet\([^]*?\n  }/)[0],c);
  c.fadeAimWinSoundsOnBet();now=1500;frame();assert.equal(audio.volume,.25);
  c.fadeAimWinSoundsOnBet();assert.equal(id,1);

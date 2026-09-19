@@ -15,7 +15,7 @@ test('preparation rares can award ART and a zone, misses cannot',()=>{
 });
 test('locked sound waits for ended, not a fixed timeout, and gates play',()=>{
  const timers=[];class Audio{constructor(src){this.src=src;}pause(){} getAttribute(){return this.src;}play(){return Promise.resolve();}}
- const ctx=vm.createContext({Audio,setTimeout:fn=>{timers.push(fn);return 1;},clearTimeout:()=>{},updateAutoUi:()=>{},applyAudioSourceOutputScale:x=>x,isCompleteTrialLocked:()=>false});
+ const ctx=vm.createContext({Audio,setTimeout:fn=>{timers.push(fn);return 1;},clearTimeout:()=>{},updateAutoUi:()=>{},soundOutputVolume:(src,x)=>x,isCompleteTrialLocked:()=>false});
  vm.runInContext(`const A_TYPE_MODE=true,debugFastSpinActive=false,speedToBonusActive=false,SEVEN_CONFIRM_SOUND_SRC='seven';let bonusConfirmSoundPlaying=false,bonusEndBgmPlaying=false,bonusConfirmSoundTimer=null,bonusConfirmSoundAudio=null;const oneShotSoundCache=new Map();`+fn('clearBonusConfirmSoundLock')+fn('playLockedBonusConfirmSound')+fn('canPlayCompleteTrial'),ctx);
  ctx.playLockedBonusConfirmSound('patrol',.5);assert.equal(ctx.canPlayCompleteTrial(),false);assert.equal(timers.length,0);
  vm.runInContext('bonusConfirmSoundAudio.onended()',ctx);assert.equal(ctx.canPlayCompleteTrial(),true);

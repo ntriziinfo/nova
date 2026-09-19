@@ -6811,9 +6811,9 @@ body{
             </div>
           </div>
           <div class="field">
-            <label>ボイス音量</label>
+            <label for="voiceVolume">ボイス音量（全キャラ共通）</label>
             <div class="audioVolumeControl">
-              <input id="voiceVolume" type="range" min="0" max="1" step="0.01" value="0.50" />
+              <input id="voiceVolume" type="range" min="0" max="1" step="0.01" value="0.50" title="押し順・狙え・ゾーン開始・継続・確定ボイスをまとめて調整" />
               <input id="voiceVolumeNumber" class="audioVolumeNumber" type="number" min="0" max="100" step="1" value="50" inputmode="numeric" aria-label="ボイス音量 %" />
             </div>
           </div>
@@ -8142,8 +8142,18 @@ body{
   const BELL_NAVI_COMPLETE_VOICE_SRC='assets/media/nova/navi-complete-sosuke.wav';
   const AIM_VOICE_SRCS={seven:['assets/media/nova/aim_seven_sosuke.wav','assets/media/nova/aim-seven-sora.wav','assets/media/nova/aim-seven-giru.wav'],nebula:['assets/media/nova/aim-nebula-giru.wav']};
   const ZONE_START_VOICE_SRCS={sora:'assets/media/nova/zone-start-sora.wav',ura_sora:'assets/media/nova/zone-start-ura-sora.wav',giru:'assets/media/nova/zone-start-giru.wav',ura_giru:'assets/media/nova/zone-start-ura-giru.wav'};
-  for(const src of [...Object.values(BELL_NAVI_VOICE_SRCS).flat(),BELL_NAVI_COMPLETE_VOICE_SRC,...Object.values(AIM_VOICE_SRCS).flat(),...Object.values(ZONE_START_VOICE_SRCS),'assets/media/nova/continue-sora.wav']){const audio=new Audio(src);audio.preload='auto';oneShotSoundCache.set(src,audio);audio.load();}
-  for(const src of ['assets/media/nova/bell-navi.wav','assets/media/nova/direct-award.wav','assets/media/nova/weak-nova.wav','assets/media/nova/aim/nebula-win.wav','assets/media/nova/aim/bonus-nebula-win.wav','assets/media/nova/aim/zone-roulette-confirm.wav?v=20260919-roulette-voice','assets/media/nova/aim/seven-win.wav','assets/media/nova/aim/cue-blue.wav','assets/media/nova/aim/cue-red.wav','assets/media/nova/aim/cue-rainbow.wav','assets/media/nova/shutter.wav','assets/media/nova/shutter-close.wav','assets/media/nova/ladder-final-award.wav','assets/media/nova/ladder-final-award-under1000.wav']){const audio=new Audio(src);audio.preload='auto';oneShotSoundCache.set(src,audio);audio.load();}
+  // Register new character lines here (or in the banks above). Keep originals
+  // at unity gain until the complete cast is ready for loudness normalization.
+  const CHARACTER_VOICE_SRCS=Object.freeze([
+    ...Object.values(BELL_NAVI_VOICE_SRCS).flat(),BELL_NAVI_COMPLETE_VOICE_SRC,
+    ...Object.values(AIM_VOICE_SRCS).flat(),...Object.values(ZONE_START_VOICE_SRCS),
+    'assets/media/nova/continue-sora.wav','assets/media/nova/bonus_confirm.wav',
+    'assets/media/nova/aim/bonus-nebula-win.wav','assets/media/nova/aim/zone-roulette-confirm.wav?v=20260919-roulette-voice',
+    'assets/media/jag/cz_remaining_3.wav?v=count2','assets/media/jag/cz_remaining_2.wav?v=count2','assets/media/jag/cz_last.wav?v=count2'
+  ]);
+  const CHARACTER_VOICE_KEYS=new Set(CHARACTER_VOICE_SRCS.map(normalizedAudioSourceKey));
+  for(const src of CHARACTER_VOICE_SRCS){const audio=new Audio(src);audio.preload='auto';oneShotSoundCache.set(src,audio);audio.load();}
+  for(const src of ['assets/media/nova/bell-navi.wav','assets/media/nova/direct-award.wav','assets/media/nova/weak-nova.wav','assets/media/nova/aim/nebula-win.wav','assets/media/nova/aim/seven-win.wav','assets/media/nova/aim/cue-blue.wav','assets/media/nova/aim/cue-red.wav','assets/media/nova/aim/cue-rainbow.wav','assets/media/nova/shutter.wav','assets/media/nova/shutter-close.wav','assets/media/nova/ladder-final-award.wav','assets/media/nova/ladder-final-award-under1000.wav']){const audio=new Audio(src);audio.preload='auto';oneShotSoundCache.set(src,audio);audio.load();}
   const resultEyecatchPreload = new Audio('assets/media/nova/result-eyecatch.wav');
   resultEyecatchPreload.preload='auto';resultEyecatchPreload.load();
   oneShotSoundCache.set('assets/media/nova/result-eyecatch.wav',resultEyecatchPreload);
@@ -8622,6 +8632,21 @@ body{
     return audioOutputVolume(settings.voiceVolume, scale);
   }
 
+  function soundOutputVolume(src, volume){
+    return CHARACTER_VOICE_KEYS.has(normalizedAudioSourceKey(src))?voiceOutputVolume():applyAudioSourceOutputScale(volume,src);
+  }
+
+  function aimWinOutputVolume(audio){
+    return soundOutputVolume(audio.aimSoundSrc,sfxOutputVolume())*(audio.aimFadeGain??1);
+  }
+
+  function applyCharacterVoiceOutputVolumes(){
+    for(const [src,audio] of oneShotSoundCache){
+      if(CHARACTER_VOICE_KEYS.has(normalizedAudioSourceKey(src)))audio.volume=voiceOutputVolume();
+    }
+    for(const audio of aimWinAudios)audio.volume=aimWinOutputVolume(audio);
+  }
+
   function voiceOutputVolumeForSource(scale=1, src=""){
     return voiceOutputVolume(scale * audioSourceOutputScale(src));
   }
@@ -8803,7 +8828,7 @@ body{
   }
 
   function applyAudioOutputVolumes(){
-    for(const audio of aimWinAudios)audio.volume=sfxOutputVolume()*(audio.aimFadeGain??1);
+    applyCharacterVoiceOutputVolumes();
     if(oumaIntroAudio)oumaIntroAudio.volume=sfxOutputVolumeForSource(SFX_OUTPUT_SCALE,'assets/media/nova/uuufa.wav');
     if(oumaReverseAudio)oumaReverseAudio.volume=sfxOutputVolumeForSource(SFX_OUTPUT_SCALE,"assets/media/nova/ouma-reverse-v2.wav");
     applyBgmOutputVolumes();
@@ -12027,6 +12052,7 @@ body{
       gekiatsuVideo.loop = false;
       gekiatsuVideo.volume = movieOutputVolumeForSource(MOVIE_OUTPUT_SCALE, GEKIATSU_VIDEO_SRC);
     }
+    applyCharacterVoiceOutputVolumes();
     updateAudioMuteButton();
     renderSettingTable();
   }
@@ -16359,7 +16385,7 @@ body{
       const started=performance.now();audio.aimFadeGain=1;
       audio.aimFadeTimer=setInterval(()=>{
         audio.aimFadeGain=Math.max(0,1-(performance.now()-started)/3000);
-        audio.volume=sfxOutputVolume()*audio.aimFadeGain;
+        audio.volume=aimWinOutputVolume(audio);
         if(audio.aimFadeGain===0){audio.pause();clearInterval(audio.aimFadeTimer);aimWinAudios.delete(audio);}
       },50);
     }
@@ -16369,7 +16395,7 @@ body{
     const name=symbol==='nebula'?(resolved.aTypeBonusGame?'bonus-nebula':'nebula'):'seven';
     const src='assets/media/nova/aim/'+name+'-win.wav';
     const audio=oneShotSoundCache.get(src).cloneNode(true);
-    audio.loop=false;audio.volume=sfxOutputVolume();aimWinAudios.add(audio);
+    audio.aimSoundSrc=src;audio.loop=false;audio.volume=aimWinOutputVolume(audio);aimWinAudios.add(audio);
     audio.onended=audio.onerror=()=>{clearInterval(audio.aimFadeTimer);aimWinAudios.delete(audio);};
     audio.play().catch(()=>aimWinAudios.delete(audio));
   }
@@ -16391,7 +16417,7 @@ body{
         try{ audio.load(); }catch(e){}
       }
       audio.currentTime = 0;
-      audio.volume = applyAudioSourceOutputScale(volume, src);
+      audio.volume = soundOutputVolume(src, volume);
       const p = audio.play();
       if(p && typeof p.catch === "function") p.catch(()=>{});
     }catch(e){}
@@ -16536,7 +16562,7 @@ body{
         try{ audio.load(); }catch(e){}
       }
       audio.currentTime = 0;
-      audio.volume = applyAudioSourceOutputScale(volume, src);
+      audio.volume = soundOutputVolume(src, volume);
       audio.onended = finish;
       audio.onerror = finish;
       if(!A_TYPE_MODE)bonusConfirmSoundTimer = setTimeout(finish, 8000);
