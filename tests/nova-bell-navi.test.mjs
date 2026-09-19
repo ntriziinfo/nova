@@ -38,18 +38,20 @@ function voiceHarness(){
  return {c,sounds};
 }
 
-test('all six numbered orders announce directions then celebrate third landing exactly once for manual and AUTO',()=>{
- const sources=['left','center','right'].map(side=>'assets/media/nova/navi-'+side+'-sosuke.wav');
- for(let pick=0;pick<6;pick++)for(const autoStopAtStart of [false,true]){
+test('all six orders keep the randomly selected character through manual and AUTO stops',()=>{
+ for(const [roll,character] of [[0,'sosuke'],[.499999,'sosuke'],[.5,'sora'],[.999999,'sora']])for(let pick=0;pick<6;pick++)for(const autoStopAtStart of [false,true]){
+  const sources=['left','center','right'].map(side=>'assets/media/nova/navi-'+side+'-'+character+'.wav');let draws=0;
   const {c,sounds}=voiceHarness(),spin={...bell(),autoStopAtStart,bellNaviOrder:copy(n.drawOrder(()=>(pick+.5)/6)),stopped:[false,false,false]};
-  c.playBellNaviVoice(spin);c.playBellNaviVoice(spin);
+  const rng=()=>{draws++;return roll;};
+  c.playBellNaviVoice(spin,rng);c.playBellNaviVoice(spin,rng);
   const order=copy(n.stopOrder(spin));
   for(let index=0;index<3;index++){
    assert.equal(sounds.length,index+1);assert.deepEqual(sounds[index],{src:sources[order[index]],volume:.6});
-   spin.stopped[order[index]]=true;c.playBellNaviVoice(spin);c.playBellNaviVoice(spin);
+   spin.stopped[order[index]]=true;c.playBellNaviVoice(spin,rng);c.playBellNaviVoice(spin,rng);
   }
   assert.equal(sounds.length,4);
   assert.deepEqual(sounds[3],{src:'assets/media/nova/navi-complete-sosuke.wav',volume:.6});
+  assert.equal(spin.bellNaviVoiceCharacter,character);assert.equal(draws,1);
  }
 });
 
@@ -58,7 +60,7 @@ test('voice follows the remaining displayed guide after wrong order, and stays s
  for(const spin of [bell(),{...bell(),stopped:[true,true,true]},{rareNavi:{color:'red',mark:'!!'},stopped:[false,false,false]},{rareNavi:{color:'red',mark:'!!'},stopped:[true,true,true]},null])c.playBellNaviVoice(spin);
  assert.equal(sounds.length,0);
  const spin={...bell(),bellNaviOrder:[2,0,1],stopped:[true,false,false]};
- c.playBellNaviVoice(spin);assert.equal(sounds[0].src,'assets/media/nova/navi-right-sosuke.wav');
+ c.playBellNaviVoice(spin,()=>0);assert.equal(sounds[0].src,'assets/media/nova/navi-right-sosuke.wav');
  spin.stopped[2]=true;c.playBellNaviVoice(spin);assert.equal(sounds[1].src,'assets/media/nova/navi-center-sosuke.wav');
  for(const flag of ['debugFastSpinActive','speedToBonusActive']){
   c[flag]=true;c.playBellNaviVoice({...bell(),bellNaviOrder:[0,1,2],stopped:[false,false,false]});c[flag]=false;

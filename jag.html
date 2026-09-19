@@ -6546,7 +6546,7 @@ body{
 <link rel="stylesheet" href="nova-direct-award.css?v=20260917-zone-award-134">
 <script src="nova-direct-award.js?v=20260917-navi-136"></script>
 <link rel="stylesheet" href="nova-aim-presentation.css?v=20260919-zone-entry-seven">
-<script src="nova-aim-presentation.js?v=20260919-fast-start"></script>
+<script src="nova-aim-presentation.js?v=20260920-sora-voice"></script>
 <script src="nova-art.js?v=20260918-initial-ladder-147"></script>
 <script src="nova-balance.js?v=20260918-initial-ladder-147"></script>
 <script src="nova-normal.js?v=20260917-s4-140"></script>
@@ -8138,9 +8138,9 @@ body{
   const bellZakoTimers = [null, null, null];
   const aimWinAudios=new Set();
   const oneShotSoundCache = new Map();
-  const BELL_NAVI_VOICE_SRCS=['assets/media/nova/navi-left-sosuke.wav','assets/media/nova/navi-center-sosuke.wav','assets/media/nova/navi-right-sosuke.wav'];
+  const BELL_NAVI_VOICE_SRCS={sosuke:['assets/media/nova/navi-left-sosuke.wav','assets/media/nova/navi-center-sosuke.wav','assets/media/nova/navi-right-sosuke.wav'],sora:['assets/media/nova/navi-left-sora.wav','assets/media/nova/navi-center-sora.wav','assets/media/nova/navi-right-sora.wav']};
   const BELL_NAVI_COMPLETE_VOICE_SRC='assets/media/nova/navi-complete-sosuke.wav';
-  for(const src of [...BELL_NAVI_VOICE_SRCS,BELL_NAVI_COMPLETE_VOICE_SRC]){const audio=new Audio(src);audio.preload='auto';oneShotSoundCache.set(src,audio);audio.load();}
+  for(const src of [...Object.values(BELL_NAVI_VOICE_SRCS).flat(),BELL_NAVI_COMPLETE_VOICE_SRC,'assets/media/nova/aim-seven-sora.wav','assets/media/nova/zone-start-sora.wav','assets/media/nova/zone-start-ura-sora.wav','assets/media/nova/continue-sora.wav']){const audio=new Audio(src);audio.preload='auto';oneShotSoundCache.set(src,audio);audio.load();}
   for(const src of ['assets/media/nova/bell-navi.wav','assets/media/nova/direct-award.wav','assets/media/nova/weak-nova.wav','assets/media/nova/aim/nebula-win.wav','assets/media/nova/aim/bonus-nebula-win.wav','assets/media/nova/aim/zone-roulette-confirm.wav?v=20260919-roulette-voice','assets/media/nova/aim/seven-win.wav','assets/media/nova/aim/cue-blue.wav','assets/media/nova/aim/cue-red.wav','assets/media/nova/aim/cue-rainbow.wav','assets/media/nova/shutter.wav','assets/media/nova/shutter-close.wav','assets/media/nova/ladder-final-award.wav','assets/media/nova/ladder-final-award-under1000.wav']){const audio=new Audio(src);audio.preload='auto';oneShotSoundCache.set(src,audio);audio.load();}
   const resultEyecatchPreload = new Audio('assets/media/nova/result-eyecatch.wav');
   resultEyecatchPreload.preload='auto';resultEyecatchPreload.load();
@@ -14985,8 +14985,10 @@ body{
       session.remain--;
     }
     if(!options?.oumaFailed){
+      const flowBeforeBet=normalState.flow;
       countTotalSpinIfNeeded(aTypeBonusActiveAtSpinStart);
       chargeSpinCost();
+      if(normalActiveAtSpinStart)playSoraZoneStartVoice(flowBeforeBet,normalState.flow);
     }
     if(!debugFastSpinActive){
       if(normalState.ladderAwardPresentation){normalState.ladderAwardPresentation.started=true;NovaLadder.award(normalState.ladderAwardPresentation.card.pt,true);}
@@ -15279,7 +15281,7 @@ body{
       currentSpin.aimWinPlayed=true;
       const resolved=currentSpin.resolved;
       const symbol=resolved.aim.symbol;
-      NovaAim.win(()=>playAimSevenWinSound(symbol,resolved),symbol,resolved);
+      NovaAim.win(()=>playAimSevenWinSound(symbol,resolved),symbol,resolved,()=>playSoraContinueVoice(symbol,resolved));
     }
     if(stopOrder===3 && currentSpin.resolved?.czLamp)playCzConfirmedSound(currentSpin.resolved);
     if(stopOrder===3)showZoneRoulette(currentSpin.resolved?.flowAfter);
@@ -15378,12 +15380,16 @@ body{
     playStopSound(i, stopOrder);
   }
 
-  function playBellNaviVoice(spin){
+  function playBellNaviVoice(spin,rng=Math.random){
     if(debugFastSpinActive||speedToBonusActive||!spin?.bellNaviOrder)return;
     const stopped=spin.stopped||[],stage=stopped.filter(Boolean).length;
     if(stage>3||spin.bellNaviVoiceStage===stage)return;
+    if(!BELL_NAVI_VOICE_SRCS[spin.bellNaviVoiceCharacter]){
+      const characters=Object.keys(BELL_NAVI_VOICE_SRCS);
+      spin.bellNaviVoiceCharacter=characters[Math.min(characters.length-1,Math.max(0,Math.floor(rng()*characters.length)))];
+    }
     const reel=spin.bellNaviOrder.find(i=>!stopped[i]);
-    const src=stage===3?BELL_NAVI_COMPLETE_VOICE_SRC:BELL_NAVI_VOICE_SRCS[reel];
+    const src=stage===3?BELL_NAVI_COMPLETE_VOICE_SRC:BELL_NAVI_VOICE_SRCS[spin.bellNaviVoiceCharacter][reel];
     if(!src)return;
     spin.bellNaviVoiceStage=stage;
     playOneShotSound(src,voiceOutputVolume(),{allowDuringPremiumConfirm:true});
@@ -15394,7 +15400,21 @@ body{
     if(resolved.aim)resolved.aim.guide ??= NovaAim.drawGuide(resolved.aim);
     const entryCue=NovaAim.bet(resolved.aim,resolved);
     if(entryCue)playOneShotSound('assets/media/nova/aim_seven_sosuke.wav',voiceOutputVolume(),{allowDuringPremiumConfirm:true});
-    else if(NovaAim.hasGuide(resolved.aim))playOneShotSound('assets/media/nova/aim/cue-'+resolved.aim.color+'.wav',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
+    else if(NovaAim.hasGuide(resolved.aim)){
+      playOneShotSound('assets/media/nova/aim/cue-'+resolved.aim.color+'.wav',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
+      if(resolved.aim.symbol==='seven'&&resolved.flowBefore?.phase==='art'&&['sora','ura_sora'].includes(resolved.flowBefore.zone))playOneShotSound('assets/media/nova/aim-seven-sora.wav',voiceOutputVolume(),{allowDuringPremiumConfirm:true});
+    }
+  }
+
+  function playSoraZoneStartVoice(before,after){
+    if(debugFastSpinActive||speedToBonusActive||before?.phase!=='art'||before.entryStage!=='confirmed'||after?.phase!=='art'||!['sora','ura_sora'].includes(after.zone)||after.entryStage)return;
+    const ura=after.ura||after.zone==='ura_sora';
+    playOneShotSound('assets/media/nova/zone-start-'+(ura?'ura-sora':'sora')+'.wav',voiceOutputVolume(),{allowDuringPremiumConfirm:true});
+  }
+
+  function playSoraContinueVoice(symbol,resolved){
+    if(debugFastSpinActive||speedToBonusActive||symbol!=='nebula'||resolved?.aTypeBonusGame||resolved?.flowBefore?.phase!=='art'||!['sora','ura_sora'].includes(resolved.flowBefore.zone))return;
+    playOneShotSound('assets/media/nova/continue-sora.wav',voiceOutputVolume(),{allowDuringPremiumConfirm:true});
   }
 
   function playZoneInternalConfirmedSound(resolved){

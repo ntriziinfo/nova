@@ -26,6 +26,28 @@ test('reset cancels pending playback and result callbacks',()=>{
  assert.equal(aim.busy,false);assert.equal(results,0);assert.equal(sounds,1);
 });
 
+test('delayed voice starts two seconds after video playback, once, and reset cancels it',()=>{
+ const t=setup();let sounds=0,voices=0;
+ t.aim.win(()=>sounds++,'nebula',{},()=>voices++);
+ assert.equal(t.timers.size,0);assert.equal(voices,0);
+ const video=t.elements.find(e=>e.src==='assets/media/nova/aim/nebula-win.mp4'),start=video.onplaying;
+ start();start();assert.equal(sounds,1);
+ const voiceTimers=[...t.timers.values()].filter(timer=>timer.ms===2000);
+ assert.equal(voiceTimers.length,1);assert.equal(voices,0);assert.equal(t.aim.busy,true);
+ voiceTimers[0].fn();assert.equal(voices,1);assert.equal(t.aim.busy,true);
+ [...t.timers.values()].find(timer=>timer.ms===3000).fn();assert.equal(t.aim.busy,false);
+ t.aim.win(()=>{},'nebula',{},()=>voices++);video.onplaying();
+ const pending=[...t.timers.values()].filter(timer=>timer.ms===2000).at(-1);t.aim.reset();pending.fn();assert.equal(voices,1);
+});
+
+test('hidden playback schedules the delayed voice; a newer win invalidates the old voice',()=>{
+ const t=setup();let voices=0;t.hide();
+ t.aim.win(()=>{},'nebula',{},()=>voices++);
+ const old=[...t.timers.values()].find(timer=>timer.ms===2000);
+ assert.ok(old);assert.equal(voices,0);
+ t.aim.win(()=>{},'seven');old.fn();assert.equal(voices,0);
+});
+
 test('hidden seven and nebula wins keep the full lock without waiting for video playback',()=>{
  for(const symbol of ['seven','nebula'])for(const hiddenBefore of [true,false]){
   const t=setup();let sounds=0,results=0;if(hiddenBefore)t.hide();

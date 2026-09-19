@@ -3,7 +3,7 @@ globalThis.NovaAim=(()=>{
  const {setTimeout,clearTimeout}=globalThis.NovaClock||globalThis;
  let host,root,active=null;
  const videos=new Map();
- let winLocked=false,winTimer=null,winToken=0,afterWinCallbacks=[],pendingStart=null;
+ let winLocked=false,winTimer=null,winVoiceTimer=null,winToken=0,afterWinCallbacks=[],pendingStart=null;
  function init(){
   if(root)return true;
   host=document.getElementById('machine');if(!host)return false;
@@ -57,16 +57,16 @@ globalThis.NovaAim=(()=>{
   if(!active||!root||root.hidden||root.dataset.failed==='true')return;
   root.dataset.failed='true';playSound();
   // Let the miss remain visible before a final-game result or AUTO advances.
-  const token=++winToken;winLocked=true;clearTimeout(winTimer);
+  const token=++winToken;winLocked=true;clearTimeout(winTimer);clearTimeout(winVoiceTimer);
   winTimer=setTimeout(()=>{
    if(token!==winToken)return;winLocked=false;
    const callbacks=afterWinCallbacks;afterWinCallbacks=[];callbacks.forEach(fn=>fn());
    window.dispatchEvent(new Event('nova-aim-unlocked'));
   },650);
  }
- function win(playSound,symbol='seven',resolved={}){
+ function win(playSound,symbol='seven',resolved={},playDelayedVoice=null){
   if(!init())return;
-  hide();const token=++winToken;winLocked=true;clearTimeout(winTimer);
+  hide();const token=++winToken;winLocked=true;clearTimeout(winTimer);clearTimeout(winVoiceTimer);
   const key=symbol==='nebula'?(resolved.aTypeBonusGame?'bonus-nebula-win':'nebula-win'):'win';
   const video=videos.get(key);active=video;root.hidden=false;root.dataset.symbol=symbol;root.dataset.color='win';
   host.dataset.aimActive='true';video.hidden=false;video.currentTime=0;layout();
@@ -74,6 +74,7 @@ globalThis.NovaAim=(()=>{
   const start=()=>{
    if(started||token!==winToken)return;started=true;pendingStart=null;video.onplaying=null;video.onerror=null;
    playSound();
+   if(playDelayedVoice)winVoiceTimer=setTimeout(()=>{winVoiceTimer=null;if(token===winToken)playDelayedVoice();},2000);
    winTimer=setTimeout(()=>{
     if(token!==winToken)return;winLocked=false;
     const callbacks=afterWinCallbacks;afterWinCallbacks=[];callbacks.forEach(fn=>fn());
@@ -87,7 +88,7 @@ globalThis.NovaAim=(()=>{
   if(document.hidden)start();
  }
  function afterWin(fn){if(winLocked)afterWinCallbacks.push(fn);else fn();}
- function reset(){winToken++;pendingStart=null;clearTimeout(winTimer);winLocked=false;afterWinCallbacks=[];for(const video of videos.values()){video.onplaying=null;video.onerror=null;}hide();}
+ function reset(){winToken++;pendingStart=null;clearTimeout(winTimer);clearTimeout(winVoiceTimer);winLocked=false;afterWinCallbacks=[];for(const video of videos.values()){video.onplaying=null;video.onerror=null;}hide();}
  if(typeof document!=='undefined'){
   document.addEventListener('DOMContentLoaded',init);
   document.addEventListener('visibilitychange',()=>{if(document.hidden)pendingStart?.();});
