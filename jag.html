@@ -8142,8 +8142,8 @@ body{
   const BELL_NAVI_COMPLETE_VOICE_SRC='assets/media/nova/navi-complete-sosuke.wav';
   const AIM_VOICE_SRCS={seven:['assets/media/nova/aim_seven_sosuke.wav','assets/media/nova/aim-seven-sora.wav','assets/media/nova/aim-seven-giru.wav'],nebula:['assets/media/nova/aim-nebula-giru.wav']};
   const ZONE_START_VOICE_SRCS={sora:'assets/media/nova/zone-start-sora.wav',ura_sora:'assets/media/nova/zone-start-ura-sora.wav',giru:'assets/media/nova/zone-start-giru.wav',ura_giru:'assets/media/nova/zone-start-ura-giru.wav'};
-  // Register new character lines here (or in the banks above). Keep originals
-  // at unity gain until the complete cast is ready for loudness normalization.
+  // Register new character lines here (or in the banks above). Game copies are
+  // loudness-normalized offline; preserve supplied originals separately.
   const CHARACTER_VOICE_SRCS=Object.freeze([
     ...Object.values(BELL_NAVI_VOICE_SRCS).flat(),BELL_NAVI_COMPLETE_VOICE_SRC,
     ...Object.values(AIM_VOICE_SRCS).flat(),...Object.values(ZONE_START_VOICE_SRCS),
