@@ -156,20 +156,22 @@ test('cue rewinds while hidden and reuses the prepared first frame on the next B
  aim.bet(null,entry);assert.equal(seeks.length,1);assert.equal(video.paused,false);assert.equal(video.hidden,false);
 });
 
-test('zone entry plays the existing aim-seven voice once on BET; colored zone cues keep their own audio',()=>{
+test('zone entry and colored seven cues play one character voice on BET with their existing presentation',()=>{
  const t=setup(),sounds=[];
- const context=vm.createContext({NovaAim:t.aim,debugFastSpinActive:false,voiceOutputVolume:()=>.6,sfxOutputVolume:()=>.4,playOneShotSound:(src,volume)=>sounds.push({src,volume})});
+ const context=vm.createContext({NovaAim:t.aim,debugFastSpinActive:false,speedToBonusActive:false,voiceOutputVolume:()=>.6,sfxOutputVolume:()=>.4,playOneShotSound:(src,volume)=>sounds.push({src,volume})});
  const html=fs.readFileSync('jag.html','utf8');
+ vm.runInContext(html.match(/  const AIM_VOICE_SRCS=[^\n]+/)[0]+'\n'+html.match(/  function playRandomAimVoice\([^]*?\n  }/)[0],context);
  vm.runInContext(html.match(/  function playAimBetPresentation\([^]*?\n  }/)[0],context);
- context.playAimBetPresentation({flowBefore:{phase:'art',entryStage:'seven'},flowAfter:{phase:'art',entryStage:'roulette'}});
+ context.playAimBetPresentation({flowBefore:{phase:'art',entryStage:'seven'},flowAfter:{phase:'art',entryStage:'roulette'}},()=>0);
  assert.deepEqual(sounds,[{src:'assets/media/nova/aim_seven_sosuke.wav',volume:.6}]);
- context.playAimBetPresentation({aim:{symbol:'seven',color:'red',guide:true},flowBefore:{phase:'art',zone:'toto'}});
+ context.playAimBetPresentation({aim:{symbol:'seven',color:'red',guide:true},flowBefore:{phase:'art',zone:'toto'}},()=>.9);
  assert.deepEqual(sounds[1],{src:'assets/media/nova/aim/cue-red.wav',volume:.4});
+ assert.deepEqual(sounds[2],{src:'assets/media/nova/aim-seven-giru.wav',volume:.6});
  const entry=t.elements.find(e=>e.src?.includes('/zone-entry-seven.webm'));
  assert.equal(entry.hidden,true);assert.equal(entry.paused,true);assert.equal(t.elements[0].dataset.zoneEntry,'false');
- context.playAimBetPresentation({flowBefore:{phase:'art'},flowAfter:{phase:'art',entryStage:'seven'}});assert.equal(sounds.length,2);
+ context.playAimBetPresentation({flowBefore:{phase:'art'},flowAfter:{phase:'art',entryStage:'seven'}});assert.equal(sounds.length,3);
  context.debugFastSpinActive=true;
- context.playAimBetPresentation({flowBefore:{phase:'art',entryStage:'seven'},flowAfter:{phase:'art',entryStage:'roulette'}});assert.equal(sounds.length,2);
+ context.playAimBetPresentation({flowBefore:{phase:'art',entryStage:'seven'},flowAfter:{phase:'art',entryStage:'roulette'}});assert.equal(sounds.length,3);
 });
 
 test('bonus nebula confirmation switches back to the original video for character zones',()=>{
