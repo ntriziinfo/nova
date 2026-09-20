@@ -8138,16 +8138,18 @@ body{
   const bellZakoTimers = [null, null, null];
   const aimWinAudios=new Set();
   const oneShotSoundCache = new Map();
-  const BELL_NAVI_VOICE_SRCS={sosuke:['assets/media/nova/navi-left-sosuke.wav','assets/media/nova/navi-center-sosuke.wav','assets/media/nova/navi-right-sosuke.wav'],sora:['assets/media/nova/navi-left-sora.wav','assets/media/nova/navi-center-sora.wav','assets/media/nova/navi-right-sora.wav'],giru:['assets/media/nova/navi-left-giru.wav','assets/media/nova/navi-center-giru.wav','assets/media/nova/navi-right-giru.wav']};
+  const BELL_NAVI_VOICE_SRCS={sosuke:['assets/media/nova/navi-left-sosuke.wav','assets/media/nova/navi-center-sosuke.wav','assets/media/nova/navi-right-sosuke.wav'],sora:['assets/media/nova/navi-left-sora.wav','assets/media/nova/navi-center-sora.wav','assets/media/nova/navi-right-sora.wav'],giru:['assets/media/nova/navi-left-giru.wav','assets/media/nova/navi-center-giru.wav','assets/media/nova/navi-right-giru.wav'],toto:['assets/media/nova/navi-left-toto.wav','assets/media/nova/navi-center-toto.wav','assets/media/nova/navi-right-toto.wav']};
   const BELL_NAVI_COMPLETE_VOICE_SRC='assets/media/nova/navi-complete-sosuke.wav';
-  const AIM_VOICE_SRCS={seven:['assets/media/nova/aim_seven_sosuke.wav','assets/media/nova/aim-seven-sora.wav','assets/media/nova/aim-seven-giru.wav'],nebula:['assets/media/nova/aim-nebula-giru.wav']};
-  const ZONE_START_VOICE_SRCS={sora:'assets/media/nova/zone-start-sora.wav',ura_sora:'assets/media/nova/zone-start-ura-sora.wav',giru:'assets/media/nova/zone-start-giru.wav',ura_giru:'assets/media/nova/zone-start-ura-giru.wav'};
+  const AIM_VOICE_SRCS={seven:['assets/media/nova/aim_seven_sosuke.wav','assets/media/nova/aim-seven-sora.wav','assets/media/nova/aim-seven-giru.wav','assets/media/nova/aim-seven-toto.wav'],nebula:['assets/media/nova/aim-nebula-giru.wav','assets/media/nova/aim-nebula-toto.wav']};
+  const SEVEN_ZONE_VOICE_SRCS={sosuke:AIM_VOICE_SRCS.seven[0],sora:AIM_VOICE_SRCS.seven[1],giru:AIM_VOICE_SRCS.seven[2],toto:AIM_VOICE_SRCS.seven[3]};
+  const ZONE_START_VOICE_SRCS={sora:'assets/media/nova/zone-start-sora.wav',ura_sora:'assets/media/nova/zone-start-ura-sora.wav',giru:'assets/media/nova/zone-start-giru.wav',ura_giru:'assets/media/nova/zone-start-ura-giru.wav',toto:'assets/media/nova/zone-start-toto.wav'};
+  const ZONE_CONTINUE_VOICE_SRCS={sora:'assets/media/nova/continue-sora.wav',toto:'assets/media/nova/continue-toto.wav'};
   // Register new character lines here (or in the banks above). Game copies are
   // loudness-normalized offline; preserve supplied originals separately.
   const CHARACTER_VOICE_SRCS=Object.freeze([
     ...Object.values(BELL_NAVI_VOICE_SRCS).flat(),BELL_NAVI_COMPLETE_VOICE_SRC,
     ...Object.values(AIM_VOICE_SRCS).flat(),...Object.values(ZONE_START_VOICE_SRCS),
-    'assets/media/nova/continue-sora.wav','assets/media/nova/bonus_confirm.wav',
+    ...Object.values(ZONE_CONTINUE_VOICE_SRCS),'assets/media/nova/bonus_confirm.wav',
     'assets/media/nova/aim/bonus-nebula-win.wav','assets/media/nova/aim/zone-roulette-confirm.wav?v=20260919-roulette-voice',
     'assets/media/jag/cz_remaining_3.wav?v=count2','assets/media/jag/cz_remaining_2.wav?v=count2','assets/media/jag/cz_last.wav?v=count2'
   ]);
@@ -15347,7 +15349,7 @@ body{
       currentSpin.aimWinPlayed=true;
       const resolved=currentSpin.resolved;
       const symbol=resolved.aim.symbol;
-      NovaAim.win(()=>playAimSevenWinSound(symbol,resolved),symbol,resolved,()=>playSoraContinueVoice(symbol,resolved));
+      NovaAim.win(()=>playAimSevenWinSound(symbol,resolved),symbol,resolved,()=>playZoneContinueVoice(symbol,resolved));
     }
     if(stopOrder===3 && currentSpin.resolved?.czLamp)playCzConfirmedSound(currentSpin.resolved);
     if(stopOrder===3)showZoneRoulette(currentSpin.resolved?.flowAfter);
@@ -15469,6 +15471,15 @@ body{
     playOneShotSound(src,voiceOutputVolume(),{allowDuringPremiumConfirm:true});
   }
 
+  function playSevenAimVoice(resolved,rng=Math.random){
+    if(debugFastSpinActive||speedToBonusActive)return;
+    const flow=resolved?.flowBefore;
+    const zone=!resolved?.aTypeBonusGame&&flow?.phase==='art'&&!flow.entryStage?String(flow.zone||'').replace(/^ura_/,''):'';
+    if(!zone){playRandomAimVoice('seven',rng);return;}
+    const src=SEVEN_ZONE_VOICE_SRCS[zone];
+    if(src)playOneShotSound(src,voiceOutputVolume(),{allowDuringPremiumConfirm:true});
+  }
+
   function playAimBetPresentation(resolved,rng=Math.random){
     if(debugFastSpinActive)return;
     if(resolved.aim)resolved.aim.guide ??= NovaAim.drawGuide(resolved.aim);
@@ -15476,7 +15487,8 @@ body{
     if(entryCue)playRandomAimVoice('seven',rng);
     else if(NovaAim.hasGuide(resolved.aim)){
       playOneShotSound('assets/media/nova/aim/cue-'+resolved.aim.color+'.wav',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
-      if(resolved.aim.symbol==='seven'||(resolved.aim.symbol==='nebula'&&resolved.aTypeBonusGame&&resolved.initialBonusGame))playRandomAimVoice(resolved.aim.symbol,rng);
+      if(resolved.aim.symbol==='seven')playSevenAimVoice(resolved,rng);
+      else if(resolved.aim.symbol==='nebula'&&resolved.aTypeBonusGame&&resolved.initialBonusGame)playRandomAimVoice('nebula',rng);
     }
   }
 
@@ -15487,9 +15499,10 @@ body{
     if(src)playOneShotSound(src,voiceOutputVolume(),{allowDuringPremiumConfirm:true});
   }
 
-  function playSoraContinueVoice(symbol,resolved){
-    if(debugFastSpinActive||speedToBonusActive||symbol!=='nebula'||resolved?.aTypeBonusGame||resolved?.flowBefore?.phase!=='art'||!['sora','ura_sora'].includes(resolved.flowBefore.zone))return;
-    playOneShotSound('assets/media/nova/continue-sora.wav',voiceOutputVolume(),{allowDuringPremiumConfirm:true});
+  function playZoneContinueVoice(symbol,resolved){
+    if(debugFastSpinActive||speedToBonusActive||symbol!=='nebula'||resolved?.aTypeBonusGame||resolved?.flowBefore?.phase!=='art')return;
+    const src=ZONE_CONTINUE_VOICE_SRCS[String(resolved.flowBefore.zone||'').replace(/^ura_/,'')];
+    if(src)playOneShotSound(src,voiceOutputVolume(),{allowDuringPremiumConfirm:true});
   }
 
   function playZoneInternalConfirmedSound(resolved){

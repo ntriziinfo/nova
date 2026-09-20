@@ -22,7 +22,8 @@ const target = { integratedLufs: -12, truePeakDbtp: -1, dualMono: true };
 const html = fs.readFileSync(path.join(root, 'jag.html'), 'utf8');
 const context = vm.createContext({ normalizedAudioSourceKey: src => src.split('?')[0] });
 vm.runInContext(html.slice(html.indexOf('  const BELL_NAVI_VOICE_SRCS='), html.indexOf('  for(const src of CHARACTER_VOICE_SRCS)')) + ';globalThis.sources=CHARACTER_VOICE_SRCS;', context);
-const sources = [...new Set(Array.from(context.sources, src => src.split('?')[0]))];
+const sources = [...new Set(Array.from(context.sources, src => src.split('?')[0]))].filter(src => !args.includes('--only') || src.includes(option('--only')));
+if (!sources.length) throw new Error('No registered voice matches --only.');
 const hash = file => createHash('sha256').update(fs.readFileSync(file)).digest('hex');
 function command(exe, argv) {
   const result = spawnSync(exe, argv, { encoding: 'utf8', windowsHide: true, maxBuffer: 8 * 1024 * 1024 });
@@ -49,7 +50,7 @@ const report = { target, measurementSilencePaddingSeconds: 1, method: 'Measured 
 for (const src of sources) {
   const input = path.join(sourceDir, src), output = path.join(outputDir, src);
   const format = probe(input), before = measure(input), inputHash = hash(input);
-  if (format.codec !== 'pcm_s16le') throw new Error(`Unexpected source format: ${src}`);
+  if (!['pcm_s16le', 'pcm_s24le'].includes(format.codec)) throw new Error(`Unexpected source format: ${src}`);
   fs.mkdirSync(path.dirname(output), { recursive: true });
   let gainDb = target.integratedLufs - Number(before.input_i), after;
   // Extra 0.1 dB accommodates resampling. Limiting only affects peaks that would exceed the ceiling.
@@ -63,10 +64,10 @@ for (const src of sources) {
     gainDb += difference;
   }
   const outputFormat = probe(output);
-  if (JSON.stringify(format) !== JSON.stringify(outputFormat)) throw new Error(`Duration/format changed: ${src}`);
+  if (JSON.stringify({ ...format, codec: 'pcm_s16le' }) !== JSON.stringify(outputFormat)) throw new Error(`Duration/format changed: ${src}`);
   if (Math.abs(Number(after.input_i) - target.integratedLufs) > 0.5 || Number(after.input_tp) > target.truePeakDbtp + 0.1) throw new Error(`Loudness outside tolerance: ${src}: ${JSON.stringify(levels(after))}`);
   if (hash(input) !== inputHash) throw new Error(`Original changed: ${src}`);
-  const row = { src, ...format, gainDb: Number(gainDb.toFixed(2)), sourceSha256: inputHash, outputSha256: hash(output), before: levels(before), after: levels(after) };
+  const row = { src, ...format, outputCodec: outputFormat.codec, gainDb: Number(gainDb.toFixed(2)), sourceSha256: inputHash, outputSha256: hash(output), before: levels(before), after: levels(after) };
   report.files.push(row);
   console.log(JSON.stringify({ src, before: row.before, after: row.after }));
 }
