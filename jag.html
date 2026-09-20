@@ -8142,6 +8142,7 @@ body{
   const BELL_NAVI_COMPLETE_VOICE_SRC='assets/media/nova/navi-complete-sosuke.wav';
   const AIM_VOICE_SRCS={seven:['assets/media/nova/aim_seven_sosuke.wav','assets/media/nova/aim-seven-sora.wav','assets/media/nova/aim-seven-giru.wav','assets/media/nova/aim-seven-toto.wav'],nebula:['assets/media/nova/aim-nebula-giru.wav','assets/media/nova/aim-nebula-toto.wav']};
   const SEVEN_ZONE_VOICE_SRCS={sosuke:AIM_VOICE_SRCS.seven[0],sora:AIM_VOICE_SRCS.seven[1],giru:AIM_VOICE_SRCS.seven[2],toto:AIM_VOICE_SRCS.seven[3]};
+  const NEBULA_ZONE_VOICE_SRCS={giru:AIM_VOICE_SRCS.nebula[0],toto:AIM_VOICE_SRCS.nebula[1]};
   const ZONE_START_VOICE_SRCS={sora:'assets/media/nova/zone-start-sora.wav',ura_sora:'assets/media/nova/zone-start-ura-sora.wav',giru:'assets/media/nova/zone-start-giru.wav',ura_giru:'assets/media/nova/zone-start-ura-giru.wav',toto:'assets/media/nova/zone-start-toto.wav'};
   const ZONE_CONTINUE_VOICE_SRCS={sora:'assets/media/nova/continue-sora.wav',toto:'assets/media/nova/continue-toto.wav'};
   // Register new character lines here (or in the banks above). Game copies are
@@ -15480,6 +15481,19 @@ body{
     if(src)playOneShotSound(src,voiceOutputVolume(),{allowDuringPremiumConfirm:true});
   }
 
+  function playNebulaAimVoice(resolved,rng=Math.random){
+    if(debugFastSpinActive||speedToBonusActive)return;
+    if(resolved?.aTypeBonusGame){
+      if(resolved.initialBonusGame)playRandomAimVoice('nebula',rng);
+      return;
+    }
+    const flow=resolved?.flowBefore;
+    if(flow?.phase!=='art'||!flow.zone||flow.entryStage)return;
+    const src=NEBULA_ZONE_VOICE_SRCS[String(flow.zone).replace(/^ura_/,'')];
+    if(src)playOneShotSound(src,voiceOutputVolume(),{allowDuringPremiumConfirm:true});
+    else playRandomAimVoice('nebula',rng);
+  }
+
   function playAimBetPresentation(resolved,rng=Math.random){
     if(debugFastSpinActive)return;
     if(resolved.aim)resolved.aim.guide ??= NovaAim.drawGuide(resolved.aim);
@@ -15488,7 +15502,7 @@ body{
     else if(NovaAim.hasGuide(resolved.aim)){
       playOneShotSound('assets/media/nova/aim/cue-'+resolved.aim.color+'.wav',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
       if(resolved.aim.symbol==='seven')playSevenAimVoice(resolved,rng);
-      else if(resolved.aim.symbol==='nebula'&&resolved.aTypeBonusGame&&resolved.initialBonusGame)playRandomAimVoice('nebula',rng);
+      else if(resolved.aim.symbol==='nebula')playNebulaAimVoice(resolved,rng);
     }
   }
 

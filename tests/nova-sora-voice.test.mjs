@@ -5,8 +5,8 @@ import vm from 'node:vm';
 const html=fs.readFileSync('jag.html','utf8');
 function setup(){
  const sounds=[],c=vm.createContext({debugFastSpinActive:false,speedToBonusActive:false,voiceOutputVolume:()=>.6,sfxOutputVolume:()=>.4,playOneShotSound:(src,volume)=>sounds.push({src,volume}),NovaAim:{drawGuide:()=>true,hasGuide:a=>!!a&&a.guide!==false,bet:()=>false}});
- for(const name of ['AIM_VOICE_SRCS','SEVEN_ZONE_VOICE_SRCS','ZONE_START_VOICE_SRCS','ZONE_CONTINUE_VOICE_SRCS'])vm.runInContext(html.match(new RegExp('  const '+name+'=[^\\n]+'))[0],c);
- for(const name of ['playRandomAimVoice','playSevenAimVoice','playAimBetPresentation','playZoneStartVoice','playZoneContinueVoice'])vm.runInContext(html.match(new RegExp('  function '+name+'\\([^]*?\\n  }'))[0],c);
+ for(const name of ['AIM_VOICE_SRCS','SEVEN_ZONE_VOICE_SRCS','NEBULA_ZONE_VOICE_SRCS','ZONE_START_VOICE_SRCS','ZONE_CONTINUE_VOICE_SRCS'])vm.runInContext(html.match(new RegExp('  const '+name+'=[^\\n]+'))[0],c);
+ for(const name of ['playRandomAimVoice','playSevenAimVoice','playNebulaAimVoice','playAimBetPresentation','playZoneStartVoice','playZoneContinueVoice'])vm.runInContext(html.match(new RegExp('  function '+name+'\\([^]*?\\n  }'))[0],c);
  vm.runInContext(fs.readFileSync('nova-art.js','utf8'),c);
  return {c,sounds};
 }
@@ -16,10 +16,30 @@ test('zone seven cues match the character on hits and misses, including reverse 
   const {c,sounds}=setup();let draws=0;c.playAimBetPresentation({aim:{symbol:'seven',color,guide:true,result},flowBefore:{phase:'art',zone,ura}},()=>{draws++;return .99;});
   assert.deepEqual(sounds,[{src:'assets/media/nova/aim/cue-'+color+'.wav',volume:.4},{src:'assets/media/nova/'+voice+'.wav',volume:.6}]);assert.equal(draws,0);
  }
- for(const [symbol,zone,guide] of [['nebula','sora',true],['nebula','toto',true],['seven','sora',false]]){
+ for(const [symbol,zone,guide] of [['seven','toto',false],['seven','sora',false]]){
   const {c,sounds}=setup();let draws=0;c.playAimBetPresentation({aim:{symbol,color:'blue',guide},flowBefore:{phase:'art',zone}},()=>{draws++;return .5;});assert.equal(draws,0);
  }
 });
+test('zone nebula guides play the matching voice or registered fallback on BET, including misses and reverse zones',()=>{
+ for(const [zone,ura] of [['toto',false],['sora',false],['sora',true],['ura_sora',false],['giru',false],['ura_giru',false]])for(const color of ['blue','red','rainbow'])for(const result of ['NEBULA','MISS'])for(const roll of [0,.999999]){
+  const {c,sounds}=setup();let draws=0;
+  c.playAimBetPresentation({aim:{symbol:'nebula',color,result,guide:true},flowBefore:{phase:'art',zone,ura}},()=>{draws++;return roll;});
+  const dedicated=zone==='toto'?'toto':zone.includes('giru')?'giru':'';
+  const character=dedicated||(roll<.5?'giru':'toto');
+  assert.deepEqual(sounds,[{src:'assets/media/nova/aim/cue-'+color+'.wav',volume:.4},{src:'assets/media/nova/aim-nebula-'+character+'.wav',volume:.6}]);
+  assert.equal(draws,dedicated?0:1);
+ }
+});
+
+test('hidden zone nebula guides stay silent; simulation and non-zone states cannot trigger a zone voice',()=>{
+ const {c,sounds}=setup();
+ for(const zone of ['toto','sora','ura_sora'])c.playAimBetPresentation({aim:{symbol:'nebula',color:'blue',result:'MISS',guide:false},flowBefore:{phase:'art',zone}});
+ assert.deepEqual(sounds,[]);
+ for(const flowBefore of [{phase:'normal',zone:'toto'},{phase:'art'},{phase:'art',zone:'toto',entryStage:'seven'}])c.playNebulaAimVoice({flowBefore});
+ for(const flag of ['debugFastSpinActive','speedToBonusActive']){c[flag]=true;c.playNebulaAimVoice({flowBefore:{phase:'art',zone:'toto'}});c[flag]=false;}
+ assert.deepEqual(sounds,[]);
+});
+
 test('initial BIG nebula guides choose Giru or Toto equally on BET and hide voices with an absent guide',()=>{
  for(const [roll,character] of [[0,'giru'],[.499999,'giru'],[.5,'toto'],[.999999,'toto']])for(const result of ['NEBULA','MISS'])for(const color of ['blue','red','rainbow']){
   const {c,sounds}=setup();c.playAimBetPresentation({aTypeBonusGame:true,initialBonusGame:true,aim:{symbol:'nebula',result,color,guide:true}},()=>roll);
