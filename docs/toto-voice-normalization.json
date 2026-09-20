@@ -6,152 +6,152 @@
   },
   "measurementSilencePaddingSeconds": 1,
   "method": "Measured gain with 192 kHz look-ahead peak limiting; compensated latency; render each pass from original",
-  "sourceRevision": "92e693a51b0fd75ea2c3034c5f160da379b9f6f5",
+  "sourceRevision": "bf673b0ff3fcf30e953313b30dcb47b7e11ee159",
   "files": [
     {
       "src": "assets/media/nova/navi-left-toto.wav",
-      "codec": "pcm_s24le",
-      "rate": 48000,
+      "codec": "pcm_s16le",
+      "rate": 44100,
       "channels": 2,
-      "samples": 94208,
+      "samples": 26624,
       "outputCodec": "pcm_s16le",
-      "gainDb": 15.92,
-      "sourceSha256": "cdf1abb506db71fef50d23f1a5418584eb474937db34c9aa743d8cf8394dd432",
-      "outputSha256": "1790cb4206b9ebca0bb90c3992a77f426385de7eb9f2bec19c94e8d220111b17",
+      "gainDb": 15.06,
+      "sourceSha256": "88086acac02994304f553ebee5361f1f53a29cebac1e0bd4f72ed3ebfd418362",
+      "outputSha256": "895bbc822c169e6f8359068881a83e7b03311d0b05d6d9355766e67529cb20b4",
       "before": {
-        "integratedLufs": -26.86,
+        "integratedLufs": -26.33,
         "truePeakDbtp": -13.24,
         "loudnessRangeLu": 0
       },
       "after": {
-        "integratedLufs": -12.13,
+        "integratedLufs": -12.11,
         "truePeakDbtp": -1.1,
         "loudnessRangeLu": 0
       }
     },
     {
       "src": "assets/media/nova/navi-center-toto.wav",
-      "codec": "pcm_s24le",
-      "rate": 48000,
+      "codec": "pcm_s16le",
+      "rate": 44100,
       "channels": 2,
-      "samples": 88064,
+      "samples": 24576,
       "outputCodec": "pcm_s16le",
-      "gainDb": 18.38,
-      "sourceSha256": "c23f794dce85b02421a8bca835810d47139eb2dbfed107c2ac7aa161507299eb",
-      "outputSha256": "5e83930457f1e4a4a5deccfe7366f3930263f1ee59a763fe5a148ce78e4314f1",
+      "gainDb": 19.97,
+      "sourceSha256": "88add746031db2ab714aaf5d7c9c21c4c959296b37c48dc72f3648dd23f999fe",
+      "outputSha256": "f840b124aff4471934d2230ed979f8fee1ec58df19ee0779076f5fa65f8cc899",
       "before": {
-        "integratedLufs": -26.41,
+        "integratedLufs": -26.75,
         "truePeakDbtp": -12.65,
         "loudnessRangeLu": 0
       },
       "after": {
-        "integratedLufs": -12.13,
+        "integratedLufs": -12.12,
         "truePeakDbtp": -1.1,
         "loudnessRangeLu": 0
       }
     },
     {
       "src": "assets/media/nova/navi-right-toto.wav",
-      "codec": "pcm_s24le",
-      "rate": 48000,
+      "codec": "pcm_s16le",
+      "rate": 44100,
       "channels": 2,
-      "samples": 84992,
+      "samples": 38912,
       "outputCodec": "pcm_s16le",
-      "gainDb": 18.71,
-      "sourceSha256": "0505db97940a138e34c0cc8c2ed8126060d2cbd12373d9c4b7ded4394d03a606",
-      "outputSha256": "c13089a470da4c870c36d72bd993c45bb7665ecdee63a2f1ad2c2ed1dddb17dc",
+      "gainDb": 17.71,
+      "sourceSha256": "c722f942a33c667ecd6ba942e6da8fb0383a4d34c79415bfc806a2f81d30a436",
+      "outputSha256": "dcbdf1fab1454211f4ce3346f9eb3c47d6c46e5846d7df73fb3239af82a000ed",
       "before": {
-        "integratedLufs": -30.71,
-        "truePeakDbtp": -18.9,
+        "integratedLufs": -29.71,
+        "truePeakDbtp": -18.91,
         "loudnessRangeLu": 0
       },
       "after": {
-        "integratedLufs": -12.1,
-        "truePeakDbtp": -1.1,
+        "integratedLufs": -12.01,
+        "truePeakDbtp": -1.2,
         "loudnessRangeLu": 0
       }
     },
     {
       "src": "assets/media/nova/aim-seven-toto.wav",
-      "codec": "pcm_s24le",
-      "rate": 48000,
+      "codec": "pcm_s16le",
+      "rate": 44100,
       "channels": 2,
-      "samples": 133120,
+      "samples": 57344,
       "outputCodec": "pcm_s16le",
-      "gainDb": 14.88,
-      "sourceSha256": "792c459524b8209dee9001ec20f61365c65f7613b6f68dbd2cc5e36b2f792263",
-      "outputSha256": "1249b38360c9895a43b1793af803726e90b6dd12bdfa3b9480cc4e0e91476057",
+      "gainDb": 14.91,
+      "sourceSha256": "c1350e8e55a2eea53f0bd8e5e35e9b652510cd79a2789b9e031cae86dcdd7db6",
+      "outputSha256": "a2c73004b60541cb279d8e11bf264ddcb227c979e3ba059dad0e1266671ecd21",
       "before": {
-        "integratedLufs": -26.52,
-        "truePeakDbtp": -13.56,
-        "loudnessRangeLu": 1
+        "integratedLufs": -26.61,
+        "truePeakDbtp": -13.55,
+        "loudnessRangeLu": 0
       },
       "after": {
-        "integratedLufs": -12.11,
+        "integratedLufs": -12.07,
         "truePeakDbtp": -1.1,
-        "loudnessRangeLu": 1
+        "loudnessRangeLu": 0
       }
     },
     {
       "src": "assets/media/nova/aim-nebula-toto.wav",
-      "codec": "pcm_s24le",
-      "rate": 48000,
+      "codec": "pcm_s16le",
+      "rate": 44100,
       "channels": 2,
-      "samples": 99328,
+      "samples": 65536,
       "outputCodec": "pcm_s16le",
-      "gainDb": 14.86,
-      "sourceSha256": "e53c50b54cca8071c84b76c88881be899d2736a79f029ebb860898834eb3fba9",
-      "outputSha256": "ce532775666fcae6edcb8817e336b8eb66004f09f38ff8d01c98ebc0a5b61077",
+      "gainDb": 14.78,
+      "sourceSha256": "16c18278e5fcbc9e026363038c4abf4cc077b202044becf7036e62b0681cdb7d",
+      "outputSha256": "8b942772d8268a837f5f61f73c98ab0b09a28c3f3b5aa1dadd918ec2bde5749f",
       "before": {
-        "integratedLufs": -26.55,
+        "integratedLufs": -26.6,
         "truePeakDbtp": -13.11,
-        "loudnessRangeLu": 0.3
+        "loudnessRangeLu": 0
       },
       "after": {
-        "integratedLufs": -12.05,
+        "integratedLufs": -11.99,
         "truePeakDbtp": -1.1,
-        "loudnessRangeLu": 0.3
+        "loudnessRangeLu": 0
       }
     },
     {
       "src": "assets/media/nova/zone-start-toto.wav",
-      "codec": "pcm_s24le",
-      "rate": 48000,
+      "codec": "pcm_s16le",
+      "rate": 44100,
       "channels": 2,
-      "samples": 76800,
+      "samples": 38912,
       "outputCodec": "pcm_s16le",
-      "gainDb": 16.45,
-      "sourceSha256": "818a3c2a98bb1bbfb3d3f3196c30d6e9fe8619fe8f0cc95b2a67ed768b1b3595",
-      "outputSha256": "9607c922d9daa3e8cc49545574002b4e6bfc127067a3f93769e24187421d459f",
+      "gainDb": 15.24,
+      "sourceSha256": "bb58ebcbd36069a12be6f31f72565f7f1a95dfba2d0a6d0fa1016c7d89905117",
+      "outputSha256": "4c48ae989e6ba1fe6dac9277d3dda5cbc6a74601c0cb44fbbf7e532c8937283d",
       "before": {
-        "integratedLufs": -28.45,
+        "integratedLufs": -27.24,
         "truePeakDbtp": -17.62,
         "loudnessRangeLu": 0
       },
       "after": {
-        "integratedLufs": -12.01,
-        "truePeakDbtp": -1.17,
+        "integratedLufs": -12.04,
+        "truePeakDbtp": -2.38,
         "loudnessRangeLu": 0
       }
     },
     {
       "src": "assets/media/nova/continue-toto.wav",
-      "codec": "pcm_s24le",
-      "rate": 48000,
+      "codec": "pcm_s16le",
+      "rate": 44100,
       "channels": 2,
-      "samples": 89088,
+      "samples": 38912,
       "outputCodec": "pcm_s16le",
-      "gainDb": 17.51,
-      "sourceSha256": "45a84e5a56903432e6f67d073ea6ab19359bebd3cbc7b5a4a1dc274de5683fe8",
-      "outputSha256": "e16a21dedb5ec072343fcfb1b813e518e9f0a1375c581c0c7599954215885ee9",
+      "gainDb": 17.18,
+      "sourceSha256": "cbf7d5635c67443eab3f4870133471a9eba63bfa19338a6128219d4b207ab53c",
+      "outputSha256": "48e64cd958de5d7d327ae5009a0ac3f1814c6a417db113073b0a25f563934a4a",
       "before": {
-        "integratedLufs": -29.51,
+        "integratedLufs": -29.18,
         "truePeakDbtp": -18.5,
         "loudnessRangeLu": 0
       },
       "after": {
-        "integratedLufs": -12.01,
-        "truePeakDbtp": -1.1,
+        "integratedLufs": -12.04,
+        "truePeakDbtp": -1.32,
         "loudnessRangeLu": 0
       }
     }
