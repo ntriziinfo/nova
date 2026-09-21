@@ -1,0 +1,264 @@
+{
+  "target": {
+    "integratedLufs": -12,
+    "truePeakDbtp": -1,
+    "dualMono": true
+  },
+  "measurementSilencePaddingSeconds": 1,
+  "method": "Measured gain with 192 kHz look-ahead peak limiting; compensated latency; render each pass from original",
+  "sourceRevision": "5acebd5f61f31fe2a967efe1f8c0e27424e9ed30",
+  "files": [
+    {
+      "src": "assets/media/nova/navi-left-ouma.wav",
+      "codec": "pcm_s16le",
+      "rate": 44100,
+      "channels": 2,
+      "samples": 43072,
+      "outputCodec": "pcm_s16le",
+      "gainDb": -2.21,
+      "sourceSha256": "fb9512c106f840221b1bf7d199ed34c13168f8e74439bcdc620ea68618c01fdd",
+      "outputSha256": "a60f427e48169647d1cd65d5c0c9bcd5be1826ebb6fc21b2a250de37c58dddaf",
+      "before": {
+        "integratedLufs": -9.79,
+        "truePeakDbtp": 0.13,
+        "loudnessRangeLu": 0
+      },
+      "after": {
+        "integratedLufs": -11.99,
+        "truePeakDbtp": -2.09,
+        "loudnessRangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/navi-center-ouma.wav",
+      "codec": "pcm_s16le",
+      "rate": 44100,
+      "channels": 2,
+      "samples": 37440,
+      "outputCodec": "pcm_s16le",
+      "gainDb": 0.32,
+      "sourceSha256": "193f0b0ccfa4c2dcbdff4561e933cff1c26473a9875a49ffa52ad345277f5fb9",
+      "outputSha256": "e12d933a991c83e3baf7ed513c5ad60c46a305c54502416eb138d73f95260a66",
+      "before": {
+        "integratedLufs": -11.65,
+        "truePeakDbtp": 0.13,
+        "loudnessRangeLu": 0
+      },
+      "after": {
+        "integratedLufs": -12.08,
+        "truePeakDbtp": -1.09,
+        "loudnessRangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/navi-right-ouma.wav",
+      "codec": "pcm_s16le",
+      "rate": 44100,
+      "channels": 2,
+      "samples": 36416,
+      "outputCodec": "pcm_s16le",
+      "gainDb": 0.75,
+      "sourceSha256": "3196a5f812c05f46d75927d2fa05a728a1b16b8077c3f8fdce87a07b2e22d187",
+      "outputSha256": "7def16d4e55475cd8a92daaeda3e6a525e844fb25e1a338b15b4a39ac1e864b7",
+      "before": {
+        "integratedLufs": -12.52,
+        "truePeakDbtp": -0.46,
+        "loudnessRangeLu": 0
+      },
+      "after": {
+        "integratedLufs": -12.13,
+        "truePeakDbtp": -1.1,
+        "loudnessRangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/navi-complete-ouma.wav",
+      "codec": "pcm_s16le",
+      "rate": 44100,
+      "channels": 2,
+      "samples": 49152,
+      "outputCodec": "pcm_s16le",
+      "gainDb": 7.15,
+      "sourceSha256": "60ec604ffa9722c528b1b8a4956c18499df1ba4cd3ae674394356dcb3bfee286",
+      "outputSha256": "f4fc853d3242d8c7f1814b39f713231ea8d33ba2d0d2bb1092187503b349c58d",
+      "before": {
+        "integratedLufs": -13.41,
+        "truePeakDbtp": -0.28,
+        "loudnessRangeLu": 0
+      },
+      "after": {
+        "integratedLufs": -12.13,
+        "truePeakDbtp": -1.1,
+        "loudnessRangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/aim-seven-ouma.wav",
+      "codec": "pcm_s16le",
+      "rate": 44100,
+      "channels": 2,
+      "samples": 125952,
+      "outputCodec": "pcm_s16le",
+      "gainDb": -2.47,
+      "sourceSha256": "39490bac0da78f0006f3c706ac95f0b6e886517d78240b047d190fe7a496979b",
+      "outputSha256": "59e21854afcf610d0c0c3600b3535dec1ef95694743686c8a637f1a5579800e7",
+      "before": {
+        "integratedLufs": -9.53,
+        "truePeakDbtp": 0.01,
+        "loudnessRangeLu": 3
+      },
+      "after": {
+        "integratedLufs": -12,
+        "truePeakDbtp": -2.46,
+        "loudnessRangeLu": 2.9
+      }
+    },
+    {
+      "src": "assets/media/nova/aim-nebula-ouma.wav",
+      "codec": "pcm_s16le",
+      "rate": 44100,
+      "channels": 2,
+      "samples": 147456,
+      "outputCodec": "pcm_s16le",
+      "gainDb": -0.07,
+      "sourceSha256": "a258d381c5216e96e391ef93ddb9a7911217056df1d6b6d63a3a23571ab13e1e",
+      "outputSha256": "36efa246a7d2540b573f227fa962d6c35cbba9229d225e5af80793eaffed65d3",
+      "before": {
+        "integratedLufs": -11.93,
+        "truePeakDbtp": -0.11,
+        "loudnessRangeLu": 3.7
+      },
+      "after": {
+        "integratedLufs": -12.06,
+        "truePeakDbtp": -1.1,
+        "loudnessRangeLu": 3.7
+      }
+    },
+    {
+      "src": "assets/media/nova/zone-start-ouma.wav",
+      "codec": "pcm_s16le",
+      "rate": 44100,
+      "channels": 2,
+      "samples": 124416,
+      "outputCodec": "pcm_s16le",
+      "gainDb": 1.14,
+      "sourceSha256": "ac4af9b827d8772464ef00c8cf67e256430f77d07f5d203286bd6d412948eeac",
+      "outputSha256": "79aa9656467d9af33e8cd560af6594b651c9984eacf33bad589623275dc376bd",
+      "before": {
+        "integratedLufs": -12.65,
+        "truePeakDbtp": -0.18,
+        "loudnessRangeLu": 7.2
+      },
+      "after": {
+        "integratedLufs": -12.07,
+        "truePeakDbtp": -1.1,
+        "loudnessRangeLu": 6.8
+      }
+    },
+    {
+      "src": "assets/media/nova/zone-start-ura-ouma.wav",
+      "codec": "pcm_s16le",
+      "rate": 44100,
+      "channels": 2,
+      "samples": 195072,
+      "outputCodec": "pcm_s16le",
+      "gainDb": -0.27,
+      "sourceSha256": "b437ce595d144b3e1cbbb2d5b8da8bd717945a5ec4af49b820bd570a3a2bc338",
+      "outputSha256": "da2e5c03348464c0712ce844b4fbe200f8c7827bf9a1f9b2f011c9a7dd76c2bf",
+      "before": {
+        "integratedLufs": -11.73,
+        "truePeakDbtp": -0.18,
+        "loudnessRangeLu": 8
+      },
+      "after": {
+        "integratedLufs": -12.04,
+        "truePeakDbtp": -1.1,
+        "loudnessRangeLu": 8
+      }
+    },
+    {
+      "src": "assets/media/nova/aim-nova-ouma.wav",
+      "codec": "pcm_s16le",
+      "rate": 44100,
+      "channels": 2,
+      "samples": 146432,
+      "outputCodec": "pcm_s16le",
+      "gainDb": -2.96,
+      "sourceSha256": "15b7137754ac2ba45f1145ae705af137d879887be44fe1e956602c5e87e76451",
+      "outputSha256": "d24b28c560a035257c64346291882243ab3ae74470c73f980bcb26882a26f1c0",
+      "before": {
+        "integratedLufs": -9.04,
+        "truePeakDbtp": -0.25,
+        "loudnessRangeLu": 5.5
+      },
+      "after": {
+        "integratedLufs": -11.99,
+        "truePeakDbtp": -3.21,
+        "loudnessRangeLu": 5.6
+      }
+    },
+    {
+      "src": "assets/media/nova/nova-win-1-ouma.wav",
+      "codec": "pcm_s16le",
+      "rate": 44100,
+      "channels": 2,
+      "samples": 151552,
+      "outputCodec": "pcm_s16le",
+      "gainDb": 1.96,
+      "sourceSha256": "b9167492bcfd4c31336da96ccb6123ef6d8735fec9a5b97ada638ca897c56ceb",
+      "outputSha256": "3a78d23dbd67bb6dbb079d3af0cabb2e30d609067e23040a8740e844e88e1ddf",
+      "before": {
+        "integratedLufs": -13.58,
+        "truePeakDbtp": -0.01,
+        "loudnessRangeLu": 3.5
+      },
+      "after": {
+        "integratedLufs": -12.11,
+        "truePeakDbtp": -1.1,
+        "loudnessRangeLu": 3.4
+      }
+    },
+    {
+      "src": "assets/media/nova/nova-win-2-ouma.wav",
+      "codec": "pcm_s16le",
+      "rate": 44100,
+      "channels": 2,
+      "samples": 146944,
+      "outputCodec": "pcm_s16le",
+      "gainDb": 7.78,
+      "sourceSha256": "9993c23ff76733969f2e835c1144fd46afd5c03e881e852a81e55c5811d64be8",
+      "outputSha256": "78703b531997ece86f68914b5727ba56a56ff46d1b6149b9fb7d109ac2003a1c",
+      "before": {
+        "integratedLufs": -19.05,
+        "truePeakDbtp": -4.26,
+        "loudnessRangeLu": 6.8
+      },
+      "after": {
+        "integratedLufs": -12.07,
+        "truePeakDbtp": -1.1,
+        "loudnessRangeLu": 5.8
+      }
+    },
+    {
+      "src": "assets/media/nova/nova-win-3-ouma.wav",
+      "codec": "pcm_s16le",
+      "rate": 44100,
+      "channels": 2,
+      "samples": 191488,
+      "outputCodec": "pcm_s16le",
+      "gainDb": 13.87,
+      "sourceSha256": "4cdaf243fe85bc7110b643e22ba417a82140f65f424c722966f724e68b25ac65",
+      "outputSha256": "068c3aa478b8c6a99944782fe0429c1910244c7f3f3e0f4610459b0a5900cb09",
+      "before": {
+        "integratedLufs": -24.99,
+        "truePeakDbtp": -10.31,
+        "loudnessRangeLu": 2
+      },
+      "after": {
+        "integratedLufs": -12.11,
+        "truePeakDbtp": -1.1,
+        "loudnessRangeLu": 2
+      }
+    }
+  ]
+}
