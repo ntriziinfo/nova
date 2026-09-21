@@ -34,7 +34,7 @@ test('AUTO and takeover reuse the committed nav order without another random dra
 function voiceHarness(){
  const sounds=[],html=fs.readFileSync('jag.html','utf8');
  const c=vm.createContext({debugFastSpinActive:false,speedToBonusActive:false,voiceOutputVolume:()=>.6,playOneShotSound:(src,volume)=>sounds.push({src,volume})});
- vm.runInContext(html.match(/  const BELL_NAVI_VOICE_SRCS=[^\n]+/)[0]+'\n'+html.match(/  const BELL_NAVI_COMPLETE_VOICE_SRC=[^\n]+/)[0]+'\n'+html.match(/  function playBellNaviVoice\([^]*?\n  }/)[0],c);
+ vm.runInContext(html.match(/  const BELL_NAVI_VOICE_SRCS=[^\n]+/)[0]+'\n'+html.match(/  const BELL_NAVI_COMPLETE_VOICE_SRCS=[^\n]+/)[0]+'\n'+html.match(/  function playBellNaviVoice\([^]*?\n  }/)[0],c);
  return {c,sounds};
 }
 
@@ -50,7 +50,7 @@ test('all six orders keep the randomly selected character through manual and AUT
    spin.stopped[order[index]]=true;c.playBellNaviVoice(spin,rng);c.playBellNaviVoice(spin,rng);
   }
   assert.equal(sounds.length,4);
-  assert.deepEqual(sounds[3],{src:'assets/media/nova/navi-complete-sosuke.wav',volume:.6});
+  assert.deepEqual(sounds[3],{src:'assets/media/nova/navi-complete-'+(character==='toto'?'toto':'sosuke')+'.wav',volume:.6});
   assert.equal(spin.bellNaviVoiceCharacter,character);assert.equal(draws,1);
  }
 });

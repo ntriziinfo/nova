@@ -8139,7 +8139,7 @@ body{
   const aimWinAudios=new Set();
   const oneShotSoundCache = new Map();
   const BELL_NAVI_VOICE_SRCS={sosuke:['assets/media/nova/navi-left-sosuke.wav','assets/media/nova/navi-center-sosuke.wav','assets/media/nova/navi-right-sosuke.wav'],sora:['assets/media/nova/navi-left-sora.wav','assets/media/nova/navi-center-sora.wav','assets/media/nova/navi-right-sora.wav'],giru:['assets/media/nova/navi-left-giru.wav','assets/media/nova/navi-center-giru.wav','assets/media/nova/navi-right-giru.wav'],toto:['assets/media/nova/navi-left-toto.wav','assets/media/nova/navi-center-toto.wav','assets/media/nova/navi-right-toto.wav']};
-  const BELL_NAVI_COMPLETE_VOICE_SRC='assets/media/nova/navi-complete-sosuke.wav';
+  const BELL_NAVI_COMPLETE_VOICE_SRCS={sosuke:'assets/media/nova/navi-complete-sosuke.wav',toto:'assets/media/nova/navi-complete-toto.wav'};
   const AIM_VOICE_SRCS={seven:['assets/media/nova/aim_seven_sosuke.wav','assets/media/nova/aim-seven-sora.wav','assets/media/nova/aim-seven-giru.wav','assets/media/nova/aim-seven-toto.wav'],nebula:['assets/media/nova/aim-nebula-giru.wav','assets/media/nova/aim-nebula-toto.wav']};
   const SEVEN_ZONE_VOICE_SRCS={sosuke:AIM_VOICE_SRCS.seven[0],sora:AIM_VOICE_SRCS.seven[1],giru:AIM_VOICE_SRCS.seven[2],toto:AIM_VOICE_SRCS.seven[3]};
   const NEBULA_ZONE_VOICE_SRCS={giru:AIM_VOICE_SRCS.nebula[0],toto:AIM_VOICE_SRCS.nebula[1]};
@@ -8148,7 +8148,7 @@ body{
   // Register new character lines here (or in the banks above). Game copies are
   // loudness-normalized offline; preserve supplied originals separately.
   const CHARACTER_VOICE_SRCS=Object.freeze([
-    ...Object.values(BELL_NAVI_VOICE_SRCS).flat(),BELL_NAVI_COMPLETE_VOICE_SRC,
+    ...Object.values(BELL_NAVI_VOICE_SRCS).flat(),...Object.values(BELL_NAVI_COMPLETE_VOICE_SRCS),
     ...Object.values(AIM_VOICE_SRCS).flat(),...Object.values(ZONE_START_VOICE_SRCS),
     ...Object.values(ZONE_CONTINUE_VOICE_SRCS),'assets/media/nova/bonus_confirm.wav',
     'assets/media/nova/aim/bonus-nebula-win.wav','assets/media/nova/aim/zone-roulette-confirm.wav?v=20260919-roulette-voice',
@@ -15458,7 +15458,7 @@ body{
       spin.bellNaviVoiceCharacter=characters[Math.min(characters.length-1,Math.max(0,Math.floor(rng()*characters.length)))];
     }
     const reel=spin.bellNaviOrder.find(i=>!stopped[i]);
-    const src=stage===3?BELL_NAVI_COMPLETE_VOICE_SRC:BELL_NAVI_VOICE_SRCS[spin.bellNaviVoiceCharacter][reel];
+    const src=stage===3?(BELL_NAVI_COMPLETE_VOICE_SRCS[spin.bellNaviVoiceCharacter]||BELL_NAVI_COMPLETE_VOICE_SRCS.sosuke):BELL_NAVI_VOICE_SRCS[spin.bellNaviVoiceCharacter][reel];
     if(!src)return;
     spin.bellNaviVoiceStage=stage;
     playOneShotSound(src,voiceOutputVolume(),{allowDuringPremiumConfirm:true});
