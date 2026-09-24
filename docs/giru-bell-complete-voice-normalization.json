@@ -1,0 +1,33 @@
+{
+  "target": {
+    "integratedLufs": -12,
+    "truePeakDbtp": -1,
+    "dualMono": true
+  },
+  "measurementSilencePaddingSeconds": 1,
+  "method": "Measured gain with 192 kHz look-ahead peak limiting; compensated latency; render each pass from original",
+  "sourceRevision": "6a6f27061b9bf1e3620a330e69c767eedd47b23b",
+  "files": [
+    {
+      "src": "assets/media/nova/navi-complete-giru.wav",
+      "codec": "pcm_s16le",
+      "rate": 48000,
+      "channels": 2,
+      "samples": 73728,
+      "outputCodec": "pcm_s16le",
+      "gainDb": 7.38,
+      "sourceSha256": "c89b551dbb5556ba897e0e7ba63f8a25519ee19445e5e05fe7e84aa424c7d569",
+      "outputSha256": "c4e62339650b82a8ad6d3009f623482b9d5f978c08276ff0b511104e817efb50",
+      "before": {
+        "integratedLufs": -18.1,
+        "truePeakDbtp": -4.48,
+        "loudnessRangeLu": 0
+      },
+      "after": {
+        "integratedLufs": -12.09,
+        "truePeakDbtp": -1.1,
+        "loudnessRangeLu": 0
+      }
+    }
+  ]
+}
