@@ -1,0 +1,33 @@
+{
+  "target": {
+    "integratedLufs": -12,
+    "truePeakDbtp": -1,
+    "dualMono": true
+  },
+  "measurementSilencePaddingSeconds": 1,
+  "method": "Measured gain with 192 kHz look-ahead peak limiting; compensated latency; render each pass from original",
+  "sourceRevision": "e0e16e5afee16881a62e1aa697c7bf0eba2cb588",
+  "files": [
+    {
+      "src": "assets/media/nova/navi-complete-sora.wav",
+      "codec": "pcm_s16le",
+      "rate": 44100,
+      "channels": 2,
+      "samples": 40960,
+      "outputCodec": "pcm_s16le",
+      "gainDb": 1.57,
+      "sourceSha256": "0a62e42468a72f121ec8c94d45c66d2b57d63c55976238fefd0672cef1cac42c",
+      "outputSha256": "dbef96a679597d1c0747387c92963169a7da782c73a85b955c1133cf92fad65f",
+      "before": {
+        "integratedLufs": -12.68,
+        "truePeakDbtp": 0.02,
+        "loudnessRangeLu": 0
+      },
+      "after": {
+        "integratedLufs": -12.12,
+        "truePeakDbtp": -1.1,
+        "loudnessRangeLu": 0
+      }
+    }
+  ]
+}
