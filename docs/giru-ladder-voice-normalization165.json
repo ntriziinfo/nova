@@ -1,0 +1,144 @@
+{
+  "target": {
+    "integratedLufs": -12,
+    "truePeakDbtp": -1,
+    "dualMono": true
+  },
+  "measurementSilencePaddingSeconds": 1,
+  "method": "Measured gain with 192 kHz look-ahead peak limiting; compensated latency; render each pass from original",
+  "sourceRevision": "5a0e19b61e4dd974bca66f9e3e788587fb9781ba",
+  "files": [
+    {
+      "src": "assets/media/nova/giru-ladder-bet-moment.wav",
+      "codec": "pcm_s16le",
+      "rate": 44100,
+      "channels": 2,
+      "samples": 94833,
+      "outputCodec": "pcm_s16le",
+      "gainDb": -1.82,
+      "sourceSha256": "f6237dc4138fa544dbd0768802f63a6d7f3e4f995987011c3abc39ccd7a241d8",
+      "outputSha256": "37846f5f41790e1f7076a050ab64357b6eafcb5f60905be703b8deef5e57b38b",
+      "before": {
+        "integratedLufs": -10.18,
+        "truePeakDbtp": 0.04,
+        "loudnessRangeLu": 0.5
+      },
+      "after": {
+        "integratedLufs": -12.01,
+        "truePeakDbtp": -1.79,
+        "loudnessRangeLu": 0.4
+      },
+      "originalFile": "この瞬間_ギル.wav"
+    },
+    {
+      "src": "assets/media/nova/giru-ladder-bet-challenge.wav",
+      "codec": "pcm_s16le",
+      "rate": 44100,
+      "channels": 2,
+      "samples": 94833,
+      "outputCodec": "pcm_s16le",
+      "gainDb": -4.25,
+      "sourceSha256": "9a863cbda6696bf644fe4a2e4a6777623681f89f243474964432c96e2cb76389",
+      "outputSha256": "338ee6b36cbab2a01067261047f6b9324621f3feb752f90923c5856e79385fe7",
+      "before": {
+        "integratedLufs": -7.75,
+        "truePeakDbtp": 0.53,
+        "loudnessRangeLu": 0.2
+      },
+      "after": {
+        "integratedLufs": -12,
+        "truePeakDbtp": -3.75,
+        "loudnessRangeLu": 0.1
+      },
+      "originalFile": "ここで引けなきゃ男じゃねぇな_ギル.wav"
+    },
+    {
+      "src": "assets/media/nova/giru-ladder-bet-good-flow.wav",
+      "codec": "pcm_s16le",
+      "rate": 44100,
+      "channels": 2,
+      "samples": 62396,
+      "outputCodec": "pcm_s16le",
+      "gainDb": -5.07,
+      "sourceSha256": "2736ea1414b56ac5e96c85fd405dd4ea6bbc66eab9dbca354514f243f5e79c7a",
+      "outputSha256": "643205f12814428d5aa9c4743a780a657ced93b4e1b78570debc1408c260798c",
+      "before": {
+        "integratedLufs": -6.93,
+        "truePeakDbtp": 0.7,
+        "loudnessRangeLu": 0
+      },
+      "after": {
+        "integratedLufs": -11.96,
+        "truePeakDbtp": -4.44,
+        "loudnessRangeLu": 0
+      },
+      "originalFile": "悪くねぇ流れだ_ギル.wav"
+    },
+    {
+      "src": "assets/media/nova/giru-ladder-result-under500.wav",
+      "codec": "pcm_s16le",
+      "rate": 44100,
+      "channels": 2,
+      "samples": 63410,
+      "outputCodec": "pcm_s16le",
+      "gainDb": -6.33,
+      "sourceSha256": "3ed7fe0f83daac3e48c8dc0b4d8886a463452089a3067f76f82daf5d13e47dca",
+      "outputSha256": "c7ee8089b203f1b68fd9248ae4e7bddadad703de8722ba8156bbf57dbc3c27ba",
+      "before": {
+        "integratedLufs": -5.67,
+        "truePeakDbtp": 0.38,
+        "loudnessRangeLu": 0
+      },
+      "after": {
+        "integratedLufs": -12,
+        "truePeakDbtp": -5.96,
+        "loudnessRangeLu": 0
+      },
+      "originalFile": "まぁ合格点だな_ギル.wav"
+    },
+    {
+      "src": "assets/media/nova/giru-ladder-result-500.wav",
+      "codec": "pcm_s16le",
+      "rate": 44100,
+      "channels": 2,
+      "samples": 74335,
+      "outputCodec": "pcm_s16le",
+      "gainDb": -4.7,
+      "sourceSha256": "663c3ad790515c820ca3f9ee104305ab5e60f96715d155759b28b3f83eea3132",
+      "outputSha256": "62fc40a5082c219b89e5e0e0975f4a51191d5e5db4b689e4a52e9879751d99c8",
+      "before": {
+        "integratedLufs": -7.3,
+        "truePeakDbtp": 0.41,
+        "loudnessRangeLu": 0
+      },
+      "after": {
+        "integratedLufs": -12,
+        "truePeakDbtp": -4.31,
+        "loudnessRangeLu": 0
+      },
+      "originalFile": "悪かねぇ_ギル.wav"
+    },
+    {
+      "src": "assets/media/nova/giru-ladder-result-1000.wav",
+      "codec": "pcm_s16le",
+      "rate": 44100,
+      "channels": 2,
+      "samples": 52822,
+      "outputCodec": "pcm_s16le",
+      "gainDb": -6.96,
+      "sourceSha256": "fdae5a4645f3cec9f9f72ca4a4e685253c0456762d60c051ca1eab8aa6d00224",
+      "outputSha256": "7f16ea97f3ca5a79bc00d9ca4ec27c670690794783b1b5f0a1cca578239cf3e0",
+      "before": {
+        "integratedLufs": -5.04,
+        "truePeakDbtp": 0.73,
+        "loudnessRangeLu": 0
+      },
+      "after": {
+        "integratedLufs": -11.98,
+        "truePeakDbtp": -6.25,
+        "loudnessRangeLu": 0
+      },
+      "originalFile": "上出来だな_ギル.wav"
+    }
+  ]
+}
