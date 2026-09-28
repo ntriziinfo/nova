@@ -69,21 +69,21 @@ test('logical confidence tiers retain the original third-stop model and surprise
  assert.equal(f.lampAtStop({...lamp,rainbowAt:20,remaining:1},3).rainbow,true);
 });
 
-test('live stop handler lights Kushuri, Nito, then Sosuke and applies surprise rainbow on third',()=>{
+test('live stop handler follows the distributed schedule and applies surprise rainbow on third',()=>{
  const html=fs.readFileSync('jag.html','utf8'),handler=html.match(/  function showCzLamp\([^]*?\n  }/)[0];
  const machine={dataset:{czLamp:'0',czRainbow:'false'}};
- ctx.document={getElementById:()=>machine};ctx.setTimeout=fn=>{fn();return 1;};ctx.clearTimeout=()=>{};
- vm.runInContext('let czLampTimers=[];'+handler,ctx);
+ ctx.document={getElementById:()=>machine};ctx.playOneShotSound=()=>{};ctx.sfxOutputVolume=()=>.5;
+ vm.runInContext(handler,ctx);
  ctx.showCzLamp(0,{czLamp:{stage:5}});assert.equal(machine.dataset.czBlink,'0');
  ctx.showCzLamp(1,{czLamp:{stage:5,rainbow:true,rainbowAt:1,totalGames:20,remaining:20}});
  assert.equal(machine.dataset.czBlink,'1');
- assert.equal(machine.dataset.czLamp,'1');
+ assert.equal(Number(machine.dataset.czLamp),f.lampDisplayAtStop({stage:5,totalGames:20,remaining:20},1).stage);
  ctx.showCzLamp(2,{czLamp:{stage:5,rainbow:true,rainbowAt:1,totalGames:20,remaining:20}});
  assert.equal(machine.dataset.czBlink,'2');
- assert.equal(machine.dataset.czLamp,'2');assert.equal(machine.dataset.czRainbow,'false');
+ assert.equal(Number(machine.dataset.czLamp),f.lampDisplayAtStop({stage:5,totalGames:20,remaining:20},2).stage);assert.equal(machine.dataset.czRainbow,'false');
  ctx.showCzLamp(3,{czLamp:{stage:5,rainbow:true,rainbowAt:1,totalGames:20,remaining:20}});
  assert.equal(machine.dataset.czBlink,'');
- assert.equal(machine.dataset.czLamp,'3');assert.equal(machine.dataset.czRainbow,'true');
+ assert.equal(Number(machine.dataset.czLamp),f.lampDisplayAtStop({stage:5,totalGames:20,remaining:20},3).stage);assert.equal(machine.dataset.czRainbow,'true');
 });
 
 test('full or rainbow lamps end CZ early with a bonus even when direct ART chance is 100%',()=>{

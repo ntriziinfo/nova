@@ -3,7 +3,7 @@ globalThis.NovaDirectAward=(()=>{
  const values=Object.freeze([10,20,30,50,100,300]);
  const source=pt=>'assets/design/nova-direct-pt-v1/direct-plus-'+pt+'pt.png';
  const atlas='assets/design/nova-award-glyphs-v1/glyphs.png';
- let root,img,fallback,glyphs,shownAt=0,resultTimer=null;
+ let root,img,fallback,glyphs,shownAt=0,resultTimer=null,imageRequest=0;
  function directAmount(resolved){
   const n=Number(resolved?.atOutcome?.direct);
   return resolved?.flowBefore?.phase==='art'&&Number.isSafeInteger(n)&&n>0?n:0;
@@ -21,7 +21,6 @@ globalThis.NovaDirectAward=(()=>{
   img=new Image();img.alt='';img.draggable=false;
   fallback=document.createElement('span');fallback.className='awardFallback';fallback.hidden=true;
   glyphs=document.createElement('div');glyphs.className='awardGlyphs';glyphs.setAttribute('aria-hidden','true');glyphs.hidden=true;
-  img.addEventListener('error',()=>{img.hidden=true;fallback.hidden=false;});
   root.append(img,glyphs,fallback);host.append(root);
   for(const pt of values){const preload=new Image();preload.src=source(pt);}
   const preload=new Image();preload.src=atlas;
@@ -32,8 +31,19 @@ globalThis.NovaDirectAward=(()=>{
   const pt=amount(resolved);if(!pt||!init())return false;
   const label='＋'+pt+'pt';root.dataset.pt=String(pt);root.setAttribute('aria-label',(resolved.zoneAward?'ゾーン上乗せ ':'直乗せ ')+label);
   root.dataset.duo=String(resolved.flowBefore?.initialVersion===148&&resolved.flowBefore?.initialStage==='zone');
-  fallback.textContent=label;fallback.hidden=true;img.hidden=!values.includes(pt);glyphs.hidden=values.includes(pt);
-  if(values.includes(pt))img.src=source(pt);
+  const request=++imageRequest;
+  // A reused img can keep painting its old bitmap while the next src decodes.
+  // The fallback always contains this spin's real amount, never the previous award.
+  fallback.textContent=label;fallback.hidden=!values.includes(pt);img.hidden=true;glyphs.hidden=values.includes(pt);
+  if(values.includes(pt)){
+   const src=source(pt);
+   const current=()=>request===imageRequest&&img.getAttribute('src')===src;
+   const ready=()=>{if(current()&&img.complete&&img.naturalWidth>0){img.hidden=false;fallback.hidden=true;}};
+   img.onload=()=>{if(typeof img.decode==='function')img.decode().then(ready).catch(()=>{});else ready();};
+   img.onerror=()=>{if(current()){img.hidden=true;fallback.hidden=false;}};
+   img.src=src;
+   if(img.complete&&img.naturalWidth>0)img.onload();
+  }
   else{
    glyphs.replaceChildren(...[10,...String(pt).split('').map(Number),11].map(index=>{
     const cell=document.createElement('span');cell.style.backgroundPosition=(index%6)*20+'% '+(index<6?0:100)+'%';return cell;
@@ -44,6 +54,8 @@ globalThis.NovaDirectAward=(()=>{
   return true;
  }
  function clear(){
+  imageRequest++;
+  if(img)img.hidden=true;
   if(resultTimer!==null){NovaClock.clearTimeout(resultTimer);resultTimer=null;}
   if(root){root.hidden=true;root.classList.remove('show');delete root.dataset.pt;delete root.dataset.duo;}
  }

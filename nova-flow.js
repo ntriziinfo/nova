@@ -45,12 +45,13 @@ globalThis.NovaFlow = (() => {
   function drawLamp(value,random=Math.random){
     const s=normalize(value),p=s.winProbability??(s.success?1:0);
     const rollValue=s.lampRoll??random(),rainbowValue=s.rainbowRoll??random();
-    if(p<.01)return {stage:s.success?6:1,rainbow:false};
+    const timingSeed=(Math.floor(rollValue*4294967296)^Math.imul(Math.floor(rainbowValue*4294967296),31))>>>0;
+    if(p<.01)return {stage:s.success?6:1,rainbow:false,timingSeed};
     const w=lampWeights(p).map((v,i)=>v*(s.success?lampConfidence[i]:1-lampConfidence[i]));
     let roll=rollValue*w.reduce((a,b)=>a+b,0),index=w.findIndex(v=>(roll-=v)<0);
     if(index<0)index=s.success?5:0;
     const rainbow=index===5&&s.success&&rainbowValue<.5;
-    return {stage:rainbow?5:index+1,rainbow,rainbowAt:1+Math.floor(rainbowValue*2*s.totalGames)};
+    return {stage:rainbow?5:index+1,rainbow,rainbowAt:1+Math.floor(rainbowValue*2*s.totalGames),timingSeed};
   }
   function lampAtStop(lamp,stopOrder){
     if(!lamp||stopOrder!==3)return null;
@@ -59,16 +60,20 @@ globalThis.NovaFlow = (() => {
     return {stage:Math.min(lamp.stage,Math.ceil(6*elapsed/lamp.totalGames)),rainbow};
   }
   const lampCharacters=Object.freeze(['kushuri','nito','sosuke','toto','urapi','giru1','sora1','ouma1']);
-  // Eight physical lamps reveal the existing six confidence tiers. The first
-  // two are entrance steps; the winning draw and early-completion G stay intact.
+  // Spread the physical lamps across the CZ, retaining the final confidence
+  // tier and the original third-stop full-confirmation game. This deterministic
+  // presentation seed consumes no gameplay RNG and survives saved-game reloads.
   function lampDisplayAtStop(lamp,stopOrder){
     if(!lamp||!Number.isInteger(stopOrder)||stopOrder<1||stopOrder>3)return null;
     const total=Math.max(1,Number(lamp.totalGames)||1),elapsed=Math.max(1,total-(Number(lamp.remaining)||1)+1);
     const stopped=(elapsed-1)*3+stopOrder,target=Math.min(8,Math.max(1,Number(lamp.stage)||1)+2);
-    let stage=0,scheduled=0;
+    const deadline=target===8?(Math.floor(5*total/6)+1)*3:total*3;
+    let stage=0;
     for(let next=1;next<=target;next++){
-      const game=next<=3?1:Math.floor((next-3)*total/6)+1;
-      scheduled=Math.min(total*3,Math.max(scheduled,(game-1)*3+(next-1)%3+1));
+      let seed=((lamp.timingSeed||0)^Math.imul(next,0x9e3779b9))>>>0;
+      seed=Math.imul(seed^(seed>>>16),0x21f0aaad);seed=Math.imul(seed^(seed>>>15),0x735a2d97);
+      const fraction=.1+.8*((seed^(seed>>>15))>>>0)/4294967296;
+      const scheduled=next===8?deadline:Math.max(1,Math.ceil(deadline*(next-1+fraction)/target));
       if(stopped>=scheduled)stage=next;
     }
     const rainbow=!!lamp.rainbow&&(elapsed>(lamp.rainbowAt||1)||(elapsed===(lamp.rainbowAt||1)&&stopOrder===3));

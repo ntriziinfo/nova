@@ -6546,13 +6546,13 @@ body{
 <link rel="stylesheet" href="nova-initial-duo.css?v=20260928-duo-149">
 <script src="nova-initial-duo.js?v=20260928-duo-149"></script>
 <link rel="stylesheet" href="nova-direct-award.css?v=20260928-duo-149">
-<script src="nova-direct-award.js?v=20260928-duo-149"></script>
+<script src="nova-direct-award.js?v=20260928-presentation-154"></script>
 <link rel="stylesheet" href="nova-aim-presentation.css?v=20260919-zone-entry-seven">
 <script src="nova-aim-presentation.js?v=20260920-sora-voice"></script>
 <script src="nova-art.js?v=20260928-duo-149"></script>
 <script src="nova-balance.js?v=20260928-duo-149"></script>
 <script src="nova-normal.js?v=20260928-cz-prelude-152"></script>
-<script src="nova-flow.js?v=20260928-presentation-150"></script>
+<script src="nova-flow.js?v=20260928-presentation-154"></script>
 <link rel="stylesheet" href="nova-audit.css?v=20260910-audit-121">
 <script src="nova-audit.js?v=20260928-duo-149"></script>
 <script src="nova-audit-ui.js?v=20260916-role-128"></script>
@@ -8169,6 +8169,7 @@ body{
   const characterVoiceConnections=new WeakMap();
   let characterVoiceBus=null;
   for(const src of CHARACTER_VOICE_SRCS){const audio=new Audio(src);audio.preload='auto';oneShotSoundCache.set(src,audio);audio.load();}
+  for(const src of ['assets/media/jag/cz_third_success.wav','assets/media/jag/cz_third_failure.wav','assets/media/nova/cz_stop_12.wav']){const audio=new Audio(src);audio.preload='auto';oneShotSoundCache.set(src,audio);audio.load();}
   for(const src of ['assets/media/nova/bell-navi.wav','assets/media/nova/direct-award.wav','assets/media/nova/weak-nova.wav','assets/media/nova/aim/nebula-win.wav','assets/media/nova/aim/seven-win.wav','assets/media/nova/aim/cue-blue.wav','assets/media/nova/aim/cue-red.wav','assets/media/nova/aim/cue-rainbow.wav','assets/media/nova/shutter.wav','assets/media/nova/shutter-close.wav','assets/media/nova/ladder-final-award.wav','assets/media/nova/ladder-final-award-under1000.wav']){const audio=new Audio(src);audio.preload='auto';oneShotSoundCache.set(src,audio);audio.load();}
   const resultEyecatchPreload = new Audio('assets/media/nova/result-eyecatch.wav');
   const initialDuoBgmPreload = new Audio(INITIAL_DUO_ZONE_BGM_SRC);
@@ -15639,24 +15640,25 @@ body{
     if(stopOrder===0)renderCzPrelude(prelude.before);
     if(stopOrder===3)renderCzPrelude(prelude.after);
   }
-  let czLampTimers=[];
   function showCzLamp(stopOrder,resolved){
     const host=document.getElementById('machine');
     host.dataset.czBlink=resolved?.czLamp&&stopOrder<3?String(stopOrder):'';
     if(resolved?.czLamp&&stopOrder===0){resolved.czLampAtBet=Number(host.dataset.czLamp)||0;return;}
-    czLampTimers.forEach(clearTimeout);czLampTimers=[];
     const lamp=resolved?.czLamp,machine=document.getElementById('machine');
     if(!lamp){machine.dataset.czLamp='0';machine.dataset.czRainbow='false';return;}
     const display=NovaFlow.lampDisplayAtStop(lamp,stopOrder);if(!display)return;
     const target=display.stage;
     const previous=Number(machine.dataset.czLamp)||0;
-    if(stopOrder===3&&previous>=8&&target===8&&resolved.bonusHit)playCzConfirmedSound(resolved);
-    for(let stage=previous+1;stage<=target;stage++){
-      czLampTimers.push(setTimeout(()=>{machine.dataset.czLamp=String(stage);if(stopOrder===3&&stage===8&&resolved.bonusHit)playCzConfirmedSound(resolved);},(stage-previous-1)*100));
+    const newRainbow=display.rainbow&&machine.dataset.czRainbow!=='true';
+    if(target>previous)machine.dataset.czLamp=String(target);
+    if(newRainbow)machine.dataset.czRainbow='true';
+    // Landed-stop callbacks own both light and SE, including stops one and two.
+    // Repeated finish callbacks see no new light and cannot replay its sound.
+    if(target>previous||newRainbow){
+      (resolved.czLitStops ||= {})[stopOrder]=true;
+      playOneShotSound('assets/media/jag/cz_third_success.wav',sfxOutputVolume());
     }
-    if(display.rainbow){
-      czLampTimers.push(setTimeout(()=>{machine.dataset.czRainbow='true';if(stopOrder===3&&resolved.bonusHit)playCzConfirmedSound(resolved);},0));
-    }
+    if(stopOrder===3&&(target>=8||display.rainbow)&&resolved.bonusHit)playCzConfirmedSound(resolved);
   }
 
   var oumaReverseAudio=null,oumaReverseLoadTimer=null,oumaIntroAudio=null,oumaStoppedTops=[0,0,0];
@@ -16856,11 +16858,13 @@ body{
   }
   function czThirdStopSound(resolved,previousStage){
     if(!resolved?.czLamp)return '';
+    const failed=resolved.czCompleted&&!resolved.bonusHit&&resolved.flowAfter?.phase==='normal';
+    if(failed)return 'assets/media/jag/cz_third_failure.wav';
+    if(resolved.czLitStops?.[3])return ''; // Already played with the light itself.
     const display=NovaFlow.lampDisplayAtStop(resolved.czLamp,3);
     previousStage=resolved.czLampAtBet??previousStage;
-    const failed=resolved.czCompleted&&!resolved.bonusHit&&resolved.flowAfter?.phase==='normal';
     const success=!failed&&(display.rainbow||display.stage>previousStage||resolved.bonusHit||resolved.flowAfter?.phase==='art');
-    return success?'assets/media/jag/cz_third_success.wav':'assets/media/jag/cz_third_failure.wav';
+    return success?'assets/media/nova/cz_stop_12.wav':'assets/media/jag/cz_third_failure.wav';
   }
   function clearCzReelBlackout(){
     document.querySelectorAll('.reel.cz-stop-blackout').forEach(reel=>reel.classList.remove('cz-stop-blackout'));
@@ -16883,10 +16887,12 @@ body{
       resolved.czThirdSoundPlayed=true;
       const previous=Number(document.getElementById('machine').dataset.czLamp)||0;
       const sound=czThirdStopSound(resolved,previous);
+      if(!sound)return;
       if(sound.endsWith('cz_third_failure.wav'))document.querySelector('.reel[data-reel="'+i+'"]').classList.add('cz-stop-blackout');
       playOneShotSound(sound,sfxOutputVolume());
       return;
     }
+    if(resolved?.czLamp&&resolved.czLitStops?.[stopOrder])return;
     playOneShotSound(resolved?.czLamp && (stopOrder===1 || stopOrder===2)?"assets/media/nova/cz_stop_12.wav":STOP_SOUND_SRC);
   }
   function playWinSound(big){

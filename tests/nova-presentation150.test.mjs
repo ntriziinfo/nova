@@ -1,7 +1,7 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
 const flowContext=vm.createContext({});vm.runInContext(fs.readFileSync('nova-flow.js','utf8'),flowContext);const f=flowContext.NovaFlow;
 
-test('CZ adds two entrance lamps and uses all three landed stops in the requested order',()=>{
+test('CZ spreads the eight lamps across games and all landed stops in the requested order',()=>{
  assert.deepEqual([...f.lampCharacters],['kushuri','nito','sosuke','toto','urapi','giru1','sora1','ouma1']);
  for(const total of [15,16,17,18,19,20]){
   const seen=[],stops=new Set();let previous=0;
@@ -12,14 +12,15 @@ test('CZ adds two entrance lamps and uses all three landed stops in the requeste
    previous=display.stage;
   }
   assert.equal(stops.size,3);assert.deepEqual(seen,[...f.lampCharacters]);
-  for(let stop=1;stop<=3;stop++)assert.equal(f.lampDisplayAtStop({stage:6,totalGames:total,remaining:total},stop).stage,stop);
+  assert(f.lampDisplayAtStop({stage:6,totalGames:total,remaining:total},3).stage<=1);
  }
 });
 
 test('extra lamps never change confidence tiers, guaranteed completion game or failed-CZ outcome',()=>{
  for(let total=1;total<=100;total++)for(let remaining=1;remaining<=total;remaining++)for(let stage=1;stage<=6;stage++){
   const lamp={stage,totalGames:total,remaining};
-  assert.equal(f.lampDisplayAtStop(lamp,3).stage,f.lampAtStop(lamp,3).stage+2);
+  assert.equal(f.lampDisplayAtStop(lamp,3).stage===8,f.lampAtStop(lamp,3).stage===6);
+  if(remaining===1)assert.equal(f.lampDisplayAtStop(lamp,3).stage,stage+2);
   if(stage<6)for(let stop=1;stop<=3;stop++)assert(f.lampDisplayAtStop(lamp,stop).stage<8);
  }
  const rainbow={stage:5,totalGames:20,remaining:19,rainbow:true,rainbowAt:2};
