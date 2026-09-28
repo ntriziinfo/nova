@@ -15213,9 +15213,9 @@ body{
     playAimBetPresentation(resolved);
     playRareNaviSound(currentSpin);
     playRareCueVoice(currentSpin);
-    if(!resolved.oumaFailed&&['urapi','ouma'].includes(normalState.flow?.zone))showOverlay('ノヴァを狙え');
-    if(resolved.oumaFreeze)showOverlay(NovaArt.zoneName(normalState.flow)+'フリーズ！ 0G連・ノヴァを狙え');
-    if(resolved.artReverse)showOverlay('逆回転！ '+resolved.flowAfter.award+'pt');
+    if(resolved.oumaFreeze)showOverlay(NovaArt.zoneName(normalState.flow)+'フリーズ！ 0G連');
+    else if(resolved.artReverse)showOverlay('逆回転！ '+resolved.flowAfter.award+'pt');
+    else if(!resolved.oumaFailed&&['urapi','ouma'].includes(normalState.flow?.zone))showOverlay('ノヴァを狙え');
     if(currentSpin.bonusConfirmWaitSpin){
       showBonusConfirmScreen("solid");
     }else if(currentSpin.bonusConfirmPrizeSpin){
@@ -15585,7 +15585,7 @@ body{
   }
 
   function playOumaNovaAimVoice(resolved){
-    if(debugFastSpinActive||speedToBonusActive||resolved?.aTypeBonusGame||resolved?.oumaFailed)return;
+    if(debugFastSpinActive||speedToBonusActive||resolved?.aTypeBonusGame||resolved?.oumaFailed||resolved?.oumaFreeze||resolved?.artReverse)return;
     const flow=resolved?.flowBefore;
     if(flow?.phase!=='art'||flow.entryStage||String(flow.zone||'').replace(/^ura_/,'')!=='ouma')return;
     playOneShotSound(OUMA_NOVA_VOICE_SRCS.aim,voiceOutputVolume(),{allowDuringPremiumConfirm:true});

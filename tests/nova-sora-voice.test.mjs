@@ -98,12 +98,15 @@ test('zone selection entry uses a uniform five-character draw even with a previo
  }
 });
 
-test('Ouma nova aim plays on active zone BET for both wins and misses, but never outside the zone or on a failed freeze',()=>{
+test('Ouma nova aim plays on ordinary zone BET, but stays silent during automatic reverse freezes and outside the zone',()=>{
  for(const zone of ['ouma','ura_ouma'])for(const ura of [false,true])for(const result of ['SUPER_NOVA','MISS']){
   const {c,sounds}=setup();c.playAimBetPresentation({result,flowBefore:{phase:'art',zone,ura},flowAfter:{phase:'art'}});
   assert.deepEqual(sounds,[{src:'assets/media/nova/aim-nova-ouma.wav',volume:.6}]);
  }
  const {c,sounds}=setup();
+ for(const zone of ['ouma','ura_ouma'])for(const ura of [false,true])for(const flag of ['oumaFreeze','artReverse','oumaFailed']){
+  c.playAimBetPresentation({[flag]:true,result:'SUPER_NOVA',flowBefore:{phase:'art',zone,ura},flowAfter:{phase:'art'}});
+ }
  for(const resolved of [{flowBefore:{phase:'normal',zone:'ouma'}},{flowBefore:{phase:'art'}},{flowBefore:{phase:'art',zone:'urapi'}},{flowBefore:{phase:'art',zone:'ouma',entryStage:'seven'}},{flowBefore:{phase:'art',zone:'ouma'},oumaFailed:true},{flowBefore:{phase:'art',zone:'ouma'},aTypeBonusGame:true}])c.playOumaNovaAimVoice(resolved);
  for(const flag of ['debugFastSpinActive','speedToBonusActive']){c[flag]=true;c.playOumaNovaAimVoice({flowBefore:{phase:'art',zone:'ouma'}});c[flag]=false;}
  assert.deepEqual(sounds,[]);
