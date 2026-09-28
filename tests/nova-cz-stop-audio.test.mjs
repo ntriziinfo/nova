@@ -2,7 +2,7 @@ import test from 'node:test';import assert from 'node:assert/strict';import fs f
 const html=fs.readFileSync('jag.html','utf8');
 function setup(){
  const calls=[],machine={dataset:{czLamp:'0',czRainbow:'false'}},black=new Set();
- const ctx=vm.createContext({currentSpin:null,isLadderShutterSpin:()=>false,document:{getElementById:()=>machine,querySelector:selector=>({classList:{add:()=>black.add(selector)}}),querySelectorAll:()=>[...black].map(selector=>({classList:{remove:()=>black.delete(selector)}}))},STOP_SOUND_SRC:'normal.wav',sfxOutputVolume:()=>.5,playOneShotSound:src=>calls.push({src,stage:Number(machine.dataset.czLamp),rainbow:machine.dataset.czRainbow==='true'}),playCzConfirmedSound(){}});
+ const ctx=vm.createContext({renderCzPrelude(){},currentSpin:null,isLadderShutterSpin:()=>false,document:{getElementById:()=>machine,querySelector:selector=>({classList:{add:()=>black.add(selector)}}),querySelectorAll:()=>[...black].map(selector=>({classList:{remove:()=>black.delete(selector)}}))},STOP_SOUND_SRC:'normal.wav',sfxOutputVolume:()=>.5,playOneShotSound:src=>calls.push({src,stage:Number(machine.dataset.czLamp),rainbow:machine.dataset.czRainbow==='true'}),playCzConfirmedSound(){}});
  vm.runInContext(fs.readFileSync('nova-flow.js','utf8'),ctx);
  for(const name of ['showCzLamp','czThirdStopSound','playStopSound','clearCzReelBlackout'])vm.runInContext(html.match(new RegExp('  function '+name+'\\([^]*?\\n  }'))[0],ctx);
  return {ctx,calls,machine,black};

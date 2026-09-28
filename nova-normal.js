@@ -13,7 +13,7 @@ globalThis.NovaNormal=(()=>{
  function czPrelude(entry,czOptions,rng,g,source='rare'){
   const span=czPreludeRules.maxGames-czPreludeRules.minGames;
   const total=czPreludeRules.minGames+Math.min(span,Math.floor(rng()*(span+1)));
-  return {kind:source==='ceiling'?'ceilingCz':'cz',originG:g,presentation:'reel',total,left:total,entry,source,
+  return {kind:source==='ceiling'?'ceilingCz':'cz',originG:g,presentation:'reel',total,left:total-1,entry,source,
    ...(entry==='STRONG_CZ'?{strongChance:czOptions.strongChance}:{})};
  }
  function normalizePrelude(p){
@@ -24,7 +24,9 @@ globalThis.NovaNormal=(()=>{
   return {...base,presentation:'reel',total,left:Math.max(0,Math.min(total,Math.floor(Number(p.left)||0))),entry:p.entry==='STRONG_CZ'||p.kind==='ceilingCz'?'STRONG_CZ':'CZ',source:p.kind==='ceilingCz'?'ceiling':'rare',
    ...(Number.isFinite(p.strongChance)?{strongChance:Math.max(0,Math.min(1,p.strongChance))}:{})};
  }
- function czPreludeStage(p){return p?.presentation==='reel'?Math.min(3,Math.floor((p.total-p.left)*3/p.total)):0;}
+ // Darkness belongs to one spin only; no reel stays dark across BETs.
+ function czPreludeStage(){return 0;}
+ function preludeStops(p,rng){return p.left===0?3:1+Math.min(1,Math.floor(rng()*2));}
  function normalLabel(value){const s=normalize(value);return s.prelude?preludeLabel(s.prelude):'通常';}
  // Every rare role draws CZ. SUICA/chance eyes also draw high-state promotion.
  const rare={WEAK_SUICA:{p:0.011,up:.05,cz:.06,gain:1,pay:6},STRONG_SUICA:{p:0.0026,up:.5,cz:.6,gain:3,pay:6},CHANCE_A:{p:1/312.5,up:9/28,cz:3/14,gain:1,pay:0},CHANCE_B:{p:1/125,up:9/28,cz:3/14,gain:1,pay:0},WEAK_NOVA:{p:1/128,up:.35,cz:.3,gain:2,pay:0},STRONG_NOVA:{p:1/2500,up:.75,cz:1,gain:4,pay:0}};
@@ -80,7 +82,7 @@ globalThis.NovaNormal=(()=>{
   options={...options,cz:NovaFlow.forSetting(options.cz,setting)};
   const before=normalize(value),c=config(options.normal),result=forced||drawRole(setting,rng);
   flow=NovaFlow.rewrite(flow,result,options.cz,rng);
-  const state=advance(before,result,flow,c,rng),token={result,state,czFlow:flow,internalBonus:null,entry:'',direct:false,czOptions:options.cz};
+  const state=advance(before,result,flow,c,rng),token={result,state,czFlow:flow,internalBonus:null,entry:'',direct:false,czOptions:options.cz,czChance:before.prelude?.presentation==='reel'?1:roleCzRate(before,result,setting,c)};
   if(['cz','strong_cz'].includes(flow.phase)&&before.prelude?.presentation==='reel'&&before.prelude.left===0){
    state.prelude=null;token.czPrelude={before:3,after:0,announce:true};
   }
@@ -104,7 +106,7 @@ globalThis.NovaNormal=(()=>{
      token.message=token.entry==='STRONG_CZ'?'強CZ突入':'CZ突入';return token;
     }
     p.left--;
-    token.czPrelude={before:czPreludeStage(before.prelude),after:czPreludeStage(p),left:p.left,total:p.total};
+    token.czPrelude={before:0,after:preludeStops(p,rng),left:p.left,total:p.total};
     if(p.left===0){
      token.entry=p.entry;token.entrySource=p.source;token.czPrelude.enter=true;
      if(Number.isFinite(p.strongChance))token.czOptions={...options.cz,strongChance:p.strongChance};
@@ -120,16 +122,16 @@ globalThis.NovaNormal=(()=>{
      token.message=preludeLabel(before.prelude)+'終了';
     }
    }
-   if(state.prelude?.kind.startsWith('ceiling')){if(state.prelude.presentation==='reel')token.czPrelude={before:0,after:0,started:true,left:state.prelude.left,total:state.prelude.total};return token;}
+   if(state.prelude?.kind.startsWith('ceiling')){if(state.prelude.presentation==='reel')token.czPrelude={before:0,after:preludeStops(state.prelude,rng),started:true,left:state.prelude.left,total:state.prelude.total};return token;}
    if(!forced&&rng()<1/c.superDenom){token.result='SUPER_NOVA';state.prelude=null;return token;}
    if(result==='STRONG_NOVA'){
     token.czOptions={...options.cz,strongChance:before.level==='high'?1:.85};
     state.prelude=czPrelude('STRONG_CZ',token.czOptions,rng,state.games);
-    token.czPrelude={before:0,after:0,started:true,left:state.prelude.left,total:state.prelude.total};token.message='CZ前兆開始';return token;
+    token.czPrelude={before:0,after:preludeStops(state.prelude,rng),started:true,left:state.prelude.left,total:state.prelude.total};token.message='CZ前兆開始';return token;
    }
    if(rare[result]&&rng()<roleCzRate(before,result,setting,c)){
     state.prelude=czPrelude('CZ',options.cz,rng,state.games);
-    token.czPrelude={before:0,after:0,started:true,left:state.prelude.left,total:state.prelude.total};token.message='CZ前兆開始';return token;
+    token.czPrelude={before:0,after:preludeStops(state.prelude,rng),started:true,left:state.prelude.left,total:state.prelude.total};token.message='CZ前兆開始';return token;
    }
   }else if(['cz','strong_cz'].includes(flow.phase)){
    flow.lampRoll??=rng();flow.rainbowRoll??=rng();

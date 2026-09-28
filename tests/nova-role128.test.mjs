@@ -50,7 +50,7 @@ test('common ceiling awards once after the prelude and respects an active CZ',()
  for(const [roll,bonus] of [[.49,true],[.5,false]]){
   let t=spin({games:799,impurity:0},seq(roll,0));
   assert.equal(t.internalBonus,null);assert.equal(t.state.impurity,10);assert.equal(t.state.prelude.originG,800);
-  for(let i=0;i<3;i++)t=spin(n.normalize(JSON.parse(JSON.stringify(t.state))));
+  for(let i=0;i<(bonus?3:2);i++)t=spin(n.normalize(JSON.parse(JSON.stringify(t.state))));
   if(bonus){assert.equal(t.internalBonus.kind,'BIG');assert.match(t.internalBonus.source,/800G/);}
   else{assert.equal(t.czPrelude.after,3);assert.equal(t.entry,'STRONG_CZ');assert.equal(t.czOptions.strongChance,1);}
   assert.equal(t.state.ceilingHandled,true);assert.equal(spin(t.state).state.impurity,10);

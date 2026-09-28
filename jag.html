@@ -6550,9 +6550,9 @@ body{
 <script src="nova-direct-award.js?v=20260928-presentation-154"></script>
 <link rel="stylesheet" href="nova-aim-presentation.css?v=20260928-seven-entry-156">
 <script src="nova-aim-presentation.js?v=20260928-seven-entry-156"></script>
-<script src="nova-art.js?v=20260928-duo-157"></script>
+<script src="nova-art.js?v=20260928-prelude-158"></script>
 <script src="nova-balance.js?v=20260928-duo-157"></script>
-<script src="nova-normal.js?v=20260928-cz-prelude-152"></script>
+<script src="nova-normal.js?v=20260928-prelude-158"></script>
 <script src="nova-flow.js?v=20260928-presentation-154"></script>
 <link rel="stylesheet" href="nova-audit.css?v=20260910-audit-121">
 <script src="nova-audit.js?v=20260928-duo-149"></script>
@@ -7991,7 +7991,7 @@ body{
     return {run:stats.auditRunId,game:Number(stats.totalSpins)||0,bet:Number(stats.totalFee)||0,paid:Number(stats.totalPaid)||0,setting:settings.setting,
       flow:normalState.flow||{phase:'normal'},internal:normalState.internal||{},replayFree:!!normalState.replayFree,complete:!!completeTrialState.locked,
       bonus:{active:isATypeBonusActive(),phase:session.phase,tier:session.bonusTier,paid:session.paid,sets:session.bonusArtSets,zones:session.bonusZones,target:session.bonusTarget,pending:!!normalState.bonusPending,source:normalState.bonusSource,prepLeft:normalState.prepLeft,prepSets:normalState.prepSets,prepZones:normalState.prepZones,premium:session.premiumBonus||normalState.premiumBonus,pointsRemaining:session.bonusPointsRemaining},
-      config:{balance:157,initialPresentation:157,audit:121,setting:settings.setting,fee:SPIN_COST,completeLimitPt:settings.completeLimitPt,oddsMultiplier:settings.oddsMultiplier,art:settings.novaArt,commonAt:NovaArt.commonAtRules,entryQuota:NovaArt.entryQuotaRules,initialRareAwards:NovaArt.initialRareAwards,uraChallenge:NovaArt.burstRules,normal:settings.novaNormal,normalLottery:NovaNormal.lotteryRules,cz:settings.novaFlow}};
+      config:{balance:158,initialPresentation:157,prelude:158,audit:121,setting:settings.setting,fee:SPIN_COST,completeLimitPt:settings.completeLimitPt,oddsMultiplier:settings.oddsMultiplier,art:settings.novaArt,commonAt:NovaArt.commonAtRules,entryQuota:NovaArt.entryQuotaRules,initialRareAwards:NovaArt.initialRareAwards,atPrelude:NovaArt.atPreludeRules,uraChallenge:NovaArt.burstRules,normal:settings.novaNormal,normalLottery:NovaNormal.lotteryRules,cz:settings.novaFlow}};
   }
   function auditCapture(detail={kind:'checkpoint'}){
     if(!novaAuditRecorder)return;
@@ -8003,7 +8003,7 @@ body{
       artSetWon:resolved.artSetWon,novaRushConfirmed:resolved.novaRushConfirmed,oumaFreeze:resolved.oumaFreeze,czLamp:resolved.czLamp,bonusHit:resolved.bonusHit,bonusSource:resolved.bonusSource,
       bellNaviOrder:currentSpin?.bellNaviOrder,rareNavi:currentSpin?.rareNavi,rareCueVoice:currentSpin?.rareCueVoice,rareNaviSoundPlayed:currentSpin?.rareNaviSoundPlayed,
       pressOrder:debugFastSpinActive?'simulation':currentSpin?.auditPressOrder,stopOrder:debugFastSpinActive?'simulation':currentSpin?.auditStopOrder,grid:debugFastSpinActive?undefined:currentSpin?.auditGrid,visualResult:!debugFastSpinActive&&NovaAim.hasGuide(resolved.aim)&&currentSpin?.aimAligned===false?'MISS':result,
-      flowBefore:resolved.flowBefore,flowAfter:resolved.flowAfter,manualLineupMiss:resolved.manualLineupMiss,bonusWaitSpin:resolved.bonusWaitSpin,czEntry:resolved.czEntry,czPrelude:resolved.czPrelude,czCompleted:resolved.czCompleted};
+      flowBefore:resolved.flowBefore,flowAfter:resolved.flowAfter,manualLineupMiss:resolved.manualLineupMiss,bonusWaitSpin:resolved.bonusWaitSpin,czEntry:resolved.czEntry,czPrelude:resolved.czPrelude,atPrelude:resolved.atPrelude,czChance:resolved.czChance,czCompleted:resolved.czCompleted};
   }
   function setupPlayAudit(){
     novaAuditRecorder=new NovaAudit.Recorder({scope:STORAGE_KEY});
@@ -11287,7 +11287,7 @@ body{
     if(inCz){token.czFlow.lampRoll??=Math.random();token.czFlow.rainbowRoll??=Math.random();}
     const ceilingHit=token.internalBonus?.source?.includes('天井');
     pendingArtStep={
-      result:token.result,normalInternal:token.state,czEntry:token.entry,czPrelude:token.czPrelude,
+      result:token.result,normalInternal:token.state,czEntry:token.entry,czPrelude:token.czPrelude,czChance:token.czChance,
       flow:token.direct?NovaArt.enterInitial({...settings.novaArt,setting:settings.setting}):token.entry?NovaFlow.enterCZ(token.entry==='STRONG_CZ',token.czOptions ?? settings.novaFlow):token.internalBonus?NovaFlow.normalize(null):NovaFlow.advance(token.czFlow),
       czLamp:token.czLamp || (inCz?{...NovaFlow.drawLamp({...token.czFlow,
         success:token.czFlow.success||!!token.internalBonus||token.direct,
@@ -11410,6 +11410,8 @@ body{
       return {
         normalInternal:artStep?.normalInternal,
         czPrelude:artStep?.czPrelude,
+        atPrelude:artStep?.atPrelude,
+        czChance:artStep?.czChance,
         czLamp:artStep?.czLamp,
         aim:artStep?.aim,
         burstEvent:artStep?.burstEvent,
@@ -13471,7 +13473,7 @@ body{
       reelArea.classList.toggle("premiumBigOverlayOn", !!(isATypeBonusActive() && (session.premiumBonus || session.oneGameRenBonus)));
     }
     const internal=NovaNormal.normalize(normalState.internal);
-    if(!isSpinning)renderCzPrelude(!session.active&&!normalState.bonusPending&&['normal','cz','strong_cz'].includes(normalState.flow?.phase)?NovaNormal.czPreludeStage(internal.prelude):0);
+    // Per-spin blackout is cleared by BET, never restored from a previous game's progress.
     if($('novaInternalStatus'))$('novaInternalStatus').textContent='小役CZ抽選 / '+internal.games+'G（共通天井'+NovaNormal.ceiling(internal)+'G） / '+(internal.level==='high'?'高確（保証'+internal.highLeft+'G）':'低確')+ (normalState.flow?.phase==='art'?' / '+'AT '+(normalState.flow.atHigh?'高確（保証'+normalState.flow.atHighLeft+'G）':'低確'):'')+' / 穢れ'+internal.impurity+'pt / 特化予約 '+(session.active?(session.bonusZones||[]):(normalState.flow?.queuedZones||[])).map(z=>NovaArt.zoneName(z)).join('・');
     const flowStatus=$("novaFlowStatus");
     if(flowStatus){
@@ -15390,7 +15392,7 @@ body{
     }
     syncCabinetControlState();
     showCzLamp(stopOrder,currentSpin.resolved);
-    showCzPrelude(stopOrder,currentSpin.resolved);
+    showCzPrelude(stopOrder,currentSpin.resolved,i);
     NovaLadder.stop(stopOrder);
     if(currentSpin.stopped.every(Boolean)&&NovaAim.hasGuide(currentSpin.resolved?.aim)&&['BIG','NEBULA'].includes(currentSpin.result)&&currentSpin.aimAligned&&!currentSpin.aimWinPlayed&&!debugFastSpinActive){
       currentSpin.aimWinPlayed=true;
@@ -15504,13 +15506,15 @@ body{
   function rareCueGrade(spin){
     const role=spin?.result;
     if(!['WEAK_SUICA','STRONG_SUICA','CHANCE_A','CHANCE_B','WEAK_NOVA','STRONG_NOVA','SUPER_NOVA'].includes(role))return '';
-    const resolved=spin.resolved;
+    const resolved=spin.resolved,before=resolved?.flowBefore;
+    if(before?.zone||before?.initialStage||before?.entryStage||resolved?.aTypeBonusGame)return '';
     // A rare role, CZ win, direct award or challenge entry alone is not a zone guarantee.
     const zone=resolved?.atOutcome?.zone;
     const after=resolved?.flowAfter;
-    if(after?.phase==='art'&&after.pendingZone&&after.entryStage&&
-      ((zone&&zone===after.pendingZone)||resolved?.comebackEvent==='success'))return 'hot';
-    return ['STRONG_SUICA','CHANCE_B','STRONG_NOVA','SUPER_NOVA'].includes(role)?'bigChance':'chance';
+    if(after?.phase==='art'&&((zone&&(after.atPrelude?.zones?.includes(zone)||zone===after.pendingZone))||resolved?.comebackEvent==='success'))return 'hot';
+    if(before?.phase==='art')return Number(resolved?.atOutcome?.direct)>0?'bigChance':'chance';
+    if((before?.phase||'normal')==='normal'&&Number(resolved?.czChance)>=.6)return 'bigChance';
+    return 'chance';
   }
 
   function playRareCueVoice(spin,rng=Math.random){
@@ -15637,16 +15641,17 @@ body{
     const tick=()=>{const zone=zones[index++%zones.length];show(zone,'特化ゾーン抽選中… '+NovaArt.names[zone]);};
     tick();zoneRouletteTimer=setInterval(tick,110);
   }
-  function renderCzPrelude(stage){
-    const count=Math.max(0,Math.min(3,Number(stage)||0));
-    document.getElementById('machine').dataset.czPreludeStage=String(count);
-    document.querySelectorAll('.reel[data-reel]').forEach(reel=>reel.classList.toggle('cz-prelude-blackout',Number(reel.dataset.reel)<count));
+  function renderCzPrelude(indices=[]){
+    const dark=Array.isArray(indices)?indices:[];
+    document.getElementById('machine').dataset.czPreludeStage=String(dark.length);
+    document.querySelectorAll('.reel[data-reel]').forEach(reel=>reel.classList.toggle('cz-prelude-blackout',dark.includes(Number(reel.dataset.reel))));
   }
-  function showCzPrelude(stopOrder,resolved){
-    const prelude=resolved?.czPrelude;
-    if(!prelude){if(stopOrder===0||stopOrder===3)renderCzPrelude(0);return;}
+  function showCzPrelude(stopOrder,resolved,reelIndex=null){
+    const prelude=resolved?.czPrelude||resolved?.atPrelude;
+    if(stopOrder===0){renderCzPrelude([]);if(resolved)resolved.blackoutReels=[];}
+    if(!prelude)return;
     if(prelude.announce){
-      renderCzPrelude(0);
+      renderCzPrelude([]);
       if(stopOrder===0&&!resolved.czAnnounced){
         resolved.czAnnounced=true;
         updateDisplay();
@@ -15655,8 +15660,11 @@ body{
       }
       return;
     }
-    if(stopOrder===0)renderCzPrelude(prelude.before);
-    if(stopOrder===3)renderCzPrelude(prelude.after);
+    if(stopOrder>0&&Number.isInteger(reelIndex)&&stopOrder<=prelude.after){
+      const dark=resolved.blackoutReels ||= [];
+      if(!dark.includes(reelIndex))dark.push(reelIndex);
+      renderCzPrelude(dark);
+    }
   }
   function showCzLamp(stopOrder,resolved){
     const host=document.getElementById('machine');
@@ -16893,6 +16901,7 @@ body{
   }
   function clearCzReelBlackout(){
     document.querySelectorAll('.reel.cz-stop-blackout').forEach(reel=>reel.classList.remove('cz-stop-blackout'));
+    renderCzPrelude([]);
   }
   function playInitialDuoStop(spin,order){
     if(debugFastSpinActive||speedToBonusActive||!NovaInitialDuo.eligible(spin?.resolved?.flowBefore))return;
@@ -16901,6 +16910,11 @@ body{
   }
   function playStopSound(i, stopOrder=null){
     if(globalThis.NovaInitialDuo?.eligible(currentSpin?.resolved?.flowBefore))return;
+    const prelude=currentSpin?.resolved?.czPrelude||currentSpin?.resolved?.atPrelude;
+    if(prelude&&!prelude.announce&&stopOrder>0&&stopOrder<=prelude.after){
+      playOneShotSound('assets/media/jag/cz_third_failure.wav',sfxOutputVolume());
+      return;
+    }
     if(isLadderShutterSpin()&&stopOrder>=1&&stopOrder<=3){
       if(stopOrder===3)oneShotSoundCache.get('assets/media/nova/shutter.wav')?.pause();
       playOneShotSound(stopOrder===3?(currentSpin?.result==='MISS'?'assets/media/nova/ouma-fail.wav':'assets/media/nova/shutter-close.wav'):'assets/media/nova/shutter.wav',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
