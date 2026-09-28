@@ -6,7 +6,7 @@ test('zone result includes final increment and preserves large point values',()=
 function presenter(){
  const source=fs.readFileSync('nova-results.js','utf8'),images=[],shown=[],fields={span:{},output:{}};
  const c=vm.createContext({root:{hidden:true,dataset:{}},art:{querySelector:()=>({replaceWith:img=>shown.push(img.src)})},num:{setAttribute(){}},fallback:{querySelector:tag=>fields[tag]},names:{sora:'空',ouma:'逢魔'},init(){},apply(){},Image:class{constructor(){images.push(this);this.naturalWidth=100;}decode(){return Promise.resolve();}}});
- vm.runInContext('const images=new Map();let imageRequest=0,active=null;'+source.slice(source.indexOf(' function loadImage('),source.indexOf(' function apply('))+source.slice(source.indexOf(' function show(value)'),source.indexOf(" if(typeof document")),c);
+ vm.runInContext(source.match(/ const characterImages=.*;/)[0]+'const images=new Map();let imageRequest=0,active=null;'+source.slice(source.indexOf(' function loadImage('),source.indexOf(' function apply('))+source.slice(source.indexOf(' function show(value)'),source.indexOf(" if(typeof document")),c);
  const flush=()=>new Promise(resolve=>setImmediate(resolve));
  return {c,images,shown,fields,flush};
 }
@@ -15,14 +15,15 @@ test('decoded result images show synchronously and cold/error requests show the 
  c.show({character:'sora',color:'blue',pt:'750'});assert.equal(c.num.textContent,'750');assert.equal(fields.output.textContent,'750pt');assert.equal(fields.span.textContent,'空 上乗せ');
  images[0].onload();await flush();assert.equal(c.root.dataset.loading,undefined);
  c.show({character:'sora',color:'blue',pt:'800'});assert.equal(c.root.dataset.loading,undefined);assert.equal(c.num.textContent,'800');assert.equal(images.length,1);assert.equal(shown.length,2);
- c.show({character:'sora',color:'red',pt:'1000'});images[1].onerror();await flush();assert.equal(c.root.dataset.loading,'true');assert.equal(fields.output.textContent,'1000pt');
- c.show({character:'sora',color:'red',pt:'1200'});assert.equal(images.length,3);assert.equal(fields.output.textContent,'1200pt');images[2].onload();await flush();assert.equal(c.root.dataset.loading,undefined);
+ c.show({character:'sora',color:'red',pt:'900'});assert.equal(c.root.dataset.color,'red');assert.equal(images.length,1);assert.equal(c.root.dataset.loading,undefined);
+ c.show({character:'ouma',color:'red',pt:'1000'});images[1].onerror();await flush();assert.equal(c.root.dataset.loading,'true');assert.equal(fields.output.textContent,'1000pt');
+ c.show({character:'ouma',color:'red',pt:'1200'});assert.equal(images.length,3);assert.equal(fields.output.textContent,'1200pt');images[2].onload();await flush();assert.equal(c.root.dataset.loading,undefined);
 });
 test('image switches hide previous art immediately and ignore stale image loads',async()=>{
  const {c,images,shown,flush}=presenter();
  c.show({character:'ouma',color:'blue',pt:'100'});images[0].onload();await flush();assert.equal(shown.length,1);
  c.show({character:'sora',color:'blue',pt:'200'});assert.equal(c.root.dataset.loading,'true');assert.equal(shown.length,1);
- c.show({character:'sora',color:'red',pt:'300'});images[1].onload();await flush();assert.equal(shown.length,1);assert.equal(c.root.dataset.loading,'true');
- images[2].onload();await flush();assert.equal(shown.at(-1),'assets/results/sora-red.png');assert.equal(c.num.textContent,'300');assert.equal(c.root.dataset.loading,undefined);
- c.show({character:'ouma',color:'red',pt:'400'});c.hide();images[3].onload();await flush();assert.equal(shown.length,2);assert.equal(c.root.hidden,true);
+ c.show({character:'toto',color:'red',pt:'300'});images[1].onload();await flush();assert.equal(shown.length,1);assert.equal(c.root.dataset.loading,'true');
+ images[2].onload();await flush();assert.equal(shown.at(-1),'assets/illustrations/lamps-20260916/toto.png');assert.equal(c.num.textContent,'300');assert.equal(c.root.dataset.loading,undefined);
+ c.show({character:'giru',color:'red',pt:'400'});c.hide();images[3].onload();await flush();assert.equal(shown.length,2);assert.equal(c.root.hidden,true);
 });

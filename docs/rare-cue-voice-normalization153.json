@@ -1,0 +1,138 @@
+{
+  "target": {
+    "integratedLufs": -12,
+    "truePeakDbtp": -1,
+    "dualMono": true
+  },
+  "measurementSilencePaddingSeconds": 1,
+  "method": "Measured gain with 192 kHz look-ahead peak limiting; compensated latency; render each pass from original",
+  "sourceRevision": "df5f1db6cefb0583fa6735cd410cdb4ac8317d55",
+  "files": [
+    {
+      "src": "assets/media/nova/rare-cue-chance-kushuri.wav",
+      "codec": "pcm_s16le",
+      "rate": 48000,
+      "channels": 2,
+      "samples": 45056,
+      "outputCodec": "pcm_s16le",
+      "gainDb": 6.62,
+      "sourceSha256": "9ba9a3848d05ec0c9460b5fb790026cfd0c7bd5af841c7bc9a37afffd7a40472",
+      "outputSha256": "2ba31634b2c903201a93d1d2d8a9f4a61bfb3ed17179fb07c8174db1d6280edf",
+      "before": {
+        "integratedLufs": -18.62,
+        "truePeakDbtp": -6.25,
+        "loudnessRangeLu": 0
+      },
+      "after": {
+        "integratedLufs": -12.04,
+        "truePeakDbtp": -1.1,
+        "loudnessRangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/rare-cue-big-chance-kushuri.wav",
+      "codec": "pcm_s16le",
+      "rate": 48000,
+      "channels": 2,
+      "samples": 49152,
+      "outputCodec": "pcm_s16le",
+      "gainDb": 27.61,
+      "sourceSha256": "ad21de84229c89cb2689f86f1b6bbb014d692c89186d4ed889bf1c19b402afff",
+      "outputSha256": "f80672d48bafbaceef305b5cf9e8ec869c6dc442df9acee5f4d7d932b057a462",
+      "before": {
+        "integratedLufs": -39.61,
+        "truePeakDbtp": -28.51,
+        "loudnessRangeLu": 0
+      },
+      "after": {
+        "integratedLufs": -12.03,
+        "truePeakDbtp": -1.09,
+        "loudnessRangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/rare-cue-hot-kushuri.wav",
+      "codec": "pcm_s16le",
+      "rate": 48000,
+      "channels": 2,
+      "samples": 102400,
+      "outputCodec": "pcm_s16le",
+      "gainDb": 33.48,
+      "sourceSha256": "65b24c876e3088dd46c4e63097684b2f5cb3d62d506a2ef802d1ee4d9fc5c816",
+      "outputSha256": "4d699660089405ca0c9348110e9a9941edd186f9e36c6a5774f78edad47ccdf8",
+      "before": {
+        "integratedLufs": -45.48,
+        "truePeakDbtp": -34.41,
+        "loudnessRangeLu": 0.3
+      },
+      "after": {
+        "integratedLufs": -12.01,
+        "truePeakDbtp": -1.1,
+        "loudnessRangeLu": 0.4
+      }
+    },
+    {
+      "src": "assets/media/nova/rare-cue-chance-nito.wav",
+      "codec": "pcm_s16le",
+      "rate": 48000,
+      "channels": 1,
+      "samples": 62464,
+      "outputCodec": "pcm_s16le",
+      "gainDb": 16.45,
+      "sourceSha256": "897a4d587ab4264dad44239b0272a6d1e7d25463d7840bc94e3649b7b279f938",
+      "outputSha256": "ea04c188a9d48fddb48e6a161b2464c9353618bf1081ad580080d6f9a8d7edd4",
+      "before": {
+        "integratedLufs": -28.45,
+        "truePeakDbtp": -18.05,
+        "loudnessRangeLu": 0
+      },
+      "after": {
+        "integratedLufs": -12.02,
+        "truePeakDbtp": -1.6,
+        "loudnessRangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/rare-cue-big-chance-nito.wav",
+      "codec": "pcm_s16le",
+      "rate": 48000,
+      "channels": 1,
+      "samples": 86016,
+      "outputCodec": "pcm_s16le",
+      "gainDb": 17.2,
+      "sourceSha256": "05f7100db80d7d9f1b9d4029f19017287fe53f38dc48294230fedfc3c627a9d8",
+      "outputSha256": "8a2885b9a5613716f8189a956a3e82868fc97fcef81b29b539051707ff506e4b",
+      "before": {
+        "integratedLufs": -25.95,
+        "truePeakDbtp": -11.05,
+        "loudnessRangeLu": 0
+      },
+      "after": {
+        "integratedLufs": -12.14,
+        "truePeakDbtp": -1.09,
+        "loudnessRangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/rare-cue-hot-nito.wav",
+      "codec": "pcm_s16le",
+      "rate": 48000,
+      "channels": 1,
+      "samples": 77514,
+      "outputCodec": "pcm_s16le",
+      "gainDb": 16.21,
+      "sourceSha256": "8756390964846811b84fe857142dfc99bfd83260ac783ebf9b5053f59b676856",
+      "outputSha256": "12a0bb4037a2946496cce4bd06136335313674aad593baeca52e19243cffa521",
+      "before": {
+        "integratedLufs": -27.12,
+        "truePeakDbtp": -12.99,
+        "loudnessRangeLu": 0
+      },
+      "after": {
+        "integratedLufs": -12.14,
+        "truePeakDbtp": -1.1,
+        "loudnessRangeLu": 0
+      }
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-/* User supplied result images are displayed unchanged, separate from the digits. */
+/* Provided character originals stay separate from the CSS background and result text. */
 globalThis.NovaResults=(()=>{
  const chars=['sosuke','toto','urapi','giru','sora','ouma'];
  const initialChars=['kushuri','nito','kushuri_nito'];
@@ -11,14 +11,22 @@ globalThis.NovaResults=(()=>{
   if(before?.zone&&!after?.zone)return {kind:'zone',...pick('zone',before.zone,setting,rng),pt:String(after?.award??before.award??0)};
   return null;
  }
- const defaults={x:22,y:34,w:56,h:23,imageX:0,imageY:0,scale:100,numberX:7,numberY:54,numberW:36,numberH:10,font:9};
+ const characterImages={sosuke:'lamps-20260916/sosuke.png',toto:'lamps-20260916/toto.png',urapi:'lamps-20260916/urapi.png',giru:'lamps-20260916/giru1.png',sora:'lamps-20260916/sora1.png',ouma:'lamps-20260916/ouma1.png',kushuri:'lamps-20260928/kushuri.png',nito:'lamps-20260928/nito.png',kushuri_nito:'lamps-20260928/nito.png'};
+ const defaults={x:22,y:34,w:56,h:23,imageX:0,imageY:0,scale:100,numberX:47,numberY:51,numberW:51,numberH:30,font:10};
  const images=new Map();
  let positions={},root,card,art,num,fallback,panel,select,preview=false,active=null,imageRequest=0;
- try{positions=JSON.parse(localStorage.getItem('nova_result_layout_v1'))||{};}catch{}
+ try{
+  positions=JSON.parse(localStorage.getItem('nova_result_layout_v2'));
+  if(!positions){
+   const previous=JSON.parse(localStorage.getItem('nova_result_layout_v1'))||{};
+   // Retain the user's screen placement; baked-image digit coordinates do not fit this design.
+   positions=Object.fromEntries(Object.entries(previous).map(([id,p])=>[id,Object.fromEntries(['x','y','w','h'].filter(k=>Number.isFinite(p[k])).map(k=>[k,p[k]]))]));
+  }
+ }catch{positions={};}
  const key=()=>active?active.character+'-'+active.color:'sosuke-red';
  const layout=()=>({...defaults,...positions[key()]});
  function loadImage(character,color){
-  const src=color==='initial'?`assets/illustrations/lamps-20260928/${character==='kushuri_nito'?'nito':character}.png`:`assets/results/${character}-${color}.png`,cached=images.get(src);
+  const src='assets/illustrations/'+(characterImages[character]||characterImages.sosuke),cached=images.get(src);
   if(cached&&!cached.failed)return cached;
   const img=new Image();img.draggable=false;img.decoding='async';
   const entry={img,ready:false,failed:false};images.set(src,entry);
@@ -30,28 +38,28 @@ globalThis.NovaResults=(()=>{
   return entry;
  }
  function apply(){if(!active||!root)return;const p=layout();card.style.cssText=`left:${p.x}%;top:${p.y}%;width:${p.w}%;height:${p.h}%;`;
-  const cw=card.clientWidth,ch=card.clientHeight,img=art.querySelector('img'),ratio=img.naturalWidth&&img.naturalHeight?img.naturalWidth/img.naturalHeight:1510/1365;
-  const ah=Math.min(ch,cw/ratio)*p.scale/100,aw=ah*ratio;
-  art.style.cssText=`width:${aw}px;height:${ah}px;left:calc(50% + ${p.imageX}%);top:calc(50% + ${p.imageY}%);transform:translate(-50%,-50%);`;
-  num.style.cssText=`left:${p.numberX}%;top:${p.numberY}%;width:${p.numberW}%;height:${p.numberH}%;font-size:${aw*p.font/100}px;`;
+  const cw=card.clientWidth,duo=active.character==='kushuri_nito';
+  art.style.cssText=`left:${(duo?-5:1)+p.imageX}%;top:${3+p.imageY}%;width:${(duo?57:46)*p.scale/100}%;height:${94*p.scale/100}%;`;
+  const font=Math.min(cw*p.font/100,cw*p.numberW/100/((String(active.pt).length+2)*.72));
+  fallback.querySelector('output').style.cssText=`left:${p.numberX}%;top:${p.numberY}%;width:${p.numberW}%;height:${p.numberH}%;font-size:${font}px;`;
  }
  function init(){if(root)return;const machine=document.getElementById('machine');if(!machine)return;
   root=document.createElement('div');root.className='novaResultsLayer';root.hidden=true;
   root.innerHTML='<div class="novaResultCard"><div class="novaResultArt"><img draggable="false" alt=""><output class="novaResultNumber"></output><img class="novaResultPartner" src="assets/illustrations/lamps-20260928/kushuri.png" alt="くしゅり" draggable="false" hidden></div><div class="novaResultFallback" role="status"><strong>RESULT</strong><span></span><output></output></div></div>';
   machine.append(root);card=root.firstElementChild;art=card.firstElementChild;num=art.querySelector('output');fallback=card.querySelector('.novaResultFallback');
-  // Decode all twelve unchanged result images before a third-stop result needs them.
+  // Both background colors share the same unmodified character image.
   for(const character of chars)for(const color of ['red','blue'])loadImage(character,color);
   for(const character of initialChars)loadImage(character,'initial');
   const button=document.createElement('button');button.id='novaResultAdjust';button.textContent='リザルト調整';document.body.append(button);
   panel=document.createElement('dialog');panel.className='novaResultSettings';panel.innerHTML='<h3>リザルト配置</h3><label>確認画像 <select id="novaResultSelect"></select></label><div class="novaResultFields"></div><button type="button" id="novaResultReset">この画像を初期位置へ</button> <button type="button" id="novaResultClose">閉じる</button><p>変更はこのブラウザに画像別で自動保存します。画像は縦横比を維持します。</p>';document.body.append(panel);
   select=panel.querySelector('select');select.innerHTML=chars.flatMap(id=>['red','blue'].map(c=>`<option value="${id}-${c}">${names[id]}・${c==='red'?'赤':'青'}</option>`)).join('')+initialChars.map(id=>`<option value="${id}-initial">${names[id]}・初期pt</option>`).join('');
-  const fields={x:'表示枠 X（%）',y:'表示枠 Y（%）',w:'表示枠 幅（%）',h:'表示枠 高さ（%）',imageX:'画像 X（%）',imageY:'画像 Y（%）',scale:'画像倍率（%）',numberX:'数字 X（%）',numberY:'数字 Y（%）',numberW:'黒背景 幅（%）',numberH:'黒背景 高さ（%）',font:'数字サイズ（%）'};
+  const fields={x:'表示枠 X（%）',y:'表示枠 Y（%）',w:'表示枠 幅（%）',h:'表示枠 高さ（%）',imageX:'画像 X（%）',imageY:'画像 Y（%）',scale:'画像倍率（%）',numberX:'獲得pt X（%）',numberY:'獲得pt Y（%）',numberW:'獲得pt 幅（%）',numberH:'獲得pt 高さ（%）',font:'数字サイズ（%）'};
   panel.querySelector('.novaResultFields').innerHTML=Object.entries(fields).map(([k,label])=>`<label>${label}<input type="number" step="0.5" data-field="${k}"></label>`).join('');
   const fill=()=>panel.querySelectorAll('input').forEach(el=>el.value=layout()[el.dataset.field]);
   button.onclick=()=>{if(!active){preview=true;show({kind:'preview',character:'sosuke',color:'red',pt:'1234'});}select.value=key();fill();panel.show();};
   select.onchange=()=>{preview=true;const [character,color]=select.value.split('-');show({kind:'preview',character,color,pt:'1234'});fill();};
-  panel.oninput=e=>{const k=e.target.dataset.field;if(!k)return;let v=Number(e.target.value);if(!Number.isFinite(v))return;v=Math.max(['x','y','imageX','imageY','numberX','numberY'].includes(k)?-100:1,Math.min(200,v));positions[key()]={...layout(),[k]:v};try{localStorage.setItem('nova_result_layout_v1',JSON.stringify(positions));}catch{}apply();};
-  panel.querySelector('#novaResultReset').onclick=()=>{delete positions[key()];localStorage.setItem('nova_result_layout_v1',JSON.stringify(positions));apply();fill();};
+  panel.oninput=e=>{const k=e.target.dataset.field;if(!k)return;let v=Number(e.target.value);if(!Number.isFinite(v))return;v=Math.max(['x','y','imageX','imageY','numberX','numberY'].includes(k)?-100:1,Math.min(200,v));positions[key()]={...layout(),[k]:v};try{localStorage.setItem('nova_result_layout_v2',JSON.stringify(positions));}catch{}apply();};
+  panel.querySelector('#novaResultReset').onclick=()=>{delete positions[key()];localStorage.setItem('nova_result_layout_v2',JSON.stringify(positions));apply();fill();};
   panel.querySelector('#novaResultClose').onclick=()=>{panel.close();if(preview){preview=false;hide();}};
   new ResizeObserver(apply).observe(machine);window.addEventListener('resize',apply);
  }
@@ -59,6 +67,7 @@ globalThis.NovaResults=(()=>{
   init();if(!root)return;
   const request=++imageRequest;active=value;root.hidden=false;root.dataset.loading='true';
   root.dataset.initial=String(value.color==='initial');
+  root.dataset.color=value.color==='red'?'red':'blue';
   root.dataset.duo=String(value.character==='kushuri_nito');
   const partner=art.querySelector('.novaResultPartner');if(partner)partner.hidden=value.character!=='kushuri_nito';
   const label=`${names[value.character]} ${value.color==='initial'?'AT初期pt':value.kind==='at'?'AT総獲得':'上乗せ'}`;

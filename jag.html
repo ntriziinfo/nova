@@ -6537,8 +6537,8 @@ body{
 <script src="nova-beat-lamps.js?v=20260928-eight-lamps"></script>
 <script src="nova-clock.js?v=20260917-background-129"></script>
 <script src="nova-reel-motion.js?v=20260917-background-129"></script>
-<link rel="stylesheet" href="nova-results.css?v=20260928-duo-149">
-<script src="nova-results.js?v=20260928-duo-149"></script>
+<link rel="stylesheet" href="nova-results.css?v=20260928-result-153">
+<script src="nova-results.js?v=20260928-result-153"></script>
 <link rel="stylesheet" href="nova-ladder-presentation.css?v=20260917-initial-131">
 <script src="nova-ladder-presentation.js?v=20260917-initial-131"></script>
 <link rel="stylesheet" href="nova-bell-navi.css?v=20260928-presentation-150">
@@ -8000,7 +8000,7 @@ body{
     return {kind:'spin',result,message:resolved.artMessage||'',mode:debugFastSpinActive?'fast':autoPlay?'auto':speedToBonusActive?'speed':'manual',forced:pendingForceResult||'',
       aim:resolved.aim,burstEvent:resolved.burstEvent,burstReward:resolved.burstReward,comebackEvent:resolved.comebackEvent,atOutcome:resolved.atOutcome,zoneAward:resolved.zoneAward,
       artSetWon:resolved.artSetWon,oumaFreeze:resolved.oumaFreeze,czLamp:resolved.czLamp,bonusHit:resolved.bonusHit,bonusSource:resolved.bonusSource,
-      bellNaviOrder:currentSpin?.bellNaviOrder,rareNavi:currentSpin?.rareNavi,
+      bellNaviOrder:currentSpin?.bellNaviOrder,rareNavi:currentSpin?.rareNavi,rareCueVoice:currentSpin?.rareCueVoice,
       pressOrder:debugFastSpinActive?'simulation':currentSpin?.auditPressOrder,stopOrder:debugFastSpinActive?'simulation':currentSpin?.auditStopOrder,grid:debugFastSpinActive?undefined:currentSpin?.auditGrid,visualResult:!debugFastSpinActive&&NovaAim.hasGuide(resolved.aim)&&currentSpin?.aimAligned===false?'MISS':result,
       flowBefore:resolved.flowBefore,flowAfter:resolved.flowAfter,manualLineupMiss:resolved.manualLineupMiss,bonusWaitSpin:resolved.bonusWaitSpin,czEntry:resolved.czEntry,czPrelude:resolved.czPrelude,czCompleted:resolved.czCompleted};
   }
@@ -8149,6 +8149,10 @@ body{
   const ZONE_START_VOICE_SRCS={sora:'assets/media/nova/zone-start-sora.wav',ura_sora:'assets/media/nova/zone-start-ura-sora.wav',giru:'assets/media/nova/zone-start-giru.wav',ura_giru:'assets/media/nova/zone-start-ura-giru.wav',toto:'assets/media/nova/zone-start-toto.wav',ouma:'assets/media/nova/zone-start-ouma.wav',ura_ouma:'assets/media/nova/zone-start-ura-ouma.wav'};
   const ZONE_CONTINUE_VOICE_SRCS={sora:'assets/media/nova/continue-sora.wav',toto:'assets/media/nova/continue-toto.wav'};
   const OUMA_NOVA_VOICE_SRCS={aim:'assets/media/nova/aim-nova-ouma.wav',wins:['assets/media/nova/nova-win-1-ouma.wav','assets/media/nova/nova-win-2-ouma.wav','assets/media/nova/nova-win-3-ouma.wav']};
+  const RARE_CUE_VOICE_SRCS={
+    kushuri:{chance:'assets/media/nova/rare-cue-chance-kushuri.wav',bigChance:'assets/media/nova/rare-cue-big-chance-kushuri.wav',hot:'assets/media/nova/rare-cue-hot-kushuri.wav'},
+    nito:{chance:'assets/media/nova/rare-cue-chance-nito.wav',bigChance:'assets/media/nova/rare-cue-big-chance-nito.wav',hot:'assets/media/nova/rare-cue-hot-nito.wav'}
+  };
   // Register new character lines here (or in the banks above). Game copies are
   // loudness-normalized offline; preserve supplied originals separately.
   const CHARACTER_VOICE_SRCS=Object.freeze([
@@ -8156,6 +8160,7 @@ body{
     ...Object.values(AIM_VOICE_SRCS).flat(),...Object.values(ZONE_START_VOICE_SRCS),
     ...Object.values(ZONE_CONTINUE_VOICE_SRCS),'assets/media/nova/bonus_confirm.wav',
     OUMA_NOVA_VOICE_SRCS.aim,...OUMA_NOVA_VOICE_SRCS.wins,
+    ...Object.values(RARE_CUE_VOICE_SRCS).flatMap(bank=>Object.values(bank)),
     'assets/media/nova/aim/bonus-nebula-win.wav','assets/media/nova/aim/zone-roulette-confirm.wav?v=20260919-roulette-voice',
     'assets/media/jag/cz_remaining_3.wav?v=count2','assets/media/jag/cz_remaining_2.wav?v=count2','assets/media/jag/cz_last.wav?v=count2'
   ]);
@@ -15193,6 +15198,7 @@ body{
       playBellNaviVoice(currentSpin);
     }
     playAimBetPresentation(resolved);
+    playRareCueVoice(currentSpin);
     if(!resolved.oumaFailed&&['urapi','ouma'].includes(normalState.flow?.zone))showOverlay('ノヴァを狙え');
     if(resolved.oumaFreeze)showOverlay(NovaArt.zoneName(normalState.flow)+'フリーズ！ 0G連・ノヴァを狙え');
     if(resolved.artReverse)showOverlay('逆回転！ '+resolved.flowAfter.award+'pt');
@@ -15474,6 +15480,27 @@ body{
     setReelColumn(i, columnSymbols, label, cls, lineRow);
     stopBtns[i].disabled = true;
     playStopSound(i, stopOrder);
+  }
+
+  function rareCueGrade(spin){
+    const role=spin?.result;
+    if(!['WEAK_SUICA','STRONG_SUICA','CHANCE_A','CHANCE_B','WEAK_NOVA','STRONG_NOVA','SUPER_NOVA'].includes(role))return '';
+    const resolved=spin.resolved;
+    // A rare role, CZ win, direct award or challenge entry alone is not a zone guarantee.
+    const zone=resolved?.atOutcome?.zone;
+    const after=resolved?.flowAfter;
+    if(after?.phase==='art'&&after.pendingZone&&after.entryStage&&
+      ((zone&&zone===after.pendingZone)||resolved?.comebackEvent==='success'))return 'hot';
+    return ['STRONG_SUICA','CHANCE_B','STRONG_NOVA','SUPER_NOVA'].includes(role)?'bigChance':'chance';
+  }
+
+  function playRareCueVoice(spin,rng=Math.random){
+    if(debugFastSpinActive||speedToBonusActive||!spin||spin.rareCueVoicePlayed)return;
+    const grade=rareCueGrade(spin);if(!grade)return;
+    const characters=Object.keys(RARE_CUE_VOICE_SRCS);
+    const character=characters[Math.min(characters.length-1,Math.max(0,Math.floor(rng()*characters.length)))];
+    spin.rareCueVoicePlayed=true;spin.rareCueVoice={character,grade};
+    playOneShotSound(RARE_CUE_VOICE_SRCS[character][grade],voiceOutputVolume(),{allowDuringPremiumConfirm:true});
   }
 
   function playBellNaviVoice(spin,rng=Math.random){
