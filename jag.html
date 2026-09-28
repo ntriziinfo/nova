@@ -15669,13 +15669,17 @@ body{
   function showCzLamp(stopOrder,resolved){
     const host=document.getElementById('machine');
     host.dataset.czBlink=resolved?.czLamp&&stopOrder<3?String(stopOrder):'';
-    if(resolved?.czLamp&&stopOrder===0){resolved.czLampAtBet=Number(host.dataset.czLamp)||0;return;}
     const lamp=resolved?.czLamp,machine=document.getElementById('machine');
-    if(!lamp){machine.dataset.czLamp='0';machine.dataset.czRainbow='false';return;}
-    const display=NovaFlow.lampDisplayAtStop(lamp,stopOrder);if(!display)return;
-    const target=display.stage;
+    const czSpin=!!lamp||['cz','strong_cz'].includes(resolved?.flowBefore?.phase);
+    if(czSpin&&stopOrder===0){resolved.czLampAtBet=Number(host.dataset.czLamp)||0;return;}
+    if(!czSpin){machine.dataset.czLamp='0';machine.dataset.czRainbow='false';return;}
+    // Reveal every character at the landed confirmation stop, not at the
+    // internal CZ lottery. Premium overrides may confirm without a lamp roll.
+    const confirmed=stopOrder===3&&!!(resolved.bonusHit||resolved.aTypeBonusReady||resolved.flowAfter?.phase==='art');
+    const display=NovaFlow.lampDisplayAtStop(lamp,stopOrder);if(!display&&!confirmed)return;
+    const target=confirmed?NovaFlow.lampCharacters.length:display.stage;
     const previous=Number(machine.dataset.czLamp)||0;
-    const newRainbow=display.rainbow&&machine.dataset.czRainbow!=='true';
+    const newRainbow=(confirmed||display?.rainbow)&&machine.dataset.czRainbow!=='true';
     if(target>previous)machine.dataset.czLamp=String(target);
     if(newRainbow)machine.dataset.czRainbow='true';
     // Landed-stop callbacks own both light and SE, including stops one and two.
@@ -15684,7 +15688,7 @@ body{
       (resolved.czLitStops ||= {})[stopOrder]=true;
       playOneShotSound('assets/media/jag/cz_third_success.wav',sfxOutputVolume());
     }
-    if(stopOrder===3&&(target>=8||display.rainbow)&&resolved.bonusHit)playCzConfirmedSound(resolved);
+    if(confirmed)playCzConfirmedSound(resolved);
   }
 
   var oumaReverseAudio=null,oumaReverseLoadTimer=null,oumaIntroAudio=null,oumaStoppedTops=[0,0,0];

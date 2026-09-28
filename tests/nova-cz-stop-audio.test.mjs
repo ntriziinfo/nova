@@ -30,6 +30,47 @@ test('rainbow shares the lighting cue and repeated finish calls do not play it t
  const rainbow=calls.filter(x=>x.rainbow&&x.src.endsWith('cz_third_success.wav'));assert.equal(rainbow.length,1);
  const count=calls.length;ctx.showCzLamp(3,resolved);ctx.playStopSound(2,3);assert.equal(calls.length,count);
 });
+
+test('early CZ confirmation lights all eight only at the third landed stop',()=>{
+ for(const phase of ['cz','strong_cz']){
+  for(const rainbow of [false,true]){
+   const {ctx,calls,machine}=setup();
+   const resolved={flowBefore:{phase,success:true},bonusHit:true,czLamp:{stage:5,totalGames:20,remaining:20,rainbow,rainbowAt:1}};
+   ctx.currentSpin={resolved};ctx.showCzLamp(0,resolved);
+   for(let stop=1;stop<=2;stop++){
+    ctx.showCzLamp(stop,resolved);ctx.playStopSound(stop-1,stop);
+    assert(Number(machine.dataset.czLamp)<8);assert.equal(machine.dataset.czRainbow,'false');
+   }
+   const before=calls.length;ctx.showCzLamp(3,resolved);ctx.playStopSound(2,3);
+   assert.equal(machine.dataset.czLamp,'8');assert.equal(machine.dataset.czRainbow,'true');
+   assert.deepEqual(calls.slice(before),[{src:'assets/media/jag/cz_third_success.wav',stage:8,rainbow:true}]);
+   const count=calls.length;ctx.showCzLamp(3,resolved);ctx.playStopSound(2,3);assert.equal(calls.length,count);
+   ctx.showCzLamp(0,{flowBefore:{phase:'normal'}});assert.equal(machine.dataset.czLamp,'0');assert.equal(machine.dataset.czRainbow,'false');
+  }
+ }
+});
+
+test('an internally won CZ keeps the ordinary lamp schedule until confirmation',()=>{
+ const {ctx,machine}=setup(),resolved={flowBefore:{phase:'cz',success:true},bonusHit:false,czLamp:{stage:6,totalGames:20,remaining:20,timingSeed:12345}};
+ for(let stop=0;stop<=3;stop++)ctx.showCzLamp(stop,resolved);
+ assert.equal(Number(machine.dataset.czLamp),ctx.NovaFlow.lampDisplayAtStop(resolved.czLamp,3).stage);
+ assert(Number(machine.dataset.czLamp)<8);assert.equal(machine.dataset.czRainbow,'false');
+});
+
+test('CZ premium confirmation without a lamp roll still lights everyone; ordinary bonus does not',()=>{
+ for(const phase of ['cz','strong_cz','normal']){
+  for(const outcome of [{bonusHit:true},{aTypeBonusReady:true},{flowAfter:{phase:'art'}}]){
+   const {ctx,machine}=setup(),resolved={flowBefore:{phase},...outcome};
+   machine.dataset.czLamp='2';
+   for(let stop=0;stop<=2;stop++){
+    ctx.showCzLamp(stop,resolved);assert.equal(machine.dataset.czLamp,phase==='normal'?'0':'2');
+    assert.equal(machine.dataset.czRainbow,'false');
+   }
+   ctx.showCzLamp(3,resolved);assert.equal(machine.dataset.czLamp,phase==='normal'?'0':'8');
+   assert.equal(machine.dataset.czRainbow,String(phase!=='normal'));
+  }
+ }
+});
 test('earlier-stop lighting uses a regular third stop; final CZ loss still plays failure and blacks out only the final reel',()=>{
  const {ctx,calls,black}=setup();
  const resolved={czLamp:{stage:2,totalGames:20,remaining:1},czLampAtBet:3,czLitStops:{2:true}};
