@@ -1,0 +1,100 @@
+{
+  "target": {
+    "integratedLufs": -12,
+    "truePeakDbtp": -1,
+    "dualMono": true
+  },
+  "measurementSilencePaddingSeconds": 1,
+  "method": "Measured gain with 192 kHz look-ahead peak limiting; compensated latency; render each pass from original",
+  "sourceRevision": "ce1764b3b66b1996e46d5b00eb76667e22214f29",
+  "files": [
+    {
+      "src": "assets/media/nova/navi-left-nito.wav",
+      "codec": "pcm_s16le",
+      "rate": 48000,
+      "channels": 1,
+      "samples": 49152,
+      "outputCodec": "pcm_s16le",
+      "gainDb": 24.82,
+      "sourceSha256": "4791ca4ff4c4827d9405e1026ea892fd22c6ca36b57578d49cf80d85ac09a299",
+      "outputSha256": "2638071163647b4d5388b2ad74be7a632c6e8747d0c57c3b1bfca0ee86364349",
+      "before": {
+        "integratedLufs": -36.66,
+        "truePeakDbtp": -23.98,
+        "loudnessRangeLu": 0
+      },
+      "after": {
+        "integratedLufs": -11.99,
+        "truePeakDbtp": -1.1,
+        "loudnessRangeLu": 0
+      },
+      "originalFile": "にと_左.wav"
+    },
+    {
+      "src": "assets/media/nova/navi-center-nito.wav",
+      "codec": "pcm_s16le",
+      "rate": 48000,
+      "channels": 1,
+      "samples": 38912,
+      "outputCodec": "pcm_s16le",
+      "gainDb": 24.35,
+      "sourceSha256": "e3fa89c2d630b180282f4a849b34feec1935ce72da7d1813e2773e258afee2c5",
+      "outputSha256": "1b107059eaa0aa1937deee9f9dff58dba449f1d75efc862e97566557bce1ba8b",
+      "before": {
+        "integratedLufs": -30.49,
+        "truePeakDbtp": -16.04,
+        "loudnessRangeLu": 0
+      },
+      "after": {
+        "integratedLufs": -12.15,
+        "truePeakDbtp": -1.09,
+        "loudnessRangeLu": 0
+      },
+      "originalFile": "にと_中.wav"
+    },
+    {
+      "src": "assets/media/nova/navi-right-nito.wav",
+      "codec": "pcm_s16le",
+      "rate": 48000,
+      "channels": 1,
+      "samples": 41480,
+      "outputCodec": "pcm_s16le",
+      "gainDb": 31.07,
+      "sourceSha256": "e98979e617d241e1f2fa00a811fed7162a45193bf763ed1ebcf4e926194334f9",
+      "outputSha256": "434dd4291d412fb8b1629065ef8f90591f41c07223599148f358f559b9d2daab",
+      "before": {
+        "integratedLufs": -40,
+        "truePeakDbtp": -24.28,
+        "loudnessRangeLu": 0
+      },
+      "after": {
+        "integratedLufs": -12.09,
+        "truePeakDbtp": -1.09,
+        "loudnessRangeLu": 0
+      },
+      "originalFile": "にと_右.wav"
+    },
+    {
+      "src": "assets/media/nova/navi-complete-nito.wav",
+      "codec": "pcm_s16le",
+      "rate": 48000,
+      "channels": 1,
+      "samples": 75776,
+      "outputCodec": "pcm_s16le",
+      "gainDb": 22.57,
+      "sourceSha256": "463ca52b792e1e29b76da954e435ed62fe15a79f3c267e54631f786a0d7e44e6",
+      "outputSha256": "26a3d991bd7292a3bd96db48b8ef8537c4b9940969b8d1386e08ab5ddcbb52df",
+      "before": {
+        "integratedLufs": -33.83,
+        "truePeakDbtp": -20.45,
+        "loudnessRangeLu": 0
+      },
+      "after": {
+        "integratedLufs": -12.07,
+        "truePeakDbtp": -1.1,
+        "loudnessRangeLu": 0
+      },
+      "originalFile": "にと_揃い.wav"
+    }
+  ]
+}
