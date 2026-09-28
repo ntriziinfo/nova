@@ -1,8 +1,8 @@
 /* User supplied result images are displayed unchanged, separate from the digits. */
 globalThis.NovaResults=(()=>{
  const chars=['sosuke','toto','urapi','giru','sora','ouma'];
- const initialChars=['kushuri','nito'];
- const names={sosuke:'宗介',toto:'とと',urapi:'うらぴ',giru:'ギル',sora:'空',ouma:'逢魔',kushuri:'くしゅり',nito:'にと'};
+ const initialChars=['kushuri','nito','kushuri_nito'];
+ const names={sosuke:'宗介',toto:'とと',urapi:'うらぴ',giru:'ギル',sora:'空',ouma:'逢魔',kushuri:'くしゅり',nito:'にと',kushuri_nito:'くしゅり＆にと'};
  function pick(kind,zone,setting,rng=Math.random){
   if(kind==='at'){const n=Math.min(11,Math.floor(rng()*12));return {character:chars[Math.floor(n/2)],color:n%2?'blue':'red'};}
   return {character:chars.includes(zone)||initialChars.includes(zone)?zone:'sosuke',color:initialChars.includes(zone)?'initial':rng()<(Number(setting)%2?.6:.4)?'red':'blue'};
@@ -18,7 +18,7 @@ globalThis.NovaResults=(()=>{
  const key=()=>active?active.character+'-'+active.color:'sosuke-red';
  const layout=()=>({...defaults,...positions[key()]});
  function loadImage(character,color){
-  const src=color==='initial'?`assets/illustrations/lamps-20260928/${character}.png`:`assets/results/${character}-${color}.png`,cached=images.get(src);
+  const src=color==='initial'?`assets/illustrations/lamps-20260928/${character==='kushuri_nito'?'nito':character}.png`:`assets/results/${character}-${color}.png`,cached=images.get(src);
   if(cached&&!cached.failed)return cached;
   const img=new Image();img.draggable=false;img.decoding='async';
   const entry={img,ready:false,failed:false};images.set(src,entry);
@@ -37,7 +37,7 @@ globalThis.NovaResults=(()=>{
  }
  function init(){if(root)return;const machine=document.getElementById('machine');if(!machine)return;
   root=document.createElement('div');root.className='novaResultsLayer';root.hidden=true;
-  root.innerHTML='<div class="novaResultCard"><div class="novaResultArt"><img draggable="false" alt=""><output class="novaResultNumber"></output></div><div class="novaResultFallback" role="status"><strong>RESULT</strong><span></span><output></output></div></div>';
+  root.innerHTML='<div class="novaResultCard"><div class="novaResultArt"><img draggable="false" alt=""><output class="novaResultNumber"></output><img class="novaResultPartner" src="assets/illustrations/lamps-20260928/kushuri.png" alt="くしゅり" draggable="false" hidden></div><div class="novaResultFallback" role="status"><strong>RESULT</strong><span></span><output></output></div></div>';
   machine.append(root);card=root.firstElementChild;art=card.firstElementChild;num=art.querySelector('output');fallback=card.querySelector('.novaResultFallback');
   // Decode all twelve unchanged result images before a third-stop result needs them.
   for(const character of chars)for(const color of ['red','blue'])loadImage(character,color);
@@ -59,6 +59,8 @@ globalThis.NovaResults=(()=>{
   init();if(!root)return;
   const request=++imageRequest;active=value;root.hidden=false;root.dataset.loading='true';
   root.dataset.initial=String(value.color==='initial');
+  root.dataset.duo=String(value.character==='kushuri_nito');
+  const partner=art.querySelector('.novaResultPartner');if(partner)partner.hidden=value.character!=='kushuri_nito';
   const label=`${names[value.character]} ${value.color==='initial'?'AT初期pt':value.kind==='at'?'AT総獲得':'上乗せ'}`;
   num.textContent=String(value.pt);num.setAttribute('aria-label',value.pt+'pt');
   fallback.querySelector('span').textContent=label;fallback.querySelector('output').textContent=value.pt+'pt';

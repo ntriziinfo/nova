@@ -1,0 +1,22 @@
+/* VP9 alpha preserves transparency over both reels and lamps. */
+#novaInitialParticles,#novaInitialDuo{position:absolute;pointer-events:none;user-select:none}
+#novaInitialParticles{z-index:42;object-fit:fill;max-width:none;max-height:none}
+#novaInitialDuo{z-index:43;overflow:hidden}
+#novaInitialParticles[hidden],#novaInitialDuo[hidden],#novaInitialDuo [hidden]{display:none!important}
+.novaInitialActor{position:absolute;left:7%;bottom:0;width:86%;height:100%;transform:translateY(58%);transform-origin:50% 100%}
+.novaInitialActor img{position:absolute;bottom:0;display:block;width:100%;height:80%;object-fit:contain;filter:drop-shadow(0 0 12px #e3c7ff);max-width:none}
+#novaInitialDuo[data-pair=true] .novaInitialActor{width:65%;left:-7%}
+#novaInitialDuo[data-pair=true] .novaInitialActor[data-character=kushuri]{left:42%}
+#novaInitialDuo[data-stop="1"] .novaInitialActor{animation:novaDuoJump1 440ms ease-out both}
+#novaInitialDuo[data-stop="2"] .novaInitialActor{animation:novaDuoJump2 470ms ease-out both}
+#novaInitialDuo[data-stop="3"] .novaInitialActor{animation:novaDuoJump3 620ms ease-out both}
+@keyframes novaDuoJump1{0%{transform:translateY(58%)}42%{transform:translateY(15%)}76%{transform:translateY(38%)}100%{transform:translateY(35%)}}
+@keyframes novaDuoJump2{0%{transform:translateY(35%)}42%{transform:translateY(0)}76%{transform:translateY(18%)}100%{transform:translateY(15%)}}
+@keyframes novaDuoJump3{0%{transform:translateY(15%)}40%{transform:translateY(-18%)}76%{transform:translateY(3%)}100%{transform:translateY(0)}}
+/* Keep the large actors in front of the lamp row while they jump through it. */
+body[data-initial-duo-game] .reelArea{z-index:50!important}
+body:is([data-initial-duo-game],[data-art-zone=kushuri_nito],[data-zone-roulette-lamp=kushuri_nito]) .novaArtItem,
+body:is([data-initial-duo-game],[data-art-zone=kushuri_nito],[data-zone-roulette-lamp=kushuri_nito]) .novaArtItem img{animation:none!important;opacity:1!important}
+body:is([data-initial-duo-game],[data-art-zone=kushuri_nito],[data-zone-roulette-lamp=kushuri_nito]) .novaArtItem img{filter:brightness(.24) saturate(.7)!important}
+body:is([data-initial-duo-game],[data-art-zone=kushuri_nito],[data-zone-roulette-lamp=kushuri_nito]) .novaArtItem:is([data-artwork=kushuri],[data-artwork=nito]) img{filter:brightness(1.25) drop-shadow(0 0 12px #edc2ff)!important}
+@media(prefers-reduced-motion:reduce){#novaInitialDuo .novaInitialActor{animation-duration:1ms!important}}

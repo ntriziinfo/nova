@@ -6,5 +6,6 @@
 #novaDirectAward .awardGlyphs span{flex:1;min-width:0;background-image:url('assets/design/nova-award-glyphs-v1/glyphs.png');background-size:600% 200%;background-repeat:no-repeat}
 #novaDirectAward.show img,#novaDirectAward.show .awardGlyphs,#novaDirectAward.show .awardFallback{animation:novaDirectAwardIn 220ms cubic-bezier(.16,.8,.25,1) both}
 #novaDirectAward .awardFallback{font:900 italic clamp(40px,9vw,150px)/1 system-ui;color:#ffe56b;-webkit-text-stroke:2px #7e1600;text-shadow:3px 3px #140400}
+#novaDirectAward[data-duo=true] img{inset:auto 10% 1%;width:80%!important;height:40%!important;object-fit:contain!important}
 @keyframes novaDirectAwardIn{from{transform:scale(.72);opacity:.2}to{transform:scale(1);opacity:1}}
 @media(prefers-reduced-motion:reduce){#novaDirectAward.show img,#novaDirectAward.show .awardGlyphs,#novaDirectAward.show .awardFallback{animation:none}}

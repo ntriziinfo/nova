@@ -7,11 +7,11 @@ import {xoshiro128} from '../scripts/zone-v2-rng.mjs';
 loadModel();const a=NovaArt,b=NovaBalance;
 const reload=s=>a.normalize(JSON.parse(JSON.stringify(s)));
 
-test('Kushuri and Nito are equal initial-only selections; ordinary zones never include them',()=>{
+test('the shared Kushuri/Nito zone is initial-only; ordinary zones never include it',()=>{
  for(let setting=1;setting<=6;setting++)for(const quota of a.entryQuotaRules.values){
-  assert.equal(a.pickInitialZone(setting,quota,()=>.499999),'kushuri');
-  assert.equal(a.pickInitialZone(setting,quota,()=>.5),'nito');
-  assert.deepEqual([...a.rouletteZones({initialStage:'entry',initialVersion:148})],['kushuri','nito']);
+  assert.equal(a.pickInitialZone(setting,quota,()=>.499999),'kushuri_nito');
+  assert.equal(a.pickInitialZone(setting,quota,()=>.5),'kushuri_nito');
+  assert.deepEqual([...a.rouletteZones({initialStage:'entry',initialVersion:148})],['kushuri_nito']);
   for(let i=0;i<100;i++)assert(!a.initialZoneIds.includes(a.pickZone(setting,()=>(i+.5)/100)));
  }
  for(const id of a.initialZoneIds){
@@ -78,7 +78,7 @@ test('current analytic zone averages agree with independently consumed zones',()
 
 test('initial result cards keep their own character and do not emit setting hints',()=>{
  const c=vm.createContext({});vm.runInContext(fs.readFileSync('nova-results.js','utf8'),c);
- for(const zone of ['kushuri','nito'])for(let setting=1;setting<=6;setting++){
+ for(const zone of ['kushuri','nito','kushuri_nito'])for(let setting=1;setting<=6;setting++){
   const card=c.NovaResults.transition({zone,initialStage:'zone'},{zone:'',award:'200'},setting,()=>{throw Error('initial result must not draw a setting hint');});
   assert.equal(card.character,zone);assert.equal(card.color,'initial');assert.equal(card.pt,'200');
  }

@@ -31,6 +31,7 @@ globalThis.NovaDirectAward=(()=>{
  function show(resolved){
   const pt=amount(resolved);if(!pt||!init())return false;
   const label='＋'+pt+'pt';root.dataset.pt=String(pt);root.setAttribute('aria-label',(resolved.zoneAward?'ゾーン上乗せ ':'直乗せ ')+label);
+  root.dataset.duo=String(resolved.flowBefore?.initialVersion===148&&resolved.flowBefore?.initialStage==='zone');
   fallback.textContent=label;fallback.hidden=true;img.hidden=!values.includes(pt);glyphs.hidden=values.includes(pt);
   if(values.includes(pt))img.src=source(pt);
   else{
@@ -44,7 +45,7 @@ globalThis.NovaDirectAward=(()=>{
  }
  function clear(){
   if(resultTimer!==null){NovaClock.clearTimeout(resultTimer);resultTimer=null;}
-  if(root){root.hidden=true;root.classList.remove('show');delete root.dataset.pt;}
+  if(root){root.hidden=true;root.classList.remove('show');delete root.dataset.pt;delete root.dataset.duo;}
  }
  // A last-game award must remain readable before the result card covers it.
  // The shared clock also advances while AUTO is in a background tab.

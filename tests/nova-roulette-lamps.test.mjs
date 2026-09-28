@@ -24,14 +24,14 @@ test('legacy initial roulette omits ladder characters for unsupported amounts, o
  ctx.showZoneRoulette(null);
 });
 
-test('new initial roulette cycles only Kushuri and Nito and confirms their own lamps',()=>{
+test('new initial roulette selects the shared zone and lights both lamps',()=>{
  ctx.showZoneRoulette({entryStage:'roulette',initialStage:'entry',initialVersion:148,entryQuota:'200'});
  for(let i=0;i<8;i++){
-  assert.equal(body.dataset.zoneRouletteLamp,i%2?'nito':'kushuri');
-  assert.equal(panel.textContent,'特化ゾーン抽選中… '+(i%2?'にと':'くしゅり'));
+  assert.equal(body.dataset.zoneRouletteLamp,'kushuri_nito');
+  assert.equal(panel.textContent,'特化ゾーン抽選中… くしゅり＆にと');
   [...timers.values()][0]();
  }
- for(const id of ['kushuri','nito']){
+ for(const id of ['kushuri_nito']){
   ctx.showZoneRoulette({entryStage:'confirmed',initialStage:'entry',initialVersion:148,pendingZone:id});
   assert.equal(body.dataset.zoneRouletteLamp,id);assert.equal(timers.size,0);
  }
