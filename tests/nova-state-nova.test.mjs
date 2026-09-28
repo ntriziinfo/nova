@@ -7,12 +7,12 @@ const {NovaNormal:n,NovaArt:a,NovaFlow:f}=load();
 test('normal NOVA uses pre-spin state for CZ and never promotes state',()=>{
  for(const level of ['low','high']){
   const state={level,highLeft:10,games:100};const p=n.roleCzRate(state,'WEAK_NOVA',3);
-  for(const [roll,expected]of [[p-1e-10,'CZ'],[p,'']])assert.equal(n.spin(state,{phase:'normal'},3,{},()=>roll,'WEAK_NOVA').entry,expected);
-  const t=n.spin(state,{phase:'normal'},3,{},()=>.99,'STRONG_NOVA');assert.equal(t.entry,'STRONG_CZ');assert.equal(t.state.level,level);assert.equal(t.czOptions.strongChance,level==='high'?1:.85);
+  for(const [roll,expected]of [[p-1e-10,'CZ'],[p,'']])assert.equal(n.spin(state,{phase:'normal'},3,{},()=>roll,'WEAK_NOVA').state.prelude?.entry||'',expected);
+  const t=n.spin(state,{phase:'normal'},3,{},()=>.99,'STRONG_NOVA');assert.equal(t.entry,'');assert.equal(t.state.prelude.entry,'STRONG_CZ');assert.equal(t.state.level,level);assert.equal(t.czOptions.strongChance,level==='high'?1:.85);
   assert.equal(f.enterCZ(true,t.czOptions,()=>.849).success,true);
   assert.equal(f.enterCZ(true,t.czOptions,()=>.999).success,level==='high');
  }
- for(const role of ['WEAK_SUICA','STRONG_SUICA','CHANCE_A','CHANCE_B'])assert.equal(n.spin({}, {phase:'normal'},3,{},()=>0,role).entry,'CZ');
+ for(const role of ['WEAK_SUICA','STRONG_SUICA','CHANCE_A','CHANCE_B'])assert.equal(n.spin({}, {phase:'normal'},3,{},()=>0,role).state.prelude.entry,'CZ');
 });
 test('normal guarantee protects exactly ten subsequent games without rare extension',()=>{
  let s=n.advance({mode:'通常C'},'STRONG_SUICA',{phase:'normal'},{},()=>0);assert.equal(s.highLeft,10);
@@ -38,7 +38,14 @@ test('strong SUICA rare 300pt is literal points, not converted G, and pays 6pt',
 test('live normal path passes strong CZ options and preserves normalized AT state',()=>{
  const c=load(),html=fs.readFileSync('jag.html','utf8');
  vm.runInContext("const normalState={internal:{level:'high',highLeft:10},flow:{phase:'normal'}},settings={setting:3};let pendingArtStep=null,pendingForceResult='STRONG_NOVA';"+html.match(/  function drawIndependentATypeOutcome\([^]*?\n  }/)[0],c);
- c.drawIndependentATypeOutcome();assert.equal(vm.runInContext('pendingArtStep.flow.success',c),true);assert.equal(vm.runInContext('pendingArtStep.flow.winProbability',c),1);
+ c.drawIndependentATypeOutcome();assert.equal(vm.runInContext('pendingArtStep.flow.phase',c),'normal');
+ vm.runInContext("normalState.internal=pendingArtStep.normalInternal;pendingForceResult='BELL';",c);
+ for(let i=0;i<11;i++){
+  c.drawIndependentATypeOutcome();
+  if(vm.runInContext('!!pendingArtStep.czEntry',c))break;
+  vm.runInContext('normalState.internal=pendingArtStep.normalInternal;',c);
+ }
+ assert.equal(vm.runInContext('pendingArtStep.flow.success',c),true);assert.equal(vm.runInContext('pendingArtStep.flow.winProbability',c),1);
  assert.equal(f.normalize({...({...a.enter({},()=>.5),remaining:'150',entryQuota:'150'}),atHigh:true,atHighLeft:7}).atHighLeft,7);
 });
 test('old forced strong bell maps to ordinary bell in both engines',()=>{

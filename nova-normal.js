@@ -4,11 +4,27 @@ globalThis.NovaNormal=(()=>{
  // A/B/heaven and game-count zones are retired; a single common ceiling remains.
  const modes=['通常'],ceilings=[lotteryRules.ceilingGames],transitions=[[100]],gameZoneRates={通常:{}},atEndModeWeights={dry:[100],normal:[100]};
  const gameZoneConfig={fakeRate:0,preludeMin:3,preludeMax:8,ceilingBonusRate:.5};
+ const czPreludeRules=Object.freeze({minGames:3,maxGames:10});
  function zonePoint(){return false;}
  function zoneRate(){return 0;}
  function preludePresentation(){return 'none';}
  function prelude(kind,rng,g){return {kind,originG:g,presentation:'main',left:gameZoneConfig.preludeMin+Math.floor(rng()*(gameZoneConfig.preludeMax-gameZoneConfig.preludeMin+1))};}
- function preludeLabel(p){return p?.presentation==='pre'?'ざわつき':p?.presentation==='main'?'NOVA前兆':'前兆中';}
+ function preludeLabel(p){return p?.presentation==='reel'?'CZ前兆':p?.presentation==='pre'?'ざわつき':p?.presentation==='main'?'NOVA前兆':'前兆中';}
+ function czPrelude(entry,czOptions,rng,g,source='rare'){
+  const span=czPreludeRules.maxGames-czPreludeRules.minGames;
+  const total=czPreludeRules.minGames+Math.min(span,Math.floor(rng()*(span+1)));
+  return {kind:source==='ceiling'?'ceilingCz':'cz',originG:g,presentation:'reel',total,left:total,entry,source,
+   ...(entry==='STRONG_CZ'?{strongChance:czOptions.strongChance}:{})};
+ }
+ function normalizePrelude(p){
+  if(!p||!['cz','ceilingBonus','ceilingCz'].includes(p.kind))return null;
+  const base={kind:p.kind,originG:Math.max(0,Math.floor(Number(p.originG)||0)),presentation:['pre','main'].includes(p.presentation)?p.presentation:'legacy',left:Math.max(0,Math.min(8,Math.floor(Number(p.left)||0)))};
+  if(p.presentation!=='reel'||p.kind==='ceilingBonus')return base;
+  const total=Math.max(3,Math.min(10,Math.floor(Number(p.total)||3)));
+  return {...base,presentation:'reel',total,left:Math.max(0,Math.min(total,Math.floor(Number(p.left)||0))),entry:p.entry==='STRONG_CZ'||p.kind==='ceilingCz'?'STRONG_CZ':'CZ',source:p.kind==='ceilingCz'?'ceiling':'rare',
+   ...(Number.isFinite(p.strongChance)?{strongChance:Math.max(0,Math.min(1,p.strongChance))}:{})};
+ }
+ function czPreludeStage(p){return p?.presentation==='reel'?Math.min(3,Math.floor((p.total-p.left)*3/p.total)):0;}
  function normalLabel(value){const s=normalize(value);return s.prelude?preludeLabel(s.prelude):'通常';}
  // Every rare role draws CZ. SUICA/chance eyes also draw high-state promotion.
  const rare={WEAK_SUICA:{p:0.011,up:.05,cz:.06,gain:1,pay:6},STRONG_SUICA:{p:0.0026,up:.5,cz:.6,gain:3,pay:6},CHANCE_A:{p:1/312.5,up:9/28,cz:3/14,gain:1,pay:0},CHANCE_B:{p:1/125,up:9/28,cz:3/14,gain:1,pay:0},WEAK_NOVA:{p:1/128,up:.35,cz:.3,gain:2,pay:0},STRONG_NOVA:{p:1/2500,up:.75,cz:1,gain:4,pay:0}};
@@ -19,7 +35,7 @@ globalThis.NovaNormal=(()=>{
  function resetDistribution(setting=1){const row=resetImpurityWeights[Math.max(0,Math.min(5,Math.round(Number(setting)||1)-1))];return resetImpurityPoints.map((pt,i)=>({pt,weight:row[i]}));}
  function reset(rng=Math.random,setting=1){const row=resetDistribution(setting);return normalize({impurity:row[weighted(row.map(x=>x.weight),rng)].pt});}
  // Preserve an already-won legacy prelude, counters and impurity, but discard fake hints.
- function normalize(v){return {normalVersion:128,prelude:v?.prelude&&['cz','ceilingBonus','ceilingCz'].includes(v.prelude.kind)?{kind:v.prelude.kind,originG:Math.max(0,Math.floor(Number(v.prelude.originG)||0)),presentation:['pre','main'].includes(v.prelude.presentation)?v.prelude.presentation:'legacy',left:Math.max(0,Math.min(8,Math.floor(Number(v.prelude.left)||0)))}:null,ceilingHandled:!!v?.ceilingHandled,regStreak:0,morningCeiling:false,mode:'通常',games:Math.max(0,Math.floor(Number(v?.games)||0)),level:v?.level==='high'?'high':'low',highLeft:v?.level==='high'?Math.max(0,Math.floor(Number(v?.highLeft)||0)):0,impurity:Math.min(100,Math.max(0,Number(v?.impurity)||0))};}
+ function normalize(v){return {normalVersion:152,prelude:normalizePrelude(v?.prelude),ceilingHandled:!!v?.ceilingHandled,regStreak:0,morningCeiling:false,mode:'通常',games:Math.max(0,Math.floor(Number(v?.games)||0)),level:v?.level==='high'?'high':'low',highLeft:v?.level==='high'?Math.max(0,Math.floor(Number(v?.highLeft)||0)):0,impurity:Math.min(100,Math.max(0,Number(v?.impurity)||0))};}
  function modeWeights(){return [100];}
  function weighted(weights,rng){let n=rng()*weights.reduce((a,b)=>a+b,0);return Math.max(0,weights.findIndex(w=>(n-=w)<0));}
  function ceiling(){return lotteryRules.ceilingGames;}
@@ -65,13 +81,36 @@ globalThis.NovaNormal=(()=>{
   const before=normalize(value),c=config(options.normal),result=forced||drawRole(setting,rng);
   flow=NovaFlow.rewrite(flow,result,options.cz,rng);
   const state=advance(before,result,flow,c,rng),token={result,state,czFlow:flow,internalBonus:null,entry:'',direct:false,czOptions:options.cz};
+  if(['cz','strong_cz'].includes(flow.phase)&&before.prelude?.presentation==='reel'&&before.prelude.left===0){
+   state.prelude=null;token.czPrelude={before:3,after:0,announce:true};
+  }
   const bonus=source=>({kind:'BIG',source,internalResult:'BIG'});
-  if(forced==='FREEZE'){token.result='MISS';token.internalBonus={...bonus('フリーズ'),premiumBonus:true};return token;}
+  if(forced==='FREEZE'){state.prelude=null;token.result='MISS';token.internalBonus={...bonus('フリーズ'),premiumBonus:true};return token;}
   if(!before.ceilingHandled&&!before.prelude&&before.games+1>=ceiling(before)){
    state.ceilingHandled=true;state.impurity=Math.min(100,state.impurity+c.ceilingGain);
-   state.prelude=prelude(rng()<gameZoneConfig.ceilingBonusRate?'ceilingBonus':'ceilingCz',rng,ceiling(before));if(flow.phase==='normal')token.message=preludeLabel(state.prelude)+'開始';
+   state.prelude=rng()<gameZoneConfig.ceilingBonusRate?prelude('ceilingBonus',rng,ceiling(before)):czPrelude('STRONG_CZ',{strongChance:1},rng,ceiling(before),'ceiling');if(flow.phase==='normal')token.message=preludeLabel(state.prelude)+'開始';
   }
   if(flow.phase==='normal'){
+   if(before.prelude?.presentation==='reel'){
+    const p=state.prelude;
+    // Keep the won CZ and its countdown. Strong NOVA can promote it without
+    // restarting the prelude; a premium bonus retains its existing priority.
+    if(p.source!=='ceiling'&&(result==='SUPER_NOVA'||(!forced&&rng()<1/c.superDenom))){token.result='SUPER_NOVA';state.prelude=null;return token;}
+    if(result==='STRONG_NOVA'){p.entry='STRONG_CZ';p.strongChance=Math.max(p.strongChance||0,before.level==='high'?1:.85);}
+    if(before.prelude.left===0){
+     token.entry=p.entry;token.entrySource=p.source;
+     if(Number.isFinite(p.strongChance))token.czOptions={...options.cz,strongChance:p.strongChance};
+     token.czPrelude={before:3,after:0,announce:true};state.prelude=null;
+     token.message=token.entry==='STRONG_CZ'?'強CZ突入':'CZ突入';return token;
+    }
+    p.left--;
+    token.czPrelude={before:czPreludeStage(before.prelude),after:czPreludeStage(p),left:p.left,total:p.total};
+    if(p.left===0){
+     token.entry=p.entry;token.entrySource=p.source;token.czPrelude.enter=true;
+     if(Number.isFinite(p.strongChance))token.czOptions={...options.cz,strongChance:p.strongChance};
+    }
+    return token;
+   }
    if(before.prelude&&state.prelude&&before.prelude.kind===state.prelude.kind&&before.prelude.originG===state.prelude.originG){
     state.prelude.left=Math.max(0,state.prelude.left-1);
     if(!state.prelude.left){const kind=state.prelude.kind;state.prelude=null;
@@ -81,13 +120,16 @@ globalThis.NovaNormal=(()=>{
      token.message=preludeLabel(before.prelude)+'終了';
     }
    }
-   if(state.prelude?.kind.startsWith('ceiling'))return token;
+   if(state.prelude?.kind.startsWith('ceiling')){if(state.prelude.presentation==='reel')token.czPrelude={before:0,after:0,started:true,left:state.prelude.left,total:state.prelude.total};return token;}
    if(!forced&&rng()<1/c.superDenom){token.result='SUPER_NOVA';state.prelude=null;return token;}
    if(result==='STRONG_NOVA'){
-    state.prelude=null;token.entry='STRONG_CZ';token.entrySource='rare';token.czOptions={...options.cz,strongChance:before.level==='high'?1:.85};return token;
+    token.czOptions={...options.cz,strongChance:before.level==='high'?1:.85};
+    state.prelude=czPrelude('STRONG_CZ',token.czOptions,rng,state.games);
+    token.czPrelude={before:0,after:0,started:true,left:state.prelude.left,total:state.prelude.total};token.message='CZ前兆開始';return token;
    }
    if(rare[result]&&rng()<roleCzRate(before,result,setting,c)){
-    state.prelude=null;token.entry='CZ';token.entrySource='rare';return token;
+    state.prelude=czPrelude('CZ',options.cz,rng,state.games);
+    token.czPrelude={before:0,after:0,started:true,left:state.prelude.left,total:state.prelude.total};token.message='CZ前兆開始';return token;
    }
   }else if(['cz','strong_cz'].includes(flow.phase)){
    flow.lampRoll??=rng();flow.rainbowRoll??=rng();
@@ -106,5 +148,5 @@ globalThis.NovaNormal=(()=>{
  function afterBonus(value,rng=Math.random,setting){const s=normalize(value);return {...s,prelude:null,ceilingHandled:false,morningCeiling:false,games:0,level:'low',highLeft:0};}
  function drawRare(rng=Math.random){const keys=Object.keys(rare);return keys[weighted(keys.map(k=>rare[k].p),rng)];}
  const rareMean=Object.values(rare).reduce((s,r)=>s+r.p*r.pay,0)/Object.values(rare).reduce((s,r)=>s+r.p,0);
- return {lotteryRules,roleCzRate,modeWeights,gameZoneRates,gameZoneConfig,atEndModeWeights,zonePoint,preludePresentation,zoneRate,normalLabel,resetImpurityPoints,resetImpurityWeights,resetDistribution,reset,modes,ceilings,transitions,rare,rareMean,rareFactor,roleProbabilities,drawRare,defaults,config,normalize,ceiling,favored,multiplier,pay,drawRole,advance,spin,claim,afterArt,bonusEnd,afterBonus};
+ return {lotteryRules,czPreludeRules,czPreludeStage,roleCzRate,modeWeights,gameZoneRates,gameZoneConfig,atEndModeWeights,zonePoint,preludePresentation,zoneRate,normalLabel,resetImpurityPoints,resetImpurityWeights,resetDistribution,reset,modes,ceilings,transitions,rare,rareMean,rareFactor,roleProbabilities,drawRare,defaults,config,normalize,ceiling,favored,multiplier,pay,drawRole,advance,spin,claim,afterArt,bonusEnd,afterBonus};
 })();

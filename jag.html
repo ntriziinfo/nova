@@ -6531,7 +6531,7 @@ body{
   .vertexConnectionBadge.offline{color:#ff8f9c;border-color:rgba(255,91,113,.65);background:rgba(52,9,17,.9)}
   .vertexConnectionBadge.legacy{color:#d4a6ff;border-color:rgba(185,109,255,.6)}
 </style>
-<link rel="stylesheet" href="nova-cabinet.css?v=20260928-duo-149">
+<link rel="stylesheet" href="nova-cabinet.css?v=20260928-cz-prelude-152">
 <link rel="stylesheet" href="nova-artwork.css?v=20260928-eight-lamps">
 <script src="nova-artwork.js?v=20260928-lamp-defaults-151" defer></script>
 <script src="nova-beat-lamps.js?v=20260928-eight-lamps"></script>
@@ -6551,7 +6551,7 @@ body{
 <script src="nova-aim-presentation.js?v=20260920-sora-voice"></script>
 <script src="nova-art.js?v=20260928-duo-149"></script>
 <script src="nova-balance.js?v=20260928-duo-149"></script>
-<script src="nova-normal.js?v=20260917-s4-140"></script>
+<script src="nova-normal.js?v=20260928-cz-prelude-152"></script>
 <script src="nova-flow.js?v=20260928-presentation-150"></script>
 <link rel="stylesheet" href="nova-audit.css?v=20260910-audit-121">
 <script src="nova-audit.js?v=20260928-duo-149"></script>
@@ -8002,7 +8002,7 @@ body{
       artSetWon:resolved.artSetWon,oumaFreeze:resolved.oumaFreeze,czLamp:resolved.czLamp,bonusHit:resolved.bonusHit,bonusSource:resolved.bonusSource,
       bellNaviOrder:currentSpin?.bellNaviOrder,rareNavi:currentSpin?.rareNavi,
       pressOrder:debugFastSpinActive?'simulation':currentSpin?.auditPressOrder,stopOrder:debugFastSpinActive?'simulation':currentSpin?.auditStopOrder,grid:debugFastSpinActive?undefined:currentSpin?.auditGrid,visualResult:!debugFastSpinActive&&NovaAim.hasGuide(resolved.aim)&&currentSpin?.aimAligned===false?'MISS':result,
-      flowBefore:resolved.flowBefore,flowAfter:resolved.flowAfter,manualLineupMiss:resolved.manualLineupMiss,bonusWaitSpin:resolved.bonusWaitSpin,czEntry:resolved.czEntry,czCompleted:resolved.czCompleted};
+      flowBefore:resolved.flowBefore,flowAfter:resolved.flowAfter,manualLineupMiss:resolved.manualLineupMiss,bonusWaitSpin:resolved.bonusWaitSpin,czEntry:resolved.czEntry,czPrelude:resolved.czPrelude,czCompleted:resolved.czCompleted};
   }
   function setupPlayAudit(){
     novaAuditRecorder=new NovaAudit.Recorder({scope:STORAGE_KEY});
@@ -10413,6 +10413,7 @@ body{
 
   function normalModeLabel(){
     if(normalState.bonusPending) return normalState.prepLeft>0?"ボーナス準備中 残り"+normalState.prepLeft+"G":"7を狙え";
+    if(normalState.internal?.prelude?.presentation==='reel'&&['normal','cz','strong_cz'].includes(normalState.flow?.phase)&&!(isSpinning&&currentSpin?.resolved?.czPrelude?.announce))return 'CZ前兆';
     return normalState.flow?.phase==='normal'?NovaNormal.normalLabel(normalState.internal):NovaFlow.label(normalState.flow);
   }
 
@@ -11275,13 +11276,13 @@ body{
     if(inCz){token.czFlow.lampRoll??=Math.random();token.czFlow.rainbowRoll??=Math.random();}
     const ceilingHit=token.internalBonus?.source?.includes('天井');
     pendingArtStep={
-      result:token.result,normalInternal:token.state,
+      result:token.result,normalInternal:token.state,czEntry:token.entry,czPrelude:token.czPrelude,
       flow:token.direct?NovaArt.enterInitial({...settings.novaArt,setting:settings.setting}):token.entry?NovaFlow.enterCZ(token.entry==='STRONG_CZ',token.czOptions ?? settings.novaFlow):token.internalBonus?NovaFlow.normalize(null):NovaFlow.advance(token.czFlow),
       czLamp:token.czLamp || (inCz?{...NovaFlow.drawLamp({...token.czFlow,
         success:token.czFlow.success||!!token.internalBonus||token.direct,
         winProbability:ceilingHit?1:token.czFlow.winProbability}),
         totalGames:token.czFlow.totalGames,remaining:token.czFlow.remaining}:null),
-      message:token.direct?'AT準備開始':token.entry?token.entry+'突入':token.message||''
+      message:token.direct?'AT準備開始':token.czPrelude?.enter?'':token.entry?(token.entry==='STRONG_CZ'?'強CZ突入':'CZ突入'):token.message||''
     };
     return {result:token.result,internalBonus:token.internalBonus};
   }
@@ -11356,8 +11357,8 @@ body{
   function resolveNormalOutcome(result, lineRow=1){
     if(A_TYPE_MODE){
       const flowBefore = NovaFlow.normalize(normalState.flow);
-      const czEntry = result === "CZ" || result === "STRONG_CZ";
       const artStep=pendingArtStep;pendingArtStep=null;
+      const czEntry = !!artStep?.czEntry || result === "CZ" || result === "STRONG_CZ";
       const zoneSpin=!!artStep?.zoneSpin;
       const superNovaBonus = result === "SUPER_NOVA" && flowBefore.phase!=='art' && !normalState.bonusPending && !zoneSpin ? drawSuperNovaBonus() : null;
       const internalBonus = superNovaBonus || pendingATypeInternalBonus;
@@ -11397,6 +11398,7 @@ body{
               : "";
       return {
         normalInternal:artStep?.normalInternal,
+        czPrelude:artStep?.czPrelude,
         czLamp:artStep?.czLamp,
         aim:artStep?.aim,
         burstEvent:artStep?.burstEvent,
@@ -12966,6 +12968,7 @@ body{
     if(A_TYPE_MODE && result==="REPLAY")normalState.replayFree=true;
     if(A_TYPE_MODE && resolved.aTypeBonusReady)jagChainBonusHandoff=true;
     if(A_TYPE_MODE && resolved.normalInternal)normalState.internal=NovaNormal.normalize(resolved.normalInternal);
+    showCzPrelude(3,resolved);
     const info = RESULT[result] || RESULT.MISS;
     const modeAtStart = A_TYPE_MODE ? NovaFlow.label(resolved.flowBefore) : (resolved.highAtStart ? "高確" : "通常");
     const lineText = result !== "MISS" ? `${lineName(lineRow)}ライン` : "";
@@ -13030,8 +13033,9 @@ body{
       if(resolved.comebackEvent==='success')showOverlay('AT復活！');
       return;
     }
+    if(resolved.czPrelude?.enter){showMessage('CZ前兆','リール全消灯');log('CZ前兆：リール全消灯 / 次BETでCZ告知');return;}
     if(A_TYPE_MODE && (resolved.czEntry || resolved.rtCompleted || (resolved.czCompleted && !resolved.bonusHit))){
-      if(resolved.artMessage){showMessage(resolved.artMessage,normalModeLabel());showOverlay(resolved.artMessage);log(resolved.artMessage);return;}
+      if(resolved.artMessage){showMessage(resolved.artMessage,normalModeLabel());if(!resolved.czAnnounced)showOverlay(resolved.artMessage);log(resolved.artMessage);return;}
       const message=resolved.czEntry ? (result === "STRONG_CZ" ? "強CZ突入" : "CZ突入") : resolved.rtCompleted ? "RT終了" : "CZ失敗";
       showMessage(message, normalModeLabel()+normalRewardText);
       log(message+" / "+normalModeLabel());
@@ -13454,6 +13458,7 @@ body{
       reelArea.classList.toggle("premiumBigOverlayOn", !!(isATypeBonusActive() && (session.premiumBonus || session.oneGameRenBonus)));
     }
     const internal=NovaNormal.normalize(normalState.internal);
+    if(!isSpinning)renderCzPrelude(!session.active&&!normalState.bonusPending&&['normal','cz','strong_cz'].includes(normalState.flow?.phase)?NovaNormal.czPreludeStage(internal.prelude):0);
     if($('novaInternalStatus'))$('novaInternalStatus').textContent='小役CZ抽選 / '+internal.games+'G（共通天井'+NovaNormal.ceiling(internal)+'G） / '+(internal.level==='high'?'高確（保証'+internal.highLeft+'G）':'低確')+ (normalState.flow?.phase==='art'?' / '+'AT '+(normalState.flow.atHigh?'高確（保証'+normalState.flow.atHighLeft+'G）':'低確'):'')+' / 穢れ'+internal.impurity+'pt / 特化予約 '+(session.active?(session.bonusZones||[]):(normalState.flow?.queuedZones||[])).map(z=>NovaArt.zoneName(z)).join('・');
     const flowStatus=$("novaFlowStatus");
     if(flowStatus){
@@ -15180,6 +15185,7 @@ body{
       reversePushGuide,
       pendingBattleOutcome:null
     };
+    showCzPrelude(0,resolved);
     playCzCountdownOnLever(resolved);
     currentSpin.manualBonusStop = false; // Fixed-G prototype: bonus starts on the next confirmed spin.
     if(!debugFastSpinActive&&NovaBellNavi.begin(currentSpin)){
@@ -15365,6 +15371,7 @@ body{
     }
     syncCabinetControlState();
     showCzLamp(stopOrder,currentSpin.resolved);
+    showCzPrelude(stopOrder,currentSpin.resolved);
     NovaLadder.stop(stopOrder);
     if(currentSpin.stopped.every(Boolean)&&NovaAim.hasGuide(currentSpin.resolved?.aim)&&['BIG','NEBULA'].includes(currentSpin.result)&&currentSpin.aimAligned&&!currentSpin.aimWinPlayed&&!debugFastSpinActive){
       currentSpin.aimWinPlayed=true;
@@ -15583,6 +15590,27 @@ body{
     let index=0;const zones=NovaArt.rouletteZones(flow);
     const tick=()=>{const zone=zones[index++%zones.length];show(zone,'特化ゾーン抽選中… '+NovaArt.names[zone]);};
     tick();zoneRouletteTimer=setInterval(tick,110);
+  }
+  function renderCzPrelude(stage){
+    const count=Math.max(0,Math.min(3,Number(stage)||0));
+    document.getElementById('machine').dataset.czPreludeStage=String(count);
+    document.querySelectorAll('.reel[data-reel]').forEach(reel=>reel.classList.toggle('cz-prelude-blackout',Number(reel.dataset.reel)<count));
+  }
+  function showCzPrelude(stopOrder,resolved){
+    const prelude=resolved?.czPrelude;
+    if(!prelude){if(stopOrder===0||stopOrder===3)renderCzPrelude(0);return;}
+    if(prelude.announce){
+      renderCzPrelude(0);
+      if(stopOrder===0&&!resolved.czAnnounced){
+        resolved.czAnnounced=true;
+        updateDisplay();
+        const message=resolved.flowAfter?.phase==='strong_cz'?'強CZ突入':'CZ突入';
+        showMessage(message,'リール全消灯からCZへ');showOverlay(message);
+      }
+      return;
+    }
+    if(stopOrder===0)renderCzPrelude(prelude.before);
+    if(stopOrder===3)renderCzPrelude(prelude.after);
   }
   let czLampTimers=[];
   function showCzLamp(stopOrder,resolved){

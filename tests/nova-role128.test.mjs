@@ -36,7 +36,7 @@ test('all rare roles draw CZ at their thresholds, using the state before the rol
  for(let setting=1;setting<=6;setting++)for(const level of ['low','high'])for(const role of Object.keys(n.rare)){
   const rate=n.roleCzRate({level},role,setting),state={level,highLeft:10};assert(rate>0&&rate<=1);
   const run=roll=>n.spin(state,{phase:'normal'},setting,{},()=>roll,role);
-  assert.equal(run(Math.max(0,rate-1e-10)).entry,role==='STRONG_NOVA'?'STRONG_CZ':'CZ');
+  const hit=run(Math.max(0,rate-1e-10));assert.equal(hit.entry,'');assert.equal(hit.state.prelude.entry,role==='STRONG_NOVA'?'STRONG_CZ':'CZ');
   if(rate<1)assert.equal(run(rate).entry,'');
   if(role==='STRONG_NOVA')assert.equal(run(.99999).czOptions.strongChance,level==='high'?1:.85);
  }
@@ -52,7 +52,7 @@ test('common ceiling awards once after the prelude and respects an active CZ',()
   assert.equal(t.internalBonus,null);assert.equal(t.state.impurity,10);assert.equal(t.state.prelude.originG,800);
   for(let i=0;i<3;i++)t=spin(n.normalize(JSON.parse(JSON.stringify(t.state))));
   if(bonus){assert.equal(t.internalBonus.kind,'BIG');assert.match(t.internalBonus.source,/800G/);}
-  else{assert.equal(t.entry,'STRONG_CZ');assert.equal(t.czOptions.strongChance,1);}
+  else{assert.equal(t.czPrelude.after,3);assert.equal(t.entry,'STRONG_CZ');assert.equal(t.czOptions.strongChance,1);}
   assert.equal(t.state.ceilingHandled,true);assert.equal(spin(t.state).state.impurity,10);
  }
  const cz={phase:'cz',remaining:2,totalGames:15,success:false,winProbability:.4};
