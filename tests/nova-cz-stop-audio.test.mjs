@@ -1,11 +1,12 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
-const html=fs.readFileSync('jag.html','utf8'),calls=[],ctx=vm.createContext({currentSpin:null,isLadderShutterSpin:()=>false,document:{getElementById:()=>({dataset:{czLamp:'2'}})},STOP_SOUND_SRC:'normal.wav',sfxOutputVolume:()=>.5,playOneShotSound:(src)=>calls.push(src)});
+const html=fs.readFileSync('jag.html','utf8'),calls=[],ctx=vm.createContext({currentSpin:null,isLadderShutterSpin:()=>false,document:{getElementById:()=>({dataset:{czLamp:'4'}})},STOP_SOUND_SRC:'normal.wav',sfxOutputVolume:()=>.5,playOneShotSound:(src)=>calls.push(src)});
 vm.runInContext(fs.readFileSync('nova-flow.js','utf8'),ctx);
 for(const name of ['czThirdStopSound','playStopSound'])vm.runInContext(html.match(new RegExp('  function '+name+'\\([^]*?\\n  }'))[0],ctx);
 const lamp={stage:3,rainbow:false,totalGames:20,remaining:11};
 test('new light and surprise rainbow use success; no advance and final loss use failure',()=>{
- assert.match(ctx.czThirdStopSound({czLamp:lamp},2),/success/);
- assert.match(ctx.czThirdStopSound({czLamp:lamp},3),/failure/);
+ assert.match(ctx.czThirdStopSound({czLamp:lamp},4),/success/);
+ assert.match(ctx.czThirdStopSound({czLamp:lamp},5),/failure/);
+ assert.match(ctx.czThirdStopSound({czLamp:lamp,czLampAtBet:4},5),/success/);
  assert.match(ctx.czThirdStopSound({czLamp:{...lamp,rainbow:true,rainbowAt:1}},3),/success/);
  assert.match(ctx.czThirdStopSound({czLamp:lamp,czCompleted:true,bonusHit:false,flowAfter:{phase:'normal'}},2),/failure/);
 });

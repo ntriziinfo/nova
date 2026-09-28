@@ -68,7 +68,7 @@
   const chance=document.getElementById('stLamp');
   function syncLamp(){
     const stage=Number(machine.dataset.czLamp)||0;
-    const order=['sosuke','toto','urapi','giru1','sora1','ouma1'];
+    const order=NovaFlow.lampCharacters;
     for(const [id,item] of items){
       const index=order.indexOf(id);
       item.dataset.czLit=String(index>=0&&index<stage);

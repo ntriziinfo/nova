@@ -25,9 +25,10 @@ globalThis.NovaBellNavi=(()=>{
   root.setAttribute('role','group');root.setAttribute('aria-label','ベル押し順ナビ');
   items=[0,1,2].map(i=>{
    const item=document.createElement('div');item.className='novaBellNaviItem';item.dataset.reel=String(i);
-   const img=new Image();img.src=asset;img.alt='';img.draggable=false;item.append(img);root.append(item);return item;
+   const img=new Image();img.hidden=true;img.alt='';img.draggable=false;item.append(img);root.append(item);return item;
   });
   host.append(root);
+  const bellPreload=new Image();bellPreload.src=asset;
   for(const color of ['green','purple','red'])for(const mark of ['!','!!']){const preload=new Image();preload.src=rareAsset({color,mark});}
   if(typeof ResizeObserver!=='undefined'){
    const observer=new ResizeObserver(layout);observer.observe(host);
@@ -59,16 +60,27 @@ globalThis.NovaBellNavi=(()=>{
    if(signal){delete item.dataset.number;item.dataset.mark=signal.mark;}else{item.dataset.number=String(number);delete item.dataset.mark;}
    item.dataset.stopped=String(!!stopped[i]);item.dataset.next=String(!signal&&i===next);
    item.setAttribute('aria-label',['左','中','右'][i]+'リール '+(signal?signalLabel:number+'番目')+(stopped[i]?' 停止済み':''));
-   const src=signal?rareAsset(signal):asset;if(item.firstChild.getAttribute('src')!==src)item.firstChild.src=src;
+   const src=signal?rareAsset(signal):asset;setSprite(item.firstChild,src);
    item.firstChild.style.left=-(signal?i:number-1)*100+'%';
   });
   layout();
+ }
+ // Changing img.src can retain the previous decoded bitmap until the new image
+ // finishes loading. Hide it first and only reveal the latest decoded request.
+ function setSprite(img,src){
+  if(img.getAttribute('src')===src)return;
+  img.hidden=true;const request=(img.naviRequest||0)+1;img.naviRequest=request;
+  const ready=()=>{if(img.naviRequest===request&&img.getAttribute('src')===src&&img.complete&&img.naturalWidth>0)img.hidden=false;};
+  img.onload=()=>{if(typeof img.decode==='function')img.decode().then(ready).catch(()=>{});else ready();};
+  img.onerror=()=>{if(img.naviRequest===request)img.hidden=true;};
+  img.src=src;
+  if(img.complete&&img.naturalWidth>0)img.onload();
  }
  function begin(spin,rng=Math.random){
   spin.bellNaviOrder=eligible(spin)?drawOrder(rng):null;
   spin.rareNavi=drawRareNavi(spin,rng);
   // The caller uses the returned numbered order to trigger the bell BET sound.
-  active=spin.bellNaviOrder||spin.rareNavi?spin:null;render();return spin.bellNaviOrder;
+  active=spin;render();return spin.bellNaviOrder;
  }
  function stop(spin){if(active===spin)render();}
  function clear(){active=null;render();}

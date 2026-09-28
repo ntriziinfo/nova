@@ -58,6 +58,22 @@ globalThis.NovaFlow = (() => {
     const rainbow=!!lamp.rainbow&&elapsed>=(lamp.rainbowAt||1);
     return {stage:Math.min(lamp.stage,Math.ceil(6*elapsed/lamp.totalGames)),rainbow};
   }
+  const lampCharacters=Object.freeze(['kushuri','nito','sosuke','toto','urapi','giru1','sora1','ouma1']);
+  // Eight physical lamps reveal the existing six confidence tiers. The first
+  // two are entrance steps; the winning draw and early-completion G stay intact.
+  function lampDisplayAtStop(lamp,stopOrder){
+    if(!lamp||!Number.isInteger(stopOrder)||stopOrder<1||stopOrder>3)return null;
+    const total=Math.max(1,Number(lamp.totalGames)||1),elapsed=Math.max(1,total-(Number(lamp.remaining)||1)+1);
+    const stopped=(elapsed-1)*3+stopOrder,target=Math.min(8,Math.max(1,Number(lamp.stage)||1)+2);
+    let stage=0,scheduled=0;
+    for(let next=1;next<=target;next++){
+      const game=next<=3?1:Math.floor((next-3)*total/6)+1;
+      scheduled=Math.min(total*3,Math.max(scheduled,(game-1)*3+(next-1)%3+1));
+      if(stopped>=scheduled)stage=next;
+    }
+    const rainbow=!!lamp.rainbow&&(elapsed>(lamp.rainbowAt||1)||(elapsed===(lamp.rainbowAt||1)&&stopOrder===3));
+    return {stage,rainbow};
+  }
   function normalize(value){
     if(value?.phase==='art')return NovaArt.normalize(value);
     if(value?.phase==='rt')return NovaArt.normalize({...value,phase:'art'});
@@ -95,5 +111,5 @@ globalThis.NovaFlow = (() => {
     return s.phase==='rt'?`RT 残り${s.remaining}G / 純増1.2pt`:
       s.phase==='cz'?`CZ 残り${s.remaining}G`:s.phase==='strong_cz'?`強CZ 残り${s.remaining}G`:'通常';
   }
-  return Object.freeze({forSetting,defaults,rewriteRates,lampConfidence,lampWeights,drawLamp,lampAtStop,rewrite,rt,config,normalize,enterCZ,afterBonus,advance,drawEntry,drawRT,label});
+  return Object.freeze({forSetting,defaults,rewriteRates,lampConfidence,lampWeights,drawLamp,lampAtStop,lampDisplayAtStop,lampCharacters,rewrite,rt,config,normalize,enterCZ,afterBonus,advance,drawEntry,drawRT,label});
 })();

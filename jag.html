@@ -6533,7 +6533,7 @@ body{
 </style>
 <link rel="stylesheet" href="nova-cabinet.css?v=20260928-duo-149">
 <link rel="stylesheet" href="nova-artwork.css?v=20260928-eight-lamps">
-<script src="nova-artwork.js?v=20260928-eight-lamps" defer></script>
+<script src="nova-artwork.js?v=20260928-presentation-150" defer></script>
 <script src="nova-beat-lamps.js?v=20260928-eight-lamps"></script>
 <script src="nova-clock.js?v=20260917-background-129"></script>
 <script src="nova-reel-motion.js?v=20260917-background-129"></script>
@@ -6541,8 +6541,8 @@ body{
 <script src="nova-results.js?v=20260928-duo-149"></script>
 <link rel="stylesheet" href="nova-ladder-presentation.css?v=20260917-initial-131">
 <script src="nova-ladder-presentation.js?v=20260917-initial-131"></script>
-<link rel="stylesheet" href="nova-bell-navi.css?v=20260917-bell-132">
-<script src="nova-bell-navi.js?v=20260917-navi-136"></script>
+<link rel="stylesheet" href="nova-bell-navi.css?v=20260928-presentation-150">
+<script src="nova-bell-navi.js?v=20260928-presentation-150"></script>
 <link rel="stylesheet" href="nova-initial-duo.css?v=20260928-duo-149">
 <script src="nova-initial-duo.js?v=20260928-duo-149"></script>
 <link rel="stylesheet" href="nova-direct-award.css?v=20260928-duo-149">
@@ -6552,7 +6552,7 @@ body{
 <script src="nova-art.js?v=20260928-duo-149"></script>
 <script src="nova-balance.js?v=20260928-duo-149"></script>
 <script src="nova-normal.js?v=20260917-s4-140"></script>
-<script src="nova-flow.js?v=20260916-role-128"></script>
+<script src="nova-flow.js?v=20260928-presentation-150"></script>
 <link rel="stylesheet" href="nova-audit.css?v=20260910-audit-121">
 <script src="nova-audit.js?v=20260928-duo-149"></script>
 <script src="nova-audit-ui.js?v=20260916-role-128"></script>
@@ -7286,6 +7286,7 @@ body{
   const SORA_ZONE_BGM_SRC = "assets/media/nova/sora-bgm.wav";
   const GIRU_ZONE_BGM_SRC = "assets/media/nova/giru-bgm.wav";
   const OUMA_ZONE_BGM_SRC = "assets/media/nova/oumafreez.wav";
+  const INITIAL_DUO_ZONE_BGM_SRC = "assets/media/nova/initial-duo-bgm.mp3";
   const NOVA_ART_BGM_SRC = "assets/media/nova/RUSH.wav";
   const NOVA_BIG_BGM_SRC = "assets/media/nova/BIG.wav";
   const NOVA_REG_BGM_SRC = "assets/media/nova/NovaREG.wav";
@@ -8165,6 +8166,8 @@ body{
   for(const src of CHARACTER_VOICE_SRCS){const audio=new Audio(src);audio.preload='auto';oneShotSoundCache.set(src,audio);audio.load();}
   for(const src of ['assets/media/nova/bell-navi.wav','assets/media/nova/direct-award.wav','assets/media/nova/weak-nova.wav','assets/media/nova/aim/nebula-win.wav','assets/media/nova/aim/seven-win.wav','assets/media/nova/aim/cue-blue.wav','assets/media/nova/aim/cue-red.wav','assets/media/nova/aim/cue-rainbow.wav','assets/media/nova/shutter.wav','assets/media/nova/shutter-close.wav','assets/media/nova/ladder-final-award.wav','assets/media/nova/ladder-final-award-under1000.wav']){const audio=new Audio(src);audio.preload='auto';oneShotSoundCache.set(src,audio);audio.load();}
   const resultEyecatchPreload = new Audio('assets/media/nova/result-eyecatch.wav');
+  const initialDuoBgmPreload = new Audio(INITIAL_DUO_ZONE_BGM_SRC);
+  initialDuoBgmPreload.preload='auto';initialDuoBgmPreload.load();
   resultEyecatchPreload.preload='auto';resultEyecatchPreload.load();
   oneShotSoundCache.set('assets/media/nova/result-eyecatch.wav',resultEyecatchPreload);
   const oumaFailPreload = new Audio('assets/media/nova/ouma-fail.wav');
@@ -12702,6 +12705,7 @@ body{
 
   function normalBgmSrc(){
     if(!session.active && normalState.flow?.phase==='art'){
+      if(normalState.flow.initialStage==='zone'&&['kushuri_nito','kushuri','nito'].includes(normalState.flow.zone))return INITIAL_DUO_ZONE_BGM_SRC;
       const zoneTracks = {sosuke:SOSUKE_ZONE_BGM_SRC,toto:TOTO_ZONE_BGM_SRC,urapi:URAPI_ZONE_BGM_SRC,sora:SORA_ZONE_BGM_SRC,giru:GIRU_ZONE_BGM_SRC,ouma:OUMA_ZONE_BGM_SRC};
       return zoneTracks[normalState.flow.zone] || NOVA_ART_BGM_SRC;
     }
@@ -12722,7 +12726,8 @@ body{
   }
 
   function playNormalBgm(){
-    if(normalState.resultCard || normalState.pendingZoneResult || normalState.ladderAwardPresentation || NovaDirectAward.busy){pauseNormalBgm();return;}
+    const initialDuoZone=normalState.flow?.initialStage==='zone'&&['kushuri_nito','kushuri','nito'].includes(normalState.flow.zone);
+    if(normalState.resultCard || normalState.pendingZoneResult || normalState.ladderAwardPresentation || (NovaDirectAward.busy&&!initialDuoZone)){pauseNormalBgm();return;}
     if(debugFastSpinActive) return;
     if(session.active) return;
     if(bonusConfirmBgmHold && !session.active) return;
@@ -15583,19 +15588,19 @@ body{
   function showCzLamp(stopOrder,resolved){
     const host=document.getElementById('machine');
     host.dataset.czBlink=resolved?.czLamp&&stopOrder<3?String(stopOrder):'';
-    if(resolved?.czLamp&&stopOrder!==3)return;
+    if(resolved?.czLamp&&stopOrder===0){resolved.czLampAtBet=Number(host.dataset.czLamp)||0;return;}
     czLampTimers.forEach(clearTimeout);czLampTimers=[];
     const lamp=resolved?.czLamp,machine=document.getElementById('machine');
     if(!lamp){machine.dataset.czLamp='0';machine.dataset.czRainbow='false';return;}
-    const display=NovaFlow.lampAtStop(lamp,stopOrder);
+    const display=NovaFlow.lampDisplayAtStop(lamp,stopOrder);if(!display)return;
     const target=display.stage;
     const previous=Number(machine.dataset.czLamp)||0;
-    if(previous>=6&&target===6&&resolved.bonusHit)playCzConfirmedSound(resolved);
+    if(stopOrder===3&&previous>=8&&target===8&&resolved.bonusHit)playCzConfirmedSound(resolved);
     for(let stage=previous+1;stage<=target;stage++){
-      czLampTimers.push(setTimeout(()=>{machine.dataset.czLamp=String(stage);if(stage===6&&resolved.bonusHit)playCzConfirmedSound(resolved);},(stage-previous-1)*100));
+      czLampTimers.push(setTimeout(()=>{machine.dataset.czLamp=String(stage);if(stopOrder===3&&stage===8&&resolved.bonusHit)playCzConfirmedSound(resolved);},(stage-previous-1)*100));
     }
     if(display.rainbow){
-      czLampTimers.push(setTimeout(()=>{machine.dataset.czRainbow='true';if(resolved.bonusHit)playCzConfirmedSound(resolved);},0));
+      czLampTimers.push(setTimeout(()=>{machine.dataset.czRainbow='true';if(stopOrder===3&&resolved.bonusHit)playCzConfirmedSound(resolved);},0));
     }
   }
 
@@ -16796,7 +16801,8 @@ body{
   }
   function czThirdStopSound(resolved,previousStage){
     if(!resolved?.czLamp)return '';
-    const display=NovaFlow.lampAtStop(resolved.czLamp,3);
+    const display=NovaFlow.lampDisplayAtStop(resolved.czLamp,3);
+    previousStage=resolved.czLampAtBet??previousStage;
     const failed=resolved.czCompleted&&!resolved.bonusHit&&resolved.flowAfter?.phase==='normal';
     const success=!failed&&(display.rainbow||display.stage>previousStage||resolved.bonusHit||resolved.flowAfter?.phase==='art');
     return success?'assets/media/jag/cz_third_success.wav':'assets/media/jag/cz_third_failure.wav';
