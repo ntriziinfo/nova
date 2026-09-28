@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
-const ctx=vm.createContext({});vm.runInContext(fs.readFileSync('nova-art.js','utf8'),ctx);const a=ctx.NovaArt;
+const ctx=vm.createContext({});vm.runInContext(fs.readFileSync('nova-tuning.js','utf8')+'\n'+fs.readFileSync('nova-art.js','utf8'),ctx);const a=ctx.NovaArt;
 const seq=(...values)=>()=>values.length>1?values.shift():values[0];
 test('each zone and target use exact color success boundaries, even above 2000pt',()=>{
  for(const id of ['toto','sora','ura_sora'])for(const award of ['0','2500'])for(const symbol of ['seven','nebula'])for(const [roll,color,p] of [[.1,'blue',.2],[.7,'red',.8],[.97,'rainbow',1]]){

@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
-for(const f of ['nova-art.js','nova-balance.js'])vm.runInThisContext(fs.readFileSync(f,'utf8'));const a=NovaArt;
+for(const f of ['nova-tuning.js','nova-art.js','nova-balance.js'])vm.runInThisContext(fs.readFileSync(f,'utf8'));const a=NovaArt;
 const sequence=values=>()=>{assert.ok(values.length);return values.shift();};
 test('threshold includes the proposed award and remains exact for large saved points',()=>{assert.equal(a.zoneAwardFactor('1999'),1);assert.equal(a.zoneAwardFactor('1950',50),.01);assert.equal(a.zoneAwardFactor('2000'),.01);assert.equal(a.zoneAwardFactor('999999999999999999999999'),.01);});
 test('ladder actual role advances beyond 2000 without another draw',()=>{const s={...a.startZone(({...a.enter({},()=>.5),remaining:'150',entryQuota:'150'}),'ura_giru',{},()=>.9),ladderRevealed:true,ladderIndex:3,award:'2000',zoneLeft:1};const t=a.step(s,{},sequence([.1,0]));assert.equal(t.result,'REPLAY');assert.equal(t.flow.remaining,'3150');assert.equal(t.flow.zone,'');});

@@ -7,7 +7,7 @@ function setup(){
  const sounds=[],c=vm.createContext({debugFastSpinActive:false,speedToBonusActive:false,voiceOutputVolume:()=>.6,sfxOutputVolume:()=>.4,playOneShotSound:(src,volume)=>sounds.push({src,volume}),NovaAim:{drawGuide:()=>true,hasGuide:a=>!!a&&a.guide!==false,bet:()=>false}});
  for(const name of ['AIM_VOICE_SRCS','SEVEN_ZONE_VOICE_SRCS','NEBULA_ZONE_VOICE_SRCS','ZONE_START_VOICE_SRCS','ZONE_CONTINUE_VOICE_SRCS','OUMA_NOVA_VOICE_SRCS'])vm.runInContext(html.match(new RegExp('  const '+name+'=[^\\n]+'))[0],c);
  for(const name of ['playRandomAimVoice','playSevenAimVoice','playNebulaAimVoice','playAimBetPresentation','playZoneStartVoice','playZoneContinueVoice','playOumaNovaAimVoice','playOumaNovaWinVoice','novaSymbol','isNovaGrid'])vm.runInContext(name==='novaSymbol'||name==='isNovaGrid'?html.match(new RegExp('  function '+name+'[^\\n]+'))[0]:html.match(new RegExp('  function '+name+'\\([^]*?\\n  }'))[0],c);
- vm.runInContext(fs.readFileSync('nova-art.js','utf8'),c);
+ vm.runInContext(fs.readFileSync('nova-tuning.js','utf8')+'\n'+fs.readFileSync('nova-art.js','utf8'),c);
  return {c,sounds};
 }
 test('zone seven cues match the character on hits and misses, including reverse zones, without a voice draw',()=>{

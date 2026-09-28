@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
-const ctx=vm.createContext({});for(const f of ['nova-art.js','nova-balance.js'])vm.runInContext(fs.readFileSync(f,'utf8'),ctx);const a=ctx.NovaArt,b=ctx.NovaBalance;
+const ctx=vm.createContext({});for(const f of ['nova-tuning.js','nova-art.js','nova-balance.js'])vm.runInContext(fs.readFileSync(f,'utf8'),ctx);const a=ctx.NovaArt,b=ctx.NovaBalance;
 test('initial character restriction keeps prior RTP evidence explicitly historical',()=>{
  const report=JSON.parse(fs.readFileSync('docs/role128-summary.json','utf8'));
  const current=JSON.parse(fs.readFileSync('docs/bonus-stock146-validation.json','utf8'));

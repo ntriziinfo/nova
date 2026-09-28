@@ -1,4 +1,4 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
-const c=vm.createContext({});for(const f of ['nova-art.js','nova-normal.js'])vm.runInContext(fs.readFileSync(f,'utf8'),c);const a=c.NovaArt,n=c.NovaNormal;
+const c=vm.createContext({});for(const f of ['nova-tuning.js','nova-art.js','nova-normal.js'])vm.runInContext(fs.readFileSync(f,'utf8'),c);const a=c.NovaArt,n=c.NovaNormal;
 test('high strong NOVA doubles Giru and above selection weights before normalization',()=>{for(let setting=1;setting<=6;setting++){const low=a.atZoneWeights(setting),high=a.atZoneWeights(setting,true);assert.ok(Math.abs(low.reduce((x,y)=>x+y,0)-100)<1e-10);assert.ok(low.every(x=>x>0));for(let i=3;i<6;i++)assert.ok(Math.abs((high[i]/high[0])/(low[i]/low[0])-2)<1e-12);}});
 test('non-NOVA rare roles cannot directly enter zones',()=>{for(const role of Object.keys(a.atRoleRules)){const t=a.step(a.enter(),{setting:6},()=>0,role);assert.equal(t.flow.entryStage,'');assert.equal(t.flow.atHigh,true);assert.ok(t.atOutcome.direct>0);}});

@@ -5,7 +5,7 @@ import {loadBurstTrial} from '../scripts/burst112-trial-model.mjs';
 import {xoshiro128} from '../scripts/zone-v2-rng.mjs';
 
 test('trial retains initial 150, BIG chances, zone locations, mode guarantees and disk sources',()=>{
- const files=['nova-art.js','nova-normal.js','nova-flow.js'];
+ const files=['nova-tuning.js','nova-art.js','nova-normal.js','nova-flow.js'];
  const before=files.map(f=>fs.readFileSync(f,'utf8'));
  const a=loadBurstTrial({normalBoost:.48});const n=NovaNormal;
  assert.equal(a.enter({},()=>.5).remaining,'150');

@@ -1,3 +1,3 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
-const ctx=vm.createContext({});for(const f of ['nova-art.js','nova-balance.js','nova-flow.js','nova-normal.js'])vm.runInContext(fs.readFileSync(f,'utf8'),ctx);const a=ctx.NovaArt,n=ctx.NovaNormal;
+const ctx=vm.createContext({});for(const f of ['nova-tuning.js','nova-art.js','nova-balance.js','nova-flow.js','nova-normal.js'])vm.runInContext(fs.readFileSync(f,'utf8'),ctx);const a=ctx.NovaArt,n=ctx.NovaNormal;
 test('normal and heaven persistence increases without changing ceilings',()=>{assert.ok(n.transitions[0][0]>=70);assert.ok(n.transitions[1][1]>=65);assert.equal(n.transitions[4][4]+n.transitions[4][5],75);assert.equal(n.transitions[5][4]+n.transitions[5][5],82);assert.deepEqual(Array.from(n.ceilings),[600,600,300,600,100,100]);});

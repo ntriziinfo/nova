@@ -36,7 +36,7 @@ test('restore keeps the saved game and final jump survives until result; unrelat
  assert.equal(p.eligible({...flow(0),initialVersion:131}),false);
 });
 test('old two-character saves merge without losing their already sealed plan or points',()=>{
- const c=vm.createContext({});vm.runInContext(fs.readFileSync('nova-art.js','utf8'),c);const a=c.NovaArt;
+ const c=vm.createContext({});vm.runInContext(fs.readFileSync('nova-tuning.js','utf8')+'\n'+fs.readFileSync('nova-art.js','utf8'),c);const a=c.NovaArt;
  for(const old of ['kushuri','nito']){
   const saved={...a.enterInitial({},()=>.5),initialStage:'zone',zone:old,initialPlan:[50,100,50],initialIndex:1,zoneLeft:2,award:'50',remaining:'0'};
   const restored=a.normalize(saved);assert.equal(restored.zone,'kushuri_nito');assert.equal(restored.initialIndex,1);assert.deepEqual([...restored.initialPlan],[50,100,50]);assert.equal(restored.award,'50');

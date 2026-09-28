@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
-const ctx=vm.createContext({});for(const f of ['nova-art.js','nova-flow.js','nova-balance.js','nova-normal.js'])vm.runInContext(fs.readFileSync(f,'utf8'),ctx);const a=ctx.NovaArt;
+const ctx=vm.createContext({});for(const f of ['nova-tuning.js','nova-art.js','nova-flow.js','nova-balance.js','nova-normal.js'])vm.runInContext(fs.readFileSync(f,'utf8'),ctx);const a=ctx.NovaArt;
 test('BIG and migrated REG both use a 100pt target',()=>{assert.equal(a.bonusTarget('BIG'),100);assert.equal(a.bonusTarget('MID'),100)});
 test('ART win freezes quota, then red seven, roulette, announcement, zone',()=>{
  let s={...a.enter(),remaining:'5'};

@@ -1,4 +1,4 @@
-import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';const c=vm.createContext({});for(const f of ['nova-art.js','nova-balance.js'])vm.runInContext(fs.readFileSync(f,'utf8'),c);const a=c.NovaArt;const seq=(...xs)=>()=>xs.length>1?xs.shift():xs[0];
+import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';const c=vm.createContext({});for(const f of ['nova-tuning.js','nova-art.js','nova-balance.js'])vm.runInContext(fs.readFileSync(f,'utf8'),c);const a=c.NovaArt;const seq=(...xs)=>()=>xs.length>1?xs.shift():xs[0];
 test('roulette rare role upgrades to six/giru or ura-giru, seven/sosuke only',()=>{
  for(const [roll,character,id]of [[.1,.1,'giru'],[.1,.9,'ura_giru'],[.9,.1,'sosuke']]){
   const out=a.step({...a.enter(),entryStage:'roulette',pendingZone:'toto'}, {},seq(0,roll,character),'STRONG_NOVA');assert.equal(out.result,'STRONG_NOVA');assert.equal(out.flow.pendingZone,id);

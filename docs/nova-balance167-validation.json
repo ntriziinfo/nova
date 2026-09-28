@@ -1,0 +1,89 @@
+{
+  "version": 167,
+  "date": "2026-09-29",
+  "referenceReplays": [
+    {
+      "setting": 1,
+      "games": 30000,
+      "net": -4852,
+      "base": 33.5,
+      "referenceExact": true
+    },
+    {
+      "setting": 2,
+      "games": 30000,
+      "net": -4677,
+      "base": 33.49999999999999,
+      "referenceExact": true
+    },
+    {
+      "setting": 3,
+      "games": 30000,
+      "net": 551,
+      "base": 33.49999999999999,
+      "referenceExact": true
+    },
+    {
+      "setting": 4,
+      "games": 30000,
+      "net": -1599,
+      "base": 33.5,
+      "referenceExact": true
+    },
+    {
+      "setting": 5,
+      "games": 30000,
+      "net": 5670,
+      "base": 33.5,
+      "referenceExact": true
+    },
+    {
+      "setting": 6,
+      "games": 30000,
+      "net": 6811,
+      "base": 42,
+      "referenceExact": true
+    }
+  ],
+  "regression": {
+    "passed": 41,
+    "failed": 0,
+    "scope": "v167 base/entry/challenge/persistence plus CZ/AT preludes, AUTO, role isolation, rescue",
+    "legacySuite": "Contains pre-existing obsolete specification assertions; not an all-suite pass."
+  },
+  "browser": {
+    "scenarios": [
+      {
+        "scenario": "sortie",
+        "spins": 10,
+        "passed": true
+      },
+      {
+        "scenario": "checkpoint-failure",
+        "spins": 10,
+        "passed": true
+      },
+      {
+        "scenario": "rare-hold",
+        "spins": 4,
+        "passed": true
+      },
+      {
+        "scenario": "initial-challenge",
+        "spins": 10,
+        "passed": true
+      }
+    ],
+    "errors": [],
+    "muted": true
+  },
+  "sourceHashes": {
+    "nova-tuning.js": "60361ba69bd9123c4e456d2f040c17aa32a0a70c1c1c48ccfbf88c49d96157ed",
+    "nova-art.js": "71607f3e08390badcc5c779634d8ccfa96755fb060f8ea277343c89d4624d654",
+    "nova-normal.js": "fc3e78798bc16031097089445eaecdb2f5d71ff81f03f7109110b1e86c3fdad5",
+    "nova-progress.js": "0c82660fa2b098d47b9e60c3c253f462504c63dafd593e919922ab8b7602b968",
+    "nova-balance.js": "7b8d2ae49cc11bc20b032ada882206410cfa43422e5c976c23754ea1118bbe04",
+    "scripts/zone-v2-model.mjs": "bc889ea0273a5d014c9d6e44b062ec9cf7e4c5c6824a72382d8be7f14b5d1453",
+    "jag.html": "073fa2e274eeb73bb0aab9aade1680861452bc01fac4328b626fb99edddfd0fe"
+  }
+}

@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
-const ctx=vm.createContext({});for(const f of ['nova-art.js','nova-balance.js'])vm.runInContext(fs.readFileSync(f,'utf8'),ctx);
+const ctx=vm.createContext({});for(const f of ['nova-tuning.js','nova-art.js','nova-balance.js'])vm.runInContext(fs.readFileSync(f,'utf8'),ctx);
 const a=ctx.NovaArt,b=ctx.NovaBalance;
 const save=s=>a.normalize(JSON.parse(JSON.stringify(s)));
 test('nine zones and retired aliases preserve queued awards without new promotion',()=>{

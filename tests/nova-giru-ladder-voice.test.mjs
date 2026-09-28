@@ -7,7 +7,7 @@ function setup(){
  const sounds=[],c=vm.createContext({debugFastSpinActive:false,speedToBonusActive:false,voiceOutputVolume:()=>.6,playOneShotSound:(src,volume)=>sounds.push({src,volume})});
  vm.runInContext(html.match(/  const GIRU_LADDER_VOICE_SRCS=[^\n]+/)[0],c);
  for(const name of ['playGiruLadderBetVoice','playGiruLadderResultVoice'])vm.runInContext(html.match(new RegExp('  function '+name+'\\([^]*?\\n  }'))[0],c);
- vm.runInContext(fs.readFileSync('nova-art.js','utf8'),c);
+ vm.runInContext(fs.readFileSync('nova-tuning.js','utf8')+'\n'+fs.readFileSync('nova-art.js','utf8'),c);
  return {c,sounds};
 }
 function challenge(c,zone,pass){

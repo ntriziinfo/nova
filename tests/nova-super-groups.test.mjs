@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
-const ctx=vm.createContext({});for(const f of ['nova-art.js','nova-balance.js','nova-normal.js'])vm.runInContext(fs.readFileSync(f,'utf8'),ctx);const a=ctx.NovaArt,b=ctx.NovaBalance,n=ctx.NovaNormal;
+const ctx=vm.createContext({});for(const f of ['nova-tuning.js','nova-art.js','nova-balance.js','nova-normal.js'])vm.runInContext(fs.readFileSync(f,'utf8'),ctx);const a=ctx.NovaArt,b=ctx.NovaBalance,n=ctx.NovaNormal;
 test('group lottery retains original strong share and its 3 percent super promotion',()=>{
  for(let setting=1;setting<=6;setting++)for(const boost of [false,true])for(const preparation of [false,true]){
   const original=a.zoneWeights[setting-1].map((w,i)=>w*(boost&&i>=3?2:1)*Math.exp((preparation?0:a.tuning.tilts[setting-1])*i));

@@ -5,6 +5,7 @@ import vm from 'node:vm';
 import {execFileSync} from 'node:child_process';
 import {xoshiro128} from '../scripts/zone-v2-rng.mjs';
 const prior=vm.createContext({}),current=vm.createContext({});
+vm.runInContext(fs.readFileSync('nova-tuning.js','utf8'),current);
 for(const file of ['nova-art.js','nova-flow.js','nova-normal.js']){
  vm.runInContext(execFileSync('git',['show',`90f739d:${file}`],{encoding:'utf8'}),prior);
  vm.runInContext(fs.readFileSync(file,'utf8'),current);

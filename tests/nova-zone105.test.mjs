@@ -1,4 +1,4 @@
-import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';const c=vm.createContext({});for(const f of ['nova-art.js','nova-balance.js'])vm.runInContext(fs.readFileSync(f,'utf8'),c);const a=c.NovaArt;
+import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';const c=vm.createContext({});for(const f of ['nova-tuning.js','nova-art.js','nova-balance.js'])vm.runInContext(fs.readFileSync(f,'utf8'),c);const a=c.NovaArt;
 test('ouma final miss below 100 rewrites to a win without freeze',()=>{
  for(const award of ['0','50']){const out=a.step({...a.startZone(a.enter(),'ouma'),zoneLeft:1,award},{},()=>.9,'MISS');assert.equal(out.result,'SUPER_NOVA');assert.equal(out.flow.award,'100');assert.equal(out.flow.oumaPending,false);assert.equal(out.flow.zone,'');}
  const out=a.step({...a.startZone(a.enter(),'ouma'),zoneLeft:1,award:'100'},{},()=>.9,'MISS');assert.equal(out.result,'MISS');

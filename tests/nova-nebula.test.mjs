@@ -1,4 +1,4 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';import crypto from 'node:crypto';
-const ctx=vm.createContext({});vm.runInContext(fs.readFileSync('nova-art.js','utf8'),ctx);const a=ctx.NovaArt;
+const ctx=vm.createContext({});vm.runInContext(fs.readFileSync('nova-tuning.js','utf8')+'\n'+fs.readFileSync('nova-art.js','utf8'),ctx);const a=ctx.NovaArt;
 test('licensed nebula original is byte-identical to the supplied asset',()=>{assert.equal(crypto.createHash('sha256').update(fs.readFileSync('assets/symbols/nebula-original.png')).digest('hex'),'9b467ec4adb80708be9eaeae730674de150cd58d018834d962f53078d1edb828');});
 test('bonus special thresholds retain each setting probability under the dedicated symbol',()=>{for(let s=1;s<=6;s++){const p=a.bonusSpecialFor(s);assert.equal(a.drawBonus(()=>p-1e-12,s),'NEBULA');assert.notEqual(a.drawBonus(()=>p,s),'NEBULA');}});

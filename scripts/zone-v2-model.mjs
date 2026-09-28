@@ -1,7 +1,9 @@
 import fs from 'node:fs';import path from 'node:path';import vm from 'node:vm';import {fileURLToPath} from 'node:url';import {xoshiro128} from './zone-v2-rng.mjs';
 export const ROOT=path.dirname(fileURLToPath(import.meta.url));
 export function loadModel(variant='..',cache=true){
- for(const f of ['nova-art.js','nova-balance.js','nova-flow.js','nova-normal.js']){
+ const files=['nova-art.js','nova-balance.js','nova-flow.js','nova-normal.js'];
+ if(fs.existsSync(path.join(ROOT,variant,'nova-tuning.js'))){files.unshift('nova-tuning.js');files.push('nova-progress.js');}
+ for(const f of files){
   let s=fs.readFileSync(path.join(ROOT,variant,f),'utf8');
   if(f==='nova-flow.js'&&cache)s=s.replace('function lampWeights(p){','const lampCache=new Map();function lampWeights(p){if(!lampCache.has(p))lampCache.set(p,computeLampWeights(p));return lampCache.get(p);}function computeLampWeights(p){');
   if(f==='nova-normal.js'&&variant==='baseline'){
@@ -14,7 +16,16 @@ export function loadModel(variant='..',cache=true){
 export function lcg(seed){return ()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};}
 export function mulberry(seed){return ()=>{seed=(seed+0x6D2B79F5)>>>0;let t=seed;t=Math.imul(t^(t>>>15),t|1);t^=t+Math.imul(t^(t>>>7),t|61);return ((t^(t>>>14))>>>0)/4294967296;};}
 export function simulate(setting,games,seed,options={}){
+ options={rareSortie:!!globalThis.NovaTuning,rareDenominator:globalThis.NovaTuning?.profile(setting).denominator||10000,...options};
  const a=NovaArt,n=NovaNormal,c={...a.defaults,setting,...options.art},rng=(options.rng==='xoshiro128'?xoshiro128:options.rng==='mulberry'?mulberry:lcg)(seed);
+ a.resetResearchCheckpoints?.();
+ const atPayoutBins=Object.fromEntries(['0-499','500-999','1000-1999','2000-2999','3000-4999','5000-9999','10000+'].map(k=>[k,0]));
+ const actualAtZone={normal:{games:0,wins:0},upper:{games:0,wins:0}};
+ const upper={spins:0,upperGames:0,bySource:{initial:{started:0,won:0,failed:0},threshold:{started:0,won:0,failed:0},rare:{started:0,won:0,failed:0}}};
+ const entryRng=xoshiro128(String(seed)+'|sortie-entry');
+ const rare={draws:0,triggered:0,pending:0,started:0,completed:0,newAt:0,spins:0,stocks:0,guaranteedStocks:0,byPhase:{},tiers:{},stockHist:{},zones:{},audit:options.rareAudit?[]:undefined};
+ const forcedRare=options.rareForcedGames?new Set(options.rareForcedGames):null;
+ const isReady=()=>flow.phase==='art'&&!flow.initialStage&&!flow.zone&&!flow.entryStage&&!flow.atPrelude&&!flow.burstPending&&!flow.burstLeft&&!flow.researchSortieLeft&&!flow.queuedZones?.length&&Number(flow.sets||0)===0&&Number(flow.stock||0)===0;
  let flow={phase:'normal'},state=options.initialImpurity===undefined?n.reset(rng,setting):n.normalize({impurity:options.initialImpurity});
  if(options.initialMode)state.mode=options.initialMode;
  if(options.initialModeWeights){let r=rng()*options.initialModeWeights.reduce((s,w)=>s+w,0);state.mode=n.modes[options.initialModeWeights.findIndex(w=>(r-=w)<0)];}
@@ -27,9 +38,11 @@ export function simulate(setting,games,seed,options={}){
  const atMetrics={eligible:0,high:0,zoneWins:0,directWins:0,directPoints:0,promotions:0,suica100:0,suica300:0};const blocks=[];let blockBet=0,blockPaid=0,blockPeak=0,firstComplete=null;
  const zones={},normalRoles={},normalPayout={bet:0,paid:0,games:0};
  const sessionEnd=Symbol('session end'),scale=NovaBalance.profile(setting).scale*(options.scaleMultiplier??1);
- const track=()=>{if(flow.phase==='art'&&!treatmentStart){const tier=flow.atLevel||0;treatmentStart={tier,paid,fee};atLevelMetrics[tier].entries++;}if(flow.phase!=='art'&&treatmentStart){const row=atLevelMetrics[treatmentStart.tier];row.completed++;row.completedPaid+=paid-treatmentStart.paid;row.completedNet+=paid-treatmentStart.paid-fee+treatmentStart.fee;treatmentStart=null;}const net=paid-fee;peak=Math.max(peak,net);maxDrawdown=Math.max(maxDrawdown,peak-net);if(artStart!==null)maxArtNet=Math.max(maxArtNet,net-artStart);if(options.recordBlocks)blockPeak=Math.max(blockPeak,net-(blockPaid-blockBet));if(!firstComplete&&net>=(options.completeLimitPt??19000))firstComplete={games:count,totalBet:fee,totalPaid:paid,net};};
+ const track=()=>{if(flow.phase==='art'&&!treatmentStart){const tier=flow.atLevel||0;treatmentStart={tier,paid,fee,comebackPaid:0};atLevelMetrics[tier].entries++;}if(flow.phase!=='art'&&treatmentStart){const row=atLevelMetrics[treatmentStart.tier];row.completed++;row.completedPaid+=paid-treatmentStart.paid;
+ const total=paid-treatmentStart.paid;atPayoutBins[total<500?'0-499':total<1000?'500-999':total<2000?'1000-1999':total<3000?'2000-2999':total<5000?'3000-4999':total<10000?'5000-9999':'10000+']++;row.completedNet+=paid-treatmentStart.paid-fee+treatmentStart.fee;treatmentStart=null;}const net=paid-fee;a.observeResearchNet?.(net);peak=Math.max(peak,net);maxDrawdown=Math.max(maxDrawdown,peak-net);if(artStart!==null)maxArtNet=Math.max(maxArtNet,net-artStart);if(options.recordBlocks)blockPeak=Math.max(blockPeak,net-(blockPaid-blockBet));if(!firstComplete&&net>=(options.completeLimitPt??19000))firstComplete={games:count,totalBet:fee,totalPaid:paid,net};};
  const saveBlock=()=>{blocks.push({endGame:count,totalBet:fee-blockBet,totalPaid:paid-blockPaid,net:paid-blockPaid-fee+blockBet,peak:blockPeak});blockBet=fee;blockPaid=paid;blockPeak=0;};
- const bet=phase=>{track();if(options.stopAtComplete!==false&&options.completeLimitPt&&paid-fee>=options.completeLimitPt)throw sessionEnd;if(count>=games&&!cutoff)cutoff={games:count,totalBet:fee,totalPaid:paid,net:paid-fee,peak,phase};if(options.exactGames!==false&&!options.settleEnd&&count>=games)throw sessionEnd;if(options.recordBlocks&&count>0&&count%options.recordBlocks===0)saveBlock();count++;counts[phase]++;normalGap++;const charged=replay?0:3;fee+=charged;replay=false;return charged;};
+ const bet=phase=>{track();if(options.stopAtComplete!==false&&options.completeLimitPt&&paid-fee>=options.completeLimitPt)throw sessionEnd;if(count>=games&&!cutoff)cutoff={games:count,totalBet:fee,totalPaid:paid,net:paid-fee,peak,phase};if(options.exactGames!==false&&!options.settleEnd&&count>=games)throw sessionEnd;if(options.recordBlocks&&count>0&&count%options.recordBlocks===0)saveBlock();count++;counts[phase]++;normalGap++;
+ if(options.rareSortie){rare.draws++;const hit=forcedRare?forcedRare.has(count):entryRng()<1/(options.rareDenominator||10000);if(hit){rare.triggered++;rare.pending++;rare.byPhase[phase]=(rare.byPhase[phase]||0)+1;if(rare.audit)rare.audit.push({type:'trigger',game:count,phase});}}const charged=replay?0:3;fee+=charged;replay=false;return charged;};
  const zoneEntry=f=>{if(f.zone){counts.zoneEntries++;const name=(f.ura?'ura_':'')+f.zone;zones[name]=(zones[name]||0)+1;}};
  function bonus(kind,freeze=false){
   if(a.drawBonusTier)kind='BIG';counts[kind==='MID'?'REG':'BIG']++;maxBonusGap=Math.max(maxBonusGap,normalGap);normalGap=0;
@@ -50,15 +63,28 @@ export function simulate(setting,games,seed,options={}){
  }
  try{while(count<games||(options.settleEnd&&flow.phase==='art')){
   track();if(options.stopAtComplete!==false&&options.completeLimitPt&&paid-fee>=options.completeLimitPt)throw sessionEnd;if(flow.phase==='art'&&artStart===null)artStart=paid-fee;else if(flow.phase!=='art')artStart=null;
+  if(a.hasResearchCheckpoint?.()&&flow.phase==='normal'&&!state.prelude){flow=a.enterResearchCheckpoint(c,rng);counts.artEntries++;track();}
+  if(a.queueResearchThreshold&&a.observeResearchNet&&flow.phase==='art')flow=a.queueResearchThreshold(flow,paid-fee);
+  if(options.rareSortie&&rare.pending){
+   if(flow.phase==='normal'&&!state.prelude){flow=a.enterInitial(c,rng);counts.artEntries++;rare.newAt++;track();if(rare.audit)rare.audit.push({type:'newAt',game:count});}
+   if(isReady()){rare.pending--;rare.started++;flow=a.beginResearchSortie(flow,rng);const p=flow.researchSortieRate;rare.tiers[p]=(rare.tiers[p]||0)+1;if(rare.audit)rare.audit.push({type:'start',game:count,rate:p});}
+  }
   if(flow.phase==='art'){
+   if(a.queueResearchThreshold)flow=a.queueResearchThreshold(flow,a.observeResearchNet?paid-fee:Math.max(0,paid-(treatmentStart?.paid??paid)-(treatmentStart?.comebackPaid||0)));
    const prior=flow;flow=a.prepareBet(flow,c,rng);if(!prior.zone&&flow.zone)zoneEntry(flow);
    if(!flow.zero)bet(flow.zone?'zone':'at');else counts.zero++;
    if(!flow.zero)atLevelMetrics[flow.atLevel||0].games++;
-   const eligible=!flow.zone&&!flow.entryStage&&!flow.queuedZones?.length&&Number(flow.stock||0)===0&&Number(flow.remaining)>0;
+   const eligible=!flow.researchSortieLeft&&!flow.zone&&!flow.entryStage&&!flow.queuedZones?.length&&Number(flow.stock||0)===0&&Number(flow.remaining)>0;
    const s=a.step(flow,{...c,netPt:options.netGuard===false?0:paid-fee},rng);
    if(eligible){atMetrics.eligible++;if(flow.atHigh)atMetrics.high++;if(s.flow.entryStage==='seven')atMetrics.zoneWins++;}
-   if(s.atOutcome){const o=s.atOutcome;if(o.promoted)atMetrics.promotions++;if(o.direct){atMetrics.directWins++;atMetrics.directPoints+=o.direct;if(s.result==='STRONG_SUICA'&&o.direct===100)atMetrics.suica100++;if(s.result==='STRONG_SUICA'&&o.direct===300)atMetrics.suica300++;}}if(!flow.zone&&s.flow.zone)zoneEntry(s.flow);
-   paid+=n.pay(s.result);if(s.result==='REPLAY')replay=true;state=n.afterArt(state,flow,s.flow,{...options.normal,setting},rng);flow=s.flow;if(s.internalBonus)bonus('BIG');continue;
+   if(s.researchChallenge){const e=s.researchChallenge,r=upper.bySource[e.source];upper.spins++;if(e.started)r.started++;if(e.won)r.won++;if(e.finished&&!e.won)r.failed++;}
+   if(eligible&&flow.researchUpper&&!s.researchChallenge)upper.upperGames++;
+   if(s.researchSortie){const r=s.researchSortie;rare.spins++;rare.stocks+=r.won;rare.guaranteedStocks+=r.guaranteed;if(r.zone)rare.zones[r.zone]=(rare.zones[r.zone]||0)+1;if(r.finished){rare.completed++;rare.stockHist[r.hits]=(rare.stockHist[r.hits]||0)+1;}}
+   if(options.rareSortie&&rare.pending&&s.flow.phase==='normal'){
+    s.flow={...a.normalize(flow),remaining:'0',zone:'',entryStage:'',comebackLeft:0,comebackConfirmed:false,comebackLamp:'',dryEligible:false};
+   }
+   if(s.atOutcome){const measured=actualAtZone[flow.researchUpper?'upper':'normal'];measured.games++;measured.wins+=!!s.atOutcome.zone;const o=s.atOutcome;if(o.promoted)atMetrics.promotions++;if(o.direct){atMetrics.directWins++;atMetrics.directPoints+=o.direct;if(s.result==='STRONG_SUICA'&&o.direct===100)atMetrics.suica100++;if(s.result==='STRONG_SUICA'&&o.direct===300)atMetrics.suica300++;}}if(!flow.zone&&s.flow.zone)zoneEntry(s.flow);
+   if(flow.comebackLeft&&!s.researchChallenge&&treatmentStart)treatmentStart.comebackPaid+=n.pay(s.result);paid+=n.pay(s.result);if(s.result==='REPLAY')replay=true;state=n.afterArt(state,flow,s.flow,{...options.normal,setting},rng);flow=s.flow;if(s.internalBonus)bonus('BIG');continue;
   }
   const normal=flow.phase==='normal',charged=bet(normal?'normal':'cz');
   if(normal){counts.highNormalG+=state.level==='high';counts.favoredNormalG+=n.favored(state);}
@@ -71,5 +97,5 @@ export function simulate(setting,games,seed,options={}){
   else flow=NovaFlow.advance(t.czFlow);
  }}catch(e){if(e!==sessionEnd)throw e;}
  track();maxBonusGap=Math.max(maxBonusGap,normalGap);if(options.recordBlocks)saveBlock();
- return {atLevelMetrics,bonusMetrics,atMetrics,seed,setting,initialMode,cutoff:cutoff||{games:count,totalBet:fee,totalPaid:paid,net:paid-fee,peak,phase:flow.phase},games:count,totalBet:fee,totalPaid:paid,rtp:paid/fee,net:paid-fee,peak,maxDrawdown,maxNormalGames,maxBonusGap,maxArtNet,freezes,ceilings,release,bonusNet:(bonusP-bonusFee)/bonusG,counts,zones,normalRoles,normalPayout,endPhase:flow.phase,firstComplete,blocks:options.recordBlocks?blocks:undefined,unspentZoneStocks:flow.phase==='art'?Number(flow.sets||0)+(flow.queuedZones?.length||0):0,unspentAtQuota:flow.phase==='art'?Number(flow.remaining||0)+(flow.zone?Number(flow.award||0):0):0};
+ return {checkpointStats:a.researchCheckpointStats?.(),atPayoutBins,actualAtZone,upper,rare,atLevelMetrics,bonusMetrics,atMetrics,seed,setting,initialMode,cutoff:cutoff||{games:count,totalBet:fee,totalPaid:paid,net:paid-fee,peak,phase:flow.phase},games:count,totalBet:fee,totalPaid:paid,rtp:paid/fee,net:paid-fee,peak,maxDrawdown,maxNormalGames,maxBonusGap,maxArtNet,freezes,ceilings,release,bonusNet:(bonusP-bonusFee)/bonusG,counts,zones,normalRoles,normalPayout,endPhase:flow.phase,firstComplete,blocks:options.recordBlocks?blocks:undefined,unspentZoneStocks:flow.phase==='art'?Number(flow.sets||0)+(flow.queuedZones?.length||0):0,unspentAtQuota:flow.phase==='art'?Number(flow.remaining||0)+(flow.zone?Number(flow.award||0):0):0};
 }

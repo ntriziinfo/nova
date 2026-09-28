@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
-function load(){const c=vm.createContext({});for(const f of ['nova-art.js','nova-balance.js','nova-flow.js','nova-normal.js'])vm.runInContext(fs.readFileSync(f,'utf8'),c);return c;}
+function load(){const c=vm.createContext({});for(const f of ['nova-tuning.js','nova-art.js','nova-balance.js','nova-flow.js','nova-normal.js'])vm.runInContext(fs.readFileSync(f,'utf8'),c);return c;}
 const {NovaNormal:n,NovaArt:a,NovaFlow:f}=load();
 test('normal NOVA uses pre-spin state for CZ and never promotes state',()=>{
  for(const level of ['low','high']){

@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
-for(const f of ['nova-art.js','nova-balance.js'])vm.runInThisContext(fs.readFileSync(f,'utf8'));const a=NovaArt;
+for(const f of ['nova-tuning.js','nova-art.js','nova-balance.js'])vm.runInThisContext(fs.readFileSync(f,'utf8'));const a=NovaArt;
 test('all setting table weights match proposed means and weighted selection',()=>{
  const expected={sosuke:[167.196,182.4544],giru:[388.9375,397.4375],ura_giru:[933.5864197530863,957.6851851851852]};
  for(const [id,ends] of Object.entries(expected).filter(([id])=>id!=='ura_giru'))for(let setting=1;setting<=6;setting++){

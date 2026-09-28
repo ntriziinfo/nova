@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';import vm from 'node:vm';
 const ctx=vm.createContext({});
-for(const file of ['nova-art.js','nova-flow.js','nova-normal.js'])vm.runInContext(fs.readFileSync(file,'utf8'),ctx);
+for(const file of ['nova-tuning.js','nova-art.js','nova-flow.js','nova-normal.js'])vm.runInContext(fs.readFileSync(file,'utf8'),ctx);
 const a=ctx.NovaArt,n=ctx.NovaNormal;
 const normal={mode:'通常B',games:245,impurity:78,level:'high'};
 test('ART final game resets normal ceiling count and next normal game is 1G',()=>{

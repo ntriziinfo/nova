@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
 
-function load(){const c=vm.createContext({});for(const f of ['nova-art.js','nova-balance.js','nova-flow.js','nova-normal.js'])vm.runInContext(fs.readFileSync(f,'utf8'),c);return c;}
+function load(){const c=vm.createContext({});for(const f of ['nova-tuning.js','nova-art.js','nova-balance.js','nova-flow.js','nova-normal.js'])vm.runInContext(fs.readFileSync(f,'utf8'),c);return c;}
 function rng(seed=8171){return ()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/4294967296);}
 const plain=x=>JSON.parse(JSON.stringify(x));
 
@@ -35,7 +35,7 @@ test('independent AT/bonus distributions normalize and retain expected 4pt per g
  for(const [role,p]of Object.entries(a.roleProbabilities(3)))assert.ok(Math.abs((actual[role]||0)/N-p)<6*Math.sqrt(p*(1-p)/N),role);
 });
 
-test('phase-specific roles exclude strong bell and split chance eyes 40:60 / 60:40',()=>{const {NovaNormal:n,NovaArt:a}=load();for(let setting=1;setting<=6;setting++){for(const p of [n.roleProbabilities(setting),a.roleProbabilities(setting),a.preparationProbabilities(setting)]){assert.equal(p.STRONG_BELL,undefined);assert.ok(Math.abs(p.CHANCE_A/(p.CHANCE_A+p.CHANCE_B)-(setting%2?.4:.6))<1e-12);}assert.ok(Math.abs(n.roleProbabilities(setting).WEAK_NOVA-n.rareFactor(setting)/128)<1e-12);}});
+test('phase-specific roles retain chance parity and setting 6 normal rare enhancement',()=>{const {NovaNormal:n,NovaArt:a}=load();for(let setting=1;setting<=6;setting++){for(const p of [n.roleProbabilities(setting),a.roleProbabilities(setting),a.preparationProbabilities(setting)]){assert.equal(p.STRONG_BELL,undefined);assert.ok(Math.abs(p.CHANCE_A/(p.CHANCE_A+p.CHANCE_B)-(setting%2?.4:.6))<1e-12);}assert.ok(Math.abs(n.roleProbabilities(setting).WEAK_NOVA-n.rareFactor(setting)/128*(setting===6?1.4:1))<1e-12);}});
 test('CZ rewrite uses equal chance-eye thresholds',()=>{const f=load().NovaFlow;assert.equal(f.rewriteRates.CHANCE_A,3/14);assert.equal(f.rewriteRates.CHANCE_B,3/14);for(const [role,p]of Object.entries(f.rewriteRates)){const loss={phase:'cz',remaining:10,totalGames:15,success:false,winProbability:.4};assert.equal(f.rewrite(loss,role,{},()=>p-1e-12).success,true);if(p<1)assert.equal(f.rewrite(loss,role,{},()=>p).success,false);}});
 
 test('live bonus preparation routes to its own lottery even when the normal draw is unavailable',()=>{

@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
-vm.runInThisContext(fs.readFileSync('nova-art.js','utf8'));const a=NovaArt;
+vm.runInThisContext(fs.readFileSync('nova-tuning.js','utf8')+'\n'+fs.readFileSync('nova-art.js','utf8'));const a=NovaArt;
 test('session net thresholds no longer suppress new AT rewards',()=>{
  for(let setting=1;setting<=6;setting++)for(const net of [-50000,-2000,0,2000,4000,5000,50000])assert.equal(a.netRewardFactor(setting,net),1);
  assert.equal(a.netRewardControl.enabled,false);

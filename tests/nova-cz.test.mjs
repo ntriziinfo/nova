@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
 const ctx=vm.createContext({});
-for(const f of ['nova-art.js','nova-balance.js','nova-flow.js','nova-normal.js'])vm.runInContext(fs.readFileSync(f,'utf8'),ctx);
+for(const f of ['nova-tuning.js','nova-art.js','nova-balance.js','nova-flow.js','nova-normal.js'])vm.runInContext(fs.readFileSync(f,'utf8'),ctx);
 const f=ctx.NovaFlow,n=ctx.NovaNormal;
 test('only rare roles rewrite losses; wins are absorbing and reload retains probability',()=>{
  for(const role of ['MISS','BELL','REPLAY'])assert.equal(f.rewrite(f.enterCZ(false,undefined,()=>.9),role,{},()=>0).success,false);
