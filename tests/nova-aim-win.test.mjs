@@ -107,7 +107,7 @@ test('cue dismissal runs after real reel landing, not button acceptance',()=>{
  const html=fs.readFileSync('jag.html','utf8');const stop=html.slice(html.indexOf('  function stopSingleReel(i,'),html.indexOf('  function stopAllReels()'));
  assert.equal(stop.slice(0,stop.indexOf('await NovaReelMotion.stop')).includes('NovaAim.hide()'),false);
  const landed=stop.indexOf('currentSpin.stopped[i] = true;'),finished=stop.indexOf('if(currentSpin.stopped.every(Boolean)){',landed);
- assert.ok(landed>=0&&finished>landed);assert.ok(stop.indexOf('else NovaAim.hide();')>finished);
+ assert.ok(landed>=0&&finished>landed);assert.ok(stop.indexOf('else NovaAim.stop(currentSpin.resolved);')>finished);
  assert.ok(stop.indexOf('NovaAim.fail(')>stop.indexOf('currentSpin.stopped[i] = true'));
  assert.ok(stop.indexOf('NovaAim.win(')>stop.indexOf('currentSpin.stopped[i] = true'));
 });
@@ -174,7 +174,35 @@ test('CZ bonus seven cue shares the new looping movie after preparation, without
    {bonusHit:true,bonusReady:false},
    {bonusPendingAtStart:false,bonusReady:true},
    {aTypeBonusGame:true}
-  ]){aim.bet(null,pending);assert.equal(video.hidden,true);assert.equal(elements[0].hidden,true);}
+  ]){aim.bet(null,pending);assert.equal(video.hidden,true);assert.equal(elements[0].hidden,!pending.bonusWaitSpin);}
+ }
+});
+
+test('initial bonus wait loops the gold movie continuously across stops and BETs until the seven cue',()=>{
+ const {aim,elements,timers}=setup();
+ const waiting={flowBefore:{phase:'normal'},bonusPendingAtStart:true,bonusWaitSpin:true};
+ aim.bet(null,waiting);
+ const root=elements[0],video=elements.find(e=>e.loop&&e.src?.endsWith('/bonus-nebula-win.mp4'));
+ assert(video);assert.equal(video.hidden,false);assert.equal(video.paused,false);assert.equal(video.muted,true);
+ assert.equal(root.dataset.bonusWait,'true');assert.equal(aim.busy,false);assert.equal(timers.size,0);
+ video.currentTime=1.25;
+ for(let game=0;game<4;game++){
+  aim.stop(waiting);assert.equal(video.currentTime,1.25);assert.equal(video.paused,false);assert.equal(root.hidden,false);
+  aim.bet(null,waiting);assert.equal(video.currentTime,1.25);assert.equal(root.dataset.bonusWait,'true');
+ }
+ aim.bet(null,{...waiting,bonusWaitSpin:false,bonusReady:true});
+ assert.equal(video.hidden,true);assert.equal(video.paused,true);assert.equal(video.currentTime,0);
+ assert.equal(root.dataset.bonusWait,undefined);
+ assert.equal(elements.find(e=>e.src?.endsWith('/seven-entry-red.mp4')).hidden,false);
+ aim.stop({bonusReady:true});assert.equal(root.hidden,true);
+});
+
+test('gold preparation loop is excluded from AT stock bonuses and reset fully dismisses it',()=>{
+ const {aim,elements}=setup();
+ const waiting={bonusWaitSpin:true,flowBefore:{phase:'normal'}};
+ aim.bet(null,waiting);const root=elements[0];aim.reset();assert.equal(root.hidden,true);assert.equal(root.dataset.bonusWait,undefined);
+ for(const excluded of [{bonusWaitSpin:true,flowBefore:{phase:'art'}},{bonusWaitSpin:true,aTypeBonusGame:true},{flowBefore:{phase:'art',initialStage:'wait'}}]){
+  aim.bet(null,excluded);assert.equal(root.hidden,true);
  }
 });
 

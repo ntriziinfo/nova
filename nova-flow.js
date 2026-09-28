@@ -66,7 +66,7 @@ globalThis.NovaFlow = (() => {
   function lampDisplayAtStop(lamp,stopOrder){
     if(!lamp||!Number.isInteger(stopOrder)||stopOrder<1||stopOrder>3)return null;
     const total=Math.max(1,Number(lamp.totalGames)||1),elapsed=Math.max(1,total-(Number(lamp.remaining)||1)+1);
-    const stopped=(elapsed-1)*3+stopOrder,target=Math.min(8,Math.max(1,Number(lamp.stage)||1)+2);
+    const stopped=(elapsed-1)*3+(stopOrder===3?3:0),target=Math.min(8,Math.max(1,Number(lamp.stage)||1)+2);
     const deadline=target===8?(Math.floor(5*total/6)+1)*3:total*3;
     let stage=0;
     for(let next=1;next<=target;next++){

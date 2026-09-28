@@ -49,7 +49,7 @@ test('normal CZ chance uses the pre-role internal state and the real per-setting
 
 test('each landed reel darkens in the actual stop order, resets on BET, and uses CZ3 failure sound only when dark',()=>{
  const source=fs.readFileSync('jag.html','utf8'),painted=[],sounds=[];
- const c=vm.createContext({renderCzPrelude:v=>painted.push([...v]),updateDisplay(){},showMessage(){},showOverlay(){},NovaInitialDuo:{eligible:()=>false},sfxOutputVolume:()=>.4,playOneShotSound:src=>sounds.push(src),isLadderShutterSpin:()=>false,STOP_SOUND_SRC:'ordinary'});
+ const c=vm.createContext({syncCzPreludeGlow(){},renderCzPrelude:v=>painted.push([...v]),updateDisplay(){},showMessage(){},showOverlay(){},NovaInitialDuo:{eligible:()=>false},sfxOutputVolume:()=>.4,playOneShotSound:src=>sounds.push(src),isLadderShutterSpin:()=>false,STOP_SOUND_SRC:'ordinary'});
  for(const name of ['showCzPrelude','playStopSound'])vm.runInContext(source.match(new RegExp('  function '+name+'\\([^]*?\\n  }'))[0],c);
  for(const field of ['czPrelude','atPrelude'])for(const count of [0,1,2,3]){
   const resolved={[field]:{before:2,after:count}};c.currentSpin={resolved};c.showCzPrelude(0,resolved);assert.deepEqual(painted.at(-1),[]);

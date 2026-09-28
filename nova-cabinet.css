@@ -73,6 +73,8 @@ body[data-art-zone=toto][data-toto-color=rainbow] .novaArtItem[data-artwork=toto
 
 .reel.cz-stop-blackout .window{filter:brightness(0)!important}
 .reel.cz-prelude-blackout .window{filter:brightness(0)!important}
+#machine[data-cz-prelude-active="true"] .reels{border-radius:12px;box-shadow:0 0 0 2px #ff3150,0 0 24px #ff183bc4,0 0 50px #ff183b70,inset 0 0 22px #ff183b40!important}
+#machine[data-cz-prelude-active="true"] .reel{border-color:#ff5267!important;box-shadow:0 0 8px #ff183b99,inset 0 0 10px #ff183b66!important}
 
 body[data-art-zone=urapi] .novaArtItem[data-artwork=urapi] img{animation:none!important;filter:brightness(1.25) drop-shadow(0 0 12px #fff)!important}
 body[data-art-zone=sosuke] .novaArtItem[data-artwork=sosuke] img,

@@ -6531,7 +6531,7 @@ body{
   .vertexConnectionBadge.offline{color:#ff8f9c;border-color:rgba(255,91,113,.65);background:rgba(52,9,17,.9)}
   .vertexConnectionBadge.legacy{color:#d4a6ff;border-color:rgba(185,109,255,.6)}
 </style>
-<link rel="stylesheet" href="nova-cabinet.css?v=20260928-cz-prelude-152">
+<link rel="stylesheet" href="nova-cabinet.css?v=20260928-cz-wait-161">
 <link rel="stylesheet" href="nova-artwork.css?v=20260928-cz-rainbow-155">
 <script src="nova-artwork.js?v=20260928-cz-rainbow-155" defer></script>
 <script src="nova-beat-lamps.js?v=20260928-eight-lamps"></script>
@@ -6549,11 +6549,11 @@ body{
 <link rel="stylesheet" href="nova-direct-award.css?v=20260928-duo-149">
 <script src="nova-direct-award.js?v=20260928-presentation-154"></script>
 <link rel="stylesheet" href="nova-aim-presentation.css?v=20260928-seven-entry-156">
-<script src="nova-aim-presentation.js?v=20260928-seven-entry-156"></script>
+<script src="nova-aim-presentation.js?v=20260928-cz-wait-161"></script>
 <script src="nova-art.js?v=20260928-prelude-158"></script>
 <script src="nova-balance.js?v=20260928-duo-157"></script>
 <script src="nova-normal.js?v=20260928-fake-prelude-160"></script>
-<script src="nova-flow.js?v=20260928-presentation-154"></script>
+<script src="nova-flow.js?v=20260928-cz-wait-161"></script>
 <link rel="stylesheet" href="nova-audit.css?v=20260910-audit-121">
 <script src="nova-audit.js?v=20260928-duo-149"></script>
 <script src="nova-audit-ui.js?v=20260916-role-128"></script>
@@ -13473,6 +13473,7 @@ body{
       reelArea.classList.toggle("premiumBigOverlayOn", !!(isATypeBonusActive() && (session.premiumBonus || session.oneGameRenBonus)));
     }
     const internal=NovaNormal.normalize(normalState.internal);
+    syncCzPreludeGlow(isSpinning?currentSpin?.resolved:null);
     // Per-spin blackout is cleared by BET, never restored from a previous game's progress.
     if($('novaInternalStatus'))$('novaInternalStatus').textContent='小役CZ抽選 / '+internal.games+'G（共通天井'+NovaNormal.ceiling(internal)+'G） / '+(internal.level==='high'?'高確（保証'+internal.highLeft+'G）':'低確')+ (normalState.flow?.phase==='art'?' / '+'AT '+(normalState.flow.atHigh?'高確（保証'+normalState.flow.atHighLeft+'G）':'低確'):'')+' / 穢れ'+internal.impurity+'pt / 特化予約 '+(session.active?(session.bonusZones||[]):(normalState.flow?.queuedZones||[])).map(z=>NovaArt.zoneName(z)).join('・');
     const flowStatus=$("novaFlowStatus");
@@ -15388,7 +15389,7 @@ body{
       }
       if(NovaAim.hasGuide(currentSpin.resolved?.aim)&&!currentSpin.aimAligned&&!debugFastSpinActive){
         NovaAim.fail(()=>playOneShotSound('assets/media/nova/ouma-fail.wav',sfxOutputVolume(),{allowDuringPremiumConfirm:true}));
-      }else NovaAim.hide();
+      }else NovaAim.stop(currentSpin.resolved);
     }
     syncCabinetControlState();
     showCzLamp(stopOrder,currentSpin.resolved);
@@ -15646,9 +15647,15 @@ body{
     document.getElementById('machine').dataset.czPreludeStage=String(dark.length);
     document.querySelectorAll('.reel[data-reel]').forEach(reel=>reel.classList.toggle('cz-prelude-blackout',dark.includes(Number(reel.dataset.reel))));
   }
+  function syncCzPreludeGlow(resolved=null){
+    const cue=resolved?.czPrelude;
+    const pending=normalState.internal?.prelude?.presentation==='reel';
+    const active=!session.active&&!normalState.bonusPending&&(cue?!cue.announce:pending);
+    document.getElementById('machine').dataset.czPreludeActive=String(active);
+  }
   function showCzPrelude(stopOrder,resolved,reelIndex=null){
     const prelude=resolved?.czPrelude||resolved?.atPrelude;
-    if(stopOrder===0){renderCzPrelude([]);if(resolved)resolved.blackoutReels=[];}
+    if(stopOrder===0){renderCzPrelude([]);if(resolved)resolved.blackoutReels=[];syncCzPreludeGlow(resolved);}
     if(!prelude)return;
     if(prelude.announce){
       renderCzPrelude([]);
@@ -15668,11 +15675,12 @@ body{
   }
   function showCzLamp(stopOrder,resolved){
     const host=document.getElementById('machine');
-    host.dataset.czBlink=resolved?.czLamp&&stopOrder<3?String(stopOrder):'';
+    host.dataset.czBlink='';
     const lamp=resolved?.czLamp,machine=document.getElementById('machine');
     const czSpin=!!lamp||['cz','strong_cz'].includes(resolved?.flowBefore?.phase);
     if(czSpin&&stopOrder===0){resolved.czLampAtBet=Number(host.dataset.czLamp)||0;return;}
     if(!czSpin){machine.dataset.czLamp='0';machine.dataset.czRainbow='false';return;}
+    if(stopOrder!==3)return;
     // Reveal every character at the landed confirmation stop, not at the
     // internal CZ lottery. Premium overrides may confirm without a lamp roll.
     const confirmed=stopOrder===3&&!!(resolved.bonusHit||resolved.aTypeBonusReady||resolved.flowAfter?.phase==='art');
@@ -15682,7 +15690,7 @@ body{
     const newRainbow=(confirmed||display?.rainbow)&&machine.dataset.czRainbow!=='true';
     if(target>previous)machine.dataset.czLamp=String(target);
     if(newRainbow)machine.dataset.czRainbow='true';
-    // Landed-stop callbacks own both light and SE, including stops one and two.
+    // The final landed stop owns both light and SE.
     // Repeated finish callbacks see no new light and cannot replay its sound.
     if(target>previous||newRainbow){
       (resolved.czLitStops ||= {})[stopOrder]=true;
@@ -16906,6 +16914,7 @@ body{
   function clearCzReelBlackout(){
     document.querySelectorAll('.reel.cz-stop-blackout').forEach(reel=>reel.classList.remove('cz-stop-blackout'));
     renderCzPrelude([]);
+    document.getElementById('machine').dataset.czPreludeActive='false';
   }
   function playInitialDuoStop(spin,order){
     if(debugFastSpinActive||speedToBonusActive||!NovaInitialDuo.eligible(spin?.resolved?.flowBefore))return;

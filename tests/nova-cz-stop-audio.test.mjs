@@ -7,7 +7,7 @@ function setup(){
  for(const name of ['showCzLamp','czThirdStopSound','playStopSound','clearCzReelBlackout'])vm.runInContext(html.match(new RegExp('  function '+name+'\\([^]*?\\n  }'))[0],ctx);
  return {ctx,calls,machine,black};
 }
-test('every character lights with the same SE at its actual landed stop, with no third-stop replay',()=>{
+test('every character lights with its SE only at the final landed stop, without replay',()=>{
  const {ctx,calls,machine}=setup(),seen=[],stops=new Set();
  for(let remaining=20;remaining>=1;remaining--){
   const resolved={czLamp:{stage:6,totalGames:20,remaining,timingSeed:12345}};ctx.currentSpin={resolved};ctx.showCzLamp(0,resolved);
@@ -17,11 +17,12 @@ test('every character lights with the same SE at its actual landed stop, with no
    const sounds=calls.slice(count).filter(x=>x.src.endsWith('cz_third_success.wav'));
    const after=Number(machine.dataset.czLamp);
    assert.equal(sounds.length,after>before?1:0,`${remaining}G stop${stop}`);
-   if(after>before){assert.equal(sounds[0].stage,after);seen.push(after);stops.add(stop);}
+   if(after>before){assert.equal(stop,3);assert.equal(sounds[0].stage,after);seen.push(after);stops.add(stop);}
+   assert.equal(machine.dataset.czBlink,'');
   }
   const count=calls.length;ctx.showCzLamp(3,resolved);ctx.playStopSound(1,3);assert.equal(calls.length,count);
  }
- assert.deepEqual(seen,[1,2,3,4,5,6,7,8]);assert.equal(stops.size,3);
+ assert.deepEqual(seen,[1,2,3,4,5,6,7,8]);assert.deepEqual([...stops],[3]);
 });
 test('rainbow shares the lighting cue and repeated finish calls do not play it twice',()=>{
  const {ctx,calls}=setup(),resolved={czLamp:{stage:5,totalGames:20,remaining:20,rainbow:true,rainbowAt:1}};
