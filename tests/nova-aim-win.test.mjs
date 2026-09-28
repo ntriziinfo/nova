@@ -136,7 +136,7 @@ test('zone entry loops the supplied cue until the reels finish, for initial and 
  for(const initialStage of ['', 'entry']){
   const {aim,elements}=setup();
   assert.equal(aim.bet(null,{flowBefore:{phase:'art',entryStage:'seven',initialStage},flowAfter:{phase:'art',entryStage:'roulette'}}),true);
-  const video=elements.find(e=>e.src?.includes('/zone-entry-seven.webm'));
+  const video=elements.find(e=>e.src?.includes('/seven-entry-red.mp4'));
   assert.equal(video.hidden,false);assert.equal(video.loop,true);assert.equal(video.muted,true);assert.equal(video.currentTime,0);assert.equal(video.paused,false);
   assert.equal(elements[0].dataset.zoneEntry,'true');assert.equal(aim.busy,false);
   aim.hide();assert.equal(video.hidden,true);assert.equal(video.paused,true);assert.equal(elements[0].dataset.zoneEntry,undefined);
@@ -149,11 +149,42 @@ test('cue rewinds while hidden and reuses the prepared first frame on the next B
  const {aim,elements}=setup();
  const entry={flowBefore:{phase:'art',entryStage:'seven'},flowAfter:{phase:'art',entryStage:'roulette'}};
  aim.bet(null,entry);
- const video=elements.find(e=>e.src?.includes('/zone-entry-seven.webm'));
+ const video=elements.find(e=>e.src?.includes('/seven-entry-red.mp4'));
  let time=1.5;const seeks=[];
  Object.defineProperty(video,'currentTime',{get:()=>time,set(value){seeks.push({value,hidden:this.hidden,paused:this.paused});time=value;}});
  aim.hide();assert.deepEqual(seeks,[{value:0,hidden:true,paused:true}]);
  aim.bet(null,entry);assert.equal(seeks.length,1);assert.equal(video.paused,false);assert.equal(video.hidden,false);
+});
+
+test('CZ bonus seven cue shares the new looping movie after preparation, without duplicating its existing voice',()=>{
+ for(const phase of ['cz','strong_cz','normal']){
+  const {aim,elements}=setup();
+  const resolved={flowBefore:{phase},bonusPendingAtStart:true,bonusReady:true,bonusWaitSpin:false};
+  // Only zone entry returns true to request an extra seven voice. Bonus BET owns its voice.
+  assert.equal(aim.bet(null,resolved),false);
+  const video=elements.find(e=>e.src?.endsWith('/seven-entry-red.mp4'));
+  assert.equal(elements[0].hidden,false);assert.equal(video.hidden,false);assert.equal(video.paused,false);
+  assert.equal(video.loop,true);assert.equal(video.muted,true);assert.equal(aim.busy,false);
+  aim.hide();assert.equal(video.hidden,true);assert.equal(video.paused,true);
+  // A missed manual lineup can retry the same cue on the following BET.
+  aim.bet(null,resolved);assert.equal(video.hidden,false);
+  for(const pending of [
+   {bonusPendingAtStart:true,bonusReady:false,bonusWaitSpin:true},
+   {bonusPendingAtStart:true,bonusReady:true,bonusWaitSpin:true},
+   {bonusHit:true,bonusReady:false},
+   {bonusPendingAtStart:false,bonusReady:true},
+   {aTypeBonusGame:true}
+  ]){aim.bet(null,pending);assert.equal(video.hidden,true);assert.equal(elements[0].hidden,true);}
+ }
+});
+
+test('colored zone seven/nebula guides retain their own movie after the entry replacement',()=>{
+ const {aim,elements}=setup();
+ for(const symbol of ['seven','nebula'])for(const color of ['blue','red','rainbow']){
+  aim.bet({symbol,color,result:'MISS',guide:true});
+  assert.equal(elements.find(e=>e.src===`assets/media/nova/aim/${symbol}-${color}.mp4`).hidden,false);
+  assert.equal(elements.find(e=>e.src?.endsWith('/seven-entry-red.mp4')).hidden,true);
+ }
 });
 
 test('zone entry and colored seven cues play one character voice on BET with their existing presentation',()=>{
@@ -163,12 +194,13 @@ test('zone entry and colored seven cues play one character voice on BET with the
  vm.runInContext(html.match(/  const AIM_VOICE_SRCS=[^\n]+/)[0]+'\n'+html.match(/  function playRandomAimVoice\([^]*?\n  }/)[0],context);
  vm.runInContext(html.match(/  const SEVEN_ZONE_VOICE_SRCS=[^\n]+/)[0]+'\n'+html.match(/  function playSevenAimVoice\([^]*?\n  }/)[0],context);
  vm.runInContext(html.match(/  function playAimBetPresentation\([^]*?\n  }/)[0],context);
+ vm.runInContext(html.match(/  function playOumaNovaAimVoice\([^]*?\n  }/)[0],context);
  context.playAimBetPresentation({flowBefore:{phase:'art',entryStage:'seven'},flowAfter:{phase:'art',entryStage:'roulette'}},()=>0);
  assert.deepEqual(sounds,[{src:'assets/media/nova/aim_seven_sosuke.wav',volume:.6}]);
  context.playAimBetPresentation({aim:{symbol:'seven',color:'red',guide:true},flowBefore:{phase:'art',zone:'toto'}},()=>.9);
  assert.deepEqual(sounds[1],{src:'assets/media/nova/aim/cue-red.wav',volume:.4});
  assert.deepEqual(sounds[2],{src:'assets/media/nova/aim-seven-toto.wav',volume:.6});
- const entry=t.elements.find(e=>e.src?.includes('/zone-entry-seven.webm'));
+ const entry=t.elements.find(e=>e.src?.includes('/seven-entry-red.mp4'));
  assert.equal(entry.hidden,true);assert.equal(entry.paused,true);assert.equal(t.elements[0].dataset.zoneEntry,'false');
  context.playAimBetPresentation({flowBefore:{phase:'art'},flowAfter:{phase:'art',entryStage:'seven'}});assert.equal(sounds.length,3);
  context.debugFastSpinActive=true;
