@@ -26,7 +26,7 @@ test('three initial increments have independent 2/3 and 1/3 marginals and no ext
   let s={...a.enterInitial({},rng),initialStage:'entry',entryStage:'confirmed',pendingZone:i%2?'nito':'kushuri'};
   s=a.prepareBet(reload(s),{},rng);assert.equal(s.zoneLeft,3);const target=Number(s.entryQuota);
   for(let g=0;g<3;g++){
-   const t=a.step(reload(s),{},rng);assert([50,100].includes(t.zoneAward));hundreds[g]+=t.zoneAward===100;
+   const t=a.step(reload(s),{},rng,'BELL');assert([50,100].includes(t.zoneAward));hundreds[g]+=t.zoneAward===100;
    assert.equal(t.aim,null);assert(['BELL','REPLAY'].includes(t.result));s=t.flow;
   }
   assert.equal(s.remaining,String(target));assert.equal(s.initialStage,'');assert.equal(s.zone,'');

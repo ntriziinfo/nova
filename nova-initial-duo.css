@@ -7,12 +7,12 @@
 .novaInitialActor img{position:absolute;bottom:0;display:block;width:100%;height:80%;object-fit:contain;filter:drop-shadow(0 0 12px #e3c7ff);max-width:none}
 #novaInitialDuo[data-pair=true] .novaInitialActor{width:65%;left:-7%}
 #novaInitialDuo[data-pair=true] .novaInitialActor[data-character=kushuri]{left:42%}
-#novaInitialDuo[data-stop="1"] .novaInitialActor{animation:novaDuoJump1 440ms ease-out both}
-#novaInitialDuo[data-stop="2"] .novaInitialActor{animation:novaDuoJump2 470ms ease-out both}
-#novaInitialDuo[data-stop="3"] .novaInitialActor{animation:novaDuoJump3 620ms ease-out both}
-@keyframes novaDuoJump1{0%{transform:translateY(58%)}42%{transform:translateY(15%)}76%{transform:translateY(38%)}100%{transform:translateY(35%)}}
-@keyframes novaDuoJump2{0%{transform:translateY(35%)}42%{transform:translateY(0)}76%{transform:translateY(18%)}100%{transform:translateY(15%)}}
-@keyframes novaDuoJump3{0%{transform:translateY(15%)}40%{transform:translateY(-18%)}76%{transform:translateY(3%)}100%{transform:translateY(0)}}
+#novaInitialDuo[data-stop="1"] .novaInitialActor{animation:novaDuoJump1 560ms ease-in-out both}
+#novaInitialDuo[data-stop="2"] .novaInitialActor{animation:novaDuoJump2 590ms ease-in-out both}
+#novaInitialDuo[data-stop="3"] .novaInitialActor{animation:novaDuoJump3 720ms ease-in-out both}
+@keyframes novaDuoJump1{0%{transform:translateY(58%)}16%{transform:translateY(46%)}34%{transform:translateY(62%)}56%{transform:translateY(22%)}74%{transform:translateY(42%)}88%{transform:translateY(31%)}100%{transform:translateY(35%)}}
+@keyframes novaDuoJump2{0%{transform:translateY(35%)}16%{transform:translateY(23%)}34%{transform:translateY(39%)}56%{transform:translateY(0)}74%{transform:translateY(23%)}88%{transform:translateY(11%)}100%{transform:translateY(15%)}}
+@keyframes novaDuoJump3{0%{transform:translateY(15%)}16%{transform:translateY(1%)}34%{transform:translateY(21%)}56%{transform:translateY(-18%)}74%{transform:translateY(10%)}88%{transform:translateY(-5%)}100%{transform:translateY(0)}}
 /* Keep the large actors in front of the lamp row while they jump through it. */
 body[data-initial-duo-game] .reelArea{z-index:50!important}
 body:is([data-initial-duo-game],[data-art-zone=kushuri_nito],[data-zone-roulette-lamp=kushuri_nito]) .novaArtItem,

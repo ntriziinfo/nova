@@ -30,14 +30,14 @@ test('fresh bonus win waits exactly three paid games then seven, roulette and in
  s=a.prepareBet(reload(t.flow),{},()=>.5);assert.equal(s.initialStage,'zone');assert.equal(s.remaining,'0');assert.equal(s.zoneLeft,3);
 });
 
-test('every character reveals every possible sealed quota exactly once, despite forced roles and reloads',()=>{
+test('ordinary roles reveal every possible sealed base quota exactly once across reloads',()=>{
  for(const zone of a.initialZoneIds)for(const target of a.entryQuotaRules.values)for(let seed=1;seed<=5;seed++){
   const rng=xoshiro128(seed+target),base={...a.enterInitial({},rng),initialStage:'entry',initialWait:0,entryQuota:String(target),entryStage:'confirmed',pendingZone:zone,sets:'2',queuedZones:['ura_sora']};
   let s=a.prepareBet(reload(base),{},rng);assert.equal(s.entryStage,'');assert.equal(s.remaining,'0');
   for(let g=0;g<3;g++){
    assert.deepEqual(reload(s),s);
    const prepared=a.prepareBet(s,{},rng);assert.deepEqual(prepared,s);
-   const t=a.step(prepared,{},rng,g%2?'MISS':'STRONG_NOVA');s=reload(t.flow);
+   const t=a.step(prepared,{},rng,g%2?'REPLAY':'BELL');s=reload(t.flow);
    assert.equal(t.zoneSpin,true);assert.equal(t.internalBonus,undefined);assert.equal(s.oumaPending,false);assert.equal(s.zero,false);
    assert.equal(s.sets,'2');assert.deepEqual(s.queuedZones,['ura_sora']);
    assert.equal(s.remaining,g===2?String(target):'0');

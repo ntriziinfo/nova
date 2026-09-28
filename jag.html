@@ -6543,14 +6543,15 @@ body{
 <script src="nova-ladder-presentation.js?v=20260917-initial-131"></script>
 <link rel="stylesheet" href="nova-bell-navi.css?v=20260928-presentation-150">
 <script src="nova-bell-navi.js?v=20260928-presentation-150"></script>
-<link rel="stylesheet" href="nova-initial-duo.css?v=20260928-duo-149">
-<script src="nova-initial-duo.js?v=20260928-duo-149"></script>
+<link rel="stylesheet" href="nova-initial-duo.css?v=20260928-duo-157">
+<script src="nova-initial-duo.js?v=20260928-duo-157"></script>
+<script src="nova-rush-confirm.js?v=20260928-audio-157"></script>
 <link rel="stylesheet" href="nova-direct-award.css?v=20260928-duo-149">
 <script src="nova-direct-award.js?v=20260928-presentation-154"></script>
 <link rel="stylesheet" href="nova-aim-presentation.css?v=20260928-seven-entry-156">
 <script src="nova-aim-presentation.js?v=20260928-seven-entry-156"></script>
-<script src="nova-art.js?v=20260928-duo-149"></script>
-<script src="nova-balance.js?v=20260928-duo-149"></script>
+<script src="nova-art.js?v=20260928-duo-157"></script>
+<script src="nova-balance.js?v=20260928-duo-157"></script>
 <script src="nova-normal.js?v=20260928-cz-prelude-152"></script>
 <script src="nova-flow.js?v=20260928-presentation-154"></script>
 <link rel="stylesheet" href="nova-audit.css?v=20260910-audit-121">
@@ -7990,7 +7991,7 @@ body{
     return {run:stats.auditRunId,game:Number(stats.totalSpins)||0,bet:Number(stats.totalFee)||0,paid:Number(stats.totalPaid)||0,setting:settings.setting,
       flow:normalState.flow||{phase:'normal'},internal:normalState.internal||{},replayFree:!!normalState.replayFree,complete:!!completeTrialState.locked,
       bonus:{active:isATypeBonusActive(),phase:session.phase,tier:session.bonusTier,paid:session.paid,sets:session.bonusArtSets,zones:session.bonusZones,target:session.bonusTarget,pending:!!normalState.bonusPending,source:normalState.bonusSource,prepLeft:normalState.prepLeft,prepSets:normalState.prepSets,prepZones:normalState.prepZones,premium:session.premiumBonus||normalState.premiumBonus,pointsRemaining:session.bonusPointsRemaining},
-      config:{balance:148,initialPresentation:149,audit:121,setting:settings.setting,fee:SPIN_COST,completeLimitPt:settings.completeLimitPt,oddsMultiplier:settings.oddsMultiplier,art:settings.novaArt,commonAt:NovaArt.commonAtRules,entryQuota:NovaArt.entryQuotaRules,uraChallenge:NovaArt.burstRules,normal:settings.novaNormal,normalLottery:NovaNormal.lotteryRules,cz:settings.novaFlow}};
+      config:{balance:157,initialPresentation:157,audit:121,setting:settings.setting,fee:SPIN_COST,completeLimitPt:settings.completeLimitPt,oddsMultiplier:settings.oddsMultiplier,art:settings.novaArt,commonAt:NovaArt.commonAtRules,entryQuota:NovaArt.entryQuotaRules,initialRareAwards:NovaArt.initialRareAwards,uraChallenge:NovaArt.burstRules,normal:settings.novaNormal,normalLottery:NovaNormal.lotteryRules,cz:settings.novaFlow}};
   }
   function auditCapture(detail={kind:'checkpoint'}){
     if(!novaAuditRecorder)return;
@@ -7999,7 +8000,7 @@ body{
   function auditSpinDetail(result,resolved){
     return {kind:'spin',result,message:resolved.artMessage||'',mode:debugFastSpinActive?'fast':autoPlay?'auto':speedToBonusActive?'speed':'manual',forced:pendingForceResult||'',
       aim:resolved.aim,burstEvent:resolved.burstEvent,burstReward:resolved.burstReward,comebackEvent:resolved.comebackEvent,atOutcome:resolved.atOutcome,zoneAward:resolved.zoneAward,
-      artSetWon:resolved.artSetWon,oumaFreeze:resolved.oumaFreeze,czLamp:resolved.czLamp,bonusHit:resolved.bonusHit,bonusSource:resolved.bonusSource,
+      artSetWon:resolved.artSetWon,novaRushConfirmed:resolved.novaRushConfirmed,oumaFreeze:resolved.oumaFreeze,czLamp:resolved.czLamp,bonusHit:resolved.bonusHit,bonusSource:resolved.bonusSource,
       bellNaviOrder:currentSpin?.bellNaviOrder,rareNavi:currentSpin?.rareNavi,rareCueVoice:currentSpin?.rareCueVoice,rareNaviSoundPlayed:currentSpin?.rareNaviSoundPlayed,
       pressOrder:debugFastSpinActive?'simulation':currentSpin?.auditPressOrder,stopOrder:debugFastSpinActive?'simulation':currentSpin?.auditStopOrder,grid:debugFastSpinActive?undefined:currentSpin?.auditGrid,visualResult:!debugFastSpinActive&&NovaAim.hasGuide(resolved.aim)&&currentSpin?.aimAligned===false?'MISS':result,
       flowBefore:resolved.flowBefore,flowAfter:resolved.flowAfter,manualLineupMiss:resolved.manualLineupMiss,bonusWaitSpin:resolved.bonusWaitSpin,czEntry:resolved.czEntry,czPrelude:resolved.czPrelude,czCompleted:resolved.czCompleted};
@@ -8170,6 +8171,7 @@ body{
   let characterVoiceBus=null;
   for(const src of CHARACTER_VOICE_SRCS){const audio=new Audio(src);audio.preload='auto';oneShotSoundCache.set(src,audio);audio.load();}
   const rareNaviPreload=new Audio('assets/media/nova/rare-navi.mp3');rareNaviPreload.preload='auto';rareNaviPreload.loop=false;oneShotSoundCache.set('assets/media/nova/rare-navi.mp3',rareNaviPreload);rareNaviPreload.load();
+  for(const src of ['assets/media/nova/initial-duo-stop.mp3','assets/media/nova/initial-duo-final-stop.mp3']){const audio=new Audio(src);audio.preload='auto';audio.loop=false;oneShotSoundCache.set(src,audio);audio.load();}
   for(const src of ['assets/media/jag/cz_third_success.wav','assets/media/jag/cz_third_failure.wav','assets/media/nova/cz_stop_12.wav']){const audio=new Audio(src);audio.preload='auto';oneShotSoundCache.set(src,audio);audio.load();}
   for(const src of ['assets/media/nova/bell-navi.wav','assets/media/nova/direct-award.wav','assets/media/nova/weak-nova.wav','assets/media/nova/aim/nebula-win.wav','assets/media/nova/aim/seven-win.wav','assets/media/nova/aim/cue-blue.wav','assets/media/nova/aim/cue-red.wav','assets/media/nova/aim/cue-rainbow.wav','assets/media/nova/shutter.wav','assets/media/nova/shutter-close.wav','assets/media/nova/ladder-final-award.wav','assets/media/nova/ladder-final-award-under1000.wav']){const audio=new Audio(src);audio.preload='auto';oneShotSoundCache.set(src,audio);audio.load();}
   const resultEyecatchPreload = new Audio('assets/media/nova/result-eyecatch.wav');
@@ -8882,6 +8884,7 @@ body{
   }
 
   function applyAudioOutputVolumes(){
+    globalThis.NovaRushConfirm?.updateVolumes(bgmOutputVolume(BGM_OUTPUT_SCALE),sfxOutputVolume());
     applyCharacterVoiceOutputVolumes();
     if(oumaIntroAudio)oumaIntroAudio.volume=sfxOutputVolumeForSource(SFX_OUTPUT_SCALE,'assets/media/nova/uuufa.wav');
     if(oumaReverseAudio)oumaReverseAudio.volume=sfxOutputVolumeForSource(SFX_OUTPUT_SCALE,"assets/media/nova/ouma-reverse-v2.wav");
@@ -10189,6 +10192,7 @@ body{
       zoneGameAdd:0,
       zoneSevenHit:false,
       artSetWon:special && !isATypeBonusComplete()?1:0,
+      novaRushConfirmed:special&&!isATypeBonusComplete()&&!NovaArt.bonusStockEligible(session,normalState.flow),
       aTypeBonusGame:true,
       initialBonusGame:normalState.flow?.phase!=='art'
     };
@@ -12735,6 +12739,7 @@ body{
   }
 
   function playNormalBgm(){
+    if(globalThis.NovaRushConfirm?.active)return;
     const initialDuoZone=normalState.flow?.initialStage==='zone'&&['kushuri_nito','kushuri','nito'].includes(normalState.flow.zone);
     if(normalState.resultCard || normalState.pendingZoneResult || normalState.ladderAwardPresentation || (NovaDirectAward.busy&&!initialDuoZone)){pauseNormalBgm();return;}
     if(debugFastSpinActive) return;
@@ -12762,6 +12767,7 @@ body{
   }
 
   function playBarAudioSource(src, mode, logLabel){
+    if(globalThis.NovaRushConfirm?.active)return;
     if(debugFastSpinActive) return;
     if(!barBgm) return;
     if(!src) return;
@@ -13842,6 +13848,7 @@ body{
     stopSpeedToBonus("初期化のためSPEED停止");
     if(!confirm("統計と現在の状態を初期化しますか？")) return;
     NovaAim.reset();
+    globalThis.NovaRushConfirm?.reset();
     NovaInitialDuo.clear();
     NovaBellNavi.clear();
     NovaDirectAward.clear();
@@ -13908,6 +13915,7 @@ body{
 
   function resetRuntimeForMorning(reason="朝一リセット"){
     NovaAim.reset();
+    globalThis.NovaRushConfirm?.reset();
     NovaInitialDuo.clear();
     NovaBellNavi.clear();
     NovaDirectAward.clear();
@@ -15323,7 +15331,10 @@ body{
     if(isRogiHighZoneSpin(currentSpin)) stopRogiStopEffect(true);
 
     if(!options.visualReady&&currentSpin.visualStopping?.[i])return;
-    if(!options.visualReady)(currentSpin.auditPressOrder ||= []).push(i);
+    if(!options.visualReady){
+      (currentSpin.auditPressOrder ||= []).push(i);
+      playInitialDuoStop(currentSpin,currentSpin.auditPressOrder.length);
+    }
     if(NovaAim.hasGuide(currentSpin.resolved?.aim)&&!options.visualReady){
       currentSpin.aimStopOrder ||= [];
       if(!currentSpin.aimStopOrder.includes(i))currentSpin.aimStopOrder.push(i);
@@ -15366,7 +15377,6 @@ body{
     for(let row=0;row<3;row++)currentSpin.auditGrid[row][i]=col[row];
     currentSpin.stopped[i] = true;
     NovaBellNavi.stop(currentSpin);
-    if(!debugFastSpinActive&&!speedToBonusActive)NovaInitialDuo.stop(currentSpin.stopped.filter(Boolean).length);
     playBellNaviVoice(currentSpin);
     if(currentSpin.stopped.every(Boolean)){
       playOumaNovaWinVoice(currentSpin);
@@ -16548,6 +16558,7 @@ body{
   }
 
   function fadeAimWinSoundsOnBet(){
+    globalThis.NovaRushConfirm?.fadeOnBet();
     for(const audio of aimWinAudios){
       if(audio.paused||audio.ended||audio.aimFadeTimer!==undefined)continue;
       const started=performance.now();audio.aimFadeGain=1;
@@ -16560,6 +16571,11 @@ body{
   }
   function playAimSevenWinSound(symbol='seven',resolved={}){
     if(debugFastSpinActive)return;
+    if(symbol==='nebula'&&resolved.novaRushConfirmed){
+      pauseNormalBgm();barBgm?.pause();
+      NovaRushConfirm.play(bgmOutputVolume(BGM_OUTPUT_SCALE),sfxOutputVolume());
+      return;
+    }
     const name=symbol==='nebula'?(resolved.aTypeBonusGame?'bonus-nebula':'nebula'):'seven';
     const src='assets/media/nova/aim/'+name+'-win.wav';
     const audio=oneShotSoundCache.get(src).cloneNode(true);
@@ -16569,6 +16585,7 @@ body{
     audio.play().catch(()=>{aimWinAudios.delete(audio);releaseCharacterVoiceAudio(audio);});
   }
   window.addEventListener('nova-aim-unlocked',()=>{updateDisplay();if(autoPlay)queueAutoStep(50);});
+  window.addEventListener('nova-rush-confirm-ended',()=>{if(session.active)resumeSessionBgm();else playNormalBgm();});
   function playOneShotSound(src, volume=sfxOutputVolume(), options={}){
     if(debugFastSpinActive || speedToBonusActive) return;
     if(premiumBigConfirmSilence && !options.allowDuringPremiumConfirm) return;
@@ -16877,7 +16894,13 @@ body{
   function clearCzReelBlackout(){
     document.querySelectorAll('.reel.cz-stop-blackout').forEach(reel=>reel.classList.remove('cz-stop-blackout'));
   }
+  function playInitialDuoStop(spin,order){
+    if(debugFastSpinActive||speedToBonusActive||!NovaInitialDuo.eligible(spin?.resolved?.flowBefore))return;
+    if(!NovaInitialDuo.stop(order))return;
+    playOneShotSound(order===3?'assets/media/nova/initial-duo-final-stop.mp3':'assets/media/nova/initial-duo-stop.mp3',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
+  }
   function playStopSound(i, stopOrder=null){
+    if(globalThis.NovaInitialDuo?.eligible(currentSpin?.resolved?.flowBefore))return;
     if(isLadderShutterSpin()&&stopOrder>=1&&stopOrder<=3){
       if(stopOrder===3)oneShotSoundCache.get('assets/media/nova/shutter.wav')?.pause();
       playOneShotSound(stopOrder===3?(currentSpin?.result==='MISS'?'assets/media/nova/ouma-fail.wav':'assets/media/nova/shutter-close.wav'):'assets/media/nova/shutter.wav',sfxOutputVolume(),{allowDuringPremiumConfirm:true});

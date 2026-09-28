@@ -9,7 +9,10 @@ globalThis.NovaBalance=(()=>{
  const normal=[[354.112628,570.311235,6.592194,128,7.464630],[335.340933,496.870459,6.554256,192,7.482946],[318.675842,391.096799,6.455407,124,7.452119],[295.728558,359.759320,6.248231,184,7.301746],[288.226978,283.780845,6.120643,120,7.250883],[276.519476,276.524590,5.897360,176,7.245667]];
  // Exact reward recursion: 50pt grid below the threshold, translation-invariant tail above it.
  function zoneMean(id,options={}){
-  if(NovaArt.initialZoneIds.includes(id))return NovaArt.entryQuotaRules.games*(50*2/3+100/3);
+  if(NovaArt.initialZoneIds.includes(id)){
+   const base=50*2/3+100/3;
+   return NovaArt.entryQuotaRules.games*Object.entries(NovaArt.roleProbabilities(options.setting)).reduce((sum,[role,p])=>sum+p*(NovaArt.initialRareAwards[role]??base),0);
+  }
   const a=NovaArt,c=a.config(options),s=a.startZone(a.enter({},()=>.5),id,{...c,setting:options.setting},()=>.5),r=a.zoneRules(s,c),limit=a.zoneTailControl.threshold;
   if(r.family==='ladder'){
    const weights=a.ladderWeightsFor(s),tables=a.ladderTableFor(s);
