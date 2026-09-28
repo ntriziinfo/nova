@@ -2,8 +2,10 @@
  * brightness for lamp effects; no cropping, redraw, generation or encoding. */
 (() => {
   'use strict';
-  const originals = ['ouma1','sora1','sosuke','toto','urapi','giru1'];
-  const defaults = {
+  const originals = ['ouma1','sora1','sosuke','toto','urapi','giru1','kushuri','nito'];
+  const names = {ouma1:'逢魔',sora1:'空',sosuke:'宗介',toto:'とと',urapi:'うらぴ',giru1:'ギル',kushuri:'くしゅり',nito:'にと'};
+  const sources = {kushuri:'assets/illustrations/lamps-20260928/kushuri.png',nito:'assets/illustrations/lamps-20260928/nito.png'};
+  const previousDefaults = {
     ouma1:{x:39.3417,y:35.3043,w:15.5},
     sora1:{x:47.925,y:35.118,w:15.7},
     sosuke:{x:67.5542,y:35.9391,w:10.7},
@@ -11,12 +13,34 @@
     urapi:{x:19.7667,y:34.0807,w:17.6},
     giru1:{x:30.1667,y:35.2609,w:15.5}
   };
-  const key = 'nova_licensed_artwork_locked_20260907';
+  // Keep the existing six-character order and relative adjustments while making
+  // room for two more lamps in the same row. Original source pixels stay intact.
+  const fitPreviousRow = p => ({x:21.5+(p.x-21.5)*.75,y:43.4+(p.y-43.4)*.75,w:p.w*.75});
+  const defaults = {
+    ...Object.fromEntries(Object.entries(previousDefaults).map(([id,p])=>[id,fitPreviousRow(p)])),
+    kushuri:{x:61.1,y:36.9,w:11.4},
+    nito:{x:69.5,y:37.3,w:10.1}
+  };
+  const key = 'nova_licensed_artwork_locked_20260928';
   const clone = value => JSON.parse(JSON.stringify(value));
   const clamp = (value,min,max) => Math.max(min,Math.min(max,value));
   let positions = clone(defaults), selected = originals[0], dragging = null;
   try {
-    const saved = JSON.parse(localStorage.getItem(key));
+    let saved = JSON.parse(localStorage.getItem(key));
+    if(!saved){
+      const previous = JSON.parse(localStorage.getItem('nova_licensed_artwork_locked_20260907'));
+      if(previous){
+        saved={};
+        for(const [id,p] of Object.entries(previousDefaults)){
+          const position={...p};
+          for(const field of ['x','y','w']){
+            const value=previous[id]?.[field];
+            if(typeof value==='number'&&Number.isFinite(value))position[field]=clamp(value,field==='w'?4:0,field==='w'?45:96);
+          }
+          saved[id]=fitPreviousRow(position);
+        }
+      }
+    }
     for(const id of originals) for(const field of ['x','y','w']) {
       const value = saved?.[id]?.[field];
       if(typeof value === 'number' && Number.isFinite(value)) positions[id][field]=clamp(value,field==='w'?4:0,field==='w'?45:96);
@@ -26,7 +50,7 @@
   const items=new Map();
   for(const id of originals){
     const item=document.createElement('div'); item.className='novaArtItem'; item.dataset.artwork=id;
-    const img=document.createElement('img'); img.src=`assets/illustrations/lamps-20260916/${id}.png`; img.alt=id; img.draggable=false;
+    const img=document.createElement('img'); img.src=sources[id]||`assets/illustrations/lamps-20260916/${id}.png`; img.alt=names[id]; img.draggable=false;
     img.addEventListener('load',()=>render(id));
     item.append(img); layer.append(item); items.set(id,item);
   }
@@ -34,7 +58,7 @@
   const toggle=document.createElement('button'); toggle.id='novaArtToggle'; toggle.type='button'; toggle.textContent='イラスト'; toggle.setAttribute('aria-expanded','false'); toggle.setAttribute('aria-controls','novaArtPanel');
   document.getElementById('layoutEditToggleBtn').after(toggle);
   const panel=document.createElement('section'); panel.id='novaArtPanel'; panel.hidden=true; panel.setAttribute('aria-label','イラスト配置');
-  panel.innerHTML=`<h2>イラスト配置</h2><label>画像<select id="novaArtSelect">${originals.map(id=>`<option value="${id}">${id}</option>`).join('')}</select></label><p>画像をドラッグして移動できます。大きさは縦横比を保って変更します。</p><label>横位置 (%)<input id="novaArtX" type="number" min="0" max="96" step="0.1"></label><label>縦位置 (%)<input id="novaArtY" type="number" min="0" max="96" step="0.1"></label><label>表示幅 (%)<input id="novaArtW" type="number" min="4" max="45" step="0.1"></label><div class="novaArtActions"><button type="button" id="novaArtSave">保存</button><button type="button" id="novaArtReset">選択画像を戻す</button><button type="button" id="novaArtClose">閉じる</button></div><output role="status" id="novaArtStatus"></output><p>保存先はこのブラウザーです。原本画像は変更しません。</p>`;
+  panel.innerHTML=`<h2>イラスト配置</h2><label>画像<select id="novaArtSelect">${originals.map(id=>`<option value="${id}">${names[id]}</option>`).join('')}</select></label><p>画像をドラッグして移動できます。大きさは縦横比を保って変更します。</p><label>横位置 (%)<input id="novaArtX" type="number" min="0" max="96" step="0.1"></label><label>縦位置 (%)<input id="novaArtY" type="number" min="0" max="96" step="0.1"></label><label>表示幅 (%)<input id="novaArtW" type="number" min="4" max="45" step="0.1"></label><div class="novaArtActions"><button type="button" id="novaArtSave">保存</button><button type="button" id="novaArtReset">選択画像を戻す</button><button type="button" id="novaArtClose">閉じる</button></div><output role="status" id="novaArtStatus"></output><p>保存先はこのブラウザーです。原本画像は変更しません。</p>`;
   document.body.append(panel);
   const lampControls=document.createElement('label');
   lampControls.innerHTML='ランプ表示<select id="novaLampMode"><option value="auto">自動（通常・告知・ボーナス）</option><option value="dim">通常・暗め</option><option value="blink">点滅</option><option value="rainbow">七色発光</option></select>';
@@ -45,7 +69,11 @@
   function syncLamp(){
     const stage=Number(machine.dataset.czLamp)||0;
     const order=['sosuke','toto','urapi','giru1','sora1','ouma1'];
-    for(const [id,item] of items){item.dataset.czLit=String(order.indexOf(id)<stage);item.dataset.czPending=String(machine.dataset.czBlink!==undefined&&machine.dataset.czBlink!==''&&order.indexOf(id)===stage&&stage<6&&machine.dataset.czRainbow!=='true');}
+    for(const [id,item] of items){
+      const index=order.indexOf(id);
+      item.dataset.czLit=String(index>=0&&index<stage);
+      item.dataset.czPending=String(index>=0&&machine.dataset.czBlink!==undefined&&machine.dataset.czBlink!==''&&index===stage&&stage<order.length&&machine.dataset.czRainbow!=='true');
+    }
     const automatic=machine.dataset.czRainbow==='true'?'rainbow':stage?'cz':machine.classList.contains('active')?'rainbow':chance?.classList.contains('on')?'blink':'dim';
     layer.dataset.lamp=lampMode.value==='auto'?automatic:lampMode.value;
   }
@@ -80,7 +108,7 @@
     if(input.value===''||!Number.isFinite(input.valueAsNumber))return;
     positions[selected][field]=input.valueAsNumber;render(selected);status.textContent='未保存';
   });
-  panel.querySelector('#novaArtSave').addEventListener('click',()=>{try{localStorage.setItem(key,JSON.stringify(positions));status.textContent='6点の配置を保存しました';}catch{status.textContent='保存できませんでした。このブラウザーの保存設定を確認してください';}});
+  panel.querySelector('#novaArtSave').addEventListener('click',()=>{try{localStorage.setItem(key,JSON.stringify(positions));status.textContent=`${originals.length}点の配置を保存しました`;}catch{status.textContent='保存できませんでした。このブラウザーの保存設定を確認してください';}});
   panel.querySelector('#novaArtReset').addEventListener('click',()=>{positions[selected]=clone(defaults[selected]);render(selected);sync();status.textContent='未保存';});
   panel.querySelector('#novaArtClose').addEventListener('click',()=>setOpen(false));
   layer.addEventListener('pointerdown',event=>{

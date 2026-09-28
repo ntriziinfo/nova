@@ -60,6 +60,8 @@ body[data-game-phase=bonus][data-bonus-tier=upper] .novaArtLayer .novaArtItem im
 .novaArtItem[data-artwork=sora1]{--music-index:3}
 .novaArtItem[data-artwork=toto]{--music-index:4}
 .novaArtItem[data-artwork=sosuke]{--music-index:5}
+.novaArtItem[data-artwork=kushuri]{--music-index:6}
+.novaArtItem[data-artwork=nito]{--music-index:7}
 
 /* Fit the supplied transparent originals into the existing lamp slots. Saved
  * coordinates and the source pixels are unchanged; padding differs by artwork. */
