@@ -6552,7 +6552,7 @@ body{
 <script src="nova-aim-presentation.js?v=20260928-seven-entry-156"></script>
 <script src="nova-art.js?v=20260928-prelude-158"></script>
 <script src="nova-balance.js?v=20260928-duo-157"></script>
-<script src="nova-normal.js?v=20260928-prelude-158"></script>
+<script src="nova-normal.js?v=20260928-fake-prelude-160"></script>
 <script src="nova-flow.js?v=20260928-presentation-154"></script>
 <link rel="stylesheet" href="nova-audit.css?v=20260910-audit-121">
 <script src="nova-audit.js?v=20260928-duo-149"></script>
@@ -7991,7 +7991,7 @@ body{
     return {run:stats.auditRunId,game:Number(stats.totalSpins)||0,bet:Number(stats.totalFee)||0,paid:Number(stats.totalPaid)||0,setting:settings.setting,
       flow:normalState.flow||{phase:'normal'},internal:normalState.internal||{},replayFree:!!normalState.replayFree,complete:!!completeTrialState.locked,
       bonus:{active:isATypeBonusActive(),phase:session.phase,tier:session.bonusTier,paid:session.paid,sets:session.bonusArtSets,zones:session.bonusZones,target:session.bonusTarget,pending:!!normalState.bonusPending,source:normalState.bonusSource,prepLeft:normalState.prepLeft,prepSets:normalState.prepSets,prepZones:normalState.prepZones,premium:session.premiumBonus||normalState.premiumBonus,pointsRemaining:session.bonusPointsRemaining},
-      config:{balance:158,initialPresentation:157,prelude:158,audit:121,setting:settings.setting,fee:SPIN_COST,completeLimitPt:settings.completeLimitPt,oddsMultiplier:settings.oddsMultiplier,art:settings.novaArt,commonAt:NovaArt.commonAtRules,entryQuota:NovaArt.entryQuotaRules,initialRareAwards:NovaArt.initialRareAwards,atPrelude:NovaArt.atPreludeRules,uraChallenge:NovaArt.burstRules,normal:settings.novaNormal,normalLottery:NovaNormal.lotteryRules,cz:settings.novaFlow}};
+      config:{balance:158,initialPresentation:157,prelude:160,audit:121,setting:settings.setting,fee:SPIN_COST,completeLimitPt:settings.completeLimitPt,oddsMultiplier:settings.oddsMultiplier,art:settings.novaArt,commonAt:NovaArt.commonAtRules,entryQuota:NovaArt.entryQuotaRules,initialRareAwards:NovaArt.initialRareAwards,atPrelude:NovaArt.atPreludeRules,uraChallenge:NovaArt.burstRules,normal:settings.novaNormal,normalLottery:NovaNormal.lotteryRules,normalPrelude:NovaNormal.czPreludeRules,cz:settings.novaFlow}};
   }
   function auditCapture(detail={kind:'checkpoint'}){
     if(!novaAuditRecorder)return;
