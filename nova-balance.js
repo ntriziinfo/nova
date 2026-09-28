@@ -1,7 +1,7 @@
 /* Normal AT only, net 4pt/G: current zone rules and estimates are in docs/zone-v2.md. */
 globalThis.NovaBalance=(()=>{
  // Prior S4: docs/s4-140-report.md, 6,000 independent 30,000G trials, +10,000pt stop.
- // v147 changes initial character frequencies and incidental reel payouts.
+ // v148 changes initial awards and seven-zone continuation. These are not current RTP estimates.
  // Preserve v146 measurements as historical until the new mix is measured.
  const targets=[0.955124,0.979594,1.005842,1.004989,1.078051,1.138476];
  // docs/bonus-stock146-report.md: 30,000G, S1-5 1,024 trials, S6 2,048 trials; +10,000pt stop.
@@ -9,6 +9,7 @@ globalThis.NovaBalance=(()=>{
  const normal=[[354.112628,570.311235,6.592194,128,7.464630],[335.340933,496.870459,6.554256,192,7.482946],[318.675842,391.096799,6.455407,124,7.452119],[295.728558,359.759320,6.248231,184,7.301746],[288.226978,283.780845,6.120643,120,7.250883],[276.519476,276.524590,5.897360,176,7.245667]];
  // Exact reward recursion: 50pt grid below the threshold, translation-invariant tail above it.
  function zoneMean(id,options={}){
+  if(NovaArt.initialZoneIds.includes(id))return NovaArt.entryQuotaRules.games*(50*2/3+100/3);
   const a=NovaArt,c=a.config(options),s=a.startZone(a.enter({},()=>.5),id,{...c,setting:options.setting},()=>.5),r=a.zoneRules(s,c),limit=a.zoneTailControl.threshold;
   if(r.family==='ladder'){
    const weights=a.ladderWeightsFor(s),tables=a.ladderTableFor(s);
@@ -32,9 +33,9 @@ globalThis.NovaBalance=(()=>{
    for(let award=limit-10;award>=0;award-=10){
     const row=Array.from({length:H+1},()=>Array(6).fill(0)),rate=a.sevenAimRules({...s,award:String(award)},c);rows.set(award,row);
     for(let h=H;h>=0;h--)for(let left=1;left<=5;left++){
-     const floor=s.zone==='sora'&&s.ura&&left===1&&award<500,guarantee=floor||h+left-1<H;
+     const floor=s.zone==='sora'&&s.ura?Math.ceil((500-award)/100):0,guarantee=Math.max(floor,H-h)>left-1;
      const hit=guarantee?1-rate.reset:rate.hit,miss=1-rate.reset-hit;
-     const win=floor?(()=>{const n=a.sevenValues.find(v=>v>=500-award)||500;return n+get(award+n,Math.min(H,h+1),left-1);})():a.sevenValues.reduce((n,v,i)=>n+r.weights[i]*(v+get(award+v,Math.min(H,h+1),left-1)),0);
+     const win=a.sevenValues.reduce((n,v,i)=>n+r.weights[i]*(v+get(award+v,Math.min(H,h+1),left-1)),0);
      row[h][left]=rate.reset*(10+get(award+10,h,5))+hit*win+miss*row[h][left-1];
     }
    }

@@ -1,10 +1,11 @@
 /* User supplied result images are displayed unchanged, separate from the digits. */
 globalThis.NovaResults=(()=>{
  const chars=['sosuke','toto','urapi','giru','sora','ouma'];
- const names={sosuke:'宗介',toto:'とと',urapi:'うらぴ',giru:'ギル',sora:'空',ouma:'逢魔'};
+ const initialChars=['kushuri','nito'];
+ const names={sosuke:'宗介',toto:'とと',urapi:'うらぴ',giru:'ギル',sora:'空',ouma:'逢魔',kushuri:'くしゅり',nito:'にと'};
  function pick(kind,zone,setting,rng=Math.random){
   if(kind==='at'){const n=Math.min(11,Math.floor(rng()*12));return {character:chars[Math.floor(n/2)],color:n%2?'blue':'red'};}
-  return {character:chars.includes(zone)?zone:'sosuke',color:rng()<(Number(setting)%2?.6:.4)?'red':'blue'};
+  return {character:chars.includes(zone)||initialChars.includes(zone)?zone:'sosuke',color:initialChars.includes(zone)?'initial':rng()<(Number(setting)%2?.6:.4)?'red':'blue'};
  }
  function transition(before,after,setting,rng=Math.random){
   if(before?.zone&&!after?.zone)return {kind:'zone',...pick('zone',before.zone,setting,rng),pt:String(after?.award??before.award??0)};
@@ -17,7 +18,7 @@ globalThis.NovaResults=(()=>{
  const key=()=>active?active.character+'-'+active.color:'sosuke-red';
  const layout=()=>({...defaults,...positions[key()]});
  function loadImage(character,color){
-  const src=`assets/results/${character}-${color}.png`,cached=images.get(src);
+  const src=color==='initial'?`assets/illustrations/lamps-20260928/${character}.png`:`assets/results/${character}-${color}.png`,cached=images.get(src);
   if(cached&&!cached.failed)return cached;
   const img=new Image();img.draggable=false;img.decoding='async';
   const entry={img,ready:false,failed:false};images.set(src,entry);
@@ -40,9 +41,10 @@ globalThis.NovaResults=(()=>{
   machine.append(root);card=root.firstElementChild;art=card.firstElementChild;num=art.querySelector('output');fallback=card.querySelector('.novaResultFallback');
   // Decode all twelve unchanged result images before a third-stop result needs them.
   for(const character of chars)for(const color of ['red','blue'])loadImage(character,color);
+  for(const character of initialChars)loadImage(character,'initial');
   const button=document.createElement('button');button.id='novaResultAdjust';button.textContent='リザルト調整';document.body.append(button);
   panel=document.createElement('dialog');panel.className='novaResultSettings';panel.innerHTML='<h3>リザルト配置</h3><label>確認画像 <select id="novaResultSelect"></select></label><div class="novaResultFields"></div><button type="button" id="novaResultReset">この画像を初期位置へ</button> <button type="button" id="novaResultClose">閉じる</button><p>変更はこのブラウザに画像別で自動保存します。画像は縦横比を維持します。</p>';document.body.append(panel);
-  select=panel.querySelector('select');select.innerHTML=chars.flatMap(id=>['red','blue'].map(c=>`<option value="${id}-${c}">${names[id]}・${c==='red'?'赤':'青'}</option>`)).join('');
+  select=panel.querySelector('select');select.innerHTML=chars.flatMap(id=>['red','blue'].map(c=>`<option value="${id}-${c}">${names[id]}・${c==='red'?'赤':'青'}</option>`)).join('')+initialChars.map(id=>`<option value="${id}-initial">${names[id]}・初期pt</option>`).join('');
   const fields={x:'表示枠 X（%）',y:'表示枠 Y（%）',w:'表示枠 幅（%）',h:'表示枠 高さ（%）',imageX:'画像 X（%）',imageY:'画像 Y（%）',scale:'画像倍率（%）',numberX:'数字 X（%）',numberY:'数字 Y（%）',numberW:'黒背景 幅（%）',numberH:'黒背景 高さ（%）',font:'数字サイズ（%）'};
   panel.querySelector('.novaResultFields').innerHTML=Object.entries(fields).map(([k,label])=>`<label>${label}<input type="number" step="0.5" data-field="${k}"></label>`).join('');
   const fill=()=>panel.querySelectorAll('input').forEach(el=>el.value=layout()[el.dataset.field]);
@@ -56,7 +58,8 @@ globalThis.NovaResults=(()=>{
  function show(value){
   init();if(!root)return;
   const request=++imageRequest;active=value;root.hidden=false;root.dataset.loading='true';
-  const label=`${names[value.character]} ${value.kind==='at'?'AT総獲得':'上乗せ'}`;
+  root.dataset.initial=String(value.color==='initial');
+  const label=`${names[value.character]} ${value.color==='initial'?'AT初期pt':value.kind==='at'?'AT総獲得':'上乗せ'}`;
   num.textContent=String(value.pt);num.setAttribute('aria-label',value.pt+'pt');
   fallback.querySelector('span').textContent=label;fallback.querySelector('output').textContent=value.pt+'pt';
   const entry=loadImage(value.character,value.color);

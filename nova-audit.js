@@ -2,7 +2,7 @@
 globalThis.NovaAudit=(()=>{
   const copy=v=>JSON.parse(JSON.stringify(v));
   const num=v=>Number(v)||0;
-  const zone=f=>f?.zone?(f.ura?'裏':'')+({sosuke:'宗介',giru:'ギル',sora:'空',ouma:'逢魔',toto:'とと',urapi:'うらぴ'}[f.zone]||f.zone):'';
+  const zone=f=>f?.zone?(f.ura?'裏':'')+({sosuke:'宗介',giru:'ギル',sora:'空',ouma:'逢魔',toto:'とと',urapi:'うらぴ',kushuri:'くしゅり',nito:'にと'}[f.zone]||f.zone):'';
   function describe(before,after,detail={}){
     const out=[],a=before?.flow||{},b=after.flow||{};
     if(!before)out.push('記録開始（以前の内訳は未記録）');

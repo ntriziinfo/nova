@@ -11,8 +11,12 @@ test('zone awards no longer reduce hit or freeze chances above 2000',()=>{
  assert.equal(a.zoneAwardFactor('100000',500),1);
  const out=a.step({...a.startZone(a.enter(),'ura_ouma'),award:'10000'},{},()=>.2);assert.equal(out.result,'SUPER_NOVA');assert.ok(Number(out.flow.award)>10000);
 });
-test('target zone means and unchanged base cue colors',()=>{
+test('updated reset rates retain the confidence of each cue color',()=>{
  assert.ok(Math.abs(c.NovaBalance.zoneMean('ura_ouma')-1000)<2);
- assert.ok(Math.abs(c.NovaBalance.zoneMean('ura_sora')-900)<2);
- assert.equal(a.aimColorsFor(a.startZone(a.enter(),'toto'))[1].weight,.35);assert.equal(a.aimColorsFor(a.startZone(a.enter(),'sora'))[1].weight,.35);assert.equal(a.aimColorsFor(a.startZone(a.enter(),'ura_sora'))[1].weight,.715);
+ assert.ok(Math.abs(c.NovaBalance.zoneMean('ura_sora')-800)<2);
+ for(const [id,total]of [['toto',.37],['sora',.50],['ura_sora',.65]]){
+  const colors=a.aimColorsFor(a.startZone(a.enter(),id));
+  assert.deepEqual([...colors.map(x=>x.hit)],[.2,.8,1]);
+  assert.ok(Math.abs(colors.reduce((n,x)=>n+x.hit*x.weight,0)-total)<1e-12);
+ }
 });

@@ -13,13 +13,27 @@ test('confirmation stops cycling and lights the selected character including ura
  ctx.showZoneRoulette(null);assert.equal(panel.hidden,true);assert.equal(body.dataset.zoneRouletteLamp,'');
 });
 
-test('initial roulette omits ladder characters for unsupported amounts, ordinary roulette keeps them',()=>{
+test('legacy initial roulette omits ladder characters for unsupported amounts, ordinary roulette keeps them',()=>{
  for(const quota of [300,350,500,750,1000,1200]){
   ctx.showZoneRoulette({entryStage:'roulette',initialStage:'entry',entryQuota:String(quota)});
   const seen=new Set();for(let i=0;i<12;i++){seen.add(body.dataset.zoneRouletteLamp);[...timers.values()][0]();}
   const allowed=[300,500,1000].includes(quota);
   assert.equal(seen.has('sosuke'),allowed);assert.equal(seen.has('giru1'),allowed);
   for(const id of ['toto','urapi','sora1','ouma1'])assert.ok(seen.has(id));
+ }
+ ctx.showZoneRoulette(null);
+});
+
+test('new initial roulette cycles only Kushuri and Nito and confirms their own lamps',()=>{
+ ctx.showZoneRoulette({entryStage:'roulette',initialStage:'entry',initialVersion:148,entryQuota:'200'});
+ for(let i=0;i<8;i++){
+  assert.equal(body.dataset.zoneRouletteLamp,i%2?'nito':'kushuri');
+  assert.equal(panel.textContent,'特化ゾーン抽選中… '+(i%2?'にと':'くしゅり'));
+  [...timers.values()][0]();
+ }
+ for(const id of ['kushuri','nito']){
+  ctx.showZoneRoulette({entryStage:'confirmed',initialStage:'entry',initialVersion:148,pendingZone:id});
+  assert.equal(body.dataset.zoneRouletteLamp,id);assert.equal(timers.size,0);
  }
  ctx.showZoneRoulette(null);
 });

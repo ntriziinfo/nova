@@ -10,7 +10,7 @@ const reload=s=>a.normalize(JSON.parse(JSON.stringify(s)));
 test('first normal BIG win awards initial AT; extra wins and all in-AT wins reserve zones',()=>{
  const normal={phase:'normal'},active={...a.enter({},()=>.5),remaining:'417'};
  const first=a.afterBonus(normal,{},1,()=>.5);
- assert.equal(first.initialWait,3);assert.equal(first.entryQuota,'750');assert.equal(first.sets,'0');
+ assert.equal(first.initialWait,3);assert.equal(first.entryQuota,'200');assert.equal(first.sets,'0');
  assert.equal(a.afterBonus(normal,{},0).phase,'normal');
  assert.equal(a.afterBonus(normal,{},3,()=>.5).sets,'2');
  const resumed=a.afterBonus(active,{},3,()=>{throw Error('no draw before stock BET');});

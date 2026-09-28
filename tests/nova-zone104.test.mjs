@@ -11,9 +11,13 @@ test('normal table selection never includes six or seven',()=>{
   const s=a.startZone(a.enter(),id,{setting},()=>i/100);assert.ok(a.ladderTables.sosuke.slice(0,5).some(l=>JSON.stringify(l)===JSON.stringify(s.ladder)));
  }
 });
-test('sora guarantees two sevens, ura sora fills 500 on last non-nebula',()=>{
+test('sora guarantees two sevens, ura sora reaches 500 in fixed 100pt wins',()=>{
  let s=a.startZone(a.enter(),'sora');for(let i=0;i<5;i++)s=a.step(s,{},()=>.1,'MISS').flow;assert.equal(s.sevenHits,2);assert.ok(Number(s.award)>=100);
- for(const award of [0,10,100,200,390,490]){const out=a.step({...a.startZone(a.enter(),'ura_sora'),award:String(award),zoneLeft:1}, {},()=>.1,'MISS');assert.equal(out.result,'BIG');assert.ok(Number(out.flow.award)>=500);}
+ for(const award of [0,10,100,200,390,490]){
+  let saved={...a.startZone(a.enter(),'ura_sora'),award:String(award),zoneLeft:1};
+  do{const out=a.step(saved,{},()=>.1,'MISS');assert.equal(out.result,'BIG');assert.equal(out.zoneAward,100);saved=out.flow;}while(saved.zone);
+  assert.ok(Number(saved.award)>=500);
+ }
  const reset=a.step({...a.startZone(a.enter(),'ura_sora'),zoneLeft:1},{},()=>.1,'NEBULA');assert.equal(reset.result,'NEBULA');assert.equal(reset.flow.zoneLeft,5);
 });
 test('urapi has 50 guarantee and zero-game freeze; ura ouma has 500 guarantee',()=>{
