@@ -6531,7 +6531,7 @@ body{
   .vertexConnectionBadge.offline{color:#ff8f9c;border-color:rgba(255,91,113,.65);background:rgba(52,9,17,.9)}
   .vertexConnectionBadge.legacy{color:#d4a6ff;border-color:rgba(185,109,255,.6)}
 </style>
-<link rel="stylesheet" href="nova-cabinet.css?v=20260928-cz-colors-162">
+<link rel="stylesheet" href="nova-cabinet.css?v=20260928-prelude-glow-163">
 <link rel="stylesheet" href="nova-artwork.css?v=20260928-cz-rainbow-155">
 <script src="nova-artwork.js?v=20260928-cz-rainbow-155" defer></script>
 <script src="nova-beat-lamps.js?v=20260928-eight-lamps"></script>
@@ -15651,7 +15651,11 @@ body{
     const cue=resolved?.czPrelude;
     const pending=normalState.internal?.prelude?.presentation==='reel';
     const active=!session.active&&!normalState.bonusPending&&(cue?!cue.announce:pending);
-    document.getElementById('machine').dataset.czPreludeActive=String(active);
+    const machine=document.getElementById('machine');
+    machine.dataset.czPreludeActive=String(active);
+    // Use the current spin's cue so hit and fake preludes also glow on their
+    // trigger/final game; between spins use the saved, unfinished prelude.
+    machine.dataset.atPreludeActive=String(!session.active&&!normalState.bonusPending&&normalState.flow?.phase==='art'&&!!(resolved?.atPrelude||normalState.flow.atPrelude));
   }
   function showCzPrelude(stopOrder,resolved,reelIndex=null){
     const prelude=resolved?.czPrelude||resolved?.atPrelude;
@@ -16915,6 +16919,7 @@ body{
     document.querySelectorAll('.reel.cz-stop-blackout').forEach(reel=>reel.classList.remove('cz-stop-blackout'));
     renderCzPrelude([]);
     document.getElementById('machine').dataset.czPreludeActive='false';
+    document.getElementById('machine').dataset.atPreludeActive='false';
   }
   function playInitialDuoStop(spin,order){
     if(debugFastSpinActive||speedToBonusActive||!NovaInitialDuo.eligible(spin?.resolved?.flowBefore))return;

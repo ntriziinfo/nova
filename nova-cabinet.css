@@ -76,9 +76,14 @@ body[data-art-zone=toto][data-toto-color=rainbow] .novaArtItem[data-artwork=toto
 body[data-game-phase="cz"] #machine:not([data-cz-prelude-active="true"]) .reels{border-radius:12px;box-shadow:0 0 0 2px #63377c,0 0 16px #71399580,0 0 30px #51236950,inset 0 0 16px #51236933!important}
 body[data-game-phase="cz"] #machine:not([data-cz-prelude-active="true"]) .reel{border-color:#70478a!important;box-shadow:0 0 6px #71399566,inset 0 0 8px #51236944!important}
 body[data-game-phase="strong_cz"] #machine .reels,
+#machine[data-at-prelude-active="true"] .reels,
 #machine[data-cz-prelude-active="true"] .reels{border-radius:12px;box-shadow:0 0 0 2px #ff3150,0 0 24px #ff183bc4,0 0 50px #ff183b70,inset 0 0 22px #ff183b40!important}
 body[data-game-phase="strong_cz"] #machine .reel,
+#machine[data-at-prelude-active="true"] .reel,
 #machine[data-cz-prelude-active="true"] .reel{border-color:#ff5267!important;box-shadow:0 0 8px #ff183b99,inset 0 0 10px #ff183b66!important}
+/* Keep the warm light inside the symbol window so reel blackout dims it too. */
+body:is([data-game-phase="cz"],[data-game-phase="strong_cz"]) #machine .reel .window::after,
+#machine:is([data-cz-prelude-active="true"],[data-at-prelude-active="true"]) .reel .window::after{content:"";position:absolute;inset:0;z-index:5;pointer-events:none;border-radius:inherit;background:linear-gradient(90deg,#ffe45a26,transparent 26% 74%,#ffe45a26),radial-gradient(ellipse at 50% 45%,#ffe77724,#ffd84d0d 75%);box-shadow:inset 0 0 22px #ffe35d38}
 
 body[data-art-zone=urapi] .novaArtItem[data-artwork=urapi] img{animation:none!important;filter:brightness(1.25) drop-shadow(0 0 12px #fff)!important}
 body[data-art-zone=sosuke] .novaArtItem[data-artwork=sosuke] img,
