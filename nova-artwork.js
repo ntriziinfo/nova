@@ -13,13 +13,19 @@
     urapi:{x:19.7667,y:34.0807,w:17.6},
     giru1:{x:30.1667,y:35.2609,w:15.5}
   };
-  // Keep the existing six-character order and relative adjustments while making
-  // room for two more lamps in the same row. Original source pixels stay intact.
+  // Retain the old six-lamp migration for browsers with an older saved layout.
   const fitPreviousRow = p => ({x:21.5+(p.x-21.5)*.75,y:43.4+(p.y-43.4)*.75,w:p.w*.75});
+  // Defaults captured from the user's saved eight-lamp layout on 2026-09-28.
+  // Keep the saved precision so adopting this layout does not move the lamps.
   const defaults = {
-    ...Object.fromEntries(Object.entries(previousDefaults).map(([id,p])=>[id,fitPreviousRow(p)])),
-    kushuri:{x:61.1,y:36.9,w:11.4},
-    nito:{x:69.5,y:37.3,w:10.1}
+    ouma1:{x:39.68896777794596,y:34.461526481127564,w:13.7},
+    sora1:{x:46.607212055740554,y:35.611815814620165,w:14.8},
+    sosuke:{x:62.050265972432456,y:34.41206508600096,w:10.7},
+    toto:{x:57.72358344471355,y:36.98388566650741,w:8.3},
+    urapi:{x:24.36669207421983,y:34.16494449354993,w:15.8},
+    giru1:{x:32.407076713117135,y:36.14899559245103,w:13.8},
+    kushuri:{x:67.43012882429552,y:36.80444338270424,w:12.5},
+    nito:{x:19.820507961225065,y:36.29665551839465,w:12.3}
   };
   const key = 'nova_licensed_artwork_locked_20260928';
   const clone = value => JSON.parse(JSON.stringify(value));
