@@ -6532,8 +6532,8 @@ body{
   .vertexConnectionBadge.legacy{color:#d4a6ff;border-color:rgba(185,109,255,.6)}
 </style>
 <link rel="stylesheet" href="nova-cabinet.css?v=20260928-cz-prelude-152">
-<link rel="stylesheet" href="nova-artwork.css?v=20260928-eight-lamps">
-<script src="nova-artwork.js?v=20260928-lamp-defaults-151" defer></script>
+<link rel="stylesheet" href="nova-artwork.css?v=20260928-cz-rainbow-155">
+<script src="nova-artwork.js?v=20260928-cz-rainbow-155" defer></script>
 <script src="nova-beat-lamps.js?v=20260928-eight-lamps"></script>
 <script src="nova-clock.js?v=20260917-background-129"></script>
 <script src="nova-reel-motion.js?v=20260917-background-129"></script>
@@ -8000,7 +8000,7 @@ body{
     return {kind:'spin',result,message:resolved.artMessage||'',mode:debugFastSpinActive?'fast':autoPlay?'auto':speedToBonusActive?'speed':'manual',forced:pendingForceResult||'',
       aim:resolved.aim,burstEvent:resolved.burstEvent,burstReward:resolved.burstReward,comebackEvent:resolved.comebackEvent,atOutcome:resolved.atOutcome,zoneAward:resolved.zoneAward,
       artSetWon:resolved.artSetWon,oumaFreeze:resolved.oumaFreeze,czLamp:resolved.czLamp,bonusHit:resolved.bonusHit,bonusSource:resolved.bonusSource,
-      bellNaviOrder:currentSpin?.bellNaviOrder,rareNavi:currentSpin?.rareNavi,rareCueVoice:currentSpin?.rareCueVoice,
+      bellNaviOrder:currentSpin?.bellNaviOrder,rareNavi:currentSpin?.rareNavi,rareCueVoice:currentSpin?.rareCueVoice,rareNaviSoundPlayed:currentSpin?.rareNaviSoundPlayed,
       pressOrder:debugFastSpinActive?'simulation':currentSpin?.auditPressOrder,stopOrder:debugFastSpinActive?'simulation':currentSpin?.auditStopOrder,grid:debugFastSpinActive?undefined:currentSpin?.auditGrid,visualResult:!debugFastSpinActive&&NovaAim.hasGuide(resolved.aim)&&currentSpin?.aimAligned===false?'MISS':result,
       flowBefore:resolved.flowBefore,flowAfter:resolved.flowAfter,manualLineupMiss:resolved.manualLineupMiss,bonusWaitSpin:resolved.bonusWaitSpin,czEntry:resolved.czEntry,czPrelude:resolved.czPrelude,czCompleted:resolved.czCompleted};
   }
@@ -8169,6 +8169,7 @@ body{
   const characterVoiceConnections=new WeakMap();
   let characterVoiceBus=null;
   for(const src of CHARACTER_VOICE_SRCS){const audio=new Audio(src);audio.preload='auto';oneShotSoundCache.set(src,audio);audio.load();}
+  const rareNaviPreload=new Audio('assets/media/nova/rare-navi.mp3');rareNaviPreload.preload='auto';rareNaviPreload.loop=false;oneShotSoundCache.set('assets/media/nova/rare-navi.mp3',rareNaviPreload);rareNaviPreload.load();
   for(const src of ['assets/media/jag/cz_third_success.wav','assets/media/jag/cz_third_failure.wav','assets/media/nova/cz_stop_12.wav']){const audio=new Audio(src);audio.preload='auto';oneShotSoundCache.set(src,audio);audio.load();}
   for(const src of ['assets/media/nova/bell-navi.wav','assets/media/nova/direct-award.wav','assets/media/nova/weak-nova.wav','assets/media/nova/aim/nebula-win.wav','assets/media/nova/aim/seven-win.wav','assets/media/nova/aim/cue-blue.wav','assets/media/nova/aim/cue-red.wav','assets/media/nova/aim/cue-rainbow.wav','assets/media/nova/shutter.wav','assets/media/nova/shutter-close.wav','assets/media/nova/ladder-final-award.wav','assets/media/nova/ladder-final-award-under1000.wav']){const audio=new Audio(src);audio.preload='auto';oneShotSoundCache.set(src,audio);audio.load();}
   const resultEyecatchPreload = new Audio('assets/media/nova/result-eyecatch.wav');
@@ -15199,6 +15200,7 @@ body{
       playBellNaviVoice(currentSpin);
     }
     playAimBetPresentation(resolved);
+    playRareNaviSound(currentSpin);
     playRareCueVoice(currentSpin);
     if(!resolved.oumaFailed&&['urapi','ouma'].includes(normalState.flow?.zone))showOverlay('ノヴァを狙え');
     if(resolved.oumaFreeze)showOverlay(NovaArt.zoneName(normalState.flow)+'フリーズ！ 0G連・ノヴァを狙え');
@@ -15481,6 +15483,12 @@ body{
     setReelColumn(i, columnSymbols, label, cls, lineRow);
     stopBtns[i].disabled = true;
     playStopSound(i, stopOrder);
+  }
+
+  function playRareNaviSound(spin){
+    if(debugFastSpinActive||speedToBonusActive||!spin?.rareNavi||spin.rareNaviSoundPlayed)return;
+    spin.rareNaviSoundPlayed=true;
+    playOneShotSound('assets/media/nova/rare-navi.mp3',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
   }
 
   function rareCueGrade(spin){

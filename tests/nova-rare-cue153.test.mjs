@@ -42,5 +42,5 @@ test('each rare BET plays one random Nito/Kushuri line and fast simulation stays
   assert(sounds.at(-1)[0].endsWith('-'+character+'.wav'));assert.equal(sounds.at(-1)[1],.42);assert(fs.existsSync(sounds.at(-1)[0]));
  }
  const count=sounds.length;c.playRareCueVoice({result:'BELL'});c.debugFastSpinActive=true;c.playRareCueVoice({result:'WEAK_SUICA'});c.debugFastSpinActive=false;c.speedToBonusActive=true;c.playRareCueVoice({result:'WEAK_SUICA'});assert.equal(sounds.length,count);
- assert.match(html,/playAimBetPresentation\(resolved\);\s*playRareCueVoice\(currentSpin\);/);
+ assert.match(html,/playAimBetPresentation\(resolved\);\s*playRareNaviSound\(currentSpin\);\s*playRareCueVoice\(currentSpin\);/);
 });
