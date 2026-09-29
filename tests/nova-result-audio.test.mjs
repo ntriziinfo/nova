@@ -2,17 +2,22 @@ import test from 'node:test';import assert from 'node:assert/strict';import fs f
 const html=fs.readFileSync('jag.html','utf8');
 const fn=name=>html.match(new RegExp('  function '+name+'\\([^]*?\\n  }'))[0];
 
-test('roulette BET uses the supplied roulette voice once instead of normal start audio',()=>{
- const sounds=[];const c=vm.createContext({normalState:{},isLadderShutterSpin:()=>false,SPIN_SOUND_SRC:'normal.wav',sfxOutputVolume:()=>.5,playOneShotSound:src=>sounds.push(src)});
- vm.runInContext(fn('playSpinSound'),c);
+test('AT roulette BET plays its voice once; fixed initial roulette keeps the ordinary BET sound',()=>{
+ const sounds=[];const c=vm.createContext({debugFastSpinActive:false,speedToBonusActive:false,normalState:{},isLadderShutterSpin:()=>false,SPIN_SOUND_SRC:'normal.wav',sfxOutputVolume:()=>.5,voiceOutputVolume:()=>.7,playOneShotSound:(...args)=>sounds.push(args)});
+ vm.runInContext(fn('playZoneRouletteBetVoice')+fn('playSpinSound'),c);
  for(const initialStage of ['', 'entry']){
-  sounds.length=0;c.playSpinSound({flowBefore:{phase:'art',entryStage:'roulette',initialStage},flowAfter:{phase:'art',entryStage:'confirmed'}});
-  assert.deepEqual(sounds,['assets/media/nova/aim/zone-roulette-confirm.wav?v=20260919-roulette-voice']);
+  sounds.length=0;
+  const r={flowBefore:{phase:'art',entryStage:'roulette',initialStage},flowAfter:{phase:'art',entryStage:'confirmed'}};
+  const before=JSON.stringify([r.flowBefore,r.flowAfter]);
+  c.playZoneRouletteBetVoice(r);c.playZoneRouletteBetVoice(r);c.playSpinSound(r);
+  assert.equal(JSON.stringify([r.flowBefore,r.flowAfter]),before);
+  assert.deepEqual(JSON.parse(JSON.stringify(sounds)),[[initialStage?'normal.wav':'assets/media/nova/aim/zone-roulette-confirm.wav?v=20260919-roulette-voice',initialStage ? .5 : .7,{allowDuringPremiumConfirm:true}]]);
  }
- sounds.length=0;
- c.playSpinSound({flowBefore:{phase:'art',entryStage:'seven'},flowAfter:{phase:'art',entryStage:'roulette'}});
- c.playSpinSound({flowBefore:{phase:'art',entryStage:'confirmed'}});
- assert.deepEqual(sounds,['normal.wav','normal.wav']);
+ for(const entryStage of ['seven','confirmed','']){
+  sounds.length=0;const r={flowBefore:{phase:'art',entryStage}};
+  c.playZoneRouletteBetVoice(r);c.playSpinSound(r);assert.equal(sounds[0][0],'normal.wav');assert.equal(sounds.length,1);
+ }
+ assert.match(html,/playZoneRouletteBetVoice\(resolved\);\s+playAimBetPresentation\(resolved\);/);
 });
 test('background music stays paused through result callbacks and resumes after result dismissal',()=>{
  let plays=0,pauses=0;const c=vm.createContext({NovaDirectAward:{busy:false},normalState:{resultCard:{kind:'zone'}},debugFastSpinActive:false,session:{active:false},bonusConfirmBgmHold:false,barBgmActive:false,battleBgmActive:false,bgm:{paused:true,play(){plays++;return Promise.resolve();}},pauseNormalBgm(){pauses++;},ensureNormalBgmSource:()=> 'at.wav',bgmOutputVolumeForSource:()=>.5,BGM_OUTPUT_SCALE:1,getAudio(){}});

@@ -15264,6 +15264,7 @@ body{
       playOneShotSound('assets/media/nova/bell-navi.wav',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
       playBellNaviVoice(currentSpin);
     }
+    playZoneRouletteBetVoice(resolved);
     playAimBetPresentation(resolved);
     playRareNaviSound(currentSpin);
     playRareCueVoice(currentSpin);
@@ -15629,6 +15630,15 @@ body{
     const src=NEBULA_ZONE_VOICE_SRCS[String(flow.zone).replace(/^ura_/,'')];
     if(src)playOneShotSound(src,voiceOutputVolume(),{allowDuringPremiumConfirm:true});
     else playRandomAimVoice('nebula',rng);
+  }
+
+  function playZoneRouletteBetVoice(resolved){
+    if(debugFastSpinActive||speedToBonusActive||!resolved||resolved.zoneRouletteVoicePlayed)return;
+    const flow=resolved.flowBefore;
+    // The initial duo is fixed; only the AT character roulette needs this voice.
+    if(flow?.phase!=='art'||flow.entryStage!=='roulette'||flow.initialStage)return;
+    resolved.zoneRouletteVoicePlayed=true;
+    playOneShotSound('assets/media/nova/aim/zone-roulette-confirm.wav?v=20260919-roulette-voice',voiceOutputVolume(),{allowDuringPremiumConfirm:true});
   }
 
   function playAimBetPresentation(resolved,rng=Math.random){
@@ -16965,10 +16975,7 @@ body{
 
   function isLadderShutterSpin(){const flow=currentSpin?.resolved?.flowBefore;return NovaLadder.eligible(flow)&&flow.ladderRevealed;}
   function playSpinSound(resolved){
-    if(resolved?.flowBefore?.phase==='art'&&resolved.flowBefore.entryStage==='roulette'){
-      playOneShotSound('assets/media/nova/aim/zone-roulette-confirm.wav?v=20260919-roulette-voice',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
-      return;
-    }
+    if(resolved?.zoneRouletteVoicePlayed)return;
     const src=normalState.ladderAwardPresentation?.started?(Number(normalState.ladderAwardPresentation.card?.pt)>=1000?'assets/media/nova/ladder-final-award.wav':'assets/media/nova/ladder-final-award-under1000.wav'):isLadderShutterSpin()?'assets/media/nova/shutter.wav':SPIN_SOUND_SRC;
     playOneShotSound(src,sfxOutputVolume(),{allowDuringPremiumConfirm:true});
   }
