@@ -24,8 +24,8 @@ test('zone nebula guides play the matching voice or registered fallback on BET, 
  for(const [zone,ura] of [['toto',false],['sora',false],['sora',true],['ura_sora',false],['giru',false],['ura_giru',false],['ouma',false],['ouma',true],['ura_ouma',false]])for(const color of ['blue','red','rainbow'])for(const result of ['NEBULA','MISS'])for(const roll of [0,.5,.999999]){
   const {c,sounds}=setup();let draws=0;
   c.playAimBetPresentation({aim:{symbol:'nebula',color,result,guide:true},flowBefore:{phase:'art',zone,ura}},()=>{draws++;return roll;});
-  const dedicated=zone==='toto'?'toto':zone.includes('giru')?'giru':zone.includes('ouma')?'ouma':'';
-  const character=dedicated||['giru','toto','ouma'][Math.floor(roll*3)];
+  const dedicated=zone.replace(/^ura_/,'');
+  const character=dedicated;
   assert.deepEqual(sounds,[{src:'assets/media/nova/aim/cue-'+color+'.wav',volume:.4},{src:'assets/media/nova/aim-nebula-'+character+'.wav',volume:.6}]);
   assert.equal(draws,dedicated?0:1);
  }
@@ -40,8 +40,8 @@ test('hidden zone nebula guides stay silent; simulation and non-zone states cann
  assert.deepEqual(sounds,[]);
 });
 
-test('initial BIG nebula guides choose Giru, Toto or Ouma equally on BET and hide voices with an absent guide',()=>{
- for(const [roll,character] of [[0,'giru'],[.333333,'giru'],[1/3,'toto'],[.666666,'toto'],[2/3,'ouma'],[.999999,'ouma']])for(const result of ['NEBULA','MISS'])for(const color of ['blue','red','rainbow']){
+test('initial BIG nebula guides choose Giru, Toto, Ouma or Sora equally on BET and hide voices with an absent guide',()=>{
+ for(const [roll,character] of [[0,'giru'],[.249999,'giru'],[.25,'toto'],[.499999,'toto'],[.5,'ouma'],[.749999,'ouma'],[.75,'sora'],[.999999,'sora']])for(const result of ['NEBULA','MISS'])for(const color of ['blue','red','rainbow']){
   const {c,sounds}=setup();c.playAimBetPresentation({aTypeBonusGame:true,initialBonusGame:true,aim:{symbol:'nebula',result,color,guide:true}},()=>roll);
   assert.deepEqual(sounds,[{src:'assets/media/nova/aim/cue-'+color+'.wav',volume:.4},{src:'assets/media/nova/aim-nebula-'+character+'.wav',volume:.6}]);
  }

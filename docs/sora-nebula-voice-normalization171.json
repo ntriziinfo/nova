@@ -1,0 +1,33 @@
+{
+  "target": {
+    "integratedLufs": -12,
+    "truePeakDbtp": -1,
+    "dualMono": true
+  },
+  "measurementSilencePaddingSeconds": 1,
+  "method": "Measured gain with 192 kHz look-ahead peak limiting; compensated latency; render each pass from original",
+  "sourceRevision": "cc3add3a6e186fccf80a8710a769904059de91b9",
+  "files": [
+    {
+      "src": "assets/media/nova/aim-nebula-sora.wav",
+      "codec": "pcm_s16le",
+      "rate": 48000,
+      "channels": 2,
+      "samples": 57344,
+      "outputCodec": "pcm_s16le",
+      "gainDb": -5.79,
+      "sourceSha256": "0f735e4492b44a4a94786e616170ac89682345f1e4f96b0016ac3d1d2c73be34",
+      "outputSha256": "f67407e1d747214bffa0d044b3cabbc7712aa0857750e00b26bcdf47940ca57f",
+      "before": {
+        "integratedLufs": -6.21,
+        "truePeakDbtp": 0.19,
+        "loudnessRangeLu": 0
+      },
+      "after": {
+        "integratedLufs": -12,
+        "truePeakDbtp": -5.61,
+        "loudnessRangeLu": 0
+      }
+    }
+  ]
+}

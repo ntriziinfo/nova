@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>NOVA</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23030005'/%3E%3Cpath d='M9 39 32 7l23 32H40l-8 18-8-18H9z' fill='%23ff2334' stroke='%23ffd761' stroke-width='4'/%3E%3C/svg%3E">
 <link rel="preload" as="image" href="assets/symbols/gang-v3/miss.png">
@@ -6562,6 +6562,8 @@ body{
 <script src="nova-audit-ui.js?v=20260916-role-128"></script>
 <link rel="stylesheet" href="nova-comeback-presentation.css?v=20260909-comeback-114">
 <script src="nova-comeback-presentation.js?v=20260909-comeback-114"></script>
+<link rel="stylesheet" href="nova-mobile.css?v=20260929-mobile-171">
+<script src="nova-mobile.js?v=20260929-mobile-171" defer></script>
 <style>
 /* Fit the original nebula art to reel width; its transparent vertical margins
    no longer shrink the lettering to the cell height. Keep native proportions. */
@@ -8149,9 +8151,9 @@ body{
   const oneShotSoundCache = new Map();
   const BELL_NAVI_VOICE_SRCS={sosuke:['assets/media/nova/navi-left-sosuke.wav','assets/media/nova/navi-center-sosuke.wav','assets/media/nova/navi-right-sosuke.wav'],sora:['assets/media/nova/navi-left-sora.wav','assets/media/nova/navi-center-sora.wav','assets/media/nova/navi-right-sora.wav'],giru:['assets/media/nova/navi-left-giru.wav','assets/media/nova/navi-center-giru.wav','assets/media/nova/navi-right-giru.wav'],toto:['assets/media/nova/navi-left-toto.wav','assets/media/nova/navi-center-toto.wav','assets/media/nova/navi-right-toto.wav'],ouma:['assets/media/nova/navi-left-ouma.wav','assets/media/nova/navi-center-ouma.wav','assets/media/nova/navi-right-ouma.wav'],nito:['assets/media/nova/navi-left-nito.wav','assets/media/nova/navi-center-nito.wav','assets/media/nova/navi-right-nito.wav'],kushuri:['assets/media/nova/navi-left-kushuri.wav','assets/media/nova/navi-center-kushuri.wav','assets/media/nova/navi-right-kushuri.wav']};
   const BELL_NAVI_COMPLETE_VOICE_SRCS={sosuke:'assets/media/nova/navi-complete-sosuke.wav',sora:'assets/media/nova/navi-complete-sora.wav',giru:'assets/media/nova/navi-complete-giru.wav',toto:'assets/media/nova/navi-complete-toto.wav',ouma:'assets/media/nova/navi-complete-ouma.wav',nito:'assets/media/nova/navi-complete-nito.wav',kushuri:'assets/media/nova/navi-complete-kushuri.wav'};
-  const AIM_VOICE_SRCS={seven:['assets/media/nova/aim_seven_sosuke.wav','assets/media/nova/aim-seven-sora.wav','assets/media/nova/aim-seven-giru.wav','assets/media/nova/aim-seven-toto.wav','assets/media/nova/aim-seven-ouma.wav'],nebula:['assets/media/nova/aim-nebula-giru.wav','assets/media/nova/aim-nebula-toto.wav','assets/media/nova/aim-nebula-ouma.wav']};
+  const AIM_VOICE_SRCS={seven:['assets/media/nova/aim_seven_sosuke.wav','assets/media/nova/aim-seven-sora.wav','assets/media/nova/aim-seven-giru.wav','assets/media/nova/aim-seven-toto.wav','assets/media/nova/aim-seven-ouma.wav'],nebula:['assets/media/nova/aim-nebula-giru.wav','assets/media/nova/aim-nebula-toto.wav','assets/media/nova/aim-nebula-ouma.wav','assets/media/nova/aim-nebula-sora.wav']};
   const SEVEN_ZONE_VOICE_SRCS={sosuke:AIM_VOICE_SRCS.seven[0],sora:AIM_VOICE_SRCS.seven[1],giru:AIM_VOICE_SRCS.seven[2],toto:AIM_VOICE_SRCS.seven[3],ouma:AIM_VOICE_SRCS.seven[4]};
-  const NEBULA_ZONE_VOICE_SRCS={giru:AIM_VOICE_SRCS.nebula[0],toto:AIM_VOICE_SRCS.nebula[1],ouma:AIM_VOICE_SRCS.nebula[2]};
+  const NEBULA_ZONE_VOICE_SRCS={giru:AIM_VOICE_SRCS.nebula[0],toto:AIM_VOICE_SRCS.nebula[1],ouma:AIM_VOICE_SRCS.nebula[2],sora:AIM_VOICE_SRCS.nebula[3]};
   const ZONE_START_VOICE_SRCS={sora:'assets/media/nova/zone-start-sora.wav',ura_sora:'assets/media/nova/zone-start-ura-sora.wav',giru:'assets/media/nova/zone-start-giru.wav',ura_giru:'assets/media/nova/zone-start-ura-giru.wav',toto:'assets/media/nova/zone-start-toto.wav',ouma:'assets/media/nova/zone-start-ouma.wav',ura_ouma:'assets/media/nova/zone-start-ura-ouma.wav'};
   const ZONE_CONTINUE_VOICE_SRCS={sora:'assets/media/nova/continue-sora.wav',toto:'assets/media/nova/continue-toto.wav'};
   const OUMA_NOVA_VOICE_SRCS={aim:'assets/media/nova/aim-nova-ouma.wav',wins:['assets/media/nova/nova-win-1-ouma.wav','assets/media/nova/nova-win-2-ouma.wav','assets/media/nova/nova-win-3-ouma.wav']};
@@ -8294,6 +8296,7 @@ body{
   let pageScrollBoundsRaf = 0;
 
   function renderedPageZoom(){
+    if(window.NovaMobile?.active()) return window.NovaMobile.scale();
     return pageZoom * PAGE_ZOOM_BASE;
   }
 
@@ -8353,6 +8356,7 @@ body{
   }
 
   function syncZoomAnchorToSlotTop(){
+    if(window.NovaMobile?.active()) return;
     const root = document.documentElement;
     if(!root) return;
     const wrapEl = document.querySelector(".wrap");
@@ -8440,6 +8444,11 @@ body{
   }
 
   function updatePageScrollBounds(){
+    if(window.NovaMobile?.active()){
+      const spacer = $("pageScrollSpacer");
+      if(spacer) spacer.style.height = "0px";
+      return;
+    }
     const targets = [".wrap", ".main", ".machine", ".reelArea", ".buttonRow", ".autoStack"]
       .flatMap(selector=>Array.from(document.querySelectorAll(selector)));
     const wrapEl = document.querySelector(".wrap");
