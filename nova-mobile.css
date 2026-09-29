@@ -1,6 +1,12 @@
 /* Keep cabinet artwork/reel coordinates intact; fit the complete stage on phones. */
 .novaMobileViewport { display:contents; }
 .novaMobileControls { display:none; }
+.novaMobileAudioEnable {
+  position:fixed;z-index:10000;right:10px;bottom:calc(82px + env(safe-area-inset-bottom, 0px));
+  min-height:44px;padding:10px 16px;border:1px solid #e7c77b;border-radius:10px;
+  background:#382a14;color:white;font:700 15px system-ui;touch-action:manipulation;
+}
+.novaMobileAudioEnable[hidden] { display:none; }
 @media (max-width:1024px) {
   :root {
     --jag-cabinet-width:960px;
@@ -97,12 +103,6 @@
   /* Desktop artwork editors are kept out of the mobile play controls. */
   #novaSymbolPreviewOpen, #bellNaviAdjustBtn, #novaResultAdjust { display:none!important; }
   .debugToggleBtn { bottom:86px!important; }
-  .novaMobileAudioEnable {
-    position:fixed;z-index:10000;right:10px;bottom:calc(82px + env(safe-area-inset-bottom, 0px));
-    min-height:44px;padding:10px 16px;border:1px solid #e7c77b;border-radius:10px;
-    background:#382a14;color:white;font:700 15px system-ui;touch-action:manipulation;
-  }
-  .novaMobileAudioEnable[hidden] { display:none; }
 }
 @media (max-width:1024px) and (max-height:600px) and (orientation:landscape) {
   /* A short landscape screen focuses on the lamps/reels; the touch bar stays available. */
