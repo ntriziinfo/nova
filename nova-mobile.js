@@ -60,4 +60,17 @@
   if (machine) observer.observe(machine, {attributes:true, attributeFilter:['data-ouma-freeze']});
   document.body.append(controls);
   sync();
+  if(globalThis.NovaAudio?.enabled){
+    const audioButton=document.createElement('button');
+    audioButton.type='button';audioButton.className='novaMobileAudioEnable';audioButton.textContent='音声ON';
+    audioButton.setAttribute('aria-label','音声を有効にする');
+    const updateAudio=()=>{const s=NovaAudio.status();audioButton.hidden=s.unlocked&&s.state==='running';};
+    audioButton.addEventListener('click',async event=>{
+      if(await NovaAudio.unlock(event))window.dispatchEvent(new Event('nova-enable-audio'));
+      updateAudio();
+    });
+    for(const name of ['nova-audio-ready','nova-audio-blocked'])window.addEventListener(name,updateAudio);
+    document.addEventListener('visibilitychange',updateAudio);
+    document.body.append(audioButton);updateAudio();
+  }
 })();

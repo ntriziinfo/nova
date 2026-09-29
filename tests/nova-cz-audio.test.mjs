@@ -13,12 +13,16 @@ test('normal, ART, bonus pending, and missing flow do not play countdown',()=>{
  played.length=0;for(const phase of ['normal','art'])ctx.playCzCountdownOnLever({flowBefore:{phase,remaining:1}});
  ctx.playCzCountdownOnLever({flowBefore:{phase:'cz',remaining:1},bonusPendingAtStart:true});ctx.playCzCountdownOnLever({});assert.equal(played.length,0);
 });
-test('provided audio is copied byte-for-byte',()=>{
+test('CZ voice assets match normalization output and preserve supplied originals',()=>{
+ const manifest=JSON.parse(fs.readFileSync('docs/character-voice-normalization.json','utf8'));
  const pairs=[['3.wav','cz_remaining_3.wav'],['2.wav','cz_remaining_2.wav'],['ラスト.wav','cz_last.wav']];
+ const hash=p=>crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex');
  for(const [original,dest] of pairs){
+  const asset='assets/media/jag/'+dest,record=manifest.files.find(file=>file.src===asset);
+  assert.ok(record,'normalization record for '+dest);
+  assert.equal(hash(asset),record.outputSha256);
   const path='C:/Users/nitro/Dropbox/NOVA台用イラスト/'+original;
   if(!fs.existsSync(path))continue;
-  const hash=p=>crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex');
-  assert.equal(hash(path),hash('assets/media/jag/'+dest));
+  assert.equal(hash(path),record.sourceSha256);
  }
 });

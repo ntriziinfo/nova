@@ -1,5 +1,6 @@
 /* Confirmation BGM and effect use separate players, synchronized to media time. */
 globalThis.NovaRushConfirm=(()=>{
+ const Audio=globalThis.NovaAudio?.Audio||globalThis.Audio;
  const clock=globalThis.NovaClock||globalThis;
  const sources={bgm:'assets/media/nova/rush-confirm-bgm.mp3',se:'assets/media/nova/rush-confirm-se.wav'};
  const preload={};

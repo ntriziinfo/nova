@@ -6534,7 +6534,8 @@ body{
 <link rel="stylesheet" href="nova-cabinet.css?v=20260928-prelude-glow-163">
 <link rel="stylesheet" href="nova-artwork.css?v=20260928-cz-rainbow-155">
 <script src="nova-artwork.js?v=20260928-cz-rainbow-155" defer></script>
-<script src="nova-beat-lamps.js?v=20260928-eight-lamps"></script>
+<script src="nova-audio.js?v=20260930-ios-audio-172"></script>
+<script src="nova-beat-lamps.js?v=20260930-ios-audio-172"></script>
 <script src="nova-clock.js?v=20260917-background-129"></script>
 <script src="nova-reel-motion.js?v=20260917-background-129"></script>
 <link rel="stylesheet" href="nova-results.css?v=20260928-result-153">
@@ -6545,7 +6546,7 @@ body{
 <script src="nova-bell-navi.js?v=20260929-bell-169"></script>
 <link rel="stylesheet" href="nova-initial-duo.css?v=20260928-duo-157">
 <script src="nova-initial-duo.js?v=20260928-duo-157"></script>
-<script src="nova-rush-confirm.js?v=20260928-audio-157"></script>
+<script src="nova-rush-confirm.js?v=20260930-ios-audio-172"></script>
 <link rel="stylesheet" href="nova-direct-award.css?v=20260928-duo-149">
 <script src="nova-direct-award.js?v=20260928-presentation-154"></script>
 <link rel="stylesheet" href="nova-aim-presentation.css?v=20260928-seven-entry-156">
@@ -6562,8 +6563,8 @@ body{
 <script src="nova-audit-ui.js?v=20260916-role-128"></script>
 <link rel="stylesheet" href="nova-comeback-presentation.css?v=20260909-comeback-114">
 <script src="nova-comeback-presentation.js?v=20260909-comeback-114"></script>
-<link rel="stylesheet" href="nova-mobile.css?v=20260929-mobile-171">
-<script src="nova-mobile.js?v=20260929-mobile-171" defer></script>
+<link rel="stylesheet" href="nova-mobile.css?v=20260930-ios-audio-172">
+<script src="nova-mobile.js?v=20260930-ios-audio-172" defer></script>
 <style>
 /* Fit the original nebula art to reel width; its transparent vertical margins
    no longer shrink the lettering to the cell height. Keep native proportions. */
@@ -8047,6 +8048,8 @@ body{
   let devilZoneConfirmIntroPending = false;
   let pendingDevilRushEntryEffect = "";
   let audioCtx = null;
+  const Audio = globalThis.NovaAudio?.Audio || window.Audio;
+  for(const audio of document.querySelectorAll('audio'))globalThis.NovaAudio?.adopt(audio);
   let spinIntervals = [];
   let reelSpinOffsets = [0, 0, 0];
   let rogiBlackoutTimer = null;
@@ -8688,6 +8691,7 @@ body{
       characterVoiceBus=gain;
     }
     let connection=characterVoiceConnections.get(audio);
+    if(globalThis.NovaAudio?.connect(audio,characterVoiceBus))return;
     if(!connection){
       connection={source:ctx.createMediaElementSource(audio),connected:false};
       characterVoiceConnections.set(audio,connection);
@@ -8696,6 +8700,7 @@ body{
   }
 
   function releaseCharacterVoiceAudio(audio){
+    if(globalThis.NovaAudio?.enabled){globalThis.NovaAudio.disconnect(audio);return;}
     const connection=characterVoiceConnections.get(audio);
     if(connection?.connected){connection.source.disconnect();connection.connected=false;}
   }
@@ -8703,6 +8708,12 @@ body{
   // Unlock during user input so AUTO and delayed continuation lines use the same bus.
   window.addEventListener('pointerdown',resumeCharacterVoiceAudio,{capture:true,passive:true});
   window.addEventListener('keydown',resumeCharacterVoiceAudio,{capture:true});
+  window.addEventListener('touchend',resumeCharacterVoiceAudio,{capture:true,passive:true});
+  window.addEventListener('click',resumeCharacterVoiceAudio,{capture:true,passive:true});
+  window.addEventListener('nova-enable-audio',()=>{
+    settings.audioMuted=false;applyAudioOutputVolumes();persistState();
+    if(session.active)resumeSessionBgm();else playNormalBgm();
+  });
 
   function soundOutputVolume(src, volume){
     return CHARACTER_VOICE_KEYS.has(normalizedAudioSourceKey(src))?voiceOutputVolume():applyAudioSourceOutputScale(volume,src);
@@ -16630,6 +16641,7 @@ body{
   }
 
   function getAudio(){
+    if(globalThis.NovaAudio?.enabled)return globalThis.NovaAudio.context();
     if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     return audioCtx;
   }
