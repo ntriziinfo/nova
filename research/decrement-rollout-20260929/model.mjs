@@ -7,7 +7,7 @@ import {createHash} from 'node:crypto';
 import {xoshiro128} from '../../scripts/zone-v2-rng.mjs';
 export {summarize} from './summary.mjs';
 export const engineFiles=['nova-tuning.js','nova-art.js','nova-balance.js','nova-flow.js','nova-normal.js','nova-progress.js'];
-export const readSource=()=>JSON.parse(fs.readFileSync('research/decrement-rollout-20260929/source.json','utf8')); 
+export const readSource=()=>JSON.parse(fs.readFileSync('research/decrement-rollout-20260929/source.json','utf8'));
 export const hashes=source=>Object.fromEntries(Object.entries(source).map(([f,s])=>[f,createHash('sha256').update(s).digest('hex')]));
 const replace=(s,a,b)=>{assert.equal(s.split(a).length,2,a);return s.replace(a,b);};
 
