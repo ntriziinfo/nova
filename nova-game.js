@@ -2386,7 +2386,7 @@
   }
 
   function targetRtpText(settingNo = settings.setting){
-    if(A_TYPE_MODE){const profile=NovaBalance.profile(settingNo);return profile.verifiedModel?((profile.measuredRtp??profile.target)*100).toFixed(1)+"%（3万G試算・停止込み）":"未集計（変更前"+((profile.measuredRtp??profile.target)*100).toFixed(1)+"%）";}
+    if(A_TYPE_MODE){const profile=NovaBalance.profile(settingNo);return profile.verifiedModel?((profile.measuredRtp??profile.target)*100).toFixed(2)+`%（v173・3万G×${profile.trials}回・停止込み推定）`:"未集計（変更前"+((profile.measuredRtp??profile.target)*100).toFixed(1)+"%）";}
   }
 
   function rewardFor(result){
@@ -3554,11 +3554,6 @@
       if(data?.settings){
         const previousAudioBalance = data.settings.audioBalanceVersion || 0;
         settings = {...settings, ...data.settings};
-        if(settings.balanceVersion!=='cz-lamps10'){settings.novaArt={...settings.novaArt,...Object.fromEntries([1,2,3,4,5,6].map(i=>['direct'+i,NovaArt.defaults['direct'+i]])),soraHit:NovaArt.defaults.soraHit,oumaHit:NovaArt.defaults.oumaHit};settings.balanceVersion='cz-lamps10';}
-        if(settings.bellBalanceVersion!==23){settings.novaArt={...NovaArt.defaults};settings.bellBalanceVersion=23;}
-        if(settings.lotteryVersion!==33){settings.novaArt={...NovaArt.defaults};settings.novaNormal={...NovaNormal.defaults};settings.novaFlow={...NovaFlow.defaults};settings.lotteryVersion=33;}
-        if(settings.zoneVersion!==2){settings.novaArt={...NovaArt.defaults,initial:settings.novaArt?.initial||275};settings.zoneVersion=2;}
-        if(settings.zoneLotteryVersion!==3){settings.novaArt={...settings.novaArt,soraUraReset:NovaArt.defaults.soraUraReset};delete settings.novaArt.uraChance;settings.zoneLotteryVersion=3;}
         if(previousAudioBalance < AUDIO_BALANCE_VERSION){
           const savedBgmVolume = Number(settings.bgmVolume);
           const savedSfxVolume = Number(settings.sfxVolume);
@@ -3583,13 +3578,19 @@
         settings.masterVolume = Object.prototype.hasOwnProperty.call(data.settings, "masterVolume") && Number.isFinite(savedMasterVolume) ? clamp(savedMasterVolume, 0, 1) : DEFAULT_MASTER_VOLUME;
         settings.audioBalanceVersion = AUDIO_BALANCE_VERSION;
       }
+      // Fresh and saved browsers must finish the same migrations before persisting settings.
+      if(settings.balanceVersion!=='cz-lamps10'){settings.novaArt={...settings.novaArt,...Object.fromEntries([1,2,3,4,5,6].map(i=>['direct'+i,NovaArt.defaults['direct'+i]])),soraHit:NovaArt.defaults.soraHit,oumaHit:NovaArt.defaults.oumaHit};settings.balanceVersion='cz-lamps10';}
+      if(settings.bellBalanceVersion!==23){settings.novaArt={...NovaArt.defaults};settings.bellBalanceVersion=23;}
+      if(settings.lotteryVersion!==33){settings.novaArt={...NovaArt.defaults};settings.novaNormal={...NovaNormal.defaults};settings.novaFlow={...NovaFlow.defaults};settings.lotteryVersion=33;}
+      if(settings.zoneVersion!==2){settings.novaArt={...NovaArt.defaults,initial:settings.novaArt?.initial||275};settings.zoneVersion=2;}
+      if(settings.zoneLotteryVersion!==3){settings.novaArt={...settings.novaArt,soraUraReset:NovaArt.defaults.soraUraReset};delete settings.novaArt.uraChance;settings.zoneLotteryVersion=3;}
       if(settings.at150Version!==45){settings.novaArt={...settings.novaArt,...{"initial":150,"ladderSosuke":0.7,"ladderGiru":0.95,"ladderUraGiru":0.98,"totoHit":0.35,"soraHit":0.63,"soraUraHit":0.75,"urapiSuper":0.49,"oumaSuper":0.77,"oumaUraSuper":0.98,"payoutVersion":1}};settings.completeLimitPt=10000;settings.at150Version=45;}
       if(settings.ladderGuaranteeVersion!==57){settings.novaArt={...settings.novaArt,ladderSosuke:.4,ladderGiru:.5,ladderUraGiru:2/3};settings.ladderGuaranteeVersion=57;}
       if(settings.zoneBalanceVersion!==105){settings.novaArt={...settings.novaArt,oumaUraSuper:.75,oumaUraFreeze:.35,soraUraHit:.75,soraUraReset:.25,soraUraRed:.715};settings.zoneBalanceVersion=105;}
       if(settings.challengeBalanceVersion!==120){settings.novaArt={...settings.novaArt,initial:NovaArt.defaults.initial};settings.challengeBalanceVersion=120;}
       if(settings.commonAtVersion!==125){settings.novaArt=NovaArt.config(settings.novaArt);settings.commonAtVersion=125;}
       if(settings.entryQuotaVersion!==128){
-        const savedFlow=data.normalState?.flow;
+        const savedFlow=data?.normalState?.flow;
         if(savedFlow?.phase==='art'&&savedFlow.setQuota==null)savedFlow.setQuota=String(data.settings?.novaArt?.initial||300);
         settings.novaArt={...settings.novaArt,initial:NovaArt.defaults.initial};settings.entryQuotaVersion=128;
       }
@@ -3725,10 +3726,12 @@
       rogiBgmMuted = !!runtime.rogiBgmMuted;
       autoPlay = false;
       speedToBonusActive = false;
-      isSpinning = false;
+      currentSpin = NovaSpinResume.restore(runtime.pendingSpin, RESULT);
+      isSpinning = !!currentSpin;
       spinCanStop = false;
-      currentSpin = null;
-    }catch(e){}
+      // The unfinished BET is already counted; normal/high counters settle at the final stop.
+      if(currentSpin)stats.totalSpins=Math.max(0,Number(data?.stats?.totalSpins)||0);
+    }catch(e){console.warn('Failed to restore NOVA state',e);}
   }
 
   function compactStatsForResume(){
@@ -3741,6 +3744,7 @@
 
   function runtimeStateForStorage(){
     return {
+      pendingSpin:NovaSpinResume.capture(currentSpin),
       session:{...session},
       jagChainCount,
       jagLastGamePayout,
@@ -3761,6 +3765,8 @@
   }
 
   function persistState(){
+    // Commit the result and removal of the pending spin together, after finishSpin returns.
+    if(currentSpin?.finishing)return false;
     if(A_TYPE_MODE)syncNovaProgress();
     auditCapture();
     const savedAt = Date.now();
@@ -4147,13 +4153,13 @@
     $("stSpinsInput").readOnly = !!A_TYPE_MODE;
     $("oddsMultiplierInput").value = settings.oddsMultiplier;
     if($("smallMulInput")) $("smallMulInput").value = (A_TYPE_PAYOUTS.SMALL) / PAYOUT_BASE;
-    if($("midMulInput")) $("midMulInput").value = 100;
+    if($("midMulInput")) $("midMulInput").value = NovaArt.bonusTarget();
     if($("crownMulInput")) $("crownMulInput").value = 0;
     if($("cherryMulInput")) $("cherryMulInput").value = (2) / PAYOUT_BASE;
     if($("bellMulInput")) $("bellMulInput").value = (A_TYPE_PAYOUTS.BELL) / PAYOUT_BASE;
     if($("suikaMulInput")) $("suikaMulInput").value = ROLE_PAYOUTS.SUICA / PAYOUT_BASE;
-    if($("bigMulInput")) $("bigMulInput").value = 100;
-    if($("bigAddInput")) $("bigAddInput").value = 100;
+    if($("bigMulInput")) $("bigMulInput").value = NovaArt.bonusTarget();
+    if($("bigAddInput")) $("bigAddInput").value = NovaArt.bonusTarget();
     $("autoDelayInput").value = settings.autoDelay;
     if($("masterVolume")) $("masterVolume").value = settings.masterVolume;
     if($("bgmVolume")) $("bgmVolume").value = settings.bgmVolume;
@@ -6713,6 +6719,48 @@
     return true;
   }
 
+  function restorePendingSpin(){
+    const spin=currentSpin;
+    if(!spin)return false;
+    isSpinning=true;spinCanStop=true;
+    NovaBellNavi.restore(spin);
+    NovaAim.bet(spin.resolved.aim,spin.resolved);
+    NovaInitialDuo.begin(spin.resolved);
+    NovaInitialDuo.stop(spin.stopped.filter(Boolean).length);
+    NovaLadder.bet(spin.resolved.flowBefore);
+    NovaLadder.stop(spin.stopped.filter(Boolean).length);
+    renderCzPrelude(spin.resolved.blackoutReels||[]);
+    syncCzPreludeGlow(spin.resolved);
+    if(spin.resolved.czLampAtBet!=null)document.getElementById('machine').dataset.czLamp=String(spin.resolved.czLampAtBet);
+    reels.forEach((reel,i)=>{
+      const column=spin.stopped[i]&&spin.auditGrid?.every(row=>row?.[i])?spin.auditGrid.map(row=>row[i]):spin.grid.map(row=>row[i]);
+      setReelColumn(i,column,i===1?spin.spec.label:'',spin.spec.cls,spin.stopped[i]?spin.lineRow:null);
+      reel.classList.toggle('spinning',!spin.stopped[i]);
+      stopBtns[i].disabled=spin.stopped[i]||!!spin.pendingStopColumns[i];
+      if(!spin.stopped[i])NovaReelMotion.start(i,reel,REEL_STRIPS[i],currentReelTopIndex(i),!!spin.artReverse,cellHtml);
+    });
+    $('spinBtn').disabled=false;$('spinBtn').textContent='ストップ';
+    $('resultText').textContent='中断した回転を再開 / BET済み・残りリールを停止してください';
+    if(spin.stopped.every(Boolean)){
+      NovaAim.stop(spin.resolved);
+      prepareManualBonusOutcome(spin);
+      finishSpin(spin.result,spin.resolved,spin.lineRow);
+    }else if(spin.resolved.oumaFreeze){
+      startOumaReverseAudio(spin);
+    }else{
+      // Pressed reels retain their target even if reloaded before the landing animation ends.
+      const order=spin.auditPressOrder||[0,1,2];
+      for(const i of order){
+        const column=spin.pendingStopColumns[i];
+        if(column)setTimeout(()=>{
+          if(currentSpin===spin)stopSingleReel(i,{visualReady:true,visualColumn:column});
+        },0);
+      }
+    }
+    updateDisplay();syncCabinetControlState();
+    return true;
+  }
+
   async function spin(options={}){
     if(NovaLadder.busy||NovaAim.busy||NovaDirectAward.busy)return;
     if(NovaResults.editing)return;
@@ -7051,6 +7099,7 @@
         setTimeout(()=>stopSingleReel(i,{oumaAuto:!!resolved.oumaFreeze}), delay);
       });
     }
+    persistState();
   }
 
   function willCompleteATypeBonusWithSpin(spin=currentSpin){
@@ -7122,11 +7171,13 @@
       spin.visualStopping ||= [false,false,false];
       if(spin.visualStopping[i])return;
       spin.visualStopping[i]=true;stopBtns[i].disabled=true;
+      (spin.pendingStopColumns ||= [null,null,null])[i]=col.slice();
+      persistState();
       Promise.resolve().then(async()=>{
         if(currentSpin!==spin||!isSpinning)return;
         const landed=await NovaReelMotion.stop(i,col,{immediate:['BELL','REPLAY'].includes(spin.result)&&!spin.manualBonusStop});
         if(landed&&currentSpin===spin&&isSpinning)stopSingleReel(i,{...options,visualReady:true,visualColumn:col});
-      }).catch(error=>{console.error(error);spin.visualStopping[i]=false;stopBtns[i].disabled=false;});
+      }).catch(error=>{console.error(error);spin.visualStopping[i]=false;spin.pendingStopColumns[i]=null;stopBtns[i].disabled=false;persistState();});
       return;
     }
     const label = i === 1 ? spec.label : "";
@@ -7136,6 +7187,7 @@
     currentSpin.auditGrid ||= [[],[],[]];
     for(let row=0;row<3;row++)currentSpin.auditGrid[row][i]=col[row];
     currentSpin.stopped[i] = true;
+    if(currentSpin.pendingStopColumns)currentSpin.pendingStopColumns[i]=null;
     NovaBellNavi.stop(currentSpin);
     playBellNaviVoice(currentSpin);
     if(currentSpin.stopped.every(Boolean)){
@@ -7221,6 +7273,7 @@
         }
       }, resultWaitMs);
     }
+    persistState();
   }
 
   function stopAllReels(){
@@ -7578,6 +7631,7 @@
 
   function finishSpin(result, resolved, lineRow=1){
     if(!isSpinning || (currentSpin && currentSpin.finishing)) return;
+    try{
     NovaBellNavi.clear();
     if(resolved.researchChallenge?.finished)showOverlay(resolved.researchChallenge.won?'上位AT確定！':'通常ATへ');
     if(resolved.researchSortie?.won)showOverlay(NovaArt.zoneName(resolved.researchSortie.zone)+'ゾーン獲得！');
@@ -7595,6 +7649,7 @@
 
     if(resolved.oumaFailed){
       auditCapture({kind:'zero-failure',result:'MISS',message:'逢魔フリーズ 継続失敗（0G）'});
+      currentSpin=null;
       $('resultText').textContent='逢魔フリーズ 継続失敗 / ハズレ（0G）';
       if(normalState.pendingZoneResult){displayNovaResult(normalState.pendingZoneResult);normalState.pendingZoneResult=null;}
       persistState();updateDisplay();playNormalBgm();
@@ -7725,6 +7780,7 @@
     }else{
       scheduleNextAuto();
     }
+    }finally{persistState();}
   }
 
   function direct(result){
@@ -9138,8 +9194,10 @@
   setupPlayAudit();
   persistState();
   connectAdminCommands();
-  reels.forEach((_,i)=>setRandomReel(i));
-  showMessage("READY",`BIG ${NovaArt.bonusTarget()}pt / AT初期${Math.min(...NovaArt.entryQuotaRules.values)}～${Math.max(...NovaArt.entryQuotaRules.values)}pt / 設定${settings.setting}`);
+  if(!restorePendingSpin()){
+    reels.forEach((_,i)=>setRandomReel(i));
+    showMessage("READY",`BIG ${NovaArt.bonusTarget()}pt / AT初期${Math.min(...NovaArt.entryQuotaRules.values)}～${Math.max(...NovaArt.entryQuotaRules.values)}pt / 設定${settings.setting}`);
+  }
   if($("forceResult")) $("forceResult").value = forceResult;
   if($("premiumForceStatus")) $("premiumForceStatus").value = forcePremiumEffect ? "ON" : "OFF";
   updateDisplay();

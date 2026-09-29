@@ -87,11 +87,12 @@ globalThis.NovaBellNavi=(()=>{
   active=spin;render();return spin.bellNaviOrder;
  }
  function stop(spin){if(active===spin)render();}
+ function restore(spin){active=spin;render();}
  function clear(){active=null;render();}
  function preview(on){previewing=!!on;render();}
  if(typeof document!=='undefined'){
   document.addEventListener('DOMContentLoaded',init);
   window.addEventListener('resize',layout);
  }
- return {defaults,eligible,drawRareNavi,drawOrder,stopOrder,begin,stop,clear,preview,layout};
+ return {defaults,eligible,drawRareNavi,drawOrder,stopOrder,begin,restore,stop,clear,preview,layout};
 })();
