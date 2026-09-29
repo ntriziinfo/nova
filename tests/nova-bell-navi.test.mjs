@@ -39,7 +39,7 @@ function voiceHarness(){
 }
 
 test('all six orders keep the randomly selected character through manual and AUTO stops',()=>{
- const voiceIntervals=['sosuke','sora','giru','toto','ouma','nito'].flatMap((character,i)=>[[i/6,character],[(i+1)/6-1e-8,character]]);
+ const voiceIntervals=['sosuke','sora','giru','toto','ouma','nito','kushuri'].flatMap((character,i)=>[[i/7,character],[(i+1)/7-1e-8,character]]);
  for(const [roll,character] of voiceIntervals)for(let pick=0;pick<6;pick++)for(const autoStopAtStart of [false,true]){
   const sources=['left','center','right'].map(side=>'assets/media/nova/navi-'+side+'-'+character+'.wav');let draws=0;
   const {c,sounds}=voiceHarness(),spin={...bell(),autoStopAtStart,bellNaviOrder:copy(n.drawOrder(()=>(pick+.5)/6)),stopped:[false,false,false]};

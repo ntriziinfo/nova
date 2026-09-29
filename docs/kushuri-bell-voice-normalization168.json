@@ -1,0 +1,100 @@
+{
+  "target": {
+    "integratedLufs": -12,
+    "truePeakDbtp": -1,
+    "dualMono": true
+  },
+  "measurementSilencePaddingSeconds": 1,
+  "method": "Measured gain with 192 kHz look-ahead peak limiting; compensated latency; render each pass from original",
+  "sourceRevision": "382edaa76ec498d52c8427404f53a5ddaec429a6",
+  "files": [
+    {
+      "src": "assets/media/nova/navi-left-kushuri.wav",
+      "codec": "pcm_s16le",
+      "rate": 48000,
+      "channels": 1,
+      "samples": 52240,
+      "outputCodec": "pcm_s16le",
+      "gainDb": 2.72,
+      "sourceSha256": "f91fe51cc3f1f5e6c563ca079b9b63a79093996c968eef98a621c8f0d5e96031",
+      "outputSha256": "7a0ca066bb0e25b4ede89113db035bc3b0d477a1ed4ab883937796ac83ad5953",
+      "before": {
+        "integratedLufs": -14.72,
+        "truePeakDbtp": -3.95,
+        "loudnessRangeLu": 0
+      },
+      "after": {
+        "integratedLufs": -12,
+        "truePeakDbtp": -1.23,
+        "loudnessRangeLu": 0
+      },
+      "originalFile": "くしゅり_左.wav"
+    },
+    {
+      "src": "assets/media/nova/navi-center-kushuri.wav",
+      "codec": "pcm_s16le",
+      "rate": 48000,
+      "channels": 1,
+      "samples": 64512,
+      "outputCodec": "pcm_s16le",
+      "gainDb": 2.68,
+      "sourceSha256": "d02bf8bf3398b448212907cba16454dda53fdf8e3c5562c0492287accb038bc2",
+      "outputSha256": "2909ea6feb4f34cbff9df9731de966230058a33729afec16a123a6c7a717f8b9",
+      "before": {
+        "integratedLufs": -14.68,
+        "truePeakDbtp": -3.95,
+        "loudnessRangeLu": 0
+      },
+      "after": {
+        "integratedLufs": -12,
+        "truePeakDbtp": -1.27,
+        "loudnessRangeLu": 0
+      },
+      "originalFile": "くしゅり_中.wav"
+    },
+    {
+      "src": "assets/media/nova/navi-right-kushuri.wav",
+      "codec": "pcm_s16le",
+      "rate": 48000,
+      "channels": 1,
+      "samples": 58368,
+      "outputCodec": "pcm_s16le",
+      "gainDb": 3.55,
+      "sourceSha256": "aa0864e076f9a45f0eabe8f1a93f94d26326a7f8ea1dce0551d1a89f03d39b68",
+      "outputSha256": "27dd0478a74a70a1c7f37b1277d037a68e9fe08f0cbf8c082faa81e5723581f1",
+      "before": {
+        "integratedLufs": -15.55,
+        "truePeakDbtp": -4.5,
+        "loudnessRangeLu": 0
+      },
+      "after": {
+        "integratedLufs": -12.05,
+        "truePeakDbtp": -1.1,
+        "loudnessRangeLu": 0
+      },
+      "originalFile": "くしゅり_右.wav"
+    },
+    {
+      "src": "assets/media/nova/navi-complete-kushuri.wav",
+      "codec": "pcm_s16le",
+      "rate": 48000,
+      "channels": 1,
+      "samples": 43528,
+      "outputCodec": "pcm_s16le",
+      "gainDb": 9.42,
+      "sourceSha256": "48ce02033c6f0eca9f0a6ff88ecc06dc7f44daf52faf0f6458a23c921c3a7806",
+      "outputSha256": "9978b27dfb486aae2a7ab870f47bc5767eaa0c7d27ff0398daaa3ca0a26a325b",
+      "before": {
+        "integratedLufs": -21.19,
+        "truePeakDbtp": -7.41,
+        "loudnessRangeLu": 0
+      },
+      "after": {
+        "integratedLufs": -12.07,
+        "truePeakDbtp": -1.1,
+        "loudnessRangeLu": 0
+      },
+      "originalFile": "くしゅり_揃い.wav"
+    }
+  ]
+}
