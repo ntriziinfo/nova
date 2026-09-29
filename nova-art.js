@@ -76,7 +76,7 @@ globalThis.NovaArt=(()=>{
   return {SUPER_NOVA:superRate,...row};
  }
  function drawComebackRole(setting,rng){let roll=rng();for(const [role,p] of Object.entries(comebackRoleProbabilities(setting)))if((roll-=p)<0)return role;return 'MISS';}
- function beginComeback(value){return {...normalize(value),comebackLeft:comebackRules.games,comebackLamp:'',comebackConfirmed:false,remaining:'0'};}
+ function beginComeback(value){return normalize({...value,comebackLeft:comebackRules.games,comebackLamp:'',comebackConfirmed:false,remaining:'0'});}
  function prepareComeback(value,options={},rng=Math.random){
   if(!value?.comebackLeft||value.comebackLamp)return value;
   return {...normalize(value),comebackLamp:pickAtZone(options.setting,false,rng)};
@@ -259,6 +259,9 @@ function roleProbabilities(setting=3){const {r,chance,mean}=atMix(setting);r.BEL
  const zoneIds=['sosuke','toto','urapi','giru','sora','ouma','ura_giru','ura_sora','ura_ouma'];
  const canonicalZone=z=>String(z||'').replace(/^ura_(sosuke|toto|urapi)$/,'$1');
  function normalize(v){
+  // Revival awards its selected character zone, never a first-hit initial award.
+  // Clear stale entry state before it can remap pendingZone (also on saved-game reload).
+  if(v?.comebackLeft>0||v?.comebackConfirmed)v={...v,initialStage:'',initialWait:0,initialPlan:[],initialIndex:0};
   if(v?.burstLeft>0&&!v.researchChallengeActive)v={...v,burstLeft:0,burstPending:true,researchChallengeSource:'rare',researchAim:''};
   // Retire pending point challenges; never subtract points or stocks already earned.
   if(v?.burstVersion!==2&&v?.burstType!=='ura')v={...v,burstUsed:false,burstPending:false,burstLeft:0,burstWon:false};

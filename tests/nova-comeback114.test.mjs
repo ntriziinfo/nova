@@ -51,6 +51,47 @@ test('win lights the selected zone and revives from its award without a free 150
  const finished=a.settleZone({...entered,award:'100'});assert.equal(finished.remaining,'100');assert.equal(finished.atLevel,undefined);
 });
 
+test('forced comeback leaves an unfinished initial award and uses only the winning character',()=>{
+ loadModel();const a=NovaArt;
+ const draw=fs.readFileSync('nova-game.js','utf8').match(/  function drawNormalResult\([^]*?\n  }/)[0];
+ for(const initialStage of ['wait','entry','zone']){
+  // The debug COMEBACK action can interrupt any phase of the initial award.
+  const base={...a.enterInitial({setting:6},()=>.9),initialStage,initialWait:2,initialPlan:[50,50,100],initialIndex:1,
+   zone:initialStage==='zone'?'kushuri_nito':'',entryStage:initialStage==='entry'?'seven':''};
+  const ctx=vm.createContext({NovaArt:a,A_TYPE_MODE:true,normalState:{flow:base},settings:{setting:6,novaArt:{}},
+   pendingForceResult:'COMEBACK',pendingArtStep:null,pendingATypeInternalBonus:null});
+  assert.equal(vm.runInContext(draw+';drawNormalResult()',ctx),'MISS');
+  const recovery={...ctx.pendingArtStep.flow,comebackLamp:'toto'};
+  const won=a.step(recovery,{setting:6},()=>.5,'WEAK_SUICA');
+  assert.equal(won.comebackEvent,'success',initialStage);
+  const entered=a.prepareBet(won.flow,{setting:6},()=>.5);
+  assert.equal(entered.zone,'toto',initialStage);assert.equal(entered.initialStage,'');
+  const finished=a.settleZone({...entered,award:'100'});
+  assert.equal(finished.remaining,'100');assert.equal(finished.initialWait,0);
+  assert.deepEqual(finished.initialPlan,[]);assert.equal(finished.initialIndex,0);
+  const resumed=a.step(finished,{setting:6},()=>.9999,'BELL');
+  assert.equal(resumed.initialAward,undefined);assert.equal(resumed.flow.zone,'');
+ }
+});
+
+test('saved comeback success cannot be redirected by stale initial-award state',()=>{
+ loadModel();const a=NovaArt;
+ for(const zone of a.zoneIds){
+  const base={...a.beginComeback(a.enter({setting:6},()=>.9)),comebackLamp:zone};
+  const won=a.step(base,{setting:6},()=>.5,'WEAK_SUICA');
+  const expected=a.prepareBet(won.flow,{setting:6},()=>.5);
+  for(const initialStage of ['wait','entry','zone']){
+   const saved={...won.flow,initialStage,initialWait:2,initialPlan:[100,100,100],initialIndex:2};
+   const restored=a.normalize(JSON.parse(JSON.stringify(saved)));
+   assert.equal(restored.pendingZone,zone,`${zone}/${initialStage}`);
+   assert.equal(restored.initialStage,'');
+   const entered=a.prepareBet(restored,{setting:6},()=>.5);
+   assert.equal(entered.zone,expected.zone);assert.equal(entered.ura,expected.ura);
+   assert.equal(entered.award,expected.award);assert.equal(entered.remaining,'0');
+  }
+ }
+});
+
 test('every rare role guarantees revival on all five games and settings, including after reload',()=>{
  loadModel();const a=NovaArt;
  const roles=['WEAK_SUICA','STRONG_SUICA','CHANCE_A','CHANCE_B','WEAK_NOVA','STRONG_NOVA','SUPER_NOVA'];
