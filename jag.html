@@ -6542,7 +6542,7 @@ body{
 <link rel="stylesheet" href="nova-ladder-presentation.css?v=20260917-initial-131">
 <script src="nova-ladder-presentation.js?v=20260917-initial-131"></script>
 <link rel="stylesheet" href="nova-bell-navi.css?v=20260928-presentation-150">
-<script src="nova-bell-navi.js?v=20260928-presentation-150"></script>
+<script src="nova-bell-navi.js?v=20260929-bell-169"></script>
 <link rel="stylesheet" href="nova-initial-duo.css?v=20260928-duo-157">
 <script src="nova-initial-duo.js?v=20260928-duo-157"></script>
 <script src="nova-rush-confirm.js?v=20260928-audio-157"></script>
@@ -6550,12 +6550,12 @@ body{
 <script src="nova-direct-award.js?v=20260928-presentation-154"></script>
 <link rel="stylesheet" href="nova-aim-presentation.css?v=20260928-seven-entry-156">
 <script src="nova-aim-presentation.js?v=20260928-cz-wait-161"></script>
-<script src="nova-tuning.js?v=20260929-balance-167"></script>
-<script src="nova-art.js?v=20260929-balance-167"></script>
-<script src="nova-balance.js?v=20260929-balance-167"></script>
-<script src="nova-normal.js?v=20260929-balance-167"></script>
+<script src="nova-tuning.js?v=20260929-bell-169"></script>
+<script src="nova-art.js?v=20260929-bell-169"></script>
+<script src="nova-balance.js?v=20260929-bell-169"></script>
+<script src="nova-normal.js?v=20260929-bell-169"></script>
 <script src="nova-flow.js?v=20260928-cz-wait-161"></script>
-<script src="nova-progress.js?v=20260929-balance-167"></script>
+<script src="nova-progress.js?v=20260929-bell-169"></script>
 <link rel="stylesheet" href="nova-audit.css?v=20260910-audit-121">
 <script src="nova-audit.js?v=20260928-duo-149"></script>
 <script src="nova-audit-ui.js?v=20260916-role-128"></script>
@@ -7994,7 +7994,7 @@ body{
       flow:normalState.flow||{phase:'normal'},internal:normalState.internal||{},replayFree:!!normalState.replayFree,complete:!!completeTrialState.locked,
       bonus:{active:isATypeBonusActive(),phase:session.phase,tier:session.bonusTier,paid:session.paid,sets:session.bonusArtSets,zones:session.bonusZones,target:session.bonusTarget,pending:!!normalState.bonusPending,source:normalState.bonusSource,prepLeft:normalState.prepLeft,prepSets:normalState.prepSets,prepZones:normalState.prepZones,premium:session.premiumBonus||normalState.premiumBonus,pointsRemaining:session.bonusPointsRemaining},
       progress:normalState.novaProgress,
-      config:{balance:167,tuning:NovaTuning.profile(settings.setting),initialPresentation:157,prelude:160,audit:121,setting:settings.setting,fee:SPIN_COST,completeLimitPt:settings.completeLimitPt,oddsMultiplier:settings.oddsMultiplier,art:settings.novaArt,commonAt:NovaArt.commonAtRulesFor(settings.setting),entryQuota:NovaArt.entryQuotaRules,initialRareAwards:NovaArt.initialRareAwards,atPrelude:NovaArt.atPreludeRules,uraChallenge:NovaArt.burstRules,normal:settings.novaNormal,normalLottery:NovaNormal.lotteryRules,normalPrelude:NovaNormal.czPreludeRules,cz:settings.novaFlow}};
+      config:{balance:169,normalBellDenominators:NovaTuning.normalBellDenominators,tuning:NovaTuning.profile(settings.setting),initialPresentation:157,prelude:160,audit:121,setting:settings.setting,fee:SPIN_COST,completeLimitPt:settings.completeLimitPt,oddsMultiplier:settings.oddsMultiplier,art:settings.novaArt,commonAt:NovaArt.commonAtRulesFor(settings.setting),entryQuota:NovaArt.entryQuotaRules,initialRareAwards:NovaArt.initialRareAwards,atPrelude:NovaArt.atPreludeRules,uraChallenge:NovaArt.burstRules,normal:settings.novaNormal,normalLottery:NovaNormal.lotteryRules,normalPrelude:NovaNormal.czPreludeRules,cz:settings.novaFlow}};
   }
   function auditCapture(detail={kind:'checkpoint'}){
     if(!novaAuditRecorder)return;
@@ -8005,7 +8005,7 @@ body{
       researchSortie:resolved.researchSortie,researchChallenge:resolved.researchChallenge,
       aim:resolved.aim,burstEvent:resolved.burstEvent,burstReward:resolved.burstReward,comebackEvent:resolved.comebackEvent,atOutcome:resolved.atOutcome,zoneAward:resolved.zoneAward,
       artSetWon:resolved.artSetWon,novaRushConfirmed:resolved.novaRushConfirmed,oumaFreeze:resolved.oumaFreeze,czLamp:resolved.czLamp,bonusHit:resolved.bonusHit,bonusSource:resolved.bonusSource,
-      bellNaviOrder:currentSpin?.bellNaviOrder,rareNavi:currentSpin?.rareNavi,rareCueVoice:currentSpin?.rareCueVoice,rareNaviSoundPlayed:currentSpin?.rareNaviSoundPlayed,
+      normalBellNavi:resolved.normalBellNavi,bellNaviOrder:currentSpin?.bellNaviOrder,rareNavi:currentSpin?.rareNavi,rareCueVoice:currentSpin?.rareCueVoice,rareNaviSoundPlayed:currentSpin?.rareNaviSoundPlayed,
       pressOrder:debugFastSpinActive?'simulation':currentSpin?.auditPressOrder,stopOrder:debugFastSpinActive?'simulation':currentSpin?.auditStopOrder,grid:debugFastSpinActive?undefined:currentSpin?.auditGrid,visualResult:!debugFastSpinActive&&NovaAim.hasGuide(resolved.aim)&&currentSpin?.aimAligned===false?'MISS':result,
       flowBefore:resolved.flowBefore,flowAfter:resolved.flowAfter,manualLineupMiss:resolved.manualLineupMiss,bonusWaitSpin:resolved.bonusWaitSpin,czEntry:resolved.czEntry,czPrelude:resolved.czPrelude,atPrelude:resolved.atPrelude,czChance:resolved.czChance,czCompleted:resolved.czCompleted};
   }
@@ -11304,7 +11304,7 @@ body{
     if(inCz){token.czFlow.lampRoll??=Math.random();token.czFlow.rainbowRoll??=Math.random();}
     const ceilingHit=token.internalBonus?.source?.includes('天井');
     pendingArtStep={
-      result:token.result,normalInternal:token.state,czEntry:token.entry,czPrelude:token.czPrelude,czChance:token.czChance,
+      result:token.result,normalBellNavi:token.normalBellNavi,normalInternal:token.state,czEntry:token.entry,czPrelude:token.czPrelude,czChance:token.czChance,
       flow:token.direct?NovaArt.enterInitial({...settings.novaArt,setting:settings.setting}):token.entry?NovaFlow.enterCZ(token.entry==='STRONG_CZ',token.czOptions ?? settings.novaFlow):token.internalBonus?NovaFlow.normalize(null):NovaFlow.advance(token.czFlow),
       czLamp:token.czLamp || (inCz?{...NovaFlow.drawLamp({...token.czFlow,
         success:token.czFlow.success||!!token.internalBonus||token.direct,
@@ -11426,6 +11426,7 @@ body{
               : "";
       return {
         normalInternal:artStep?.normalInternal,
+        normalBellNavi:!!artStep?.normalBellNavi&&result==='BELL',
         czPrelude:artStep?.czPrelude,
         atPrelude:artStep?.atPrelude,
         czChance:artStep?.czChance,

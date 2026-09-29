@@ -1,0 +1,47 @@
+{
+  "sourceVersion": 167,
+  "options": {
+    "rng": "xoshiro128",
+    "exactGames": true,
+    "stopAtComplete": false,
+    "completeLimitPt": 10000
+  },
+  "trials": [
+    {
+      "setting": 1,
+      "games": 30000,
+      "seed": "NOVA-controls-neutral-S1",
+      "sha256": "59429b1d7ecd68835abc2019ad297f714105592d2927c770f3cc3aa343a53c61"
+    },
+    {
+      "setting": 2,
+      "games": 30000,
+      "seed": "NOVA-controls-neutral-S2",
+      "sha256": "e0a2828a11a0d47cbe205b90f3f9292a3e622bd373718fd7a5922a51ff0ab04b"
+    },
+    {
+      "setting": 3,
+      "games": 30000,
+      "seed": "NOVA-controls-neutral-S3",
+      "sha256": "f877479d9c7a8ae31dd8a01689468b57b36e23705e439bcd3f19fda2bd3f91d7"
+    },
+    {
+      "setting": 4,
+      "games": 30000,
+      "seed": "NOVA-controls-neutral-S4",
+      "sha256": "f24cfcee731fe7414de4ab9da15ed438e786026dadd76a62180679c7cf48e2d0"
+    },
+    {
+      "setting": 5,
+      "games": 30000,
+      "seed": "NOVA-controls-neutral-S5",
+      "sha256": "49b641e9765aa077baca66eaf42448e8d66451eaadb92ed7c2cddc02a42d94f5"
+    },
+    {
+      "setting": 6,
+      "games": 30000,
+      "seed": "NOVA-controls-neutral-S6",
+      "sha256": "f7b5a097dd6d2b186086166d1177e164ee47d826b60c40f711bf538c7f447cc8"
+    }
+  ]
+}

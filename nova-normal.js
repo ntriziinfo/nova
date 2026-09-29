@@ -50,9 +50,27 @@ globalThis.NovaNormal=(()=>{
   const chanceTotal=r.CHANCE_A+r.CHANCE_B;r.CHANCE_A=chanceTotal*(Math.max(1,Math.min(6,Math.round(Number(setting)||3)))%2?.4:.6);r.CHANCE_B=chanceTotal-r.CHANCE_A;
   if(Number(setting)===6)for(const key of ['WEAK_SUICA','CHANCE_A','CHANCE_B','WEAK_NOVA'])r[key]*=1.4;
   const rarePay=Object.entries(r).reduce((sum,[role,p])=>sum+p*pay(role),0);
-  r.REPLAY=Number(setting)===6?0.54:frequent*0.45;r.BELL=(3*(1-r.REPLAY)-rarePay-50/(Number(setting)===6?42:33.5))/15;r.MISS=1-Object.values(r).reduce((a,b)=>a+b,0);return r;}
+  r.REPLAY=NovaTuning.normalReplay(setting);r.BELL=(3*(1-r.REPLAY)-rarePay-50/NovaTuning.normalBase(setting))/15;r.MISS=1-Object.values(r).reduce((a,b)=>a+b,0);
+  if(Object.values(r).some(p=>!Number.isFinite(p)||p<0||p>1))throw new RangeError('Normal base/replay combination produces invalid role probabilities for setting '+setting);
+  return r;}
  const roleEntries=[1,2,3,4,5,6].map(s=>Object.entries(roleProbabilities(s)));
  function drawRole(setting,rng=Math.random){let r=rng();for(const [role,p]of roleEntries[Math.max(0,Math.min(5,Math.round(Number(setting)||3)-1))]){r-=p;if(r<0)return role;}return 'MISS';}
+ // Only ordinary play (including CZ preludes) adds numbered bell navigation.
+ // Keep the shared role table unchanged for CZ, preparation and comeback draws.
+ function normalRoleProbabilities(setting=3){
+  const key=Math.max(1,Math.min(6,Math.round(Number(setting)||3))),r={...roleProbabilities(key)};
+  r.NAVI_BELL=1/NovaTuning.normalBellDenominators[key-1];
+  if(key===6)r.BELL-=r.NAVI_BELL;
+  else r.MISS=1-Object.entries(r).reduce((sum,[role,p])=>sum+(role==='MISS'?0:p),0);
+  if(Object.values(r).some(p=>!Number.isFinite(p)||p<0||p>1))throw new RangeError('Invalid normal bell navigation probabilities');
+  return r;
+ }
+ const normalRoleEntries=[1,2,3,4,5,6].map(setting=>{
+  const mix=normalRoleProbabilities(setting);
+  // Setting 6 splits the existing bell interval without changing the draw count.
+  return Object.entries(mix).flatMap(([role,p])=>setting===6?(role==='BELL'?[['NAVI_BELL',mix.NAVI_BELL],['BELL',p]]:role==='NAVI_BELL'?[]:[[role,p]]):[[role,p]]);
+ });
+ function drawNormalRole(setting,rng=Math.random){let r=rng();for(const [role,p]of normalRoleEntries[Math.max(0,Math.min(5,Math.round(Number(setting)||3)-1))])if((r-=p)<0)return role;return 'MISS';}
  const stateRoles=['WEAK_SUICA','STRONG_SUICA','CHANCE_A','CHANCE_B'];
  function roleCzRate(value,role,setting=1,options={}){
   if(role==='STRONG_NOVA')return 1;
@@ -81,9 +99,9 @@ globalThis.NovaNormal=(()=>{
  function spin(value,flow,setting=1,options={},rng=Math.random,forced=''){
   if(forced==='STRONG_BELL')forced='BELL';
   options={...options,cz:NovaFlow.forSetting(options.cz,setting)};
-  const before=normalize(value),c=config(options.normal),result=forced||drawRole(setting,rng);
+  const before=normalize(value),c=config(options.normal),drawn=forced||(flow.phase==='normal'?drawNormalRole(setting,rng):drawRole(setting,rng)),result=drawn==='NAVI_BELL'?'BELL':drawn;
   flow=NovaFlow.rewrite(flow,result,options.cz,rng);
-  const state=advance(before,result,flow,c,rng),token={result,state,czFlow:flow,internalBonus:null,entry:'',direct:false,czOptions:options.cz,czChance:before.prelude?.presentation==='reel'&&before.prelude.kind!=='czFake'?1:roleCzRate(before,result,setting,c)};
+  const state=advance(before,result,flow,c,rng),token={normalBellNavi:drawn==='NAVI_BELL',result,state,czFlow:flow,internalBonus:null,entry:'',direct:false,czOptions:options.cz,czChance:before.prelude?.presentation==='reel'&&before.prelude.kind!=='czFake'?1:roleCzRate(before,result,setting,c)};
   if(['cz','strong_cz'].includes(flow.phase)&&before.prelude?.presentation==='reel'&&before.prelude.kind!=='czFake'&&before.prelude.left===0){
    state.prelude=null;token.czPrelude={before:3,after:0,announce:true};
   }
@@ -160,5 +178,5 @@ globalThis.NovaNormal=(()=>{
  function afterBonus(value,rng=Math.random,setting){const s=normalize(value);return {...s,prelude:null,ceilingHandled:false,morningCeiling:false,games:0,level:'low',highLeft:0};}
  function drawRare(rng=Math.random){const keys=Object.keys(rare);return keys[weighted(keys.map(k=>rare[k].p),rng)];}
  const rareMean=Object.values(rare).reduce((s,r)=>s+r.p*r.pay,0)/Object.values(rare).reduce((s,r)=>s+r.p,0);
- return {lotteryRules,czPreludeRules,czPreludeStage,roleCzRate,modeWeights,gameZoneRates,gameZoneConfig,atEndModeWeights,zonePoint,preludePresentation,zoneRate,normalLabel,resetImpurityPoints,resetImpurityWeights,resetDistribution,reset,modes,ceilings,transitions,rare,rareMean,rareFactor,roleProbabilities,drawRare,defaults,config,normalize,ceiling,favored,multiplier,pay,drawRole,advance,spin,claim,afterArt,bonusEnd,afterBonus};
+ return {normalRoleProbabilities,drawNormalRole,lotteryRules,czPreludeRules,czPreludeStage,roleCzRate,modeWeights,gameZoneRates,gameZoneConfig,atEndModeWeights,zonePoint,preludePresentation,zoneRate,normalLabel,resetImpurityPoints,resetImpurityWeights,resetDistribution,reset,modes,ceilings,transitions,rare,rareMean,rareFactor,roleProbabilities,drawRare,defaults,config,normalize,ceiling,favored,multiplier,pay,drawRole,advance,spin,claim,afterArt,bonusEnd,afterBonus};
 })();

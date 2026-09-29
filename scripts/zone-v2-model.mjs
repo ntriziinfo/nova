@@ -1,6 +1,6 @@
 import fs from 'node:fs';import path from 'node:path';import vm from 'node:vm';import {fileURLToPath} from 'node:url';import {xoshiro128} from './zone-v2-rng.mjs';
 export const ROOT=path.dirname(fileURLToPath(import.meta.url));
-export function loadModel(variant='..',cache=true){
+export function loadModel(variant='..',cache=true,tuningOverrides){
  const files=['nova-art.js','nova-balance.js','nova-flow.js','nova-normal.js'];
  if(fs.existsSync(path.join(ROOT,variant,'nova-tuning.js'))){files.unshift('nova-tuning.js');files.push('nova-progress.js');}
  for(const f of files){
@@ -11,6 +11,7 @@ export function loadModel(variant='..',cache=true){
    s=s.replace("if(!forced){token.entry=NovaFlow.drawEntry(","if(!forced){token.entrySource='background';token.entry=NovaFlow.drawEntry(");
   }
   vm.runInThisContext(s,{filename:variant+'/'+f});
+  if(f==='nova-tuning.js'&&tuningOverrides)globalThis.NovaTuning=NovaTuning.withOverrides(tuningOverrides);
  }
 }
 export function lcg(seed){return ()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};}

@@ -1,4 +1,4 @@
-/* AT navigation presentation only. Role draws and payouts remain in NovaArt. */
+/* Bell navigation presentation. Role draws and payouts stay in the game engines. */
 globalThis.NovaBellNavi=(()=>{
  const orders=Object.freeze([[0,1,2],[0,2,1],[1,0,2],[1,2,0],[2,0,1],[2,1,0]].map(Object.freeze));
  const defaults=Object.freeze({x:0,y:0,w:100,h:7.6,gap:.4});
@@ -10,7 +10,11 @@ globalThis.NovaBellNavi=(()=>{
   const r=spin?.resolved,f=r?.flowBefore;
   return !!(f?.phase==='art'&&!spin.aTypeBonusActiveAtStart&&!r.bonusPendingAtStart&&!r.zoneSpin&&!r.comebackEvent&&!r.burstEvent&&!f.zone&&!f.entryStage&&!f.initialStage&&!f.comebackLeft&&!f.comebackConfirmed&&!f.burstLeft&&!f.burstPending);
  }
- function eligible(spin){return spin?.result==='BELL'&&available(spin);}
+ function eligible(spin){
+  const r=spin?.resolved;
+  const normal=r?.normalBellNavi&&r.flowBefore?.phase==='normal'&&!spin.aTypeBonusActiveAtStart&&!r.bonusPendingAtStart&&!r.zoneSpin;
+  return spin?.result==='BELL'&&!!(normal||available(spin));
+ }
  function drawRareNavi(spin,rng=Math.random){
   const role=rareRoles[spin?.result];if(!role||!available(spin))return null;
   const [color,strength]=role;

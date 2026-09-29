@@ -1,10 +1,10 @@
 /* Normal AT only, net 4pt/G: current zone rules and estimates are in docs/zone-v2.md. */
 globalThis.NovaBalance=(()=>{
  // Prior S4: docs/s4-140-report.md, 6,000 independent 30,000G trials, +10,000pt stop.
- // v167 final setting profiles; see docs/nova-balance167-release.md.
- const targets=[0.955124,0.979594,1.005842,1.004989,1.078051,1.138476];
- // 30,000G, S1-4 1,000 trials, S5-6 3,000 trials; cumulative +10,000pt stop.
- const measuredRtp=[0.954177998,0.976736088,0.998023053,1.007239316,1.079708029,1.143279008];
+ // v169 selected bell proposal; see docs/nova-bell169-release.md.
+ const targets=[0.945,0.965,0.985,1.005,1.055,1.14];
+ // 30,000G, S1-5 2,000 trials, S6 3,000 trials; cumulative +10,000pt stop.
+ const measuredRtp=[0.942166374431837,0.9633237437263732,0.9836735351840022,1.0048026547069249,1.057873883844156,1.143279008];
  const normal=[[354.112628,570.311235,6.592194,128,7.464630],[335.340933,496.870459,6.554256,192,7.482946],[318.675842,391.096799,6.455407,124,7.452119],[295.728558,359.759320,6.248231,184,7.301746],[288.226978,283.780845,6.120643,120,7.250883],[276.519476,276.524590,5.897360,176,7.245667]];
  // Exact reward recursion: 50pt grid below the threshold, translation-invariant tail above it.
  function zoneMean(id,options={}){
@@ -62,7 +62,7 @@ globalThis.NovaBalance=(()=>{
  }
  const giruMean=(setting,ura=false)=>zoneMean(ura?'ura_giru':'giru',{setting});
  // Entry scales fitted with the normal-mode / ceiling / impurity / freeze simulation.
- function profile(setting){const i=Math.max(0,Math.min(5,Math.round(Number(setting)||1)-1)),scale=.21*(1+.12*NovaArt.settingBias[i]);return {setting:i+1,target:targets[i],measuredRtp:measuredRtp[i],scale,directDenom:NovaArt.defaults['direct'+(i+1)]/scale,czDenom:120/scale,strongDenom:600/scale,verifiedModel:'balance167-30000g-complete-stop',previousVerifiedModel:'bonus-stock146-30000g-complete-stop'};}
+ function profile(setting){const i=Math.max(0,Math.min(5,Math.round(Number(setting)||1)-1)),scale=.21*(1+.12*NovaArt.settingBias[i]);return {setting:i+1,target:targets[i],measuredRtp:measuredRtp[i],scale,directDenom:NovaArt.defaults['direct'+(i+1)]/scale,czDenom:120/scale,strongDenom:600/scale,verifiedModel:'bell169-30000g-complete-stop',previousVerifiedModel:'balance167-30000g-complete-stop'};}
  const profiles=targets.map((_,i)=>profile(i+1));
  return {targets,normal,profiles,profile,giruMean,zoneMean};
 })();

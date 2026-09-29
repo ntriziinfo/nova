@@ -1,0 +1,112 @@
+{
+  "passed": true,
+  "exactReplays": 15,
+  "unchangedSetting6": true,
+  "trials": [
+    {
+      "setting": 1,
+      "games": 30000,
+      "seed": "NOVA-bell-targets-verification-20260929-S1-trial0",
+      "sha256": "3cfc103cacc290b27a3b1886915e7388d01633d40e7eea3b4cde9243b3328fdd",
+      "complete": true
+    },
+    {
+      "setting": 1,
+      "games": 30000,
+      "seed": "NOVA-bell-targets-verification-20260929-S1-trial1999",
+      "sha256": "0495edddb9507bdcda99dc9d974ae98e9b393101c37005dd97376af7837275cc",
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "games": 30000,
+      "seed": "NOVA-bell-targets-verification-20260929-S1-trial1",
+      "sha256": "b34c644e18da7975bb2fe588c247deb08ea80bea85ae5fc6ebe356b57c01a1f4",
+      "complete": true
+    },
+    {
+      "setting": 2,
+      "games": 30000,
+      "seed": "NOVA-bell-targets-verification-20260929-S2-trial0",
+      "sha256": "e4f7a0ac173cff1efb30e6c14b6747893b68f0c8233084ed82f00e0a8525d58d",
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "games": 30000,
+      "seed": "NOVA-bell-targets-verification-20260929-S2-trial51",
+      "sha256": "473b4e287bbe8516ac9def5944d5c380df736f66992d828ab27148b1ae6fa1a7",
+      "complete": true
+    },
+    {
+      "setting": 2,
+      "games": 30000,
+      "seed": "NOVA-bell-targets-verification-20260929-S2-trial1999",
+      "sha256": "939f66e258a34ac66172c225d39f8fc32a5675ff105a90273cc346b9c4cc71e9",
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "games": 30000,
+      "seed": "NOVA-bell-targets-verification-20260929-S3-trial0",
+      "sha256": "f8303fd8d93866c842d0d926a2e693a1a74a508e33a4ce41b6e429bb9e57567a",
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "games": 30000,
+      "seed": "NOVA-bell-targets-verification-20260929-S3-trial18",
+      "sha256": "216ef0e617bb86b0b18e7ae9597b62694bde71b1275b22e2b94a6bf299758bdb",
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "games": 30000,
+      "seed": "NOVA-bell-targets-verification-20260929-S3-trial1999",
+      "sha256": "8f2964d6bae3849c43bff650c72ee7c051d423fb3215f5ded00645e04c3ac60f",
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "games": 30000,
+      "seed": "NOVA-bell-targets-confirmation-20260929-S4-trial0",
+      "sha256": "50efe01268c8bf149aa3359976b15fd8576091c96affb9f88b97d218532b0c35",
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "games": 30000,
+      "seed": "NOVA-bell-targets-confirmation-20260929-S4-trial3",
+      "sha256": "e7f661ae08612a85eb4ebf7b4748292be7bcf9ac5942ffa2ca948886c412bc03",
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "games": 30000,
+      "seed": "NOVA-bell-targets-confirmation-20260929-S4-trial1999",
+      "sha256": "59369d51205859589a03935268447c06d931e6ba6933fe4a50aa8024471595fe",
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "games": 30000,
+      "seed": "NOVA-bell-targets-confirmation-20260929-S5-trial0",
+      "sha256": "92a87bed4446984eeaffd86cbd14de39f0993b11da0db10fbeaad0c8d4dd8fff",
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "games": 30000,
+      "seed": "NOVA-bell-targets-confirmation-20260929-S5-trial2",
+      "sha256": "91882d6ea6271a57c507db32bb36b003baad8ec0bf40428a27e6b5796d141fc9",
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "games": 30000,
+      "seed": "NOVA-bell-targets-confirmation-20260929-S5-trial1999",
+      "sha256": "aaddbb94d6a6f8b9fea3eb08e6ee43725753249b008b9a6d7096bc9459c4529c",
+      "complete": false
+    }
+  ]
+}

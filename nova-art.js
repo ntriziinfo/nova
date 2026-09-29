@@ -23,6 +23,12 @@ globalThis.NovaArt=(()=>{
   roles:Object.freeze({WEAK_SUICA:.05,STRONG_SUICA:.5,CHANCE_A:.2,CHANCE_B:.2,WEAK_NOVA:.1,STRONG_NOVA:1})
  });
  function challengeName(){return '上位ATチャレンジ';}
+ function challengeAimChance(target,setting){
+  const rare=atMix(setting).chance,miss=1-.1-rare;
+  const q=((miss/(1-target)**.1-miss-rare)/.1-rare)/(1-rare);
+  if(!Number.isFinite(q)||q<0||q>1)throw new RangeError('Challenge target cannot preserve rare guarantees');
+  return q;
+ }
  function weightedChallenge(weights,rng){let roll=rng()*weights.reduce((a,b)=>a+b,0);for(let i=0;i<weights.length;i++)if((roll-=weights[i])<0)return i;return weights.length-1;}
  function burstReward(s,rng){
   s.burstWon=true;s.dryEligible=false;
@@ -91,7 +97,7 @@ globalThis.NovaArt=(()=>{
  }
  // No persistent performance class. These rules apply to every AT.
  const commonAtRules=Object.freeze({rare:1,direct:.6,weakNova:.35,groups:Object.freeze([70,29.1,.9])});
- function commonAtRulesFor(setting=3){const p=NovaTuning.profile(setting);return {...commonAtRules,direct:.6*p.direct,weakNova:.35*p.zone};}
+ function commonAtRulesFor(setting=3){const p=NovaTuning.profile(setting);return {...commonAtRules,groups:p.groups,direct:.6*p.direct,weakNova:.35*p.zone};}
  const atPreludeRules=Object.freeze({minGames:3,maxGames:5});
  function normalizeAtPrelude(p){
   if(!p)return null;
@@ -125,7 +131,7 @@ globalThis.NovaArt=(()=>{
  const initialRareAwards=Object.freeze({WEAK_SUICA:100,CHANCE_A:100,WEAK_NOVA:100,STRONG_SUICA:200,CHANCE_B:200,STRONG_NOVA:200,SUPER_NOVA:200});
  function drawInitialRole(setting,rng){let roll=rng();for(const [role,p]of Object.entries(roleProbabilities(setting)))if((roll-=p)<0)return role;return 'REPLAY';}
  function enterInitial(c,rng=Math.random){const s={...enter(c,rng),initialVersion:148,remaining:'0',initialStage:'wait',initialWait:entryQuotaRules.waitGames,initialPlan:[],initialIndex:0};if(rng()<.05){s.burstPending=true;s.burstUsed=true;s.researchChallengeSource='initial';}return s;}
- function initialFields(v){return {modelSetting:validSetting(v?.modelSetting),researchSortieLeft:Math.max(0,Number(v?.researchSortieLeft)||0),researchSortieHits:Math.max(0,Number(v?.researchSortieHits)||0),researchSortieRate:Number(v?.researchSortieRate)||0,
+ function initialFields(v){return {...(Number.isFinite(v?.researchChallengeSuccess)&&v.researchChallengeSuccess>=.4&&v.researchChallengeSuccess<=1?{researchChallengeSuccess:v.researchChallengeSuccess}:{}),modelSetting:validSetting(v?.modelSetting),researchSortieLeft:Math.max(0,Number(v?.researchSortieLeft)||0),researchSortieHits:Math.max(0,Number(v?.researchSortieHits)||0),researchSortieRate:Number(v?.researchSortieRate)||0,
   researchUpper:!!v?.researchUpper,researchThresholdUsed:!!v?.researchThresholdUsed,researchThresholdPending:!!v?.researchThresholdPending,
   researchChallengeActive:!!v?.researchChallengeActive,researchChallengeSource:v?.researchChallengeSource||'',researchAim:v?.researchAim||'',initialVersion:v?.initialVersion===148?148:131,initialStage:['wait','entry','zone'].includes(v?.initialStage)?v.initialStage:'',initialWait:Math.max(0,Math.min(entryQuotaRules.waitGames,Math.floor(Number(v?.initialWait)||0))),initialPlan:Array.isArray(v?.initialPlan)?v.initialPlan.slice(0,5).map(n=>Math.max(0,Math.floor(Number(n)||0))):[],initialIndex:Math.max(0,Math.min(5,Math.floor(Number(v?.initialIndex)||0)))};}
  // Initial ladder presentations only use amounts with the ordinary artwork.
@@ -332,7 +338,7 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
   CHANCE_B:{up:.45,hit:4/15,values:[10,20,30],weights:[.5,.35,.15]}
  };
  function zoneGroupWeights(setting,boost=false,preparation=false){
-  const groups=commonAtRules.groups;
+  const groups=NovaTuning.profile(setting).groups;
   if(groups&&!preparation){const row=groups.map((p,i)=>p*(boost&&i>0?2:1)),total=row.reduce((a,b)=>a+b,0);return row.map(p=>p*100/total);}
   const row=zoneWeights[validSetting(setting)-1].map((w,i)=>w*(boost&&i>=3?2:1)*Math.exp((preparation?0:tuning.tilts[validSetting(setting)-1])*i));
   const total=row.reduce((a,b)=>a+b,0),weak=row.slice(0,3).reduce((a,b)=>a+b,0)/total;
@@ -348,7 +354,7 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
  const netRewardControl=Object.freeze({enabled:false,startRatio:0,floor:1});
  function netRewardFactor(){return 1;}
  function resolveAtRole(s,role,setting,rng=Math.random,netPt=0){
-  const rules=commonAtRulesFor(setting),ruleSet=s.researchUpper?{...rules,direct:rules.direct*1.5,weakNova:rules.weakNova*1.5}:rules;
+  const rules=commonAtRulesFor(setting),upper=NovaTuning.profile(setting).upper,ruleSet=s.researchUpper?{...rules,direct:rules.direct*upper,weakNova:rules.weakNova*upper}:rules;
   const wasHigh=!!s.atHigh,held=wasHigh&&s.atHighLeft>0,out={wasHigh,direct:0,zone:'',promoted:false};
   if(held)s.atHighLeft--;
   const rule=atRoleRules[role];
@@ -383,17 +389,19 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
    const started=!s.researchChallengeActive;
    if(started){s.researchChallengeActive=true;s.burstLeft=10;s.burstPending=true;s.burstUsed=true;s.researchAim='';s.researchChallengeSource=s.researchChallengeSource||'rare';}
    const source=s.researchChallengeSource,priorAim=s.researchAim;
+   if(started){const pinned=s.researchChallengeSuccess;delete s.researchChallengeSuccess;if(source==='threshold'&&Number.isFinite(pinned??options.thresholdSuccess))s.researchChallengeSuccess=pinned??options.thresholdSuccess;}
+   const targetChance=s.researchChallengeSuccess;
    let roll=rng();const mix={...atMix(options.setting).r,BELL:.05,REPLAY:.05};mix.MISS=1-Object.values(mix).reduce((a,b)=>a+b,0);
    const role=rareRoles[forced]||['BELL','REPLAY','MISS','SUPER_NOVA'].includes(forced)?forced:Object.entries(mix).find(([k,p])=>(roll-=p)<0)?.[0]||'MISS';
    const isRare=!!rareRoles[role]||role==='SUPER_NOVA';if(!priorAim&&role==='MISS')s.burstLeft--;
    let won=false;result=role;
-   if(priorAim){won=priorAim==='rare'||isRare||rng()<({"initial":0.1909926807243627,"threshold":0.5396499826643559,"rare":0.5396499826643559})[source];s.researchAim='';result=won?'SUPER_NOVA':'MISS';}
+   if(priorAim){won=priorAim==='rare'||isRare||rng()<(source==='threshold'&&targetChance!==undefined?challengeAimChance(targetChance,options.setting):({"initial":0.1909926807243627,"threshold":0.5396499826643559,"rare":0.5396499826643559})[source]);s.researchAim='';result=won?'SUPER_NOVA':'MISS';}
    else if(isRare)s.researchAim='rare';
    else if(['BELL','REPLAY'].includes(role))s.researchAim='common';
    const finished=won||(!s.burstLeft&&!s.researchAim);
-   if(finished){s.burstLeft=0;s.burstPending=false;s.researchChallengeActive=false;s.researchAim='';s.researchChallengeSource='';}
+   if(finished){s.burstLeft=0;s.burstPending=false;s.researchChallengeActive=false;s.researchAim='';s.researchChallengeSource='';delete s.researchChallengeSuccess;}
    if(won){s.researchUpper=true;s.burstWon=true;s.dryEligible=false;s.researchThresholdPending=false;}
-   return {result,flow:s,zoneSpin:true,burstEvent:won?'success':finished?'failure':'continue',researchChallenge:{started,source,role,priorAim,nextAim:s.researchAim,won,finished,left:s.burstLeft}};
+   return {result,flow:s,zoneSpin:true,burstEvent:won?'success':finished?'failure':'continue',researchChallenge:{...(targetChance!==undefined?{targetChance}:{}),started,source,role,priorAim,nextAim:s.researchAim,won,finished,left:s.burstLeft}};
   }
   if(s.comebackLeft)return stepComeback(s,options,rng,forced);
   if(s.entryStage==='seven'){s.entryStage='roulette';return {result:'BIG',flow:s,zoneSpin:true,message:'赤7揃い！ 特化ゾーンルーレット'};}

@@ -2,7 +2,7 @@
 globalThis.NovaProgress=(()=>{
  const a=NovaArt;
  const empty=()=>({version:167,next:2400,pending:0,sorties:0,earned:0,started:0,upperRetries:0,discardedPt:0,discardedZones:0,discardedSets:0,discardedBonusStocks:0,newAt:0,rewardZones:0});
- let state=empty();
+ let state=empty(),latestNet=0;
  function bind(value,priorPeak=0){
   if(value?.version!==167)value={...empty(),next:2400*(1+Math.floor(Math.max(0,Number(priorPeak)||0)/2400))};
   state=value;
@@ -10,12 +10,16 @@ globalThis.NovaProgress=(()=>{
   for(const k of Object.keys(empty()).filter(k=>!['version','next'].includes(k)))state[k]=Math.max(0,Math.floor(Number(state[k])||0));
   return state;
  }
- function reset(){state=empty();}
- function observeNet(net){while(Number(net)>=state.next){state.next+=2400;state.pending++;state.earned++;}}
+ function reset(){state=empty();latestNet=0;}
+ function observeNet(net){latestNet=Number(net)||0;while(Number(net)>=state.next){state.next+=2400;state.pending++;state.earned++;}}
  function drawSortie(setting,rng=Math.random){const won=rng()<1/NovaTuning.profile(setting).denominator;if(won)state.sorties++;return won;}
- function queueThreshold(value,net){
+ function queueThreshold(value,net,setting=value?.modelSetting||3){
   observeNet(net);if(value?.phase!=='art')return value;const s={...value};
   if(state.pending&&!s.burstPending&&!s.researchChallengeActive&&!s.burstLeft){state.pending--;s.burstPending=true;s.researchChallengeSource='threshold';}
+  // Pin before charging this BET, so manual play and simulation use the same net.
+  if(s.burstPending&&s.researchChallengeSource==='threshold'&&!s.researchChallengeActive&&!s.zone&&!s.entryStage&&!s.atPrelude&&!s.initialStage&&!s.researchSortieLeft&&s.researchChallengeSuccess===undefined){
+   const target=NovaTuning.thresholdSuccess(setting,net);if(target!==undefined)s.researchChallengeSuccess=target;
+  }
   return s;
  }
  function enterCheckpoint(c,rng=Math.random){state.newAt++;return {...a.enter(c,rng),remaining:'0',initialStage:'',initialWait:0};}
@@ -24,7 +28,7 @@ globalThis.NovaProgress=(()=>{
   if(blocked)return flow;
   observeNet(net);
   if(state.pending&&flow?.phase==='normal')flow=enterCheckpoint(c,rng);
-  if(flow?.phase==='art')flow=queueThreshold(flow,net);
+  if(flow?.phase==='art')flow=queueThreshold(flow,net,c.setting);
   if(state.sorties){
    if(flow?.phase==='normal')flow=enterInitial(c,rng);
    if(ready(flow)){state.sorties--;flow=a.beginResearchSortie(flow,rng,c.setting);}
@@ -43,7 +47,8 @@ globalThis.NovaProgress=(()=>{
  function enterInitial(c,rng=Math.random){return initial(a.enterInitial(c,rng));}
  function afterBonus(v,c,won=0,rng=Math.random){const s=a.afterBonus(v,c,won,rng);return v?.phase!=='art'?initial(s):s;}
  function step(value,c,rng=Math.random,forced=''){
-  const out=a.step(value,c,rng,forced),e=out.researchChallenge;
+  const target=NovaTuning.thresholdSuccess(c.setting,latestNet);
+  const out=a.step(value,target===undefined?c:{...c,thresholdSuccess:target},rng,forced),e=out.researchChallenge;
   if(e){
    if(e.started&&e.source==='threshold'){
     e.wasUpper=!!value.researchUpper;e.discarded=clearCarry(out.flow);out.flow.researchUpper=false;
