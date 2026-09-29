@@ -1,5 +1,6 @@
+import {readGameSource} from '../scripts/game-source.mjs';
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
-const h=fs.readFileSync('jag.html','utf8'),fn=h.match(/  function playStopSound\([^]*?\n  }/)[0];
+const h=readGameSource(),fn=h.match(/  function playStopSound\([^]*?\n  }/)[0];
 test('ordinary super NOVA plays once but reverse freeze skips the lineup sound',()=>{
  for(const reverse of [false,true]){
   const sounds=[];const c=vm.createContext({currentSpin:{result:'SUPER_NOVA',resolved:{oumaFreeze:reverse}},STOP_SOUND_SRC:'normal',sfxOutputVolume:()=>1,playOneShotSound(src){sounds.push(src)}});vm.runInContext(fn,c);

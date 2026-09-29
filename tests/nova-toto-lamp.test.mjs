@@ -1,3 +1,4 @@
+import {readGameSource} from '../scripts/game-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -17,7 +18,7 @@ test('stale saved colors cannot light Toto outside its active zone or during bon
  const selectors=css.match(/body[^{}]*\[data-toto-color=rainbow\][^{]*/g);
  assert.equal(selectors.length,2);
  for(const selector of selectors)assert.ok(selector.includes('[data-art-zone=toto]'));
- const html=fs.readFileSync('jag.html','utf8');
+ const html=readGameSource();
  const assignment=html.match(/document.body.dataset.totoColor=([^;]+);/)[1];
  for(const artZone of ['', 'sora','toto']){
   const document={body:{dataset:{artZone}}};

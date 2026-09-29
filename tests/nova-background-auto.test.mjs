@@ -1,8 +1,9 @@
+import {readGameSource} from '../scripts/game-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
-const html=fs.readFileSync('jag.html','utf8');
+const html=readGameSource();
 function setup(stage='bet'){
  const calls=[];const context=vm.createContext({autoPlay:true,bonusEndBgmPlaying:false,bonusConfirmSoundPlaying:false,
   oumaPresentation:{stage},isSpinning:false,locked:false,isCompleteTrialLocked:()=>context.locked,

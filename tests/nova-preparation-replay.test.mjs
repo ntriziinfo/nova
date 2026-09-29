@@ -1,5 +1,6 @@
+import {readGameSource} from '../scripts/game-source.mjs';
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
-const html=fs.readFileSync('jag.html','utf8'),fn=name=>html.match(new RegExp('  function '+name+'\\([^]*?\\n  }'))[0];
+const html=readGameSource(),fn=name=>html.match(new RegExp('  function '+name+'\\([^]*?\\n  }'))[0];
 test('replay consumes no quota and grants exactly one free BET, surviving saved state',()=>{
  const ctx=vm.createContext({});for(const f of ['nova-tuning.js','nova-art.js','nova-normal.js'])vm.runInContext(fs.readFileSync(f,'utf8'),ctx);
  vm.runInContext(`const A_TYPE_MODE=true,SPIN_COST=3,stats={totalFee:0},session={active:true,cost:0},normalState=JSON.parse('{"replayFree":true}');const clearCzReelBlackout=()=>{};const recordSlumpPoint=()=>{},updateCompleteTrialState=()=>{};`+fn('chargeSpinCost'),ctx);

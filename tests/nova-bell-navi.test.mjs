@@ -1,3 +1,4 @@
+import {readGameSource} from '../scripts/game-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -32,7 +33,7 @@ test('AUTO and takeover reuse the committed nav order without another random dra
 });
 
 function voiceHarness(){
- const sounds=[],html=fs.readFileSync('jag.html','utf8');
+ const sounds=[],html=readGameSource();
  const c=vm.createContext({debugFastSpinActive:false,speedToBonusActive:false,voiceOutputVolume:()=>.6,playOneShotSound:(src,volume)=>sounds.push({src,volume})});
  vm.runInContext(html.match(/  const BELL_NAVI_VOICE_SRCS=[^\n]+/)[0]+'\n'+html.match(/  const BELL_NAVI_COMPLETE_VOICE_SRCS=[^\n]+/)[0]+'\n'+html.match(/  function playBellNaviVoice\([^]*?\n  }/)[0],c);
  return {c,sounds};

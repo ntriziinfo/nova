@@ -1,0 +1,313 @@
+{
+  "baselineCommit": "5b2b5bccf2e2ebe10b1b2f0f6c354bcddf890016",
+  "before": {
+    "tests": 466,
+    "pass": 394,
+    "fail": 72,
+    "skipped": 0,
+    "cancelled": 0
+  },
+  "after": {
+    "tests": 466,
+    "pass": 394,
+    "fail": 72,
+    "skipped": 0,
+    "cancelled": 0
+  },
+  "newFailures": [],
+  "sameFailingTests": true,
+  "notes": [
+    "Failures predate this cleanup; they remain visible and are not skipped.",
+    "The legacy migration test no longer asserts a random fresh AT starts at 150pt; it verifies the saved 900pt balance survives normalization."
+  ],
+  "failures": [
+    {
+      "test": "each zone and target use exact color success boundaries, even above 2000pt",
+      "file": "tests/nova-aim.test.mjs"
+    },
+    {
+      "test": "each seven zone guarantees a first seven on its last failed game",
+      "file": "tests/nova-aim.test.mjs"
+    },
+    {
+      "test": "ART final game resets normal ceiling count and next normal game is 1G",
+      "file": "tests/nova-art-reset.test.mjs"
+    },
+    {
+      "test": "AT NOVA entry preserves quota through bonus interruption",
+      "file": "tests/nova-art.test.mjs"
+    },
+    {
+      "test": "zone success improves while strength ordering and large-award protection remain",
+      "file": "tests/nova-at150.test.mjs"
+    },
+    {
+      "test": "manual and fast result committers, BIG transitions and 0G misses all feed the independent audit",
+      "file": "tests/nova-audit121.test.mjs"
+    },
+    {
+      "test": "initial character restriction keeps prior RTP evidence explicitly historical",
+      "file": "tests/nova-balance.test.mjs"
+    },
+    {
+      "test": "normal rare probabilities and bonus chances are retained after level removal",
+      "file": "tests/nova-balance118-gameplay.test.mjs"
+    },
+    {
+      "test": "each of the nine zones retains its exact awards and continuation trace",
+      "file": "tests/nova-balance118-gameplay.test.mjs"
+    },
+    {
+      "test": "50pt BIG has valid payouts and exactly the tier AT chance before four bells",
+      "file": "tests/nova-balance120.test.mjs"
+    },
+    {
+      "test": "ura reward guarantees one of the three ura zones and no automatic level promotion",
+      "file": "tests/nova-balance120.test.mjs"
+    },
+    {
+      "test": "ura challenges retain three-game 50% success and a used flag after failure",
+      "file": "tests/nova-balance120.test.mjs"
+    },
+    {
+      "test": "15pt bells preserve the 50G normal base for every setting",
+      "file": "tests/nova-bell15.test.mjs"
+    },
+    {
+      "test": "existing saves migrate the ART configuration once without altering artwork layout",
+      "file": "tests/nova-bell15.test.mjs"
+    },
+    {
+      "test": "production burst is one three-game chance per new AT, with a 50% success rate",
+      "file": "tests/nova-burst112.test.mjs"
+    },
+    {
+      "test": "success persists through save, bonus and zones; legacy AT receives common rules without losing quota",
+      "file": "tests/nova-burst112.test.mjs"
+    },
+    {
+      "test": "last-quota trigger and preexisting zone are preserved without net-dependent adjustment",
+      "file": "tests/nova-burst112.test.mjs"
+    },
+    {
+      "test": "ura success reserves a zone without granting quota before zone play",
+      "file": "tests/nova-burst113.test.mjs"
+    },
+    {
+      "test": "six-setting ura entry rates are valid and keep 50% success",
+      "file": "tests/nova-burst113.test.mjs"
+    },
+    {
+      "test": "one-shot burst flag survives pending and active BIG, then is consumed once",
+      "file": "tests/nova-burst119-debug.test.mjs"
+    },
+    {
+      "test": "normal-screen selection creates the configured initial AT and a full three-game challenge with random success",
+      "file": "tests/nova-burst119-debug.test.mjs"
+    },
+    {
+      "test": "existing quota and stocks survive; active zone finishes before the queued challenge",
+      "file": "tests/nova-burst119-debug.test.mjs"
+    },
+    {
+      "test": "forced retry escapes recovery or previous challenge without discarding earned quota",
+      "file": "tests/nova-burst119-debug.test.mjs"
+    },
+    {
+      "test": "manual and AUTO/simulation spin paths share the retained ura flag",
+      "file": "tests/nova-burst119-debug.test.mjs"
+    },
+    {
+      "test": "weak NOVA retains its common AT threshold and reserves the zone for the prelude",
+      "file": "tests/nova-calibrated-entry.test.mjs"
+    },
+    {
+      "test": "live Ouma free BET charges neither pt nor total game count",
+      "file": "tests/nova-chain.test.mjs"
+    },
+    {
+      "test": "only comeback boosts rare frequency, keeping its bell/replay/premium mix and other phases intact",
+      "file": "tests/nova-comeback114.test.mjs"
+    },
+    {
+      "test": "existing ura challenge progress and earned rewards survive the migration",
+      "file": "tests/nova-common125.test.mjs"
+    },
+    {
+      "test": "natural initial-zone rare roles use the AT frequencies and the new exact award mean",
+      "file": "tests/nova-duo157.test.mjs"
+    },
+    {
+      "test": "BIG and migrated REG both use a 100pt target",
+      "file": "tests/nova-entry-flow.test.mjs"
+    },
+    {
+      "test": "ART win freezes quota, then red seven, roulette, announcement, zone",
+      "file": "tests/nova-entry-flow.test.mjs"
+    },
+    {
+      "test": "entry quota draw happens once on a new AT, never on loss, resume, or reload",
+      "file": "tests/nova-entry126.test.mjs"
+    },
+    {
+      "test": "all settings draw the same initial quota distribution with valid weights",
+      "file": "tests/nova-entry126.test.mjs"
+    },
+    {
+      "test": "saved extra stocks become special zones without granting legacy 150/300pt quotas",
+      "file": "tests/nova-entry126.test.mjs"
+    },
+    {
+      "test": "entry quota never caps or changes later role rewards",
+      "file": "tests/nova-entry126.test.mjs"
+    },
+    {
+      "test": "comeback and ura challenge preserve the entry draw and earned balance",
+      "file": "tests/nova-entry126.test.mjs"
+    },
+    {
+      "test": "cancel preserves complete and does not start; approval resets before fast play",
+      "file": "tests/nova-fast-complete.test.mjs"
+    },
+    {
+      "test": "ordinary start does not reset a game",
+      "file": "tests/nova-fast-complete.test.mjs"
+    },
+    {
+      "test": "ART starts at 150pt and ends after actual payouts reach the target",
+      "file": "tests/nova-flow.test.mjs"
+    },
+    {
+      "test": "initial draw of three independent 50/100pt awards has exact mean 200",
+      "file": "tests/nova-initial131.test.mjs"
+    },
+    {
+      "test": "fresh bonus win waits exactly three paid games then seven, roulette and initial zone",
+      "file": "tests/nova-initial131.test.mjs"
+    },
+    {
+      "test": "retired minus-2000 bonus no longer overrides the common AT rules",
+      "file": "tests/nova-loss-boost.test.mjs"
+    },
+    {
+      "test": "ART starts at 150pt and ends after actual payouts reach the target",
+      "file": "tests/nova-flow.test.mjs"
+    },
+    {
+      "test": "normal base is 50 across six settings and probability tables are valid",
+      "file": "tests/nova-morning99.test.mjs"
+    },
+    {
+      "test": "freeze offers exactly three equal outcomes and stacks reserved zones with impurity",
+      "file": "tests/nova-normal.test.mjs"
+    },
+    {
+      "test": "AT chance eyes have equal promotion and direct awards without direct zone wins",
+      "file": "tests/nova-normal.test.mjs"
+    },
+    {
+      "test": "failed continuation bypasses fee, game counter and role/zone draws",
+      "file": "tests/nova-ouma-failed-zero.test.mjs"
+    },
+    {
+      "test": "failed continuation completion skips ordinary result application",
+      "file": "tests/nova-ouma-failed-zero.test.mjs"
+    },
+    {
+      "test": "ART consumes actual gross payout, with free replay, and zero-pay roles preserve its quota",
+      "file": "tests/nova-payout-management.test.mjs"
+    },
+    {
+      "test": "CZ spreads the eight lamps across games and all landed stops in the requested order",
+      "file": "tests/nova-presentation150.test.mjs"
+    },
+    {
+      "test": "lamp timing varies across CZs, spans the session even for low final tiers, and never forces three lamps in game one",
+      "file": "tests/nova-presentation154.test.mjs"
+    },
+    {
+      "test": "explicit CZ debug odds and guarantees are not overwritten by setting tuning",
+      "file": "tests/nova-role128.test.mjs"
+    },
+    {
+      "test": "non-chance normal roles have smooth modest differences",
+      "file": "tests/nova-soft-settings.test.mjs"
+    },
+    {
+      "test": "freeze bonus uses BIG payout target, no setting hint, no old PBB sound",
+      "file": "tests/nova-soft-settings.test.mjs"
+    },
+    {
+      "test": "AT guarantee pauses during roulette and zones, carries through sets and save",
+      "file": "tests/nova-state-nova.test.mjs"
+    },
+    {
+      "test": "Ura Sora base reset stays25 percent and tail control reduces super means",
+      "file": "tests/nova-super-groups.test.mjs"
+    },
+    {
+      "test": "ordinary super NOVA plays once but reverse freeze skips the lineup sound",
+      "file": "tests/nova-super-stop.test.mjs"
+    },
+    {
+      "test": "actual stop grids match every supported outcome using real consecutive strip cells",
+      "file": "tests/nova-symbols.test.mjs"
+    },
+    {
+      "test": "bell pays 15 normally and throughout bonus including final game",
+      "file": "tests/nova-symbols.test.mjs"
+    },
+    {
+      "test": "game resolver expires ART when final payout exhausts the quota",
+      "file": "tests/nova-symbols.test.mjs"
+    },
+    {
+      "test": "normal and ura Toto clear rainbow on final stop without losing award",
+      "file": "tests/nova-toto-lamp.test.mjs"
+    },
+    {
+      "test": "normal and heaven persistence increases without changing ceilings",
+      "file": "tests/nova-volatility.test.mjs"
+    },
+    {
+      "test": "shared tables and one-shot settle once on the first challenge",
+      "file": "tests/nova-zone-redesign.test.mjs"
+    },
+    {
+      "test": "ladder strength changes success probability, with exact boundary failure",
+      "file": "tests/nova-zone-redesign.test.mjs"
+    },
+    {
+      "test": "seven family can award each amount, grants no sets and resets final game to five",
+      "file": "tests/nova-zone-redesign.test.mjs"
+    },
+    {
+      "test": "last-game Ouma hit continues free SUPER chains then settles only once",
+      "file": "tests/nova-zone-redesign.test.mjs"
+    },
+    {
+      "test": "live zero-chain wiring automatically stops reels and continues with state guards",
+      "file": "tests/nova-zone-redesign.test.mjs"
+    },
+    {
+      "test": "threshold includes the proposed award and remains exact for large saved points",
+      "file": "tests/nova-zone-tail.test.mjs"
+    },
+    {
+      "test": "seven crossing is rare but not capped; extension is reduced after threshold",
+      "file": "tests/nova-zone-tail.test.mjs"
+    },
+    {
+      "test": "paid Nova crossing is suppressed; committed free spin still pays and next freeze is reduced",
+      "file": "tests/nova-zone-tail.test.mjs"
+    },
+    {
+      "test": "threshold persists across reload and resets for a newly started zone",
+      "file": "tests/nova-zone-tail.test.mjs"
+    },
+    {
+      "test": "turning off tail multiplier recovers legacy exact means",
+      "file": "tests/nova-zone-tail.test.mjs"
+    }
+  ]
+}

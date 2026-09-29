@@ -1,5 +1,6 @@
+import {readGameSource} from '../scripts/game-source.mjs';
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
-const html=fs.readFileSync('jag.html','utf8'),ctx=vm.createContext({});vm.runInContext(html.match(/  function chainCountStep\([^]*?\n  }/)[0],ctx);
+const html=readGameSource(),ctx=vm.createContext({});vm.runInContext(html.match(/  function chainCountStep\([^]*?\n  }/)[0],ctx);
 const step=ctx.chainCountStep;
 test('one initial hit accumulates bonus and ART gross payouts without a 999 cap',()=>{
  const start=step(null,true,100,300);

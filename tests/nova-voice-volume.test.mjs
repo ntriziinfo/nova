@@ -1,8 +1,9 @@
+import {readGameSource} from '../scripts/game-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
-const html=fs.readFileSync('jag.html','utf8');
+const html=readGameSource();
 const fn=name=>html.match(new RegExp('  function '+name+'\\([^]*?\\n  }'))[0];
 const voices=html.slice(html.indexOf('  const BELL_NAVI_VOICE_SRCS='),html.indexOf('  for(const src of CHARACTER_VOICE_SRCS)'));
 function setup(){

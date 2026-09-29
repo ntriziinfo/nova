@@ -1,5 +1,6 @@
+import {readGameSource} from '../scripts/game-source.mjs';
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
-const h=fs.readFileSync('jag.html','utf8');
+const h=readGameSource();
 test('failed continuation bypasses fee, game counter and role/zone draws',()=>{
  const calls=[];const flow={phase:'art',zone:'ouma',zoneLeft:3,remaining:'150',award:'100'};
  const c=vm.createContext({options:{oumaFailed:true},normalState:{flow},normalActiveAtSpinStart:true,aTypeBonusActiveAtSpinStart:false,lineRow:1,countTotalSpinIfNeeded(){calls.push('count')},chargeSpinCost(){calls.push('fee')},drawNormalResult(){calls.push('draw');return 'SUPER_NOVA'},drawResult(){calls.push('draw')},resolveNormalOutcome(){calls.push('resolve')},resolveOutcome(){calls.push('resolve')}});

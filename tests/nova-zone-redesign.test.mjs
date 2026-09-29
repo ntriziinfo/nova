@@ -1,3 +1,4 @@
+import {readGameSource} from '../scripts/game-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -91,6 +92,6 @@ test('analytic expectations agree with independent simulation and strength order
  for(const group of [['sosuke','giru','ura_giru'],['toto','sora','ura_sora'],['urapi','ouma','ura_ouma']])assert.ok(b.zoneMean(group[0])<b.zoneMean(group[1])&&b.zoneMean(group[1])<b.zoneMean(group[2]));
 });
 test('live zero-chain wiring automatically stops reels and continues with state guards',()=>{
- const h=fs.readFileSync('jag.html','utf8');assert.match(h,/if\(resolved.oumaFreeze\)\{startOumaReverseAudio\(currentSpin\);\}/);
+ const h=readGameSource();assert.match(h,/if\(resolved.oumaFreeze\)\{startOumaReverseAudio\(currentSpin\);\}/);
  assert.match(h,/!\(scheduleOumaZeroChain\(\)\)/);assert.match(h,/normalState.flow!==previous/);assert.match(h,/normalState.flow.zero\)\{clearOumaPresentation\(\);spin\(\)/);
 });

@@ -1,3 +1,4 @@
+import {readGameSource} from '../scripts/game-source.mjs';
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
 function setup(){let now=0,id=0;const tasks=new Map(),timers=new Map();const win={offsetWidth:100,classList:{add(){},remove(){}},getBoundingClientRect:()=>({width:100,height:90}),append(x){this.layer=x;}};const ctx=vm.createContext({performance:{now:()=>now},setTimeout(f,ms){timers.set(++id,{f,due:now+ms});return id;},clearTimeout:i=>timers.delete(i),requestAnimationFrame:f=>{tasks.set(++id,f);return id},cancelAnimationFrame:i=>tasks.delete(i),document:{createElement:()=>({style:{},children:[],setAttribute(){},append(x){this.children.push(x);this.firstElementChild ||=x;},getBoundingClientRect(){return {height:parseFloat(this.style.height)}},remove(){}})}});vm.runInContext(fs.readFileSync('nova-reel-motion.js','utf8'),ctx);return {a:ctx.NovaReelMotion,win,reel:{querySelector:()=>win},tick(ms,render=true){now+=ms;for(const [key,t] of [...timers])if(t.due<=now){timers.delete(key);t.f();}if(render){const run=[...tasks.values()];tasks.clear();run.forEach(f=>f(now));}},timers};}
 test('normal and reverse land by moving the same strip, without replacing symbols',async()=>{for(const reverse of [false,true]){const t=setup(),strip=['A','B','C','D','E'];t.a.start(0,t.reel,strip,0,reverse,s=>s);const layer=t.win.layer,html=layer.children.map(x=>x.innerHTML);t.tick(55);const start=parseFloat(layer.style.transform.match(/translateY\(([-.\d]+)/)[1]);const done=t.a.stop(0,['C','D','E']);t.tick(100);const moving=parseFloat(layer.style.transform.match(/translateY\(([-.\d]+)/)[1]);assert.ok(reverse?moving<start:moving>start);t.tick(5000);assert.equal(await done,true);assert.equal(t.a.top(0),2);assert.deepEqual(layer.children.map(x=>x.innerHTML),html);t.a.clear(0);assert.equal(t.a.has(0),false);}});
@@ -43,7 +44,7 @@ test('immediate common-role stop lands without advancing time and remains stoppe
  }
 });
 test('only bell and replay request immediate landing',()=>{
- const html=fs.readFileSync('jag.html','utf8');
+ const html=readGameSource();
  assert.match(html,/NovaReelMotion.stop\(i,col,\{immediate:\['BELL','REPLAY'\].includes\(spin.result\)&&!spin.manualBonusStop\}\)/);
 });
 

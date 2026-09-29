@@ -1,10 +1,11 @@
+import {readGameSource} from '../scripts/game-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
 import {createHash} from 'node:crypto';
 
-const html=fs.readFileSync('jag.html','utf8');
+const html=readGameSource();
 test('Ouma lighting switches all eight CZ lamps to fast rainbow; clearing CZ restores normal modes',()=>{
  const c=vm.createContext({});
  vm.runInContext(fs.readFileSync('nova-flow.js','utf8'),c);

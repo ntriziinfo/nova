@@ -1,3 +1,4 @@
+import {readGameSource} from '../scripts/game-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -28,5 +29,5 @@ test('six-setting ura entry rates are valid and keep 50% success',()=>{
   assert.equal(a.enter({setting:s},()=>.99999).atLevel,undefined);
   assert.equal(a.enter({setting:s},()=>0).remaining,String(a.drawEntryQuota({},()=>0)));
  }
- const html=fs.readFileSync('jag.html','utf8');assert.match(html,/直接pt報酬とレベル昇格は廃止/);assert.doesNotMatch(html,/成功すると＋8,000pt/);
+ const html=readGameSource();assert.match(html,/直接pt報酬とレベル昇格は廃止/);assert.doesNotMatch(html,/成功すると＋8,000pt/);
 });

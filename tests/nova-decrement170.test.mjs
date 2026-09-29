@@ -1,3 +1,4 @@
+import {readGameSource} from '../scripts/game-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -56,7 +57,7 @@ test('net hysteresis uses the weaker factor without stacking and cannot mutate e
 
 test('actual browser hooks clock bonus and AUTO BETs but not 0G, and observe settled net',()=>{
  loadModel();NovaDecrement.reset(6,xoshiro128State('browser-clock'));
- const html=fs.readFileSync('jag.html','utf8');
+ const html=readGameSource();
  const count=html.slice(html.indexOf('  function countTotalSpinIfNeeded'),html.indexOf('  function expectedAverageSets'));
  assert(count.indexOf('NovaDecrement.beforeBet')>count.indexOf("flow?.zero)return false"));
  assert(count.indexOf('NovaDecrement.beforeBet')<count.indexOf('aTypeBonusActiveAtSpinStart) return false'));

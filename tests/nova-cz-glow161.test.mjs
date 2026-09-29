@@ -1,10 +1,11 @@
+import {readGameSource} from '../scripts/game-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
 import {loadModel} from '../scripts/zone-v2-model.mjs';
 loadModel();
-const html=fs.readFileSync('jag.html','utf8');
+const html=readGameSource();
 function setup(){
  const machine={dataset:{}};
  const c=vm.createContext({document:{getElementById:()=>machine},normalState:{},session:{active:false}});

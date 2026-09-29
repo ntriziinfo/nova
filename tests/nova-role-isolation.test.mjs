@@ -1,3 +1,4 @@
+import {readGameSource} from '../scripts/game-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -39,7 +40,7 @@ test('phase-specific roles retain chance parity and setting 6 normal rare enhanc
 test('CZ rewrite uses equal chance-eye thresholds',()=>{const f=load().NovaFlow;assert.equal(f.rewriteRates.CHANCE_A,3/14);assert.equal(f.rewriteRates.CHANCE_B,3/14);for(const [role,p]of Object.entries(f.rewriteRates)){const loss={phase:'cz',remaining:10,totalGames:15,success:false,winProbability:.4};assert.equal(f.rewrite(loss,role,{},()=>p-1e-12).success,true);if(p<1)assert.equal(f.rewrite(loss,role,{},()=>p).success,false);}});
 
 test('live bonus preparation routes to its own lottery even when the normal draw is unavailable',()=>{
- const c=load(),html=fs.readFileSync('jag.html','utf8');
+ const c=load(),html=readGameSource();
  const fn=html.match(/  function drawNormalResult\([^]*?\n  }/)[0];
  vm.runInContext(`const A_TYPE_MODE=true,normalState={bonusPending:true,prepLeft:3},settings={setting:6};let pendingArtStep=null,pendingATypeInternalBonus=null,pendingForceResult='';const isNovaResult=()=>false;`+fn,c);
  c.NovaNormal.drawRole=()=>{throw Error('Normal draw used for preparation');};

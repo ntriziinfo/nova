@@ -1,3 +1,4 @@
+import {readGameSource} from '../scripts/game-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';import vm from 'node:vm';
@@ -25,7 +26,7 @@ test('bonus at ART boundary resets only when it returns to normal, not when a se
  assert.equal(n.afterArt(normal,before,a.afterBonus(before,{},1)).games,245);
 });
 test('live transition resets displayed and internal counters without changing lifetime statistics',()=>{
- const source=fs.readFileSync('jag.html','utf8');
+ const source=readGameSource();
  const helper=source.match(/  function resetNormalCountersAfterArt\([^]*?\n  }/)[0];
  vm.runInContext('var settings={novaNormal:{}};var normalState={sinceBonus:295,internal:{games:245,impurity:78,mode:"通常B"}};var stats={totalSpins:1500};'+helper+';resetNormalCountersAfterArt({phase:"art"},{phase:"normal"});',ctx);
  assert.equal(ctx.normalState.sinceBonus,0);assert.equal(ctx.normalState.internal.games,0);assert.equal(ctx.stats.totalSpins,1500);

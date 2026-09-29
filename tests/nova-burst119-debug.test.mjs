@@ -1,10 +1,11 @@
+import {readGameSource} from '../scripts/game-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
 import {loadModel} from '../scripts/zone-v2-model.mjs';
 
-const html=fs.readFileSync('jag.html','utf8');
+const html=readGameSource();
 function context(){
  loadModel();
  const c=vm.createContext({NovaArt,NovaNormal,A_TYPE_MODE:true,settings:{setting:6,novaArt:{}},normalState:{flow:{phase:'normal'},bonusPending:false},forceResult:'URA_CHALLENGE',pendingForceResult:'URA_CHALLENGE',bonusActive:false,RESULT:{}});

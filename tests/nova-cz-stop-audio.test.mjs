@@ -1,5 +1,6 @@
+import {readGameSource} from '../scripts/game-source.mjs';
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
-const html=fs.readFileSync('jag.html','utf8');
+const html=readGameSource();
 function setup(){
  const calls=[],machine={dataset:{czLamp:'0',czRainbow:'false'}},black=new Set();
  const ctx=vm.createContext({renderCzPrelude(){},currentSpin:null,isLadderShutterSpin:()=>false,document:{getElementById:()=>machine,querySelector:selector=>({classList:{add:()=>black.add(selector)}}),querySelectorAll:()=>[...black].map(selector=>({classList:{remove:()=>black.delete(selector)}}))},STOP_SOUND_SRC:'normal.wav',sfxOutputVolume:()=>.5,playOneShotSound:src=>calls.push({src,stage:Number(machine.dataset.czLamp),rainbow:machine.dataset.czRainbow==='true'}),playCzConfirmedSound(){}});

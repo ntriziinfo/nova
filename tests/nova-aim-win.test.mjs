@@ -1,3 +1,4 @@
+import {readGameSource} from '../scripts/game-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -63,7 +64,7 @@ test('reset while waiting for visible playback cannot start an old sound when hi
  assert.equal(sounds,0);assert.equal(t.aim.busy,false);assert.equal(t.timers.size,0);
 });
 test('consecutive wins create independent nonlooping audio instances',()=>{
- const html=fs.readFileSync('jag.html','utf8'),audios=[];
+ const html=readGameSource(),audios=[];
  const c=vm.createContext({prepareCharacterVoiceAudio(){},releaseCharacterVoiceAudio(){},debugFastSpinActive:false,aimWinAudios:new Set(),clearInterval(){},aimWinOutputVolume:()=>.5,oneShotSoundCache:new Map([['assets/media/nova/aim/seven-win.wav',{cloneNode(){const a={play(){return Promise.resolve();}};audios.push(a);return a;}}]])});
  vm.runInContext(html.match(/  function playAimSevenWinSound\([^]*?\n  }/)[0],c);
  c.playAimSevenWinSound();c.playAimSevenWinSound();assert.equal(audios.length,2);assert.notEqual(audios[0],audios[1]);assert.equal(audios[0].loop,false);assert.equal(c.aimWinAudios.size,2);audios[0].onended();assert.equal(c.aimWinAudios.size,1);
@@ -104,7 +105,7 @@ test('suppressed miss cue never opens video',()=>{
  const {aim,elements}=setup();aim.bet({symbol:'seven',color:'blue',result:'MISS',guide:false});assert.equal(elements.length,0);assert.equal(aim.hasGuide({guide:false}),false);
 });
 test('cue dismissal runs after real reel landing, not button acceptance',()=>{
- const html=fs.readFileSync('jag.html','utf8');const stop=html.slice(html.indexOf('  function stopSingleReel(i,'),html.indexOf('  function stopAllReels()'));
+ const html=readGameSource();const stop=html.slice(html.indexOf('  function stopSingleReel(i,'),html.indexOf('  function stopAllReels()'));
  assert.equal(stop.slice(0,stop.indexOf('await NovaReelMotion.stop')).includes('NovaAim.hide()'),false);
  const landed=stop.indexOf('currentSpin.stopped[i] = true;'),finished=stop.indexOf('if(currentSpin.stopped.every(Boolean)){',landed);
  assert.ok(landed>=0&&finished>landed);assert.ok(stop.indexOf('else NovaAim.stop(currentSpin.resolved);')>finished);
@@ -218,7 +219,7 @@ test('colored zone seven/nebula guides retain their own movie after the entry re
 test('zone entry and colored seven cues play one character voice on BET with their existing presentation',()=>{
  const t=setup(),sounds=[];
  const context=vm.createContext({NovaAim:t.aim,debugFastSpinActive:false,speedToBonusActive:false,voiceOutputVolume:()=>.6,sfxOutputVolume:()=>.4,playOneShotSound:(src,volume)=>sounds.push({src,volume})});
- const html=fs.readFileSync('jag.html','utf8');
+ const html=readGameSource();
  vm.runInContext(html.match(/  const AIM_VOICE_SRCS=[^\n]+/)[0]+'\n'+html.match(/  function playRandomAimVoice\([^]*?\n  }/)[0],context);
  vm.runInContext(html.match(/  const SEVEN_ZONE_VOICE_SRCS=[^\n]+/)[0]+'\n'+html.match(/  function playSevenAimVoice\([^]*?\n  }/)[0],context);
  vm.runInContext(html.match(/  function playAimBetPresentation\([^]*?\n  }/)[0],context);
@@ -254,13 +255,13 @@ test('bonus nebula confirmation switches back to the original video for characte
  assert.equal(bonusVideo.hidden,true);
 });
 test('nebula audio uses dedicated source and continues independently from video',()=>{
- const html=fs.readFileSync('jag.html','utf8');let played=0;const audio={play(){played++;return Promise.resolve();}};
+ const html=readGameSource();let played=0;const audio={play(){played++;return Promise.resolve();}};
  const c=vm.createContext({prepareCharacterVoiceAudio(){},releaseCharacterVoiceAudio(){},debugFastSpinActive:false,aimWinAudios:new Set(),clearInterval(){},aimWinOutputVolume:()=>.5,oneShotSoundCache:new Map([['assets/media/nova/aim/nebula-win.wav',{cloneNode:()=>audio}]])});
  vm.runInContext(html.match(/  function playAimSevenWinSound\([^]*?\n  }/)[0],c);c.playAimSevenWinSound('nebula');assert.equal(played,1);assert.equal(audio.loop,false);assert.equal(c.aimWinAudios.has(audio),true);
 });
 
 test('BET fades existing win sound over three seconds and repeat BET does not restart',()=>{
- const html=fs.readFileSync('jag.html','utf8');let now=0,frame,id=0;const audio={paused:false,ended:false,volume:.5,pause(){this.paused=true;}};
+ const html=readGameSource();let now=0,frame,id=0;const audio={paused:false,ended:false,volume:.5,pause(){this.paused=true;}};
  const c=vm.createContext({releaseCharacterVoiceAudio(){},aimWinAudios:new Set([audio]),performance:{now:()=>now},aimWinOutputVolume:a=>.5*(a.aimFadeGain??1),setInterval(fn){frame=fn;return ++id;},clearInterval(){}});
  vm.runInContext(html.match(/  function fadeAimWinSoundsOnBet\([^]*?\n  }/)[0],c);
  c.fadeAimWinSoundsOnBet();now=1500;frame();assert.equal(audio.volume,.25);

@@ -1,5 +1,6 @@
+import {readGameSource} from '../scripts/game-source.mjs';
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';import crypto from 'node:crypto';
-const source=fs.readFileSync('jag.html','utf8');
+const source=readGameSource();
 const fn=source.match(/  function playCzCountdownOnLever\([^]*?\n  }/)[0];
 const played=[];const ctx=vm.createContext({voiceOutputVolume:()=>.5,playOneShotSound:(src,volume)=>played.push({src,volume})});vm.runInContext(fn,ctx);
 test('CZ and strong CZ play exactly the remaining 3, 2 and final game clips',()=>{

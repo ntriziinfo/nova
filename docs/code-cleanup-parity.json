@@ -1,0 +1,55 @@
+{
+  "retainedJavaScriptAstMatches": true,
+  "cssByteIdentical": true,
+  "expandedPageMatches": true,
+  "unchangedEngineFiles": [
+    "nova-tuning.js",
+    "nova-art.js",
+    "nova-normal.js",
+    "nova-flow.js",
+    "nova-balance.js",
+    "nova-decrement.js",
+    "nova-progress.js"
+  ],
+  "simulations": [
+    {
+      "setting": 1,
+      "games": 30000,
+      "allFieldsMatch": true
+    },
+    {
+      "setting": 2,
+      "games": 30000,
+      "allFieldsMatch": true
+    },
+    {
+      "setting": 3,
+      "games": 30000,
+      "allFieldsMatch": true
+    },
+    {
+      "setting": 4,
+      "games": 30000,
+      "allFieldsMatch": true
+    },
+    {
+      "setting": 5,
+      "games": 30000,
+      "allFieldsMatch": true
+    },
+    {
+      "setting": 6,
+      "games": 30000,
+      "allFieldsMatch": true
+    }
+  ],
+  "engineHashes": {
+    "nova-tuning.js": "4a1bb10a6052b77e68c5eda5a422393df5e03c2157c63103cdcab42963015f2f",
+    "nova-art.js": "75d8f6db6808d80e40cde3ead8559d59bac7004cd4b04369a00068eb4e8876ee",
+    "nova-normal.js": "04d5e64200a1dd79f748d5a730c99f6662e6922a887a280660316bfec448a5a7",
+    "nova-flow.js": "7393b84ad4883e08ebefaaf175998e3d5f747032a422caaa6706a4ef19989423",
+    "nova-balance.js": "db5a0524bb200d5f47efe11fbcf0706e892332732624169ef7a108e15255739e",
+    "nova-decrement.js": "a58f72c810431683b056905bb01841fec90bcd3bb0c87c7be3ab4f0f1b6419ea",
+    "nova-progress.js": "50fbd1927417fcb42cd7af7fc8d194d9b886b0890ba9baed8408a5cce33f86de"
+  }
+}

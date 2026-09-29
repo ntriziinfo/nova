@@ -1,3 +1,4 @@
+import {readGameSource} from '../scripts/game-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -29,7 +30,7 @@ test('next BET fades the mix over three seconds without restarting; reset cancel
  h.p.play(.6,.4);const stale=h.audios.at(-2).ontimeupdate;h.p.play(.6,.4);stale();assert.equal(h.audios.at(-1).plays,0);
 });
 test('only the first earned AT in an initial BIG qualifies; ordinary zones and further stocks do not',()=>{
- const html=fs.readFileSync('jag.html','utf8'),c=vm.createContext({normalState:{flow:{phase:'normal'}},session:{bonusArtSets:0},settings:{setting:1},isATypeBonusComplete:()=>false,Math});
+ const html=readGameSource(),c=vm.createContext({normalState:{flow:{phase:'normal'}},session:{bonusArtSets:0},settings:{setting:1},isATypeBonusComplete:()=>false,Math});
  vm.runInContext(fs.readFileSync('nova-tuning.js','utf8')+'\n'+fs.readFileSync('nova-art.js','utf8'),c);
  vm.runInContext(html.match(/  function resolveATypeBonusOutcome\([^]*?\n  }/)[0],c);
  assert.equal(c.resolveATypeBonusOutcome('NEBULA').novaRushConfirmed,true);

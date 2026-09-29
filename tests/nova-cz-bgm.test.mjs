@@ -1,5 +1,6 @@
+import {readGameSource} from '../scripts/game-source.mjs';
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
-const html=fs.readFileSync('jag.html','utf8');
+const html=readGameSource();
 const fn=html.match(/  function normalBgmSrc\([^]*?\n  }/)[0];
 const constants=[...html.matchAll(/  const \w+_ZONE_BGM_SRC = "[^"]+";/g)].map(m=>m[0]).join('\n');
 const ctx=vm.createContext({session:{active:false},normalState:{flow:{phase:'normal'}},NOVA_ART_BGM_SRC:'rush',CZ_BGM_SRC:'cz',DEFAULT_NORMAL_BGM_SRC:'normal',SPEED_BGM_SRC:'speed',HIGH_MODE_BGM_SRC:'high',speedToBonusActive:false,isHighMode:()=>false});vm.runInContext(constants+'\n'+fn,ctx);

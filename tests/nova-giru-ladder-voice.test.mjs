@@ -1,8 +1,9 @@
+import {readGameSource} from '../scripts/game-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
-const html=fs.readFileSync('jag.html','utf8');
+const html=readGameSource();
 function setup(){
  const sounds=[],c=vm.createContext({debugFastSpinActive:false,speedToBonusActive:false,voiceOutputVolume:()=>.6,playOneShotSound:(src,volume)=>sounds.push({src,volume})});
  vm.runInContext(html.match(/  const GIRU_LADDER_VOICE_SRCS=[^\n]+/)[0],c);

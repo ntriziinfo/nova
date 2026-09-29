@@ -1,3 +1,4 @@
+import {readGameSource} from '../scripts/game-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -64,7 +65,7 @@ test('already active zones, selected entries and queued awards keep precedence o
 });
 
 test('AUTO uses the live entry path to consume multiple bonus stocks without stopping',()=>{
- const html=fs.readFileSync('jag.html','utf8'),rng=xoshiro128(145);
+ const html=readGameSource(),rng=xoshiro128(145);
  let spins=0;
  const ctx=vm.createContext({autoPlay:true,A_TYPE_MODE:true,isSpinning:false,bonusEndBgmPlaying:false,
   bonusConfirmSoundPlaying:false,oumaPresentation:null,session:{active:false},normalState:{flow:a.afterBonus(a.enter({},rng),{},3)},

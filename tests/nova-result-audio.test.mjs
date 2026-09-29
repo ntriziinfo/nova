@@ -1,5 +1,6 @@
+import {readGameSource} from '../scripts/game-source.mjs';
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
-const html=fs.readFileSync('jag.html','utf8');
+const html=readGameSource();
 const fn=name=>html.match(new RegExp('  function '+name+'\\([^]*?\\n  }'))[0];
 
 test('AT roulette BET plays its voice once; fixed initial roulette keeps the ordinary BET sound',()=>{

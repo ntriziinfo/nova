@@ -1,10 +1,11 @@
+import {readGameSource} from '../scripts/game-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
 import {loadModel} from '../scripts/zone-v2-model.mjs';
 import {xoshiro128} from '../scripts/zone-v2-rng.mjs';
-const html=fs.readFileSync('jag.html','utf8');
+const html=readGameSource();
 function setup(){
  const sounds=[];
  const c=vm.createContext({debugFastSpinActive:false,speedToBonusActive:false,voiceOutputVolume:()=>.42,playOneShotSound:(...args)=>sounds.push(args),normalizedAudioSourceKey:src=>src.split('?')[0]});

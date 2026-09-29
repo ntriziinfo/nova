@@ -1,3 +1,4 @@
+import {readGameSource} from '../scripts/game-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -42,7 +43,7 @@ test('normal entry lottery has separate CZ and strong CZ rates',()=>{
  assert.deepEqual(counts,{CZ:500,STRONG_CZ:100,'':59400});
 });
 test('new flow and isolated state storage are wired into game',()=>{
- const game=fs.readFileSync('jag.html','utf8');
+ const game=readGameSource();
  assert.match(game,/nova-flow\.js/);
  assert.match(game,/normalState\.flow = NovaFlow\.afterBonus/);
  assert.match(game,/flow:NovaFlow\.normalize\(data\.normalState\.flow\)/);

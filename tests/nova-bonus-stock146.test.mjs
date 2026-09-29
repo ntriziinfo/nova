@@ -1,3 +1,4 @@
+import {readGameSource} from '../scripts/game-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -56,7 +57,7 @@ test('reduced stock guides retain blue/red/rainbow confidence and half of misses
 });
 
 test('live bonus draw and aim use the same secured state; forced stock wins still work',()=>{
- const html=fs.readFileSync('jag.html','utf8'),ctx=vm.createContext({NovaArt:a,NovaNormal,A_TYPE_MODE:true,
+ const html=readGameSource(),ctx=vm.createContext({NovaArt:a,NovaNormal,A_TYPE_MODE:true,
   session:{bonusKind:'BIG',bonusTier:'normal',bonusArtSets:1,paid:30,active:true,phase:'a_type_bonus'},
   normalState:{flow:{phase:'normal'}},pendingForceResult:'',settings:{setting:1},isNovaResult:()=>false});
  for(const name of ['normalizeATypeBonusKind','isATypeBonusActive','aTypeBonusTarget','isATypeBonusComplete','drawATypeBonusResult','resolveATypeBonusOutcome'])vm.runInContext(html.match(new RegExp('  function '+name+'\\([^]*?\\n  }'))[0],ctx);

@@ -1,3 +1,4 @@
+import {readGameSource} from '../scripts/game-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -51,7 +52,7 @@ test('normal navigation survives the display pipeline but never covers rare or b
   const order=Array.from(n.drawOrder(()=>(i+.5)/6));
   assert.deepEqual(Array.from(n.stopOrder({...spin,bellNaviOrder:order})),order);
  }
- const html=fs.readFileSync('jag.html','utf8');
+ const html=readGameSource();
  assert(html.includes('normalBellNavi:token.normalBellNavi'));
  assert(html.includes("normalBellNavi:!!artStep?.normalBellNavi&&result==='BELL'"));
 });

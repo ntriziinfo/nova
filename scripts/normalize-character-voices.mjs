@@ -1,3 +1,4 @@
+import {readGameSource} from './game-source.mjs';
 // Offline asset preparation; supplied recordings are never overwritten.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -19,7 +20,7 @@ if (sourceDir.toLowerCase() === outputDir.toLowerCase() || fs.existsSync(outputD
 }
 // Match the game's relatively loud music/effects mix, with safe peak headroom.
 const target = { integratedLufs: -12, truePeakDbtp: -1, dualMono: true };
-const html = fs.readFileSync(path.join(root, 'jag.html'), 'utf8');
+const html = readGameSource(root);
 const context = vm.createContext({ normalizedAudioSourceKey: src => src.split('?')[0] });
 vm.runInContext(html.slice(html.indexOf('  const BELL_NAVI_VOICE_SRCS='), html.indexOf('  for(const src of CHARACTER_VOICE_SRCS)')) + ';globalThis.sources=CHARACTER_VOICE_SRCS;', context);
 const sources = [...new Set(Array.from(context.sources, src => src.split('?')[0]))].filter(src => !args.includes('--only') || src.includes(option('--only')));

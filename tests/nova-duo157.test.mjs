@@ -1,3 +1,4 @@
+import {readGameSource} from '../scripts/game-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -41,7 +42,7 @@ test('natural initial-zone rare roles use the AT frequencies and the new exact a
 });
 
 test('duo stop effects follow accepted button presses once, leaving ordinary landing sounds silent',()=>{
- const html=fs.readFileSync('jag.html','utf8'),sounds=[],jumps=[];let rank=0;
+ const html=readGameSource(),sounds=[],jumps=[];let rank=0;
  const spin={resolved:{flowBefore:initial()}};
  const c=vm.createContext({debugFastSpinActive:false,speedToBonusActive:false,currentSpin:spin,NovaInitialDuo:{eligible:s=>s?.initialStage==='zone'&&s?.zone==='kushuri_nito',stop:n=>{if(n<=rank)return false;rank=n;jumps.push(n);return true;}},sfxOutputVolume:()=>.4,playOneShotSound:(src,volume)=>sounds.push({src,volume})});
  for(const name of ['playInitialDuoStop','playStopSound'])vm.runInContext(html.match(new RegExp('  function '+name+'\\([^]*?\\n  }'))[0],c);

@@ -1,8 +1,9 @@
+import {readGameSource} from '../scripts/game-source.mjs';
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
 const panel={},body={dataset:{}},timers=new Map();let serial=0;
 const ctx=vm.createContext({document:{body,getElementById:()=>panel},setInterval:fn=>{timers.set(++serial,fn);return serial;},clearInterval:id=>timers.delete(id)});
 vm.runInContext(fs.readFileSync('nova-tuning.js','utf8')+'\n'+fs.readFileSync('nova-art.js','utf8'),ctx);
-vm.runInContext('let zoneRouletteTimer=null;'+fs.readFileSync('jag.html','utf8').match(/  function showZoneRoulette\([^]*?\n  }/)[0],ctx);
+vm.runInContext('let zoneRouletteTimer=null;'+readGameSource().match(/  function showZoneRoulette\([^]*?\n  }/)[0],ctx);
 test('roulette text and character lamp advance together through all six characters',()=>{
  ctx.showZoneRoulette({entryStage:'roulette'});
  const names=['宗介','とと','うらぴ','ギル','空','逢魔'],ids=['sosuke','toto','urapi','giru1','sora1','ouma1'];

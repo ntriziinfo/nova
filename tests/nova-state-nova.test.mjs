@@ -1,3 +1,4 @@
+import {readGameSource} from '../scripts/game-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -36,7 +37,7 @@ test('strong SUICA rare 300pt is literal points, not converted G, and pays 6pt',
  assert.equal(t.atOutcome.direct,300);assert.equal(t.flow.remaining,'444');assert.equal(a.payout(t.result),6);
 });
 test('live normal path passes strong CZ options and preserves normalized AT state',()=>{
- const c=load(),html=fs.readFileSync('jag.html','utf8');
+ const c=load(),html=readGameSource();
  vm.runInContext("const normalState={internal:{level:'high',highLeft:10},flow:{phase:'normal'}},settings={setting:3};let pendingArtStep=null,pendingForceResult='STRONG_NOVA';"+html.match(/  function drawIndependentATypeOutcome\([^]*?\n  }/)[0],c);
  c.drawIndependentATypeOutcome();assert.equal(vm.runInContext('pendingArtStep.flow.phase',c),'normal');
  vm.runInContext("normalState.internal=pendingArtStep.normalInternal;pendingForceResult='BELL';",c);

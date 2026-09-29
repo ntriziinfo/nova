@@ -1,3 +1,4 @@
+import {readGameSource} from '../scripts/game-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -70,7 +71,7 @@ test('logical confidence tiers retain the original third-stop model and surprise
 });
 
 test('live lamps and surprise rainbow change only on the third stop',()=>{
- const html=fs.readFileSync('jag.html','utf8'),handler=html.match(/  function showCzLamp\([^]*?\n  }/)[0];
+ const html=readGameSource(),handler=html.match(/  function showCzLamp\([^]*?\n  }/)[0];
  const machine={dataset:{czLamp:'0',czRainbow:'false'}};
  ctx.document={getElementById:()=>machine};ctx.playOneShotSound=()=>{};ctx.sfxOutputVolume=()=>.5;
  vm.runInContext(handler,ctx);
