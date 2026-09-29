@@ -1,0 +1,32 @@
+{
+  "micro1": {
+    "setting": 1,
+    "replay": 0.4364,
+    "extraRate": 0.01
+  },
+  "micro2": {
+    "setting": 2,
+    "replay": 0.43820000000000003,
+    "extraRate": 0.01
+  },
+  "micro3": {
+    "setting": 3,
+    "replay": 0.44,
+    "extraRate": 0.01
+  },
+  "micro4": {
+    "setting": 4,
+    "replay": 0.4418,
+    "extraRate": 0.01
+  },
+  "micro5": {
+    "setting": 5,
+    "replay": 0.4436,
+    "extraRate": 0.04
+  },
+  "micro6": {
+    "setting": 6,
+    "replay": 0.53,
+    "extraRate": 0.04
+  }
+}

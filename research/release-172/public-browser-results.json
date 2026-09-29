@@ -1,0 +1,83 @@
+{
+  "url": "https://nova-eta-jet-30.vercel.app/jag.html?v=172",
+  "systemMuted": true,
+  "realIOSDevice": false,
+  "checks": [
+    {
+      "name": "trusted tap starts decoded BGM with a nonzero output signal",
+      "status": {
+        "enabled": true,
+        "state": "running",
+        "unlocked": true,
+        "active": 1,
+        "cachedBytes": 0,
+        "started": 1,
+        "lastError": ""
+      }
+    },
+    {
+      "name": "manual BET and all stops",
+      "spins": 1,
+      "audio": {
+        "enabled": true,
+        "state": "running",
+        "unlocked": true,
+        "active": 2,
+        "cachedBytes": 1447376,
+        "started": 5,
+        "lastError": ""
+      }
+    },
+    {
+      "name": "AUTO plays delayed sound",
+      "audio": {
+        "enabled": true,
+        "state": "running",
+        "unlocked": true,
+        "active": 2,
+        "cachedBytes": 1447376,
+        "started": 13,
+        "lastError": ""
+      }
+    },
+    {
+      "name": "new and cloned voice players overlap and stop independently",
+      "running": {
+        "enabled": true,
+        "state": "running",
+        "unlocked": true,
+        "active": 4,
+        "cachedBytes": 1580496,
+        "started": 15,
+        "lastError": ""
+      },
+      "stopped": {
+        "enabled": true,
+        "state": "running",
+        "unlocked": true,
+        "active": 3,
+        "cachedBytes": 1580496,
+        "started": 15,
+        "lastError": ""
+      },
+      "at": 0,
+      "volume": 0.1
+    },
+    {
+      "name": "interrupted context resumes from audio button",
+      "audio": {
+        "enabled": true,
+        "state": "running",
+        "unlocked": true,
+        "active": 2,
+        "cachedBytes": 1580496,
+        "started": 15,
+        "lastError": ""
+      }
+    },
+    {
+      "name": "desktop uses original native audio"
+    }
+  ],
+  "errors": []
+}

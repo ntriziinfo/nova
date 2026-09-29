@@ -1,0 +1,62 @@
+[
+  {
+    "name": "jag.html",
+    "status": 200,
+    "sha256": "fab17e10bbfb473de6ad8e97472c4197364c1bc8b86a8cca1be78ca3c6a7b48f",
+    "match": true
+  },
+  {
+    "name": "nova-audio.js",
+    "status": 200,
+    "sha256": "f8793bf78a3726d3f7684c380e21be7226a249c6450ef26f850efbda65c54ab2",
+    "match": true
+  },
+  {
+    "name": "nova-mobile.js",
+    "status": 200,
+    "sha256": "ac6558c186e0d4f7b706567c3e520415d1c606e13852c900c39dadab88b9c467",
+    "match": true
+  },
+  {
+    "name": "nova-mobile.css",
+    "status": 200,
+    "sha256": "41a1bba04bd87057d87edb80ee8fb229cbecd10b6969817e17b60ab8ceb5febd",
+    "match": true
+  },
+  {
+    "name": "nova-beat-lamps.js",
+    "status": 200,
+    "sha256": "b8eac3d5f0c6c6b07c7bfc763bc32d29ef167894cb4ff77eb7c83616b6ae6743",
+    "match": true
+  },
+  {
+    "name": "nova-rush-confirm.js",
+    "status": 200,
+    "sha256": "a64c772996776371476b05423c1bd9bae21c63f129190b4d073883429e0c2deb",
+    "match": true
+  },
+  {
+    "name": "nova-tuning.js",
+    "status": 200,
+    "sha256": "e2a30b83b34138c9241113782e7bedd828a9c15eb75dd5641cabbf3b6256bf81",
+    "match": true
+  },
+  {
+    "name": "nova-decrement.js",
+    "status": 200,
+    "sha256": "a58f72c810431683b056905bb01841fec90bcd3bb0c87c7be3ab4f0f1b6419ea",
+    "match": true
+  },
+  {
+    "name": "nova-art.js",
+    "status": 200,
+    "sha256": "847b2d60c9de4abd24c4d50103c6762e76f472959057ec286f2ddee6bb2d320f",
+    "match": true
+  },
+  {
+    "name": "nova-normal.js",
+    "status": 200,
+    "sha256": "a2a90e37268fbfcb9dbddb256f74b36bed2592146f20a54b5efec59714d56fe6",
+    "match": true
+  }
+]

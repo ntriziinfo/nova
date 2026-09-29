@@ -1,0 +1,169 @@
+{
+  "checks": [
+    {
+      "setting": 1,
+      "unmodifiedWrapperExactMatch": true
+    },
+    {
+      "setting": 2,
+      "unmodifiedWrapperExactMatch": true
+    },
+    {
+      "setting": 3,
+      "unmodifiedWrapperExactMatch": true
+    },
+    {
+      "setting": 4,
+      "unmodifiedWrapperExactMatch": true
+    },
+    {
+      "setting": 5,
+      "unmodifiedWrapperExactMatch": true
+    },
+    {
+      "setting": 6,
+      "unmodifiedWrapperExactMatch": true
+    }
+  ],
+  "samples": [
+    {
+      "setting": 1,
+      "upper": false,
+      "role": "WEAK_SUICA",
+      "n": 100000,
+      "expected": 0.2,
+      "actual": 0.19995
+    },
+    {
+      "setting": 1,
+      "upper": false,
+      "role": "STRONG_SUICA",
+      "n": 100000,
+      "expected": 0.4,
+      "actual": 0.40187
+    },
+    {
+      "setting": 1,
+      "upper": false,
+      "role": "CHANCE_A",
+      "n": 100000,
+      "expected": 0.2,
+      "actual": 0.19796
+    },
+    {
+      "setting": 1,
+      "upper": false,
+      "role": "CHANCE_B",
+      "n": 100000,
+      "expected": 0.2,
+      "actual": 0.20142
+    },
+    {
+      "setting": 1,
+      "upper": true,
+      "role": "WEAK_SUICA",
+      "n": 100000,
+      "expected": 0.30000000000000004,
+      "actual": 0.30237
+    },
+    {
+      "setting": 1,
+      "upper": true,
+      "role": "STRONG_SUICA",
+      "n": 100000,
+      "expected": 0.6000000000000001,
+      "actual": 0.60138
+    },
+    {
+      "setting": 1,
+      "upper": true,
+      "role": "CHANCE_A",
+      "n": 100000,
+      "expected": 0.30000000000000004,
+      "actual": 0.30021
+    },
+    {
+      "setting": 1,
+      "upper": true,
+      "role": "CHANCE_B",
+      "n": 100000,
+      "expected": 0.30000000000000004,
+      "actual": 0.3004
+    },
+    {
+      "setting": 6,
+      "upper": false,
+      "role": "WEAK_SUICA",
+      "n": 100000,
+      "expected": 0.2,
+      "actual": 0.20063
+    },
+    {
+      "setting": 6,
+      "upper": false,
+      "role": "STRONG_SUICA",
+      "n": 100000,
+      "expected": 0.4,
+      "actual": 0.40243
+    },
+    {
+      "setting": 6,
+      "upper": false,
+      "role": "CHANCE_A",
+      "n": 100000,
+      "expected": 0.2,
+      "actual": 0.1993
+    },
+    {
+      "setting": 6,
+      "upper": false,
+      "role": "CHANCE_B",
+      "n": 100000,
+      "expected": 0.2,
+      "actual": 0.199
+    },
+    {
+      "setting": 6,
+      "upper": true,
+      "role": "WEAK_SUICA",
+      "n": 100000,
+      "expected": 0.30000000000000004,
+      "actual": 0.29939
+    },
+    {
+      "setting": 6,
+      "upper": true,
+      "role": "STRONG_SUICA",
+      "n": 100000,
+      "expected": 0.6000000000000001,
+      "actual": 0.59832
+    },
+    {
+      "setting": 6,
+      "upper": true,
+      "role": "CHANCE_A",
+      "n": 100000,
+      "expected": 0.30000000000000004,
+      "actual": 0.30107
+    },
+    {
+      "setting": 6,
+      "upper": true,
+      "role": "CHANCE_B",
+      "n": 100000,
+      "expected": 0.30000000000000004,
+      "actual": 0.30304
+    }
+  ],
+  "productionUnchanged": true,
+  "sourceHashes": {
+    "nova-tuning.js": "e2a30b83b34138c9241113782e7bedd828a9c15eb75dd5641cabbf3b6256bf81",
+    "nova-decrement.js": "a58f72c810431683b056905bb01841fec90bcd3bb0c87c7be3ab4f0f1b6419ea",
+    "nova-art.js": "847b2d60c9de4abd24c4d50103c6762e76f472959057ec286f2ddee6bb2d320f",
+    "nova-balance.js": "db5a0524bb200d5f47efe11fbcf0706e892332732624169ef7a108e15255739e",
+    "nova-flow.js": "7393b84ad4883e08ebefaaf175998e3d5f747032a422caaa6706a4ef19989423",
+    "nova-normal.js": "a2a90e37268fbfcb9dbddb256f74b36bed2592146f20a54b5efec59714d56fe6",
+    "nova-progress.js": "50fbd1927417fcb42cd7af7fc8d194d9b886b0890ba9baed8408a5cce33f86de",
+    "scripts/zone-v2-model.mjs": "3c65c5308985e1e6b65e54bae981e01aafa4e6502d97773c1e3d64474bd34821"
+  }
+}

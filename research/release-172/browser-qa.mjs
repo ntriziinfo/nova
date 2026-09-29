@@ -29,7 +29,8 @@ try{
  result.checks.push({name:'trusted tap starts decoded BGM with a nonzero output signal',status:await p.evaluate(()=>NovaAudio.status())});
  await p.evaluate(()=>{const spin=NovaNormal.spin;NovaNormal.spin=(state,flow,setting,options)=>spin(state,flow,setting,options,()=>.999999,'MISS');});
  const initial=await p.evaluate(()=>__jagAdminSnapshot().stats.totalSpins);
- await button('spinBtn').tap();for(const id of ['stop2','stop0','stop1'])await button(id).tap();
+ const tapAndHear=async id=>{const n=await p.evaluate(()=>NovaAudio.status().started);await button(id).tap();await p.waitForFunction(before=>NovaAudio.status().started>before,n);};
+ await tapAndHear('spinBtn');for(const id of ['stop2','stop0','stop1'])await tapAndHear(id);
  await p.waitForFunction(n=>__jagAdminSnapshot().stats.totalSpins>n&&!__jagAdminSnapshot().state.isSpinning,initial);
  const manual=await p.evaluate(()=>({spins:__jagAdminSnapshot().stats.totalSpins,audio:NovaAudio.status()}));
  assert(manual.audio.started>=4);result.checks.push({name:'manual BET and all stops',...manual});

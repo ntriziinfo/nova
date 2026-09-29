@@ -1,0 +1,50 @@
+{
+  "base1": {
+    "setting": 1
+  },
+  "candidate1": {
+    "setting": 1,
+    "replay": 0.4214,
+    "extraRate": 0.03
+  },
+  "base2": {
+    "setting": 2
+  },
+  "candidate2": {
+    "setting": 2,
+    "replay": 0.42319999999999997,
+    "extraRate": 0.03
+  },
+  "base3": {
+    "setting": 3
+  },
+  "candidate3": {
+    "setting": 3,
+    "replay": 0.425,
+    "extraRate": 0.03
+  },
+  "base4": {
+    "setting": 4
+  },
+  "candidate4": {
+    "setting": 4,
+    "replay": 0.42679999999999996,
+    "extraRate": 0.03
+  },
+  "base5": {
+    "setting": 5
+  },
+  "candidate5": {
+    "setting": 5,
+    "replay": 0.4286,
+    "extraRate": 0.14
+  },
+  "base6": {
+    "setting": 6
+  },
+  "candidate6": {
+    "setting": 6,
+    "replay": 0.515,
+    "extraRate": 0.12
+  }
+}

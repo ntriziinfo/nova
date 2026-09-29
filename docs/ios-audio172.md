@@ -14,3 +14,5 @@ Muted browser checks use a touch-enabled 390×844 Chromium viewport with an iPho
 Platform references: [WebKit user-gesture policy](https://webkit.org/blog/6784/new-video-policies-for-ios/), [Safari 17 Audio Session support](https://webkit.org/blog/14445/webkit-features-in-safari-17-0/), [WebKit audio category discussion](https://bugs.webkit.org/show_bug.cgi?id=237322).
 
 The separate replay/special-zone balancing work remains research only.
+
+Production verification: commit `1a0fd137f761fc48a2b3030901197bcd4a49b168`, Vercel deployment `dpl_HEQqPfdCF6dmfw53BZjpnFVHW8gm` reached READY and owns `nova-eta-jet-30.vercel.app`. Ten served files matched the local sources (LF-normalized SHA-256), including the unchanged lottery engines. The same muted browser checks passed on the public URL with no page errors. The public test waits for each actual audio start because the initial network decode is asynchronous; an earlier test sampled the play count before decoding finished. Evidence: `research/release-172/public-assets.json` and `public-browser-results.json`.
