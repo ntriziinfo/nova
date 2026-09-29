@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
 import {loadModel} from '../scripts/zone-v2-model.mjs';
-loadModel();const a=NovaArt,n=NovaNormal;
+// These timing fixtures predate the supplemental SUICA/chance-eye lottery.
+loadModel('..',true,{3:{extraZone:0}});const a=NovaArt,n=NovaNormal;
 const reload=s=>JSON.parse(JSON.stringify(s));
 const base=()=>({...a.enter({},()=>.5),remaining:'500',burstUsed:true});
 
@@ -58,4 +59,17 @@ test('each landed reel darkens in the actual stop order, resets on BET, and uses
   c.showCzPrelude(3,resolved);assert.deepEqual(painted.at(-1),order.slice(0,count));
   c.showCzPrelude(0,{});assert.deepEqual(painted.at(-1),[]);
  }
+});
+
+test('a supplemental SUICA zone uses the ordinary reel prelude and then seven/roulette entry',()=>{
+ loadModel();const engine=NovaArt;
+ let s={...engine.enter({setting:3},()=>.5),remaining:'500',burstUsed:true};
+ let t=engine.step(s,{setting:3},()=>.005,'WEAK_SUICA');
+ assert(t.atOutcome.zone);assert(t.atOutcome.direct>0);
+ assert.equal(t.atPrelude.total,3);assert.equal(t.atPrelude.left,2);assert.equal(t.flow.entryStage,'');
+ const zone=t.atOutcome.zone;s=reload(t.flow);
+ t=engine.step(s,{setting:3},()=>.99,'REPLAY');assert.equal(t.atPrelude.left,1);assert.equal(t.flow.entryStage,'');
+ t=engine.step(reload(t.flow),{setting:3},()=>.99,'REPLAY');
+ assert(t.atPrelude.confirmed);assert.equal(t.atPrelude.after,3);assert.equal(t.flow.pendingZone,zone);assert.equal(t.flow.entryStage,'seven');
+ t=engine.step(reload(t.flow),{setting:3},()=>.99,'REPLAY');assert.equal(t.flow.entryStage,'roulette');
 });

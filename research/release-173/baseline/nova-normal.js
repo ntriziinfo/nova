@@ -59,8 +59,6 @@ globalThis.NovaNormal=(()=>{
  // Keep the shared role table unchanged for CZ, preparation and comeback draws.
  function normalRoleProbabilities(setting=3){
   const key=Math.max(1,Math.min(6,Math.round(Number(setting)||3))),r={...roleProbabilities(key)};
-  const reduction=NovaTuning.profile(key).normalReplayReduction;
-  r.MISS+=reduction;r.REPLAY-=reduction;
   r.NAVI_BELL=1/NovaTuning.normalBellDenominators[key-1];
   if(key===6)r.BELL-=r.NAVI_BELL;
   else r.MISS=1-Object.entries(r).reduce((sum,[role,p])=>sum+(role==='MISS'?0:p),0);

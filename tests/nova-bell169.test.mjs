@@ -4,9 +4,10 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 import {createHash} from 'node:crypto';
 import {loadModel,simulate} from '../scripts/zone-v2-model.mjs';
+const loadV169=()=>loadModel('..',true,Object.fromEntries([1,2,3,4,5,6].map(s=>[s,{normalReplayReduction:0,extraZone:0,...(s===5?{cz:2.45}:{})}])));
 
 test('selected bell proposal applies only the intended profiles and normal role intervals',()=>{
- loadModel();const n=NovaNormal,t=NovaTuning;
+ loadV169();const n=NovaNormal,t=NovaTuning;
  assert.deepEqual([1,2,3,4,5,6].map(s=>t.profile(s).cz),[1.85,1.91,1.78,1.92,2.45,1.607]);
  assert.deepEqual(t.profile(5).tiers,[.47,.05,.05,.05,.38]);
  for(let setting=1;setting<=6;setting++){
@@ -58,7 +59,7 @@ test('normal navigation survives the display pipeline but never covers rare or b
 test('with decrement disabled, 30,000G ledgers replay the v169 calibration trials',()=>{
  const fixture=JSON.parse(fs.readFileSync('tests/fixtures/nova-bell169-session-digests.json','utf8'));
  for(const trial of fixture.trials){
-  loadModel();const actual=simulate(trial.setting,trial.games,trial.seed,{...fixture.options,decrement:false});
+  loadV169();const actual=simulate(trial.setting,trial.games,trial.seed,{...fixture.options,decrement:false});
   assert.equal(createHash('sha256').update(JSON.stringify(JSON.parse(JSON.stringify(actual)))).digest('hex'),trial.sha256,trial.seed);
  }
 });

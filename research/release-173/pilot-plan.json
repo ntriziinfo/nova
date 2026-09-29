@@ -1,0 +1,26 @@
+{
+  "cz2.45": {
+    "setting": 5,
+    "replay": 0.4436,
+    "extraRate": 0.04,
+    "cz": 2.45
+  },
+  "cz2.6": {
+    "setting": 5,
+    "replay": 0.4436,
+    "extraRate": 0.04,
+    "cz": 2.6
+  },
+  "cz2.8": {
+    "setting": 5,
+    "replay": 0.4436,
+    "extraRate": 0.04,
+    "cz": 2.8
+  },
+  "cz3": {
+    "setting": 5,
+    "replay": 0.4436,
+    "extraRate": 0.04,
+    "cz": 3
+  }
+}

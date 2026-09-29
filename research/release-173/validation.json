@@ -1,0 +1,265 @@
+{
+  "proposalOnly": true,
+  "games": 30000,
+  "trials": 1000,
+  "seed": "NOVA-173-independent-validation",
+  "plan": {
+    "micro5": {
+      "setting": 5,
+      "replay": 0.4436,
+      "extraRate": 0.04,
+      "cz": 2.45
+    },
+    "selected5": {
+      "setting": 5,
+      "replay": 0.4436,
+      "extraRate": 0.04,
+      "cz": 2.6
+    }
+  },
+  "configs": {
+    "selected5": {
+      "roles": {
+        "WEAK_SUICA": 0.011352,
+        "STRONG_SUICA": 0.0026831999999999997,
+        "CHANCE_A": 0.004623360000000001,
+        "CHANCE_B": 0.006935040000000001,
+        "WEAK_NOVA": 0.0080625,
+        "STRONG_NOVA": 0.0004128,
+        "REPLAY": 0.4436,
+        "BELL": 0.004163432437810944,
+        "MISS": 0.5134057628002844,
+        "NAVI_BELL": 0.004761904761904762
+      },
+      "base50": 34.45641153738778,
+      "profile": {
+        "cz": 2.6,
+        "zone": 1,
+        "direct": 0.8,
+        "denominator": 7000,
+        "tiers": [
+          0.47,
+          0.05,
+          0.05,
+          0.05,
+          0.38
+        ],
+        "weights": [
+          0.1,
+          0.1,
+          0.1,
+          0.19,
+          0.19,
+          0.19,
+          0.01,
+          0.01,
+          0.01,
+          0.1
+        ],
+        "base": 33.5,
+        "replay": 0.4536,
+        "upper": 1.5,
+        "groups": [
+          70,
+          29.1,
+          0.9
+        ],
+        "thresholdBands": []
+      }
+    },
+    "micro5": {
+      "roles": {
+        "WEAK_SUICA": 0.011352,
+        "STRONG_SUICA": 0.0026831999999999997,
+        "CHANCE_A": 0.004623360000000001,
+        "CHANCE_B": 0.006935040000000001,
+        "WEAK_NOVA": 0.0080625,
+        "STRONG_NOVA": 0.0004128,
+        "REPLAY": 0.4436,
+        "BELL": 0.004163432437810944,
+        "MISS": 0.5134057628002844,
+        "NAVI_BELL": 0.004761904761904762
+      },
+      "base50": 34.45641153738778,
+      "profile": {
+        "cz": 2.45,
+        "zone": 1,
+        "direct": 0.8,
+        "denominator": 7000,
+        "tiers": [
+          0.47,
+          0.05,
+          0.05,
+          0.05,
+          0.38
+        ],
+        "weights": [
+          0.1,
+          0.1,
+          0.1,
+          0.19,
+          0.19,
+          0.19,
+          0.01,
+          0.01,
+          0.01,
+          0.1
+        ],
+        "base": 33.5,
+        "replay": 0.4536,
+        "upper": 1.5,
+        "groups": [
+          70,
+          29.1,
+          0.9
+        ],
+        "thresholdBands": []
+      }
+    }
+  },
+  "options": {
+    "rng": "xoshiro128",
+    "exactGames": true,
+    "completeLimitPt": 10000,
+    "stopAtComplete": false,
+    "rareSortie": true,
+    "decrementAudit": true
+  },
+  "sourceHashes": {
+    "nova-tuning.js": "e2a30b83b34138c9241113782e7bedd828a9c15eb75dd5641cabbf3b6256bf81",
+    "nova-decrement.js": "a58f72c810431683b056905bb01841fec90bcd3bb0c87c7be3ab4f0f1b6419ea",
+    "nova-art.js": "847b2d60c9de4abd24c4d50103c6762e76f472959057ec286f2ddee6bb2d320f",
+    "nova-balance.js": "db5a0524bb200d5f47efe11fbcf0706e892332732624169ef7a108e15255739e",
+    "nova-flow.js": "7393b84ad4883e08ebefaaf175998e3d5f747032a422caaa6706a4ef19989423",
+    "nova-normal.js": "a2a90e37268fbfcb9dbddb256f74b36bed2592146f20a54b5efec59714d56fe6",
+    "nova-progress.js": "50fbd1927417fcb42cd7af7fc8d194d9b886b0890ba9baed8408a5cce33f86de",
+    "scripts/zone-v2-model.mjs": "3c65c5308985e1e6b65e54bae981e01aafa4e6502d97773c1e3d64474bd34821"
+  },
+  "summary": {
+    "micro5": {
+      "n": 1000,
+      "uncapped": {
+        "rtp": 1.044755129506904,
+        "rtpCi95": [
+          1.036014631136717,
+          1.0534956278770908
+        ],
+        "winRate": 0.651,
+        "winCi95": [
+          0.6209297417330122,
+          0.679914534893898
+        ],
+        "meanNet": 2123.63,
+        "p10": -8399.3,
+        "median": 5869.5,
+        "p90": 8063.4,
+        "bet": 47449980,
+        "paid": 49573610
+      },
+      "stopped": {
+        "rtp": 1.0492542494056578,
+        "rtpCi95": [
+          1.0400178866975742,
+          1.0584906121137414
+        ],
+        "winRate": 0.651,
+        "winCi95": [
+          0.6209297417330122,
+          0.679914534893898
+        ],
+        "meanNet": 2280.924,
+        "p10": -8399.3,
+        "median": 5892.5,
+        "p90": 9409,
+        "bet": 46309182,
+        "paid": 48590106
+      },
+      "reach": 0.094,
+      "reachCi95": [
+        0.07743389633418887,
+        0.11367354531796026
+      ],
+      "final10000": 0.021,
+      "normalAtDenominator": 237.9998701654669,
+      "normalCzDenominator": 91.58536558286194,
+      "realizedBase50": 34.367889764193535,
+      "normalReplayRate": 0.4435803486174282,
+      "normalAtZoneDenominator": 673.051621835443,
+      "upperAtZoneDenominator": 502.16616314199393,
+      "completedAtPayout": 565.8252823631625,
+      "atPayoutBins": {
+        "0-499": 0.6484506226469736,
+        "500-999": 0.2307413843035042,
+        "1000-1999": 0.08546191717347235,
+        "2000-2999": 0.021474080509701707,
+        "3000-4999": 0.012858384013900956,
+        "5000-9999": 0.0010136113524471474,
+        "10000+": 0
+      },
+      "meanUnspentPt": 125.475
+    },
+    "selected5": {
+      "n": 1000,
+      "uncapped": {
+        "rtp": 1.0525544883840272,
+        "rtpCi95": [
+          1.0442677173474173,
+          1.0608412594206371
+        ],
+        "winRate": 0.671,
+        "winCi95": [
+          0.6412724074667483,
+          0.6994187932167063
+        ],
+        "meanNet": 2492.383,
+        "p10": -7662.7,
+        "median": 6064.5,
+        "p90": 8051.1,
+        "bet": 47424741,
+        "paid": 49917124
+      },
+      "stopped": {
+        "rtp": 1.059293085901374,
+        "rtpCi95": [
+          1.050328464091141,
+          1.068257707711607
+        ],
+        "winRate": 0.671,
+        "winCi95": [
+          0.6412724074667483,
+          0.6994187932167063
+        ],
+        "meanNet": 2726.775,
+        "p10": -7662.7,
+        "median": 6147,
+        "p90": 10001,
+        "bet": 45988077,
+        "paid": 48714852
+      },
+      "reach": 0.118,
+      "reachCi95": [
+        0.0994512436719432,
+        0.13947250684805915
+      ],
+      "final10000": 0.019,
+      "normalAtDenominator": 233.08372146021165,
+      "normalCzDenominator": 89.74857133455451,
+      "realizedBase50": 34.37734138042401,
+      "normalReplayRate": 0.4437355079493357,
+      "normalAtZoneDenominator": 671.1114690092728,
+      "upperAtZoneDenominator": 495.2693089430894,
+      "completedAtPayout": 563.3943120236785,
+      "atPayoutBins": {
+        "0-499": 0.6480546777814319,
+        "500-999": 0.23250925833249925,
+        "1000-1999": 0.0855484221513648,
+        "2000-2999": 0.020618556701030927,
+        "3000-4999": 0.011996511145745457,
+        "5000-9999": 0.0012582753049172827,
+        "10000+": 0.000014298583010423668
+      },
+      "meanUnspentPt": 121.571
+    }
+  },
+  "seconds": 223.259
+}

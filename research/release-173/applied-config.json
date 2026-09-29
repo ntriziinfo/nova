@@ -1,0 +1,355 @@
+{
+  "version": 173,
+  "baselineCommit": "95667d573e61463c9754c65f13b30daba3174676",
+  "settings": [
+    {
+      "setting": 1,
+      "profile": {
+        "cz": 1.85,
+        "zone": 2.5,
+        "direct": 0.8,
+        "denominator": 7000,
+        "tiers": [
+          0.25,
+          0.15,
+          0.15,
+          0.25,
+          0.2
+        ],
+        "weights": [
+          0.1,
+          0.1,
+          0.1,
+          0.15,
+          0.15,
+          0.15,
+          0.05,
+          0.05,
+          0.05,
+          0.1
+        ],
+        "base": 33.5,
+        "replay": 0.4464,
+        "normalReplayReduction": 0.01,
+        "extraZone": 0.01,
+        "upper": 1.5,
+        "groups": [
+          70,
+          29.1,
+          0.9
+        ],
+        "thresholdBands": []
+      },
+      "normalRoles": {
+        "WEAK_SUICA": 0.010648,
+        "STRONG_SUICA": 0.0025168,
+        "CHANCE_A": 0.00433664,
+        "CHANCE_B": 0.00650496,
+        "WEAK_NOVA": 0.0075625,
+        "STRONG_NOVA": 0.00038720000000000003,
+        "REPLAY": 0.4364,
+        "BELL": 0.005951592437810937,
+        "MISS": 0.5216923075621891,
+        "NAVI_BELL": 0.004
+      },
+      "extraNormalAt": {
+        "WEAK_SUICA": 0.01,
+        "STRONG_SUICA": 0.02,
+        "CHANCE_A": 0.01,
+        "CHANCE_B": 0.01
+      }
+    },
+    {
+      "setting": 2,
+      "profile": {
+        "cz": 1.91,
+        "zone": 3.5,
+        "direct": 1.3,
+        "denominator": 10000,
+        "tiers": [
+          0.1,
+          0.2,
+          0.4,
+          0.25,
+          0.05
+        ],
+        "weights": [
+          0.1,
+          0.1,
+          0.1,
+          0.15,
+          0.15,
+          0.15,
+          0.05,
+          0.05,
+          0.05,
+          0.1
+        ],
+        "base": 33.5,
+        "replay": 0.4482,
+        "normalReplayReduction": 0.01,
+        "extraZone": 0.01,
+        "upper": 1.5,
+        "groups": [
+          70,
+          29.1,
+          0.9
+        ],
+        "thresholdBands": []
+      },
+      "normalRoles": {
+        "WEAK_SUICA": 0.010823999999999999,
+        "STRONG_SUICA": 0.0025583999999999997,
+        "CHANCE_A": 0.0066124800000000004,
+        "CHANCE_B": 0.00440832,
+        "WEAK_NOVA": 0.0076875,
+        "STRONG_NOVA": 0.0003936,
+        "REPLAY": 0.4382,
+        "BELL": 0.005504552437810947,
+        "MISS": 0.5196444808955224,
+        "NAVI_BELL": 0.004166666666666667
+      },
+      "extraNormalAt": {
+        "WEAK_SUICA": 0.01,
+        "STRONG_SUICA": 0.02,
+        "CHANCE_A": 0.01,
+        "CHANCE_B": 0.01
+      }
+    },
+    {
+      "setting": 3,
+      "profile": {
+        "cz": 1.78,
+        "zone": 2.5,
+        "direct": 0.8,
+        "denominator": 7000,
+        "tiers": [
+          0.25,
+          0.15,
+          0.15,
+          0.25,
+          0.2
+        ],
+        "weights": [
+          0.1,
+          0.1,
+          0.1,
+          0.15,
+          0.15,
+          0.15,
+          0.05,
+          0.05,
+          0.05,
+          0.1
+        ],
+        "base": 33.5,
+        "replay": 0.45,
+        "normalReplayReduction": 0.01,
+        "extraZone": 0.01,
+        "upper": 1.5,
+        "groups": [
+          70,
+          29.1,
+          0.9
+        ],
+        "thresholdBands": []
+      },
+      "normalRoles": {
+        "WEAK_SUICA": 0.011,
+        "STRONG_SUICA": 0.0026,
+        "CHANCE_A": 0.0044800000000000005,
+        "CHANCE_B": 0.006719999999999999,
+        "WEAK_NOVA": 0.0078125,
+        "STRONG_NOVA": 0.0004,
+        "REPLAY": 0.44,
+        "BELL": 0.00505751243781094,
+        "MISS": 0.5175821614752325,
+        "NAVI_BELL": 0.004347826086956522
+      },
+      "extraNormalAt": {
+        "WEAK_SUICA": 0.01,
+        "STRONG_SUICA": 0.02,
+        "CHANCE_A": 0.01,
+        "CHANCE_B": 0.01
+      }
+    },
+    {
+      "setting": 4,
+      "profile": {
+        "cz": 1.92,
+        "zone": 3.5,
+        "direct": 1.3,
+        "denominator": 10000,
+        "tiers": [
+          0.1,
+          0.2,
+          0.4,
+          0.25,
+          0.05
+        ],
+        "weights": [
+          0.1,
+          0.1,
+          0.1,
+          0.15,
+          0.15,
+          0.15,
+          0.05,
+          0.05,
+          0.05,
+          0.1
+        ],
+        "base": 33.5,
+        "replay": 0.45180000000000003,
+        "normalReplayReduction": 0.01,
+        "extraZone": 0.01,
+        "upper": 1.5,
+        "groups": [
+          70,
+          29.1,
+          0.9
+        ],
+        "thresholdBands": []
+      },
+      "normalRoles": {
+        "WEAK_SUICA": 0.011176,
+        "STRONG_SUICA": 0.0026416,
+        "CHANCE_A": 0.006827519999999999,
+        "CHANCE_B": 0.00455168,
+        "WEAK_NOVA": 0.0079375,
+        "STRONG_NOVA": 0.0004064,
+        "REPLAY": 0.4418,
+        "BELL": 0.004610472437810949,
+        "MISS": 0.5155033730167345,
+        "NAVI_BELL": 0.004545454545454545
+      },
+      "extraNormalAt": {
+        "WEAK_SUICA": 0.01,
+        "STRONG_SUICA": 0.02,
+        "CHANCE_A": 0.01,
+        "CHANCE_B": 0.01
+      }
+    },
+    {
+      "setting": 5,
+      "profile": {
+        "cz": 2.6,
+        "zone": 1,
+        "direct": 0.8,
+        "denominator": 7000,
+        "tiers": [
+          0.47,
+          0.05,
+          0.05,
+          0.05,
+          0.38
+        ],
+        "weights": [
+          0.1,
+          0.1,
+          0.1,
+          0.19,
+          0.19,
+          0.19,
+          0.01,
+          0.01,
+          0.01,
+          0.1
+        ],
+        "base": 33.5,
+        "replay": 0.4536,
+        "normalReplayReduction": 0.01,
+        "extraZone": 0.04,
+        "upper": 1.5,
+        "groups": [
+          70,
+          29.1,
+          0.9
+        ],
+        "thresholdBands": []
+      },
+      "normalRoles": {
+        "WEAK_SUICA": 0.011352,
+        "STRONG_SUICA": 0.0026831999999999997,
+        "CHANCE_A": 0.004623360000000001,
+        "CHANCE_B": 0.006935040000000001,
+        "WEAK_NOVA": 0.0080625,
+        "STRONG_NOVA": 0.0004128,
+        "REPLAY": 0.4436,
+        "BELL": 0.004163432437810944,
+        "MISS": 0.5134057628002844,
+        "NAVI_BELL": 0.004761904761904762
+      },
+      "extraNormalAt": {
+        "WEAK_SUICA": 0.01,
+        "STRONG_SUICA": 0.02,
+        "CHANCE_A": 0.01,
+        "CHANCE_B": 0.01
+      }
+    },
+    {
+      "setting": 6,
+      "profile": {
+        "cz": 1.607,
+        "zone": 0.4,
+        "direct": 1,
+        "denominator": 10000,
+        "tiers": [
+          0.1,
+          0.2,
+          0.6,
+          0.09,
+          0.01
+        ],
+        "weights": [
+          0.1,
+          0.1,
+          0.1,
+          0.19,
+          0.19,
+          0.19,
+          0.01,
+          0.01,
+          0.01,
+          0.1
+        ],
+        "base": 42,
+        "replay": 0.54,
+        "normalReplayReduction": 0.01,
+        "extraZone": 0.04,
+        "upper": 1.5,
+        "groups": [
+          70,
+          29.1,
+          0.9
+        ],
+        "thresholdBands": []
+      },
+      "normalRoles": {
+        "WEAK_SUICA": 0.0161392,
+        "STRONG_SUICA": 0.0027248,
+        "CHANCE_A": 0.009859584,
+        "CHANCE_B": 0.006573056000000001,
+        "WEAK_NOVA": 0.0114625,
+        "STRONG_NOVA": 0.00041920000000000005,
+        "REPLAY": 0.53,
+        "BELL": 0.00008932063492063207,
+        "MISS": 0.41773233936507936,
+        "NAVI_BELL": 0.005
+      },
+      "extraNormalAt": {
+        "WEAK_SUICA": 0.01,
+        "STRONG_SUICA": 0.02,
+        "CHANCE_A": 0.01,
+        "CHANCE_B": 0.01
+      }
+    }
+  ],
+  "hashes": {
+    "nova-tuning.js": "4a1bb10a6052b77e68c5eda5a422393df5e03c2157c63103cdcab42963015f2f",
+    "nova-art.js": "75d8f6db6808d80e40cde3ead8559d59bac7004cd4b04369a00068eb4e8876ee",
+    "nova-normal.js": "04d5e64200a1dd79f748d5a730c99f6662e6922a887a280660316bfec448a5a7",
+    "nova-decrement.js": "a58f72c810431683b056905bb01841fec90bcd3bb0c87c7be3ab4f0f1b6419ea",
+    "nova-progress.js": "50fbd1927417fcb42cd7af7fc8d194d9b886b0890ba9baed8408a5cce33f86de"
+  }
+}
