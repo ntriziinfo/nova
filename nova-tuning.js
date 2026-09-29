@@ -1,4 +1,4 @@
-/* Selected normal-bell proposal, 30,000G calibration, 2026-09-29. Pure probabilities; no net-based suppression. */
+/* Selected normal-bell proposal, 30,000G calibration, 2026-09-29. Base probabilities; additional v170 regimes live in nova-decrement.js. */
 globalThis.NovaTuning=(()=>{
  const profiles=[{"cz":1.85,"zone":2.5,"direct":0.8,"denominator":7000,"tiers":[0.25,0.15,0.15,0.25,0.2],"weights":[0.1,0.1,0.1,0.15,0.15,0.15,0.05,0.05,0.05,0.1]},{"cz":1.91,"zone":3.5,"direct":1.3,"denominator":10000,"tiers":[0.1,0.2,0.4,0.25,0.05],"weights":[0.1,0.1,0.1,0.15,0.15,0.15,0.05,0.05,0.05,0.1]},{"cz":1.78,"zone":2.5,"direct":0.8,"denominator":7000,"tiers":[0.25,0.15,0.15,0.25,0.2],"weights":[0.1,0.1,0.1,0.15,0.15,0.15,0.05,0.05,0.05,0.1]},{"cz":1.92,"zone":3.5,"direct":1.3,"denominator":10000,"tiers":[0.1,0.2,0.4,0.25,0.05],"weights":[0.1,0.1,0.1,0.15,0.15,0.15,0.05,0.05,0.05,0.1]},{"cz":2.45,"zone":1,"direct":0.8,"denominator":7000,"tiers":[0.47,0.05,0.05,0.05,0.38],"weights":[0.1,0.1,0.1,0.19,0.19,0.19,0.01,0.01,0.01,0.1]},{"cz":1.607,"zone":0.4,"direct":1,"denominator":10000,"tiers":[0.1,0.2,0.6,0.09,0.01],"weights":[0.1,0.1,0.1,0.19,0.19,0.19,0.01,0.01,0.01,0.1]}];
  for(const p of profiles){Object.freeze(p.tiers);Object.freeze(p.weights);Object.freeze(p);}
@@ -30,7 +30,7 @@ globalThis.NovaTuning=(()=>{
    for(const key of Object.keys(patch))if(!Object.hasOwn(limits,key)&&!Object.hasOwn(distributions,key)&&key!=='thresholdBands')throw new TypeError('Unknown tuning field: '+key);
   }
   const selected=Object.freeze(rows.map((p,i)=>validate({...p,...overrides[i+1]})));
-  return Object.freeze({version:169,controlVersion:1,profile:s=>selected[index(s)],initialMeans,normalBellDenominators,
+  return Object.freeze({version:170,controlVersion:1,profile:s=>selected[index(s)],initialMeans,normalBellDenominators,
    normalBase:s=>selected[index(s)].base,normalReplay:s=>selected[index(s)].replay,
    thresholdSuccess:(s,net)=>selected[index(s)].thresholdBands.filter(row=>Number(net)>=row.net).at(-1)?.chance,
    withOverrides:patch=>create(selected,patch),snapshot:()=>selected});

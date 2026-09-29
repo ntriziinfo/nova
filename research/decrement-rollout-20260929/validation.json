@@ -1,0 +1,65 @@
+{
+  "trials": 12000,
+  "games": 360000000,
+  "pairedSeeds": true,
+  "uniqueSeedsPerCondition": 1000,
+  "allGamesAndLedgersValid": true,
+  "diffs": [
+    {
+      "setting": 1,
+      "type": "設定5型",
+      "rtpPoints": -0.6703024387461842,
+      "winPoints": 9.300000000000002,
+      "reachPoints": 0.30000000000000027
+    },
+    {
+      "setting": 1,
+      "type": "設定6型",
+      "rtpPoints": -2.3181933911017416,
+      "winPoints": -4.899999999999999,
+      "reachPoints": -1.2
+    },
+    {
+      "setting": 2,
+      "type": "設定5型",
+      "rtpPoints": -2.0152552857518824,
+      "winPoints": 12.3,
+      "reachPoints": -1.4000000000000001
+    },
+    {
+      "setting": 2,
+      "type": "設定6型",
+      "rtpPoints": -4.180315083030961,
+      "winPoints": -6.800000000000001,
+      "reachPoints": -2.1999999999999997
+    },
+    {
+      "setting": 3,
+      "type": "設定5型",
+      "rtpPoints": -1.2782865938486432,
+      "winPoints": 7.500000000000001,
+      "reachPoints": -1.7000000000000002
+    },
+    {
+      "setting": 3,
+      "type": "設定6型",
+      "rtpPoints": -2.2927311164967046,
+      "winPoints": -0.40000000000000036,
+      "reachPoints": -1.8000000000000003
+    },
+    {
+      "setting": 4,
+      "type": "設定5型",
+      "rtpPoints": -3.676530820612589,
+      "winPoints": -1.3000000000000012,
+      "reachPoints": -2.4
+    },
+    {
+      "setting": 4,
+      "type": "設定6型",
+      "rtpPoints": -4.218555057277607,
+      "winPoints": -7.200000000000006,
+      "reachPoints": -4.199999999999999
+    }
+  ]
+}

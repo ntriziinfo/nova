@@ -1,0 +1,30 @@
+{
+  "version": 170,
+  "sourceBaseline": "f1111ae",
+  "testedAt": "2026-09-29T06:56:42.264Z",
+  "regressionTests": {
+    "existing": 45,
+    "decrement": 7,
+    "passed": 52
+  },
+  "independentReplay": {
+    "settings": [
+      5,
+      6
+    ],
+    "trialsPerSetting": 5,
+    "gamesPerTrial": 30000,
+    "ledgerAndRegimeExact": true
+  },
+  "unchangedSettings": [
+    1,
+    2,
+    3,
+    4
+  ],
+  "htmlSyntax": true,
+  "staticRoutes": true,
+  "mutedBrowserScenarios": 6,
+  "reload": true,
+  "reset": true
+}

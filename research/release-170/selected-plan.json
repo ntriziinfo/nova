@@ -1,0 +1,30 @@
+{
+  "five": {
+    "setting": 5,
+    "enabled": true,
+    "lowMean": 150000,
+    "highMean": 183333.33333333334,
+    "lowCz": 0.7,
+    "lowAt": 0.25,
+    "highCz": 2.4,
+    "highAt": 0.25,
+    "netEnter": 8000,
+    "netExit": 6500,
+    "netCz": 0.25,
+    "netAt": 0.25
+  },
+  "six": {
+    "setting": 6,
+    "enabled": true,
+    "lowMean": 9000,
+    "highMean": 27000,
+    "lowCz": 0.25,
+    "lowAt": 0.25,
+    "highCz": 1.8,
+    "highAt": 0.25,
+    "netEnter": 9000,
+    "netExit": 7500,
+    "netCz": 0.25,
+    "netAt": 0.25
+  }
+}

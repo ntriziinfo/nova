@@ -1,0 +1,732 @@
+{
+  "proposalOnly": true,
+  "sourceCommit": "f1111ae",
+  "createdAt": "2026-09-29T06:58:53.137Z",
+  "games": 30000,
+  "trials": 1000,
+  "seed": "NOVA-decrement-other-settings-20260929",
+  "plan": {
+    "base1": {
+      "setting": 1,
+      "enabled": false
+    },
+    "fiveStyle1": {
+      "setting": 1,
+      "enabled": true,
+      "lowMean": 150000,
+      "highMean": 183333.33333333334,
+      "lowCz": 0.7,
+      "lowAt": 0.25,
+      "highCz": 2.4,
+      "highAt": 0.25,
+      "netEnter": 8000,
+      "netExit": 6500,
+      "netCz": 0.25,
+      "netAt": 0.25
+    },
+    "sixStyle1": {
+      "setting": 1,
+      "enabled": true,
+      "lowMean": 9000,
+      "highMean": 27000,
+      "lowCz": 0.25,
+      "lowAt": 0.25,
+      "highCz": 1.8,
+      "highAt": 0.25,
+      "netEnter": 9000,
+      "netExit": 7500,
+      "netCz": 0.25,
+      "netAt": 0.25
+    },
+    "base2": {
+      "setting": 2,
+      "enabled": false
+    },
+    "fiveStyle2": {
+      "setting": 2,
+      "enabled": true,
+      "lowMean": 150000,
+      "highMean": 183333.33333333334,
+      "lowCz": 0.7,
+      "lowAt": 0.25,
+      "highCz": 2.4,
+      "highAt": 0.25,
+      "netEnter": 8000,
+      "netExit": 6500,
+      "netCz": 0.25,
+      "netAt": 0.25
+    },
+    "sixStyle2": {
+      "setting": 2,
+      "enabled": true,
+      "lowMean": 9000,
+      "highMean": 27000,
+      "lowCz": 0.25,
+      "lowAt": 0.25,
+      "highCz": 1.8,
+      "highAt": 0.25,
+      "netEnter": 9000,
+      "netExit": 7500,
+      "netCz": 0.25,
+      "netAt": 0.25
+    },
+    "base3": {
+      "setting": 3,
+      "enabled": false
+    },
+    "fiveStyle3": {
+      "setting": 3,
+      "enabled": true,
+      "lowMean": 150000,
+      "highMean": 183333.33333333334,
+      "lowCz": 0.7,
+      "lowAt": 0.25,
+      "highCz": 2.4,
+      "highAt": 0.25,
+      "netEnter": 8000,
+      "netExit": 6500,
+      "netCz": 0.25,
+      "netAt": 0.25
+    },
+    "sixStyle3": {
+      "setting": 3,
+      "enabled": true,
+      "lowMean": 9000,
+      "highMean": 27000,
+      "lowCz": 0.25,
+      "lowAt": 0.25,
+      "highCz": 1.8,
+      "highAt": 0.25,
+      "netEnter": 9000,
+      "netExit": 7500,
+      "netCz": 0.25,
+      "netAt": 0.25
+    },
+    "base4": {
+      "setting": 4,
+      "enabled": false
+    },
+    "fiveStyle4": {
+      "setting": 4,
+      "enabled": true,
+      "lowMean": 150000,
+      "highMean": 183333.33333333334,
+      "lowCz": 0.7,
+      "lowAt": 0.25,
+      "highCz": 2.4,
+      "highAt": 0.25,
+      "netEnter": 8000,
+      "netExit": 6500,
+      "netCz": 0.25,
+      "netAt": 0.25
+    },
+    "sixStyle4": {
+      "setting": 4,
+      "enabled": true,
+      "lowMean": 9000,
+      "highMean": 27000,
+      "lowCz": 0.25,
+      "lowAt": 0.25,
+      "highCz": 1.8,
+      "highAt": 0.25,
+      "netEnter": 9000,
+      "netExit": 7500,
+      "netCz": 0.25,
+      "netAt": 0.25
+    }
+  },
+  "options": {
+    "rng": "xoshiro128",
+    "exactGames": true,
+    "completeLimitPt": 10000,
+    "stopAtComplete": false,
+    "rareSortie": true
+  },
+  "hashes": {
+    "nova-tuning.js": "dfea755b378562545156254106541354cfca836fc99723bc091d010bb3760029",
+    "nova-art.js": "2b62a995875b539da45f595eab27537cc293c56fe899f203f1b808c8a2d7f6af",
+    "nova-balance.js": "ac4f1606aac26f3e9e855162b4046b417fc2f3a377bf967e02410a63bdaac4c9",
+    "nova-flow.js": "7393b84ad4883e08ebefaaf175998e3d5f747032a422caaa6706a4ef19989423",
+    "nova-normal.js": "a6179e781a155c5a86d64fb46d80767e2684e20567d0008c945d6d47e81741ed",
+    "nova-progress.js": "50fbd1927417fcb42cd7af7fc8d194d9b886b0890ba9baed8408a5cce33f86de"
+  },
+  "summary": {
+    "base1": {
+      "n": 1000,
+      "stopped": {
+        "rtp": 0.9426169633356045,
+        "rtpCi95": [
+          0.9351819213383533,
+          0.9500520053328557
+        ],
+        "totalBet": 47235144,
+        "totalPaid": 44524648,
+        "winRate": 0.349,
+        "meanNet": -2710.496,
+        "p10": -10226.9,
+        "median": -2677.5,
+        "p90": 4530.400000000001,
+        "netSd": 5724.426265929019
+      },
+      "uncapped": {
+        "rtp": 0.9428770786492721,
+        "rtpCi95": [
+          0.9354415433428229,
+          0.9503126139557212
+        ],
+        "totalBet": 47488170,
+        "totalPaid": 44775507,
+        "winRate": 0.349,
+        "meanNet": -2712.663,
+        "p10": -10226.9,
+        "median": -2677.5,
+        "p90": 4530.400000000001,
+        "netSd": 5724.0355691267
+      },
+      "reach": 0.022,
+      "reachCi95": [
+        0.014572598673771597,
+        0.03308591637481774
+      ],
+      "normalGames": 18666961,
+      "realizedNormalBase": 34.85317739271848,
+      "navis": 0,
+      "naviDenominator": null,
+      "atPerNormalG": 381.2151244715829,
+      "czPerNormalG": 144.11748220434507,
+      "thresholds": 0.967,
+      "lowShare": 0,
+      "entries": 0,
+      "exits": 0
+    },
+    "fiveStyle1": {
+      "n": 1000,
+      "stopped": {
+        "rtp": 0.9359139389481427,
+        "rtpCi95": [
+          0.9252556118618741,
+          0.9465722660344112
+        ],
+        "totalBet": 47375856,
+        "totalPaid": 44339724,
+        "winRate": 0.442,
+        "meanNet": -3036.132,
+        "p10": -15322,
+        "median": -1539,
+        "p90": 6832.400000000001,
+        "netSd": 8201.569900293804
+      },
+      "uncapped": {
+        "rtp": 0.935454447937044,
+        "rtpCi95": [
+          0.9248908808841869,
+          0.9460180149899011
+        ],
+        "totalBet": 47646459,
+        "totalPaid": 44571092,
+        "winRate": 0.442,
+        "meanNet": -3075.367,
+        "p10": -15322,
+        "median": -1539,
+        "p90": 6776.200000000001,
+        "netSd": 8149.017358321019
+      },
+      "reach": 0.025,
+      "reachCi95": [
+        0.016990011790561223,
+        0.036645541866509784
+      ],
+      "normalGames": 18075552,
+      "realizedNormalBase": 34.83968797545325,
+      "navis": 0,
+      "naviDenominator": null,
+      "atPerNormalG": 301.7520617007779,
+      "czPerNormalG": 112.21126734332806,
+      "thresholds": 1.103,
+      "lowShare": 0.4891931,
+      "entries": 0.568,
+      "exits": 0.097
+    },
+    "sixStyle1": {
+      "n": 1000,
+      "stopped": {
+        "rtp": 0.9194350294245871,
+        "rtpCi95": [
+          0.9109666016279004,
+          0.9279034572212738
+        ],
+        "totalBet": 47561415,
+        "totalPaid": 43729631,
+        "winRate": 0.3,
+        "meanNet": -3831.784,
+        "p10": -12416,
+        "median": -3134.5,
+        "p90": 4210.5,
+        "netSd": 6553.38142697886
+      },
+      "uncapped": {
+        "rtp": 0.9191710915062872,
+        "rtpCi95": [
+          0.9107533923073912,
+          0.9275887907051832
+        ],
+        "totalBet": 47694384,
+        "totalPaid": 43839299,
+        "winRate": 0.3,
+        "meanNet": -3855.085,
+        "p10": -12416,
+        "median": -3134.5,
+        "p90": 4192.900000000001,
+        "netSd": 6511.085750889055
+      },
+      "reach": 0.01,
+      "reachCi95": [
+        0.005440695309270557,
+        0.01830966530539216
+      ],
+      "normalGames": 18372715,
+      "realizedNormalBase": 34.842682270847355,
+      "navis": 0,
+      "naviDenominator": null,
+      "atPerNormalG": 314.3429202025732,
+      "czPerNormalG": 118.24604027623135,
+      "thresholds": 0.806,
+      "lowShare": 0.25925173333333335,
+      "entries": 1.097,
+      "exits": 0.85
+    },
+    "base2": {
+      "n": 1000,
+      "stopped": {
+        "rtp": 0.9539705467528082,
+        "rtpCi95": [
+          0.9466666630265045,
+          0.961274430479112
+        ],
+        "totalBet": 46990065,
+        "totalPaid": 44827138,
+        "winRate": 0.368,
+        "meanNet": -2162.927,
+        "p10": -9473.7,
+        "median": -2063.5,
+        "p90": 5041.700000000001,
+        "netSd": 5598.068260741638
+      },
+      "uncapped": {
+        "rtp": 0.9539237595852916,
+        "rtpCi95": [
+          0.9466630000832673,
+          0.961184519087316
+        ],
+        "totalBet": 47411442,
+        "totalPaid": 45226901,
+        "winRate": 0.368,
+        "meanNet": -2184.541,
+        "p10": -9473.7,
+        "median": -2063.5,
+        "p90": 4903.6,
+        "netSd": 5574.194085787203
+      },
+      "reach": 0.032,
+      "reachCi95": [
+        0.02275696612786701,
+        0.04482501094899452
+      ],
+      "normalGames": 18410501,
+      "realizedNormalBase": 34.895551982570666,
+      "navis": 0,
+      "naviDenominator": null,
+      "atPerNormalG": 365.8757328245792,
+      "czPerNormalG": 135.89592913821738,
+      "thresholds": 0.961,
+      "lowShare": 0,
+      "entries": 0,
+      "exits": 0
+    },
+    "fiveStyle2": {
+      "n": 1000,
+      "stopped": {
+        "rtp": 0.9338179938952894,
+        "rtpCi95": [
+          0.9222394635825275,
+          0.9453965242080513
+        ],
+        "totalBet": 47423706,
+        "totalPaid": 44285110,
+        "winRate": 0.491,
+        "meanNet": -3138.596,
+        "p10": -16166.8,
+        "median": -317,
+        "p90": 6894.3,
+        "netSd": 8908.805995477118
+      },
+      "uncapped": {
+        "rtp": 0.9332421793224215,
+        "rtpCi95": [
+          0.9217565396861741,
+          0.9447278189586689
+        ],
+        "totalBet": 47629281,
+        "totalPaid": 44449654,
+        "winRate": 0.491,
+        "meanNet": -3179.627,
+        "p10": -16166.8,
+        "median": -317,
+        "p90": 6839.4,
+        "netSd": 8856.844401400625
+      },
+      "reach": 0.018,
+      "reachCi95": [
+        0.011415645858738454,
+        0.02827348437854201
+      ],
+      "normalGames": 17879162,
+      "realizedNormalBase": 34.881280251369255,
+      "navis": 0,
+      "naviDenominator": null,
+      "atPerNormalG": 285.80593698546926,
+      "czPerNormalG": 104.71510650634588,
+      "thresholds": 1.157,
+      "lowShare": 0.4616598333333333,
+      "entries": 0.534,
+      "exits": 0.084
+    },
+    "sixStyle2": {
+      "n": 1000,
+      "stopped": {
+        "rtp": 0.9121673959224986,
+        "rtpCi95": [
+          0.9031682531277692,
+          0.9211665387172281
+        ],
+        "totalBet": 47573154,
+        "totalPaid": 43394680,
+        "winRate": 0.3,
+        "meanNet": -4178.474,
+        "p10": -13833.199999999999,
+        "median": -3549,
+        "p90": 4526.400000000001,
+        "netSd": 6957.519197581041
+      },
+      "uncapped": {
+        "rtp": 0.9120707723778383,
+        "rtpCi95": [
+          0.9030882471081613,
+          0.9210532976475153
+        ],
+        "totalBet": 47653620,
+        "totalPaid": 43463474,
+        "winRate": 0.3,
+        "meanNet": -4190.146,
+        "p10": -13833.199999999999,
+        "median": -3549,
+        "p90": 4481.700000000001,
+        "netSd": 6942.739698649749
+      },
+      "reach": 0.01,
+      "reachCi95": [
+        0.005440695309270557,
+        0.01830966530539216
+      ],
+      "normalGames": 18302402,
+      "realizedNormalBase": 34.89263496368077,
+      "navis": 0,
+      "naviDenominator": null,
+      "atPerNormalG": 305.14174724908304,
+      "czPerNormalG": 113.33809332136111,
+      "thresholds": 0.743,
+      "lowShare": 0.2575865666666667,
+      "entries": 1.103,
+      "exits": 0.863
+    },
+    "base3": {
+      "n": 1000,
+      "stopped": {
+        "rtp": 0.9802779339864863,
+        "rtpCi95": [
+          0.9727601167779407,
+          0.9877957511950319
+        ],
+        "totalBet": 46518960,
+        "totalPaid": 45601510,
+        "winRate": 0.444,
+        "meanNet": -917.45,
+        "p10": -8567.3,
+        "median": -801.5,
+        "p90": 6813.900000000001,
+        "netSd": 5674.795454723729
+      },
+      "uncapped": {
+        "rtp": 0.9807969037236296,
+        "rtpCi95": [
+          0.9732742018903632,
+          0.988319605556896
+        ],
+        "totalBet": 47150313,
+        "totalPaid": 46244881,
+        "winRate": 0.444,
+        "meanNet": -905.432,
+        "p10": -8567.3,
+        "median": -801.5,
+        "p90": 6595.900000000002,
+        "netSd": 5731.290760654108
+      },
+      "reach": 0.048,
+      "reachCi95": [
+        0.036393116113688354,
+        0.06306640020840869
+      ],
+      "normalGames": 18277808,
+      "realizedNormalBase": 34.98473024322931,
+      "navis": 0,
+      "naviDenominator": null,
+      "atPerNormalG": 365.02322608990875,
+      "czPerNormalG": 139.52312178440025,
+      "thresholds": 1.262,
+      "lowShare": 0,
+      "entries": 0,
+      "exits": 0
+    },
+    "fiveStyle3": {
+      "n": 1000,
+      "stopped": {
+        "rtp": 0.9674950680479999,
+        "rtpCi95": [
+          0.9569426004365793,
+          0.9780475356594205
+        ],
+        "totalBet": 47071626,
+        "totalPaid": 45541566,
+        "winRate": 0.519,
+        "meanNet": -1530.06,
+        "p10": -13481.8,
+        "median": 699,
+        "p90": 7240.1,
+        "netSd": 8038.791198079865
+      },
+      "uncapped": {
+        "rtp": 0.9665852955215748,
+        "rtpCi95": [
+          0.9561520494663835,
+          0.977018541576766
+        ],
+        "totalBet": 47339877,
+        "totalPaid": 45758029,
+        "winRate": 0.518,
+        "meanNet": -1581.848,
+        "p10": -13481.8,
+        "median": 696,
+        "p90": 7167.200000000001,
+        "netSd": 7981.442602118171
+      },
+      "reach": 0.031,
+      "reachCi95": [
+        0.02192386473850233,
+        0.04366576613553198
+      ],
+      "normalGames": 17757074,
+      "realizedNormalBase": 34.9635201086757,
+      "navis": 0,
+      "naviDenominator": null,
+      "atPerNormalG": 291.5967222806096,
+      "czPerNormalG": 108.83627738210525,
+      "thresholds": 1.392,
+      "lowShare": 0.4761276,
+      "entries": 0.542,
+      "exits": 0.105
+    },
+    "sixStyle3": {
+      "n": 1000,
+      "stopped": {
+        "rtp": 0.9573506228215193,
+        "rtpCi95": [
+          0.9483055589314844,
+          0.9663956867115542
+        ],
+        "totalBet": 47001507,
+        "totalPaid": 44996922,
+        "winRate": 0.44,
+        "meanNet": -2004.585,
+        "p10": -11362.999999999998,
+        "median": -1067,
+        "p90": 6187.700000000001,
+        "netSd": 6901.202670047305
+      },
+      "uncapped": {
+        "rtp": 0.9564355910297097,
+        "rtpCi95": [
+          0.947534618693259,
+          0.9653365633661604
+        ],
+        "totalBet": 47342637,
+        "totalPaid": 45280183,
+        "winRate": 0.44,
+        "meanNet": -2062.454,
+        "p10": -11362.999999999998,
+        "median": -1067,
+        "p90": 6091.600000000001,
+        "netSd": 6816.5979840357295
+      },
+      "reach": 0.03,
+      "reachCi95": [
+        0.021093603189697094,
+        0.04250368148151
+      ],
+      "normalGames": 18022291,
+      "realizedNormalBase": 34.96502428770826,
+      "navis": 0,
+      "naviDenominator": null,
+      "atPerNormalG": 304.610681991042,
+      "czPerNormalG": 115.93923934999935,
+      "thresholds": 1.119,
+      "lowShare": 0.2667487333333333,
+      "entries": 1.105,
+      "exits": 0.868
+    },
+    "base4": {
+      "n": 1000,
+      "stopped": {
+        "rtp": 1.0073014175948738,
+        "rtpCi95": [
+          1.000121079652328,
+          1.0144817555374195
+        ],
+        "totalBet": 46225407,
+        "totalPaid": 46562918,
+        "winRate": 0.542,
+        "meanNet": 337.511,
+        "p10": -6844.8,
+        "median": 615.5,
+        "p90": 7317.400000000001,
+        "netSd": 5341.784772192851
+      },
+      "uncapped": {
+        "rtp": 1.00746808604222,
+        "rtpCi95": [
+          1.0003513492187026,
+          1.0145848228657375
+        ],
+        "totalBet": 47016732,
+        "totalPaid": 47367857,
+        "winRate": 0.542,
+        "meanNet": 351.125,
+        "p10": -6844.8,
+        "median": 615.5,
+        "p90": 7218.700000000001,
+        "netSd": 5395.65869733744
+      },
+      "reach": 0.062,
+      "reachCi95": [
+        0.04866396326101466,
+        0.07868839990066345
+      ],
+      "normalGames": 17933995,
+      "realizedNormalBase": 35.04746437172351,
+      "navis": 0,
+      "naviDenominator": null,
+      "atPerNormalG": 350.0067331524815,
+      "czPerNormalG": 134.32396096260288,
+      "thresholds": 1.398,
+      "lowShare": 0,
+      "entries": 0,
+      "exits": 0
+    },
+    "fiveStyle4": {
+      "n": 1000,
+      "stopped": {
+        "rtp": 0.9705361093887479,
+        "rtpCi95": [
+          0.9592076577426331,
+          0.9818645610348627
+        ],
+        "totalBet": 46863906,
+        "totalPaid": 45483113,
+        "winRate": 0.529,
+        "meanNet": -1380.793,
+        "p10": -14252,
+        "median": 1193,
+        "p90": 7617.900000000001,
+        "netSd": 8593.15210718909
+      },
+      "uncapped": {
+        "rtp": 0.9692255948343702,
+        "rtpCi95": [
+          0.9580808235603282,
+          0.9803703661084122
+        ],
+        "totalBet": 47256348,
+        "totalPaid": 45802062,
+        "winRate": 0.529,
+        "meanNet": -1454.286,
+        "p10": -14252,
+        "median": 1193,
+        "p90": 7418.8,
+        "netSd": 8510.320151397556
+      },
+      "reach": 0.038,
+      "reachCi95": [
+        0.027808845539615407,
+        0.05172720875420944
+      ],
+      "normalGames": 17702999,
+      "realizedNormalBase": 35.05810381492711,
+      "navis": 0,
+      "naviDenominator": null,
+      "atPerNormalG": 284.2667961975721,
+      "czPerNormalG": 108.11784069672281,
+      "thresholds": 1.485,
+      "lowShare": 0.4943731,
+      "entries": 0.546,
+      "exits": 0.106
+    },
+    "sixStyle4": {
+      "n": 1000,
+      "stopped": {
+        "rtp": 0.9651158670220977,
+        "rtpCi95": [
+          0.9562665325257831,
+          0.9739652015184124
+        ],
+        "totalBet": 47098863,
+        "totalPaid": 45455860,
+        "winRate": 0.47,
+        "meanNet": -1643.003,
+        "p10": -11292.3,
+        "median": -621.5,
+        "p90": 6525.000000000001,
+        "netSd": 6746.695065385441
+      },
+      "uncapped": {
+        "rtp": 0.9646678257064095,
+        "rtpCi95": [
+          0.9558853312998054,
+          0.9734503201130137
+        ],
+        "totalBet": 47254635,
+        "totalPaid": 45585026,
+        "winRate": 0.47,
+        "meanNet": -1669.609,
+        "p10": -11292.3,
+        "median": -621.5,
+        "p90": 6491.4,
+        "netSd": 6708.909881487222
+      },
+      "reach": 0.02,
+      "reachCi95": [
+        0.012983581129037627,
+        0.03069024151389728
+      ],
+      "normalGames": 17797741,
+      "realizedNormalBase": 35.04949774784302,
+      "navis": 0,
+      "naviDenominator": null,
+      "atPerNormalG": 287.6635041215452,
+      "czPerNormalG": 110.32432650227496,
+      "thresholds": 1.096,
+      "lowShare": 0.24847513333333332,
+      "entries": 1.053,
+      "exits": 0.804
+    }
+  },
+  "seconds": 1399.984
+}

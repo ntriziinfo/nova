@@ -90,10 +90,10 @@ test('every setting uses configured base, replay, CZ, upper power and zone group
  }
 });
 
-test('setting 6 preserves 30,000G gameplay against the saved v167 production model',()=>{
+test('with decrement disabled, setting 6 preserves the v167 30,000G fixture',()=>{
  const fixture=JSON.parse(fs.readFileSync('tests/fixtures/nova-v167-session-digests.json','utf8'));
  for(const trial of fixture.trials.filter(row=>row.setting===6)){
-  loadModel();const actual=simulate(trial.setting,trial.games,trial.seed,fixture.options);
+  loadModel();const actual=simulate(trial.setting,trial.games,trial.seed,{...fixture.options,decrement:false});
   assert.equal(createHash('sha256').update(JSON.stringify(actual)).digest('hex'),trial.sha256);
  }
 });

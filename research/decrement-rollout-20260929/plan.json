@@ -1,0 +1,130 @@
+{
+  "base1": {
+    "setting": 1,
+    "enabled": false
+  },
+  "fiveStyle1": {
+    "setting": 1,
+    "enabled": true,
+    "lowMean": 150000,
+    "highMean": 183333.33333333334,
+    "lowCz": 0.7,
+    "lowAt": 0.25,
+    "highCz": 2.4,
+    "highAt": 0.25,
+    "netEnter": 8000,
+    "netExit": 6500,
+    "netCz": 0.25,
+    "netAt": 0.25
+  },
+  "sixStyle1": {
+    "setting": 1,
+    "enabled": true,
+    "lowMean": 9000,
+    "highMean": 27000,
+    "lowCz": 0.25,
+    "lowAt": 0.25,
+    "highCz": 1.8,
+    "highAt": 0.25,
+    "netEnter": 9000,
+    "netExit": 7500,
+    "netCz": 0.25,
+    "netAt": 0.25
+  },
+  "base2": {
+    "setting": 2,
+    "enabled": false
+  },
+  "fiveStyle2": {
+    "setting": 2,
+    "enabled": true,
+    "lowMean": 150000,
+    "highMean": 183333.33333333334,
+    "lowCz": 0.7,
+    "lowAt": 0.25,
+    "highCz": 2.4,
+    "highAt": 0.25,
+    "netEnter": 8000,
+    "netExit": 6500,
+    "netCz": 0.25,
+    "netAt": 0.25
+  },
+  "sixStyle2": {
+    "setting": 2,
+    "enabled": true,
+    "lowMean": 9000,
+    "highMean": 27000,
+    "lowCz": 0.25,
+    "lowAt": 0.25,
+    "highCz": 1.8,
+    "highAt": 0.25,
+    "netEnter": 9000,
+    "netExit": 7500,
+    "netCz": 0.25,
+    "netAt": 0.25
+  },
+  "base3": {
+    "setting": 3,
+    "enabled": false
+  },
+  "fiveStyle3": {
+    "setting": 3,
+    "enabled": true,
+    "lowMean": 150000,
+    "highMean": 183333.33333333334,
+    "lowCz": 0.7,
+    "lowAt": 0.25,
+    "highCz": 2.4,
+    "highAt": 0.25,
+    "netEnter": 8000,
+    "netExit": 6500,
+    "netCz": 0.25,
+    "netAt": 0.25
+  },
+  "sixStyle3": {
+    "setting": 3,
+    "enabled": true,
+    "lowMean": 9000,
+    "highMean": 27000,
+    "lowCz": 0.25,
+    "lowAt": 0.25,
+    "highCz": 1.8,
+    "highAt": 0.25,
+    "netEnter": 9000,
+    "netExit": 7500,
+    "netCz": 0.25,
+    "netAt": 0.25
+  },
+  "base4": {
+    "setting": 4,
+    "enabled": false
+  },
+  "fiveStyle4": {
+    "setting": 4,
+    "enabled": true,
+    "lowMean": 150000,
+    "highMean": 183333.33333333334,
+    "lowCz": 0.7,
+    "lowAt": 0.25,
+    "highCz": 2.4,
+    "highAt": 0.25,
+    "netEnter": 8000,
+    "netExit": 6500,
+    "netCz": 0.25,
+    "netAt": 0.25
+  },
+  "sixStyle4": {
+    "setting": 4,
+    "enabled": true,
+    "lowMean": 9000,
+    "highMean": 27000,
+    "lowCz": 0.25,
+    "lowAt": 0.25,
+    "highCz": 1.8,
+    "highAt": 0.25,
+    "netEnter": 9000,
+    "netExit": 7500,
+    "netCz": 0.25,
+    "netAt": 0.25
+  }
+}

@@ -97,7 +97,7 @@ globalThis.NovaArt=(()=>{
  }
  // No persistent performance class. These rules apply to every AT.
  const commonAtRules=Object.freeze({rare:1,direct:.6,weakNova:.35,groups:Object.freeze([70,29.1,.9])});
- function commonAtRulesFor(setting=3){const p=NovaTuning.profile(setting);return {...commonAtRules,groups:p.groups,direct:.6*p.direct,weakNova:.35*p.zone};}
+ function commonAtRulesFor(setting=3){const p=NovaTuning.profile(setting);return {...commonAtRules,groups:p.groups,direct:.6*p.direct*(globalThis.NovaDecrement?.at(setting)??1),weakNova:.35*p.zone*(globalThis.NovaDecrement?.at(setting)??1)};}
  const atPreludeRules=Object.freeze({minGames:3,maxGames:5});
  function normalizeAtPrelude(p){
   if(!p)return null;
@@ -348,7 +348,7 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
  function pickAtZone(setting,boost=false,rng=Math.random,preparation=false){
   const row=atZoneWeights(setting,boost,preparation);let roll=rng()*100;const i=row.findIndex(w=>(roll-=w)<0);return zoneIds[i<0?8:i];
  }
- // Compatibility exports for old reports. AT rewards no longer depend on net points.
+ // Retired quota/payout guards stay disabled. v170 changes only future draw rates.
  const netLimits=Object.freeze([0,0,0,0,0,0]);
  const lossRewardControl=Object.freeze({enabled:false,threshold:-2000,multiplier:1});
  const netRewardControl=Object.freeze({enabled:false,startRatio:0,floor:1});

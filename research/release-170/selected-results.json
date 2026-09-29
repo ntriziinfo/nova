@@ -1,0 +1,158 @@
+{
+  "proposalOnly": true,
+  "sourceCommit": "f1111ae",
+  "createdAt": "2026-09-29T06:17:26.350Z",
+  "games": 30000,
+  "trials": 1000,
+  "plan": {
+    "five": {
+      "setting": 5,
+      "enabled": true,
+      "lowMean": 150000,
+      "highMean": 183333.33333333334,
+      "lowCz": 0.7,
+      "lowAt": 0.25,
+      "highCz": 2.4,
+      "highAt": 0.25,
+      "netEnter": 8000,
+      "netExit": 6500,
+      "netCz": 0.25,
+      "netAt": 0.25
+    },
+    "six": {
+      "setting": 6,
+      "enabled": true,
+      "lowMean": 9000,
+      "highMean": 27000,
+      "lowCz": 0.25,
+      "lowAt": 0.25,
+      "highCz": 1.8,
+      "highAt": 0.25,
+      "netEnter": 9000,
+      "netExit": 7500,
+      "netCz": 0.25,
+      "netAt": 0.25
+    }
+  },
+  "options": {
+    "rng": "xoshiro128",
+    "exactGames": true,
+    "completeLimitPt": 10000,
+    "stopAtComplete": false,
+    "rareSortie": true
+  },
+  "hashes": {
+    "nova-tuning.js": "dfea755b378562545156254106541354cfca836fc99723bc091d010bb3760029",
+    "nova-art.js": "2b62a995875b539da45f595eab27537cc293c56fe899f203f1b808c8a2d7f6af",
+    "nova-balance.js": "ac4f1606aac26f3e9e855162b4046b417fc2f3a377bf967e02410a63bdaac4c9",
+    "nova-flow.js": "7393b84ad4883e08ebefaaf175998e3d5f747032a422caaa6706a4ef19989423",
+    "nova-normal.js": "a6179e781a155c5a86d64fb46d80767e2684e20567d0008c945d6d47e81741ed",
+    "nova-progress.js": "50fbd1927417fcb42cd7af7fc8d194d9b886b0890ba9baed8408a5cce33f86de"
+  },
+  "summary": {
+    "five": {
+      "n": 1000,
+      "stopped": {
+        "rtp": 1.048993852981406,
+        "rtpCi95": [
+          1.0398395402831109,
+          1.0581481656797012
+        ],
+        "totalBet": 45848568,
+        "totalPaid": 48094866,
+        "winRate": 0.644,
+        "meanNet": 2246.298,
+        "p10": -7937.699999999999,
+        "median": 5835.5,
+        "p90": 9224.800000000001,
+        "netSd": 6689.79219907935
+      },
+      "uncapped": {
+        "rtp": 1.0439859112050172,
+        "rtpCi95": [
+          1.0353626157047002,
+          1.052609206705334
+        ],
+        "totalBet": 46977474,
+        "totalPaid": 49043821,
+        "winRate": 0.644,
+        "meanNet": 2066.347,
+        "p10": -7937.699999999999,
+        "median": 5751,
+        "p90": 8043.6,
+        "netSd": 6522.925331434547
+      },
+      "reach": 0.093,
+      "reachCi95": [
+        0.07652345008781691,
+        0.11259164536150498
+      ],
+      "normalGames": 16630539,
+      "realizedNormalBase": 35.11404770178511,
+      "navis": 0,
+      "naviDenominator": null,
+      "atPerNormalG": 238.98229605253704,
+      "czPerNormalG": 92.74741509118287,
+      "thresholds": 2.055,
+      "lowShare": 0.5672387333333333,
+      "entries": 0.549,
+      "exits": 0.089
+    },
+    "six": {
+      "n": 1000,
+      "stopped": {
+        "rtp": 1.1363427839833329,
+        "rtpCi95": [
+          1.127631655772912,
+          1.1450539121937537
+        ],
+        "totalBet": 39858105,
+        "totalPaid": 45292470,
+        "winRate": 0.859,
+        "meanNet": 5434.365,
+        "p10": -2036.1999999999998,
+        "median": 7570,
+        "p90": 10005,
+        "netSd": 5334.509881277605
+      },
+      "uncapped": {
+        "rtp": 1.1227712316452476,
+        "rtpCi95": [
+          1.1151425053990136,
+          1.1303999578914816
+        ],
+        "totalBet": 41892420,
+        "totalPaid": 47035604,
+        "winRate": 0.859,
+        "meanNet": 5143.184,
+        "p10": -2036.1999999999998,
+        "median": 7428.5,
+        "p90": 9063.900000000001,
+        "netSd": 5165.938476258159
+      },
+      "reach": 0.19,
+      "reachCi95": [
+        0.16688886767222819,
+        0.21548380945133397
+      ],
+      "normalGames": 17132152,
+      "realizedNormalBase": 41.8877280950177,
+      "navis": 0,
+      "naviDenominator": null,
+      "atPerNormalG": 240.6437711572767,
+      "czPerNormalG": 99.12604147380115,
+      "thresholds": 2.813,
+      "lowShare": 0.36469616666666665,
+      "entries": 1.099,
+      "exits": 0.842
+    }
+  },
+  "inputs": {
+    "five": "five-confirm.json",
+    "six": "final.json"
+  },
+  "seedBySetting": {
+    "5": "NOVA-decrement-five-net8000-confirmation-20260929",
+    "6": "NOVA-decrement-final-independent-20260929"
+  }
+}

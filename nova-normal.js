@@ -75,7 +75,7 @@ globalThis.NovaNormal=(()=>{
  function roleCzRate(value,role,setting=1,options={}){
   if(role==='STRONG_NOVA')return 1;
   const i=Math.max(0,Math.min(5,Math.round(Number(setting)||1)-1));
-  return Math.min(1,(rare[role]?.cz||0)*NovaTuning.profile(setting).cz*lotteryRules.czScale[i]*(value?.level==='high'?config(options).highMultiplier:1));
+  return Math.min(1,(rare[role]?.cz||0)*NovaTuning.profile(setting).cz*(globalThis.NovaDecrement?.cz(setting)??1)*lotteryRules.czScale[i]*(value?.level==='high'?config(options).highMultiplier:1));
  }
 
  function advance(value,role,flow,options={},rng=Math.random){

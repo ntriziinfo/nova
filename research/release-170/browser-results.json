@@ -1,0 +1,186 @@
+{
+  "url": "http://127.0.0.1:4175/jag.html?debug=1",
+  "muted": true,
+  "checks": [
+    {
+      "scenario": "manual-5",
+      "regime": {
+        "version": 170,
+        "setting": 5,
+        "enabled": true,
+        "rng": [
+          704700,
+          102900,
+          168052,
+          1443627008
+        ],
+        "low": false,
+        "netLow": false,
+        "games": 20,
+        "lowGames": 0,
+        "entries": 1,
+        "exits": 0,
+        "initialLow": true,
+        "lowByPhase": {},
+        "netGames": 0,
+        "netEntries": 0,
+        "netExits": 0,
+        "peakObserved": 0
+      },
+      "net": -3,
+      "rateAtDraw": 2.4,
+      "reloadPassed": true
+    },
+    {
+      "scenario": "auto-6",
+      "regime": {
+        "version": 170,
+        "setting": 6,
+        "enabled": true,
+        "rng": [
+          704700,
+          102900,
+          168052,
+          1443627008
+        ],
+        "low": false,
+        "netLow": false,
+        "games": 20,
+        "lowGames": 0,
+        "entries": 1,
+        "exits": 0,
+        "initialLow": true,
+        "lowByPhase": {},
+        "netGames": 0,
+        "netEntries": 0,
+        "netExits": 0,
+        "peakObserved": 0
+      },
+      "net": -3,
+      "rateAtDraw": 1.8,
+      "reloadPassed": true
+    },
+    {
+      "scenario": "net-entry",
+      "regime": {
+        "version": 170,
+        "setting": 6,
+        "enabled": true,
+        "rng": [
+          704700,
+          102900,
+          168052,
+          1443627008
+        ],
+        "low": false,
+        "netLow": true,
+        "games": 20,
+        "lowGames": 0,
+        "entries": 1,
+        "exits": 0,
+        "initialLow": true,
+        "lowByPhase": {},
+        "netGames": 0,
+        "netEntries": 1,
+        "netExits": 0,
+        "peakObserved": 9011
+      },
+      "net": 9011,
+      "rateAtDraw": 1.8,
+      "reloadPassed": true
+    },
+    {
+      "scenario": "transient-bet-debit",
+      "regime": {
+        "version": 170,
+        "setting": 6,
+        "enabled": true,
+        "rng": [
+          704700,
+          102900,
+          168052,
+          1443627008
+        ],
+        "low": false,
+        "netLow": true,
+        "games": 20,
+        "lowGames": 1,
+        "entries": 1,
+        "exits": 0,
+        "initialLow": true,
+        "lowByPhase": {
+          "normal": 1
+        },
+        "netGames": 1,
+        "netEntries": 0,
+        "netExits": 0,
+        "peakObserved": 7513
+      },
+      "net": 7513,
+      "rateAtDraw": 0.25,
+      "reloadPassed": true
+    },
+    {
+      "scenario": "settled-net-exit",
+      "regime": {
+        "version": 170,
+        "setting": 6,
+        "enabled": true,
+        "rng": [
+          704700,
+          102900,
+          168052,
+          1443627008
+        ],
+        "low": false,
+        "netLow": false,
+        "games": 20,
+        "lowGames": 1,
+        "entries": 1,
+        "exits": 0,
+        "initialLow": true,
+        "lowByPhase": {
+          "normal": 1
+        },
+        "netGames": 1,
+        "netEntries": 0,
+        "netExits": 1,
+        "peakObserved": 7501
+      },
+      "net": 7498,
+      "rateAtDraw": 0.25,
+      "reloadPassed": true
+    },
+    {
+      "scenario": "disabled-4",
+      "regime": {
+        "version": 170,
+        "setting": 4,
+        "enabled": false,
+        "rng": [
+          100,
+          200,
+          300,
+          400
+        ],
+        "low": false,
+        "netLow": false,
+        "games": 20,
+        "lowGames": 0,
+        "entries": 0,
+        "exits": 0,
+        "initialLow": false,
+        "lowByPhase": {},
+        "netGames": 0,
+        "netEntries": 0,
+        "netExits": 0,
+        "peakObserved": 0
+      },
+      "net": 8996,
+      "rateAtDraw": 1,
+      "reloadPassed": true
+    }
+  ],
+  "resetPassed": true,
+  "errors": []
+}

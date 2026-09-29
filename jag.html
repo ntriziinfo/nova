@@ -6550,14 +6550,15 @@ body{
 <script src="nova-direct-award.js?v=20260928-presentation-154"></script>
 <link rel="stylesheet" href="nova-aim-presentation.css?v=20260928-seven-entry-156">
 <script src="nova-aim-presentation.js?v=20260928-cz-wait-161"></script>
-<script src="nova-tuning.js?v=20260929-bell-169"></script>
-<script src="nova-art.js?v=20260929-bell-169"></script>
-<script src="nova-balance.js?v=20260929-bell-169"></script>
-<script src="nova-normal.js?v=20260929-bell-169"></script>
+<script src="nova-tuning.js?v=20260929-decrement-170"></script>
+<script src="nova-decrement.js?v=20260929-decrement-170"></script>
+<script src="nova-art.js?v=20260929-decrement-170"></script>
+<script src="nova-balance.js?v=20260929-decrement-170"></script>
+<script src="nova-normal.js?v=20260929-decrement-170"></script>
 <script src="nova-flow.js?v=20260928-cz-wait-161"></script>
 <script src="nova-progress.js?v=20260929-bell-169"></script>
 <link rel="stylesheet" href="nova-audit.css?v=20260910-audit-121">
-<script src="nova-audit.js?v=20260928-duo-149"></script>
+<script src="nova-audit.js?v=20260929-decrement-170"></script>
 <script src="nova-audit-ui.js?v=20260916-role-128"></script>
 <link rel="stylesheet" href="nova-comeback-presentation.css?v=20260909-comeback-114">
 <script src="nova-comeback-presentation.js?v=20260909-comeback-114"></script>
@@ -7993,8 +7994,8 @@ body{
     return {run:stats.auditRunId,game:Number(stats.totalSpins)||0,bet:Number(stats.totalFee)||0,paid:Number(stats.totalPaid)||0,setting:settings.setting,
       flow:normalState.flow||{phase:'normal'},internal:normalState.internal||{},replayFree:!!normalState.replayFree,complete:!!completeTrialState.locked,
       bonus:{active:isATypeBonusActive(),phase:session.phase,tier:session.bonusTier,paid:session.paid,sets:session.bonusArtSets,zones:session.bonusZones,target:session.bonusTarget,pending:!!normalState.bonusPending,source:normalState.bonusSource,prepLeft:normalState.prepLeft,prepSets:normalState.prepSets,prepZones:normalState.prepZones,premium:session.premiumBonus||normalState.premiumBonus,pointsRemaining:session.bonusPointsRemaining},
-      progress:normalState.novaProgress,
-      config:{balance:169,normalBellDenominators:NovaTuning.normalBellDenominators,tuning:NovaTuning.profile(settings.setting),initialPresentation:157,prelude:160,audit:121,setting:settings.setting,fee:SPIN_COST,completeLimitPt:settings.completeLimitPt,oddsMultiplier:settings.oddsMultiplier,art:settings.novaArt,commonAt:NovaArt.commonAtRulesFor(settings.setting),entryQuota:NovaArt.entryQuotaRules,initialRareAwards:NovaArt.initialRareAwards,atPrelude:NovaArt.atPreludeRules,uraChallenge:NovaArt.burstRules,normal:settings.novaNormal,normalLottery:NovaNormal.lotteryRules,normalPrelude:NovaNormal.czPreludeRules,cz:settings.novaFlow}};
+      progress:normalState.novaProgress,decrement:NovaDecrement.snapshot(),
+      config:{balance:170,decrementRules:NovaDecrement.rules(settings.setting),normalBellDenominators:NovaTuning.normalBellDenominators,tuning:NovaTuning.profile(settings.setting),initialPresentation:157,prelude:160,audit:121,setting:settings.setting,fee:SPIN_COST,completeLimitPt:settings.completeLimitPt,oddsMultiplier:settings.oddsMultiplier,art:settings.novaArt,commonAt:NovaArt.commonAtRulesFor(settings.setting),entryQuota:NovaArt.entryQuotaRules,initialRareAwards:NovaArt.initialRareAwards,atPrelude:NovaArt.atPreludeRules,uraChallenge:NovaArt.burstRules,normal:settings.novaNormal,normalLottery:NovaNormal.lotteryRules,normalPrelude:NovaNormal.czPreludeRules,cz:settings.novaFlow}};
   }
   function auditCapture(detail={kind:'checkpoint'}){
     if(!novaAuditRecorder)return;
@@ -10735,7 +10736,7 @@ body{
     if(session.active){
       session.cost = (Number(session.cost) || 0) + SPIN_COST;
     }
-    recordSlumpPoint();
+    recordSlumpPoint(false);
     updateCompleteTrialState("BET");
   }
 
@@ -10818,12 +10819,14 @@ body{
   }
 
   function syncNovaProgress(){
+    normalState.novaDecrement=NovaDecrement.bind(normalState.novaDecrement,settings.setting);
     normalState.novaProgress=NovaProgress.bind(normalState.novaProgress,stats.slumpHigh);
     return normalState.novaProgress;
   }
   function countTotalSpinIfNeeded(aTypeBonusActiveAtSpinStart=false){
     if(A_TYPE_MODE){
       syncNovaProgress();
+      NovaDecrement.observe(currentProfit());
       const previous=NovaFlow.normalize(normalState.flow);
       normalState.flow=NovaProgress.beforeBet(previous,{...settings.novaArt,setting:settings.setting},currentProfit(),session.active||normalState.bonusPending||previous.phase==='normal'&&!!normalState.internal?.prelude);
     }
@@ -10833,7 +10836,10 @@ body{
       auditCapture();
     }
     if(!session.active && normalState.flow?.zero)return false;
-    if(A_TYPE_MODE)NovaProgress.drawSortie(settings.setting);
+    if(A_TYPE_MODE){
+      NovaDecrement.beforeBet(aTypeBonusActiveAtSpinStart?'bonus':normalState.bonusPending?'prep':normalState.flow?.zone?'zone':normalState.flow?.phase==='art'?'at':normalState.flow?.phase==='normal'?'normal':'cz');
+      NovaProgress.drawSortie(settings.setting);
+    }
     if(A_TYPE_MODE && aTypeBonusActiveAtSpinStart) return false;
     stats.totalSpins = (Number(stats.totalSpins) || 0) + 1;
     return true;
@@ -10977,8 +10983,12 @@ body{
     refreshSlumpExtremes();
   }
 
-  function recordSlumpPoint(){
-    if(A_TYPE_MODE){syncNovaProgress();NovaProgress.observeNet(currentProfit());}
+  function recordSlumpPoint(settled=true){
+    if(A_TYPE_MODE){
+      syncNovaProgress();NovaProgress.observeNet(currentProfit());
+      // Match the simulator: the regime sees settled net, not the transient BET debit.
+      if(settled)NovaDecrement.observe(currentProfit());
+    }
     normalizeSlumpHistory();
     const point = {
       spin:Number(stats.totalSpins) || 0,
@@ -13271,7 +13281,7 @@ body{
     if(result === "MISS"){
       playLoseSound();
     }
-    }finally{auditCapture(auditSpinDetail(result,resolved));}
+    }finally{if(A_TYPE_MODE){syncNovaProgress();NovaDecrement.observe(currentProfit());}auditCapture(auditSpinDetail(result,resolved));}
   }
 
   function applyResult(result, resolved, lineRow=1){
@@ -13447,7 +13457,7 @@ body{
       : `${session.setNo || 1}SET / ${phaseText} / STOCK${session.stockSets || 0} / 継続${formatRate(session.continuationRate)}`;
     showMessage("ハズレ", [zoneRollText, battleText].filter(Boolean).join(" / "));
     playLoseSound();
-    }finally{auditCapture(auditSpinDetail(result,resolved));}
+    }finally{if(A_TYPE_MODE){syncNovaProgress();NovaDecrement.observe(currentProfit());}auditCapture(auditSpinDetail(result,resolved));}
   }
 
   function syncCabinetControlState(){

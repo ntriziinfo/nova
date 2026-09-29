@@ -30,6 +30,14 @@ globalThis.NovaAudit=(()=>{
       if(before.setting!==after.setting)out.push('設定変更：'+before.setting+' → '+after.setting);
       if(num(after.game)<num(before.game)||num(after.bet)<num(before.bet)||num(after.paid)<num(before.paid))out.push('保存状態の復元境界（前後を連続集計しない）');
     }
+    if(after.decrement?.enabled){
+      const prior=before?.decrement,current=after.decrement;
+      if(!prior?.enabled||prior.setting!==current.setting)out.push('減算配分開始 / 時間区間'+(current.low?'内':'外')+' / 差枚区間'+(current.netLow?'内':'外'));
+      else{
+        if(prior.low!==current.low)out.push('時間による減算区間'+(current.low?'へ移行':'から復帰'));
+        if(prior.netLow!==current.netLow)out.push('差枚による減算区間'+(current.netLow?'へ移行':'から復帰'));
+      }
+    }
     if(detail.burstEvent)out.push((after.flow?.burstType==='ura'?'裏チャレンジ':'爆発チャレンジ')+' '+({success:'成功',failure:'失敗',continue:'継続'}[detail.burstEvent]||detail.burstEvent));
     if(detail.burstReward?.type==='points')out.push('報酬＋'+detail.burstReward.points+'pt / '+(detail.burstReward.promoted?'Lv.'+detail.burstReward.level+'へ昇格':'昇格なし'));
     if(detail.burstReward?.type==='ura')out.push('裏ゾーン獲得：'+detail.burstReward.zone);
