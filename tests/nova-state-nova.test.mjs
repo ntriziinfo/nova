@@ -22,16 +22,17 @@ test('normal guarantee protects exactly ten subsequent games without rare extens
  s=n.advance(s,'REPLAY',{phase:'normal'},{},()=>0);assert.equal(s.level,'low');
  s=n.advance({level:'high',highLeft:5},'STRONG_SUICA',{phase:'normal'},{},()=>0);assert.equal(s.highLeft,4);
 });
-test('AT guarantee pauses during roulette and zones, carries through sets and save',()=>{
- let s={...({...a.enter({},()=>.5),remaining:'150',entryQuota:'150'}),atHigh:true,atHighLeft:10};
+test('AT high guarantee counts prelude games, pauses in roulette/zones and survives stock consumption',()=>{
+ let s={...a.enter({},()=>.5),remaining:'150',atHigh:true,atHighLeft:10,burstUsed:true};
  s=a.step(s,{setting:3},()=>.99,'STRONG_NOVA').flow;assert.equal(s.atHighLeft,9);
- for(let i=0;i<2;i++)s=a.step(s,{setting:3},()=>.99).flow;
- assert.equal(s.atHighLeft,9);s=a.prepareBet(s,{setting:3},()=>.99);
- s=a.step(s,{setting:3},()=>.99).flow;assert.equal(s.atHighLeft,9);
- s=a.normalize(JSON.parse(JSON.stringify({...({...a.enter({},()=>.5),remaining:'150',entryQuota:'150'}),atHigh:true,atHighLeft:1,remaining:'15',sets:'1'})));
- s=a.step(s,{setting:3},()=>0,'BELL').flow;assert.equal(s.remaining,'150');assert.equal(s.atHigh,true);assert.equal(s.atHighLeft,0);
- s=a.step(s,{setting:3},()=>0,'REPLAY').flow;assert.equal(s.atHigh,false);
+ let expected=9;while(s.atPrelude){s=a.step(s,{setting:3},()=>.99,'REPLAY').flow;assert.equal(s.atHighLeft,--expected);}
+ assert.equal(s.entryStage,'seven');
+ for(let i=0;i<2;i++){s=a.step(s,{setting:3},()=>.99,'MISS').flow;assert.equal(s.atHighLeft,expected);}
+ s=a.prepareBet(s,{setting:3},()=>.99);s=a.step(s,{setting:3},()=>.99).flow;assert.equal(s.atHighLeft,expected);
+ s=a.normalize(JSON.parse(JSON.stringify({...a.enter({},()=>.5),atHigh:true,atHighLeft:1,remaining:'15',sets:'1'})));
+ s=a.step(s,{setting:3},()=>0,'BELL').flow;assert.equal(s.remaining,'15');assert.equal(s.atHighLeft,1);assert.equal(s.sets,'0');assert.equal(s.entryStage,'roulette');
 });
+
 test('strong SUICA rare 300pt is literal points, not converted G, and pays 6pt',()=>{
  const seq=[.99,.99,0,.99999];const t=a.step(({...a.enter({},()=>.5),remaining:'150',entryQuota:'150'}),{setting:3},()=>seq.shift()??.99,'STRONG_SUICA');
  assert.equal(t.atOutcome.direct,300);assert.equal(t.flow.remaining,'444');assert.equal(a.payout(t.result),6);

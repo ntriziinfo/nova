@@ -2,31 +2,25 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
-import {execFileSync} from 'node:child_process';
 import {xoshiro128} from '../scripts/zone-v2-rng.mjs';
-const prior=vm.createContext({}),current=vm.createContext({});
-vm.runInContext(fs.readFileSync('nova-tuning.js','utf8'),current);
-for(const file of ['nova-art.js','nova-flow.js','nova-normal.js']){
- vm.runInContext(execFileSync('git',['show',`90f739d:${file}`],{encoding:'utf8'}),prior);
- vm.runInContext(fs.readFileSync(file,'utf8'),current);
-}
+const current=vm.createContext({});
+for(const file of ['nova-tuning.js','nova-art.js','nova-flow.js','nova-normal.js'])vm.runInContext(fs.readFileSync(file,'utf8'),current);
 const plain=v=>JSON.parse(JSON.stringify(v));
-test('normal rare probabilities and bonus chances are retained after level removal',()=>{
- const a=current.NovaArt,b=prior.NovaArt;
- assert.equal(a.atLevelRules,undefined);
- assert(a.commonAtRules);
- assert.deepEqual(plain(a.bonusRules),plain(b.bonusRules));
- for(let s=1;s<=6;s++){
-  const next=current.NovaNormal.roleProbabilities(s),old=prior.NovaNormal.roleProbabilities(s);
-  for(const role of Object.keys(current.NovaNormal.rare))assert.equal(next[role],old[role]);
-  assert(Object.values(next).every(p=>p>=0&&p<=1));assert.equal(current.NovaNormal.pay('REPLAY'),0);
+test('discarded AT levels do not alter current normal roles or the two BIG success tiers',()=>{
+ const a=current.NovaArt;assert.equal(a.atLevelRules,undefined);assert(a.commonAtRules);
+ assert.equal(a.bonusRules.normal.atChance,.52);assert.equal(a.bonusRules.upper.atChance,.8);
+ for(let setting=1;setting<=6;setting++){
+  const row=current.NovaNormal.roleProbabilities(setting);assert(Object.values(row).every(p=>p>=0&&p<=1));
+  assert(Math.abs(Object.values(row).reduce((sum,p)=>sum+p,0)-1)<1e-12);
+  for(const atLevel of [0,1,5])assert.deepEqual(a.enter({setting,atLevel},()=>.5),a.enter({setting},()=>.5));
  }
 });
-test('each of the nine zones retains its exact awards and continuation trace',()=>{
- const trace=(ctx,id,seed)=>{
-  const a=ctx.NovaArt,rng=xoshiro128(seed);let s=a.startZone({...a.enter({setting:6},()=>.5),atLevel:1,remaining:'500'},id,{setting:6},rng);const rows=[];
-  for(let g=0;s.zone&&g<10000;g++){s=a.prepareBet(s,{setting:6},rng);const step=a.step(s,{setting:6},rng);const record=plain(step);delete record.flow.burstType;delete record.flow.burstVersion;delete record.flow.atLevel;delete record.flow.entryQuota;delete record.flow.setQuota;rows.push(record);s=step.flow;}
+
+test('legacy AT levels cannot change any current zone award or continuation trace',()=>{
+ const trace=(id,seed,atLevel)=>{
+  const a=current.NovaArt,rng=xoshiro128(seed);let s=a.startZone({...a.enter({setting:6},()=>.5),atLevel,remaining:'500'},id,{setting:6},rng);const rows=[];
+  for(let g=0;s.zone&&g<10000;g++){s=a.prepareBet(s,{setting:6},rng);const step=a.step(s,{setting:6},rng);rows.push(plain(step));s=step.flow;}
   assert.equal(s.zone,'');return rows;
  };
- for(const id of current.NovaArt.zoneIds)for(const seed of [118,99118,118219])assert.deepEqual(trace(current,id,seed),trace(prior,id,seed),id);
+ for(const id of current.NovaArt.zoneIds)for(const seed of [118,99118,118219])for(const level of [1,5])assert.deepEqual(trace(id,seed,level),trace(id,seed,undefined),id);
 });

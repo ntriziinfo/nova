@@ -41,18 +41,18 @@ test('every reel has exactly one contiguous three-cell logo and no retired symbo
  assert.equal(run('REEL_STRIPS.every((s,c)=>s.length===20 && s.filter(x=>x.startsWith("NOVA_")).length===3 && [0,1,2].every(r=>s[14+r]===novaSymbol(c,r)) && !s.some(x=>[GRAPE_SYMBOL,CHERRY_SYMBOL,PIERROT_SYMBOL].includes(x)))'),true);
 });
 test('actual stop grids match every supported outcome using real consecutive strip cells',()=>{
- for(const result of ['NEBULA','MISS','BELL','WEAK_SUICA','STRONG_SUICA','CHANCE_A','CHANCE_B','REPLAY','BIG','MID','BAR3']) for(const row of [0,1,2]){
+ for(const result of ['NEBULA','MISS','BELL','WEAK_SUICA','STRONG_SUICA','CHANCE_A','CHANCE_B','REPLAY','BIG','BAR3']) for(const row of [0,1,2]){
   run(`globalThis.grid=buildNovaReelGrid(${JSON.stringify(result)},${row});`);
   assert.equal(run('displayedResultFromGrid(grid)'),result);
   assert.equal(run('gridHasOnlyAllowedPaylines(grid,'+JSON.stringify(result)+')'),true);
   assert.equal(run('REEL_STRIPS.every((s,c)=>s.some((_,i)=>[0,1,2].every(r=>grid[r][c]===s[(i+r)%20])))'),true);
  }
 });
-test('bell pays 15 normally and throughout bonus including final game',()=>{
+test('bell pays 15 normally and caps the final BIG payout at the remaining 50pt target',()=>{
  assert.equal(run('normalRewardFor("BELL")'),15);
  assert.equal(run('resolveATypeBonusOutcome("BELL").reward'),15);
- assert.equal(run('session.paid=145; resolveATypeBonusOutcome("BELL").reward'),15);
- assert.equal(run('session.paid=150; resolveATypeBonusOutcome("BELL").reward'),0);
+ assert.equal(run('session.paid=45; resolveATypeBonusOutcome("BELL").reward'),5);
+ assert.equal(run('session.paid=50; resolveATypeBonusOutcome("BELL").reward'),0);
 });
 
 test('nebula alone awards a bonus ART set, and NOVA strengths no longer substitute for it',()=>{
@@ -60,7 +60,7 @@ test('nebula alone awards a bonus ART set, and NOVA strengths no longer substitu
  assert.equal(run('resolveATypeBonusOutcome("NEBULA").artSetWon'),1);
  assert.equal(run('resolveATypeBonusOutcome("NEBULA").reward'),0);
  for(const role of ['WEAK_NOVA','STRONG_NOVA','SUPER_NOVA'])assert.equal(run(`resolveATypeBonusOutcome('${role}').artSetWon`),0);
- run('session.paid=150;');assert.equal(run('resolveATypeBonusOutcome("NEBULA").artSetWon'),0);
+ run('session.paid=50;');assert.equal(run('resolveATypeBonusOutcome("NEBULA").artSetWon'),0);
  run('session.paid=0;');
 });
 test('retired forced outcomes cannot enter active play',()=>{
@@ -116,9 +116,9 @@ test('game resolver carries CZ entry and final success into the bonus pipeline',
  assert.equal(run('czLast.bonusSource'),'CZ成功');
  assert.equal(run('czLast.flowAfter.phase'),'normal');
 });
-test('game resolver expires ART when final payout exhausts the quota',()=>{
+test('game resolver enters comeback when final payout exhausts the quota',()=>{
  run('normalState.bonusPending=false;normalState.flow={...NovaArt.enter(),remaining:"3"};pendingArtStep=NovaArt.step(normalState.flow,{rare:0},()=>.99,"BELL");globalThis.endArt=resolveNormalOutcome("BELL");');
- assert.equal(run('endArt.flowAfter.phase'),'normal');assert.equal(run('endArt.bonusHit'),false);
+ assert.equal(run('endArt.flowAfter.phase'),'art');assert.equal(run('endArt.flowAfter.comebackLeft'),5);assert.equal(run('endArt.bonusHit'),false);
 });
 
 test('Sora seven adds points without a bonus and Ouma super never invokes the normal freeze',()=>{

@@ -42,14 +42,14 @@ test('retiring an unawarded point challenge preserves quota, sets, stock and que
  }
 });
 
-test('existing ura challenge progress and earned rewards survive the migration',()=>{
+test('legacy three-game challenge restarts as current challenge without losing earned balances',()=>{
  loadModel();const a=NovaArt;
- const s=a.normalize({...a.enter({},()=>.5),burstVersion:1,burstType:'ura',burstLeft:2,burstUsed:true,remaining:'777',atLevel:5});
- assert.equal(s.burstLeft,2);assert.equal(s.burstUsed,true);
- const win=a.step(s,{},()=>0);assert.equal(win.burstEvent,'success');assert.equal(win.flow.remaining,'777');assert.equal(win.burstReward.type,'ura');assert.equal(win.burstReward.points,0);
- const saved=a.normalize(JSON.parse(JSON.stringify(win.flow))),entered=a.prepareBet(saved,{},()=>.5);
- assert.equal(entered.zone,'giru');assert(entered.ura);assert(!('atLevel' in entered));
- assert.equal(a.afterBonus(entered,{},0).remaining,'777');
+ const old={...a.enter({},()=>.5),burstVersion:1,burstType:'ura',burstLeft:2,burstUsed:true,remaining:'777',atLevel:5};
+ const s=a.normalize(old);assert.equal(s.burstLeft,0);assert.equal(s.burstPending,true);assert.equal(s.burstUsed,true);assert.equal(s.remaining,'777');
+ const held=a.step(s,{},()=>.99,'WEAK_NOVA');assert.equal(held.flow.burstLeft,10);
+ const win=a.step(a.normalize(JSON.parse(JSON.stringify(held.flow))),{},()=>.99,'MISS');
+ assert.equal(win.burstEvent,'success');assert.equal(win.flow.remaining,'777');assert.equal(win.flow.researchUpper,true);assert.equal(win.flow.atLevel,undefined);
+ assert.equal(a.afterBonus(win.flow,{},0).remaining,'777');
 });
 
 test('2000pt is no cap or reward-damping threshold',()=>{

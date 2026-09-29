@@ -34,7 +34,7 @@ test('guided internal hits can be distinguished from missed visual stops and BET
 
 test('manual and fast result committers, BIG transitions and 0G misses all feed the independent audit',()=>{
  const html=readGameSource();
- for(const name of ['applyNormalResult','applyResult','startBonusSessionNow','finishSession']){const start=html.indexOf('  function '+name+'('),end=html.indexOf('\n  function ',start+10);assert.match(html.slice(start,end),/finally\{auditCapture\(/);}
+ for(const name of ['applyNormalResult','applyResult','startBonusSessionNow','finishSession']){const start=html.indexOf('  function '+name+'('),end=html.indexOf('\n  function ',start+10);assert.match(html.slice(start,end),/finally\{[^]*?auditCapture\(/);}
  assert.match(html,/burstReward:artStep\?\.burstReward/);assert.match(html,/kind:'zero-failure'/);assert.match(html,/setupPlayAudit\(\);/);
  const source=fs.readFileSync('nova-audit.js','utf8');assert.doesNotMatch(source,/Math\.random|NovaArt\.step|NovaFlow\.step/);
 });

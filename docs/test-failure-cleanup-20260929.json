@@ -1,0 +1,686 @@
+{
+  "date": "2026-09-29",
+  "sourceCommit": "ebfc89da833c93d3a93862525f53dc6cdd07bed5",
+  "before": {
+    "tests": 475,
+    "pass": 403,
+    "fail": 72
+  },
+  "after": {
+    "tests": 472,
+    "pass": 469,
+    "fail": 3,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "categories": {
+    "obsolete-expectation": 61,
+    "test-harness": 8,
+    "production-defect": 2,
+    "duplicate": 1
+  },
+  "failures": [
+    "BUG-001: a visibly missed BIG NEBULA must not grant an AT right or zone stock",
+    "BUG-002: reported duo mean must include the setting-specific initial base weights",
+    "BUG-003: reverse freeze must not add the ordinary super-NOVA lineup sound"
+  ],
+  "notes": [
+    "Game source, draw probabilities, payout and media files are unchanged.",
+    "No failures are skipped, marked todo, or accepted as passing.",
+    "Six duplicated tests were removed; three tests were added (two alignment tests and one analytic reporting regression)."
+  ],
+  "failuresBefore": [
+    {
+      "id": 1,
+      "test": "each zone and target use exact color success boundaries, even above 2000pt",
+      "file": "tests/nova-aim.test.mjs",
+      "currentTest": "each zone and target use exact color success boundaries, even above 2000pt",
+      "category": "obsolete-expectation",
+      "status": "updated",
+      "reason": "色の当選率20/80/100%は維持。STリセット率に合わせた色配分の区間で検査する。"
+    },
+    {
+      "id": 2,
+      "test": "each seven zone guarantees a first seven on its last failed game",
+      "file": "tests/nova-aim.test.mjs",
+      "currentTest": "five-game seven guarantees are Toto one, Sora two and Ura Sora at least 500pt",
+      "category": "obsolete-expectation",
+      "status": "updated",
+      "reason": "とと1回・空2回・裏空500pt保証へ変更済み。"
+    },
+    {
+      "id": 3,
+      "test": "ART final game resets normal ceiling count and next normal game is 1G",
+      "file": "tests/nova-art-reset.test.mjs",
+      "currentTest": "normal ceiling counter resets only after all five comeback games fail",
+      "category": "obsolete-expectation",
+      "status": "updated",
+      "reason": "AT残り0の後は5G引き戻し。通常モード廃止とAT終了時リセットを検査。"
+    },
+    {
+      "id": 4,
+      "test": "AT NOVA entry preserves quota through bonus interruption",
+      "file": "tests/nova-art.test.mjs",
+      "currentTest": "AT NOVA reserves its zone through the prelude and bonus interruption without losing quota",
+      "category": "obsolete-expectation",
+      "status": "updated",
+      "reason": "特化当選は3〜5G前兆を経由する。"
+    },
+    {
+      "id": 5,
+      "test": "zone success improves while strength ordering and large-award protection remain",
+      "file": "tests/nova-at150.test.mjs",
+      "currentTest": "current zone continuation ordering has no retired 2000pt reward damping",
+      "category": "obsolete-expectation",
+      "status": "updated",
+      "reason": "現行の継続率と2000pt減衰撤廃を検査。"
+    },
+    {
+      "id": 6,
+      "test": "manual and fast result committers, BIG transitions and 0G misses all feed the independent audit",
+      "file": "tests/nova-audit121.test.mjs",
+      "currentTest": "manual and fast result committers, BIG transitions and 0G misses all feed the independent audit",
+      "category": "test-harness",
+      "status": "updated",
+      "reason": "finally内の監査呼出しの前に差枚状態同期が追加済み。文字列の隣接条件を解消し、監査呼出し自体は検査。"
+    },
+    {
+      "id": 7,
+      "test": "initial character restriction keeps prior RTP evidence explicitly historical",
+      "file": "tests/nova-balance.test.mjs",
+      "currentTest": "published RTP metadata identifies the approved v173 evidence and sample counts",
+      "category": "obsolete-expectation",
+      "status": "updated",
+      "reason": "承認済みv173の報告値を参照。過去のv146計測値を現行値にしない。"
+    },
+    {
+      "id": 8,
+      "test": "normal rare probabilities and bonus chances are retained after level removal",
+      "file": "tests/nova-balance118-gameplay.test.mjs",
+      "currentTest": "discarded AT levels do not alter current normal roles or the two BIG success tiers",
+      "category": "obsolete-expectation",
+      "status": "updated",
+      "reason": "v118以降の小役調整は承認済み。旧コミットとの全面一致ではなく廃止レベルの非干渉を検査。"
+    },
+    {
+      "id": 9,
+      "test": "each of the nine zones retains its exact awards and continuation trace",
+      "file": "tests/nova-balance118-gameplay.test.mjs",
+      "currentTest": "legacy AT levels cannot change any current zone award or continuation trace",
+      "category": "obsolete-expectation",
+      "status": "updated",
+      "reason": "ゾーン性能自体は後続仕様で変更済み。廃止レベルを含む保存の互換性を検査。"
+    },
+    {
+      "id": 10,
+      "test": "50pt BIG has valid payouts and exactly the tier AT chance before four bells",
+      "file": "tests/nova-balance120.test.mjs",
+      "currentTest": "50pt BIG has valid payouts and exactly the tier AT chance before four bells",
+      "category": "obsolete-expectation",
+      "status": "updated",
+      "reason": "現行BIG50pt、初期設定値200pt。通常52%・上位80%のBIG突破率と最終払い出しの検査は維持。"
+    },
+    {
+      "id": 11,
+      "test": "ura reward guarantees one of the three ura zones and no automatic level promotion",
+      "file": "tests/nova-balance120.test.mjs",
+      "currentTest": "upper challenge rare role holds, then wins on the following aim game",
+      "category": "obsolete-expectation",
+      "status": "updated",
+      "reason": "旧裏ゾーン即獲得から10G上位ATチャレンジへ変更済み。"
+    },
+    {
+      "id": 12,
+      "test": "ura challenges retain three-game 50% success and a used flag after failure",
+      "file": "tests/nova-balance120.test.mjs",
+      "currentTest": "ten misses finish the upper challenge, while bell/replay and their aim games HOLD",
+      "category": "obsolete-expectation",
+      "status": "updated",
+      "reason": "10G・HOLD・次Gノヴァ狙いの現行ルールを検査。"
+    },
+    {
+      "id": 13,
+      "test": "15pt bells preserve the 50G normal base for every setting",
+      "file": "tests/nova-bell15.test.mjs",
+      "currentTest": "15pt bells preserve the configured shared-role base for every setting",
+      "category": "obsolete-expectation",
+      "status": "updated",
+      "reason": "設定別の共有小役ベース（設定1〜5:33.5、6:42）と初期設定値200ptへ更新。通常専用リプレイ低減はv173検査で別確認。"
+    },
+    {
+      "id": 14,
+      "test": "existing saves migrate the ART configuration once without altering artwork layout",
+      "file": "tests/nova-bell15.test.mjs",
+      "currentTest": "existing saves migrate the ART configuration once without altering artwork layout",
+      "category": "obsolete-expectation",
+      "status": "updated",
+      "reason": "設定別の共有小役ベース（設定1〜5:33.5、6:42）と初期設定値200ptへ更新。通常専用リプレイ低減はv173検査で別確認。"
+    },
+    {
+      "id": 15,
+      "test": "production burst is one three-game chance per new AT, with a 50% success rate",
+      "file": "tests/nova-burst112.test.mjs",
+      "currentTest": "upper challenge includes HOLD and aim games in initial 50% and ordinary 65% success",
+      "category": "obsolete-expectation",
+      "status": "updated",
+      "reason": "旧3G裏チャレンジから10G・小役HOLD・上位ATへ変更済み。"
+    },
+    {
+      "id": 16,
+      "test": "success persists through save, bonus and zones; legacy AT receives common rules without losing quota",
+      "file": "tests/nova-burst112.test.mjs",
+      "currentTest": "upper success and earned quota survive reload, bonus and zone transitions",
+      "category": "obsolete-expectation",
+      "status": "updated",
+      "reason": "上位フラグ・前兆・廃止ATレベルの保存互換性を検査。"
+    },
+    {
+      "id": 17,
+      "test": "last-quota trigger and preexisting zone are preserved without net-dependent adjustment",
+      "file": "tests/nova-burst112.test.mjs",
+      "currentTest": "last-quota rare trigger waits for the already won zone and preserves awarded quota",
+      "category": "obsolete-expectation",
+      "status": "updated",
+      "reason": "特化当選前兆と後続チャレンジの優先順を検査。"
+    },
+    {
+      "id": 18,
+      "test": "ura success reserves a zone without granting quota before zone play",
+      "file": "tests/nova-burst113.test.mjs",
+      "currentTest": "initial challenge success and failure each reserve one ordinary zone without free quota",
+      "category": "obsolete-expectation",
+      "status": "updated",
+      "reason": "初当たり上位チャレンジは成否とも特化1個で開始。直接8000ptは廃止。"
+    },
+    {
+      "id": 19,
+      "test": "six-setting ura entry rates are valid and keep 50% success",
+      "file": "tests/nova-burst113.test.mjs",
+      "currentTest": "upper challenge has ten games, initial 5% entry and no direct-point or AT-level reward",
+      "category": "obsolete-expectation",
+      "status": "updated",
+      "reason": "現行上位チャレンジの入口・公称条件を検査。"
+    },
+    {
+      "id": 20,
+      "test": "one-shot burst flag survives pending and active BIG, then is consumed once",
+      "file": "tests/nova-burst119-debug.test.mjs",
+      "currentTest": "one-shot burst flag survives pending and active BIG, then is consumed once",
+      "category": "obsolete-expectation",
+      "status": "updated",
+      "reason": "デバッグ強制フラグの名称・10G・HOLD・次G狙いへ更新。保留、消費一回、獲得済みpt/ストック維持を検査。"
+    },
+    {
+      "id": 21,
+      "test": "normal-screen selection creates the configured initial AT and a full three-game challenge with random success",
+      "file": "tests/nova-burst119-debug.test.mjs",
+      "currentTest": "normal-screen selection creates the configured initial AT and a full ten-game challenge with random success",
+      "category": "obsolete-expectation",
+      "status": "updated",
+      "reason": "デバッグ強制フラグの名称・10G・HOLD・次G狙いへ更新。保留、消費一回、獲得済みpt/ストック維持を検査。"
+    },
+    {
+      "id": 22,
+      "test": "existing quota and stocks survive; active zone finishes before the queued challenge",
+      "file": "tests/nova-burst119-debug.test.mjs",
+      "currentTest": "existing quota and stocks survive; active zone finishes before the queued challenge",
+      "category": "obsolete-expectation",
+      "status": "updated",
+      "reason": "デバッグ強制フラグの名称・10G・HOLD・次G狙いへ更新。保留、消費一回、獲得済みpt/ストック維持を検査。"
+    },
+    {
+      "id": 23,
+      "test": "forced retry escapes recovery or previous challenge without discarding earned quota",
+      "file": "tests/nova-burst119-debug.test.mjs",
+      "currentTest": "forced retry escapes recovery or previous challenge without discarding earned quota",
+      "category": "obsolete-expectation",
+      "status": "updated",
+      "reason": "デバッグ強制フラグの名称・10G・HOLD・次G狙いへ更新。保留、消費一回、獲得済みpt/ストック維持を検査。"
+    },
+    {
+      "id": 24,
+      "test": "manual and AUTO/simulation spin paths share the retained ura flag",
+      "file": "tests/nova-burst119-debug.test.mjs",
+      "currentTest": "manual and AUTO/simulation spin paths share the retained ura flag",
+      "category": "obsolete-expectation",
+      "status": "updated",
+      "reason": "デバッグ強制フラグの名称・10G・HOLD・次G狙いへ更新。保留、消費一回、獲得済みpt/ストック維持を検査。"
+    },
+    {
+      "id": 25,
+      "test": "weak NOVA retains its common AT threshold and reserves the zone for the prelude",
+      "file": "tests/nova-calibrated-entry.test.mjs",
+      "currentTest": "weak NOVA obeys the setting-adjusted threshold and reserves wins in the prelude",
+      "category": "obsolete-expectation",
+      "status": "updated",
+      "reason": "設定別の特化係数を含めた境界を検査。"
+    },
+    {
+      "id": 26,
+      "test": "live Ouma free BET charges neither pt nor total game count",
+      "file": "tests/nova-chain.test.mjs",
+      "currentTest": "live Ouma free BET charges neither pt nor total game count",
+      "category": "test-harness",
+      "status": "updated",
+      "reason": "実関数が呼ぶ差枚管理・監査のモックを追加。0G連でBETと累計Gが増えないことを検査。"
+    },
+    {
+      "id": 27,
+      "test": "only comeback boosts rare frequency, keeping its bell/replay/premium mix and other phases intact",
+      "file": "tests/nova-comeback114.test.mjs",
+      "currentTest": "comeback normalizes rare frequency to 20% revival without changing other phases",
+      "category": "obsolete-expectation",
+      "status": "updated",
+      "reason": "設定6の小役優遇後は引き戻しの全レア役率が通常より必ず高いとは限らない。20%復活に必要な正規化と他状態への非干渉を検査。"
+    },
+    {
+      "id": 28,
+      "test": "existing ura challenge progress and earned rewards survive the migration",
+      "file": "tests/nova-common125.test.mjs",
+      "currentTest": "legacy three-game challenge restarts as current challenge without losing earned balances",
+      "category": "obsolete-expectation",
+      "status": "updated",
+      "reason": "保存済み旧3Gチャレンジは10Gへ移行。獲得済み残高は維持。"
+    },
+    {
+      "id": 29,
+      "test": "natural initial-zone rare roles use the AT frequencies and the new exact award mean",
+      "file": "tests/nova-duo157.test.mjs",
+      "currentTest": "BUG-002: reported duo mean must include the setting-specific initial base weights",
+      "category": "production-defect",
+      "status": "open",
+      "reason": "実抽選は設定別平均180〜230ptだが集計補助関数は旧共通配分を使う。実抽選の検査と集計不整合の失敗検査を分離。",
+      "issue": "BUG-002",
+      "additionalCoverage": "natural initial-zone rare roles use the AT frequencies and the new exact award mean"
+    },
+    {
+      "id": 30,
+      "test": "BIG and migrated REG both use a 100pt target",
+      "file": "tests/nova-entry-flow.test.mjs",
+      "currentTest": "BIG and migrated REG both use a 50pt target",
+      "category": "obsolete-expectation",
+      "status": "updated",
+      "reason": "BIGは50ptへ変更済み。AT特化当選は3〜5G前兆の後、7→ルーレットへ進む。"
+    },
+    {
+      "id": 31,
+      "test": "ART win freezes quota, then red seven, roulette, announcement, zone",
+      "file": "tests/nova-entry-flow.test.mjs",
+      "currentTest": "ART win freezes quota, then red seven, roulette, announcement, zone",
+      "category": "obsolete-expectation",
+      "status": "updated",
+      "reason": "BIGは50ptへ変更済み。AT特化当選は3〜5G前兆の後、7→ルーレットへ進む。"
+    },
+    {
+      "id": 32,
+      "test": "entry quota draw happens once on a new AT, never on loss, resume, or reload",
+      "file": "tests/nova-entry126.test.mjs",
+      "currentTest": "new AT draws a base quota and initial challenge once; resume and reload draw neither",
+      "category": "obsolete-expectation",
+      "status": "updated",
+      "reason": "初期pt抽選に加え初当たり5%上位チャレンジを1回抽選。"
+    },
+    {
+      "id": 33,
+      "test": "all settings draw the same initial quota distribution with valid weights",
+      "file": "tests/nova-entry126.test.mjs",
+      "currentTest": "setting-dependent initial bases plus rare-role rewrites average 180 through 230pt",
+      "category": "obsolete-expectation",
+      "status": "updated",
+      "reason": "設定別初期平均180〜230pt、レア役書換を含む独立計算を検査。"
+    },
+    {
+      "id": 34,
+      "test": "saved extra stocks become special zones without granting legacy 150/300pt quotas",
+      "file": "tests/nova-entry126.test.mjs",
+      "currentTest": "saved extra stocks become special zones without granting legacy 150/300pt quotas",
+      "category": "obsolete-expectation",
+      "status": "updated",
+      "reason": "初期pt抽選は150〜300ptへ変更済み。残高・ストックの保存と、初期ptが後続上乗せの上限にならない検査を維持。"
+    },
+    {
+      "id": 35,
+      "test": "entry quota never caps or changes later role rewards",
+      "file": "tests/nova-entry126.test.mjs",
+      "currentTest": "entry quota never caps or changes later role rewards",
+      "category": "obsolete-expectation",
+      "status": "updated",
+      "reason": "初期pt抽選は150〜300ptへ変更済み。残高・ストックの保存と、初期ptが後続上乗せの上限にならない検査を維持。"
+    },
+    {
+      "id": 36,
+      "test": "comeback and ura challenge preserve the entry draw and earned balance",
+      "file": "tests/nova-entry126.test.mjs",
+      "currentTest": "comeback and rare-triggered upper challenge preserve entry quota and earned balance",
+      "category": "obsolete-expectation",
+      "status": "updated",
+      "reason": "初期150〜300ptと上位チャレンジの現在の状態を検査。"
+    },
+    {
+      "id": 37,
+      "test": "cancel preserves complete and does not start; approval resets before fast play",
+      "file": "tests/nova-fast-complete.test.mjs",
+      "currentTest": "cancel preserves complete and does not start; approval resets before fast play",
+      "category": "test-harness",
+      "status": "updated",
+      "reason": "高速回転開始処理が参照する演出UI・音声再生フラグのモックを補完。確認取消時に再開しないことも検査。"
+    },
+    {
+      "id": 38,
+      "test": "ordinary start does not reset a game",
+      "file": "tests/nova-fast-complete.test.mjs",
+      "currentTest": "ordinary start does not reset a game",
+      "category": "test-harness",
+      "status": "updated",
+      "reason": "高速回転開始処理が参照する演出UI・音声再生フラグのモックを補完。確認取消時に再開しないことも検査。"
+    },
+    {
+      "id": 39,
+      "test": "ART starts at 150pt and ends after actual payouts reach the target",
+      "file": "tests/nova-flow.test.mjs",
+      "currentTest": "new AT reveals its initial quota, consumes actual payouts, then runs five comeback games",
+      "category": "obsolete-expectation",
+      "status": "updated",
+      "reason": "初期pt決定ゾーンと5G引き戻しを含む現在のフローを検査。"
+    },
+    {
+      "id": 40,
+      "test": "initial draw of three independent 50/100pt awards has exact mean 200",
+      "file": "tests/nova-initial131.test.mjs",
+      "currentTest": "default unconfigured initial base has the original mean 200; configured settings use separate weights",
+      "category": "obsolete-expectation",
+      "status": "updated",
+      "reason": "既定200ptの配分と設定別180〜230ptを区別。初期ptと5%初当たり上位チャレンジの2回抽選を検査。"
+    },
+    {
+      "id": 41,
+      "test": "fresh bonus win waits exactly three paid games then seven, roulette and initial zone",
+      "file": "tests/nova-initial131.test.mjs",
+      "currentTest": "fresh bonus win waits exactly three paid games then seven, roulette and initial zone",
+      "category": "obsolete-expectation",
+      "status": "updated",
+      "reason": "既定200ptの配分と設定別180〜230ptを区別。初期ptと5%初当たり上位チャレンジの2回抽選を検査。"
+    },
+    {
+      "id": 42,
+      "test": "retired minus-2000 bonus no longer overrides the common AT rules",
+      "file": "tests/nova-loss-boost.test.mjs",
+      "currentTest": "retired minus-2000 bonus no longer overrides the common AT rules",
+      "category": "obsolete-expectation",
+      "status": "updated",
+      "reason": "設定別特化係数を含めた当選境界へ更新。区間中点の全数検査では境界ちょうどを外すため、丸めも厳密な未満比較へ合わせた。"
+    },
+    {
+      "id": 43,
+      "test": "ART starts at 150pt and ends after actual payouts reach the target",
+      "file": "tests/nova-flow.test.mjs",
+      "currentTest": "new AT reveals its initial quota, consumes actual payouts, then runs five comeback games",
+      "category": "duplicate",
+      "status": "removed-duplicate",
+      "reason": "nova-mode.test.mjsがnova-flow.test.mjsを再importしていたため同じ6件が二重実行。元の6件は残し、転送だけのファイルを削除。"
+    },
+    {
+      "id": 44,
+      "test": "normal base is 50 across six settings and probability tables are valid",
+      "file": "tests/nova-morning99.test.mjs",
+      "currentTest": "shared-role base follows setting controls and probabilities remain valid",
+      "category": "obsolete-expectation",
+      "status": "updated",
+      "reason": "設定別の共有小役ベース（設定1〜5:33.5、6:42）を検査。旧一律50Gベースを期待しない。"
+    },
+    {
+      "id": 45,
+      "test": "freeze offers exactly three equal outcomes and stacks reserved zones with impurity",
+      "file": "tests/nova-normal.test.mjs",
+      "currentTest": "freeze offers exactly three equal outcomes and stacks reserved zones with impurity",
+      "category": "obsolete-expectation",
+      "status": "updated",
+      "reason": "初当たりの初期pt決定を先に消化。承認済みの直乗せ当選率変更を含む小役検査へ更新。"
+    },
+    {
+      "id": 46,
+      "test": "AT chance eyes have equal promotion and direct awards without direct zone wins",
+      "file": "tests/nova-normal.test.mjs",
+      "currentTest": "AT chance eyes share promotion and direct awards when the supplemental zone draw misses",
+      "category": "obsolete-expectation",
+      "status": "updated",
+      "reason": "初当たりの初期pt決定を先に消化。承認済みの直乗せ当選率変更を含む小役検査へ更新。"
+    },
+    {
+      "id": 47,
+      "test": "failed continuation bypasses fee, game counter and role/zone draws",
+      "file": "tests/nova-ouma-failed-zero.test.mjs",
+      "currentTest": "failed continuation bypasses fee, game counter and role/zone draws",
+      "category": "test-harness",
+      "status": "updated",
+      "reason": "費用処理前のローカル変数追加に対応した抽出と監査モックを補完。0G失敗がBET/抽選/精算を通らない検査を維持。"
+    },
+    {
+      "id": 48,
+      "test": "failed continuation completion skips ordinary result application",
+      "file": "tests/nova-ouma-failed-zero.test.mjs",
+      "currentTest": "failed continuation completion skips ordinary result application",
+      "category": "test-harness",
+      "status": "updated",
+      "reason": "費用処理前のローカル変数追加に対応した抽出と監査モックを補完。0G失敗がBET/抽選/精算を通らない検査を維持。"
+    },
+    {
+      "id": 49,
+      "test": "ART consumes actual gross payout, with free replay, and zero-pay roles preserve its quota",
+      "file": "tests/nova-payout-management.test.mjs",
+      "currentTest": "AT consumes gross role payout from a fixed earned balance and enters comeback at zero",
+      "category": "obsolete-expectation",
+      "status": "updated",
+      "reason": "初期ptはランダムなので支払検査では残高150を明示。残0は引き戻しへ。"
+    },
+    {
+      "id": 50,
+      "test": "CZ spreads the eight lamps across games and all landed stops in the requested order",
+      "file": "tests/nova-presentation150.test.mjs",
+      "currentTest": "CZ spreads the eight lamps across games at third stops only in the requested order",
+      "category": "obsolete-expectation",
+      "status": "updated",
+      "reason": "ユーザーの最終指示はCZキャラ点灯を第三停止のみ。8人の順序・全員点灯・初回固定なしの検査を維持。"
+    },
+    {
+      "id": 51,
+      "test": "lamp timing varies across CZs, spans the session even for low final tiers, and never forces three lamps in game one",
+      "file": "tests/nova-presentation154.test.mjs",
+      "currentTest": "lamp timing varies across CZs, spans the session even for low final tiers, and never forces three lamps in game one",
+      "category": "obsolete-expectation",
+      "status": "updated",
+      "reason": "CZ点灯は第三停止のみへ変更済み。点灯Gのばらつき・保存再現・抽選乱数を消費しない検査を維持。"
+    },
+    {
+      "id": 52,
+      "test": "explicit CZ debug odds and guarantees are not overwritten by setting tuning",
+      "file": "tests/nova-role128.test.mjs",
+      "currentTest": "explicit CZ debug odds and guarantees are not overwritten by setting tuning",
+      "category": "obsolete-expectation",
+      "status": "updated",
+      "reason": "設定6だけ共有ベース42Gに優遇済み。CZデバッグ上書き・確定率の検査を残して、旧全設定33.5G期待を更新。"
+    },
+    {
+      "id": 53,
+      "test": "non-chance normal roles have smooth modest differences",
+      "file": "tests/nova-soft-settings.test.mjs",
+      "currentTest": "setting 6 has the approved stronger normal mix while every role samples its configured probability",
+      "category": "obsolete-expectation",
+      "status": "updated",
+      "reason": "設定6の別格小役率とリプレイ54%（共有表）は承認済み。通常専用表は別のv173テスト。"
+    },
+    {
+      "id": 54,
+      "test": "freeze bonus uses BIG payout target, no setting hint, no old PBB sound",
+      "file": "tests/nova-soft-settings.test.mjs",
+      "currentTest": "freeze bonus uses BIG payout target, no setting hint, no old PBB sound",
+      "category": "obsolete-expectation",
+      "status": "updated",
+      "reason": "ボーナスは通常/上位とも50pt。フリーズ時の旧150pt期待を更新し、旧ボイスを出さない検査を維持。"
+    },
+    {
+      "id": 55,
+      "test": "AT guarantee pauses during roulette and zones, carries through sets and save",
+      "file": "tests/nova-state-nova.test.mjs",
+      "currentTest": "AT high guarantee counts prelude games, pauses in roulette/zones and survives stock consumption",
+      "category": "obsolete-expectation",
+      "status": "updated",
+      "reason": "特化前兆中は通常ATの高確Gを消費。ルーレット・特化中は保持、ストックはpt直接付与しない。"
+    },
+    {
+      "id": 56,
+      "test": "Ura Sora base reset stays25 percent and tail control reduces super means",
+      "file": "tests/nova-super-groups.test.mjs",
+      "currentTest": "seven zones share 35% seven wins and distinct 2/15/30% five-game reset rates",
+      "category": "obsolete-expectation",
+      "status": "updated",
+      "reason": "5G-ST差別化と2000pt減衰撤廃を反映。"
+    },
+    {
+      "id": 57,
+      "test": "ordinary super NOVA plays once but reverse freeze skips the lineup sound",
+      "file": "tests/nova-super-stop.test.mjs",
+      "currentTest": "BUG-003: reverse freeze must not add the ordinary super-NOVA lineup sound",
+      "category": "production-defect",
+      "status": "open",
+      "reason": "不足モックを補完すると、逆回転時にも通常のSUPER_NOVA揃い音を呼ぶことが再現。旧テストの音を省く期待を維持して失敗として残す。実音の聞き比べは未実施。",
+      "issue": "BUG-003"
+    },
+    {
+      "id": 58,
+      "test": "actual stop grids match every supported outcome using real consecutive strip cells",
+      "file": "tests/nova-symbols.test.mjs",
+      "currentTest": "actual stop grids match every supported outcome using real consecutive strip cells",
+      "category": "obsolete-expectation",
+      "status": "updated",
+      "reason": "REGは現行の支持図柄対象から除外。BIG払い出しは50ptまでで最終ベルを残枚数に制限。AT残0は5G引き戻しへ。"
+    },
+    {
+      "id": 59,
+      "test": "bell pays 15 normally and throughout bonus including final game",
+      "file": "tests/nova-symbols.test.mjs",
+      "currentTest": "bell pays 15 normally and caps the final BIG payout at the remaining 50pt target",
+      "category": "obsolete-expectation",
+      "status": "updated",
+      "reason": "REGは現行の支持図柄対象から除外。BIG払い出しは50ptまでで最終ベルを残枚数に制限。AT残0は5G引き戻しへ。"
+    },
+    {
+      "id": 60,
+      "test": "game resolver expires ART when final payout exhausts the quota",
+      "file": "tests/nova-symbols.test.mjs",
+      "currentTest": "game resolver enters comeback when final payout exhausts the quota",
+      "category": "obsolete-expectation",
+      "status": "updated",
+      "reason": "REGは現行の支持図柄対象から除外。BIG払い出しは50ptまでで最終ベルを残枚数に制限。AT残0は5G引き戻しへ。"
+    },
+    {
+      "id": 61,
+      "test": "normal and ura Toto clear rainbow on final stop without losing award",
+      "file": "tests/nova-toto-lamp.test.mjs",
+      "currentTest": "normal and ura Toto clear rainbow on final stop without losing award",
+      "category": "test-harness",
+      "status": "updated",
+      "reason": "開始残高を明示し、既に7保証を消化した状態を設定。ランプ消灯検査に初期pt抽選や最終G保証を混在させない。"
+    },
+    {
+      "id": 62,
+      "test": "normal and heaven persistence increases without changing ceilings",
+      "file": "tests/nova-volatility.test.mjs",
+      "currentTest": "retired normal/heaven modes migrate to common normal without mode-zone lotteries",
+      "category": "obsolete-expectation",
+      "status": "updated",
+      "reason": "通常モードと規定Gゾーン廃止、共通天井800Gへ変更済み。"
+    },
+    {
+      "id": 63,
+      "test": "shared tables and one-shot settle once on the first challenge",
+      "file": "tests/nova-zone-redesign.test.mjs",
+      "currentTest": "shared tables and one-shot settle once on the first challenge",
+      "category": "obsolete-expectation",
+      "status": "updated",
+      "reason": "裏ギルはテーブル6固定、300pt通過保証、7は100pt固定、逢魔は最低100ptへ変更済み。それぞれの保証と通常抽選の検査条件を分離。"
+    },
+    {
+      "id": 64,
+      "test": "ladder strength changes success probability, with exact boundary failure",
+      "file": "tests/nova-zone-redesign.test.mjs",
+      "currentTest": "ladder strength changes success probability, with exact boundary failure",
+      "category": "obsolete-expectation",
+      "status": "updated",
+      "reason": "裏ギルはテーブル6固定、300pt通過保証、7は100pt固定、逢魔は最低100ptへ変更済み。それぞれの保証と通常抽選の検査条件を分離。"
+    },
+    {
+      "id": 65,
+      "test": "seven family can award each amount, grants no sets and resets final game to five",
+      "file": "tests/nova-zone-redesign.test.mjs",
+      "currentTest": "seven awards exactly 100pt, nebula resets five games, and neither grants a BIG or stock",
+      "category": "obsolete-expectation",
+      "status": "updated",
+      "reason": "7は100pt固定。保証を満たした状態で精算を検査、保証自体はnova-aimに別検査。"
+    },
+    {
+      "id": 66,
+      "test": "last-game Ouma hit continues free SUPER chains then settles only once",
+      "file": "tests/nova-zone-redesign.test.mjs",
+      "currentTest": "last-game Ouma hit continues free SUPER chains then settles only once",
+      "category": "obsolete-expectation",
+      "status": "updated",
+      "reason": "裏ギルはテーブル6固定、300pt通過保証、7は100pt固定、逢魔は最低100ptへ変更済み。それぞれの保証と通常抽選の検査条件を分離。"
+    },
+    {
+      "id": 67,
+      "test": "live zero-chain wiring automatically stops reels and continues with state guards",
+      "file": "tests/nova-zone-redesign.test.mjs",
+      "currentTest": "reverse-chain wiring synchronizes automatic stops and keeps delayed transitions guarded",
+      "category": "test-harness",
+      "status": "updated",
+      "reason": "旧自動spin文字列から、同期逆回転とBET継続の現行関数へ検査対象を変更。"
+    },
+    {
+      "id": 68,
+      "test": "threshold includes the proposed award and remains exact for large saved points",
+      "file": "tests/nova-zone-tail.test.mjs",
+      "currentTest": "retired 2000pt threshold never attenuates awards including huge saved balances",
+      "category": "obsolete-expectation",
+      "status": "updated",
+      "reason": "2000pt減衰撤廃済み。"
+    },
+    {
+      "id": 69,
+      "test": "seven crossing is rare but not capped; extension is reduced after threshold",
+      "file": "tests/nova-zone-tail.test.mjs",
+      "currentTest": "seven wins and five-game reset rates are unchanged across 2000pt",
+      "category": "obsolete-expectation",
+      "status": "updated",
+      "reason": "7固定100とST率が2000pt前後で変わらないことを検査。"
+    },
+    {
+      "id": 70,
+      "test": "paid Nova crossing is suppressed; committed free spin still pays and next freeze is reduced",
+      "file": "tests/nova-zone-tail.test.mjs",
+      "currentTest": "paid and free NOVA awards and freeze rate remain unchanged beyond 2000pt",
+      "category": "obsolete-expectation",
+      "status": "updated",
+      "reason": "有料/0Gノヴァ上乗せに旧2000pt減衰を適用しない。"
+    },
+    {
+      "id": 71,
+      "test": "threshold persists across reload and resets for a newly started zone",
+      "file": "tests/nova-zone-tail.test.mjs",
+      "currentTest": "reload retains the whole award and a new zone starts with an empty award",
+      "category": "obsolete-expectation",
+      "status": "updated",
+      "reason": "減衰を削除しても獲得済みpt保持・新ゾーンリセットを検査。"
+    },
+    {
+      "id": 72,
+      "test": "turning off tail multiplier recovers legacy exact means",
+      "file": "tests/nova-zone-tail.test.mjs",
+      "currentTest": "all current zone means are finite and tail attenuation stays disabled",
+      "category": "obsolete-expectation",
+      "status": "updated",
+      "reason": "旧性能の解析解との比較は撤廃。現行性能の独立試算比較はnova-zone-redesignで継続。"
+    }
+  ]
+}

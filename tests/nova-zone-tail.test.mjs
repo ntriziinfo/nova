@@ -1,10 +1,42 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
 for(const f of ['nova-tuning.js','nova-art.js','nova-balance.js'])vm.runInThisContext(fs.readFileSync(f,'utf8'));const a=NovaArt;
 const sequence=values=>()=>{assert.ok(values.length);return values.shift();};
-test('threshold includes the proposed award and remains exact for large saved points',()=>{assert.equal(a.zoneAwardFactor('1999'),1);assert.equal(a.zoneAwardFactor('1950',50),.01);assert.equal(a.zoneAwardFactor('2000'),.01);assert.equal(a.zoneAwardFactor('999999999999999999999999'),.01);});
+test('retired 2000pt threshold never attenuates awards including huge saved balances',()=>{
+ for(const [award,next]of [['1999',0],['1950',50],['2000',0],['999999999999999999999999',0]])assert.equal(a.zoneAwardFactor(award,next),1);
+});
+
 test('ladder actual role advances beyond 2000 without another draw',()=>{const s={...a.startZone(({...a.enter({},()=>.5),remaining:'150',entryQuota:'150'}),'ura_giru',{},()=>.9),ladderRevealed:true,ladderIndex:3,award:'2000',zoneLeft:1};const t=a.step(s,{},sequence([.1,0]));assert.equal(t.result,'REPLAY');assert.equal(t.flow.remaining,'3150');assert.equal(t.flow.zone,'');});
 
-test('seven crossing is rare but not capped; extension is reduced after threshold',()=>{const s={...a.startZone(({...a.enter({},()=>.5),remaining:'150',entryQuota:'150'}),'ura_sora'),award:'1950',zoneLeft:1};let t=a.step(s,{},sequence([0,.3,0,.5]));assert.equal(t.result,'MISS');assert.equal(t.flow.remaining,'2100');t=a.step(s,{},sequence([0,.3,0,.005]));assert.equal(t.flow.remaining,'2150');assert.equal(a.zoneRules({...s,award:'2000'}).reset,.0025);assert.equal(a.zoneRules(s).reset,.25);});
-test('paid Nova crossing is suppressed; committed free spin still pays and next freeze is reduced',()=>{const s={...a.startZone(({...a.enter({},()=>.5),remaining:'150',entryQuota:'150'}),'ura_ouma'),award:'1900',zoneLeft:1};let t=a.step(s,{},sequence([0,0,0,.5]));assert.equal(t.result,'MISS');assert.equal(t.flow.remaining,'2050');assert.equal(a.oumaFreezeRate(s,a.defaults),.006500000000000001);t=a.step({...s,zero:true},{},()=>0);assert.equal(t.result,'SUPER_NOVA');assert.equal(t.flow.award,'2100');assert.equal(t.flow.zero,false);});
-test('threshold persists across reload and resets for a newly started zone',()=>{const s=JSON.parse(JSON.stringify({...a.startZone(({...a.enter({},()=>.5),remaining:'150',entryQuota:'150'}),'sora'),award:'2300'}));assert.equal(a.zoneAwardFactor(a.normalize(s).award),.01);assert.equal(a.startZone(a.settleZone(s),'sora').award,'0');});
-test('turning off tail multiplier recovers legacy exact means',()=>{const saved=a.zoneTailControl.factor;a.zoneTailControl.factor=1;try{assert.ok(Math.abs(NovaBalance.zoneMean('ura_sora')-((.25*10+NovaArt.defaults.soraUraHit*(50*.2+100*.2+150*.2+200*.15+300*.15+500*.1))*((1-.25)**-5-1)/.25))<1e-8);assert.ok(Math.abs(NovaBalance.zoneMean('ura_ouma')-(5*NovaArt.defaults.oumaUraSuper*170/(1-NovaArt.defaults.oumaUraFreeze)))<1e-8);assert.ok(Math.abs(NovaBalance.zoneMean('ura_giru')-933.5864197530863)<1e-8);}finally{a.zoneTailControl.factor=saved;}});
+test('seven wins and five-game reset rates are unchanged across 2000pt',()=>{
+ for(const id of ['toto','sora','ura_sora']){
+  const base={...a.startZone({...a.enter({},()=>.5),remaining:'150'},id),sevenHits:10,zoneLeft:1};
+  for(const award of ['1900','2000','5000']){
+   const s={...base,award},t=a.step(s,{},()=>.1,'BIG');assert.equal(t.zoneAward,100);assert.equal(t.flow.remaining,String(150+Number(award)+100));
+   assert.equal(a.zoneRules(s).reset,a.zoneRules(base).reset);
+   const reset=a.step(s,{},()=>.1,'NEBULA');assert.equal(reset.flow.zoneLeft,5);assert.equal(reset.zoneAward,10);
+  }
+ }
+});
+
+test('paid and free NOVA awards and freeze rate remain unchanged beyond 2000pt',()=>{
+ for(const id of ['urapi','ouma','ura_ouma']){
+  const base=a.startZone({...a.enter({},()=>.5),remaining:'150'},id);
+  for(const award of ['1900','2000','5000'])for(const zero of [false,true]){
+   const s={...base,award,zero,zoneLeft:2},t=a.step(s,{},()=>0,'SUPER_NOVA');
+   assert.equal(t.result,'SUPER_NOVA');assert.equal(t.zoneAward,id==='ura_ouma'?200:100);
+   assert.equal(a.oumaFreezeRate(s,a.defaults),a.oumaFreezeRate(base,a.defaults));
+  }
+ }
+});
+
+test('reload retains the whole award and a new zone starts with an empty award',()=>{
+ const s=JSON.parse(JSON.stringify({...a.startZone({...a.enter({},()=>.5),remaining:'150'},'sora'),award:'2300'}));
+ assert.equal(a.normalize(s).award,'2300');assert.equal(a.zoneAwardFactor(a.normalize(s).award),1);
+ const end=a.settleZone(s);assert.equal(end.remaining,'2450');assert.equal(a.startZone(end,'sora').award,'0');
+});
+
+test('all current zone means are finite and tail attenuation stays disabled',()=>{
+ assert.equal(a.zoneTailControl.factor,1);
+ for(const id of a.zoneIds)assert(Number.isFinite(NovaBalance.zoneMean(id))&&NovaBalance.zoneMean(id)>0,id);
+ // Detailed independent simulation comparison is in nova-zone-redesign.test.mjs.
+});

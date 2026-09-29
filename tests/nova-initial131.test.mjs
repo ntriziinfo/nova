@@ -5,20 +5,20 @@ import {xoshiro128} from '../scripts/zone-v2-rng.mjs';
 loadModel();const a=NovaArt;
 const reload=s=>a.normalize(JSON.parse(JSON.stringify(s)));
 
-test('initial draw of three independent 50/100pt awards has exact mean 200',()=>{
+test('default unconfigured initial base has the original mean 200; configured settings use separate weights',()=>{
  const r=a.entryQuotaRules;assert.equal(r.weights.reduce((n,w)=>n+w,0),27);
  assert.equal(r.values.reduce((n,p,i)=>n+p*r.weights[i],0)/27,200);
  let cumulative=0;
  for(let i=0;i<4;i++){
   assert.equal(r.values[i],150+i*50);
-  for(let setting=1;setting<=6;setting++)assert.equal(a.enterInitial({setting},()=>(cumulative+r.weights[i]/2)/27).entryQuota,String(r.values[i]));
+  assert.equal(a.enterInitial({},()=>(cumulative+r.weights[i]/2)/27).entryQuota,String(r.values[i]));
   cumulative+=r.weights[i];
  }
 });
 
 test('fresh bonus win waits exactly three paid games then seven, roulette and initial zone',()=>{
  let draws=0;let s=a.afterBonus({phase:'normal'},{setting:6},2,()=>{draws++;return .5;});
- assert.equal(draws,1);assert.equal(s.remaining,'0');assert.equal(s.entryQuota,'200');assert.equal(s.sets,'1');
+ assert.equal(draws,2);assert.equal(s.remaining,'0');assert.equal(s.entryQuota,'200');assert.equal(s.sets,'1');
  for(let g=0;g<3;g++){
   assert.equal(s.initialWait,3-g);assert.equal(s.entryStage,'');assert.equal(s.zone,'');
   s=a.step(reload(s),{setting:6},()=>.5).flow;

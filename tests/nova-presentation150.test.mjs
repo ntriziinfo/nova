@@ -2,7 +2,7 @@ import {readGameSource} from '../scripts/game-source.mjs';
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
 const flowContext=vm.createContext({});vm.runInContext(fs.readFileSync('nova-flow.js','utf8'),flowContext);const f=flowContext.NovaFlow;
 
-test('CZ spreads the eight lamps across games and all landed stops in the requested order',()=>{
+test('CZ spreads the eight lamps across games at third stops only in the requested order',()=>{
  assert.deepEqual([...f.lampCharacters],['kushuri','nito','sosuke','toto','urapi','giru1','sora1','ouma1']);
  for(const total of [15,16,17,18,19,20]){
   const seen=[],stops=new Set();let previous=0;
@@ -12,7 +12,7 @@ test('CZ spreads the eight lamps across games and all landed stops in the reques
    if(display.stage>previous){stops.add(stop);for(let i=previous;i<display.stage;i++)seen.push(f.lampCharacters[i]);}
    previous=display.stage;
   }
-  assert.equal(stops.size,3);assert.deepEqual(seen,[...f.lampCharacters]);
+  assert.deepEqual([...stops],[3]);assert.deepEqual(seen,[...f.lampCharacters]);
   assert(f.lampDisplayAtStop({stage:6,totalGames:total,remaining:total},3).stage<=1);
  }
 });

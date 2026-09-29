@@ -67,7 +67,7 @@ test('explicit CZ debug odds and guarantees are not overwritten by setting tunin
   assert.equal(f.forSetting({czChance:.2,strongChance:.85},setting).strongChance,.85);
   const p=n.roleProbabilities(setting);
   assert(Object.values(p).every(p=>p>=0&&p<=1));assert(Math.abs(Object.values(p).reduce((a,b)=>a+b,0)-1)<1e-12);
-  assert(Math.abs(50/(3*(1-p.REPLAY)-Object.entries(p).reduce((sum,[role,p])=>sum+p*n.pay(role),0))-33.5)<1e-10);
+  assert(Math.abs(50/(3*(1-p.REPLAY)-Object.entries(p).reduce((sum,[role,p])=>sum+p*n.pay(role),0))-NovaTuning.profile(setting).base)<1e-10);
  }
  assert.equal(a.initialHitBoost,undefined);
 });

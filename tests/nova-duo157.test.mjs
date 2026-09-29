@@ -36,9 +36,23 @@ test('natural initial-zone rare roles use the AT frequencies and the new exact a
    }
    total+=Number(s.remaining);
   }
-  const mean=NovaBalance.zoneMean('kushuri_nito',{setting});assert(mean>200&&mean<250);assert(Math.abs(total/count-mean)<1.5,`${setting}: ${total/count} vs ${mean}`);
+  // Independent approved target includes rare-role rewrites (not just the sealed base).
+  const mean=170+setting*10;assert(Math.abs(total/count-mean)<1.5,`${setting}: ${total/count} vs ${mean}`);
  }
  assert(sawWeak>0&&sawStrong>0);
+});
+
+test('BUG-002: reported duo mean must include the setting-specific initial base weights',()=>{
+ const mismatches=[];
+ for(let setting=1;setting<=6;setting++){
+  const weights=a.entryWeights[setting-1];
+  const base=a.entryQuotaRules.values.reduce((sum,pt,i)=>sum+pt*weights[i],0)/3;
+  const expected=3*Object.entries(a.roleProbabilities(setting)).reduce((sum,[role,p])=>sum+p*(a.initialRareAwards[role]??base),0);
+  assert(Math.abs(expected-(170+setting*10))<1e-9);
+  const reported=NovaBalance.zoneMean('kushuri_nito',{setting});
+  if(Math.abs(reported-expected)>1e-9)mismatches.push({setting,expected,reported});
+ }
+ assert.deepEqual(mismatches,[],'Mean-reporting helper is outdated; this does not change the live draw');
 });
 
 test('duo stop effects follow accepted button presses once, leaving ordinary landing sounds silent',()=>{

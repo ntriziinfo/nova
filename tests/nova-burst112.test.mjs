@@ -3,46 +3,39 @@ import assert from 'node:assert/strict';
 import {loadModel} from '../scripts/zone-v2-model.mjs';
 import {xoshiro128} from '../scripts/zone-v2-rng.mjs';
 
-test('production burst is one three-game chance per new AT, with a 50% success rate',()=>{
- loadModel();const a=NovaArt,initial={...a.enter({setting:6},()=>0),burstUsed:true,burstPending:true};
- const rng=xoshiro128(112);let wins=0;
- for(let i=0;i<30000;i++){
-  let s=initial;
-  for(let g=0;g<3&&!s.burstWon;g++)s=a.step(s,{setting:6},rng).flow;
-  wins+=s.burstWon;
-  assert.equal(s.remaining,initial.remaining);if(s.burstWon)assert(a.zoneGroups.super.includes(s.pendingZone));
-  assert.equal(s.atLevel,undefined);
-  assert.equal(s.burstPending,false);assert.equal(s.burstLeft,0);
+test('upper challenge includes HOLD and aim games in initial 50% and ordinary 65% success',()=>{
+ loadModel();const a=NovaArt;
+ for(const [source,target] of [['initial',.5],['rare',.65]]){
+  const rng=xoshiro128('challenge-'+source);let wins=0;
+  for(let i=0;i<6000;i++){
+   let s={...a.enter({setting:6},()=>.5),burstPending:true,burstUsed:true,researchChallengeSource:source},out,g=0;
+   do{out=a.step(s,{setting:6},rng);s=out.flow;assert(++g<1000);}while(!out.researchChallenge.finished);
+   wins+=out.researchChallenge.won;assert.equal(s.atLevel,undefined);assert.equal(s.burstPending,false);assert.equal(s.burstLeft,0);
+   if(source==='initial')assert.equal(s.entryStage,'seven');
+  }
+  assert(Math.abs(wins/6000-target)<.025,source+': '+wins/6000);
  }
- assert.ok(Math.abs(wins/30000-.5)<.015);
- let s=initial;
- for(let i=0;i<3;i++)s=a.step(s,{},()=>.999).flow;
- const next=a.step(s,{},()=>0,'STRONG_NOVA');
- assert.equal(next.flow.burstPending,false);assert.equal(next.flow.burstUsed,true);
 });
 
-test('success persists through save, bonus and zones; legacy AT receives common rules without losing quota',()=>{
+test('upper success and earned quota survive reload, bonus and zone transitions',()=>{
  loadModel();const a=NovaArt;
- let s=a.step({...a.enter({},()=>0),burstUsed:true,burstPending:true},{},()=>0).flow;
+ let s=a.step({...a.enter({},()=>.5),burstUsed:true,burstPending:true},{},()=>.99,'WEAK_NOVA').flow;
+ s=a.step(s,{},()=>.99,'MISS').flow;assert.equal(s.burstWon,true);assert.equal(s.researchUpper,true);
  s=a.afterBonus(a.normalize(JSON.parse(JSON.stringify(s))),{},1,()=>{throw Error('redraw');});
  s=a.settleZone(a.startZone(s,'sosuke',{},()=>.5));
- assert.equal(s.burstWon,true);assert.equal(s.atLevel,undefined);assert.equal(s.burstUsed,true);
- const old={...a.enter({},()=>0),atLevel:5,remaining:'9876'};delete old.burstVersion;
+ assert.equal(s.burstWon,true);assert.equal(s.researchUpper,true);assert.equal(s.burstUsed,true);assert.equal(s.atLevel,undefined);
+ const old={...a.enter({},()=>.5),atLevel:5,remaining:'9876'};delete old.burstVersion;
  const retained=a.normalize(old);assert.equal(retained.atLevel,undefined);assert.equal(retained.remaining,'9876');
  const step=a.step(retained,{setting:6},()=>0,'STRONG_NOVA');
- assert.equal(step.flow.burstPending,true);assert.equal(step.flow.entryStage,'seven');
- assert.equal(a.enter({},()=>0).burstVersion,2);assert.equal(a.enter({},()=>0).burstUsed,false);
+ assert.equal(step.flow.burstPending,true);assert.equal(step.flow.atPrelude.zones.length,1);assert.equal(step.flow.entryStage,'');
 });
 
-test('last-quota trigger and preexisting zone are preserved without net-dependent adjustment',()=>{
- loadModel();const a=NovaArt,base={...a.enter({},()=>0),remaining:'1'};
- const values=[.5,.9,.9,0];let i=0;
- const t=a.step(base,{setting:1},()=>values[i++]??.99,'WEAK_SUICA');
- assert.equal(t.flow.phase,'art');assert.equal(t.flow.burstPending,true);assert.equal(t.flow.remaining,'1');
- const strong=a.step(base,{setting:1},()=>0,'STRONG_NOVA');
- assert.equal(strong.flow.burstPending,true);assert.equal(strong.flow.entryStage,'seven');
- const entry=a.step(strong.flow,{setting:1},()=>.99);
- assert.equal(entry.burstEvent,undefined);assert.equal(entry.flow.entryStage,'roulette');
+test('last-quota rare trigger waits for the already won zone and preserves awarded quota',()=>{
+ loadModel();const a=NovaArt,base={...a.enter({},()=>.5),remaining:'1'};
+ let out=a.step(base,{setting:1},()=>0,'STRONG_NOVA'),s=out.flow;
+ assert.equal(s.burstPending,true);assert.equal(s.remaining,'1');assert.equal(s.atPrelude.zones.length,1);
+ while(s.atPrelude){out=a.step(s,{setting:1},()=>.99,'MISS');s=out.flow;assert.equal(out.burstEvent,undefined);}
+ out=a.step(s,{setting:1},()=>.99);assert.equal(out.burstEvent,undefined);assert.equal(out.flow.entryStage,'roulette');
  const run=netPt=>a.step({...base,remaining:'9999'},{setting:1,netPt},xoshiro128(112),'WEAK_NOVA');
  assert.deepEqual(run(-10000),run(10000));
 });

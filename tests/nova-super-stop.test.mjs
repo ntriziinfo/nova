@@ -1,9 +1,9 @@
 import {readGameSource} from '../scripts/game-source.mjs';
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
 const h=readGameSource(),fn=h.match(/  function playStopSound\([^]*?\n  }/)[0];
-test('ordinary super NOVA plays once but reverse freeze skips the lineup sound',()=>{
+test('BUG-003: reverse freeze must not add the ordinary super-NOVA lineup sound',()=>{
  for(const reverse of [false,true]){
-  const sounds=[];const c=vm.createContext({currentSpin:{result:'SUPER_NOVA',resolved:{oumaFreeze:reverse}},STOP_SOUND_SRC:'normal',sfxOutputVolume:()=>1,playOneShotSound(src){sounds.push(src)}});vm.runInContext(fn,c);
+  const sounds=[];const c=vm.createContext({isLadderShutterSpin:()=>false,currentSpin:{result:'SUPER_NOVA',resolved:{oumaFreeze:reverse}},STOP_SOUND_SRC:'normal',sfxOutputVolume:()=>1,playOneShotSound(src){sounds.push(src)}});vm.runInContext(fn,c);
   c.playStopSound(2,1);c.playStopSound(0,2);c.playStopSound(1,3);c.playStopSound(1,3);
   assert.deepEqual(sounds,reverse?['normal','normal']:['normal','normal','assets/media/nova/super-nova-stop.wav']);
  }

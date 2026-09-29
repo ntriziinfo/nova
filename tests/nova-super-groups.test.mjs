@@ -28,9 +28,10 @@ test('Ura Ouma awards 100 or 200 on paid and free spins, normal Ouma stays 50 or
   assert.equal(Number(t.flow.award),base*(id==='ura_ouma'?2:1));assert.equal(t.flow.zoneLeft,zero?5:4);assert.equal(t.oumaFreeze,zero);
  }
 });
-test('Ura Sora base reset stays25 percent and tail control reduces super means',()=>{
- const r=a.zoneRules(a.startZone(a.enter(),'ura_sora'));assert.equal(r.hit,.75);assert.equal(r.reset,.25);
- assert.equal(a.zoneRules(a.startZone(a.enter(),'sora')).reset,.06);
- assert.ok(b.zoneMean('ura_sora')<1800);
- assert.ok(b.zoneMean('ura_giru')<1900);assert.ok(b.zoneMean('ura_ouma')<2400);
+test('seven zones share 35% seven wins and distinct 2/15/30% five-game reset rates',()=>{
+ for(const [id,reset] of [['toto',.02],['sora',.15],['ura_sora',.30]]){
+  const r=a.zoneRules(a.startZone(a.enter({},()=>.5),id));assert.equal(r.hit,.35);assert.equal(r.reset,reset);
+  assert.equal(a.zoneRules({...a.startZone(a.enter({},()=>.5),id),award:'5000'}).reset,reset);
+ }
+ assert(b.zoneMean('toto')<b.zoneMean('sora'));assert(b.zoneMean('sora')<b.zoneMean('ura_sora'));
 });

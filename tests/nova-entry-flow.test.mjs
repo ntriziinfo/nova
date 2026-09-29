@@ -1,9 +1,10 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
 const ctx=vm.createContext({});for(const f of ['nova-tuning.js','nova-art.js','nova-flow.js','nova-balance.js','nova-normal.js'])vm.runInContext(fs.readFileSync(f,'utf8'),ctx);const a=ctx.NovaArt;
-test('BIG and migrated REG both use a 100pt target',()=>{assert.equal(a.bonusTarget('BIG'),100);assert.equal(a.bonusTarget('MID'),100)});
+test('BIG and migrated REG both use a 50pt target',()=>{assert.equal(a.bonusTarget('BIG'),50);assert.equal(a.bonusTarget('MID'),50)});
 test('ART win freezes quota, then red seven, roulette, announcement, zone',()=>{
  let s={...a.enter(),remaining:'5'};
  s=a.step(s,{big:1,zone:0},()=>0,'STRONG_NOVA').flow;
+ assert.equal(s.entryStage,'');assert.equal(s.atPrelude.zones.length,1);while(s.atPrelude)s=a.step(s,{setting:3},()=>.99,'MISS').flow;
  assert.equal(s.entryStage,'seven');assert.equal(s.remaining,'5');assert.equal(s.zone,'');
  s=a.normalize(JSON.parse(JSON.stringify(s)));
  let r=a.step(s,{},()=>.5);s=r.flow;assert.equal(r.result,'BIG');assert.equal(r.zoneSpin,true);assert.equal(r.internalBonus,undefined);assert.equal(s.entryStage,'roulette');assert.equal(s.remaining,'5');

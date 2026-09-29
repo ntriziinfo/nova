@@ -6,13 +6,15 @@ const ctx=vm.createContext({});
 for(const file of ['nova-tuning.js','nova-art.js','nova-flow.js','nova-normal.js'])vm.runInContext(fs.readFileSync(file,'utf8'),ctx);
 const a=ctx.NovaArt,n=ctx.NovaNormal;
 const normal={mode:'通常B',games:245,impurity:78,level:'high'};
-test('ART final game resets normal ceiling count and next normal game is 1G',()=>{
- const before={...a.enter(),remaining:'1'},after=a.step(before,{},()=>.99,'BELL').flow;
- const state=n.afterArt(normal,before,after,{},()=>0);
- assert.equal(state.games,0);assert.equal(state.mode,'通常B');assert.equal(state.impurity,80);assert.equal(state.level,'high');
- assert.equal(n.spin(state,after,1,{scale:0},()=>.99,'MISS').state.games,1);
- assert.equal(normal.games,245);
+test('normal ceiling counter resets only after all five comeback games fail',()=>{
+ const before={...a.enter({},()=>.5),remaining:'1'};let after=a.step(before,{},()=>.99,'BELL').flow;
+ assert.equal(after.comebackLeft,5);assert.equal(n.afterArt(normal,before,after).games,245);
+ let prior=after;for(let g=0;g<5;g++){prior=after;after=a.step(after,{},()=>.99,'MISS').flow;}
+ const state=n.afterArt(normal,prior,after,{},()=>0);
+ assert.equal(state.games,0);assert.equal(state.mode,'通常');assert.equal(state.impurity,80);assert.equal(state.level,'low');
+ assert.equal(n.spin(state,after,1,{scale:0},()=>.99,'MISS').state.games,1);assert.equal(normal.games,245);
 });
+
 test('set continuation, zones, and CZ failure do not reset the count',()=>{
  const before={...a.enter(),remaining:'1',sets:'1'};
  const next=a.step(before,{},()=>.99,'BELL').flow;

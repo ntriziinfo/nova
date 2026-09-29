@@ -6,6 +6,7 @@ import vm from 'node:vm';
 const context=vm.createContext({});
 vm.runInContext(fs.readFileSync('nova-tuning.js','utf8')+'\n'+fs.readFileSync('nova-art.js','utf8'),context);
 vm.runInContext(fs.readFileSync('nova-flow.js','utf8'),context);
+vm.runInContext(fs.readFileSync('nova-normal.js','utf8'),context);
 const flow=context.NovaFlow;
 test('CZ and strong CZ defaults and exact success thresholds',()=>{
  assert.equal(flow.enterCZ(false,undefined,()=>.399999).success,true);
@@ -22,12 +23,15 @@ test('CZ consumes its selected number of subsequent games and persists success a
  assert.equal(state.remaining,1);assert.equal(state.success,true);
  state=flow.advance(state);assert.equal(state.phase,'normal');
 });
-test('ART starts at 150pt and ends after actual payouts reach the target',()=>{
- let state=flow.afterBonus(null,undefined,1);
- assert.equal(state.remaining,'150');
- for(let i=0;i<9;i++)state=context.NovaArt.step(state,{rare:0},()=>.99,'BELL').flow;
- assert.equal(state.remaining,'15');
- state=context.NovaArt.step(state,{rare:0},()=>.99,'BELL').flow;
+test('new AT reveals its initial quota, consumes actual payouts, then runs five comeback games',()=>{
+ let state=flow.afterBonus(null,undefined,1,()=>.5);
+ assert.equal(state.remaining,'0');assert.equal(state.initialWait,3);
+ for(let g=0;state.initialStage&&g<20;g++)state=context.NovaArt.step(state,{},()=>.5,'BELL').flow;
+ assert.equal(state.initialStage,'');assert.equal(state.remaining,'200');
+ for(let i=0;i<13;i++)state=context.NovaArt.step(state,{rare:0},()=>.99,'BELL').flow;
+ assert.equal(state.remaining,'5');state=context.NovaArt.step(state,{rare:0},()=>.99,'BELL').flow;
+ assert.equal(state.remaining,'0');assert.equal(state.comebackLeft,5);assert.equal(state.phase,'art');
+ for(let g=0;g<5;g++)state=context.NovaArt.step(state,{},()=>.99,'MISS').flow;
  assert.equal(state.phase,'normal');assert.equal(state.remaining,0);
 });
 

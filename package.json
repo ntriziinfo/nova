@@ -5,6 +5,7 @@
   "scripts": {
     "check": "node scripts/check.mjs",
     "test": "node --test tests/*.test.mjs",
+    "test:known-issues": "node --test --test-name-pattern=BUG- tests/nova-bonus-alignment.test.mjs tests/nova-duo157.test.mjs tests/nova-super-stop.test.mjs",
     "validate:config": "node scripts/validate-config.mjs"
   },
   "engines": {

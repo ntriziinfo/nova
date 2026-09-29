@@ -19,7 +19,7 @@ test('lamp timing varies across CZs, spans the session even for low final tiers,
   }
   assert.equal(previous,tier+2);assert(litGames.at(-1)>=Math.floor(total*.65));assert(litGames.length>=3);
  }
- assert(firstGames.size>=3);assert.equal(stopOrders.size,3);
+ assert(firstGames.size>=3);assert.deepEqual([...stopOrders],[3]);
 });
 test('upgraded targets cannot dim lamps, and presentation scheduling consumes no gameplay randomness',()=>{
  for(let seed=0;seed<30;seed++)for(let game=1;game<=20;game++)for(let stop=1;stop<=3;stop++){

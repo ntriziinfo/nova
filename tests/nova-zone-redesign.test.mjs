@@ -22,7 +22,7 @@ test('nine zones and retired aliases preserve queued awards without new promotio
 test('shared tables and one-shot settle once on the first challenge',()=>{
  for(const id of ['sosuke','giru','ura_giru']){
   const rows=a.ladderTables[id];assert.equal(rows.length,7);
-  let cum=0;const weights=a.ladderWeightsFor({zone:a.baseZone(id),ura:id.startsWith('ura_')},1);for(let i=0;i<5;i++){assert.deepEqual(Array.from(a.startZone(({...a.enter({},()=>.5),remaining:'150',entryQuota:'150'}),id,{},()=>(cum+weights[i]/2)/100).ladder),Array.from(rows[i]));cum+=weights[i];}
+  let cum=0;const weights=a.ladderWeightsFor({zone:a.baseZone(id),ura:id.startsWith('ura_')},1);for(let i=0;i<7;i++){if(!weights[i])continue;assert.deepEqual(Array.from(a.startZone(({...a.enter({},()=>.5),remaining:'150',entryQuota:'150'}),id,{},()=>(cum+weights[i]/2)/100).ladder),Array.from(rows[i]));cum+=weights[i];}
   if(id!=='sosuke')continue;
   let s=a.prepareBet({...({...a.enter({},()=>.5),remaining:'150',entryQuota:'150'}),entryStage:'confirmed',pendingZone:'sosuke',rouletteTable:7},{},()=>.999);assert.equal(s.zoneLeft,2);
   s=save(a.step(s,{},()=>0).flow);assert.equal(s.award,'50');assert.equal(s.zoneLeft,1);
@@ -48,23 +48,20 @@ test('50 to 100 then MISS settles exactly 100 and sixth table can reach 3000',()
 test('ladder strength changes success probability, with exact boundary failure',()=>{
  let prev=0;
  for(const id of ['sosuke','giru','ura_giru']){
-  let s=a.startZone(({...a.enter({},()=>.5),remaining:'150',entryQuota:'150'}),id,{},()=>.999);s=a.step(s,{},()=>0).flow;
+  let s={...a.startZone(({...a.enter({},()=>.5),remaining:'150',entryQuota:'150'}),id,{},()=>.999),ladder:[300,500,1000,2000,3000],ladderIndex:1,ladderRevealed:true,award:'500',zoneLeft:3};
   const p=a.zoneRules(s).success;assert.ok(p>prev);prev=p;
-  assert.equal(a.step(s,{},()=>p).flow.zone,'');assert.equal(a.step(s,{},()=>p-1e-10).flow.award,'2000');
+  assert.equal(a.step(s,{},()=>p).flow.zone,'');assert.equal(a.step(s,{},()=>p-1e-10).flow.award,'1000');
  }
 });
-test('seven family can award each amount, grants no sets and resets final game to five',()=>{
+test('seven awards exactly 100pt, nebula resets five games, and neither grants a BIG or stock',()=>{
  for(const id of ['toto','sora','ura_sora']){
-  const s=a.startZone(({...a.enter({},()=>.5),remaining:'150',entryQuota:'150'}),id,{},()=>.5),weights=a.zoneRules(s).weights;let cumulative=0;
-  for(let i=0;i<6;i++){
-   const roll=cumulative+weights[i]/2;cumulative+=weights[i];
-   const t=a.step({...s,zoneLeft:1},{},()=>roll,'BIG');
-   assert.equal(t.flow.award,String(a.sevenValues[i]));assert.equal(t.flow.remaining,String(150+a.sevenValues[i]));assert.equal(t.flow.sets,'0');assert.equal(t.flow.queuedZones.length,0);assert.equal(t.internalBonus,null);
-  }
-  const t=a.step({...s,zoneLeft:1},{},()=>.99,'NEBULA');assert.equal(t.flow.zoneLeft,5);assert.equal(t.flow.award,'10');assert.equal(t.flow.zero,false);
-  const miss=a.step({...s,zoneLeft:1},{},()=>.99,'MISS');assert.equal(miss.flow.remaining,'150');assert.equal(miss.flow.zone,'');
+  const s={...a.startZone({...a.enter({},()=>.5),remaining:'150'},id,{},()=>.5),zoneLeft:1,sevenHits:5,award:'500'};
+  const t=a.step(s,{},()=>.99,'BIG');assert.equal(t.zoneAward,100);assert.equal(t.flow.award,'600');assert.equal(t.flow.remaining,'750');assert.equal(t.flow.sets,'0');assert.equal(t.flow.queuedZones.length,0);assert.equal(t.internalBonus,null);
+  const reset=a.step(s,{},()=>.99,'NEBULA');assert.equal(reset.zoneAward,10);assert.equal(reset.flow.zoneLeft,5);assert.equal(reset.flow.award,'510');assert.equal(reset.flow.remaining,'150');assert.equal(reset.flow.zero,false);
+  const miss=a.step(s,{},()=>.99,'MISS');assert.equal(miss.flow.remaining,'650');assert.equal(miss.flow.zone,'');
  }
 });
+
 test('NOVA family uses SUPER only and literal 50 or100 points; urapi participates in freeze challenge',()=>{
  for(const id of ['urapi','ouma','ura_ouma'])for(const [roll,award]of [[0,100],[.99,50]]){
   const s=a.startZone(({...a.enter({},()=>.5),remaining:'150',entryQuota:'150'}),id,{},()=>.5),t=a.step(s,{},()=>roll,'SUPER_NOVA');
@@ -72,11 +69,11 @@ test('NOVA family uses SUPER only and literal 50 or100 points; urapi participate
  }
 });
 test('last-game Ouma hit continues free SUPER chains then settles only once',()=>{
- let s={...a.startZone(({...a.enter({},()=>.5),remaining:'150',entryQuota:'150'}),'ouma'),zoneLeft:1};s=a.step(s,{},()=>.99,'SUPER_NOVA').flow;
- assert.equal(s.zoneLeft,0);assert.equal(s.oumaPending,true);assert.equal(s.award,'50');
+ let s={...a.startZone(({...a.enter({},()=>.5),remaining:'150',entryQuota:'150'}),'ouma'),zoneLeft:1,award:'50'};s=a.step(s,{},()=>.99,'SUPER_NOVA').flow;
+ assert.equal(s.zoneLeft,0);assert.equal(s.oumaPending,true);assert.equal(s.award,'100');
  s=a.prepareBet(save(s),{},()=>0);assert.equal(s.zero,true);
- const t=a.step(s,{},()=>0);s=t.flow;assert.equal(t.oumaFreeze,true);assert.equal(t.result,'SUPER_NOVA');assert.equal(s.zoneLeft,0);assert.equal(s.award,'150');assert.equal(s.remaining,'150');
- s=a.prepareBet(s,{},()=>.99);assert.equal(s.remaining,'300');assert.equal(s.zone,'');assert.equal(a.prepareBet(s,{},()=>0).remaining,'300');
+ const t=a.step(s,{},()=>0);s=t.flow;assert.equal(t.oumaFreeze,true);assert.equal(t.result,'SUPER_NOVA');assert.equal(s.zoneLeft,0);assert.equal(s.award,'200');assert.equal(s.remaining,'150');
+ s=a.prepareBet(s,{},()=>.99);assert.equal(s.remaining,'350');assert.equal(s.zone,'');assert.equal(a.prepareBet(s,{},()=>0).remaining,'350');
 });
 test('legacy active zone closes once and keeps earned points, remaining quota and sets',()=>{
  const s=a.normalize({payoutVersion:1,zone:'giru',remaining:'200',award:'847',sets:'3',zero:true});
@@ -91,7 +88,9 @@ test('analytic expectations agree with independent simulation and strength order
  }
  for(const group of [['sosuke','giru','ura_giru'],['toto','sora','ura_sora'],['urapi','ouma','ura_ouma']])assert.ok(b.zoneMean(group[0])<b.zoneMean(group[1])&&b.zoneMean(group[1])<b.zoneMean(group[2]));
 });
-test('live zero-chain wiring automatically stops reels and continues with state guards',()=>{
- const h=readGameSource();assert.match(h,/if\(resolved.oumaFreeze\)\{startOumaReverseAudio\(currentSpin\);\}/);
- assert.match(h,/!\(scheduleOumaZeroChain\(\)\)/);assert.match(h,/normalState.flow!==previous/);assert.match(h,/normalState.flow.zero\)\{clearOumaPresentation\(\);spin\(\)/);
+test('reverse-chain wiring synchronizes automatic stops and keeps delayed transitions guarded',()=>{
+ const h=readGameSource(),fn=name=>h.match(new RegExp('  function '+name+'\\([^]*?\\n  }'))[0];
+ const audio=fn('startOumaReverseAudio');assert.match(audio,/startSynced/);assert.match(audio,/landed===3/);assert.match(audio,/stopSingleReel\(index,\{oumaAuto:true/);
+ const schedule=fn('scheduleOumaZeroChain');assert.match(schedule,/normalState.flow!==previous/);assert.match(schedule,/if\(autoPlay\)queueAutoStep/);
+ const resolve=fn('resolveOumaChallenge');assert.match(resolve,/oumaPresentation!==presentation/);assert.match(resolve,/const oumaFailed=!normalState.flow.zero/);assert.match(resolve,/spin\(\{oumaFailed\}\)/);
 });

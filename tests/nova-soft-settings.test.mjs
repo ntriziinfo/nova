@@ -2,13 +2,22 @@ import {readGameSource} from '../scripts/game-source.mjs';
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
 const ctx=vm.createContext({});for(const f of ['nova-tuning.js','nova-art.js','nova-balance.js','nova-flow.js','nova-normal.js'])vm.runInContext(fs.readFileSync(f,'utf8'),ctx);
 const a=ctx.NovaArt,b=ctx.NovaBalance,n=ctx.NovaNormal;
-test('non-chance normal roles have smooth modest differences',()=>{const rows=[1,2,3,4,5,6].map(n.roleProbabilities);for(const row of rows)assert.ok(Math.abs(Object.values(row).reduce((a,b)=>a+b,0)-1)<1e-12);for(const role of Object.keys(rows[0]).filter(k=>!['MISS','CHANCE_A','CHANCE_B'].includes(k))){for(let i=1;i<6;i++)assert.ok(role==='BELL'?rows[i][role]<rows[i-1][role]:rows[i][role]>rows[i-1][role]);assert.ok(Math.max(rows[5][role],rows[0][role])/Math.min(rows[5][role],rows[0][role])<1.09);}for(let setting=1;setting<=6;setting++){const counts={};for(let i=0;i<100000;i++){const r=n.drawRole(setting,()=>(i+.5)/100000);counts[r]=(counts[r]||0)+1;}for(const [role,p]of Object.entries(rows[setting-1]))assert.ok(Math.abs((counts[role]||0)/100000-p)<.00002);}});
+test('setting 6 has the approved stronger normal mix while every role samples its configured probability',()=>{
+ const rows=[1,2,3,4,5,6].map(n.roleProbabilities);
+ for(let setting=1;setting<=6;setting++){
+  const row=rows[setting-1];assert(Object.values(row).every(p=>p>=0&&p<=1));assert(Math.abs(Object.values(row).reduce((a,b)=>a+b,0)-1)<1e-12);
+  const counts={};for(let i=0;i<100000;i++){const r=n.drawRole(setting,()=>(i+.5)/100000);counts[r]=(counts[r]||0)+1;}
+  for(const [role,p]of Object.entries(row))assert(Math.abs((counts[role]||0)/100000-p)<.00002);
+ }
+ assert.equal(rows[5].REPLAY,.54);assert(rows[5].WEAK_SUICA>rows[4].WEAK_SUICA*1.3);assert(rows[5].WEAK_NOVA>rows[4].WEAK_NOVA*1.3);
+});
+
 test('entry and zone differences stay small and all six zones remain possible',()=>{const ps=[1,2,3,4,5,6].map(b.profile);assert.ok(Math.max(...ps.map(p=>p.scale))/Math.min(...ps.map(p=>p.scale))<1.4);assert.ok(ps[0].directDenom/ps[5].directDenom>1 && ps[0].directDenom/ps[5].directDenom<2.5);for(const row of a.zoneWeights){assert.equal(row.reduce((s,x)=>s+x),100);assert.ok(row.every(x=>x>0));}for(let c=0;c<6;c++)assert.ok(Math.abs(a.zoneWeights[0][c]-a.zoneWeights[5][c])<=2.5);});
 test('bonus paid-role correction preserves 4pt across all setting-specific special rates',()=>{for(let setting=1;setting<=6;setting++){const p=a.bonusSpecialFor(setting);assert.ok(p>0&&p<1);let bells=0;for(let i=0;i<100000;i++)if(a.drawPaidRole(p,15,()=> (i+.5)/100000)==='BELL')bells++;assert.ok(Math.abs((1-p)*12*bells/100000-3*p-4)<.0002);}});
 test('freeze bonus uses BIG payout target, no setting hint, no old PBB sound',()=>{
  const h=readGameSource(),fn=name=>h.match(new RegExp('  function '+name+'\\([^]*?\\n  }'))[0];
  vm.runInContext('const normalizeATypeBonusKind=k=>k;const A_TYPE_MODE=true;const session={bonusKind:"BIG",premiumBonus:true};const settings={setting:6};'+['aTypeBonusTarget','pickSettingBonusEndVoiceSrc','premiumBonusEndImmediateVoiceSrc','playPremiumBigThirdStopVoice','isPremiumBigConfirmSoundContext'].map(fn).join('\n')+'\nconst currentSpin={};',ctx);
- assert.equal(vm.runInContext('aTypeBonusTarget()',ctx),150);assert.equal(vm.runInContext('pickSettingBonusEndVoiceSrc()',ctx),'');assert.equal(vm.runInContext('premiumBonusEndImmediateVoiceSrc()',ctx),'');assert.equal(vm.runInContext('playPremiumBigThirdStopVoice()',ctx),false);assert.equal(vm.runInContext('isPremiumBigConfirmSoundContext()',ctx),false);
+ assert.equal(vm.runInContext('aTypeBonusTarget()',ctx),50);assert.equal(vm.runInContext('pickSettingBonusEndVoiceSrc()',ctx),'');assert.equal(vm.runInContext('premiumBonusEndImmediateVoiceSrc()',ctx),'');assert.equal(vm.runInContext('playPremiumBigThirdStopVoice()',ctx),false);assert.equal(vm.runInContext('isPremiumBigConfirmSoundContext()',ctx),false);
  assert.match(h,/premiumChainEligible:false/);assert.doesNotMatch(h,/A_TYPE_PREMIUM_BIG_PAYOUT = 500/);
 });
 
