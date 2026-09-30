@@ -9,8 +9,16 @@ globalThis.NovaBalance=(()=>{
  // Exact reward recursion: 50pt grid below the threshold, translation-invariant tail above it.
  function zoneMean(id,options={}){
   if(NovaArt.initialZoneIds.includes(id)){
-   const base=50*2/3+100/3;
-   return NovaArt.entryQuotaRules.games*Object.entries(NovaArt.roleProbabilities(options.setting)).reduce((sum,[role,p])=>sum+p*(NovaArt.initialRareAwards[role]??base),0);
+   const a=NovaArt,{values,weights:fallback,games}=a.entryQuotaRules;
+   const weights=Number.isInteger(options.setting)&&options.setting>=1&&options.setting<=6?a.entryWeights[options.setting-1]:fallback;
+   const base=values.reduce((sum,pt,i)=>sum+pt*weights[i],0)/weights.reduce((sum,w)=>sum+w,0)/games;
+   const mean=games*Object.entries(a.roleProbabilities(options.setting)).reduce((sum,[role,p])=>sum+p*(a.initialRareAwards[role]??base),0);
+   // Ordinary duo stocks are unboosted. Fresh initial ATs explicitly opt in;
+   // use a saved multiplier if supplied, otherwise average its current draw.
+   if(!options.initialBoostActive)return mean;
+   const boosts=a.initialBoostRules,setting=Math.max(1,Math.min(6,Math.round(Number(options.setting)||1)));
+   const factor=boosts.values.includes(options.initialMultiplier)?options.initialMultiplier:boosts.values.reduce((sum,n,i)=>sum+n*boosts.weights[setting-1][i],0);
+   return mean*factor;
   }
   const a=NovaArt,c=a.config(options),s=a.startZone(a.enter({},()=>.5),id,{...c,setting:options.setting},()=>.5),r=a.zoneRules(s,c),limit=a.zoneTailControl.threshold;
   if(r.family==='ladder'){

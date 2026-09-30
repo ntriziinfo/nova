@@ -6190,7 +6190,17 @@
   }
 
   function prepareManualBonusOutcome(spin=currentSpin){
-    if(!spin || !spin.manualBonusStop || spin.manualOutcomeApplied) return;
+    if(!spin || spin.manualOutcomeApplied) return;
+    // A guided BIG NEBULA uses aim stop control, not manualBonusStop. Settle
+    // a completed wrong-order stop as a miss before the result is displayed.
+    // Fast simulation has no visual alignment and keeps the drawn outcome.
+    if(spin.resolved?.aTypeBonusGame && spin.result==='NEBULA' && spin.aimAligned===false && spin.stopped?.length===3 && spin.stopped.every(Boolean)){
+      spin.manualOutcomeApplied=true;
+      spin.result='MISS';spin.spec=RESULT.MISS;spin.lineRow=1;
+      spin.resolved={...spin.resolved,reward:0,artSetWon:0,novaRushConfirmed:false,manualLineupMiss:true};
+      return;
+    }
+    if(!spin.manualBonusStop) return;
     const targetResult = displayResultFor(spin.result);
     const stoppedResult = displayedResultFromGrid(spin.grid);
     spin.manualOutcomeApplied = true;
@@ -8678,6 +8688,7 @@
     if(stopOrder===3&&currentSpin?.result==='SUPER_NOVA'){
       if(currentSpin.superNovaStopSoundPlayed)return;
       currentSpin.superNovaStopSoundPlayed=true;
+      if(currentSpin.resolved?.oumaFreeze)return;
       playOneShotSound('assets/media/nova/super-nova-stop.wav',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
       return;
     }

@@ -51,8 +51,21 @@ test('BUG-002: reported duo mean must include the setting-specific initial base 
   assert(Math.abs(expected-(JSON.parse(fs.readFileSync('tests/fixtures/nova-role-merge-approved.json')).entryMeans[setting-1]))<1e-9);
   const reported=NovaBalance.zoneMean('kushuri_nito',{setting});
   if(Math.abs(reported-expected)>1e-9)mismatches.push({setting,expected,reported});
+  const boost=a.initialBoostRules.values.reduce((sum,n,i)=>sum+n*a.initialBoostRules.weights[setting-1][i],0);
+  assert(Math.abs(NovaBalance.zoneMean('kushuri_nito',{setting,initialBoostActive:true})-expected*boost)<1e-9);
+  for(const initialMultiplier of a.initialBoostRules.values){
+   assert(Math.abs(NovaBalance.zoneMean('kushuri_nito',{setting,initialBoostActive:true,initialMultiplier})-expected*initialMultiplier)<1e-9);
+   assert.equal(NovaBalance.zoneMean('kushuri_nito',{setting,initialMultiplier}),reported);
+  }
  }
  assert.deepEqual(mismatches,[],'Mean-reporting helper is outdated; this does not change the live draw');
+});
+
+test('duo mean without a setting uses the same fallback quota weights as the actual draw',()=>{
+ const {values,weights,games}=a.entryQuotaRules;
+ const base=values.reduce((sum,pt,i)=>sum+pt*weights[i],0)/weights.reduce((sum,w)=>sum+w,0)/games;
+ const expected=games*Object.entries(a.roleProbabilities()).reduce((sum,[role,p])=>sum+p*(a.initialRareAwards[role]??base),0);
+ assert(Math.abs(NovaBalance.zoneMean('kushuri_nito')-expected)<1e-9);
 });
 
 test('duo stop effects follow accepted button presses once, leaving ordinary landing sounds silent',()=>{
