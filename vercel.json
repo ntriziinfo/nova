@@ -52,6 +52,6 @@
     }
   ],
   "framework": null,
-  "buildCommand": null,
+  "buildCommand": "node scripts/prepare-deploy.mjs && node scripts/check.mjs && node scripts/validate-config.mjs",
   "outputDirectory": "."
 }

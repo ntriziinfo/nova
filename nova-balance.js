@@ -72,5 +72,13 @@ globalThis.NovaBalance=(()=>{
  // Entry scales fitted with the normal-mode / ceiling / impurity / freeze simulation.
  function profile(setting){const i=Math.max(0,Math.min(5,Math.round(Number(setting)||1)-1)),scale=.21*(1+.12*NovaArt.settingBias[i]);return {setting:i+1,target:targets[i],measuredRtp:measuredRtp[i],scale,directDenom:NovaArt.defaults['direct'+(i+1)]/scale,czDenom:120/scale,strongDenom:600/scale,verifiedModel:'cz-initial-20261001-30000g-complete-stop',trials:i===4?1000:600,previousVerifiedModel:'role-merge-20260930-30000g-complete-stop'};}
  const profiles=targets.map((_,i)=>profile(i+1));
- return {targets,normal,profiles,profile,giruMean,zoneMean};
+ // Estimates describe the approved defaults, not user-edited lottery settings.
+ function usesStandardSettings(settings={}){
+  for(const [key,engine] of [['novaNormal',NovaNormal],['novaFlow',NovaFlow],['novaArt',NovaArt]]){
+   const actual=engine.config(settings[key]),standard=engine.config();
+   if(Object.keys(standard).some(k=>actual[k]!==standard[k]))return false;
+  }
+  return Number(settings.completeLimitPt??10000)===10000;
+ }
+ return {targets,normal,profiles,profile,giruMean,zoneMean,usesStandardSettings};
 })();

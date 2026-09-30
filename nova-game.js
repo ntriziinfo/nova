@@ -2388,7 +2388,18 @@
   }
 
   function targetRtpText(settingNo = settings.setting){
+    if(A_TYPE_MODE && !NovaBalance.usesStandardSettings(settings))return "未試算（独自設定）";
     if(A_TYPE_MODE){const profile=NovaBalance.profile(settingNo);return profile.verifiedModel?((profile.measuredRtp??profile.target)*100).toFixed(2)+`%（CZ・初期pt調整版・3万G×${profile.trials}回・停止込み推定）`:"未集計（変更前"+((profile.measuredRtp??profile.target)*100).toFixed(1)+"%）";}
+  }
+
+  function refreshRtpViews(){
+    for(const id of ['targetRtpView','targetRtpViewLegacy','adminTargetRtpView']){
+      if($(id))$(id).textContent=targetRtpText();
+    }
+    for(const n of [1,2,3,4,5,6]){
+      const option=document.querySelector(`#settingSelect option[value="${n}"]`);
+      if(option)option.textContent=`設定${n} / ${targetRtpText(n)}`;
+    }
   }
 
   function rewardFor(result){
@@ -3768,6 +3779,16 @@
     };
   }
 
+  function updateStorageStatus(stateSaved, preferencesSaved){
+    const banner=$('storageStatus'),message=$('storageStatusMessage');
+    if(!banner || !message)return;
+    const text=!stateSaved
+      ? '遊技状態を保存できません。この画面を閉じると進行が失われる可能性があります。保存先の空きを確保し、再保存してください。'
+      : !preferencesSaved ? '遊技状態は保存済みですが、共通設定の保存に失敗しました。再保存してください。' : '';
+    if(message.textContent!==text)message.textContent=text;
+    banner.hidden=!text;
+  }
+
   function persistState(){
     // Commit the result and removal of the pending spin together, after finishSpin returns.
     if(currentSpin?.finishing)return false;
@@ -3775,22 +3796,23 @@
     auditCapture();
     const savedAt = Date.now();
     const runtimeState = runtimeStateForStorage();
-    const preferencesOk = safeStorageSet(PREFERENCES_STORAGE_KEY, JSON.stringify({savedAt, settings}));
-    const resumeOk = safeStorageSet(STORAGE_RESUME_KEY, JSON.stringify({
+    const write=(key,value)=>{
+      try{return safeStorageSet(key,JSON.stringify(value));}
+      catch(e){console.warn('Failed to serialize local state',e);return false;}
+    };
+    const preferencesOk = write(PREFERENCES_STORAGE_KEY, {savedAt, settings});
+    const resumeOk = write(STORAGE_RESUME_KEY, {
       savedAt,
       settings,
       stats:compactStatsForResume(),
       normalState,
       completeTrialState,
       runtimeState
-    }));
-    try{
-      const fullOk = safeStorageSet(STORAGE_KEY, JSON.stringify({savedAt, settings, stats, normalState, completeTrialState, runtimeState}));
-      return !!(fullOk || resumeOk || preferencesOk);
-    }catch(e){
-      console.warn("Failed to save full local state", e);
-      return !!(resumeOk || preferencesOk);
-    }
+    });
+    const fullOk = write(STORAGE_KEY, {savedAt, settings, stats, normalState, completeTrialState, runtimeState});
+    const stateSaved=!!(fullOk || resumeOk);
+    updateStorageStatus(stateSaved,preferencesOk);
+    return stateSaved;
   }
 
   function save(){
@@ -3800,7 +3822,7 @@
       log("設定を保存しました");
     }else{
       log("保存に失敗しました");
-      showMessage("SAVE ERROR", "スランプ履歴が大きすぎる可能性があります");
+      showMessage("SAVE ERROR", "遊技状態を保存できません。画面下部の案内を確認してください");
     }
   }
 
@@ -5953,7 +5975,7 @@
     const nc=NovaNormal.config(settings.novaNormal);for(const [k,v]of Object.entries(nc).filter(([k])=>!['bandMultiplier','regChainGain'].includes(k))){const label=document.createElement('label');label.textContent=({highMultiplier:'高確CZ倍率',downMiss:'ハズレ降格率',downReplay:'リプレイ降格率',czFailureGain:'CZ失敗の穢れpt',bonusFailureGain:'ボーナスAT非突入の穢れpt',atDryGain:'AT駆け抜けの穢れpt',ceilingGain:'共通天井到達の穢れpt',superDenom:'通常スーパーノヴァ目分母'})[k];const input=document.createElement('input');input.type='number';input.step='any';input.value=v;input.dataset.normalConfig=k;label.append(input);normalPanel.append(label);}
     const roleCzTable=document.createElement('div');roleCzTable.id='novaRoleCzTable';
     const renderRoleCzTable=()=>{roleCzTable.innerHTML='<p>各小役成立時のCZ当選率（低確／高確）</p><table><tr><th>設定</th>'+Object.keys(NovaNormal.rare).map(role=>'<th>'+RESULT[role].name+'</th>').join('')+'</tr>'+[1,2,3,4,5,6].map(setting=>'<tr><td>'+setting+'</td>'+Object.keys(NovaNormal.rare).map(role=>'<td>'+['low','high'].map(level=>(NovaNormal.roleCzRate({level},role,setting,settings.novaNormal)*100).toFixed(2)+'%').join('／')+'</td>').join('')+'</tr>').join('')+'</table>';};renderRoleCzTable();normalPanel.append(roleCzTable);
-    const saveNormal=document.createElement('button');saveNormal.textContent='通常設定を保存';saveNormal.onclick=()=>{const c={};normalPanel.querySelectorAll('[data-normal-config]').forEach(x=>c[x.dataset.normalConfig]=x.valueAsNumber);settings.novaNormal=NovaNormal.config(c);renderRoleCzTable();persistState();};normalPanel.append(saveNormal);
+    const saveNormal=document.createElement('button');saveNormal.textContent='通常設定を保存';saveNormal.onclick=()=>{const c={};normalPanel.querySelectorAll('[data-normal-config]').forEach(x=>c[x.dataset.normalConfig]=x.valueAsNumber);settings.novaNormal=NovaNormal.config(c);renderRoleCzTable();refreshRtpViews();saveNormal.textContent=persistState()?'通常設定を保存しました':'保存に失敗しました';};normalPanel.append(saveNormal);
     document.getElementById('saveFlowConfig').closest('details').after(normalPanel);
     document.getElementById('novaApplyInternal').onclick=()=>{if(isSpinning||session.active)return;normalState.internal=NovaNormal.normalize({games:$('novaNormalGames').value,level:$('novaLevel').value,highLeft:$('novaLevel').value==='high'?10:0,impurity:$('novaImpurity').value});persistState();updateDisplay();};
     const artPanel=document.createElement('details');artPanel.id='novaArtConfig';
@@ -5968,7 +5990,7 @@
     const ladderTable=document.createElement('div');ladderTable.innerHTML=Object.entries(NovaArt.ladderTables).map(([id,rows])=>{const flow={zone:NovaArt.baseZone(id),ura:id.startsWith('ura_')};return '<p>'+NovaArt.zoneName(id)+'</p><table><tr><th>番号</th><th>段階（pt）</th>'+[1,2,3,4,5,6].map(n=>'<th>設定'+n+'</th>').join('')+'</tr>'+rows.map((row,i)=>'<tr><td>'+(i+1)+'</td><td>'+row.join(' → ')+'</td>'+[1,2,3,4,5,6].map(n=>'<td>'+NovaArt.ladderWeightsFor(flow,n)[i].toFixed(1)+'%</td>').join('')+'</tr>').join('')+'</table>';}).join('');artPanel.append(ladderTable);const ladderNote=document.createElement('p');ladderNote.textContent='上表は通常選択率。⑥はギルではレア役昇格時のみ、裏ギルは常に⑥。⑦はレア役昇格時のみ宗介。';artPanel.append(ladderNote);
     const artCfg=NovaArt.config(settings.novaArt);
     for(const [key,label]of Object.entries(artLabels)){const row=document.createElement('label');row.className='field';row.textContent=label;const input=document.createElement('input');input.type='number';input.dataset.artConfig=key;input.setAttribute('aria-label',label);input.min=key.startsWith('direct')?'2':key==='initial'||key.endsWith('Games')?'1':'0';input.max=key.startsWith('direct')?'100000':key==='initial'?String(Number.MAX_SAFE_INTEGER):key.endsWith('Games')?'1000':'1';input.step=key.startsWith('direct')?'1':key==='initial'||key.endsWith('Games')?'1':'0.01';input.value=artCfg[key];row.append(input);artPanel.append(row);}
-    const artSave=document.createElement('button');artSave.type='button';artSave.textContent='AT設定を保存';artSave.onclick=()=>{const value={payoutVersion:1};artPanel.querySelectorAll('input').forEach(x=>value[x.dataset.artConfig]=x.valueAsNumber);settings.novaArt=NovaArt.config(value);persistState();artSave.textContent='AT設定を保存しました';};artPanel.append(artSave);
+    const artSave=document.createElement('button');artSave.type='button';artSave.textContent='AT設定を保存';artSave.onclick=()=>{const value={payoutVersion:1};artPanel.querySelectorAll('input').forEach(x=>value[x.dataset.artConfig]=x.valueAsNumber);settings.novaArt=NovaArt.config(value);refreshRtpViews();artSave.textContent=persistState()?'AT設定を保存しました':'保存に失敗しました';};artPanel.append(artSave);
     const atStateButton=document.createElement('button');atStateButton.type='button';atStateButton.textContent='AT低確／高確を切替（高確保証10G）';atStateButton.onclick=()=>{if(isSpinning||session.active||normalState.flow?.phase!=='art')return;normalState.flow.atHigh=!normalState.flow.atHigh;normalState.flow.atHighLeft=normalState.flow.atHigh?10:0;persistState();updateDisplay();};artPanel.append(atStateButton);
     document.getElementById('saveFlowConfig').closest('details').after(artPanel);
     const status=document.createElement("div");status.id="novaFlowStatus";
@@ -5984,8 +6006,8 @@
       document.querySelectorAll('[data-flow-config]').forEach(input=>{
         const key=input.dataset.flowConfig;value[key]=input.valueAsNumber/(key.endsWith("Chance")?100:1);
       });
-      settings.novaFlow=NovaFlow.config(value);persistState();renderSettingTable();
-      document.getElementById("flowConfigStatus").textContent="CZ設定を保存しました（次回突入から適用）";
+      settings.novaFlow=NovaFlow.config(value);const saved=persistState();renderSettingTable();refreshRtpViews();
+      document.getElementById("flowConfigStatus").textContent=saved?"CZ設定を保存しました（次回突入から適用）":"保存に失敗しました（変更はこの画面内でのみ有効）";
     };
     updateDisplay();
     const preview = document.getElementById("novaSymbolPreview");
@@ -9211,6 +9233,7 @@
   loadLayoutEdit();
   applySettings();
   setup();
+  $("retryStateSave")?.addEventListener("click",()=>persistState());
   setupPlayAudit();
   persistState();
   connectAdminCommands();

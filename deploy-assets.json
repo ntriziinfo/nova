@@ -1,0 +1,1565 @@
+{
+  "version": 1,
+  "archive": {
+    "url": "https://github.com/ntriziinfo/nova/releases/download/nova-assets-20261001/nova-assets-20261001.tar.gz",
+    "size": 1031487415,
+    "sha256": "fdea61a4f5b6ea51cf33010e30f1bd945b7db54ce0108f4d149c5d66cffe6016"
+  },
+  "files": [
+    {
+      "path": "assets/backgrounds/bg_rising_jag.png",
+      "size": 12898554,
+      "sha256": "b1e8190ef1adae5e6b95541f7eb098f6023031dde4b4f15dc53558d03198a693"
+    },
+    {
+      "path": "assets/buttons/btn_auto_gold_transparent.png",
+      "size": 2075452,
+      "sha256": "4155f9039db18d610853f72e52fe6f51c72f1262e6dc791a7031cd54776449b2"
+    },
+    {
+      "path": "assets/buttons/btn_bet.png",
+      "size": 173806,
+      "sha256": "a16619b3fec8adcfc9d5d8d07285635d2149255faf4a0252ab7fd06fee401ae7"
+    },
+    {
+      "path": "assets/buttons/btn_bet_on.png",
+      "size": 229977,
+      "sha256": "d39694adc7c4239f913942e3a341fae542cdd6de7ccddd232d73dab5e92f7dd7"
+    },
+    {
+      "path": "assets/buttons/btn_speed_half_blue.png",
+      "size": 888932,
+      "sha256": "8148500f8f52fad79928b1d646cc004d98629c03a46c1c322b250e0858696303"
+    },
+    {
+      "path": "assets/buttons/btn_stop.png",
+      "size": 183082,
+      "sha256": "64300578fa0f0c4220bc04977c18f3b410a36cb44012e26e38a7222d5721d313"
+    },
+    {
+      "path": "assets/buttons/btn_stop_on.png",
+      "size": 239637,
+      "sha256": "917ceedbdf320c17e2fde3e88a8d366c21ba64703a80c78cfb54d8635efaccac"
+    },
+    {
+      "path": "assets/cabinet/edit_parts/piero.png",
+      "size": 83211,
+      "sha256": "107c6592ea37df4b041e55199edfd695a7620e35afa38945db41080b6f397275"
+    },
+    {
+      "path": "assets/cabinet/parts/rising_part_controls.png",
+      "size": 232540,
+      "sha256": "d3de203d78a544ad760857f0681251b915c96811281908d488ce587872eea0c2"
+    },
+    {
+      "path": "assets/cabinet/parts/rising_part_lower.png",
+      "size": 743623,
+      "sha256": "16cd37f942daebb1632ec334e0bc4e51617919d854214b271312aea42528680b"
+    },
+    {
+      "path": "assets/cabinet/parts/rising_part_reel_back_roles.png",
+      "size": 552812,
+      "sha256": "250be09fafc03bb8baf01832c33883dcac2204be7b5e7fb2594706aa6bf311f0"
+    },
+    {
+      "path": "assets/cabinet/parts/rising_part_reel_center_bands.png",
+      "size": 25515,
+      "sha256": "35d297c8b09a5c56a4ebed959ccc458b7e82e7ddecb3b7993d1eefb52ccbe213"
+    },
+    {
+      "path": "assets/cabinet/parts/rising_part_top.png",
+      "size": 908740,
+      "sha256": "74dca69da42f626899a45bac93aacced3f8adbce17999d4228153d909ad20366"
+    },
+    {
+      "path": "assets/controls/start_lever_ball.png",
+      "size": 7459,
+      "sha256": "409e4ec15eb3ecf413a91693424a5a38fcea3c3e92897c49fb0ae1705961be48"
+    },
+    {
+      "path": "assets/controls/stop_button_blue_cut.png",
+      "size": 19590,
+      "sha256": "eeb85b041df2fed1ea1fe221da5614cea14d8c635961f48f05167f08014c5e79"
+    },
+    {
+      "path": "assets/controls/stop_button_red_cut.png",
+      "size": 19377,
+      "sha256": "d0642cdc931b2973b321bccecf28378a76414a2d0327c8d2074c7ef239bd06c1"
+    },
+    {
+      "path": "assets/design/nova-award-glyphs-v1/README.md",
+      "size": 1674,
+      "sha256": "150f0c59aee762f79aa8b022f1866c41b293b9b48200f9712325540a05f6a0c4"
+    },
+    {
+      "path": "assets/design/nova-award-glyphs-v1/glyphs.png",
+      "size": 1230787,
+      "sha256": "9d621340a5253e141984442b3921de852c0af9bc879fdc9eaa5b2f5a69ce0bcf"
+    },
+    {
+      "path": "assets/design/nova-cabinet-v1/cabinet-game.png",
+      "size": 2042308,
+      "sha256": "c1b5bad71d50a57b49e59032f2bd550be10dce4f5aacf5617367f4d5189c86ff"
+    },
+    {
+      "path": "assets/design/nova-cabinet-v1/lower-panel-original.webp",
+      "size": 715782,
+      "sha256": "2d423b1caa94fd74c521da802d0c7d960a475559ecabbba82620e6d8a18be040"
+    },
+    {
+      "path": "assets/design/nova-direct-pt-v1/README.md",
+      "size": 7609,
+      "sha256": "8287fd452de44670d6acf0bcfe9058419dd7de26f6fecc994b3653e07f840c9c"
+    },
+    {
+      "path": "assets/design/nova-direct-pt-v1/direct-plus-100pt.png",
+      "size": 978139,
+      "sha256": "d0050df278d0ee34043fc534ced6e8424f1690957758ff21e0d13dbfc7373bad"
+    },
+    {
+      "path": "assets/design/nova-direct-pt-v1/direct-plus-10pt.png",
+      "size": 976318,
+      "sha256": "5d1fc6aa19f64675ab5b8f8ad6e28c201eee455754d540d8ada3e7aebaecf822"
+    },
+    {
+      "path": "assets/design/nova-direct-pt-v1/direct-plus-20pt.png",
+      "size": 923682,
+      "sha256": "834c5a43c159bed05a4e2e8d22aa22478914740c8ae605cf7c02f1b4b671d73d"
+    },
+    {
+      "path": "assets/design/nova-direct-pt-v1/direct-plus-300pt.png",
+      "size": 902619,
+      "sha256": "fafc24e4fe573769e8fd9d090d6871b8a3c64d196f432305251a8d2de9153fde"
+    },
+    {
+      "path": "assets/design/nova-direct-pt-v1/direct-plus-30pt.png",
+      "size": 1006435,
+      "sha256": "0723ba02c59098ce8e282ff359bd33edf9b41f931694614211f0af89475b34e8"
+    },
+    {
+      "path": "assets/design/nova-direct-pt-v1/direct-plus-50pt.png",
+      "size": 963601,
+      "sha256": "76780cc7becea0e985a49cf9e8776f4afea37ce4ed2331adc888de4bc6ea6146"
+    },
+    {
+      "path": "assets/design/nova-direct-pt-v1/manifest.json",
+      "size": 939,
+      "sha256": "774e8918b4170f83995d9359f81b6ea5f63addf3c31d30d6bb60f4753e648a2c"
+    },
+    {
+      "path": "assets/design/nova-navi-alert-v1/README.md",
+      "size": 7278,
+      "sha256": "2d7b85a3528067e98c7db5ad9c2d156e1be94b34154680aee88dfc3e25a47302"
+    },
+    {
+      "path": "assets/design/nova-navi-alert-v1/manifest.json",
+      "size": 1198,
+      "sha256": "0d37149cc7da63b3fbe81f52d68980088fe7fbda123976ecfddae816c824fe20"
+    },
+    {
+      "path": "assets/design/nova-navi-alert-v1/navi-green-double.png",
+      "size": 729340,
+      "sha256": "73d6d35462c8de3a1fb438086b65e565133b7cfc1b6f949d9d571a8c278c883d"
+    },
+    {
+      "path": "assets/design/nova-navi-alert-v1/navi-green-single.png",
+      "size": 721253,
+      "sha256": "b72935d6ea124a7d5d9fdcc676502cd202f8b25755a3830b1d19728560b4f9db"
+    },
+    {
+      "path": "assets/design/nova-navi-alert-v1/navi-purple-double.png",
+      "size": 739911,
+      "sha256": "10c5cf4f5102f50892fda7d3c52cd4bb24d6b4bf81dd0c1db9bb9b37837859ca"
+    },
+    {
+      "path": "assets/design/nova-navi-alert-v1/navi-purple-single.png",
+      "size": 723401,
+      "sha256": "3eb0d3258838889356638135d480e24ae4b8896cfadce45bb903a3983bca4c8c"
+    },
+    {
+      "path": "assets/design/nova-navi-alert-v1/navi-red-double.png",
+      "size": 701493,
+      "sha256": "53aeb55e1f526713f37e54bca066b3c592ce102002f1713331008b1e536ba25d"
+    },
+    {
+      "path": "assets/design/nova-navi-alert-v1/navi-red-single.png",
+      "size": 680181,
+      "sha256": "b9b57827cc74b9412cfb99b25ba29506c89fa3cf374c85b667d5102f883ae316"
+    },
+    {
+      "path": "assets/design/nova-navi-v1/README.md",
+      "size": 6051,
+      "sha256": "9858bc19bca601dbe613e306fc9d935a297ee56b2d92bb7319491d58c0eb5bf7"
+    },
+    {
+      "path": "assets/design/nova-navi-v1/navi-green-123.png",
+      "size": 714039,
+      "sha256": "56d7b2fa356f470fdcfa8f3bcf97a767be85fc43a0628fa61dfe8c4f32478d94"
+    },
+    {
+      "path": "assets/design/nova-navi-v1/navi-purple-123.png",
+      "size": 717543,
+      "sha256": "f45abf19c15d4edc87166f46b86fadb2a33a17e8ee20c25b677e8e0fba2f3fac"
+    },
+    {
+      "path": "assets/design/nova-navi-v1/navi-red-123.png",
+      "size": 684351,
+      "sha256": "03f46dd5412bbaea809a925ffc09daaba9f82c9b12ec0cff8fc30dd7a42bf44a"
+    },
+    {
+      "path": "assets/design/nova-navi-v1/navi-yellow-123.png",
+      "size": 723523,
+      "sha256": "6fa31b412a7b64918c8922dc5bd2afe905c7ba2aadf3dcd3af1b8df8e0bb4110"
+    },
+    {
+      "path": "assets/effects/dz_hold_badge_custom.png",
+      "size": 204659,
+      "sha256": "7c7fc4ad9e984917203161dbf7d9af97670689ddb2be8494aaa02396b431fd10"
+    },
+    {
+      "path": "assets/frames/devil_frame_wide.png",
+      "size": 1728359,
+      "sha256": "a654ffae579e7357377103028a9b572f25c267b8be58e35d59789ad227befa4b"
+    },
+    {
+      "path": "assets/frames/rising_reel_frame_off.svg",
+      "size": 9505,
+      "sha256": "5d9dcfa228799ace54da4b9a9da1ebfdb38031e855c39a68a6c2d919d7a45239"
+    },
+    {
+      "path": "assets/frames/rising_reel_frame_on.svg",
+      "size": 3553,
+      "sha256": "b5c5516298a4e30a5710a9fa477c9ba220de688e0d6536097260a2bcd13a8695"
+    },
+    {
+      "path": "assets/guide/jag_chance_patterns.svg",
+      "size": 10211618,
+      "sha256": "0c1ac84d95b8010b21626e528fdf754040e118287671c42ce7702dadbc4b6bb6"
+    },
+    {
+      "path": "assets/guide/jag_reel_layout.svg",
+      "size": 7689436,
+      "sha256": "73ddfb83d838ea3e133fa81718b84dd0ba24fa5d5e835e343f8b8129dd1c80b0"
+    },
+    {
+      "path": "assets/guide/jag_role_summary.svg",
+      "size": 10197978,
+      "sha256": "f42b1a2be8ae1abb157d704aea4835fdfa2bc9a2f2bde51317f0cb44607b1ab0"
+    },
+    {
+      "path": "assets/guide/jag_setting_chart.svg",
+      "size": 10199249,
+      "sha256": "28ac80a5c1707cda4b22b03c91e67287672ed35f4ccdc52e08692e362136b724"
+    },
+    {
+      "path": "assets/guide/rising_judge_sheet.svg",
+      "size": 10196631,
+      "sha256": "a1a373f933b324785f3d98452129c4a136484f773ed6b84a8f4c17a026b78935"
+    },
+    {
+      "path": "assets/hero/kv_vertical_copy_nova.svg",
+      "size": 1502,
+      "sha256": "c7574a18a6d4e82bee83cef70c7fdf9e15aadb9cf9436bbfb827c3d830f22686"
+    },
+    {
+      "path": "assets/hero/kv_vertical_copy_rising.svg",
+      "size": 1508,
+      "sha256": "da046b066a448aaebd01e2b94dba145d79dd40b0bef238e8cf87fef00093a26f"
+    },
+    {
+      "path": "assets/illustrations/USAGE.md",
+      "size": 1607,
+      "sha256": "562b73f54a261c57395bda875104a21a7df96f1f89e8f7eb1047451493b7fa97"
+    },
+    {
+      "path": "assets/illustrations/lamps-20260916/giru1.png",
+      "size": 785568,
+      "sha256": "08797b8e66b4a80b1de4eb768b2d499a85a4f230922164b2174d0f2dccce0a06"
+    },
+    {
+      "path": "assets/illustrations/lamps-20260916/ouma1.png",
+      "size": 747086,
+      "sha256": "155e5897cc95b71c8f3f256bc3caf6b9cfb73f79a105f652717b0a3847062bac"
+    },
+    {
+      "path": "assets/illustrations/lamps-20260916/sora1.png",
+      "size": 610293,
+      "sha256": "a872acbaac80efda77574267d34b9417688930849151a1d4c8def829522181d8"
+    },
+    {
+      "path": "assets/illustrations/lamps-20260916/sosuke.png",
+      "size": 584212,
+      "sha256": "e30c68f496ed83db1f46528246e506dcd4a305b1db5bd98392ea7a6db1329328"
+    },
+    {
+      "path": "assets/illustrations/lamps-20260916/toto.png",
+      "size": 558210,
+      "sha256": "5d1ec2039422385243a2df868949180ba5b8d27155b9bd4a2b32ae951b43d559"
+    },
+    {
+      "path": "assets/illustrations/lamps-20260916/urapi.png",
+      "size": 606593,
+      "sha256": "063e311a514e900ce95bdfbb466a8ac5232225ec360da99ab364532d2b8bd621"
+    },
+    {
+      "path": "assets/illustrations/lamps-20260928/kushuri.png",
+      "size": 691378,
+      "sha256": "6d6a455b2415714544d3a90468b2b3f02bc546dc031797c08abad6a33732a79d"
+    },
+    {
+      "path": "assets/illustrations/lamps-20260928/nito.png",
+      "size": 640303,
+      "sha256": "81a162b5fb3283696bfa2b04518df5a75e8b446359cdda607f549249a928cc59"
+    },
+    {
+      "path": "assets/illustrations/lamps-20260928/originals.sha256.json",
+      "size": 556,
+      "sha256": "ff358c9f16d576de5cc9b1e727cc577b56e4edbeb79c40a5e40373ad3efbdb96"
+    },
+    {
+      "path": "assets/illustrations/originals.sha256.json",
+      "size": 719,
+      "sha256": "7ae88dbb013de6b3c37086e1df9fd928f4791e8e031a615acec6e637ba0b6e2d"
+    },
+    {
+      "path": "assets/illustrations/originals/giru1.png",
+      "size": 1508516,
+      "sha256": "5766e84a31d97a0fed1617aacdbccde07e51808f3028d46f8f2f125633d3c3e7"
+    },
+    {
+      "path": "assets/illustrations/originals/ouma1.png",
+      "size": 1463196,
+      "sha256": "b5118856c3b2388eeca8ffdb3647ec59022cef8bc4b385fc8d2fe31fd15f3a1a"
+    },
+    {
+      "path": "assets/illustrations/originals/sora1.png",
+      "size": 1270320,
+      "sha256": "e38a6c6a7e57fc6e77f5017f88b8e9983de61e5bcedfa7c5b4ae0e88b83523c4"
+    },
+    {
+      "path": "assets/illustrations/originals/sosuke.png",
+      "size": 822341,
+      "sha256": "b65b02e47896f1cfada299f431a223b985504981452b30045f808cfd52dc9a63"
+    },
+    {
+      "path": "assets/illustrations/originals/toto.png",
+      "size": 782228,
+      "sha256": "6d8608fdec0fb8a0c1f38ade451f6e443d671c4044bcfcc9cba234ef9de343fd"
+    },
+    {
+      "path": "assets/illustrations/originals/urapi.png",
+      "size": 996679,
+      "sha256": "f3bf8dc2fcf9d0668cace46b0332d3045e8dfbe8b764d23b0e8c6b60447c37a2"
+    },
+    {
+      "path": "assets/ladder/100.png",
+      "size": 1741952,
+      "sha256": "6d6dd3b64b9dd3d69ffaef8043cfa4fae6a198d08eed905201d072dca5641080"
+    },
+    {
+      "path": "assets/ladder/1000.png",
+      "size": 1722180,
+      "sha256": "3f77a1d6dfa8a44e95cce65e76547a39e7b685a1ebd0b8d2607111645e3d5803"
+    },
+    {
+      "path": "assets/ladder/200.png",
+      "size": 1771085,
+      "sha256": "c2db093fd9dc012f2697becfc94e44d47f7c9a1ace210e442885a25db5d3f687"
+    },
+    {
+      "path": "assets/ladder/2000.png",
+      "size": 1770898,
+      "sha256": "b2fb201c7fd3f353ca92d894a765bd0eea2ea6715f4fed2bda8583345336baa0"
+    },
+    {
+      "path": "assets/ladder/300.png",
+      "size": 1791139,
+      "sha256": "493de82b3d62ce4c3dd8a19620c440daa9cc2efd104845d2e84ff1fc6630f5e7"
+    },
+    {
+      "path": "assets/ladder/3000.png",
+      "size": 1766859,
+      "sha256": "2038bdb5a65b21e269917d3bcf73c99d2d46a2fb18ecff7d6bd00d22648f29cd"
+    },
+    {
+      "path": "assets/ladder/50.png",
+      "size": 1757293,
+      "sha256": "0ccd666598c7f68b6bf26adc1777a032e5b90bd03556a8e0fe5daf80888ad8b2"
+    },
+    {
+      "path": "assets/ladder/500.png",
+      "size": 1793265,
+      "sha256": "a449f159558d76a834619044f6db4881abcabae1dc83aa090c10c1d612a46319"
+    },
+    {
+      "path": "assets/ladder/outlaw-shutter-prompt.txt",
+      "size": 805,
+      "sha256": "e08b4780bf119206d974cf9f4abbb312b21d2f9424b817d4345f8e0ed5ea9ecc"
+    },
+    {
+      "path": "assets/ladder/outlaw-shutter.png",
+      "size": 2849066,
+      "sha256": "5b1557cf9fc40f559903711d1e144b2e7bd4a03ea3945271589508631f8ead5d"
+    },
+    {
+      "path": "assets/ladder/provenance.json",
+      "size": 1701,
+      "sha256": "afdea077025d426f7e0318055302d5cb31b0e1383624028b749a2495eac96764"
+    },
+    {
+      "path": "assets/ladder/shutter-100.png",
+      "size": 3120952,
+      "sha256": "0654656295f1aea12ef69e11a24104304c5dfa0aa017da25a2bd82c5c92bd21a"
+    },
+    {
+      "path": "assets/ladder/shutter-1000.png",
+      "size": 3044174,
+      "sha256": "a58d594dd125eed6d54557f2c70dbac1bcb4ab722504bf56795c2e33edf230fb"
+    },
+    {
+      "path": "assets/ladder/shutter-200.png",
+      "size": 3197858,
+      "sha256": "b1bdf0031c57704976ac167051e44c0ad69e51cd19f3c464a7077b35c9cc700d"
+    },
+    {
+      "path": "assets/ladder/shutter-2000.png",
+      "size": 3297871,
+      "sha256": "7ef2c5a5d5a1c9ee93987d667d43705203bc920cc8a27d6e38af4b64c931a8ce"
+    },
+    {
+      "path": "assets/ladder/shutter-300.png",
+      "size": 3218416,
+      "sha256": "212cc002eca4abfbbddefb214d36d8bfebfd95c39b8613b98f22764e0a2b99a6"
+    },
+    {
+      "path": "assets/ladder/shutter-3000.png",
+      "size": 3008509,
+      "sha256": "6ec9aabcd0553b3bf39c1af892a384839bb7cd7171d14e5be4414dfaa4b0e665"
+    },
+    {
+      "path": "assets/ladder/shutter-50.png",
+      "size": 3195565,
+      "sha256": "e83eb8d2d1c651a4507002b513e5a48665f1ea793fb323fed1df40d88e3752df"
+    },
+    {
+      "path": "assets/ladder/shutter-500.png",
+      "size": 3000760,
+      "sha256": "4f8321f04c81dbb05ebc05fbb51ca409326b2ddb1c802bc71e124aef14af7142"
+    },
+    {
+      "path": "assets/ladder/shutter-pt-prompts.txt",
+      "size": 1122,
+      "sha256": "43bff10ebd9d68d9861cf1b5728479fc4cfc565ad4a4a6f05894bb94b4b79942"
+    },
+    {
+      "path": "assets/logo/nova_logo.svg",
+      "size": 3254,
+      "sha256": "089831f4f0f1ca01bd8f72771755a9551b1a7c796f45a742551b8e1f18ec6fb3"
+    },
+    {
+      "path": "assets/logo/rising_logo.svg",
+      "size": 3272,
+      "sha256": "9a2ab4c063375b246c8e9185778450a81c3eefff251cce3e8dcb6a1452f4785e"
+    },
+    {
+      "path": "assets/media/jag/bar_wo_nerae.mp3",
+      "size": 26806,
+      "sha256": "34e6fb1af86cbec162d78ae011b3d0fa22cc653eaba7dd8eb9983a7a89715562"
+    },
+    {
+      "path": "assets/media/jag/bell.wav",
+      "size": 530318,
+      "sha256": "39664c2b360c5288c9268b9f4aac301dfa6afd8408790a1683363a7589c2ac97"
+    },
+    {
+      "path": "assets/media/jag/big_1.wav",
+      "size": 32172622,
+      "sha256": "9e546603e3bd298b35c1e7ec2ef4d98e62e842bb02cbe8b493b907cdbbe73399"
+    },
+    {
+      "path": "assets/media/jag/big_2.wav",
+      "size": 40116068,
+      "sha256": "49012f373096dc258f41b44885bcb60fa04ce5038e9925f0fc983b6c7cfc49e9"
+    },
+    {
+      "path": "assets/media/jag/big_50g.wav",
+      "size": 39683366,
+      "sha256": "cb5cd10665cee971e6da2380c2912453c4e999f30a495330223cf05c3d33fdd9"
+    },
+    {
+      "path": "assets/media/jag/big_confirm.mp3",
+      "size": 230712,
+      "sha256": "41aa5cb610d4bcd2a02f8da9558ac84bfa2738c0271783add2b68b7b10c39b25"
+    },
+    {
+      "path": "assets/media/jag/big_kakutei.wav",
+      "size": 299052,
+      "sha256": "f5b7b3c6a13a4f387e09c04a3d61b39f1ce5d861eb3e1f3167976b5b8be4bdd4"
+    },
+    {
+      "path": "assets/media/jag/bonus_end.wav",
+      "size": 1366054,
+      "sha256": "574226d558faa23b684c109643e85e5cb2a89eb37d264f4db5297831bf8f6b48"
+    },
+    {
+      "path": "assets/media/jag/cherry.wav",
+      "size": 191118,
+      "sha256": "ab092068a379b5203d738802a76e9ae8b43a2dc75f4c0c8231a3849108cf4a4b"
+    },
+    {
+      "path": "assets/media/jag/cz_last.wav",
+      "size": 143438,
+      "sha256": "2fe4a0057c62913d6b72f9717be49b39efcb554cb5dcd123dbdf23e7160b8ab0"
+    },
+    {
+      "path": "assets/media/jag/cz_patrol_confirm.wav",
+      "size": 671088,
+      "sha256": "6e766eef0978c451c048983a8d39407a7f20b34c73acd88094251d1c553af719"
+    },
+    {
+      "path": "assets/media/jag/cz_remaining_2.wav",
+      "size": 135246,
+      "sha256": "4cbbf4dc116f119ceb007642b79b2e9bd501d186c02c5be0478e88756f6ef3d7"
+    },
+    {
+      "path": "assets/media/jag/cz_remaining_3.wav",
+      "size": 155726,
+      "sha256": "eeff874c4f7c770d5d722040856f34ebbaa464ee03880e71c37143d421ff2115"
+    },
+    {
+      "path": "assets/media/jag/cz_third_failure.wav",
+      "size": 492192,
+      "sha256": "57d3307031a01b1ce6db51bda4062becc6befadb2fa851b79796e771c48e359f"
+    },
+    {
+      "path": "assets/media/jag/cz_third_success.wav",
+      "size": 423440,
+      "sha256": "1c995648957e2469d15c4a9b623d3d4c481298cb90b001d828768e3560551e61"
+    },
+    {
+      "path": "assets/media/jag/peka_1.wav",
+      "size": 135978,
+      "sha256": "5873fb74cc52dc840171a3fcbe50a08d1a8942829a4cedcdc8d8a59034744032"
+    },
+    {
+      "path": "assets/media/jag/peka_atari.wav",
+      "size": 147500,
+      "sha256": "c241bc758a9a7a3622f073be7992ee88bada38be1955a88ece35be041745185f"
+    },
+    {
+      "path": "assets/media/jag/peka_atsu.wav",
+      "size": 147500,
+      "sha256": "1894e3539e900d918b7bff2be22cc0bd97950d49ef52d51570c27f9b8d625f91"
+    },
+    {
+      "path": "assets/media/jag/peka_kyuin.wav",
+      "size": 241708,
+      "sha256": "cdb5751f088932f1eb1f04f9b97079980b7071323a41bde52020018c9c77990b"
+    },
+    {
+      "path": "assets/media/jag/peka_kyuin_triple.wav",
+      "size": 233516,
+      "sha256": "40bcb9cbf6240d2070b6a02d7731954fe21648c920b805920e04936e9ce18592"
+    },
+    {
+      "path": "assets/media/jag/premium_bb2_bgm.mp3",
+      "size": 54232,
+      "sha256": "3e4409418c16d7b4c0010c8a9d2dc45f82f87c882efe391d1aa4a2d60caab52d"
+    },
+    {
+      "path": "assets/media/jag/premium_big_confirm_movie.mp4",
+      "size": 12205456,
+      "sha256": "63505261d82205d6b5b5343cec6d1335f98b94c32652ad8cb52f76a5d9ac0235"
+    },
+    {
+      "path": "assets/media/jag/premium_big_first.mp3",
+      "size": 9476269,
+      "sha256": "d40be91f5f1f8795e2c165ecc937017734ebd6ecfa460348ae085542e92c2e90"
+    },
+    {
+      "path": "assets/media/jag/premium_big_reel.mp4",
+      "size": 5073446,
+      "sha256": "0e12c4d919e24d435af1cfbd68c50c43395554ed4e02efe2144dfe4fdeddeca2"
+    },
+    {
+      "path": "assets/media/jag/premium_big_second.wav",
+      "size": 67354976,
+      "sha256": "3a45eea86b2dfa7a6a0fdaa2664bc9ccb91ee7452970d4f1bcf2c7e808e25dd7"
+    },
+    {
+      "path": "assets/media/jag/premium_bonus_end_voice.wav",
+      "size": 292556,
+      "sha256": "fc578a3d19215e72af4f00b37192e1e3db9f71f156b3b8523e1c601f4ce7b9ef"
+    },
+    {
+      "path": "assets/media/jag/premium_first_end_voice.mp3",
+      "size": 50944,
+      "sha256": "9129e41eb75dffbbdbc2399274260a669228a010a62408f88958b973cb6b0cc7"
+    },
+    {
+      "path": "assets/media/jag/premium_piero_symbol.wav",
+      "size": 720044,
+      "sha256": "e20c596c1eb675444a8d59f9dad4092cbde419b5361dbc14377b552324dbf583"
+    },
+    {
+      "path": "assets/media/jag/premium_second_end_voice.mp3",
+      "size": 45809,
+      "sha256": "49217dd2f5107c2e9cf3745c9ae0ae0e7a0a97b6287870336ee8f28ddef8d493"
+    },
+    {
+      "path": "assets/media/jag/reg_bonus.wav",
+      "size": 31263646,
+      "sha256": "e566a96df08ed7b94a2083cd9c6e520f7e841d906744b85903b79688ece2808c"
+    },
+    {
+      "path": "assets/media/jag/reg_kakutei.wav",
+      "size": 188460,
+      "sha256": "50a780e4ade6f2213ad25e6f46652c845db4431df0de783cc670a7f5fecc42e7"
+    },
+    {
+      "path": "assets/media/jag/setting_voice_2plus.wav",
+      "size": 216038,
+      "sha256": "3ec00409ad2595655729f0e51a7e0c16e81f019c7889563e5e9cbcb6f7f53b75"
+    },
+    {
+      "path": "assets/media/jag/setting_voice_4plus.wav",
+      "size": 342038,
+      "sha256": "8d392449dc6e25471c2708d71dfa819b2b506d340c6a37984d88a640738117e4"
+    },
+    {
+      "path": "assets/media/jag/setting_voice_5plus.wav",
+      "size": 234035,
+      "sha256": "eab58920a20e7871d7dcf1f30511b6db4ad1b37b0cadc4495bbe929f5697b29d"
+    },
+    {
+      "path": "assets/media/jag/setting_voice_6plus.wav",
+      "size": 162725,
+      "sha256": "b878a1e84e65435b9f9a7742691e7cc3f3483646bf55fa3a0de17c1733aa1c0f"
+    },
+    {
+      "path": "assets/media/jag/special_symbol.wav",
+      "size": 531168,
+      "sha256": "3f860598d59cba869a0b727d23844ab91cae12fdbcd4ee683b8076ffd81fc6f6"
+    },
+    {
+      "path": "assets/media/jag/start.wav",
+      "size": 238558,
+      "sha256": "e08714f2ccbf28fceece4a56dde779416fca2f8caf5109c0ea5341f44c0de504"
+    },
+    {
+      "path": "assets/media/nova/BIG.wav",
+      "size": 46204806,
+      "sha256": "e4ad586174a8147cc317bd056a2d34afee00394ceab305518df2e6668ae6f02d"
+    },
+    {
+      "path": "assets/media/nova/NovaREG.wav",
+      "size": 28086086,
+      "sha256": "94066c63d7ed4b4ce022d6be728bdc7b5de31c3801aa7a8fbcf7cbc30bf1efd2"
+    },
+    {
+      "path": "assets/media/nova/RUSH.wav",
+      "size": 39796418,
+      "sha256": "62ecad146f80c39a989deff191ffb4d53d5a89db038b16f55ea8ab3ce41282da"
+    },
+    {
+      "path": "assets/media/nova/aim-nebula-giru.wav",
+      "size": 210018,
+      "sha256": "66037c4951b574c3e87b5c20e1b3ba6184dc84e91f5fd164e11a2e349ee6eee9"
+    },
+    {
+      "path": "assets/media/nova/aim-nebula-ouma.wav",
+      "size": 589902,
+      "sha256": "36efa246a7d2540b573f227fa962d6c35cbba9229d225e5af80793eaffed65d3"
+    },
+    {
+      "path": "assets/media/nova/aim-nebula-sora.wav",
+      "size": 229454,
+      "sha256": "f67407e1d747214bffa0d044b3cabbc7712aa0857750e00b26bcdf47940ca57f"
+    },
+    {
+      "path": "assets/media/nova/aim-nebula-toto.wav",
+      "size": 262222,
+      "sha256": "8b942772d8268a837f5f61f73c98ab0b09a28c3f3b5aa1dadd918ec2bde5749f"
+    },
+    {
+      "path": "assets/media/nova/aim-nova-ouma.wav",
+      "size": 585806,
+      "sha256": "d24b28c560a035257c64346291882243ab3ae74470c73f980bcb26882a26f1c0"
+    },
+    {
+      "path": "assets/media/nova/aim-seven-giru.wav",
+      "size": 196050,
+      "sha256": "7afa395d4ecac7cd13f7f0ffa43ecaea6edbc98312c58a274e7df09d6481f0c8"
+    },
+    {
+      "path": "assets/media/nova/aim-seven-ouma.wav",
+      "size": 503886,
+      "sha256": "59e21854afcf610d0c0c3600b3535dec1ef95694743686c8a637f1a5579800e7"
+    },
+    {
+      "path": "assets/media/nova/aim-seven-sora.wav",
+      "size": 106574,
+      "sha256": "624b119033da905205cb09681280de4e7d92ac0bf42aa08a30d04d3753ba396c"
+    },
+    {
+      "path": "assets/media/nova/aim-seven-toto.wav",
+      "size": 229454,
+      "sha256": "a2c73004b60541cb279d8e11bf264ddcb227c979e3ba059dad0e1266671ecd21"
+    },
+    {
+      "path": "assets/media/nova/aim/bonus-nebula-win.mp4",
+      "size": 3651519,
+      "sha256": "75b1b2bc0a4aa8a5e27201a67c32ad4da0017ece99f6ad51705ab42789b888a4"
+    },
+    {
+      "path": "assets/media/nova/aim/bonus-nebula-win.wav",
+      "size": 278606,
+      "sha256": "4f19dfdd6f2e4b02527060a7ff67c720c71176fb0a2db57fc1f70afe03fddd3d"
+    },
+    {
+      "path": "assets/media/nova/aim/cue-blue.wav",
+      "size": 396180,
+      "sha256": "246fee062df87eebc765b7af68f4559b4554aa06eae89cee25b5a0c9f279c0ec"
+    },
+    {
+      "path": "assets/media/nova/aim/cue-rainbow.wav",
+      "size": 475840,
+      "sha256": "dce03114c019338efa79c9cf123a0100db8dd288f91a3c6524743648d687a69f"
+    },
+    {
+      "path": "assets/media/nova/aim/cue-red.wav",
+      "size": 433264,
+      "sha256": "a465c5feb6a51816e24315560a77be61a07c0bb8f040b64df459d3fd15f6080c"
+    },
+    {
+      "path": "assets/media/nova/aim/nebula-blue.mp4",
+      "size": 6694924,
+      "sha256": "ad51ed18b3041ab24d85c72771dec891e726ea3dfbae3068e9f411935df717a8"
+    },
+    {
+      "path": "assets/media/nova/aim/nebula-rainbow.mp4",
+      "size": 9314262,
+      "sha256": "ff43e74cf996f080f264367a45ea96c3d14df511280ffaf2c1c802ce39e1adee"
+    },
+    {
+      "path": "assets/media/nova/aim/nebula-red.mp4",
+      "size": 7112797,
+      "sha256": "6f39069d68808872569d538f9f498a831e51359954b07df570d6ddd26e6faebd"
+    },
+    {
+      "path": "assets/media/nova/aim/nebula-win.mp4",
+      "size": 3302139,
+      "sha256": "63b895709334b88c9fe195837f8229e00b87db3c25a11748b75b33d0752e3590"
+    },
+    {
+      "path": "assets/media/nova/aim/nebula-win.wav",
+      "size": 1713256,
+      "sha256": "d70bc633eefe1f03cd416b4d106780e6bcdc29ee0affe48e1557fc3bda8c7972"
+    },
+    {
+      "path": "assets/media/nova/aim/seven-blue.mp4",
+      "size": 6697770,
+      "sha256": "ab94fe1d8bb25b2a24d99f3ea3640c84c45411fb95d071ace982d8f077ce939d"
+    },
+    {
+      "path": "assets/media/nova/aim/seven-entry-red.mp4",
+      "size": 8021720,
+      "sha256": "76a8b2d3a13a37b25ab7d05fcd58d0c802934b821727cd724e2be893f9400ee5"
+    },
+    {
+      "path": "assets/media/nova/aim/seven-entry-red.source.json",
+      "size": 418,
+      "sha256": "9a2fec6503e24b31fff6ccaa648b68bd8b05bef4de9ed89a45891c5609f67301"
+    },
+    {
+      "path": "assets/media/nova/aim/seven-rainbow.mp4",
+      "size": 9335465,
+      "sha256": "60d6b28b967b3896c0fbe913967f3108235a48c17e2e3e82313c15a2bc0f816a"
+    },
+    {
+      "path": "assets/media/nova/aim/seven-red.mp4",
+      "size": 6933244,
+      "sha256": "6e6052df6296e9cb3513d2edc557032ecbe34b6f7434678ef51f9eb343b62d80"
+    },
+    {
+      "path": "assets/media/nova/aim/seven-win.mp4",
+      "size": 8714934,
+      "sha256": "ad4e0e87897f70c030c979c9e7d80fb9803e8f6179bb4bf9e5e0b539afc8e185"
+    },
+    {
+      "path": "assets/media/nova/aim/seven-win.wav",
+      "size": 1260232,
+      "sha256": "894e775cc18ede145da687b04aab25416aaebe3aa579c4421af7ed4b15522d33"
+    },
+    {
+      "path": "assets/media/nova/aim/zone-entry-seven.webm",
+      "size": 5219386,
+      "sha256": "9113af42d221da134094fbef1bdde41abe155ef498f91c37b0627e7e2bbac256"
+    },
+    {
+      "path": "assets/media/nova/aim/zone-roulette-confirm.wav",
+      "size": 397390,
+      "sha256": "4998c6d530b4e2754c722108d2fff78296733a202ea7700c5862eebbf916379e"
+    },
+    {
+      "path": "assets/media/nova/aim_seven_sosuke.wav",
+      "size": 245838,
+      "sha256": "e599f4b2afd605b362c9e7097b8414ffbc63c62ea63e029d5e45cfcad56f3cc9"
+    },
+    {
+      "path": "assets/media/nova/audiostock_1117081.wav",
+      "size": 46656044,
+      "sha256": "1289d1949241eaa59a2eae9140c1b7ae9d0b8c00cb19a555ebcbc95604e3d0e5"
+    },
+    {
+      "path": "assets/media/nova/audiostock_862200.wav",
+      "size": 55872080,
+      "sha256": "ef81c6a073a27e9c585c4c1a65882b7108af485bbd4255bc67eec3e3d61ce3a5"
+    },
+    {
+      "path": "assets/media/nova/audiostock_933855.wav",
+      "size": 23038190,
+      "sha256": "f69cf424d82c8326ead1c27748aa7669f8f7c060371446bc2b049c7d3e5ad920"
+    },
+    {
+      "path": "assets/media/nova/bell-navi.wav",
+      "size": 295544,
+      "sha256": "aee9b35d22ecff0153f8c2480c32b8af3034aa7d5ccaa7ff37f69bdf44696433"
+    },
+    {
+      "path": "assets/media/nova/bell_payout.wav",
+      "size": 235324,
+      "sha256": "e502babff33d0e616e4f67f9a93392227d65f4ac28e5d37188cdaef2539e0a76"
+    },
+    {
+      "path": "assets/media/nova/bonus_art_end.wav",
+      "size": 639140,
+      "sha256": "d3903966bf126f037abc1953f6f7fdb509a6437c576fb19294358d2e3dd7439f"
+    },
+    {
+      "path": "assets/media/nova/bonus_confirm.wav",
+      "size": 352334,
+      "sha256": "b56fe68779fb1c20df6729bfd4db035d92b706f567e1e604c4fa8a076ca8d9bf"
+    },
+    {
+      "path": "assets/media/nova/continue-sora.wav",
+      "size": 106062,
+      "sha256": "bc0ff6b6c86b35aa6c0e2f41fbafb212c9704967021b4f01b6ff38a2a15665d5"
+    },
+    {
+      "path": "assets/media/nova/continue-toto.wav",
+      "size": 155726,
+      "sha256": "48e64cd958de5d7d327ae5009a0ac3f1814c6a417db113073b0a25f563934a4a"
+    },
+    {
+      "path": "assets/media/nova/cz_stop_12.wav",
+      "size": 157368,
+      "sha256": "1480e2c72e714b1416cb190a1ca176663904c2f8fce6153c496c3e2711f111e6"
+    },
+    {
+      "path": "assets/media/nova/direct-award.wav",
+      "size": 439226,
+      "sha256": "c3044cd902b85856143b378a9df765c8eaf52d6d1340236ae780065276b4561a"
+    },
+    {
+      "path": "assets/media/nova/giru-bgm.wav",
+      "size": 37558078,
+      "sha256": "e6c9f666d6f553cf598190e61caa40d248c0822bf95510ae4c8bdae8f117651a"
+    },
+    {
+      "path": "assets/media/nova/giru-ladder-bet-challenge.wav",
+      "size": 379410,
+      "sha256": "338ee6b36cbab2a01067261047f6b9324621f3feb752f90923c5856e79385fe7"
+    },
+    {
+      "path": "assets/media/nova/giru-ladder-bet-good-flow.wav",
+      "size": 249662,
+      "sha256": "643205f12814428d5aa9c4743a780a657ced93b4e1b78570debc1408c260798c"
+    },
+    {
+      "path": "assets/media/nova/giru-ladder-bet-moment.wav",
+      "size": 379410,
+      "sha256": "37846f5f41790e1f7076a050ab64357b6eafcb5f60905be703b8deef5e57b38b"
+    },
+    {
+      "path": "assets/media/nova/giru-ladder-result-1000.wav",
+      "size": 211366,
+      "sha256": "7f16ea97f3ca5a79bc00d9ca4ec27c670690794783b1b5f0a1cca578239cf3e0"
+    },
+    {
+      "path": "assets/media/nova/giru-ladder-result-500.wav",
+      "size": 297418,
+      "sha256": "62fc40a5082c219b89e5e0e0975f4a51191d5e5db4b689e4a52e9879751d99c8"
+    },
+    {
+      "path": "assets/media/nova/giru-ladder-result-under500.wav",
+      "size": 253718,
+      "sha256": "c7ee8089b203f1b68fd9248ae4e7bddadad703de8722ba8156bbf57dbc3c27ba"
+    },
+    {
+      "path": "assets/media/nova/initial-duo-bgm.mp3",
+      "size": 4657581,
+      "sha256": "e051011c806af0d0df4d2ad82b294172e560ec4e96742ad407bb4830a72f3b8a"
+    },
+    {
+      "path": "assets/media/nova/initial-duo-bgm.source.json",
+      "size": 682,
+      "sha256": "843a7b3e82689d5a29b683758c52672e30f2b6fbe7e398f1c10542131a898218"
+    },
+    {
+      "path": "assets/media/nova/initial-duo-final-stop.mp3",
+      "size": 202709,
+      "sha256": "16bd703411e51fd442d276443b41071e38703f571b512476b5b82dfc62786510"
+    },
+    {
+      "path": "assets/media/nova/initial-duo-stop.mp3",
+      "size": 77321,
+      "sha256": "18e33d8c3e8423a19daf79e965f280583d7d64a2f58573f0be51747352e5a3fb"
+    },
+    {
+      "path": "assets/media/nova/ladder-final-award-under1000.wav",
+      "size": 618496,
+      "sha256": "c549cd5f1e90370220ebffab361a9c5919732539f36d231939f2337e134d30a1"
+    },
+    {
+      "path": "assets/media/nova/ladder-final-award.wav",
+      "size": 894272,
+      "sha256": "03bc78a4c9f7fd1d0208bb11681f4df7b05e65f6d70ec292711652c5587a94f1"
+    },
+    {
+      "path": "assets/media/nova/navi-center-giru.wav",
+      "size": 99190,
+      "sha256": "e3b1400c36b397445a40a181160bc32c13fb3563f6576bb85965076e3e3deffe"
+    },
+    {
+      "path": "assets/media/nova/navi-center-kushuri.wav",
+      "size": 129102,
+      "sha256": "2909ea6feb4f34cbff9df9731de966230058a33729afec16a123a6c7a717f8b9"
+    },
+    {
+      "path": "assets/media/nova/navi-center-nito.wav",
+      "size": 77902,
+      "sha256": "1b107059eaa0aa1937deee9f9dff58dba449f1d75efc862e97566557bce1ba8b"
+    },
+    {
+      "path": "assets/media/nova/navi-center-ouma.wav",
+      "size": 149838,
+      "sha256": "e12d933a991c83e3baf7ed513c5ad60c46a305c54502416eb138d73f95260a66"
+    },
+    {
+      "path": "assets/media/nova/navi-center-sora.wav",
+      "size": 77902,
+      "sha256": "11033098a6abbdf7c1a4073c943203e5e21db40f1c6a4cf4726751e599ec9114"
+    },
+    {
+      "path": "assets/media/nova/navi-center-sosuke.wav",
+      "size": 49230,
+      "sha256": "2ddd455ba6b62cde5af4d9db19ed0bebec6b023039dac88722fbf36843523ced"
+    },
+    {
+      "path": "assets/media/nova/navi-center-toto.wav",
+      "size": 98382,
+      "sha256": "f840b124aff4471934d2230ed979f8fee1ec58df19ee0779076f5fa65f8cc899"
+    },
+    {
+      "path": "assets/media/nova/navi-complete-giru.wav",
+      "size": 294990,
+      "sha256": "c4e62339650b82a8ad6d3009f623482b9d5f978c08276ff0b511104e817efb50"
+    },
+    {
+      "path": "assets/media/nova/navi-complete-kushuri.wav",
+      "size": 87134,
+      "sha256": "9978b27dfb486aae2a7ab870f47bc5767eaa0c7d27ff0398daaa3ca0a26a325b"
+    },
+    {
+      "path": "assets/media/nova/navi-complete-nito.wav",
+      "size": 151630,
+      "sha256": "26a3d991bd7292a3bd96db48b8ef8537c4b9940969b8d1386e08ab5ddcbb52df"
+    },
+    {
+      "path": "assets/media/nova/navi-complete-ouma.wav",
+      "size": 196686,
+      "sha256": "f4fc853d3242d8c7f1814b39f713231ea8d33ba2d0d2bb1092187503b349c58d"
+    },
+    {
+      "path": "assets/media/nova/navi-complete-sora.wav",
+      "size": 163918,
+      "sha256": "dbef96a679597d1c0747387c92963169a7da782c73a85b955c1133cf92fad65f"
+    },
+    {
+      "path": "assets/media/nova/navi-complete-sosuke.wav",
+      "size": 90190,
+      "sha256": "cf19fc62417ba4d5a445a9b500ada8865c1b21b8460ab85f851fbe51368c03a3"
+    },
+    {
+      "path": "assets/media/nova/navi-complete-toto.wav",
+      "size": 73806,
+      "sha256": "c95764179ddda6ba4d7ff194c27549f293216cd55dd45b2b7179e0dc017b652b"
+    },
+    {
+      "path": "assets/media/nova/navi-left-giru.wav",
+      "size": 99190,
+      "sha256": "7385778606804281c9c1351037312646c4505b92a5354a4b4be9a4a2ad36d23d"
+    },
+    {
+      "path": "assets/media/nova/navi-left-kushuri.wav",
+      "size": 104558,
+      "sha256": "7a0ca066bb0e25b4ede89113db035bc3b0d477a1ed4ab883937796ac83ad5953"
+    },
+    {
+      "path": "assets/media/nova/navi-left-nito.wav",
+      "size": 98382,
+      "sha256": "2638071163647b4d5388b2ad74be7a632c6e8747d0c57c3b1bfca0ee86364349"
+    },
+    {
+      "path": "assets/media/nova/navi-left-ouma.wav",
+      "size": 172366,
+      "sha256": "a60f427e48169647d1cd65d5c0c9bcd5be1826ebb6fc21b2a250de37c58dddaf"
+    },
+    {
+      "path": "assets/media/nova/navi-left-sora.wav",
+      "size": 66638,
+      "sha256": "c9c09bc2f293347c6e5265a64aa28585aa51e1927ea8cadee453cf15a6580931"
+    },
+    {
+      "path": "assets/media/nova/navi-left-sosuke.wav",
+      "size": 49230,
+      "sha256": "476138cb6cb0dca133b6fb514d0ab638f426bb3626c48a4623af09f4959afc6a"
+    },
+    {
+      "path": "assets/media/nova/navi-left-toto.wav",
+      "size": 106574,
+      "sha256": "895bbc822c169e6f8359068881a83e7b03311d0b05d6d9355766e67529cb20b4"
+    },
+    {
+      "path": "assets/media/nova/navi-right-giru.wav",
+      "size": 68102,
+      "sha256": "597bf4c738996bd65c822e4990a70122293594d3bad58b0f746573c0e4429ed1"
+    },
+    {
+      "path": "assets/media/nova/navi-right-kushuri.wav",
+      "size": 116814,
+      "sha256": "27dd0478a74a70a1c7f37b1277d037a68e9fe08f0cbf8c082faa81e5723581f1"
+    },
+    {
+      "path": "assets/media/nova/navi-right-nito.wav",
+      "size": 83038,
+      "sha256": "434dd4291d412fb8b1629065ef8f90591f41c07223599148f358f559b9d2daab"
+    },
+    {
+      "path": "assets/media/nova/navi-right-ouma.wav",
+      "size": 145742,
+      "sha256": "7def16d4e55475cd8a92daaeda3e6a525e844fb25e1a338b15b4a39ac1e864b7"
+    },
+    {
+      "path": "assets/media/nova/navi-right-sora.wav",
+      "size": 62222,
+      "sha256": "1b109961d6fd970b92484953506c3645478336f3f32e2845cc473ec0a723199a"
+    },
+    {
+      "path": "assets/media/nova/navi-right-sosuke.wav",
+      "size": 41038,
+      "sha256": "73b516191e83a48b5f2c256175025e8422de76a1af34cdd51a212b06d916c88f"
+    },
+    {
+      "path": "assets/media/nova/navi-right-toto.wav",
+      "size": 155726,
+      "sha256": "dcbdf1fab1454211f4ce3346f9eb3c47d6c46e5846d7df73fb3239af82a000ed"
+    },
+    {
+      "path": "assets/media/nova/nova-win-1-ouma.wav",
+      "size": 606286,
+      "sha256": "3a78d23dbd67bb6dbb079d3af0cabb2e30d609067e23040a8740e844e88e1ddf"
+    },
+    {
+      "path": "assets/media/nova/nova-win-2-ouma.wav",
+      "size": 587854,
+      "sha256": "78703b531997ece86f68914b5727ba56a56ff46d1b6149b9fb7d109ac2003a1c"
+    },
+    {
+      "path": "assets/media/nova/nova-win-3-ouma.wav",
+      "size": 766030,
+      "sha256": "068c3aa478b8c6a99944782fe0429c1910244c7f3f3e0f4610459b0a5900cb09"
+    },
+    {
+      "path": "assets/media/nova/ouma-fail.wav",
+      "size": 132170,
+      "sha256": "25ab90db78d4d7d96ba3d785ed83e27d1ed1c927136a0714e562ae01fbdcafad"
+    },
+    {
+      "path": "assets/media/nova/ouma-reverse-v2.wav",
+      "size": 1228844,
+      "sha256": "c65df8efe3de01046dc3dbc33dea18ba92279920e976064727fc97c213b45ff1"
+    },
+    {
+      "path": "assets/media/nova/ouma1.wav",
+      "size": 2220076,
+      "sha256": "64b2767fe44414a56f2020d05a3841933e200b5809fe5dddda4fcacb62be626b"
+    },
+    {
+      "path": "assets/media/nova/oumafreez.wav",
+      "size": 18547810,
+      "sha256": "aff05055db0200d43ecc30c5fa37e11a2edfd1b07712f62cbdb01481daffda8c"
+    },
+    {
+      "path": "assets/media/nova/rare-cue-big-chance-kushuri.wav",
+      "size": 196686,
+      "sha256": "f80672d48bafbaceef305b5cf9e8ec869c6dc442df9acee5f4d7d932b057a462"
+    },
+    {
+      "path": "assets/media/nova/rare-cue-big-chance-nito.wav",
+      "size": 172110,
+      "sha256": "8a2885b9a5613716f8189a956a3e82868fc97fcef81b29b539051707ff506e4b"
+    },
+    {
+      "path": "assets/media/nova/rare-cue-chance-kushuri.wav",
+      "size": 180302,
+      "sha256": "2ba31634b2c903201a93d1d2d8a9f4a61bfb3ed17179fb07c8174db1d6280edf"
+    },
+    {
+      "path": "assets/media/nova/rare-cue-chance-nito.wav",
+      "size": 125006,
+      "sha256": "ea04c188a9d48fddb48e6a161b2464c9353618bf1081ad580080d6f9a8d7edd4"
+    },
+    {
+      "path": "assets/media/nova/rare-cue-hot-kushuri.wav",
+      "size": 409678,
+      "sha256": "4d699660089405ca0c9348110e9a9941edd186f9e36c6a5774f78edad47ccdf8"
+    },
+    {
+      "path": "assets/media/nova/rare-cue-hot-nito.wav",
+      "size": 155106,
+      "sha256": "12a0bb4037a2946496cce4bd06136335313674aad593baeca52e19243cffa521"
+    },
+    {
+      "path": "assets/media/nova/rare-navi.mp3",
+      "size": 84635,
+      "sha256": "f2aab2820bc8e9334c10605a3b2413b751b306614e066aaca56fe8c714b2d8c6"
+    },
+    {
+      "path": "assets/media/nova/rare-navi.source.json",
+      "size": 440,
+      "sha256": "6d45022431b0ee425145630344f8c837095bfa6ca59e9c6837a708b268790698"
+    },
+    {
+      "path": "assets/media/nova/reel-stop.wav",
+      "size": 490194,
+      "sha256": "38671c2d95a0eb7fd9e6e11f65f3fb57c778dc81ecb0b20c0f1647fd6ac3ed54"
+    },
+    {
+      "path": "assets/media/nova/replay.wav",
+      "size": 1435518,
+      "sha256": "b6ae9cb06a0c6846e8f14f28e01e600e5e9b0a189131a673feedcfc2cb3fc1d6"
+    },
+    {
+      "path": "assets/media/nova/result-eyecatch.wav",
+      "size": 502110,
+      "sha256": "6f82b05c2059389d1fbbe9be4ec8c3bc29b06dd72ce2c21e13e90f09fe7497ff"
+    },
+    {
+      "path": "assets/media/nova/rush-confirm-bgm.mp3",
+      "size": 392640,
+      "sha256": "634360321df44b5b6c9f08fceaa50813a7eccf5c466ea18f817f599b2e56f745"
+    },
+    {
+      "path": "assets/media/nova/rush-confirm-se.wav",
+      "size": 535160,
+      "sha256": "15256771ec83c7c433d8466def05b47cbdac063ae4dd91fdb278e17e1578f29b"
+    },
+    {
+      "path": "assets/media/nova/rush-duo157.sources.json",
+      "size": 1109,
+      "sha256": "9ee86adddd717b23451c7044510fa7edbac49a0c399fea9aff120a595454d871"
+    },
+    {
+      "path": "assets/media/nova/shutter-close.wav",
+      "size": 1011060,
+      "sha256": "f4c9a12eaf65cb094dd80b8b45c0d3022a157df7abbd4ef76a7a923f78c4ef80"
+    },
+    {
+      "path": "assets/media/nova/shutter.wav",
+      "size": 939728,
+      "sha256": "55f3f828c5e015e00004c0f5c8203d3928d4bc246188694c98a04b82bf3f1717"
+    },
+    {
+      "path": "assets/media/nova/sora-bgm.wav",
+      "size": 18081044,
+      "sha256": "6db4876ce4f9a7c059e545162a3b71b3a2faaa8941bfd4ab8b83c803c143c189"
+    },
+    {
+      "path": "assets/media/nova/sosuke-bgm.wav",
+      "size": 62691278,
+      "sha256": "c1c50ddf7a514152aff7cb4e9d105678c64fa496fc2df685e1d9a0293a54df09"
+    },
+    {
+      "path": "assets/media/nova/spin_start.wav",
+      "size": 176492,
+      "sha256": "8537d2317372c7e1ec3f3bb909d63750722a44c50fe1a6ffa67396c3192f6baf"
+    },
+    {
+      "path": "assets/media/nova/star-particle-01-alpha.webm",
+      "size": 26759306,
+      "sha256": "324da9a402cce46157e20b1853cf20ccb3c04a79f782e146b994232fc54ba893"
+    },
+    {
+      "path": "assets/media/nova/star-particle-01.mp4",
+      "size": 6780952,
+      "sha256": "e93c9a95f2977902fc00055f6aebd992bd0fed5ebcb4a7d5d64b01afe5057751"
+    },
+    {
+      "path": "assets/media/nova/star-particle-01.source.json",
+      "size": 840,
+      "sha256": "617854db7954c79ec3c62ec8a6852fe5005f7243c61d62c212a8106d81f0adff"
+    },
+    {
+      "path": "assets/media/nova/strong_nova.wav",
+      "size": 197280,
+      "sha256": "050cf2181d08fcb32bdc0b3a0f4d2f00d250ec58455745c8ebdf62897e305406"
+    },
+    {
+      "path": "assets/media/nova/super-nova-stop.wav",
+      "size": 458914,
+      "sha256": "831f3086b4dd7daabcae407dbdf3d984837829791fc4d59d277969e6d9f8ec30"
+    },
+    {
+      "path": "assets/media/nova/toto-bgm.wav",
+      "size": 21684752,
+      "sha256": "28983a9a193ceedb160f288fd109f9108f955d94ecf4de44871346d01d269da2"
+    },
+    {
+      "path": "assets/media/nova/urapi-bgm.wav",
+      "size": 41658678,
+      "sha256": "1c050289c47f44cab43e4e22d8eaa7ec8c9c56ac05e76396fac27e9828a49f23"
+    },
+    {
+      "path": "assets/media/nova/uuufa.wav",
+      "size": 2220076,
+      "sha256": "a27cf851024250684108d09c1c23c1858735f5e3533b7ee9e8aa1e1f8e46a306"
+    },
+    {
+      "path": "assets/media/nova/weak-nova.wav",
+      "size": 675162,
+      "sha256": "071bc9361a1b87f9509196a933622b2452dffdc6dc61c68a36d917645b02ec26"
+    },
+    {
+      "path": "assets/media/nova/zone-start-giru.wav",
+      "size": 169922,
+      "sha256": "ac6578ea66a0ae2c8e6555c7ac8db3d9088fa3a0afd9d0cc7e44501c86908e11"
+    },
+    {
+      "path": "assets/media/nova/zone-start-ouma.wav",
+      "size": 497742,
+      "sha256": "79aa9656467d9af33e8cd560af6594b651c9984eacf33bad589623275dc376bd"
+    },
+    {
+      "path": "assets/media/nova/zone-start-sora.wav",
+      "size": 139342,
+      "sha256": "4eec63e687be8c25df988a08699c891c05bae60e86aef2956ba00bca18c300ff"
+    },
+    {
+      "path": "assets/media/nova/zone-start-toto.wav",
+      "size": 155726,
+      "sha256": "4c48ae989e6ba1fe6dac9277d3dda5cbc6a74601c0cb44fbbf7e532c8937283d"
+    },
+    {
+      "path": "assets/media/nova/zone-start-ura-giru.wav",
+      "size": 205510,
+      "sha256": "93f7186a7a807fafa240973551aeec31750fad7c4d692f5c1eef271666d9af55"
+    },
+    {
+      "path": "assets/media/nova/zone-start-ura-ouma.wav",
+      "size": 780366,
+      "sha256": "da2e5c03348464c0712ce844b4fbe200f8c7827bf9a1f9b2f011c9a7dd76c2bf"
+    },
+    {
+      "path": "assets/media/nova/zone-start-ura-sora.wav",
+      "size": 211022,
+      "sha256": "10b29fae315f07f234c18d50f35e0a2ff9d440de27779d047c507d05ef3a4cf9"
+    },
+    {
+      "path": "assets/panels/button_data_counter_blue.png",
+      "size": 1580793,
+      "sha256": "70a7e47ad43bc23effdf27c2632164bdd95021b43e7ae550895307e7ee5092b6"
+    },
+    {
+      "path": "assets/panels/button_setting_odds_blue.png",
+      "size": 1391991,
+      "sha256": "d1a86c1b6cae345f1ccaef746a4e620298737e367e4384a04e88e194d127c29f"
+    },
+    {
+      "path": "assets/panels/button_slump_graph_blue.png",
+      "size": 1637756,
+      "sha256": "eee94c0daa0195e8c5015da97ebd460c9d6230f91fa3b452744da6eb1799ddde"
+    },
+    {
+      "path": "assets/panels/panel_big.png",
+      "size": 615494,
+      "sha256": "6de32b38229efb7305986fbb86fcb73cf73b1e68421b6bab7523bac09baa5983"
+    },
+    {
+      "path": "assets/panels/panel_blue_menu_tall.png",
+      "size": 1600023,
+      "sha256": "5e9e229249d1e617d7413992388dbcd16083338dde015dc4a62ec5cadfce81a7"
+    },
+    {
+      "path": "assets/panels/panel_devil_rush.png",
+      "size": 596804,
+      "sha256": "869d8abce0ea1cbc525f933d6edef8fd0a2bc62743bf544b9716c0838e6a763e"
+    },
+    {
+      "path": "assets/panels/panel_reg.png",
+      "size": 636292,
+      "sha256": "8be7fc0be4b004ba5fb496e207385237ccf0eceac5ae746e005504b61b83502c"
+    },
+    {
+      "path": "assets/panels/st_status_panel_red.png",
+      "size": 1490846,
+      "sha256": "5e4b0fa3d91fe03a57b172d16b09921342ce371ff0f1fe55990fcef19882874e"
+    },
+    {
+      "path": "assets/result/aozora.jpg",
+      "size": 199596,
+      "sha256": "81fe624ea8f13daffd787ed80dbb63b9f652d338b04638ae2f1cf99401622577"
+    },
+    {
+      "path": "assets/results/giru-blue.png",
+      "size": 2818136,
+      "sha256": "c5b2bf39495e6e759af470816c774cadd5a7a371fed26f81ccd70d1f7dc0f9e2"
+    },
+    {
+      "path": "assets/results/giru-red.png",
+      "size": 2673007,
+      "sha256": "4e202ab7247659e54304833642edfd9be2b01c1a336f187f8efc4debcc936936"
+    },
+    {
+      "path": "assets/results/ouma-blue.png",
+      "size": 2792548,
+      "sha256": "41935f119919205c17d128f2ccd7cb46e5130f1175477a53d22ef9ab2692a36a"
+    },
+    {
+      "path": "assets/results/ouma-red.png",
+      "size": 2665427,
+      "sha256": "1fc4c332cee7b30077d64a5777b88bdc106923e27129a0c7a85a1339b7e67ca8"
+    },
+    {
+      "path": "assets/results/sora-blue.png",
+      "size": 2802331,
+      "sha256": "82e8787403f23ad841b0b3ddda342168d64d7892a3bd28c77c26240a47d73f4c"
+    },
+    {
+      "path": "assets/results/sora-red.png",
+      "size": 2684869,
+      "sha256": "58cbc4e8f38e88ad886616057f4ecc25e1c5c1a4090bbb2bf0f5488f26eaca6b"
+    },
+    {
+      "path": "assets/results/sosuke-blue.png",
+      "size": 2757052,
+      "sha256": "f90261a69fac893e5868df52799953baa8353232e71c549cbd7eb3f2599656fe"
+    },
+    {
+      "path": "assets/results/sosuke-red.png",
+      "size": 2633466,
+      "sha256": "0c9b89100d46fad626b18f8a5e8a24717fea6be6c2a676add315bf98372082b2"
+    },
+    {
+      "path": "assets/results/toto-blue.png",
+      "size": 2705335,
+      "sha256": "64dc8326ab16cd8f0e2ad20ce35c8c414917c1e8bb6783f3ee5d10a6688fee8f"
+    },
+    {
+      "path": "assets/results/toto-red.png",
+      "size": 2572151,
+      "sha256": "2c71c530074b413c0d4ee57c07da0e3424b6170ed44f49d60dab0ad93f406d2d"
+    },
+    {
+      "path": "assets/results/urapi-blue.png",
+      "size": 2685447,
+      "sha256": "e5aedd7390310ffcf274d0a2986fdc75cb6af3db0dd152cdf6ff4adc006ae08f"
+    },
+    {
+      "path": "assets/results/urapi-red.png",
+      "size": 2557658,
+      "sha256": "9666eee09dff03c79ef3534dc6bfff2220dd1334afcf5d5ab59aa5737bde05e8"
+    },
+    {
+      "path": "assets/symbols/gang-v1/bar.png",
+      "size": 2410357,
+      "sha256": "2fff47f938530220142e7eba70f95b2f2eb6501a9509d6a518078236d8a25018"
+    },
+    {
+      "path": "assets/symbols/gang-v1/bell.png",
+      "size": 2185439,
+      "sha256": "e3450a75897ebf438fb01b99c99befbec915a18661004b1ee822bad966b66429"
+    },
+    {
+      "path": "assets/symbols/gang-v1/miss.png",
+      "size": 2233026,
+      "sha256": "ab54ff6efe4273aab32c4a7d8c57c761118b1bc5124cd085290922bcd5e2e8cb"
+    },
+    {
+      "path": "assets/symbols/gang-v1/replay.png",
+      "size": 2419491,
+      "sha256": "c04cd7a5add881dbb9852fa61052f44bba4ce879e7171ce80eab9c84e4512ff1"
+    },
+    {
+      "path": "assets/symbols/gang-v1/seven.png",
+      "size": 2356895,
+      "sha256": "4e176a774b22e9a468996b0cfca4e4120ba26ca6beabbd3e47513d77e1e9a486"
+    },
+    {
+      "path": "assets/symbols/gang-v1/suika.png",
+      "size": 2457945,
+      "sha256": "99df85996bec1d83fa89e410a9318d62152e371ca8c430864223b6e19d4ba59e"
+    },
+    {
+      "path": "assets/symbols/gang-v3/bar.png",
+      "size": 2252893,
+      "sha256": "a81fab1f1ae0bf0378f42e91fdb92e8c3c8c246558865608b7a6060d52980951"
+    },
+    {
+      "path": "assets/symbols/gang-v3/bell.png",
+      "size": 1598646,
+      "sha256": "defdc307726daf17f8adc88e4577bd7bb8c40a6bf100560daf6f3332181e31f2"
+    },
+    {
+      "path": "assets/symbols/gang-v3/miss.png",
+      "size": 1691531,
+      "sha256": "4d954a0caaa8ffa137a0dbed7babea79f803e8f92168b9139cf44030c73f37c7"
+    },
+    {
+      "path": "assets/symbols/gang-v3/replay.png",
+      "size": 1954943,
+      "sha256": "4f913253a67a4d4efb9ad9b4d0fb80c794f753c34da0d3d09cf240f0180ba642"
+    },
+    {
+      "path": "assets/symbols/gang-v3/seven.png",
+      "size": 2076483,
+      "sha256": "1ca3a453c5e7d6fa4c56c4900bd688046ec7c67368b67a110a74622cbfd7a87b"
+    },
+    {
+      "path": "assets/symbols/gang-v3/suika.png",
+      "size": 1915955,
+      "sha256": "1773e5f3608978541956c76e5d53ec304236e38058861548e8263022803fa270"
+    },
+    {
+      "path": "assets/symbols/gang-wide-v2/bar.png",
+      "size": 1210703,
+      "sha256": "5268381dbf48b57f5a32c00c9f637070f2b8dba6253473b0a6d4fe30b59cd33b"
+    },
+    {
+      "path": "assets/symbols/gang-wide-v2/bell.png",
+      "size": 1681454,
+      "sha256": "a9c94284f2f9a06927d4a3d97c6ab4195bd9aed56112f735512fc52a7dc9ee57"
+    },
+    {
+      "path": "assets/symbols/gang-wide-v2/miss.png",
+      "size": 1844440,
+      "sha256": "c1b2d07c3e651282da857d13336f11f011327113a72cf868ad52bc4035116005"
+    },
+    {
+      "path": "assets/symbols/gang-wide-v2/replay.png",
+      "size": 1580376,
+      "sha256": "45fa83a0b3b06f8f8f8d8a5de71a6933d6240b1f83a22d64ed7d1b28b8868f93"
+    },
+    {
+      "path": "assets/symbols/gang-wide-v2/seven.png",
+      "size": 2066274,
+      "sha256": "bbe2643e2e0db26ffe34b891242d2f5ba6632d90a61ce5dc0226918cbad6879b"
+    },
+    {
+      "path": "assets/symbols/gang-wide-v2/suika.png",
+      "size": 1542902,
+      "sha256": "218ead6fcbbb198310effd75f09f833c951a75694f536b456eda837b0a44311b"
+    },
+    {
+      "path": "assets/symbols/nebula-original.png",
+      "size": 1780850,
+      "sha256": "9b467ec4adb80708be9eaeae730674de150cd58d018834d962f53078d1edb828"
+    },
+    {
+      "path": "assets/symbols/seven-nebula-original.png",
+      "size": 1822288,
+      "sha256": "64955872c1a979e9af5d34c9909d3466f90e26a2a828037443f1af035d12aa89"
+    },
+    {
+      "path": "assets/symbols/sym_bar.png",
+      "size": 371012,
+      "sha256": "abbd35634235e64cc11535fd9db7f81daf26ea9df0559768f2ec68f1c0ee9c2e"
+    },
+    {
+      "path": "assets/symbols/sym_bell.png",
+      "size": 1175222,
+      "sha256": "aa029ee466e83e967ee1ab219a461f9d4fec7bc9e9b0a7a2122fc205f9e25472"
+    },
+    {
+      "path": "assets/symbols/sym_cherry.png",
+      "size": 576630,
+      "sha256": "3e9ba39d1218b29a602e6abc388fe1e98be507e50a2b2002b7d4a4de628c9f83"
+    },
+    {
+      "path": "assets/symbols/sym_coin.webp",
+      "size": 7946,
+      "sha256": "ac3e2f917d19b5e93296d2706c4542d767c5bc11e45cb0e2bfad30805541a568"
+    },
+    {
+      "path": "assets/symbols/sym_grape.png",
+      "size": 1404484,
+      "sha256": "8f750870da2480dedd23b3b0ea71757433f3fa62cdc4f55f0aa61d4bef9b4e93"
+    },
+    {
+      "path": "assets/symbols/sym_hourglass.png",
+      "size": 2752996,
+      "sha256": "733baa50c2b17292cad9fec2a70f6c8853909b864da761eaef1d49f8c60d085d"
+    },
+    {
+      "path": "assets/symbols/sym_replay.png",
+      "size": 1403439,
+      "sha256": "6394b386f8bd68a66ca344ce5d06dea544b9704ea09623b80e5bc763960d37a1"
+    },
+    {
+      "path": "assets/symbols/sym_seven.png",
+      "size": 742017,
+      "sha256": "be609a3927627e66a29715696c4c09737dc151ebfd358775622d9ebc42200fb1"
+    },
+    {
+      "path": "assets/symbols/sym_suika.png",
+      "size": 2123703,
+      "sha256": "cf6ff517a2eefb459833420c3c61e67274d5d2c103bd4ce534ac3caad1a95e9b"
+    },
+    {
+      "path": "assets/ui/icon_odds_percent_blue.png",
+      "size": 2464565,
+      "sha256": "cd3749e6010b54435bb68ba10d1ea0dec15c192a4b65a3009ac93bd4b240a4fb"
+    },
+    {
+      "path": "assets/ui/icon_slump_graph_blue.png",
+      "size": 1743084,
+      "sha256": "39ad3fe94375b3a475af57fb9ca6f4efb7472df4c8fbec8514b945380eea270b"
+    },
+    {
+      "path": "assets/ui/icon_sound_red.png",
+      "size": 1788978,
+      "sha256": "cd702cd11a8564b3b808834b1ce9e7403a7ff185a18697a046ccc77e20992061"
+    },
+    {
+      "path": "assets/ui/rising_chance_bar_confirm.png",
+      "size": 299787,
+      "sha256": "c47410ff0950abb5ff122d9994f782bc1082bc32475bcb55a645871467199ba0"
+    },
+    {
+      "path": "assets/ui/rising_chance_lamp_bg.png",
+      "size": 237587,
+      "sha256": "445c47d10c41f8e8f1de4736f7639a82e31251577b325f05c2e49d0af66737a2"
+    },
+    {
+      "path": "assets/ui/rising_chance_lamp_text.png",
+      "size": 79171,
+      "sha256": "a7e1d273a6f4a68d8ac287e3683e81e7049bfea6da56b5b8b10ac030bec78877"
+    },
+    {
+      "path": "assets/ui/rising_gogo_chance.png",
+      "size": 298054,
+      "sha256": "a868d7db7e1b91a76f3087a26b9c4a18b9024e25102f3bf4e535d8fc3f7da0a7"
+    }
+  ]
+}

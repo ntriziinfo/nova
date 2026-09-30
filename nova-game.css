@@ -6504,3 +6504,8 @@ body{
   .vertexConnectionBadge.online{color:#78ffae;border-color:rgba(77,255,145,.65);background:rgba(6,42,25,.9)}
   .vertexConnectionBadge.offline{color:#ff8f9c;border-color:rgba(255,91,113,.65);background:rgba(52,9,17,.9)}
   .vertexConnectionBadge.legacy{color:#d4a6ff;border-color:rgba(185,109,255,.6)}
+/* Storage warnings stay visible independently of game/result overlays. */
+.storageStatus { position:fixed; bottom:12px; left:12px; right:12px; z-index:100000; display:flex; gap:12px; align-items:center; padding:12px 16px; border:1px solid #ff9f7e; border-radius:8px; background:#421a16; color:#fff; font-size:14px; line-height:1.5; box-shadow:0 2px 16px #0009; }
+.storageStatus[hidden] { display:none; }
+.storageStatus button { flex:none; padding:8px 12px; color:#fff; background:#7d3022; border:1px solid #ffb39a; border-radius:6px; cursor:pointer; }
+@media(max-width:600px) { .storageStatus { bottom:4px; left:4px; right:4px; gap:8px; padding:8px; font-size:12px; } }

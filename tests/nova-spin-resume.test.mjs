@@ -26,7 +26,7 @@ function harness(saved=null){
  for(const file of ['nova-tuning.js','nova-art.js','nova-normal.js','nova-flow.js','nova-balance.js','nova-spin-resume.js'])vm.runInContext(fs.readFileSync(file,'utf8'),c,{filename:file});
  // Navigation renderer is tested separately with DOM stubs; restore must not draw an order.
  c.NovaBellNavi={restore:spin=>{c.shownOrder=json(spin.bellNaviOrder);},clear:noop};
- for(const name of ['load','runtimeStateForStorage','compactStatsForResume','persistState','restorePendingSpin'])vm.runInContext(fn(name),c);
+ for(const name of ['load','runtimeStateForStorage','compactStatsForResume','updateStorageStatus','persistState','restorePendingSpin'])vm.runInContext(fn(name),c);
  return {c,storage,errors,timers,$};
 }
 function spin(c,overrides={}){
@@ -128,4 +128,55 @@ test('displayed RTP uses the current approved estimates and BIG fields use the e
  }
  assert.equal(c.NovaArt.bonusTarget(),50);
  for(const field of ['midMulInput','bigMulInput','bigAddInput'])assert(fn('applySettings').includes('$("'+field+'").value = NovaArt.bonusTarget()'));
+});
+
+test('preferences alone cannot mask a failed game save; successful retry clears the warning',()=>{
+ const h=harness(),c=h.c;c.load();
+ c.stats.totalPaid=480;c.normalState.flow=c.NovaArt.normalize({phase:'art',remaining:'850',stock:'2',payoutVersion:1});
+ const before=json({stats:c.stats,normal:c.normalState});
+ const write=c.safeStorageSet;
+ c.safeStorageSet=(key,value)=>key==='preferences'&&write(key,value);
+ vm.runInContext('Math.random=()=>{throw Error("saving must not draw")}',c);
+ assert.equal(c.persistState(),false);assert.equal(h.$('storageStatus').hidden,false);
+ assert.match(h.$('storageStatusMessage').textContent,/遊技状態を保存できません/);
+ assert.deepEqual(json({stats:c.stats,normal:c.normalState}),before);
+ c.safeStorageSet=write;assert.equal(c.persistState(),true);assert.equal(h.$('storageStatus').hidden,true);
+ const restored=harness(JSON.parse(h.storage.get('state')));restored.c.load();
+ assert.equal(restored.c.stats.totalPaid,480);assert.equal(restored.c.normalState.flow.remaining,'850');assert.equal(restored.c.normalState.flow.stock,'2');
+});
+
+test('compact-only and full-only game saves remain recoverable',()=>{
+ for(const allowed of ['resume','state']){
+  const h=harness(),c=h.c;c.load();c.stats.totalPaid=975;
+  const write=c.safeStorageSet;c.safeStorageSet=(key,value)=>key===allowed&&write(key,value);
+  assert.equal(c.persistState(),true);
+  assert.match(h.$('storageStatusMessage').textContent,/遊技状態は保存済み/);
+  const restored=harness();restored.storage.set(allowed,h.storage.get(allowed));restored.c.load();
+  assert.equal(restored.c.stats.totalPaid,975);assert.deepEqual(restored.errors,[]);
+ }
+});
+
+test('all storage writes failing reports an error without modifying the running game',()=>{
+ const h=harness(),c=h.c;c.load();const before=json({stats:c.stats,normal:c.normalState});
+ c.safeStorageSet=()=>false;assert.equal(c.persistState(),false);
+ assert.equal(h.$('storageStatus').hidden,false);assert.deepEqual(json({stats:c.stats,normal:c.normalState}),before);
+});
+
+test('custom lottery and complete limits suppress standard RTP; presentation preferences do not',()=>{
+ const {c}=harness();c.load();vm.runInContext(fn('targetRtpText'),c);
+ const standard=json(c.settings);
+ assert(c.NovaBalance.usesStandardSettings(standard));
+ for(const change of [
+  {novaFlow:{...standard.novaFlow,czChance:.99}},
+  {novaNormal:{...standard.novaNormal,highMultiplier:3}},
+  {novaArt:{...standard.novaArt,soraHit:.41}},
+  {completeLimitPt:20000}
+ ]){
+  c.settings={...standard,...change};
+  for(let n=1;n<=6;n++)assert.equal(c.targetRtpText(n),'未試算（独自設定）');
+ }
+ c.settings={...standard,audioMuted:true,voiceVolume:.1,autoDelay:2,title:'表示変更'};
+ assert(c.targetRtpText(6).startsWith('114.24%'));
+ c.settings={...standard,novaFlow:{...standard.novaFlow,czChance:String(c.NovaFlow.defaults.czChance)}};
+ assert(c.NovaBalance.usesStandardSettings(c.settings));
 });

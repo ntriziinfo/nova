@@ -21,7 +21,7 @@
 <link rel="preload" as="image" href="assets/buttons/btn_speed_half_blue.png">
 <link rel="preload" as="image" href="assets/controls/start_lever_ball.png">
 <link rel="preload" as="image" href="assets/controls/stop_button_red_cut.png">
-<link rel="stylesheet" href="nova-game.css?v=20260930-role-merge">
+<link rel="stylesheet" href="nova-game.css?v=20261001-save-status">
 <link rel="stylesheet" href="nova-cabinet.css?v=20260928-prelude-glow-163">
 <link rel="stylesheet" href="nova-artwork.css?v=20260928-cz-rainbow-155">
 <script src="nova-artwork.js?v=20260928-cz-rainbow-155" defer></script>
@@ -45,7 +45,7 @@
 <script src="nova-tuning.js?v=20260930-fine-balance-173"></script>
 <script src="nova-decrement.js?v=20260929-decrement-170"></script>
 <script src="nova-art.js?v=20261001-cz-initial"></script>
-<script src="nova-balance.js?v=20261001-bugfix"></script>
+<script src="nova-balance.js?v=20261001-save-status"></script>
 <script src="nova-normal.js?v=20261001-cz-initial"></script>
 <script src="nova-flow.js?v=20260930-role-merge"></script>
 <script src="nova-progress.js?v=20261001-cz-initial"></script>
@@ -68,6 +68,7 @@
 <style>.cell img[src*="/gang-v3/"]{width:100% !important;height:100% !important;max-width:100% !important;max-height:100% !important;object-fit:contain !important;filter:none !important;}</style>
 </head>
 <body>
+<div id="storageStatus" class="storageStatus" role="alert" hidden><span id="storageStatusMessage"></span><button id="retryStateSave" type="button">再保存</button></div>
 <div class="confetti" id="confetti"></div>
 <div class="overlay" id="overlay"><div class="overlayText" id="overlayText">WIN</div></div>
 <button class="debugToggleBtn" id="debugToggleBtn" type="button">デバッグ</button>
@@ -646,7 +647,7 @@
 
       <div class="card secret" id="secretPanel">
         <h2>非公開デバッグ</h2>
-        <details><summary>CZ仮設定</summary>
+        <details><summary>CZ設定</summary>
         <p>CZは突入時抽選＋レア小役で当選へ書き換え。成功でボーナスまたはAT、失敗で通常へ。CZ・強CZは15〜20G。第三停止で点灯・最終失敗を告知。突然の全員レインボーは当たり確定。</p>
         <label>CZ 最短G<input type="number" min="1" max="100" data-flow-config="czGames"></label>
         <label>強CZ 最短G<input type="number" min="1" max="100" data-flow-config="strongGames"></label>
@@ -657,7 +658,7 @@
         <label>CZ 突入率 1/<input type="number" min="2" max="100000" data-flow-config="czDenom"></label>
         <label>強CZ 突入率 1/<input type="number" min="2" max="100000" data-flow-config="strongDenom"></label>
         <button type="button" id="saveFlowConfig">CZ設定を保存</button><output id="flowConfigStatus"></output>
-        <p>AT初期ptは下記のAT設定を参照。AT通常消化・ボーナスの期待純増4pt/G。通常時とAT中の小役確率は別管理。特化ゾーンの消化は別配分。表示機械割は初期pt獲得ゾーン導入前の参考値です。待機・演出ゲーム追加後の機械割は別途試算が必要です。</p></details>
+        <p>AT初期ptは下記のAT設定を参照。通常ATは純増5pt/G、上位ATは純増8pt/G、BIGは50pt。表示機械割は現行のCZ・初期pt調整版を30,000G、累計差枚＋10,000pt停止で試算した参考値です（設定5は1,000回、他は600回）。CZ・通常・AT設定やコンプリート条件を変更した場合は「未試算（独自設定）」と表示します。</p></details>
         <button class="subBtn" id="debugNovaPatternsBtn" type="button">ノヴァ目3段階を確認</button>
         <div class="field">
           <label>次回転の出目指定</label>
@@ -767,7 +768,7 @@
 <audio id="voiceSound" preload="auto"></audio>
 
 <script src="nova-spin-resume.js?v=20260929-spin-resume"></script>
-<script src="nova-game.js?v=20261001-bugfix-label"></script>
+<script src="nova-game.js?v=20261001-save-status"></script>
 <button type="button" id="novaSymbolPreviewOpen">ノヴァ目を確認</button>
 <dialog id="novaSymbolPreview"><h2>ノヴァ目</h2><label>出目<select id="novaPatternSelect"><option value="WEAK_NOVA">弱ノヴァ目：左3連</option><option value="STRONG_MIDDLE">強ノヴァ目：左・中3連</option><option value="STRONG_RIGHT">強ノヴァ目：左・右3連</option><option value="SUPER_NOVA" selected>スーパーノヴァ目：全リール3連</option></select></label><p id="novaPatternDescription"></p><div id="novaSymbolPreviewGrid"></div><p>出目の確認用です。通常時のスーパーはBIG・フリーズ各50%。ボーナス中は対象外。弱・強と自然出現率は未設定。</p><button type="button" id="novaSymbolPreviewClose">閉じる</button></dialog>
 </body>

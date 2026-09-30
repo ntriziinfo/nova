@@ -3,7 +3,8 @@
 NOVAのゲーム本体とアセットを配信する静的サイト。
 
 - 公開版: https://nova-eta-jet-30.vercel.app/jag.html
-- 現行の抽選調整: [v173の変更内容・試算条件・設定別参考値](docs/fine-balance173-report.md)
+- 現行の抽選調整: [2026-10-01 CZ・初期pt調整版の承認試算](docs/cz-initial-validation-20261001.json)（設定5は1,000回、他は600回、各30,000G・累計差枚＋10,000pt停止）
+- v173以前の試算は過去仕様。管理画面の独自設定には標準設定の機械割を適用しない。
 - コードの構成と整理の検証: [コード整理記録](docs/code-organization.md)
 - 変更前の確認事項: [AGENTS.md](AGENTS.md)
 
@@ -54,5 +55,5 @@ node --test tests/*.test.mjs
 店舗管理、台選択、プレイセッション、収益記録は独立した[VERTEX](https://github.com/ntriziinfo/vertex)が担当する。
 このリポジトリの`admin.html`・`machines.html`・`play.html`は`vercel.json`でVERTEXへ転送する。
 
-Vercelは既存プロジェクトの静的ルートを配信し、`main`へのpushで公開版を更新する。
+Vercelは既存プロジェクトの静的ルートを配信し、`main`へのpushで公開版を更新する。素材は同じリポジトリのリリースから検証付きで復元し、Git LFSの取得枠に依存しない。素材変更時の手順は[配信手順](docs/deployment-assets.md)を参照。
 `research/`の試算を実装済みと見なさず、調整コードと承認済みの検証記録を確認する。
