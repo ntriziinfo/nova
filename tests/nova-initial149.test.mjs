@@ -39,7 +39,7 @@ test('old two-character saves merge without losing their already sealed plan or 
  const c=vm.createContext({});vm.runInContext(fs.readFileSync('nova-tuning.js','utf8')+'\n'+fs.readFileSync('nova-art.js','utf8'),c);const a=c.NovaArt;
  for(const old of ['kushuri','nito']){
   const saved={...a.enterInitial({},()=>.5),initialStage:'zone',zone:old,initialPlan:[50,100,50],initialIndex:1,zoneLeft:2,award:'50',remaining:'0'};
-  const restored=a.normalize(saved);assert.equal(restored.zone,'kushuri_nito');assert.equal(restored.initialIndex,1);assert.deepEqual([...restored.initialPlan],[50,100,50]);assert.equal(restored.award,'50');
+  delete saved.initialMultiplier;delete saved.initialBoostActive;const restored=a.normalize(saved);assert.equal(restored.zone,'kushuri_nito');assert.equal(restored.initialIndex,1);assert.deepEqual([...restored.initialPlan],[50,100,50]);assert.equal(restored.award,'50');
   let result=restored;for(let i=0;i<2;i++)result=a.step(result,{},()=>.5).flow;
   assert.equal(result.remaining,'200');assert.equal(result.zone,'');assert.equal(result.initialStage,'');
   const pending=a.normalize({...saved,initialStage:'entry',zone:'',pendingZone:old});assert.equal(pending.pendingZone,'kushuri_nito');

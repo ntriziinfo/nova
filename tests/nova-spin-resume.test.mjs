@@ -121,10 +121,10 @@ test('replay entitlement and zero-game cost exemptions survive pending saves',()
 
 test('displayed RTP uses the current approved estimates and BIG fields use the engine target',()=>{
  const {c}=harness();vm.runInContext(fn('targetRtpText'),c);
- const estimates=['94.27','96.14','98.70','100.25','105.29','114.02'];
+ const estimates=['94.68','96.75','98.49','100.58','104.76','114.24'];
  for(let setting=1;setting<=6;setting++){
   assert(c.targetRtpText(setting).startsWith(estimates[setting-1]+'%'));
-  assert(c.targetRtpText(setting).includes('×'+(setting===2||setting===4?600:500)+'回'));
+  assert(c.targetRtpText(setting).includes('×'+(setting===5?1000:600)+'回'));
  }
  assert.equal(c.NovaArt.bonusTarget(),50);
  for(const field of ['midMulInput','bigMulInput','bigAddInput'])assert(fn('applySettings').includes('$("'+field+'").value = NovaArt.bonusTarget()'));

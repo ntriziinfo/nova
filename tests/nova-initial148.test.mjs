@@ -20,10 +20,10 @@ test('the shared Kushuri/Nito zone is initial-only; ordinary zones never include
  }
 });
 
-test('three initial increments have independent 2/3 and 1/3 marginals and no extra base grant',()=>{
+test('unboosted legacy initial increments keep the original marginals and no extra base grant',()=>{
  const rng=xoshiro128('initial148'),trials=30000,hundreds=[0,0,0],totals={150:0,200:0,250:0,300:0};let sum=0;
  for(let i=0;i<trials;i++){
-  let s={...a.enterInitial({},rng),initialStage:'entry',entryStage:'confirmed',pendingZone:i%2?'nito':'kushuri'};
+  let s={...a.enterInitial({},rng),initialBoostActive:false,initialMultiplier:1,initialStage:'entry',entryStage:'confirmed',pendingZone:i%2?'nito':'kushuri'};
   s=a.prepareBet(reload(s),{},rng);assert.equal(s.zoneLeft,3);const target=Number(s.entryQuota);
   for(let g=0;g<3;g++){
    const t=a.step(reload(s),{},rng,'BELL');assert([50,100].includes(t.zoneAward));hundreds[g]+=t.zoneAward===100;

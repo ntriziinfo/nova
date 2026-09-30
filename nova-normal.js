@@ -70,13 +70,15 @@ globalThis.NovaNormal=(()=>{
  const stateRoles=['WEAK_SUICA','WEAK_NOVA'];
  const redistributionNormalRoles=[{"WEAK_SUICA":0.010648,"STRONG_SUICA":0.0025168,"CHANCE_A":0.00433664,"CHANCE_B":0.00650496,"WEAK_NOVA":0.0075625,"STRONG_NOVA":0.00038720000000000003,"REPLAY":0.4464,"BELL":0.005951592437810937,"MISS":0.5156923075621891},{"WEAK_SUICA":0.010823999999999999,"STRONG_SUICA":0.0025583999999999997,"CHANCE_A":0.0066124800000000004,"CHANCE_B":0.00440832,"WEAK_NOVA":0.0076875,"STRONG_NOVA":0.0003936,"REPLAY":0.4482,"BELL":0.005504552437810947,"MISS":0.513811147562189},{"WEAK_SUICA":0.011,"STRONG_SUICA":0.0026,"CHANCE_A":0.0044800000000000005,"CHANCE_B":0.006719999999999999,"WEAK_NOVA":0.0078125,"STRONG_NOVA":0.0004,"REPLAY":0.45,"BELL":0.00505751243781094,"MISS":0.511929987562189},{"WEAK_SUICA":0.011176,"STRONG_SUICA":0.0026416,"CHANCE_A":0.006827519999999999,"CHANCE_B":0.00455168,"WEAK_NOVA":0.0079375,"STRONG_NOVA":0.0004064,"REPLAY":0.45180000000000003,"BELL":0.004610472437810949,"MISS":0.510048827562189},{"WEAK_SUICA":0.011352,"STRONG_SUICA":0.0026831999999999997,"CHANCE_A":0.004623360000000001,"CHANCE_B":0.006935040000000001,"WEAK_NOVA":0.0080625,"STRONG_NOVA":0.0004128,"REPLAY":0.4536,"BELL":0.004163432437810944,"MISS":0.5081676675621891},{"WEAK_SUICA":0.0161392,"STRONG_SUICA":0.0027248,"CHANCE_A":0.009859584,"CHANCE_B":0.006573056000000001,"WEAK_NOVA":0.0114625,"STRONG_NOVA":0.00041920000000000005,"REPLAY":0.54,"BELL":0.005089320634920632,"MISS":0.40773233936507935}];
  const redistributionNormalUp=[0.16711383671904947,0.16711383671904945,0.16711383671904942,0.16711383671904947,0.16711383671904945,0.15935451336359055];
+ // Apply after the existing cap, equally in low/high and decrement intervals.
+ const czEntryFactors=Object.freeze([.5092,.5053,.4696,.4812,.2550,.2148]);
  function roleCzRate(value,role,setting=1,options={}){
   if(role==='STRONG_NOVA')return 1;
   if(!['WEAK_SUICA','WEAK_NOVA'].includes(role))return 0;
   const i=Math.max(0,Math.min(5,Math.round(Number(setting)||1)-1)),r=redistributionNormalRoles[i];
   const m=NovaTuning.profile(setting).cz*(globalThis.NovaDecrement?.cz(setting)??1)*lotteryRules.czScale[i]*(value?.level==='high'?config(options).highMultiplier:1);
   const total=["WEAK_SUICA","STRONG_SUICA","CHANCE_A","CHANCE_B","WEAK_NOVA"].reduce((s,k)=>s+r[k]*Math.min(1,legacyRare[k].cz*m),0);
-  return Math.min(1,total/(r.WEAK_SUICA+r.STRONG_SUICA+r.WEAK_NOVA+r.CHANCE_A+r.CHANCE_B)*([1.26,1.22,1.28,1.18,1.4,1.49][i]));
+  return czEntryFactors[i]*Math.min(1,total/(r.WEAK_SUICA+r.STRONG_SUICA+r.WEAK_NOVA+r.CHANCE_A+r.CHANCE_B)*([1.26,1.22,1.28,1.18,1.4,1.49][i]));
  }
  function advance(value,role,flow,options={},rng=Math.random){
   const s=normalize(value),c=config(options),held=s.level==='high'&&s.highLeft>0;
@@ -180,5 +182,5 @@ globalThis.NovaNormal=(()=>{
  function afterBonus(value,rng=Math.random,setting){const s=normalize(value);return {...s,prelude:null,ceilingHandled:false,morningCeiling:false,games:0,level:'low',highLeft:0};}
  function drawRare(rng=Math.random){const keys=Object.keys(rare);return keys[weighted(keys.map(k=>rare[k].p),rng)];}
  const rareMean=Object.values(rare).reduce((s,r)=>s+r.p*r.pay,0)/Object.values(rare).reduce((s,r)=>s+r.p,0);
- return {normalRoleProbabilities,drawNormalRole,lotteryRules,czPreludeRules,czPreludeStage,roleCzRate,modeWeights,gameZoneRates,gameZoneConfig,atEndModeWeights,zonePoint,preludePresentation,zoneRate,normalLabel,resetImpurityPoints,resetImpurityWeights,resetDistribution,reset,modes,ceilings,transitions,rare,rareMean,rareFactor,roleProbabilities,drawRare,defaults,config,normalize,ceiling,favored,multiplier,pay,drawRole,advance,spin,claim,afterArt,bonusEnd,afterBonus};
+ return {normalRoleProbabilities,drawNormalRole,lotteryRules,czPreludeRules,czPreludeStage,roleCzRate,czEntryFactors,modeWeights,gameZoneRates,gameZoneConfig,atEndModeWeights,zonePoint,preludePresentation,zoneRate,normalLabel,resetImpurityPoints,resetImpurityWeights,resetDistribution,reset,modes,ceilings,transitions,rare,rareMean,rareFactor,roleProbabilities,drawRare,defaults,config,normalize,ceiling,favored,multiplier,pay,drawRole,advance,spin,claim,afterArt,bonusEnd,afterBonus};
 })();

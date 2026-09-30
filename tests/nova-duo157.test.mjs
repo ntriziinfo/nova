@@ -27,17 +27,17 @@ test('natural initial-zone rare roles use the AT frequencies and the new exact a
  for(let setting=1;setting<=6;setting++){
   let total=0;const count=12000;
   for(let i=0;i<count;i++){
-   let s={...a.enterInitial({setting},rng),initialStage:'entry',entryStage:'confirmed',pendingZone:'kushuri_nito'};
+   let s={...a.enterInitial({setting},rng),initialBoostActive:true,initialStage:'entry',entryStage:'confirmed',pendingZone:'kushuri_nito'};
    s=a.prepareBet(s,{setting},rng);
    for(let g=0;g<3;g++){
-    const step=a.step(s,{setting},rng);const fixed=a.initialRareAwards[step.result];
-    if(fixed){assert.equal(step.zoneAward,fixed);sawWeak+=fixed===100;sawStrong+=fixed===200;}
-    else assert([50,100].includes(step.zoneAward));s=step.flow;
+    const step=a.step(s,{setting},rng);const fixed=a.initialRareAwards[step.result],factor=s.initialMultiplier;
+    if(fixed){assert.equal(step.zoneAward,fixed*factor);sawWeak+=fixed===100;sawStrong+=fixed===200;}
+    else assert([50*factor,100*factor].includes(step.zoneAward));s=step.flow;
    }
    total+=Number(s.remaining);
   }
   // Independent approved target includes rare-role rewrites (not just the sealed base).
-  const mean=JSON.parse(fs.readFileSync('tests/fixtures/nova-role-merge-approved.json')).entryMeans[setting-1];assert(Math.abs(total/count-mean)<1.5,`${setting}: ${total/count} vs ${mean}`);
+  const meanFactor=a.initialBoostRules.weights[setting-1].reduce((s,p,i)=>s+p*(i+1),0);const mean=meanFactor*JSON.parse(fs.readFileSync('tests/fixtures/nova-role-merge-approved.json')).entryMeans[setting-1];assert(Math.abs(total/count-mean)<7,`${setting}: ${total/count} vs ${mean}`);
  }
  assert(sawWeak>0&&sawStrong>0);
 });

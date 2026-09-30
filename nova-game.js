@@ -576,7 +576,7 @@
       flow:normalState.flow||{phase:'normal'},internal:normalState.internal||{},replayFree:!!normalState.replayFree,complete:!!completeTrialState.locked,
       bonus:{active:isATypeBonusActive(),phase:session.phase,tier:session.bonusTier,paid:session.paid,sets:session.bonusArtSets,zones:session.bonusZones,target:session.bonusTarget,pending:!!normalState.bonusPending,source:normalState.bonusSource,prepLeft:normalState.prepLeft,prepSets:normalState.prepSets,prepZones:normalState.prepZones,premium:session.premiumBonus||normalState.premiumBonus,pointsRemaining:session.bonusPointsRemaining},
       progress:normalState.novaProgress,decrement:NovaDecrement.snapshot(),
-      config:{balance:170,roleMerge:"20260930",decrementRules:NovaDecrement.rules(settings.setting),normalBellDenominators:NovaTuning.normalBellDenominators,tuning:NovaTuning.profile(settings.setting),initialPresentation:157,prelude:160,audit:121,setting:settings.setting,fee:SPIN_COST,completeLimitPt:settings.completeLimitPt,oddsMultiplier:settings.oddsMultiplier,art:settings.novaArt,commonAt:NovaArt.commonAtRulesFor(settings.setting),entryQuota:NovaArt.entryQuotaRules,initialRareAwards:NovaArt.initialRareAwards,atPrelude:NovaArt.atPreludeRules,uraChallenge:NovaArt.burstRules,normal:settings.novaNormal,normalLottery:NovaNormal.lotteryRules,normalPrelude:NovaNormal.czPreludeRules,cz:settings.novaFlow}};
+      config:{balance:170,roleMerge:"20260930",czInitialRevision:"20261001",initialBoost:NovaArt.initialBoostRules,czEntryFactors:NovaNormal.czEntryFactors,decrementRules:NovaDecrement.rules(settings.setting),normalBellDenominators:NovaTuning.normalBellDenominators,tuning:NovaTuning.profile(settings.setting),initialPresentation:157,prelude:160,audit:121,setting:settings.setting,fee:SPIN_COST,completeLimitPt:settings.completeLimitPt,oddsMultiplier:settings.oddsMultiplier,art:settings.novaArt,commonAt:NovaArt.commonAtRulesFor(settings.setting),entryQuota:NovaArt.entryQuotaRules,initialRareAwards:NovaArt.initialRareAwards,atPrelude:NovaArt.atPreludeRules,uraChallenge:NovaArt.burstRules,normal:settings.novaNormal,normalLottery:NovaNormal.lotteryRules,normalPrelude:NovaNormal.czPreludeRules,cz:settings.novaFlow}};
   }
   function auditCapture(detail={kind:'checkpoint'}){
     if(!novaAuditRecorder)return;
@@ -2388,7 +2388,7 @@
   }
 
   function targetRtpText(settingNo = settings.setting){
-    if(A_TYPE_MODE){const profile=NovaBalance.profile(settingNo);return profile.verifiedModel?((profile.measuredRtp??profile.target)*100).toFixed(2)+`%（小役統合版・3万G×${profile.trials}回・停止込み推定）`:"未集計（変更前"+((profile.measuredRtp??profile.target)*100).toFixed(1)+"%）";}
+    if(A_TYPE_MODE){const profile=NovaBalance.profile(settingNo);return profile.verifiedModel?((profile.measuredRtp??profile.target)*100).toFixed(2)+`%（CZ・初期pt調整版・3万G×${profile.trials}回・停止込み推定）`:"未集計（変更前"+((profile.measuredRtp??profile.target)*100).toFixed(1)+"%）";}
   }
 
   function rewardFor(result){
@@ -5653,7 +5653,7 @@
       let html = '<tr><td>状態</td><td>継続</td><td>契機</td><td>突入時期待度</td></tr>';
       html += '<tr><td>CZ</td><td>'+cfg.czGames+'〜'+cfg.czMaxGames+'G</td><td>スイカ・弱ノヴァなどから設定別抽選</td><td>'+cfg.czChance*100+'%</td></tr>';
       html += '<tr><td>強CZ</td><td>'+cfg.strongGames+'〜'+cfg.strongMaxGames+'G</td><td>強ノヴァ：100%</td><td>'+((cfg.strongChance||0)*100).toFixed(1)+'%</td></tr>';
-      html += '<tr><td>AT</td><td>初期'+Math.min(...NovaArt.entryQuotaRules.values)+'～'+Math.max(...NovaArt.entryQuotaRules.values)+'pt</td><td>ボーナス中nebula・穢れ・フリーズ等</td><td>通常5pt/G・上位8pt/G</td></tr>';
+      html += '<tr><td>AT</td><td>初期150～1,500pt（レア役で増加）</td><td>ボーナス中nebula・穢れ・フリーズ等</td><td>通常5pt/G・上位8pt/G</td></tr>';
       table.innerHTML = html;
       renderRegDetailTable();
       return;
@@ -5961,7 +5961,7 @@
     const commonTable=document.createElement('div');
     commonTable.innerHTML='<table><tr><th>設定</th><th>ベース G/50pt</th><th>出陣 総G</th><th>スイカ・弱ノヴァ特化 低／高</th></tr>'+[1,2,3,4,5,6].map(n=>{const p=NovaTuning.profile(n),r=NovaArt.commonAtRulesFor(n);return '<tr><td>'+n+'</td><td>'+(50/(3*(1-NovaNormal.normalRoleProbabilities(n).REPLAY)-Object.entries(NovaNormal.normalRoleProbabilities(n)).reduce((sum,[role,p])=>sum+p*NovaNormal.pay(role==='NAVI_BELL'?'BELL':role),0))).toFixed(2)+'</td><td>1/'+p.denominator+'</td><td>'+[false,true].map(high=>(100*NovaArt.extraZoneChance(n,'WEAK_NOVA',false,high)).toFixed(2)+'%').join('／')+'</td></tr>';}).join('')+'</table>';artPanel.append(commonTable);
     const entryTable=document.createElement('div');entryTable.id='novaEntryQuotaTable';
-    entryTable.innerHTML='<p>初期3G：通常役は50／100pt、弱レア役100pt、強レア役200pt。下表はレア役加算前の内部枠。出陣で獲得するくしゅり＆にとは従来配分です。</p><table><tr><th>設定</th>'+NovaArt.entryQuotaRules.values.map(x=>'<th>'+x+'pt</th>').join('')+'</tr>'+NovaArt.entryWeights.map((row,i)=>'<tr><td>'+(i+1)+'</td>'+row.map(p=>'<td>'+(100*p).toFixed(2)+'%</td>').join('')+'</tr>').join('')+'</table>';artPanel.append(entryTable);
+    entryTable.innerHTML='<p>初当たりの初期3G：通常役50／100pt、弱レア役100pt、強レア役200ptを基礎に、開始時に1回だけ選ぶ1～5倍を適用。通常役のみで計150～1,500pt、レア役込みで最大3,000pt。AT中の抽選性能は倍率に左右されません。出陣・引き戻し・後からのストックには適用しません。下表は倍率適用前の内部枠です。</p><table><tr><th>設定</th>'+NovaArt.entryQuotaRules.values.map(x=>'<th>'+x+'pt</th>').join('')+'</tr>'+NovaArt.entryWeights.map((row,i)=>'<tr><td>'+(i+1)+'</td>'+row.map(p=>'<td>'+(100*p).toFixed(2)+'%</td>').join('')+'</tr>').join('')+'</table>';entryTable.innerHTML+='<p>初当たり用倍率の振り分け</p><table><tr><th>設定</th>'+NovaArt.initialBoostRules.values.map(n=>'<th>'+n+'倍</th>').join('')+'</tr>'+NovaArt.initialBoostRules.weights.map((row,i)=>'<tr><td>'+(i+1)+'</td>'+row.map(p=>'<td>'+(p*100).toFixed(0)+'%</td>').join('')+'</tr>').join('')+'</table>';artPanel.append(entryTable);
     const artLabels={ladderSosuke:'宗介 小役合算率',ladderGiru:'ギル 小役合算率',ladderUraGiru:'裏ギル 小役合算率',totoHit:'とと 7揃い率',totoReset:'とと nebula率',soraHit:'空 7揃い率',soraReset:'空 nebula率',soraUraHit:'裏空 7揃い率（保証前）',soraUraReset:'裏空 nebula率',urapiSuper:'うらぴ スーパーノヴァ率',oumaSuper:'逢魔 スーパーノヴァ率',oumaUraSuper:'裏逢魔 スーパーノヴァ率',urapiFreeze:'うらぴフリーズ継続率',oumaFreeze:'逢魔フリーズ継続率',oumaUraFreeze:'裏逢魔フリーズ継続率'};
     const zoneTable=document.createElement('div');zoneTable.innerHTML='<p>宗介・ギルは通常テーブル①〜⑤を設定別に抽選、裏ギルはテーブル⑥固定・300pt通過確定。同額の段階も突破で次へ進みます。<br>7揃い：全3ゾーン共通＋100pt。nebulaは＋10ptと残り5Gリセット（毎G：とと2%／空15%／裏空30%）。とと7揃い1回、空2回、裏空500pt以上を保証。<br>スーパーノヴァ：通常50・100pt、裏逢魔100・200pt（フリーズ中も共通）。逢魔と裏逢魔はBETでフリーズ抽選、当選時は無料の自動0G連。</p><table><tr><th>設定（準備中抽選）</th>'+['弱上乗せ','強上乗せ','超上乗せ'].map(x=>'<th>'+x+'</th>').join('')+'</tr>'+[1,2,3,4,5,6].map(setting=>NovaArt.zoneGroupWeights(setting,false,true)).map((row,i)=>'<tr><td>'+(i+1)+'</td>'+row.map(p=>'<td>'+p.toFixed(2)+'%</td>').join('')+'</tr>').join('')+'</table><p>弱＝宗介・とと・うらぴ、強＝ギル・空・逢魔、超＝裏3種。強当選後の3%で超へ昇格（従来どおり）。各区分内は3種均等。キャラルーレット中のレア役でテーブル⑥⑦への昇格抽選あり。通常ATの抽選は上記の共通ATを参照。準備中の抽選は従来通り。</p>';artPanel.append(zoneTable);
     const bonusTable=document.createElement('p');bonusTable.textContent='BIGは50pt。通常52%／上位80%のAT期待度（保証契機は別枠）。上位選択率10%の仮設定、全設定共通。白点滅＝通常、赤点滅＝上位。ネビュラを狙えは逆押し。REGは廃止。AT獲得後は特化ストック抽選：通常BIG 約1/'+(1/NovaArt.bonusRoleProbabilities(settings.setting,'normal',true).NEBULA).toFixed(2)+'／G、上位BIG 約1/'+(1/NovaArt.bonusRoleProbabilities(settings.setting,'upper',true).NEBULA).toFixed(2)+'／G。';artPanel.append(bonusTable);
@@ -9205,7 +9205,7 @@
   connectAdminCommands();
   if(!restorePendingSpin()){
     reels.forEach((_,i)=>setRandomReel(i));
-    showMessage("READY",`BIG ${NovaArt.bonusTarget()}pt / AT初期${Math.min(...NovaArt.entryQuotaRules.values)}～${Math.max(...NovaArt.entryQuotaRules.values)}pt / 設定${settings.setting}`);
+    showMessage("READY",`BIG ${NovaArt.bonusTarget()}pt / AT初期150～1,500pt＋レア役加算 / 設定${settings.setting}`);
   }
   if($("forceResult")) $("forceResult").value = forceResult;
   if($("premiumForceStatus")) $("premiumForceStatus").value = forcePremiumEffect ? "ON" : "OFF";

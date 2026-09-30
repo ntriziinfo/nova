@@ -18,7 +18,7 @@ test('default unconfigured initial base has the original mean 200; configured se
 
 test('fresh bonus win waits exactly three paid games then seven, roulette and initial zone',()=>{
  let draws=0;let s=a.afterBonus({phase:'normal'},{setting:6},2,()=>{draws++;return .5;});
- assert.equal(draws,2);assert.equal(s.remaining,'0');assert.equal(s.entryQuota,'200');assert.equal(s.sets,'1');
+ assert.equal(draws,3);assert.equal(s.remaining,'0');assert.equal(s.entryQuota,'200');assert.equal(s.sets,'1');
  for(let g=0;g<3;g++){
   assert.equal(s.initialWait,3-g);assert.equal(s.entryStage,'');assert.equal(s.zone,'');
   s=a.step(reload(s),{setting:6},()=>.5).flow;
@@ -32,18 +32,18 @@ test('fresh bonus win waits exactly three paid games then seven, roulette and in
 
 test('ordinary roles reveal every possible sealed base quota exactly once across reloads',()=>{
  for(const zone of a.initialZoneIds)for(const target of a.entryQuotaRules.values)for(let seed=1;seed<=5;seed++){
-  const rng=xoshiro128(seed+target),base={...a.enterInitial({},rng),initialStage:'entry',initialWait:0,entryQuota:String(target),entryStage:'confirmed',pendingZone:zone,sets:'2',queuedZones:['ura_sora']};
-  let s=a.prepareBet(reload(base),{},rng);assert.equal(s.entryStage,'');assert.equal(s.remaining,'0');
+  const rng=xoshiro128(seed+target),base={...a.enterInitial({},rng),initialBoostActive:true,burstPending:false,researchChallengeSource:'',initialStage:'entry',initialWait:0,entryQuota:String(target),entryStage:'confirmed',pendingZone:zone,sets:'2',queuedZones:['ura_sora']};
+  const boostedTarget=target*base.initialMultiplier;let s=a.prepareBet(reload(base),{},rng);assert.equal(s.entryStage,'');assert.equal(s.remaining,'0');
   for(let g=0;g<3;g++){
    assert.deepEqual(reload(s),s);
    const prepared=a.prepareBet(s,{},rng);assert.deepEqual(prepared,s);
    const t=a.step(prepared,{},rng,g%2?'REPLAY':'BELL');s=reload(t.flow);
    assert.equal(t.zoneSpin,true);assert.equal(t.internalBonus,undefined);assert.equal(s.oumaPending,false);assert.equal(s.zero,false);
    assert.equal(s.sets,'2');assert.deepEqual(s.queuedZones,['ura_sora']);
-   assert.equal(s.remaining,g===2?String(target):'0');
-   assert.ok(Number(s.award)<=target);
+   assert.equal(s.remaining,g===2?String(boostedTarget):'0');
+   assert.ok(Number(s.award)<=boostedTarget);
   }
-  assert.equal(s.initialStage,'');assert.equal(s.zone,'');assert.equal(s.award,String(target));assert.equal(s.entryQuota,String(target));
+  assert.equal(s.initialStage,'');assert.equal(s.zone,'');assert.equal(s.award,String(boostedTarget));assert.equal(s.entryQuota,String(target));
   assert.deepEqual(a.settleZone(s),s);
   const next=a.step(s,{},rng);assert.equal(next.flow.zone,'sora');assert.equal(next.flow.ura,true);assert.equal(next.flow.initialStage,'');
  }

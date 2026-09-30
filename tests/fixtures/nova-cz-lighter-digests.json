@@ -1,0 +1,348 @@
+{
+  "sourceRevision": "44a4114",
+  "proposal": "CZ lighter and initial-only multiplier, approved 2026-10-01",
+  "trials": [
+    {
+      "setting": 1,
+      "games": 30000,
+      "seed": "NOVA-cz-lighter-production-parity-S1-0",
+      "options": {
+        "rng": "xoshiro128",
+        "exactGames": true,
+        "completeLimitPt": 10000,
+        "stopAtComplete": false,
+        "rareSortie": true,
+        "decrementAudit": true
+      },
+      "sha256": "eb2a4ff621f6f83870b8d94ee9cbaafefe1cec8463863d50d5f8836e793eb64c"
+    },
+    {
+      "setting": 1,
+      "games": 30000,
+      "seed": "NOVA-cz-lighter-production-parity-S1-1",
+      "options": {
+        "rng": "xoshiro128",
+        "exactGames": true,
+        "completeLimitPt": 10000,
+        "stopAtComplete": false,
+        "rareSortie": true,
+        "decrementAudit": true
+      },
+      "sha256": "8ebbcf22f91085fa01297e036dd5e75962147f9bc88c781a2540b2ba301c1064"
+    },
+    {
+      "setting": 1,
+      "games": 30000,
+      "seed": "NOVA-cz-lighter-production-parity-S1-2",
+      "options": {
+        "rng": "xoshiro128",
+        "exactGames": true,
+        "completeLimitPt": 10000,
+        "stopAtComplete": false,
+        "rareSortie": true,
+        "decrementAudit": true
+      },
+      "sha256": "83ccb57c2fcc237c3c0c3ff910bd070e8dbdc75e95ea929cf84e308137fed8e6"
+    },
+    {
+      "setting": 2,
+      "games": 30000,
+      "seed": "NOVA-cz-lighter-production-parity-S2-0",
+      "options": {
+        "rng": "xoshiro128",
+        "exactGames": true,
+        "completeLimitPt": 10000,
+        "stopAtComplete": false,
+        "rareSortie": true,
+        "decrementAudit": true
+      },
+      "sha256": "5f16d078b21cfacb105acafbe0eeab4582a32b885af97f0dc0d31b3c26000b36"
+    },
+    {
+      "setting": 2,
+      "games": 30000,
+      "seed": "NOVA-cz-lighter-production-parity-S2-1",
+      "options": {
+        "rng": "xoshiro128",
+        "exactGames": true,
+        "completeLimitPt": 10000,
+        "stopAtComplete": false,
+        "rareSortie": true,
+        "decrementAudit": true
+      },
+      "sha256": "0b836d52d0f60ff596542141d1e8483e2daf85dc876561481ef1ff2346b720f5"
+    },
+    {
+      "setting": 2,
+      "games": 30000,
+      "seed": "NOVA-cz-lighter-production-parity-S2-2",
+      "options": {
+        "rng": "xoshiro128",
+        "exactGames": true,
+        "completeLimitPt": 10000,
+        "stopAtComplete": false,
+        "rareSortie": true,
+        "decrementAudit": true
+      },
+      "sha256": "a3ce9364e630572ac430d9ed1fde1bf6f460e231c7e10428c3d16b38cdf39e48"
+    },
+    {
+      "setting": 3,
+      "games": 30000,
+      "seed": "NOVA-cz-lighter-production-parity-S3-0",
+      "options": {
+        "rng": "xoshiro128",
+        "exactGames": true,
+        "completeLimitPt": 10000,
+        "stopAtComplete": false,
+        "rareSortie": true,
+        "decrementAudit": true
+      },
+      "sha256": "fe31575433a1d6d1538b4d9d51fb7ba60fdc0aed2b65ecf33afe7f13835c7270"
+    },
+    {
+      "setting": 3,
+      "games": 30000,
+      "seed": "NOVA-cz-lighter-production-parity-S3-1",
+      "options": {
+        "rng": "xoshiro128",
+        "exactGames": true,
+        "completeLimitPt": 10000,
+        "stopAtComplete": false,
+        "rareSortie": true,
+        "decrementAudit": true
+      },
+      "sha256": "eea4f0ad0035a572b4e779b8fa4708ed453cae9c8482e273e684756c63b28cb4"
+    },
+    {
+      "setting": 3,
+      "games": 30000,
+      "seed": "NOVA-cz-lighter-production-parity-S3-2",
+      "options": {
+        "rng": "xoshiro128",
+        "exactGames": true,
+        "completeLimitPt": 10000,
+        "stopAtComplete": false,
+        "rareSortie": true,
+        "decrementAudit": true
+      },
+      "sha256": "e153dd5d329cc747867322277584c344c6c7a837750051dde1e7660c0d7ba3c9"
+    },
+    {
+      "setting": 4,
+      "games": 30000,
+      "seed": "NOVA-cz-lighter-production-parity-S4-0",
+      "options": {
+        "rng": "xoshiro128",
+        "exactGames": true,
+        "completeLimitPt": 10000,
+        "stopAtComplete": false,
+        "rareSortie": true,
+        "decrementAudit": true
+      },
+      "sha256": "6c770e584334e782b7c34def981213a3c478155997ab3fa8918fc3c601dc41f1"
+    },
+    {
+      "setting": 4,
+      "games": 30000,
+      "seed": "NOVA-cz-lighter-production-parity-S4-1",
+      "options": {
+        "rng": "xoshiro128",
+        "exactGames": true,
+        "completeLimitPt": 10000,
+        "stopAtComplete": false,
+        "rareSortie": true,
+        "decrementAudit": true
+      },
+      "sha256": "d4c90492b820216bc5e1f99cd1746b731331ea1a1fd7c3743e28bfe932174677"
+    },
+    {
+      "setting": 4,
+      "games": 30000,
+      "seed": "NOVA-cz-lighter-production-parity-S4-2",
+      "options": {
+        "rng": "xoshiro128",
+        "exactGames": true,
+        "completeLimitPt": 10000,
+        "stopAtComplete": false,
+        "rareSortie": true,
+        "decrementAudit": true
+      },
+      "sha256": "23895d0c96e3bbbccc82e0e7dc24beb9f2899a5e41cc9bd3fa99d0ff004768c2"
+    },
+    {
+      "setting": 5,
+      "games": 30000,
+      "seed": "NOVA-cz-lighter-production-parity-S5-0",
+      "options": {
+        "rng": "xoshiro128",
+        "exactGames": true,
+        "completeLimitPt": 10000,
+        "stopAtComplete": false,
+        "rareSortie": true,
+        "decrementAudit": true
+      },
+      "sha256": "f5e42d4a3ce6a6c05fbd4e15c25738ca0f492288376c9fba92833a5fad10b899"
+    },
+    {
+      "setting": 5,
+      "games": 30000,
+      "seed": "NOVA-cz-lighter-production-parity-S5-1",
+      "options": {
+        "rng": "xoshiro128",
+        "exactGames": true,
+        "completeLimitPt": 10000,
+        "stopAtComplete": false,
+        "rareSortie": true,
+        "decrementAudit": true
+      },
+      "sha256": "7096562f1d880e2274f46dfd42ad7c2706487593a7d0e58ff76ba55d668693ee"
+    },
+    {
+      "setting": 5,
+      "games": 30000,
+      "seed": "NOVA-cz-lighter-production-parity-S5-2",
+      "options": {
+        "rng": "xoshiro128",
+        "exactGames": true,
+        "completeLimitPt": 10000,
+        "stopAtComplete": false,
+        "rareSortie": true,
+        "decrementAudit": true
+      },
+      "sha256": "fb3d20b24857b22eab033dea9c7273c7c444ad2cc75185cccad1050838a11f1b"
+    },
+    {
+      "setting": 6,
+      "games": 30000,
+      "seed": "NOVA-cz-lighter-production-parity-S6-0",
+      "options": {
+        "rng": "xoshiro128",
+        "exactGames": true,
+        "completeLimitPt": 10000,
+        "stopAtComplete": false,
+        "rareSortie": true,
+        "decrementAudit": true
+      },
+      "sha256": "9aac4084c27f3e4e8831f21569ce09d156868305905426b670be89977b06e7ff"
+    },
+    {
+      "setting": 6,
+      "games": 30000,
+      "seed": "NOVA-cz-lighter-production-parity-S6-1",
+      "options": {
+        "rng": "xoshiro128",
+        "exactGames": true,
+        "completeLimitPt": 10000,
+        "stopAtComplete": false,
+        "rareSortie": true,
+        "decrementAudit": true
+      },
+      "sha256": "e64694cb02bb4dcaa26bd26b7ae1670baebcbf23f47d8e513cd2bcf38c61de15"
+    },
+    {
+      "setting": 6,
+      "games": 30000,
+      "seed": "NOVA-cz-lighter-production-parity-S6-2",
+      "options": {
+        "rng": "xoshiro128",
+        "exactGames": true,
+        "completeLimitPt": 10000,
+        "stopAtComplete": false,
+        "rareSortie": true,
+        "decrementAudit": true
+      },
+      "sha256": "c655b45e21fe2778c0f067df46564fe69860714bef1de58d4be832f1de0d7a0c"
+    },
+    {
+      "setting": 1,
+      "games": 30000,
+      "seed": "NOVA-cz-lighter-independent-20260930-S1-48",
+      "options": {
+        "rng": "xoshiro128",
+        "exactGames": true,
+        "completeLimitPt": 10000,
+        "stopAtComplete": false,
+        "rareSortie": true,
+        "decrementAudit": true
+      },
+      "sha256": "af28c9604ccca538349aed6dcc56de229398f3c6e8aae58e8674f946cf12059c",
+      "note": "Initial upper-challenge route clears the unused multiplier before later stocks."
+    },
+    {
+      "setting": 2,
+      "games": 30000,
+      "seed": "NOVA-cz-lighter-refined-independent-20260930-S2-28",
+      "options": {
+        "rng": "xoshiro128",
+        "exactGames": true,
+        "completeLimitPt": 10000,
+        "stopAtComplete": false,
+        "rareSortie": true,
+        "decrementAudit": true
+      },
+      "sha256": "9c01cd6c94dca8330ba8555da9a3ef74b7b94a330bdfca55908885a91c45e4b1",
+      "note": "Initial upper-challenge route clears the unused multiplier before later stocks."
+    },
+    {
+      "setting": 3,
+      "games": 30000,
+      "seed": "NOVA-cz-lighter-independent-20260930-S3-6",
+      "options": {
+        "rng": "xoshiro128",
+        "exactGames": true,
+        "completeLimitPt": 10000,
+        "stopAtComplete": false,
+        "rareSortie": true,
+        "decrementAudit": true
+      },
+      "sha256": "d5ee4c485d8666ba4c30c1df636565f8c424a880608d7b78c60b34a0cb43430b",
+      "note": "Initial upper-challenge route clears the unused multiplier before later stocks."
+    },
+    {
+      "setting": 4,
+      "games": 30000,
+      "seed": "NOVA-cz-lighter-independent-20260930-S4-4",
+      "options": {
+        "rng": "xoshiro128",
+        "exactGames": true,
+        "completeLimitPt": 10000,
+        "stopAtComplete": false,
+        "rareSortie": true,
+        "decrementAudit": true
+      },
+      "sha256": "a07546262152df693bd3bf76746a106dd7c2d765057c890522d6ac4fd3815cb2",
+      "note": "Initial upper-challenge route clears the unused multiplier before later stocks."
+    },
+    {
+      "setting": 5,
+      "games": 30000,
+      "seed": "NOVA-cz-lighter-s5-final-independent-20260930-S5-21",
+      "options": {
+        "rng": "xoshiro128",
+        "exactGames": true,
+        "completeLimitPt": 10000,
+        "stopAtComplete": false,
+        "rareSortie": true,
+        "decrementAudit": true
+      },
+      "sha256": "480903f8e16c8bd85b9615446883834bbc9886cc3befc66c28d19309cdff5bba",
+      "note": "Initial upper-challenge route clears the unused multiplier before later stocks."
+    },
+    {
+      "setting": 6,
+      "games": 30000,
+      "seed": "NOVA-cz-lighter-independent-20260930-S6-11",
+      "options": {
+        "rng": "xoshiro128",
+        "exactGames": true,
+        "completeLimitPt": 10000,
+        "stopAtComplete": false,
+        "rareSortie": true,
+        "decrementAudit": true
+      },
+      "sha256": "87a60f286d8a48d77c499a2a4a489b2899a952dfd605cf3267bd69d4512b2d25",
+      "note": "Initial upper-challenge route clears the unused multiplier before later stocks."
+    }
+  ]
+}

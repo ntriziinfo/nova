@@ -41,7 +41,7 @@ globalThis.NovaProgress=(()=>{
   return discarded;
  }
  function initial(s){
-  if(s.phase==='art'&&s.researchChallengeSource==='initial')Object.assign(s,{initialStage:'',initialWait:0,initialPlan:[],initialIndex:0,remaining:'0'});
+  if(s.phase==='art'&&s.researchChallengeSource==='initial')Object.assign(s,{initialBoostActive:false,initialStage:'',initialWait:0,initialPlan:[],initialIndex:0,remaining:'0'});
   return s;
  }
  function enterInitial(c,rng=Math.random){return initial(a.enterInitial(c,rng));}

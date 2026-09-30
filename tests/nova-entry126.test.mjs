@@ -4,13 +4,13 @@ import assert from 'node:assert/strict';
 import {loadModel} from '../scripts/zone-v2-model.mjs';
 import {xoshiro128} from '../scripts/zone-v2-rng.mjs';
 
-test('new AT draws a base quota and initial challenge once; resume and reload draw neither',()=>{
+test('new AT draws a base quota, multiplier and initial challenge once; resume and reload draw neither',()=>{
  loadModel();const a=NovaArt;let calls=0;const rng=()=>{calls++;return .99;};
  assert.equal(a.afterBonus({phase:'normal'},{},0,rng).phase,'normal');assert.equal(calls,0);
- const fresh=a.afterBonus({phase:'normal'},{},2,rng);assert.equal(calls,2);assert.equal(fresh.entryQuota,'300');assert.equal(fresh.remaining,'0');assert.equal(fresh.initialWait,3);assert.equal(fresh.sets,'1');assert.equal(fresh.setQuota,'200');
+ const fresh=a.afterBonus({phase:'normal'},{},2,rng);assert.equal(calls,3);assert.equal(fresh.entryQuota,'300');assert.equal(fresh.remaining,'0');assert.equal(fresh.initialWait,3);assert.equal(fresh.sets,'1');assert.equal(fresh.setQuota,'200');
  const saved=a.normalize(JSON.parse(JSON.stringify(fresh)));assert.deepEqual(saved,fresh);
- const resumed=a.afterBonus(saved,{},1,rng);assert.equal(calls,2);assert.equal(resumed.remaining,'0');assert.equal(resumed.sets,'2');assert.equal(resumed.entryQuota,'300');
- a.enterInitial({},rng);assert.equal(calls,4);
+ const resumed=a.afterBonus(saved,{},1,rng);assert.equal(calls,3);assert.equal(resumed.remaining,'0');assert.equal(resumed.sets,'2');assert.equal(resumed.entryQuota,'300');
+ a.enterInitial({},rng);assert.equal(calls,6);
 });
 
 test('setting-dependent initial bases plus rare-role rewrites average 180 through 230pt',()=>{

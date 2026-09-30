@@ -1,10 +1,10 @@
-/* Normal/upper AT net 5/8pt/G. Approved role-merge estimates: docs/at-redistribution-20260930.md. */
+/* Normal/upper AT net 5/8pt/G. Approved CZ/initial-point estimates: docs/cz-initial-validation-20261001.json. */
 globalThis.NovaBalance=(()=>{
  // Prior S4: docs/s4-140-report.md, 6,000 independent 30,000G trials, +10,000pt stop.
- // Approved 2026-09-30 estimates, not guaranteed RTP.
+ // Approved 2026-10-01 estimates, not guaranteed RTP.
  const targets=[0.945,0.965,0.985,1.005,1.055,1.14];
- // 30,000G, S2/S4 600 trials; others 500; cumulative +10,000pt stop.
- const measuredRtp=[.9427,.9614,.9870,1.0025,1.0529,1.1402];
+ // 30,000G, S5 1,000 trials; others 600; cumulative +10,000pt stop.
+ const measuredRtp=[0.9468254563537776,0.9675267655402311,0.9848638245823915,1.005759399475681,1.047563751564595,1.1424375155045963];
  const normal=[[354.112628,570.311235,6.592194,128,7.464630],[335.340933,496.870459,6.554256,192,7.482946],[318.675842,391.096799,6.455407,124,7.452119],[295.728558,359.759320,6.248231,184,7.301746],[288.226978,283.780845,6.120643,120,7.250883],[276.519476,276.524590,5.897360,176,7.245667]];
  // Exact reward recursion: 50pt grid below the threshold, translation-invariant tail above it.
  function zoneMean(id,options={}){
@@ -62,7 +62,7 @@ globalThis.NovaBalance=(()=>{
  }
  const giruMean=(setting,ura=false)=>zoneMean(ura?'ura_giru':'giru',{setting});
  // Entry scales fitted with the normal-mode / ceiling / impurity / freeze simulation.
- function profile(setting){const i=Math.max(0,Math.min(5,Math.round(Number(setting)||1)-1)),scale=.21*(1+.12*NovaArt.settingBias[i]);return {setting:i+1,target:targets[i],measuredRtp:measuredRtp[i],scale,directDenom:NovaArt.defaults['direct'+(i+1)]/scale,czDenom:120/scale,strongDenom:600/scale,verifiedModel:'role-merge-20260930-30000g-complete-stop',trials:i===1||i===3?600:500,previousVerifiedModel:'fine173-30000g-complete-stop'};}
+ function profile(setting){const i=Math.max(0,Math.min(5,Math.round(Number(setting)||1)-1)),scale=.21*(1+.12*NovaArt.settingBias[i]);return {setting:i+1,target:targets[i],measuredRtp:measuredRtp[i],scale,directDenom:NovaArt.defaults['direct'+(i+1)]/scale,czDenom:120/scale,strongDenom:600/scale,verifiedModel:'cz-initial-20261001-30000g-complete-stop',trials:i===4?1000:600,previousVerifiedModel:'role-merge-20260930-30000g-complete-stop'};}
  const profiles=targets.map((_,i)=>profile(i+1));
  return {targets,normal,profiles,profile,giruMean,zoneMean};
 })();
