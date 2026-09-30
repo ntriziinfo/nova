@@ -5,9 +5,9 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 import {createHash} from 'node:crypto';
 import {loadModel,simulate} from '../scripts/zone-v2-model.mjs';
-const loadV169=()=>loadModel('..',true,Object.fromEntries([1,2,3,4,5,6].map(s=>[s,{normalReplayReduction:0,extraZone:0,...(s===5?{cz:2.45}:{})}])));
+const loadV169=()=>loadModel('../tests/fixtures/pre-role-merge',true,Object.fromEntries([1,2,3,4,5,6].map(s=>[s,{normalReplayReduction:0,extraZone:0,...(s===5?{cz:2.45}:{})}])));
 
-test('selected bell proposal applies only the intended profiles and normal role intervals',()=>{
+test('historical pre-merge: selected bell proposal applies only the intended profiles and normal role intervals',()=>{
  loadV169();const n=NovaNormal,t=NovaTuning;
  assert.deepEqual([1,2,3,4,5,6].map(s=>t.profile(s).cz),[1.85,1.91,1.78,1.92,2.45,1.607]);
  assert.deepEqual(t.profile(5).tiers,[.47,.05,.05,.05,.38]);
@@ -40,7 +40,7 @@ test('selected bell proposal applies only the intended profiles and normal role 
  }
 });
 
-test('normal navigation survives the display pipeline but never covers rare or bonus results',()=>{
+test('historical pre-merge: normal navigation survives the display pipeline but never covers rare or bonus results',()=>{
  const context=vm.createContext({});vm.runInContext(fs.readFileSync('nova-bell-navi.js','utf8'),context);const n=context.NovaBellNavi;
  const spin={result:'BELL',resolved:{flowBefore:{phase:'normal'},normalBellNavi:true,czPrelude:{after:2}}};
  assert(n.eligible(spin));assert.equal(n.drawRareNavi(spin),null);
@@ -57,7 +57,7 @@ test('normal navigation survives the display pipeline but never covers rare or b
  assert(html.includes("normalBellNavi:!!artStep?.normalBellNavi&&result==='BELL'"));
 });
 
-test('with decrement disabled, 30,000G ledgers replay the v169 calibration trials',()=>{
+test('historical pre-merge: with decrement disabled, 30,000G ledgers replay the v169 calibration trials',()=>{
  const fixture=JSON.parse(fs.readFileSync('tests/fixtures/nova-bell169-session-digests.json','utf8'));
  for(const trial of fixture.trials){
   loadV169();const actual=simulate(trial.setting,trial.games,trial.seed,{...fixture.options,decrement:false});

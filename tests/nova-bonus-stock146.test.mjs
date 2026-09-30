@@ -11,7 +11,7 @@ test('only secured-AT bonus stock odds change; first AT odds and bonus payouts s
  for(let setting=1;setting<=6;setting++)for(const tier of ['normal','upper']){
   const before=a.bonusRoleProbabilities(setting,tier),stock=a.bonusRoleProbabilities(setting,tier,true),factor=a.bonusStockFactor(setting);
   assert.ok(factor>0&&factor<1);
-  assert.ok(Math.abs(1-(before.BELL/(before.BELL+before.NEBULA))**4-a.bonusRules[tier].atChance)<1e-12);
+  assert.ok(Math.abs(1-(before.BELL/(before.BELL+before.NEBULA))**7-a.bonusRules[tier].atChance)<1e-12);
   assert.equal(stock.BELL,before.BELL);assert.equal(stock.REPLAY,before.REPLAY);
   assert.equal(stock.NEBULA,before.NEBULA*factor);
   assert.ok(Math.abs(stock.NEBULA+stock.MISS-before.NEBULA-before.MISS)<1e-12);
@@ -37,7 +37,7 @@ test('an entire BIG switches to reduced odds only after its first win and retain
    }
    wins+=state.bonusArtSets>0;extras+=Math.max(0,state.bonusArtSets-1);
   }
-  const p=a.bonusRoleProbabilities(6,tier),expected=(4*p.NEBULA/p.BELL-a.bonusRules[tier].atChance)*a.bonusStockFactor(6);
+  const p=a.bonusRoleProbabilities(6,tier),expected=(7*p.NEBULA/p.BELL-a.bonusRules[tier].atChance)*a.bonusStockFactor(6);
   assert.ok(Math.abs(wins/trials-a.bonusRules[tier].atChance)<.008);
   assert.ok(Math.abs(extras/trials-expected)<.018);
  }

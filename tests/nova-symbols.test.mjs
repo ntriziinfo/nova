@@ -41,16 +41,16 @@ test('every reel has exactly one contiguous three-cell logo and no retired symbo
  assert.equal(run('REEL_STRIPS.every((s,c)=>s.length===20 && s.filter(x=>x.startsWith("NOVA_")).length===3 && [0,1,2].every(r=>s[14+r]===novaSymbol(c,r)) && !s.some(x=>[GRAPE_SYMBOL,CHERRY_SYMBOL,PIERROT_SYMBOL].includes(x)))'),true);
 });
 test('actual stop grids match every supported outcome using real consecutive strip cells',()=>{
- for(const result of ['NEBULA','MISS','BELL','WEAK_SUICA','STRONG_SUICA','CHANCE_A','CHANCE_B','REPLAY','BIG','BAR3']) for(const row of [0,1,2]){
+ for(const result of ['NEBULA','MISS','BELL','BELL15','WEAK_SUICA','REPLAY','BIG','BAR3']) for(const row of [0,1,2]){
   run(`globalThis.grid=buildNovaReelGrid(${JSON.stringify(result)},${row});`);
   assert.equal(run('displayedResultFromGrid(grid)'),result);
   assert.equal(run('gridHasOnlyAllowedPaylines(grid,'+JSON.stringify(result)+')'),true);
   assert.equal(run('REEL_STRIPS.every((s,c)=>s.some((_,i)=>[0,1,2].every(r=>grid[r][c]===s[(i+r)%20])))'),true);
  }
 });
-test('bell pays 15 normally and caps the final BIG payout at the remaining 50pt target',()=>{
- assert.equal(run('normalRewardFor("BELL")'),15);
- assert.equal(run('resolveATypeBonusOutcome("BELL").reward'),15);
+test('bell pays 8 normally and caps the final BIG payout at the remaining 50pt target',()=>{
+ assert.equal(run('normalRewardFor("BELL")'),8);
+ assert.equal(run('resolveATypeBonusOutcome("BELL").reward'),8);
  assert.equal(run('session.paid=45; resolveATypeBonusOutcome("BELL").reward'),5);
  assert.equal(run('session.paid=50; resolveATypeBonusOutcome("BELL").reward'),0);
 });
@@ -162,3 +162,5 @@ test('nearest common stops preserve the role for every reel position and stop or
  }return stats;})()`);
  console.log('nearest-stop exhaustive statistics',JSON.stringify(stats));assert.ok(stats.BELL.max<20);assert.ok(stats.REPLAY.max<20);
 });
+
+ test('15pt bell grids place seven on each first-navigation reel using real strip cells',()=>{for(let first=0;first<3;first++){run('globalThis.grid=buildNovaReelGrid("BELL15",1,'+first+');');assert.equal(run('grid[1]['+first+']'), '7');assert.equal(run('displayedResultFromGrid(grid)'), 'BELL15');assert.equal(run('REEL_STRIPS.every((s,c)=>s.some((_,i)=>[0,1,2].every(r=>grid[r][c]===s[(i+r)%20])))'),true);}});

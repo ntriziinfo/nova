@@ -1,0 +1,95 @@
+{
+  "reference": "approved final-plan / redistributed-absorb 2026-09-30",
+  "trials": [
+    {
+      "setting": 1,
+      "games": 30000,
+      "seed": "production-parity-1",
+      "options": {
+        "rng": "xoshiro128",
+        "exactGames": true,
+        "stopAtComplete": false,
+        "completeLimitPt": 10000,
+        "rareSortie": true,
+        "decrementAudit": true
+      },
+      "sha256": "a7dcefa7be525403b6206fa383f8e948270e4facbf1c672e1cc5ed9c1103c5eb",
+      "passed": true
+    },
+    {
+      "setting": 2,
+      "games": 30000,
+      "seed": "production-parity-2",
+      "options": {
+        "rng": "xoshiro128",
+        "exactGames": true,
+        "stopAtComplete": false,
+        "completeLimitPt": 10000,
+        "rareSortie": true,
+        "decrementAudit": true
+      },
+      "sha256": "266eaedeb5746529e246cdf2f1efc1126fc03c7c9c2b7a8594364472e49f90f0",
+      "passed": true
+    },
+    {
+      "setting": 3,
+      "games": 30000,
+      "seed": "production-parity-3",
+      "options": {
+        "rng": "xoshiro128",
+        "exactGames": true,
+        "stopAtComplete": false,
+        "completeLimitPt": 10000,
+        "rareSortie": true,
+        "decrementAudit": true
+      },
+      "sha256": "dd75323f98714dc3b462c058a9d82010fd219a2dbd8443353af96a964d2cc75a",
+      "passed": true
+    },
+    {
+      "setting": 4,
+      "games": 30000,
+      "seed": "production-parity-4",
+      "options": {
+        "rng": "xoshiro128",
+        "exactGames": true,
+        "stopAtComplete": false,
+        "completeLimitPt": 10000,
+        "rareSortie": true,
+        "decrementAudit": true
+      },
+      "sha256": "3724e57ca708b2c4bf68559e4d40b8a624b884758f4c858c3a461bee7be26d7d",
+      "passed": true
+    },
+    {
+      "setting": 5,
+      "games": 30000,
+      "seed": "production-parity-5",
+      "options": {
+        "rng": "xoshiro128",
+        "exactGames": true,
+        "stopAtComplete": false,
+        "completeLimitPt": 10000,
+        "rareSortie": true,
+        "decrementAudit": true
+      },
+      "sha256": "cede9f806966edd860ad58e3328be4d217897890c17fea646252c98600177724",
+      "passed": true
+    },
+    {
+      "setting": 6,
+      "games": 30000,
+      "seed": "production-parity-6",
+      "options": {
+        "rng": "xoshiro128",
+        "exactGames": true,
+        "stopAtComplete": false,
+        "completeLimitPt": 10000,
+        "rareSortie": true,
+        "decrementAudit": true
+      },
+      "sha256": "24800df05f846e9290a886104513d20d75b669fb1a88e49d0f0732d775ab96f7",
+      "passed": true
+    }
+  ]
+}

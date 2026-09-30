@@ -15,12 +15,12 @@ globalThis.NovaArt=(()=>{
  const drawBonusTier=(rng=Math.random)=>rng()<bonusRules.upperRate?'upper':'normal';
  const bonusLabel=tier=>bonusTier(tier)==='upper'?'上位BIG':'通常BIG';
  const bonusPayout=(state,role)=>Math.min(payout(role),Math.max(0,bonusTarget()-(Number(state?.paid)||0)));
- // Upper-AT challenge. Ordinary AT has one shared rule set.
+ // The remaining challenge awards an ura zone only. Ordinary AT has one shared rule set.
  const burstRules=Object.freeze({
   version:2,games:10,success:.65,initialSuccess:.5,initialEntry:.05,
   uraWeights:Object.freeze([1,1,1]),
   entry:Object.freeze([0.0225,0.033,0.0465,0.063,0.0615,0.021]),
-  roles:Object.freeze({WEAK_SUICA:0.15839316425977998,WEAK_NOVA:0.15839316425977998,STRONG_NOVA:1})
+  roles:Object.freeze({WEAK_SUICA:.05,STRONG_SUICA:.5,CHANCE_A:.2,CHANCE_B:.2,WEAK_NOVA:.1,STRONG_NOVA:1})
  });
  function challengeName(){return '上位ATチャレンジ';}
  function challengeAimChance(target,setting){
@@ -129,7 +129,7 @@ globalThis.NovaArt=(()=>{
  function drawEntryQuota(c,rng=Math.random){const weights=Number.isInteger(c?.setting)&&c.setting>=1&&c.setting<=6?researchEntryWeights[c.setting-1]:entryQuotaRules.weights;return entryQuotaRules.values[weightedChallenge(weights,rng)];}
  // The base plan is sealed; rare roles in the duo zone can upgrade that game's award.
  const initialRareAwards=Object.freeze({WEAK_SUICA:100,CHANCE_A:100,WEAK_NOVA:100,STRONG_SUICA:200,CHANCE_B:200,STRONG_NOVA:200,SUPER_NOVA:200});
- function drawInitialRole(setting,rng){let roll=rng();for(const [role,p]of Object.entries(roleProbabilities(setting)))if((roll-=p)<0)return role==='BELL15'?'BELL':role;return 'REPLAY';}
+ function drawInitialRole(setting,rng){let roll=rng();for(const [role,p]of Object.entries(roleProbabilities(setting)))if((roll-=p)<0)return role;return 'REPLAY';}
  function enterInitial(c,rng=Math.random){const s={...enter(c,rng),initialVersion:148,remaining:'0',initialStage:'wait',initialWait:entryQuotaRules.waitGames,initialPlan:[],initialIndex:0};if(rng()<.05){s.burstPending=true;s.burstUsed=true;s.researchChallengeSource='initial';}return s;}
  function initialFields(v){return {...(Number.isFinite(v?.researchChallengeSuccess)&&v.researchChallengeSuccess>=.4&&v.researchChallengeSuccess<=1?{researchChallengeSuccess:v.researchChallengeSuccess}:{}),modelSetting:validSetting(v?.modelSetting),researchSortieLeft:Math.max(0,Number(v?.researchSortieLeft)||0),researchSortieHits:Math.max(0,Number(v?.researchSortieHits)||0),researchSortieRate:Number(v?.researchSortieRate)||0,
   researchUpper:!!v?.researchUpper,researchThresholdUsed:!!v?.researchThresholdUsed,researchThresholdPending:!!v?.researchThresholdPending,
@@ -187,13 +187,18 @@ globalThis.NovaArt=(()=>{
   return {result,aim,flow:s,zoneAward:n,zoneSpin:true,initialAward:true,message:finished?`初期pt ${s.award}pt獲得！`:family==='ladder'?`${s.award}pt確保`:n?'＋'+n+'pt':'継続'};
  }
  // AT and bonus preparation own their role mix and rewards. Normal/CZ tuning must not affect them.
- const rareRoles=Object.freeze({"WEAK_SUICA":{"p":0.0265,"pay":6,"preparation":0.13189655172413794},"STRONG_SUICA":{"p":0,"pay":6,"preparation":0.3},"CHANCE_A":{"p":0,"pay":0,"preparation":0.15},"CHANCE_B":{"p":0,"pay":0,"preparation":0.15},"WEAK_NOVA":{"p":0.0025,"pay":0,"preparation":0.13189655172413794},"STRONG_NOVA":{"p":0.0005,"pay":0,"preparation":0.5}});
+ const rareRoles=Object.freeze(Object.fromEntries(Object.entries({
+  WEAK_SUICA:{p:0.01125,pay:6,preparation:.06},STRONG_SUICA:{p:0.0032500000000000003,pay:6,preparation:.3},
+  CHANCE_A:{p:1/250,pay:0,preparation:.15},
+  CHANCE_B:{p:1/125,pay:0,preparation:.15},WEAK_NOVA:{p:1/400,pay:0,preparation:.15},
+  STRONG_NOVA:{p:1/2000,pay:0,preparation:.5}
+ }).map(([role,value])=>[role,Object.freeze(value)])));
  const rareTotal=Object.values(rareRoles).reduce((sum,v)=>sum+v.p,0);
  const rareMean=Object.values(rareRoles).reduce((sum,v)=>sum+v.p*v.pay,0)/rareTotal;
  const rareFactor=(setting=3)=>1+.016*(Math.max(1,Math.min(6,Math.round(Number(setting)||3)))-3);
- const payout=role=>rareRoles[role]?.pay??(role==='BELL'?8:role==='BELL15'?15:0);
+ const payout=role=>rareRoles[role]?.pay??(role==='BELL'?15:0);
  function drawRare(rng=Math.random){let roll=rng()*rareTotal;for(const [role,v]of Object.entries(rareRoles))if((roll-=v.p)<0)return role;return 'STRONG_NOVA';}
- function preparationProbabilities(setting=3){return {...[{"WEAK_SUICA":0.025652,"STRONG_SUICA":0,"CHANCE_A":0,"CHANCE_B":0,"WEAK_NOVA":0.00242,"STRONG_NOVA":0.000484,"BELL":0.06427499120780303,"REPLAY":0.13311650015250695,"MISS":0.77405250863969},{"WEAK_SUICA":0.026076,"STRONG_SUICA":0,"CHANCE_A":0,"CHANCE_B":0,"WEAK_NOVA":0.00246,"STRONG_NOVA":0.000492,"BELL":0.06453819681751193,"REPLAY":0.13365326023376708,"MISS":0.772780542948721},{"WEAK_SUICA":0.026499999999999996,"STRONG_SUICA":0,"CHANCE_A":0,"CHANCE_B":0,"WEAK_NOVA":0.0025,"STRONG_NOVA":0.0005,"BELL":0.06480140242722081,"REPLAY":0.1341900203150272,"MISS":0.771508577257752},{"WEAK_SUICA":0.026923999999999997,"STRONG_SUICA":0,"CHANCE_A":0,"CHANCE_B":0,"WEAK_NOVA":0.00254,"STRONG_NOVA":0.000508,"BELL":0.06506460803692969,"REPLAY":0.1347267803962873,"MISS":0.770236611566783},{"WEAK_SUICA":0.027348000000000004,"STRONG_SUICA":0,"CHANCE_A":0,"CHANCE_B":0,"WEAK_NOVA":0.0025800000000000003,"STRONG_NOVA":0.0005160000000000001,"BELL":0.06532781364663857,"REPLAY":0.1352635404775474,"MISS":0.768964645875814},{"WEAK_SUICA":0.027772,"STRONG_SUICA":0,"CHANCE_A":0,"CHANCE_B":0,"WEAK_NOVA":0.0026200000000000004,"STRONG_NOVA":0.000524,"BELL":0.06559101925634746,"REPLAY":0.1358003005588075,"MISS":0.767692680184845}][Math.max(0,Math.min(5,Math.round(Number(setting)||3)-1))]};}
+ function preparationProbabilities(setting=3){const frequent=1+.004*(Math.max(1,Math.min(6,Math.round(Number(setting)||3)))-3),r=Object.fromEntries(Object.entries(rareRoles).map(([role,v])=>[role,v.p*rareFactor(setting)]));const chanceTotal=r.CHANCE_A+r.CHANCE_B;r.CHANCE_A=chanceTotal*(Math.max(1,Math.min(6,Math.round(Number(setting)||3)))%2?.4:.6);r.CHANCE_B=chanceTotal-r.CHANCE_A;r.BELL=(.120877629551039*8*frequent+.092*rareFactor(setting)-Object.entries(r).reduce((s,[role,p])=>s+p*payout(role),0))/15;r.REPLAY=frequent/7.452119;r.MISS=1-Object.values(r).reduce((a,b)=>a+b,0);return r;}
  const preparationEntries=[1,2,3,4,5,6].map(s=>Object.entries(preparationProbabilities(s)));
  function drawPreparationRole(setting,rng=Math.random){let roll=rng();for(const [role,p]of preparationEntries[Math.max(0,Math.min(5,Math.round(Number(setting)||3)-1))])if((roll-=p)<0)return role;return 'MISS';}
  function drawPreparation(role,setting=1,rng=Math.random){const rare=rareRoles[role];let sets=0,zones=[];if(rare){if(rng()<rare.preparation)sets++;if(rng()<rare.preparation*.5){zones.push(pickZone(setting,rng));sets=Math.max(1,sets);}}return {sets,zones};}
@@ -206,12 +211,10 @@ globalThis.NovaArt=(()=>{
  const bonusStockFactor=setting=>bonusStockRules.factors[validSetting(setting)-1];
  const bonusStockEligible=(state,flow)=>flow?.phase==='art'||integer(state?.bonusArtSets)>0n;
  function bonusRoleProbabilities(setting,tier='normal',stockEligible=false){
-  // Keep the old bell frequency and the first-hit 52/80% despite seven 8pt bells.
-  const target=bonusRules[bonusTier(tier)].atChance,oldRatio=(1-target)**(-1/4)-1;
-  const oldZero=4*oldRatio/(6-3*oldRatio),BELL=(4+3*oldZero)/12;
-  const ratio=(1-target)**(-1/Math.ceil(bonusTarget()/8))-1,NEBULA=BELL*ratio;
+  const hit=.5,ratio=(1-bonusRules[bonusTier(tier)].atChance)**(-1/Math.ceil(bonusTarget()/15))-1;
+  const zero=4*ratio/(12*hit-3*ratio),NEBULA=zero*hit,MISS=zero-NEBULA,BELL=(4+3*zero)/12;
   const factor=stockEligible?bonusStockFactor(setting):1;
-  return {NEBULA:NEBULA*factor,MISS:NEBULA+NEBULA*(1-factor),BELL,REPLAY:1-BELL-2*NEBULA};
+  return {NEBULA:NEBULA*factor,MISS:MISS+NEBULA*(1-factor),BELL,REPLAY:1-zero-BELL};
  }
  const bonusSpecial=bonusRoleProbabilities().NEBULA;
  const settingBias=[-2.7,-2.55,-2.27,-2.13,-1.8,-1.46];
@@ -240,17 +243,9 @@ globalThis.NovaArt=(()=>{
   return {symbol:'nebula',color:colors[index].color,result,guide:success||rng()<.5,forced:false};
  }
 const tuning={"weak":128,"strong":1500,"other":1.15,"tilts":[-0.28,-0.28,-0.28,0.1,0.2,0.38]};
- function atMix(setting=3){
-  const r={WEAK_SUICA:0.03099152542372881,STRONG_SUICA:0,CHANCE_A:0,CHANCE_B:0,WEAK_NOVA:0.0078125,STRONG_NOVA:0.0006666666666666666};
-  const chance=Object.values(r).reduce((a,b)=>a+b,0),mean=6*r.WEAK_SUICA/chance;return {r,chance,mean};
- }
- function drawAtRare(setting,rng){const {r,chance}=atMix(setting);let roll=rng()*chance;for(const [role,p]of Object.entries(r))if((roll-=p)<0)return role;return 'STRONG_NOVA';}
- function roleProbabilities(setting=3,upper=false){
-  const {r,chance,mean}=atMix(setting),share=upper?1:0.5,target=upper?8:5;
-  const bell=(target-chance*(mean-3))/(5+7*share);
-  return {...r,BELL:bell*(1-share),BELL15:bell*share,REPLAY:1-chance-bell};
- }
- function drawAtRole(setting,upper,rng){let roll=rng();for(const [role,p]of Object.entries(roleProbabilities(setting,upper)))if((roll-=p)<0)return role;return 'REPLAY';}
+ const mixCache=new Map();function atMix(setting=3){if(!mixCache.has(setting))mixCache.set(setting,calcMix(setting));const r=mixCache.get(setting);return {...r,r:{...r.r}};}function calcMix(setting=3){const f=commonAtRules.rare,r=Object.fromEntries(Object.entries(rareRoles).map(([role,v])=>[role,(role==='WEAK_NOVA'?1/tuning.weak:role==='STRONG_NOVA'?1/tuning.strong:v.p*.03/rareTotal*tuning.other)*f]));const chanceTotal=r.CHANCE_A+r.CHANCE_B;r.CHANCE_A=chanceTotal*(Math.max(1,Math.min(6,Math.round(Number(setting)||3)))%2?.4:.6);r.CHANCE_B=chanceTotal-r.CHANCE_A;const chance=Object.values(r).reduce((s,p)=>s+p,0),mean=Object.entries(r).reduce((s,[role,p])=>s+p*payout(role),0)/chance;return {r,chance,mean};}
+ function drawAtRare(setting,rng){const {r,chance}=atMix(setting);let x=rng()*chance;for(const [role,p]of Object.entries(r))if((x-=p)<0)return role;return 'STRONG_NOVA';}
+function roleProbabilities(setting=3){const {r,chance,mean}=atMix(setting);r.BELL=(1-chance)*paidBellChance(chance,15,mean);r.REPLAY=1-chance-r.BELL;return r;}
  const zoneEntryScale=[0.405,0.475,0.415,0.5,0.485,0.485];
  // Normalize by actual rare-role frequency, preserving the average AT zone entry rate.
  const zoneRoleWeights=Object.freeze({WEAK_SUICA:1,STRONG_SUICA:10,CHANCE_A:8/3,CHANCE_B:8/3,WEAK_NOVA:1,STRONG_NOVA:10});
@@ -338,7 +333,13 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
   return integer(s.remaining)>0n||integer(s.sets)>0n||integer(s.stock)>0n||s.zone||s.entryStage||s.queuedZones.length||s.comebackLeft||s.comebackConfirmed||s.atPrelude?s:{phase:'normal',remaining:0,success:false};
  }
 
- const atRoleRules={"WEAK_SUICA":{"up":0.15,"hit":0.1793235237913243,"values":[10,20,30,50,100,300],"weights":[0.4012605042016807,0.3993697478991597,0.17205882352941176,0.026764705882352944,0.0004915966386554622,0.0000546218487394958]},"WEAK_NOVA":{"up":0.15,"hit":0.1793235237913243,"values":[10,20,30,50,100,300],"weights":[0.4012605042016807,0.3993697478991597,0.17205882352941176,0.026764705882352944,0.0004915966386554622,0.0000546218487394958]}};
+ const atRoleRules={
+  WEAK_SUICA:{up:.05,hit:.1,values:[10,20,30],weights:[.7,.25,.05]},
+  STRONG_SUICA:{up:.5,hit:.5,values:[20,30,50,100,300],weights:[.6,.3,.098,.0018,.0002]},
+
+  CHANCE_A:{up:.45,hit:4/15,values:[10,20,30],weights:[.5,.35,.15]},
+  CHANCE_B:{up:.45,hit:4/15,values:[10,20,30],weights:[.5,.35,.15]}
+ };
  function zoneGroupWeights(setting,boost=false,preparation=false){
   const groups=NovaTuning.profile(setting).groups;
   if(groups&&!preparation){const row=groups.map((p,i)=>p*(boost&&i>0?2:1)),total=row.reduce((a,b)=>a+b,0);return row.map(p=>p*100/total);}
@@ -355,39 +356,29 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
  const lossRewardControl=Object.freeze({enabled:false,threshold:-2000,multiplier:1});
  const netRewardControl=Object.freeze({enabled:false,startRatio:0,floor:1});
  function netRewardFactor(){return 1;}
- function extraZoneChance(setting,role,upper=false,high=false){
-  if(!['WEAK_SUICA','WEAK_NOVA'].includes(role))return 0;
-  const p=NovaTuning.profile(setting),guard=globalThis.NovaDecrement?.at(setting)??1;
-  const weakNova=Math.min(1,(high?.75:.25)*2*.35*p.zone*guard);
-  const weakExtra=Math.min(1,p.extraZone*guard),strongExtra=Math.min(1,2*p.extraZone*guard);
-  const total=0.0078125*weakNova+0.027190677966101695*weakExtra+0.0038008474576271185*strongExtra+0.0006666666666666666*.6;
-  // Approved 2026-09-30: common special-zone lottery calibration.
-  const scale=1.5;
-  return Math.min(1,total/0.03880402542372881*scale);
+ function extraZoneChance(setting,role,upper=false){
+  if(!['WEAK_SUICA','STRONG_SUICA','CHANCE_A','CHANCE_B'].includes(role))return 0;
+  const p=NovaTuning.profile(setting);
+  return Math.min(1,p.extraZone*(globalThis.NovaDecrement?.at(setting)??1)*(upper?p.upper:1)*(role==='STRONG_SUICA'?2:1));
  }
  function resolveAtRole(s,role,setting,rng=Math.random,netPt=0){
-  const rules=commonAtRulesFor(setting),wasHigh=!!s.atHigh,held=wasHigh&&s.atHighLeft>0;
-  const out={wasHigh,direct:0,zone:'',promoted:false,rewardFactor:1};if(held)s.atHighLeft--;
-  const drawAmount=rule=>{let r=rng();const i=rule.weights.findIndex(w=>(r-=w)<0);return rule.values[i<0?rule.values.length-1:i];};
-  const shared=atRoleRules[role];
-  if(shared){
-   if(!wasHigh&&rng()<.15){s.atHigh=true;s.atHighLeft=10;out.promoted=true;}
-   if(rng()<Math.min(1,shared.hit*rules.direct))out.direct=drawAmount(shared);
-   if(rng()<Math.min(1,extraZoneChance(setting,role,false,wasHigh)))out.zone=pickAtZone(setting,false,rng);
+  const rules=commonAtRulesFor(setting),upper=NovaTuning.profile(setting).upper,ruleSet=s.researchUpper?{...rules,direct:rules.direct*upper,weakNova:rules.weakNova*upper}:rules;
+  const wasHigh=!!s.atHigh,held=wasHigh&&s.atHighLeft>0,out={wasHigh,direct:0,zone:'',promoted:false};
+  if(held)s.atHighLeft--;
+  const rule=atRoleRules[role];
+  if(rule){
+   if(!wasHigh&&rng()<rule.up){s.atHigh=true;s.atHighLeft=10;out.promoted=true;}
+   if(rng()<Math.min(1,rule.hit*ruleSet.direct)){let r=rng();const i=rule.weights.findIndex(w=>(r-=w)<0);out.direct=rule.values[i<0?rule.values.length-1:i];}
   }
-  if(role==='STRONG_NOVA'){
-   const r=rng();
-   if(r<.2||r>=.4&&r<.6)out.direct=drawAmount({"up":0.5,"hit":0.5,"values":[20,30,50,100,300],"weights":[0.6,0.3,0.098,0.0018,0.0002]});
-   if(r>=.2&&r<.6)out.zone=pickAtZone(setting,wasHigh,rng);
-  }
-  if(s.researchUpper)out.direct=out.direct*1.5;
+  if(role==='STRONG_NOVA'||(role==='WEAK_NOVA'&&rng()<Math.min(1,(wasHigh?.75:.25)*2*ruleSet.weakNova)))out.zone=pickAtZone(setting,wasHigh&&role==='STRONG_NOVA',rng);
   if(wasHigh&&!held&&(role==='REPLAY'||role==='MISS')&&rng()<(role==='REPLAY'?.05:.08)){s.atHigh=false;s.atHighLeft=0;}
+  const additionalChance=extraZoneChance(setting,role,s.researchUpper);
+  if(!out.zone&&additionalChance>0&&rng()<additionalChance)out.zone=pickAtZone(setting,false,rng);
+  out.rewardFactor=1;
   return out;
  }
  function step(value,options={},rng=Math.random,forced=''){
   if(forced==='STRONG_BELL')forced='BELL';
-  if(forced==='STRONG_SUICA')forced='WEAK_SUICA';
-  if(forced==='CHANCE_A'||forced==='CHANCE_B')forced='MISS';
   const c=config(options);if(options.setting){c.rare=Math.min(.99,c.rare*rareFactor(options.setting));const factor=(1+.2*biasFor(options.setting))*zoneEntryScale[validSetting(options.setting)-1];c.big=Math.min(1,c.big*factor);c.zone=Math.min(1-c.big,c.zone*factor);}let s=normalize(prepareBet(value,options,rng)),freeOumaSpin=['ouma','urapi'].includes(s.zone)&&s.zero,result='MISS',message='',internalBonus=null,reverse=false,queuedEntered=false;
   let atOutcome=null,aim=null,zoneAward=0,atPrelude=null;const finish=()=>{const z=s.zone,name=zoneName(s);s=settleZone(s);message=`${name}ゾーン終了 / ${'＋'+s.award+'pt'}`;};
   if(s.researchSortieLeft){
@@ -414,7 +405,7 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
    const role=rareRoles[forced]||['BELL','REPLAY','MISS','SUPER_NOVA'].includes(forced)?forced:Object.entries(mix).find(([k,p])=>(roll-=p)<0)?.[0]||'MISS';
    const isRare=!!rareRoles[role]||role==='SUPER_NOVA';if(!priorAim&&role==='MISS')s.burstLeft--;
    let won=false;result=role;
-   if(priorAim){won=priorAim==='rare'||isRare||rng()<(source==='threshold'&&targetChance!==undefined?challengeAimChance(targetChance,options.setting):challengeAimChance(source==='initial'?.5:.65,options.setting));s.researchAim='';result=won?'SUPER_NOVA':'MISS';}
+   if(priorAim){won=priorAim==='rare'||isRare||rng()<(source==='threshold'&&targetChance!==undefined?challengeAimChance(targetChance,options.setting):({"initial":0.1909926807243627,"threshold":0.5396499826643559,"rare":0.5396499826643559})[source]);s.researchAim='';result=won?'SUPER_NOVA':'MISS';}
    else if(isRare)s.researchAim='rare';
    else if(['BELL','REPLAY'].includes(role))s.researchAim='common';
    const finished=won||(!s.burstLeft&&!s.researchAim);
@@ -426,7 +417,7 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
   if(s.entryStage==='seven'){s.entryStage='roulette';return {result:'BIG',flow:s,zoneSpin:true,message:'赤7揃い！ 特化ゾーンルーレット'};}
   if(s.entryStage==='roulette'){
    const mix=atMix(options.setting);result=rareRoles[forced]?forced:(rng()<mix.chance?drawAtRare(options.setting,rng):'MISS');
-   const rates={WEAK_SUICA:0.20554584914416751,WEAK_NOVA:0.20554584914416751,STRONG_NOVA:1};
+   const rates={WEAK_SUICA:.1,CHANCE_A:.2,CHANCE_B:.2,WEAK_NOVA:.25,STRONG_SUICA:.5,STRONG_NOVA:1};
    s.rouletteTable=0;
    if(!s.initialStage&&rates[result]&&rng()<rates[result]){s.rouletteTable=rng()<.8?6:7;s.pendingZone=s.rouletteTable===7?'sosuke':rng()<.8?'giru':'ura_giru';}
    s.entryStage='confirmed';return {result,flow:s,zoneSpin:true,message:zoneName(s.pendingZone)+'ゾーン確定！'+(s.rouletteTable?' テーブル'+s.rouletteTable+'昇格':'')};
@@ -439,8 +430,8 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
  }s=startZone(s,z,{...c,setting:options.setting,allowUra:true},rng);}
   if(!s.zone&&!s.atPrelude&&integer(s.stock)>0n){s.stock=(integer(s.stock)-1n).toString();return {result:'MISS',flow:s,internalBonus:{kind:'BIG',source:'空ゾーンストック',internalResult:'BIG'}};}
   if(!s.zone&&!s.atPrelude&&integer(s.remaining)===0n)return stepComeback(beginComeback(s),options,rng,forced);
-  const mix=atMix(options.setting);c.rare=mix.chance;const roll=rng();result=s.zone?(roll<.6?'REPLAY':roll<.9?'BELL':'MISS'):drawAtRole(options.setting,s.researchUpper,rng);
-  if(['NEBULA','MISS','BELL','BELL15','REPLAY','WEAK_NOVA','STRONG_NOVA','SUPER_NOVA'].includes(forced))result=forced;
+  const mix=atMix(options.setting);c.rare=mix.chance;const roll=rng();result=s.zone?(roll<.6?'REPLAY':roll<.9?'BELL':'MISS'):(roll<paidBellChance(c.rare,15,mix.mean)?'BELL':'REPLAY');
+  if(['NEBULA','MISS','BELL','REPLAY','WEAK_NOVA','STRONG_NOVA','SUPER_NOVA'].includes(forced))result=forced;
   if(s.zone){
    const rules=zoneRules(s,c),free=s.zero;
    // Ladder entry seeds its base amount before it is revealed. Report only the
@@ -476,7 +467,7 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
    zoneAward=Math.max(0,Number(integer(s.award)-awardBefore));
   }else{
    // Remaining AT points are consumed by actual payout after role selection.
-   const rare=forced==='RARE'||!!rareRoles[forced];if(rare)result=rareRoles[forced]?forced:drawAtRare(options.setting,rng);
+   const rare=forced==='RARE'||!!rareRoles[forced]||(!forced&&rng()<c.rare);if(rare)result=rareRoles[forced]?forced:drawAtRare(options.setting,rng);
    atOutcome=resolveAtRole(s,result,options.setting,rng,options.netPt);
    if(!s.researchUpper&&!s.researchThresholdPending&&s.burstVersion===burstRules.version&&!s.burstUsed&&burstRules.roles[result]&&rng()<burstChance(result,options.setting)){s.burstUsed=true;s.burstPending=true;s.burstType='ura';s.researchChallengeSource='rare';}
    if(atOutcome.direct){s.dryEligible=false;s.remaining=(integer(s.remaining)+BigInt(atOutcome.direct)).toString();message='直乗せ＋'+atOutcome.direct+'pt';}

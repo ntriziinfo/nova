@@ -16,10 +16,9 @@ globalThis.NovaFlow = (() => {
     // Keep explicit debug overrides and guaranteed/rare-CZ probabilities.
     if(cfg.czChance===defaults.czChance)cfg.czChance=[.5504,.556,.5588,.5792,.5932,.6336][i];
     if(cfg.strongChance===defaults.strongChance)cfg.strongChance=[.7752,.778,.7794,.7896,.7966,.8168][i];
-    cfg.rewriteRates={WEAK_SUICA:[0.1782292065925642,0.1782292065925642,0.1782292065925642,0.17822920659256422,0.1782292065925642,0.17072897405726453][i],WEAK_NOVA:[0.1782292065925642,0.1782292065925642,0.1782292065925642,0.17822920659256422,0.1782292065925642,0.17072897405726453][i],STRONG_NOVA:1,...value.rewriteRates};
     return cfg;
   }
-  const rewriteRates=Object.freeze({WEAK_SUICA:0.1782292065925642,WEAK_NOVA:0.1782292065925642,STRONG_NOVA:1});
+  const rewriteRates=Object.freeze({WEAK_SUICA:.05,STRONG_SUICA:.50,CHANCE_A:3/14,CHANCE_B:3/14,WEAK_NOVA:.20,STRONG_NOVA:1});
   const lampConfidence=Object.freeze([.01,.05,.30,.60,.80,1]);
   function rewrite(value,role,options={},random=Math.random){
     const state=normalize(value);

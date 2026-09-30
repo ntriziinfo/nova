@@ -7,4 +7,5 @@
 .novaBellNaviItem[data-next=true]{filter:brightness(1.2) drop-shadow(0 0 3px #ffda4c)}
 .novaBellNaviItem[data-stopped=true]{opacity:0}
 .novaBellNavi[data-preview=true]{outline:1px dashed #ffe470;outline-offset:2px}
+.novaBellNaviItem img.novaBellNaviSymbol{width:30%!important;height:80%!important;top:10%;right:0;left:auto;object-fit:contain!important;filter:drop-shadow(0 1px 2px #000)}
 #bellNaviAdjustBtn{position:fixed;left:12px;bottom:94px;z-index:10001;padding:10px 12px;border:1px solid #b7943d;border-radius:7px;background:#221b2a;color:#ffe694;font-weight:bold;cursor:pointer}

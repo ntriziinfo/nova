@@ -5,11 +5,11 @@ loadModel();const n=NovaNormal;
 const saved=s=>JSON.parse(JSON.stringify(s));
 const sequence=(...rolls)=>()=>rolls.shift()??.99;
 const spin=(s,role='BELL',rng=()=>.99,setting=3)=>n.spin(s,{phase:'normal'},setting,{},rng,role);
-const fake=(total=5)=>spin({},'WEAK_NOVA',sequence(.99,.1,(total-3)/8+.001));
+const fake=(total=5)=>spin({},'WEAK_NOVA',sequence(.99,.99,.1,(total-3)/8+.001));
 
 test('a missed rare role starts a fake at 50%, but ordinary roles do not',()=>{
  for(const roll of [0,.499999,.5,.999999]){
-  const t=spin({},'WEAK_NOVA',sequence(.99,roll,.5));
+  const t=spin({},'WEAK_NOVA',sequence(.99,.99,roll,.5));
   assert.equal(!!t.state.prelude,roll<.5);assert.equal(t.entry,'');
   if(roll<.5){assert.equal(t.state.prelude.kind,'czFake');assert.equal(t.state.prelude.entry,'');}
  }
@@ -40,7 +40,7 @@ test('every rare role retains its real CZ threshold during fake preludes at ever
   for(const win of [true,false]){
    if(!win&&rate===1)continue;
    // SUICA/chance roles draw the high-state promotion before the CZ lottery.
-   const rolls=level==='low'&&['WEAK_SUICA','STRONG_SUICA','CHANCE_A','CHANCE_B'].includes(role)?[.99]:[];
+   const rolls=level==='low'&&['WEAK_SUICA','WEAK_NOVA'].includes(role)?[.99]:[];
    rolls.push(win?rate-1e-9:rate+1e-9);
    const t=spin(saved(s),role,sequence(...rolls),setting);
    assert.equal(t.czChance,rate);assert.equal(t.state.prelude.kind,win?'cz':'czFake');

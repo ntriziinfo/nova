@@ -13,7 +13,7 @@ globalThis.NovaBellNavi=(()=>{
  function eligible(spin){
   const r=spin?.resolved;
   const normal=r?.normalBellNavi&&r.flowBefore?.phase==='normal'&&!spin.aTypeBonusActiveAtStart&&!r.bonusPendingAtStart&&!r.zoneSpin;
-  return spin?.result==='BELL'&&!!(normal||available(spin));
+  return ['BELL','BELL15'].includes(spin?.result)&&!!(normal||available(spin));
  }
  function drawRareNavi(spin,rng=Math.random){
   const role=rareRoles[spin?.result];if(!role||!available(spin))return null;
@@ -29,7 +29,9 @@ globalThis.NovaBellNavi=(()=>{
   root.setAttribute('role','group');root.setAttribute('aria-label','ベル押し順ナビ');
   items=[0,1,2].map(i=>{
    const item=document.createElement('div');item.className='novaBellNaviItem';item.dataset.reel=String(i);
-   const img=new Image();img.hidden=true;img.alt='';img.draggable=false;item.append(img);root.append(item);return item;
+   const img=new Image();img.hidden=true;img.alt='';img.draggable=false;item.append(img);
+   const symbol=new Image();symbol.className='novaBellNaviSymbol';symbol.hidden=true;symbol.draggable=false;item.append(symbol);
+   root.append(item);return item;
   });
   host.append(root);
   const bellPreload=new Image();bellPreload.src=asset;
@@ -66,6 +68,8 @@ globalThis.NovaBellNavi=(()=>{
    item.setAttribute('aria-label',['左','中','右'][i]+'リール '+(signal?signalLabel:number+'番目')+(stopped[i]?' 停止済み':''));
    const src=signal?rareAsset(signal):asset;setSprite(item.firstChild,src);
    item.firstChild.style.left=-(signal?i:number-1)*100+'%';
+   const symbol=item.lastChild;symbol.hidden=active?.result!=='BELL15'||!!signal;
+   if(!symbol.hidden){symbol.src=number===1?'assets/symbols/seven-nebula-original.png':'assets/symbols/gang-v3/bell.png';symbol.alt=number===1?'7を狙う':'ベル';}
   });
   layout();
  }

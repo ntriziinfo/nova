@@ -1,3 +1,4 @@
+import fs from 'node:fs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {loadModel} from '../scripts/zone-v2-model.mjs';
@@ -19,7 +20,7 @@ test('setting-dependent initial bases plus rare-role rewrites average 180 throug
   let offset=0,base=0;
   for(let i=0;i<weights.length;i++){assert(weights[i]>0);assert.equal(a.drawEntryQuota({setting},()=>offset+weights[i]/2),a.entryQuotaRules.values[i]);offset+=weights[i];base+=weights[i]*a.entryQuotaRules.values[i]/3;}
   const mean=3*Object.entries(a.roleProbabilities(setting)).reduce((sum,[role,p])=>sum+p*(a.initialRareAwards[role]??base),0);
-  assert(Math.abs(mean-(170+setting*10))<1e-9,setting+': '+mean);
+  assert(Math.abs(mean-JSON.parse(fs.readFileSync('tests/fixtures/nova-role-merge-approved.json')).entryMeans[setting-1])<1e-9,setting+': '+mean);
  }
 });
 

@@ -13,5 +13,5 @@ test('positive and negative net neither change AT outcomes nor consume extra ran
  }
 });
 test('strong Nova awards are never discarded at a positive net threshold',()=>{
- for(const treatment of [0,1,2,3,4,5])for(let setting=1;setting<=6;setting++)assert.ok(a.resolveAtRole({atLevel:treatment},'STRONG_NOVA',setting,()=>.99,50000).zone);
+ for(const treatment of [0,1,2,3,4,5])for(let setting=1;setting<=6;setting++)assert.ok(a.resolveAtRole({atLevel:treatment},'STRONG_NOVA',setting,()=>.25,50000).zone);
 });

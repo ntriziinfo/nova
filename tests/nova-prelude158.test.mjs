@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
 import {loadModel} from '../scripts/zone-v2-model.mjs';
-// These timing fixtures predate the supplemental SUICA/chance-eye lottery.
+// Isolate prelude timing from zone selection and direct-reward RNG draws.
 loadModel('..',true,{3:{extraZone:0}});const a=NovaArt,n=NovaNormal;
 const reload=s=>JSON.parse(JSON.stringify(s));
 const base=()=>({...a.enter({},()=>.5),remaining:'500',burstUsed:true});
@@ -13,7 +13,8 @@ test('AT hit and fake preludes last 3-5 games including the trigger, preserve sa
  for(const [roll,total]of [[.01,3],[.5,4],[.99,5]])for(const hit of [true,false]){
   let s=base();
   for(let g=1;g<=total;g++){
-   const t=a.step(reload(s),{setting:3},()=>roll,g===1?(hit?'STRONG_NOVA':'STRONG_SUICA'):'REPLAY');
+   const draws=hit?[.99,.99,.25,.5,roll,roll]:[.99,.99,.99,.99,.99,roll,roll];
+   const t=a.step(reload(s),{setting:3},g===1?()=>draws.length?draws.shift():roll:()=>roll,g===1?(hit?'STRONG_NOVA':'WEAK_SUICA'):'REPLAY');
    assert.equal(t.atPrelude.total,total);assert.equal(t.atPrelude.left,total-g);
    assert.equal(t.atPrelude.before,0);
    if(g<total){assert([1,2].includes(t.atPrelude.after));assert.equal(t.flow.entryStage,'');assert(t.flow.atPrelude);}
@@ -25,8 +26,8 @@ test('AT hit and fake preludes last 3-5 games including the trigger, preserve sa
 
 test('ongoing AT preludes keep extra wins, direct awards, burst reservations and zero remaining points',()=>{
  let s={...base(),remaining:'1',atPrelude:{total:4,left:3,zones:['sora']}};
- let t=a.step(s,{setting:3},()=>.99,'STRONG_NOVA');assert.equal(t.flow.atPrelude.zones.length,2);assert.equal(t.flow.atPrelude.left,2);
- t=a.step(reload(t.flow),{setting:3},()=>0,'STRONG_SUICA');assert(t.atOutcome.direct>0);assert.equal(t.flow.atPrelude.left,1);assert.equal(t.flow.entryStage,'');
+ let t=a.step(s,{setting:3},()=>.25,'STRONG_NOVA');assert.equal(t.flow.atPrelude.zones.length,2);assert.equal(t.flow.atPrelude.left,2);
+ t=a.step(reload(t.flow),{setting:3},(()=>{let v=[.99,.99,0,0,.5,.99];return ()=>v.shift()??.99;})(),'WEAK_SUICA');assert(t.atOutcome.direct>0);assert.equal(t.flow.atPrelude.left,1);assert.equal(t.flow.entryStage,'');
  t=a.step(reload(t.flow),{setting:3},()=>.99,'BELL');assert.equal(t.flow.pendingZone,'sora');assert.equal(t.flow.queuedZones.length,1);assert.equal(t.atPrelude.after,3);
  s={...base(),remaining:'0',burstPending:true,atPrelude:{total:3,left:1,zones:['toto']}};
  t=a.step(s,{},()=>.99,'REPLAY');assert(t.atPrelude.confirmed);assert.equal(t.flow.entryStage,'seven');assert(t.flow.burstPending);
@@ -39,7 +40,7 @@ test('ongoing AT preludes keep extra wins, direct awards, burst reservations and
 
 test('a pending miss can upgrade to a real zone win without restarting the timer',()=>{
  const s={...base(),atPrelude:{total:5,left:1,zones:[]}};
- const t=a.step(s,{setting:3},()=>.99,'STRONG_NOVA');assert(t.atPrelude.confirmed);assert.equal(t.atPrelude.total,5);assert.equal(t.flow.entryStage,'seven');
+ const t=a.step(s,{setting:3},()=>.25,'STRONG_NOVA');assert(t.atPrelude.confirmed);assert.equal(t.atPrelude.total,5);assert.equal(t.flow.entryStage,'seven');
 });
 
 test('normal CZ chance uses the pre-role internal state and the real per-setting lottery',()=>{

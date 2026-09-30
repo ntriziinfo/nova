@@ -13,7 +13,7 @@ test('all CZ wins produce BIG; bonus ends at exactly 50pt and legacy REG cannot 
  }
  for(const kind of ['BIG','MID','REG']){
   let state={bonusKind:kind,paid:0,bonusArtSets:0};
-  for(let i=0;i<4;i++){const pay=a.bonusPayout(state,'BELL');assert.equal(pay,i===3?5:15);state={...state,...a.advanceBonus(state,false,pay),paid:state.paid+pay};}
+  for(let i=0;i<7;i++){const pay=a.bonusPayout(state,'BELL');assert.equal(pay,i===6?2:8);state={...state,...a.advanceBonus(state,false,pay),paid:state.paid+pay};}
   assert.equal(state.paid,50);assert.equal(state.bonusPointsRemaining,0);assert.equal(a.bonusPayout(state,'BELL'),0);assert.equal(a.advanceBonus(state,true).bonusArtSets,0);
  }
  assert.equal(a.bonusPayout({paid:140},'BELL'),0);
@@ -22,7 +22,7 @@ test('tier role probabilities yield 52% and 80% AT chance over a complete BIG fo
  for(let setting=1;setting<=6;setting++)for(const tier of ['normal','upper']){
   const p=a.bonusRoleProbabilities(setting,tier);
   assert.ok(Object.values(p).every(x=>x>=0&&x<=1));assert.ok(Math.abs(Object.values(p).reduce((s,x)=>s+x,0)-1)<1e-12);
-  assert.ok(Math.abs(1-(p.BELL/(p.BELL+p.NEBULA))**4-a.bonusRules[tier].atChance)<1e-12);
+  assert.ok(Math.abs(1-(p.BELL/(p.BELL+p.NEBULA))**7-a.bonusRules[tier].atChance)<1e-12);
  }
  assert.equal(a.drawBonusTier(()=>.09999),'upper');assert.equal(a.drawBonusTier(()=>.1),'normal');
 });

@@ -1,12 +1,12 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
 const ctx=vm.createContext({});for(const f of ['nova-tuning.js','nova-art.js','nova-balance.js'])vm.runInContext(fs.readFileSync(f,'utf8'),ctx);const a=ctx.NovaArt,b=ctx.NovaBalance;
-test('published RTP metadata identifies the approved v173 evidence and sample counts',()=>{
- const report=fs.readFileSync('docs/fine-balance173-report.md','utf8');
- const measured=[.9530,.9649,.9827,1.0046,1.0593,1.1363];
+test('published RTP metadata identifies the approved role-merge evidence and sample counts',()=>{
+ const report=fs.readFileSync('docs/at-redistribution-20260930.md','utf8');
+ const measured=[.9427,.9614,.9870,1.0025,1.0529,1.1402];
  for(let i=0;i<6;i++){
   const p=b.profile(i+1);assert.equal(p.target,b.targets[i]);assert.equal(p.measuredRtp,measured[i]);
-  assert.equal(p.verifiedModel,'fine173-30000g-complete-stop');assert.equal(p.trials,i===4?1000:300);
-  assert.equal(p.previousVerifiedModel,i>=4?'decrement170-30000g-complete-stop':'bell169-30000g-complete-stop');
+  assert.equal(p.verifiedModel,'role-merge-20260930-30000g-complete-stop');assert.equal(p.trials,i===1||i===3?600:500);
+  assert.equal(p.previousVerifiedModel,'fine173-30000g-complete-stop');
   assert(report.includes((measured[i]*100).toFixed(2)+'%'));
  }
 });

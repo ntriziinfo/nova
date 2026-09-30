@@ -20,14 +20,14 @@ test('old Lv5 and other saved levels produce the same ordinary AT outcomes',()=>
  }
 });
 
-test('shared AT probabilities are valid with net four pt and no level dependence',()=>{
+test('shared AT probabilities are valid with net five pt and no level dependence',()=>{
  loadModel();const a=NovaArt;
  for(let setting=1;setting<=6;setting++){
   const p=a.roleProbabilities(setting);
   assert(Object.values(p).every(p=>p>=0&&p<=1));
   assert(Math.abs(Object.values(p).reduce((a,b)=>a+b,0)-1)<1e-12);
-  assert(Math.abs(Object.entries(p).reduce((n,[role,p])=>n+p*a.payout(role),0)-3*(1-p.REPLAY)-4)<1e-12);
-  assert.deepEqual(a.roleProbabilities(setting,5),p);
+  assert(Math.abs(Object.entries(p).reduce((n,[role,p])=>n+p*a.payout(role),0)-3*(1-p.REPLAY)-5)<1e-12);
+  assert.deepEqual(a.roleProbabilities(setting,false),p);
   assert.deepEqual(a.zoneGroupWeights(setting),a.commonAtRules.groups);
   assert(a.zoneGroupWeights(setting,true)[0]<a.commonAtRules.groups[0]);
  }

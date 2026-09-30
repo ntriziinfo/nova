@@ -6,11 +6,11 @@ test('final normal bases and rare-inclusive initial means match all six settings
  for(let s=1;s<=6;s++){
   const p=n.roleProbabilities(s),pay=Object.entries(p).reduce((sum,[r,v])=>sum+v*n.pay(r),0);
   assert(Object.values(p).every(v=>v>=0&&v<=1));assert(Math.abs(Object.values(p).reduce((sum,v)=>sum+v,0)-1)<1e-12);
-  assert(Math.abs(50/(3*(1-p.REPLAY)-pay)-t.normalBase(s))<1e-9);
+  assert(Math.abs(50/(3*(1-p.REPLAY)-pay)-JSON.parse(fs.readFileSync('tests/fixtures/nova-role-merge-approved.json')).sharedBases[s-1])<1e-9);
   const weights=a.entryWeights[s-1],mean=weights.reduce((sum,w,i)=>sum+w*a.entryQuotaRules.values[i],0)/3;
   const roles=a.roleProbabilities(s),awards=a.initialRareAwards;
   const expected=3*Object.entries(roles).reduce((sum,[r,p])=>sum+p*(awards[r]||mean),0);
-  assert(Math.abs(expected-t.initialMeans[s-1])<1e-9);
+  assert(Math.abs(expected-JSON.parse(fs.readFileSync('tests/fixtures/nova-role-merge-approved.json')).entryMeans[s-1])<1e-9);
  }
 });
 test('sortie stock rates vary by setting, guarantee two and preserve quota',()=>{

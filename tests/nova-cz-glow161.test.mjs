@@ -14,7 +14,7 @@ function setup(){
 }
 test('real and fake CZ preludes keep the red frame during play and between games; exit and announcement clear it',()=>{
  for(const fake of [true,false]){
-  const {c,machine}=setup();let rolls=[.99,.1,.1];
+  const {c,machine}=setup();let rolls=[.99,.99,.1,.1];
   let t=NovaNormal.spin({}, {phase:'normal'},3,{},fake?()=>rolls.shift()??.99:()=>.1,fake?'WEAK_NOVA':'STRONG_NOVA');
   for(let g=0;g<3;g++){
    c.syncCzPreludeGlow({czPrelude:t.czPrelude});assert.equal(machine.dataset.czPreludeActive,'true');

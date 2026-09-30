@@ -28,9 +28,8 @@ globalThis.NovaNormal=(()=>{
  function czPreludeStage(){return 0;}
  function preludeStops(p,rng){return p.left===0?(p.kind==='czFake'?0:3):1+Math.min(1,Math.floor(rng()*2));}
  function normalLabel(value){const s=normalize(value);return s.prelude?preludeLabel(s.prelude):'通常';}
- // Legacy weights are retained only to derive the approved merged lottery budget.
- const legacyRare={WEAK_SUICA:{p:0.011,up:.05,cz:.06,gain:1,pay:6},STRONG_SUICA:{p:0.0026,up:.5,cz:.6,gain:3,pay:6},CHANCE_A:{p:1/312.5,up:9/28,cz:3/14,gain:1,pay:0},CHANCE_B:{p:1/125,up:9/28,cz:3/14,gain:1,pay:0},WEAK_NOVA:{p:1/128,up:.35,cz:.3,gain:2,pay:0},STRONG_NOVA:{p:1/2500,up:.75,cz:1,gain:4,pay:0}};
- const rare={WEAK_SUICA:{...legacyRare.WEAK_SUICA,p:0.0248},WEAK_NOVA:{...legacyRare.WEAK_NOVA},STRONG_NOVA:{...legacyRare.STRONG_NOVA}};
+ // Every rare role draws CZ. SUICA/chance eyes also draw high-state promotion.
+ const rare={WEAK_SUICA:{p:0.011,up:.05,cz:.06,gain:1,pay:6},STRONG_SUICA:{p:0.0026,up:.5,cz:.6,gain:3,pay:6},CHANCE_A:{p:1/312.5,up:9/28,cz:3/14,gain:1,pay:0},CHANCE_B:{p:1/125,up:9/28,cz:3/14,gain:1,pay:0},WEAK_NOVA:{p:1/128,up:.35,cz:.3,gain:2,pay:0},STRONG_NOVA:{p:1/2500,up:.75,cz:1,gain:4,pay:0}};
  const defaults={highMultiplier:2,bandMultiplier:2,downMiss:.08,downReplay:.05,czFailureGain:1,bonusFailureGain:2,atDryGain:2,ceilingGain:10,regChainGain:2,superDenom:32768};
  function config(v={}){const c={...defaults};for(const k in c)if(Number.isFinite(Number(v[k])))c[k]=Math.max(0,Math.min(k==='superDenom'?1e9:100,Number(v[k])));c.superDenom=Math.max(2,c.superDenom);return c;}
  const resetImpurityPoints=Object.freeze([0,25,50,75,90,100]);
@@ -44,9 +43,16 @@ globalThis.NovaNormal=(()=>{
  function ceiling(){return lotteryRules.ceilingGames;}
  function favored(){return false;}
  function multiplier(){return 1;}
- function pay(role){return rare[role]?.pay??(role==='BELL'?8:role==='BELL15'?15:0);}
+ function pay(role){return rare[role]?.pay??(role==='BELL'?15:role==='REPLAY'?0:0);}
  function rareFactor(setting=3){return 1+.016*(Math.max(1,Math.min(6,Math.round(Number(setting)||3)))-3);}
- function roleProbabilities(setting=3){return {...[{"WEAK_SUICA":0.0240064,"STRONG_SUICA":0,"CHANCE_A":0,"CHANCE_B":0,"WEAK_NOVA":0.0075625,"STRONG_NOVA":0.00038720000000000003,"REPLAY":0.4464,"BELL":0.005951592437810937,"MISS":0.5156923075621891},{"WEAK_SUICA":0.0244032,"STRONG_SUICA":0,"CHANCE_A":0,"CHANCE_B":0,"WEAK_NOVA":0.0076875,"STRONG_NOVA":0.0003936,"REPLAY":0.4482,"BELL":0.005504552437810947,"MISS":0.513811147562189},{"WEAK_SUICA":0.0248,"STRONG_SUICA":0,"CHANCE_A":0,"CHANCE_B":0,"WEAK_NOVA":0.0078125,"STRONG_NOVA":0.0004,"REPLAY":0.45,"BELL":0.00505751243781094,"MISS":0.511929987562189},{"WEAK_SUICA":0.0251968,"STRONG_SUICA":0,"CHANCE_A":0,"CHANCE_B":0,"WEAK_NOVA":0.0079375,"STRONG_NOVA":0.0004064,"REPLAY":0.45180000000000003,"BELL":0.004610472437810949,"MISS":0.510048827562189},{"WEAK_SUICA":0.0255936,"STRONG_SUICA":0,"CHANCE_A":0,"CHANCE_B":0,"WEAK_NOVA":0.0080625,"STRONG_NOVA":0.0004128,"REPLAY":0.4536,"BELL":0.004163432437810944,"MISS":0.5081676675621891},{"WEAK_SUICA":0.03529664,"STRONG_SUICA":0,"CHANCE_A":0,"CHANCE_B":0,"WEAK_NOVA":0.0114625,"STRONG_NOVA":0.00041920000000000005,"REPLAY":0.54,"BELL":0.005089320634920632,"MISS":0.40773233936507935}][Math.max(0,Math.min(5,Math.round(Number(setting)||3)-1))]};}
+ function roleProbabilities(setting=3){const frequent=1+.004*(Math.max(1,Math.min(6,Math.round(Number(setting)||3)))-3),r=Object.fromEntries(Object.entries(rare).map(([k,v])=>[k,v.p*rareFactor(setting)]));
+  // Common-AT profile: normal/CZ base is 33.5 (settings 1-5) or 42 (setting 6) games per 50pt; replay grants a free next BET.
+  const chanceTotal=r.CHANCE_A+r.CHANCE_B;r.CHANCE_A=chanceTotal*(Math.max(1,Math.min(6,Math.round(Number(setting)||3)))%2?.4:.6);r.CHANCE_B=chanceTotal-r.CHANCE_A;
+  if(Number(setting)===6)for(const key of ['WEAK_SUICA','CHANCE_A','CHANCE_B','WEAK_NOVA'])r[key]*=1.4;
+  const rarePay=Object.entries(r).reduce((sum,[role,p])=>sum+p*pay(role),0);
+  r.REPLAY=NovaTuning.normalReplay(setting);r.BELL=(3*(1-r.REPLAY)-rarePay-50/NovaTuning.normalBase(setting))/15;r.MISS=1-Object.values(r).reduce((a,b)=>a+b,0);
+  if(Object.values(r).some(p=>!Number.isFinite(p)||p<0||p>1))throw new RangeError('Normal base/replay combination produces invalid role probabilities for setting '+setting);
+  return r;}
  const roleEntries=[1,2,3,4,5,6].map(s=>Object.entries(roleProbabilities(s)));
  function drawRole(setting,rng=Math.random){let r=rng();for(const [role,p]of roleEntries[Math.max(0,Math.min(5,Math.round(Number(setting)||3)-1))]){r-=p;if(r<0)return role;}return 'MISS';}
  // Only ordinary play (including CZ preludes) adds numbered bell navigation.
@@ -67,17 +73,13 @@ globalThis.NovaNormal=(()=>{
   return Object.entries(mix).flatMap(([role,p])=>setting===6?(role==='BELL'?[['NAVI_BELL',mix.NAVI_BELL],['BELL',p]]:role==='NAVI_BELL'?[]:[[role,p]]):[[role,p]]);
  });
  function drawNormalRole(setting,rng=Math.random){let r=rng();for(const [role,p]of normalRoleEntries[Math.max(0,Math.min(5,Math.round(Number(setting)||3)-1))])if((r-=p)<0)return role;return 'MISS';}
- const stateRoles=['WEAK_SUICA','WEAK_NOVA'];
- const redistributionNormalRoles=[{"WEAK_SUICA":0.010648,"STRONG_SUICA":0.0025168,"CHANCE_A":0.00433664,"CHANCE_B":0.00650496,"WEAK_NOVA":0.0075625,"STRONG_NOVA":0.00038720000000000003,"REPLAY":0.4464,"BELL":0.005951592437810937,"MISS":0.5156923075621891},{"WEAK_SUICA":0.010823999999999999,"STRONG_SUICA":0.0025583999999999997,"CHANCE_A":0.0066124800000000004,"CHANCE_B":0.00440832,"WEAK_NOVA":0.0076875,"STRONG_NOVA":0.0003936,"REPLAY":0.4482,"BELL":0.005504552437810947,"MISS":0.513811147562189},{"WEAK_SUICA":0.011,"STRONG_SUICA":0.0026,"CHANCE_A":0.0044800000000000005,"CHANCE_B":0.006719999999999999,"WEAK_NOVA":0.0078125,"STRONG_NOVA":0.0004,"REPLAY":0.45,"BELL":0.00505751243781094,"MISS":0.511929987562189},{"WEAK_SUICA":0.011176,"STRONG_SUICA":0.0026416,"CHANCE_A":0.006827519999999999,"CHANCE_B":0.00455168,"WEAK_NOVA":0.0079375,"STRONG_NOVA":0.0004064,"REPLAY":0.45180000000000003,"BELL":0.004610472437810949,"MISS":0.510048827562189},{"WEAK_SUICA":0.011352,"STRONG_SUICA":0.0026831999999999997,"CHANCE_A":0.004623360000000001,"CHANCE_B":0.006935040000000001,"WEAK_NOVA":0.0080625,"STRONG_NOVA":0.0004128,"REPLAY":0.4536,"BELL":0.004163432437810944,"MISS":0.5081676675621891},{"WEAK_SUICA":0.0161392,"STRONG_SUICA":0.0027248,"CHANCE_A":0.009859584,"CHANCE_B":0.006573056000000001,"WEAK_NOVA":0.0114625,"STRONG_NOVA":0.00041920000000000005,"REPLAY":0.54,"BELL":0.005089320634920632,"MISS":0.40773233936507935}];
- const redistributionNormalUp=[0.16711383671904947,0.16711383671904945,0.16711383671904942,0.16711383671904947,0.16711383671904945,0.15935451336359055];
+ const stateRoles=['WEAK_SUICA','STRONG_SUICA','CHANCE_A','CHANCE_B'];
  function roleCzRate(value,role,setting=1,options={}){
   if(role==='STRONG_NOVA')return 1;
-  if(!['WEAK_SUICA','WEAK_NOVA'].includes(role))return 0;
-  const i=Math.max(0,Math.min(5,Math.round(Number(setting)||1)-1)),r=redistributionNormalRoles[i];
-  const m=NovaTuning.profile(setting).cz*(globalThis.NovaDecrement?.cz(setting)??1)*lotteryRules.czScale[i]*(value?.level==='high'?config(options).highMultiplier:1);
-  const total=["WEAK_SUICA","STRONG_SUICA","CHANCE_A","CHANCE_B","WEAK_NOVA"].reduce((s,k)=>s+r[k]*Math.min(1,legacyRare[k].cz*m),0);
-  return Math.min(1,total/(r.WEAK_SUICA+r.STRONG_SUICA+r.WEAK_NOVA+r.CHANCE_A+r.CHANCE_B)*([1.26,1.22,1.28,1.18,1.4,1.49][i]));
+  const i=Math.max(0,Math.min(5,Math.round(Number(setting)||1)-1));
+  return Math.min(1,(rare[role]?.cz||0)*NovaTuning.profile(setting).cz*(globalThis.NovaDecrement?.cz(setting)??1)*lotteryRules.czScale[i]*(value?.level==='high'?config(options).highMultiplier:1));
  }
+
  function advance(value,role,flow,options={},rng=Math.random){
   const s=normalize(value),c=config(options),held=s.level==='high'&&s.highLeft>0;
   s.games++;if(held)s.highLeft--;
@@ -85,7 +87,7 @@ globalThis.NovaNormal=(()=>{
 
    if(stateRoles.includes(role)){
     if(s.level==='low'){
-     const rate=redistributionNormalUp[Math.max(0,Math.min(5,Math.round(Number(options.setting)||1)-1))];
+     const rate=Math.min(1,rare[role].up);
      if(rng()<rate){s.level='high';s.highLeft=10;}
     }
    }
@@ -98,12 +100,10 @@ globalThis.NovaNormal=(()=>{
  }
  function spin(value,flow,setting=1,options={},rng=Math.random,forced=''){
   if(forced==='STRONG_BELL')forced='BELL';
-  if(forced==='STRONG_SUICA')forced='WEAK_SUICA';
-  if(forced==='CHANCE_A'||forced==='CHANCE_B')forced='MISS';
   options={...options,cz:NovaFlow.forSetting(options.cz,setting)};
   const before=normalize(value),c=config(options.normal),drawn=forced||(flow.phase==='normal'?drawNormalRole(setting,rng):drawRole(setting,rng)),result=drawn==='NAVI_BELL'?'BELL':drawn;
   flow=NovaFlow.rewrite(flow,result,options.cz,rng);
-  const state=advance(before,result,flow,{...c,setting},rng),token={normalBellNavi:drawn==='NAVI_BELL',result,state,czFlow:flow,internalBonus:null,entry:'',direct:false,czOptions:options.cz,czChance:before.prelude?.presentation==='reel'&&before.prelude.kind!=='czFake'?1:roleCzRate(before,result,setting,c)};
+  const state=advance(before,result,flow,c,rng),token={normalBellNavi:drawn==='NAVI_BELL',result,state,czFlow:flow,internalBonus:null,entry:'',direct:false,czOptions:options.cz,czChance:before.prelude?.presentation==='reel'&&before.prelude.kind!=='czFake'?1:roleCzRate(before,result,setting,c)};
   if(['cz','strong_cz'].includes(flow.phase)&&before.prelude?.presentation==='reel'&&before.prelude.kind!=='czFake'&&before.prelude.left===0){
    state.prelude=null;token.czPrelude={before:3,after:0,announce:true};
   }

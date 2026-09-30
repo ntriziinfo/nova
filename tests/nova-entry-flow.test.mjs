@@ -3,7 +3,7 @@ const ctx=vm.createContext({});for(const f of ['nova-tuning.js','nova-art.js','n
 test('BIG and migrated REG both use a 50pt target',()=>{assert.equal(a.bonusTarget('BIG'),50);assert.equal(a.bonusTarget('MID'),50)});
 test('ART win freezes quota, then red seven, roulette, announcement, zone',()=>{
  let s={...a.enter(),remaining:'5'};
- s=a.step(s,{big:1,zone:0},()=>0,'STRONG_NOVA').flow;
+ let calls=0;s=a.step(s,{big:1,zone:0},()=>calls++===2?.25:0,'STRONG_NOVA').flow;
  assert.equal(s.entryStage,'');assert.equal(s.atPrelude.zones.length,1);while(s.atPrelude)s=a.step(s,{setting:3},()=>.99,'MISS').flow;
  assert.equal(s.entryStage,'seven');assert.equal(s.remaining,'5');assert.equal(s.zone,'');
  s=a.normalize(JSON.parse(JSON.stringify(s)));

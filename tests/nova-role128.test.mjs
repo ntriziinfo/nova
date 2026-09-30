@@ -1,3 +1,4 @@
+import fs from 'node:fs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {loadModel} from '../scripts/zone-v2-model.mjs';
@@ -40,8 +41,8 @@ test('all rare roles draw CZ at their thresholds, using the state before the rol
   if(rate<1)assert.equal(run(rate).entry,'');
   if(role==='STRONG_NOVA')assert.equal(run(.99999).czOptions.strongChance,level==='high'?1:.85);
  }
- const rate=n.roleCzRate({},'STRONG_SUICA',6);
- const promoted=n.spin({}, {phase:'normal'},6,{},seq(0,rate),'STRONG_SUICA');
+ const rate=n.roleCzRate({},'WEAK_SUICA',6);
+ const promoted=n.spin({}, {phase:'normal'},6,{},seq(0,rate),'WEAK_SUICA');
  assert.equal(promoted.state.level,'high');assert.equal(promoted.entry,'');
  assert(n.roleCzRate({level:'high'},'WEAK_SUICA',6)>n.roleCzRate({},'WEAK_SUICA',6));
 });
@@ -67,7 +68,7 @@ test('explicit CZ debug odds and guarantees are not overwritten by setting tunin
   assert.equal(f.forSetting({czChance:.2,strongChance:.85},setting).strongChance,.85);
   const p=n.roleProbabilities(setting);
   assert(Object.values(p).every(p=>p>=0&&p<=1));assert(Math.abs(Object.values(p).reduce((a,b)=>a+b,0)-1)<1e-12);
-  assert(Math.abs(50/(3*(1-p.REPLAY)-Object.entries(p).reduce((sum,[role,p])=>sum+p*n.pay(role),0))-NovaTuning.profile(setting).base)<1e-10);
+  assert(Math.abs(50/(3*(1-p.REPLAY)-Object.entries(p).reduce((sum,[role,p])=>sum+p*n.pay(role),0))-JSON.parse(fs.readFileSync('tests/fixtures/nova-role-merge-approved.json')).sharedBases[setting-1])<1e-10);
  }
  assert.equal(a.initialHitBoost,undefined);
 });

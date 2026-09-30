@@ -10,7 +10,7 @@ const initial=(plan=[50,50,50])=>({...a.enterInitial({},()=>0),initialStage:'zon
 const reload=s=>a.normalize(JSON.parse(JSON.stringify(s)));
 
 test('weak/strong roles replace only their game with 100/200; final points and saved awards match',()=>{
- for(const [role,points]of Object.entries(a.initialRareAwards))for(const plan of [[50,50,50],[100,100,100]])for(let specialGame=0;specialGame<3;specialGame++){
+ for(const [role,points]of Object.entries(a.initialRareAwards).filter(([r])=>! ['STRONG_SUICA','CHANCE_A','CHANCE_B'].includes(r)))for(const plan of [[50,50,50],[100,100,100]])for(let specialGame=0;specialGame<3;specialGame++){
   let s=initial(plan.slice()),total=0;
   for(let g=0;g<3;g++){
    const forced=g===specialGame?role:'BELL',step=a.step(reload(s),{},()=>.5,forced);
@@ -37,7 +37,7 @@ test('natural initial-zone rare roles use the AT frequencies and the new exact a
    total+=Number(s.remaining);
   }
   // Independent approved target includes rare-role rewrites (not just the sealed base).
-  const mean=170+setting*10;assert(Math.abs(total/count-mean)<1.5,`${setting}: ${total/count} vs ${mean}`);
+  const mean=JSON.parse(fs.readFileSync('tests/fixtures/nova-role-merge-approved.json')).entryMeans[setting-1];assert(Math.abs(total/count-mean)<1.5,`${setting}: ${total/count} vs ${mean}`);
  }
  assert(sawWeak>0&&sawStrong>0);
 });
@@ -48,7 +48,7 @@ test('BUG-002: reported duo mean must include the setting-specific initial base 
   const weights=a.entryWeights[setting-1];
   const base=a.entryQuotaRules.values.reduce((sum,pt,i)=>sum+pt*weights[i],0)/3;
   const expected=3*Object.entries(a.roleProbabilities(setting)).reduce((sum,[role,p])=>sum+p*(a.initialRareAwards[role]??base),0);
-  assert(Math.abs(expected-(170+setting*10))<1e-9);
+  assert(Math.abs(expected-(JSON.parse(fs.readFileSync('tests/fixtures/nova-role-merge-approved.json')).entryMeans[setting-1]))<1e-9);
   const reported=NovaBalance.zoneMean('kushuri_nito',{setting});
   if(Math.abs(reported-expected)>1e-9)mismatches.push({setting,expected,reported});
  }

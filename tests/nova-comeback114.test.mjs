@@ -33,7 +33,7 @@ test('each role follows its configured probability, including ineligible common 
  assert.ok(Math.abs(Object.values(probs).reduce((a,b)=>a+b,0)-1)<1e-12);
  for(const role of Object.keys(probs))assert.ok(a.comebackChance(role,6)>=0&&a.comebackChance(role,6)<=1,role);
  const ready={...a.beginComeback(a.enter({},()=>0)),comebackLamp:'toto'};
- for(const role of ['MISS','BELL','REPLAY','WEAK_SUICA','STRONG_SUICA','CHANCE_A','CHANCE_B','WEAK_NOVA']){
+ for(const role of ['MISS','BELL','REPLAY','WEAK_SUICA','WEAK_NOVA']){
   const rng=xoshiro128(114);let hits=0;const count=20000;
   for(let i=0;i<count;i++)hits+=a.step(ready,{setting:3},rng,role).comebackEvent==='success';
   assert.ok(Math.abs(hits/count-a.comebackChance(role,3))<.015,role);
@@ -94,7 +94,7 @@ test('saved comeback success cannot be redirected by stale initial-award state',
 
 test('every rare role guarantees revival on all five games and settings, including after reload',()=>{
  loadModel();const a=NovaArt;
- const roles=['WEAK_SUICA','STRONG_SUICA','CHANCE_A','CHANCE_B','WEAK_NOVA','STRONG_NOVA','SUPER_NOVA'];
+ const roles=['WEAK_SUICA','WEAK_NOVA','STRONG_NOVA','SUPER_NOVA'];
  for(let setting=1;setting<=6;setting++)for(let left=1;left<=5;left++)for(const role of roles){
   const base={...a.beginComeback(a.enter({setting},()=>0)),comebackLeft:left,comebackLamp:'toto',atLevel:5,burstUsed:true};
   const restored=a.normalize(JSON.parse(JSON.stringify(base)));
@@ -158,6 +158,7 @@ test('comeback normalizes rare frequency to 20% revival without changing other p
   assert.equal(at.MISS??0,0);
   let cumulative=0;
   for(const [role,p]of Object.entries(row)){
+   if(!p)continue;
    assert.equal(a.drawComebackRole(setting,()=>cumulative+p/2),role);
    cumulative+=p;
   }

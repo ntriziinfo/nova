@@ -101,7 +101,8 @@
     MID:96,
     SMALL:0,
     GRAPE:8,
-    BELL:15,
+    BELL:8,
+    BELL15:15,
     REPLAY:0
   });
 
@@ -158,7 +159,7 @@
 
   const RESULT = {
     NEBULA:{name:'nebula特殊図柄揃い',label:'NEBULA',reel:[NEBULA_SYMBOL,NEBULA_SYMBOL,NEBULA_SYMBOL],cls:'purple',kind:'miss'},
-    WEAK_SUICA:{name:'弱スイカ',label:'弱スイカ',reel:[SUICA_SYMBOL,SUICA_SYMBOL,SUICA_SYMBOL],cls:'green',kind:'rare'},
+    WEAK_SUICA:{name:'スイカ',label:'スイカ',reel:[SUICA_SYMBOL,SUICA_SYMBOL,SUICA_SYMBOL],cls:'green',kind:'rare'},
     STRONG_SUICA:{name:'強スイカ',label:'強スイカ',reel:[SUICA_SYMBOL,SUICA_SYMBOL,SUICA_SYMBOL],cls:'green',kind:'rare'},
     CHANCE_A:{name:'チャンス目A',label:'チャンス目A',reel:['7','NOVA_1_1','NOVA_2_1'],cls:'purple',kind:'rare'},
     CHANCE_B:{name:'チャンス目B',label:'チャンス目B',reel:['7','BAR','NOVA_2_1'],cls:'purple',kind:'rare'},
@@ -176,7 +177,8 @@
     BIG:{name:"BB", reel:["7","7","7"], label:"BB", cls:"red", kind:"payadd"},
     DEVIL_ZONE:{name:"DEVIL ZONE", reel:["7","7","BAR"], label:"DZ", cls:"purple", kind:"payadd"},
     SUPER_DEVIL_ZONE:{name:"SUPER DEVIL ZONE", reel:["7","7","7"], label:"SUPER DZ", cls:"red", kind:"payadd"},
-    BELL:{name:"ベル", reel:[BELL_SYMBOL,BELL_SYMBOL,BELL_SYMBOL], label:"BELL", cls:"gold", kind:"pay"},
+    BELL:{name:"8ptベル", reel:[BELL_SYMBOL,BELL_SYMBOL,BELL_SYMBOL], label:"8pt BELL", cls:"gold", kind:"pay"},
+    BELL15:{name:"15ptベル", reel:['7',BELL_SYMBOL,BELL_SYMBOL], label:"15pt BELL", cls:"gold", kind:"pay"},
     BELL3:{name:"斜めベル", reel:[BELL_SYMBOL,BELL_SYMBOL,BELL_SYMBOL], label:"", cls:"gold", kind:"pay"},
     REPLAY:{name:"リプレイ", reel:[ELEPHANT_SYMBOL,ELEPHANT_SYMBOL,ELEPHANT_SYMBOL], label:"REPLAY", cls:"blue", kind:"pay"},
     SUICA:{name:"スイカ揃い", reel:["🍋","🍋","🍋"], label:"SUICA", cls:"green", kind:"pay"},
@@ -574,7 +576,7 @@
       flow:normalState.flow||{phase:'normal'},internal:normalState.internal||{},replayFree:!!normalState.replayFree,complete:!!completeTrialState.locked,
       bonus:{active:isATypeBonusActive(),phase:session.phase,tier:session.bonusTier,paid:session.paid,sets:session.bonusArtSets,zones:session.bonusZones,target:session.bonusTarget,pending:!!normalState.bonusPending,source:normalState.bonusSource,prepLeft:normalState.prepLeft,prepSets:normalState.prepSets,prepZones:normalState.prepZones,premium:session.premiumBonus||normalState.premiumBonus,pointsRemaining:session.bonusPointsRemaining},
       progress:normalState.novaProgress,decrement:NovaDecrement.snapshot(),
-      config:{balance:170,decrementRules:NovaDecrement.rules(settings.setting),normalBellDenominators:NovaTuning.normalBellDenominators,tuning:NovaTuning.profile(settings.setting),initialPresentation:157,prelude:160,audit:121,setting:settings.setting,fee:SPIN_COST,completeLimitPt:settings.completeLimitPt,oddsMultiplier:settings.oddsMultiplier,art:settings.novaArt,commonAt:NovaArt.commonAtRulesFor(settings.setting),entryQuota:NovaArt.entryQuotaRules,initialRareAwards:NovaArt.initialRareAwards,atPrelude:NovaArt.atPreludeRules,uraChallenge:NovaArt.burstRules,normal:settings.novaNormal,normalLottery:NovaNormal.lotteryRules,normalPrelude:NovaNormal.czPreludeRules,cz:settings.novaFlow}};
+      config:{balance:170,roleMerge:"20260930",decrementRules:NovaDecrement.rules(settings.setting),normalBellDenominators:NovaTuning.normalBellDenominators,tuning:NovaTuning.profile(settings.setting),initialPresentation:157,prelude:160,audit:121,setting:settings.setting,fee:SPIN_COST,completeLimitPt:settings.completeLimitPt,oddsMultiplier:settings.oddsMultiplier,art:settings.novaArt,commonAt:NovaArt.commonAtRulesFor(settings.setting),entryQuota:NovaArt.entryQuotaRules,initialRareAwards:NovaArt.initialRareAwards,atPrelude:NovaArt.atPreludeRules,uraChallenge:NovaArt.burstRules,normal:settings.novaNormal,normalLottery:NovaNormal.lotteryRules,normalPrelude:NovaNormal.czPreludeRules,cz:settings.novaFlow}};
   }
   function auditCapture(detail={kind:'checkpoint'}){
     if(!novaAuditRecorder)return;
@@ -2386,7 +2388,7 @@
   }
 
   function targetRtpText(settingNo = settings.setting){
-    if(A_TYPE_MODE){const profile=NovaBalance.profile(settingNo);return profile.verifiedModel?((profile.measuredRtp??profile.target)*100).toFixed(2)+`%（v173・3万G×${profile.trials}回・停止込み推定）`:"未集計（変更前"+((profile.measuredRtp??profile.target)*100).toFixed(1)+"%）";}
+    if(A_TYPE_MODE){const profile=NovaBalance.profile(settingNo);return profile.verifiedModel?((profile.measuredRtp??profile.target)*100).toFixed(2)+`%（小役統合版・3万G×${profile.trials}回・停止込み推定）`:"未集計（変更前"+((profile.measuredRtp??profile.target)*100).toFixed(1)+"%）";}
   }
 
   function rewardFor(result){
@@ -2420,10 +2422,12 @@
     if(isNovaResult(result) || result === "CZ" || result === "STRONG_CZ") return result;
     if(result === "NEBULA" || NovaNormal.rare[result])return result;
     if(result === "GRAPE") return "BELL";
-    return ["MISS","BIG","MID","BELL","REPLAY","BAR3"].includes(result) ? result : "MISS";
+    return ["MISS","BIG","MID","BELL","BELL15","REPLAY","BAR3"].includes(result) ? result : "MISS";
   }
 
   function normalizeForceResult(result){
+    if(result==='STRONG_SUICA')return 'WEAK_SUICA';
+    if(result==='CHANCE_A'||result==='CHANCE_B')return 'MISS';
     if(result === "BONUS_SPECIAL")return "NEBULA";
     if(result==='BURST')return '';
     if(result==='FREEZE'||result==='ART'||result==='COMEBACK'||result==='URA_CHALLENGE'||result==='RARE'||result.startsWith('ZONE_'))return result;
@@ -2906,7 +2910,7 @@
       stats.grapeCount = (Number(stats.grapeCount) || 0) + 1;
     }else if(result === "SMALL"){
       stats.smallCount++;
-    }else if(result === "BELL"){
+    }else if(result === "BELL" || result === "BELL15"){
       stats.bellCount++;
       stats.grapeCount = (Number(stats.grapeCount) || 0) + 1;
     }else if(result === "BELL3"){
@@ -5418,12 +5422,12 @@
     if($("adminSettingView")) $("adminSettingView").textContent = settings.setting;
     if($("adminTargetRtpView")) $("adminTargetRtpView").textContent = targetRtpText();
     const stInfoText = (active
-        ? `${aTypeBonusLabel(session.bonusKind)} 残り${aTypeBonusRemainingNet()}pt / ${NovaArt.bonusStockLabel(session,normalState.flow)} / 純増目標4pt/G`
+        ? `${aTypeBonusLabel(session.bonusKind)} 残り${aTypeBonusRemainingNet()}pt / ${NovaArt.bonusStockLabel(session,normalState.flow)}`
         : `${normalModeLabel()} / CZ・強CZ経由 / 1G ${SPIN_COST}pt`);
     if($("stInfoView")) $("stInfoView").textContent = stInfoText;
     if($("stInfoViewLegacy")) $("stInfoViewLegacy").textContent = stInfoText;
     if($("adminStInfoView")) $("adminStInfoView").textContent = stInfoText;
-    const payoutScaleText = `通常BIG・上位BIGとも50pt / ネビュラ揃いでAT確定 / ベル15pt（最終払い出し調整） / リプレイ再遊技`;
+    const payoutScaleText = `通常BIG・上位BIGとも50pt / ネビュラ揃いでAT確定 / ベル8pt（最終払い出し調整） / リプレイ再遊技`;
     if($("payoutScaleView")) $("payoutScaleView").textContent = payoutScaleText;
     if($("payoutScaleViewLegacy")) $("payoutScaleViewLegacy").textContent = payoutScaleText;
     if($("adminPayoutScaleView")) $("adminPayoutScaleView").textContent = payoutScaleText;
@@ -5645,11 +5649,11 @@
     if(!table) return;
 
     if(A_TYPE_MODE){
-      const cfg=NovaFlow.config(settings.novaFlow);
+      const cfg=NovaFlow.forSetting(settings.novaFlow,settings.setting);
       let html = '<tr><td>状態</td><td>継続</td><td>契機</td><td>突入時期待度</td></tr>';
-      html += '<tr><td>CZ</td><td>'+cfg.czGames+'〜'+cfg.czMaxGames+'G</td><td>弱ノヴァ：低確25%／高確75%</td><td>'+cfg.czChance*100+'%</td></tr>';
-      html += '<tr><td>強CZ</td><td>'+cfg.strongGames+'〜'+cfg.strongMaxGames+'G</td><td>強ノヴァ：100%</td><td>低確85%／高確100%</td></tr>';
-      html += '<tr><td>AT</td><td>初期'+Math.min(...NovaArt.entryQuotaRules.values)+'～'+Math.max(...NovaArt.entryQuotaRules.values)+'pt</td><td>ボーナス中nebula・穢れ・フリーズ等</td><td>通常消化基準4pt/G</td></tr>';
+      html += '<tr><td>CZ</td><td>'+cfg.czGames+'〜'+cfg.czMaxGames+'G</td><td>スイカ・弱ノヴァなどから設定別抽選</td><td>'+cfg.czChance*100+'%</td></tr>';
+      html += '<tr><td>強CZ</td><td>'+cfg.strongGames+'〜'+cfg.strongMaxGames+'G</td><td>強ノヴァ：100%</td><td>'+((cfg.strongChance||0)*100).toFixed(1)+'%</td></tr>';
+      html += '<tr><td>AT</td><td>初期'+Math.min(...NovaArt.entryQuotaRules.values)+'～'+Math.max(...NovaArt.entryQuotaRules.values)+'pt</td><td>ボーナス中nebula・穢れ・フリーズ等</td><td>通常5pt/G・上位8pt/G</td></tr>';
       table.innerHTML = html;
       renderRegDetailTable();
       return;
@@ -5944,7 +5948,7 @@
     const forceSelect=document.getElementById('forceResult');
     for(const [value,label] of [['ART','AT突入'],['URA_CHALLENGE','上位ATチャレンジ（10G・HOLDあり）'],['COMEBACK','引き戻しゾーン（5G）'],['FREEZE','フリーズ'],...Object.keys(NovaNormal.rare).filter(k=>!isNovaResult(k)).map(k=>[k,RESULT[k].name]),['RARE','ATレア役'],...NovaArt.zoneIds.map(k=>['ZONE_'+k,NovaArt.zoneName(k)+'ゾーン'])]){const option=document.createElement('option');option.value=value;option.textContent=label;forceSelect.append(option);}
     const normalPanel=document.createElement('details');normalPanel.id='novaNormalConfig';
-    normalPanel.innerHTML='<summary>小役CZ抽選・穢れ・状態</summary><output id="novaInternalStatus"></output><label>天井カウンター<input id="novaNormalGames" type="number" min="0" max="'+NovaNormal.ceiling()+'" value="0"></label><label>内部状態<select id="novaLevel"><option value="low">低確</option><option value="high">高確</option></select></label><label>穢れpt<input id="novaImpurity" type="number" min="0" max="100" value="0"></label><button id="novaApplyInternal" type="button">内部状態を適用</button><p>レア小役でCZを抽選します。通常モード・天国・規定GのCZ抽選はありません。スイカ・チャンス目で高確も抽選し、高確中は小役CZ当選率を優遇。強ノヴァは強CZ確定です。天井は朝一も共通'+NovaNormal.ceiling()+'G＋前兆、BIG／突破確定CZを各50%。リセット時の穢れ振り分けは従来どおり。穢れ100ptは次のボーナスで消費し、AT＋特化ゾーンを予約。フリーズは通常スーパーノヴァ目の1/2。</p>';
+    normalPanel.innerHTML='<summary>小役CZ抽選・穢れ・状態</summary><output id="novaInternalStatus"></output><label>天井カウンター<input id="novaNormalGames" type="number" min="0" max="'+NovaNormal.ceiling()+'" value="0"></label><label>内部状態<select id="novaLevel"><option value="low">低確</option><option value="high">高確</option></select></label><label>穢れpt<input id="novaImpurity" type="number" min="0" max="100" value="0"></label><button id="novaApplyInternal" type="button">内部状態を適用</button><p>レア小役でCZを抽選します。通常モード・天国・規定GのCZ抽選はありません。スイカ・弱ノヴァで高確も抽選し、高確中は小役CZ当選率を優遇。強ノヴァは強CZ確定です。天井は朝一も共通'+NovaNormal.ceiling()+'G＋前兆、BIG／突破確定CZを各50%。リセット時の穢れ振り分けは従来どおり。穢れ100ptは次のボーナスで消費し、AT＋特化ゾーンを予約。フリーズは通常スーパーノヴァ目の1/2。</p>';
     const resetTable=document.createElement('div');resetTable.innerHTML='<table><tr><th>設定</th>'+NovaNormal.resetImpurityPoints.map(pt=>'<th>'+pt+'pt</th>').join('')+'</tr>'+NovaNormal.resetImpurityWeights.map((row,i)=>'<tr><td>'+(i+1)+'</td>'+row.map(w=>'<td>'+w+'%</td>').join('')+'</tr>').join('')+'</table>';normalPanel.append(resetTable);
     const nc=NovaNormal.config(settings.novaNormal);for(const [k,v]of Object.entries(nc).filter(([k])=>!['bandMultiplier','regChainGain'].includes(k))){const label=document.createElement('label');label.textContent=({highMultiplier:'高確CZ倍率',downMiss:'ハズレ降格率',downReplay:'リプレイ降格率',czFailureGain:'CZ失敗の穢れpt',bonusFailureGain:'ボーナスAT非突入の穢れpt',atDryGain:'AT駆け抜けの穢れpt',ceilingGain:'共通天井到達の穢れpt',superDenom:'通常スーパーノヴァ目分母'})[k];const input=document.createElement('input');input.type='number';input.step='any';input.value=v;input.dataset.normalConfig=k;label.append(input);normalPanel.append(label);}
     const roleCzTable=document.createElement('div');roleCzTable.id='novaRoleCzTable';
@@ -5953,9 +5957,9 @@
     document.getElementById('saveFlowConfig').closest('details').after(normalPanel);
     document.getElementById('novaApplyInternal').onclick=()=>{if(isSpinning||session.active)return;normalState.internal=NovaNormal.normalize({games:$('novaNormalGames').value,level:$('novaLevel').value,highLeft:$('novaLevel').value==='high'?10:0,impurity:$('novaImpurity').value});persistState();updateDisplay();};
     const artPanel=document.createElement('details');artPanel.id='novaArtConfig';
-    artPanel.innerHTML='<summary>AT・特化ゾーン設定</summary><p>初当たりは準備3G→赤7→ルーレット→くしゅり＆にと3G。設定別の初期平均は180／190／200／210／220／230pt（レア役加算込み）。ATレベルはありません。上位ATは直乗せ・弱ノヴァの特化抽選を1.5倍に優遇します。</p><p>出陣は10G、ストック率10／25／40／60／80%を抽選し、最低2個を獲得。初当たりの5%は上位ATチャレンジ（突破50%）。レア役契機・累計差枚＋2,400ptごとのチャレンジは突破65%。10Gでベル・リプレイ・レア役はHOLD、次Gでノヴァを狙え。レア役は突破確定。差枚契機では残りpt・未消化ストックをリセットし、成否とも特化1個で再開します。到達点はAT終了後も引き継ぎます。</p>';
+    artPanel.innerHTML='<summary>AT・特化ゾーン設定</summary><p>初当たりは準備3G→赤7→ルーレット→くしゅり＆にと3G。初期ptは設定別配分と成立役から決まります。ATレベルはありません。通常ATは8pt／15ptベルで純増5pt/G、上位ATは15ptベルで純増8pt/G。上位の直乗せ当選時ptは通常の1.5倍。スイカ・弱ノヴァは共通の上乗せ抽選と15%の高確移行、強ノヴァは直乗せのみ20%／特化のみ20%／両方20%です。</p><p>出陣は10G、ストック率10／25／40／60／80%を抽選し、最低2個を獲得。初当たりの5%は上位ATチャレンジ（突破50%）。レア役契機・累計差枚＋2,400ptごとのチャレンジは突破65%。10Gでベル・リプレイ・レア役はHOLD、次Gでノヴァを狙え。レア役は突破確定。差枚契機では残りpt・未消化ストックをリセットし、成否とも特化1個で再開します。到達点はAT終了後も引き継ぎます。</p>';
     const commonTable=document.createElement('div');
-    commonTable.innerHTML='<table><tr><th>設定</th><th>ベース G/50pt</th><th>出陣 総G</th><th>弱ノヴァ特化 低／高</th></tr>'+[1,2,3,4,5,6].map(n=>{const p=NovaTuning.profile(n),r=NovaArt.commonAtRulesFor(n);return '<tr><td>'+n+'</td><td>'+NovaTuning.normalBase(n)+'</td><td>1/'+p.denominator+'</td><td>'+[.5,1.5].map(x=>(100*Math.min(1,x*r.weakNova)).toFixed(2)+'%').join('／')+'</td></tr>';}).join('')+'</table>';artPanel.append(commonTable);
+    commonTable.innerHTML='<table><tr><th>設定</th><th>ベース G/50pt</th><th>出陣 総G</th><th>スイカ・弱ノヴァ特化 低／高</th></tr>'+[1,2,3,4,5,6].map(n=>{const p=NovaTuning.profile(n),r=NovaArt.commonAtRulesFor(n);return '<tr><td>'+n+'</td><td>'+(50/(3*(1-NovaNormal.normalRoleProbabilities(n).REPLAY)-Object.entries(NovaNormal.normalRoleProbabilities(n)).reduce((sum,[role,p])=>sum+p*NovaNormal.pay(role==='NAVI_BELL'?'BELL':role),0))).toFixed(2)+'</td><td>1/'+p.denominator+'</td><td>'+[false,true].map(high=>(100*NovaArt.extraZoneChance(n,'WEAK_NOVA',false,high)).toFixed(2)+'%').join('／')+'</td></tr>';}).join('')+'</table>';artPanel.append(commonTable);
     const entryTable=document.createElement('div');entryTable.id='novaEntryQuotaTable';
     entryTable.innerHTML='<p>初期3G：通常役は50／100pt、弱レア役100pt、強レア役200pt。下表はレア役加算前の内部枠。出陣で獲得するくしゅり＆にとは従来配分です。</p><table><tr><th>設定</th>'+NovaArt.entryQuotaRules.values.map(x=>'<th>'+x+'pt</th>').join('')+'</tr>'+NovaArt.entryWeights.map((row,i)=>'<tr><td>'+(i+1)+'</td>'+row.map(p=>'<td>'+(100*p).toFixed(2)+'%</td>').join('')+'</tr>').join('')+'</table>';artPanel.append(entryTable);
     const artLabels={ladderSosuke:'宗介 小役合算率',ladderGiru:'ギル 小役合算率',ladderUraGiru:'裏ギル 小役合算率',totoHit:'とと 7揃い率',totoReset:'とと nebula率',soraHit:'空 7揃い率',soraReset:'空 nebula率',soraUraHit:'裏空 7揃い率（保証前）',soraUraReset:'裏空 nebula率',urapiSuper:'うらぴ スーパーノヴァ率',oumaSuper:'逢魔 スーパーノヴァ率',oumaUraSuper:'裏逢魔 スーパーノヴァ率',urapiFreeze:'うらぴフリーズ継続率',oumaFreeze:'逢魔フリーズ継続率',oumaUraFreeze:'裏逢魔フリーズ継続率'};
@@ -6041,7 +6045,9 @@
     SUICA_SYMBOL,BELL_SYMBOL,ELEPHANT_SYMBOL,NEBULA_SYMBOL,BELL_SYMBOL,
     ELEPHANT_SYMBOL,"BAR",BELL_SYMBOL,ELEPHANT_SYMBOL,novaSymbol(column,0),
     novaSymbol(column,1),novaSymbol(column,2),BELL_SYMBOL,ELEPHANT_SYMBOL,SUICA_SYMBOL
-  ].map(symbol=>column===1?(symbol===BELL_SYMBOL?ELEPHANT_SYMBOL:symbol===ELEPHANT_SYMBOL?BELL_SYMBOL:symbol):symbol));
+  ].map(symbol=>column===1?(symbol===BELL_SYMBOL?ELEPHANT_SYMBOL:symbol===ELEPHANT_SYMBOL?BELL_SYMBOL:symbol):symbol)
+  // Keep counts and the NOVA block; avoid a second replay line on middle-first 15pt bells.
+  .map((symbol,index,strip)=>column===1?(index===3?strip[5]:index===5?strip[3]:symbol):symbol));
 
   function mod(n, m){
     return ((n % m) + m) % m;
@@ -6227,7 +6233,7 @@
   }
 
   function resultLineRow(result){
-    if(isNovaResult(result)) return 1;
+    if(isNovaResult(result)||result==='BELL15') return 1;
     if(isMiddleLineOnlyResult(result)) return 1;
     if(result === "CHERRY_ANY" || result === "MID_CHERRY") return aTypeCherryLineRow(result);
     if(result === "BELL3") return Math.random() < 0.5 ? [0,1,2] : [2,1,0];
@@ -6307,6 +6313,7 @@
       if(same(d,SUICA_SYMBOL))return 'WEAK_SUICA';
       if(same(m,BELL_SYMBOL))return 'BELL';
       if(same(d,BELL_SYMBOL))return 'BELL';
+      if(m.filter(x=>x==='7').length===1&&m.filter(x=>x===BELL_SYMBOL).length===2)return 'BELL15';
       if(m[0]==='7'&&nova(m[2]))return nova(m[1])?'CHANCE_A':'CHANCE_B';
     }
     const rows = Array.isArray(grid) ? grid : [];
@@ -6349,6 +6356,7 @@
 
   function displayedResultFromRow(row){
     if(!Array.isArray(row) || row.length < 3) return "MISS";
+    if(row.filter(x=>x==='7').length===1&&row.filter(x=>x===BELL_SYMBOL).length===2)return 'BELL15';
     const exactResults = ["NEBULA","BIG","MID","BAR3","SMALL","BELL","REPLAY","GRAPE","SUICA","CHERRY_TRIPLE"];
 
     for(const result of exactResults){
@@ -6496,17 +6504,17 @@
   }
 
   const novaStopGridCache = new Map();
-  function buildNovaReelGrid(result, winRow=1){
+  function buildNovaReelGrid(result, winRow=1, firstReel=0){
     result = normalizeATypeResult(result);
     if(isNovaResult(result)) return buildForcedNovaGrid(result);
     if(result === "CZ" || result === "STRONG_CZ") result = "MISS";
     const spec = RESULT[result] || RESULT.MISS;
-    if(isMiddleLineOnlyResult(result)||NovaNormal.rare[result]) winRow = 1;
-    const cacheKey = result + ":" + winRow;
+    if(isMiddleLineOnlyResult(result)||NovaNormal.rare[result]||result==='BELL15') winRow = 1;
+    const cacheKey = result + ":" + winRow + (result==='BELL15'?':'+firstReel:'');
     const cached = novaStopGridCache.get(cacheKey);
     if(cached) return cached[Math.floor(Math.random()*cached.length)].map(row=>row.slice());
     const choices = REEL_STRIPS.map((strip,column) => strip.map((_,top) => reelWindowFromTopIndex(column,top))
-      .filter(items => result==='MISS'||result==='CHANCE_A'||result==='CHANCE_B'||items[(result==='BELL'||result==='WEAK_SUICA')?column:winRow]===spec.reel[column]));
+      .filter(items => result==='MISS'||result==='CHANCE_A'||result==='CHANCE_B'||items[(result==='BELL'||result==='WEAK_SUICA')?column:winRow]===(result==='BELL15'?(column===firstReel?'7':BELL_SYMBOL):spec.reel[column])));
     const grids = [];
     for(const left of choices[0]) for(const middle of choices[1]) for(const right of choices[2]){
       const grid = [0,1,2].map(row => [left[row],middle[row],right[row]]);
@@ -7007,6 +7015,7 @@
     playCzCountdownOnLever(resolved);
     currentSpin.manualBonusStop = false; // Fixed-G prototype: bonus starts on the next confirmed spin.
     if(!debugFastSpinActive&&NovaBellNavi.begin(currentSpin)){
+      if(result==='BELL15')currentSpin.grid=buildNovaReelGrid(result,1,currentSpin.bellNaviOrder[0]);
       playOneShotSound('assets/media/nova/bell-navi.wav',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
       playBellNaviVoice(currentSpin);
     }
@@ -7175,7 +7184,7 @@
       persistState();
       Promise.resolve().then(async()=>{
         if(currentSpin!==spin||!isSpinning)return;
-        const landed=await NovaReelMotion.stop(i,col,{immediate:['BELL','REPLAY'].includes(spin.result)&&!spin.manualBonusStop});
+        const landed=await NovaReelMotion.stop(i,col,{immediate:['BELL','BELL15','REPLAY'].includes(spin.result)&&!spin.manualBonusStop});
         if(landed&&currentSpin===spin&&isSpinning)stopSingleReel(i,{...options,visualReady:true,visualColumn:col});
       }).catch(error=>{console.error(error);spin.visualStopping[i]=false;spin.pendingStopColumns[i]=null;stopBtns[i].disabled=false;persistState();});
       return;
@@ -8575,7 +8584,7 @@
   }
 
   function payoutSoundSrcFor(result, reward=0, spin=currentSpin){
-    if(A_TYPE_MODE && ["BELL","GRAPE","BELL3"].includes(result))return PAYOUT_3PT_BELL_SOUND_SRC;
+    if(A_TYPE_MODE && ["BELL","BELL15","GRAPE","BELL3"].includes(result))return PAYOUT_3PT_BELL_SOUND_SRC;
     if(isPremiumBigBonusPieroSound(result, spin)) return PREMIUM_PIERO_SYMBOL_SOUND_SRC;
     if(result === "REPLAY") return REPLAY_SOUND_SRC;
     if(result === "CHERRY_ANY" || result === "CHERRY_DOUBLE" || result === "CHERRY_TRIPLE" || result === "MID_CHERRY") return CHERRY_SOUND_SRC;
@@ -8586,7 +8595,7 @@
 
   function payoutSoundScaleFor(result="", reward=0, spin=currentSpin){
     if(isPremiumBigBonusPieroSound(result, spin)) return PAYOUT_SOUND_OUTPUT_SCALE;
-    return result === "BELL" ? BELL_PAYOUT_SOUND_OUTPUT_SCALE : PAYOUT_SOUND_OUTPUT_SCALE;
+    return ["BELL","BELL15"].includes(result) ? BELL_PAYOUT_SOUND_OUTPUT_SCALE : PAYOUT_SOUND_OUTPUT_SCALE;
   }
 
   function shouldSuppressPayoutSound(result="", reward=0, spin=currentSpin){

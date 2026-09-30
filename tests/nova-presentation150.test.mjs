@@ -33,7 +33,7 @@ function imagesHarness(){
  const created=[],decodes=[];
  class Element{
   constructor(tag){this.tag=tag;this.dataset={};this.style={};this.children=[];this.attrs={};this.hidden=false;created.push(this);}
-  append(x){this.children.push(x);}get firstChild(){return this.children[0];}
+  append(x){this.children.push(x);}get firstChild(){return this.children[0];}get lastChild(){return this.children.at(-1);}
   setAttribute(k,v){this.attrs[k]=v;}getAttribute(k){return this.attrs[k]??null;}
   set src(v){this.attrs.src=v;this.complete=false;}get src(){return this.attrs.src;}
   querySelector(){return null;}decode(){return new Promise(resolve=>decodes.push(resolve));}

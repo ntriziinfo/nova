@@ -26,13 +26,13 @@ test('upper success and earned quota survive reload, bonus and zone transitions'
  assert.equal(s.burstWon,true);assert.equal(s.researchUpper,true);assert.equal(s.burstUsed,true);assert.equal(s.atLevel,undefined);
  const old={...a.enter({},()=>.5),atLevel:5,remaining:'9876'};delete old.burstVersion;
  const retained=a.normalize(old);assert.equal(retained.atLevel,undefined);assert.equal(retained.remaining,'9876');
- const step=a.step(retained,{setting:6},()=>0,'STRONG_NOVA');
+ const step=a.step(retained,{setting:6},(()=>{let r=[.99,.99,.25,.5,0,.99];return ()=>r.shift()??.99;})(),'STRONG_NOVA');
  assert.equal(step.flow.burstPending,true);assert.equal(step.flow.atPrelude.zones.length,1);assert.equal(step.flow.entryStage,'');
 });
 
 test('last-quota rare trigger waits for the already won zone and preserves awarded quota',()=>{
  loadModel();const a=NovaArt,base={...a.enter({},()=>.5),remaining:'1'};
- let out=a.step(base,{setting:1},()=>0,'STRONG_NOVA'),s=out.flow;
+ let out=a.step(base,{setting:1},(()=>{let r=[.99,.99,.25,.5,0,.99];return ()=>r.shift()??.99;})(),'STRONG_NOVA'),s=out.flow;
  assert.equal(s.burstPending,true);assert.equal(s.remaining,'1');assert.equal(s.atPrelude.zones.length,1);
  while(s.atPrelude){out=a.step(s,{setting:1},()=>.99,'MISS');s=out.flow;assert.equal(out.burstEvent,undefined);}
  out=a.step(s,{setting:1},()=>.99);assert.equal(out.burstEvent,undefined);assert.equal(out.flow.entryStage,'roulette');

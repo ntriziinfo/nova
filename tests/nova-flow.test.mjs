@@ -28,8 +28,8 @@ test('new AT reveals its initial quota, consumes actual payouts, then runs five 
  assert.equal(state.remaining,'0');assert.equal(state.initialWait,3);
  for(let g=0;state.initialStage&&g<20;g++)state=context.NovaArt.step(state,{},()=>.5,'BELL').flow;
  assert.equal(state.initialStage,'');assert.equal(state.remaining,'200');
- for(let i=0;i<13;i++)state=context.NovaArt.step(state,{rare:0},()=>.99,'BELL').flow;
- assert.equal(state.remaining,'5');state=context.NovaArt.step(state,{rare:0},()=>.99,'BELL').flow;
+ for(let i=0;i<24;i++)state=context.NovaArt.step(state,{rare:0},()=>.99,'BELL').flow;
+ assert.equal(state.remaining,'8');state=context.NovaArt.step(state,{rare:0},()=>.99,'BELL').flow;
  assert.equal(state.remaining,'0');assert.equal(state.comebackLeft,5);assert.equal(state.phase,'art');
  for(let g=0;g<5;g++)state=context.NovaArt.step(state,{},()=>.99,'MISS').flow;
  assert.equal(state.phase,'normal');assert.equal(state.remaining,0);

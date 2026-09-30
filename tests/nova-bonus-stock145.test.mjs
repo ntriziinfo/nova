@@ -51,7 +51,7 @@ test('multiple stocks finish one by one, adding only actual zone awards before n
    assert.equal(s.initialStage,'');assert.equal(s.comebackLeft,0);assert.equal(Number(s.remaining),base+awarded);
   }
   assert.equal(completed,4);assert.ok(awarded>=200);assert.equal(s.phase,'art');
-  const next=a.step(s,{setting},rng,'BELL');assert.equal(Number(next.flow.remaining),base+awarded-15);
+  const next=a.step(s,{setting},rng,'BELL');assert.equal(Number(next.flow.remaining),base+awarded-8);
  }
 });
 

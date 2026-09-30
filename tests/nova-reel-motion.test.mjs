@@ -43,9 +43,9 @@ test('immediate common-role stop lands without advancing time and remains stoppe
   assert.equal(t.win.layer.style.transform,transform);t.a.clearAll();
  }
 });
-test('only bell and replay request immediate landing',()=>{
+test('both bells and replay request immediate landing',()=>{
  const html=readGameSource();
- assert.match(html,/NovaReelMotion.stop\(i,col,\{immediate:\['BELL','REPLAY'\].includes\(spin.result\)&&!spin.manualBonusStop\}\)/);
+ assert.match(html,/NovaReelMotion.stop\(i,col,\{immediate:\['BELL','BELL15','REPLAY'\].includes\(spin.result\)&&!spin.manualBonusStop\}\)/);
 });
 
 test('landing completes without any animation frame and cannot settle again on return',async()=>{
