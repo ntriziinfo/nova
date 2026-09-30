@@ -7690,7 +7690,7 @@
         : "";
     const isNormalSpinResult = currentSpin && currentSpin.normalActiveAtStart;
     const resultParts = [];
-    if(resolved.artSetWon)resultParts.push("ネビュラ揃い / "+NovaArt.bonusStockLabel(session,normalState.flow));
+    if(resolved.artSetWon)resultParts.push("ネビュラ揃い / "+NovaArt.bonusStockLabel({...session,...NovaArt.advanceBonus(session,true,reward)},normalState.flow));
     if(resolved.artMessage)resultParts.push(resolved.artMessage);
     const novaPattern = novaPatternFromGrid(currentSpin?.grid);
     if(currentSpin) currentSpin.novaPattern = novaPattern;

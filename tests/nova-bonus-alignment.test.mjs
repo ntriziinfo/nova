@@ -120,3 +120,18 @@ test('alignment is not settled before the last stop or for special-zone NEBULA',
   const zone=drawnSpin(c,0,[0,1,2]);zone.resolved.aTypeBonusGame=false;
   const before=JSON.stringify(zone);c.prepareManualBonusOutcome(zone);assert.equal(JSON.stringify(zone),before);
 });
+
+test('the result line previews the same post-award rights as settlement, without mutating them', () => {
+  const c=setup(),source=fs.readFileSync('nova-game.js','utf8');
+  const label=source.split('\n').find(line=>line.includes('if(resolved.artSetWon)resultParts.push('));
+  for(const phase of ['normal','art'])for(const prior of [0,1,3]){
+    c.normalState.flow.phase=phase;c.session.bonusArtSets=prior;
+    c.resolved=c.resolveATypeBonusOutcome('NEBULA');c.reward=c.resolved.reward;c.resultParts=[];
+    const before=JSON.stringify(c.session);vm.runInContext(label,c);
+    assert.equal(JSON.stringify(c.session),before);
+    const after={...c.session,...c.NovaArt.advanceBonus(c.session,true,c.reward)};
+    assert.equal(c.resultParts[0],'ネビュラ揃い / '+c.NovaArt.bonusStockLabel(after,c.normalState.flow));
+    assert(c.resultParts[0].includes(`特化ストック${prior+(phase==='art'?1:0)}個`));
+    if(phase==='normal')assert(c.resultParts[0].includes('AT確定'));
+  }
+});
