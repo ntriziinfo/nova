@@ -2623,16 +2623,14 @@
   }
 
   function atCheckpointStatus(flow,progress,net){
-    // Presentation only: remaining is gross payout, not a guaranteed future net.
+    // Gold means the cumulative-net checkpoint is earned, never projected from remaining payout.
     if(flow?.phase!=='art'||flow.zone||flow.entryStage||flow.initialStage||flow.atPrelude||flow.researchSortieLeft||flow.comebackLeft||flow.comebackConfirmed||flow.researchChallengeActive||flow.burstLeft)return null;
     const pending=Number(progress?.pending)>0 || (flow.burstPending&&flow.researchChallengeSource==='threshold');
     if(flow.burstPending&&flow.researchChallengeSource!=='threshold')return null;
     const next=Number(progress?.next),profit=Number(net);
     if(!Number.isFinite(next)||next<=0||!Number.isFinite(profit))return null;
-    let remaining;try{remaining=BigInt(flow.remaining||0);}catch{return null;}
-    if(remaining<0n)return null;
     const left=pending?0:Math.ceil(Math.max(0,next-profit));
-    return {text:`上位ATチャレンジまで${left.toLocaleString('ja-JP')}pt`,gold:remaining>=BigInt(left)};
+    return {text:`上位ATチャレンジまで${left.toLocaleString('ja-JP')}pt`,gold:left===0};
   }
 
   function checkpointResultCard(flow,progress,lastShown,net){
