@@ -22,7 +22,7 @@ function harness(saved=null){
   syncNovaProgress:noop,auditCapture:noop,$,document:{getElementById:$},reels:[0,1,2].map(i=>$('reel'+i)),stopBtns:[0,1,2].map(i=>$('stop'+i)),
   setTimeout:f=>{timers.push(f);return timers.length;},clearTimeout:noop,REEL_STRIPS:[[],[],[]],currentReelTopIndex:()=>0,cellHtml:noop,
   NovaAim:{bet:noop,stop:noop},NovaInitialDuo:{begin:noop,stop:noop},NovaLadder:{bet:noop,stop:noop},NovaReelMotion:{start:noop},
-  setReelColumn:noop,renderCzPrelude:noop,syncCzPreludeGlow:noop,updateDisplay:noop,syncCabinetControlState:noop,prepareManualBonusOutcome:noop,startOumaReverseAudio:noop
+  setReelColumn:noop,showZoneRoulette:noop,renderCzPrelude:noop,syncCzPreludeGlow:noop,updateDisplay:noop,syncCabinetControlState:noop,prepareManualBonusOutcome:noop,startOumaReverseAudio:noop
  });
  for(const file of ['nova-tuning.js','nova-art.js','nova-normal.js','nova-flow.js','nova-balance.js','nova-spin-resume.js','nova-history.js'])vm.runInContext(fs.readFileSync(file,'utf8'),c,{filename:file});
  // Navigation renderer is tested separately with DOM stubs; restore must not draw an order.

@@ -6763,6 +6763,7 @@
     NovaInitialDuo.stop(spin.stopped.filter(Boolean).length);
     NovaLadder.bet(spin.resolved.flowBefore);
     NovaLadder.stop(spin.stopped.filter(Boolean).length);
+    if(spin.resolved.flowBefore?.entryStage==='roulette')showZoneRoulette(spin.stopped.every(Boolean)?spin.resolved.flowAfter:spin.resolved.flowBefore);
     renderCzPrelude(spin.resolved.blackoutReels||[]);
     syncCzPreludeGlow(spin.resolved);
     if(spin.resolved.czLampAtBet!=null)document.getElementById('machine').dataset.czLamp=String(spin.resolved.czLampAtBet);
@@ -7511,13 +7512,30 @@
     clearInterval(zoneRouletteTimer);zoneRouletteTimer=null;
     document.body.dataset.zoneRouletteLamp='';
     panel.hidden=!['roulette','confirmed'].includes(flow?.entryStage);
+    document.body.dataset.zoneRouletteState=panel.hidden?'':flow.entryStage;
+    const lamps=Array.from(document.querySelectorAll('.novaArtItem'));
+    const light=id=>{
+      document.body.dataset.zoneRouletteLamp=id;
+      for(const lamp of lamps){
+        const active=lamp.dataset.artwork===id||(id==='kushuri_nito'&&['kushuri','nito'].includes(lamp.dataset.artwork));
+        if(lamp.dataset.rouletteLit!==String(active))lamp.dataset.rouletteLit=String(active);
+      }
+    };
+    light('');
     if(panel.hidden)return;
     const artwork={sosuke:'sosuke',toto:'toto',urapi:'urapi',giru:'giru1',sora:'sora1',ouma:'ouma1',kushuri:'kushuri',nito:'nito',kushuri_nito:'kushuri_nito'};
-    const show=(zone,text)=>{panel.textContent=text;document.body.dataset.zoneRouletteLamp=artwork[NovaArt.baseZone(zone)]||'';};
+    const show=(zone,text)=>{panel.textContent=text;light(artwork[NovaArt.baseZone(zone)]||'');};
     if(flow.entryStage==='confirmed'){show(flow.pendingZone,NovaArt.zoneName(flow.pendingZone)+'ゾーン確定！');return;}
-    let index=0;const zones=NovaArt.rouletteZones(flow);
-    const tick=()=>{const zone=zones[index++%zones.length];show(zone,'特化ゾーン抽選中… '+NovaArt.names[zone]);};
-    tick();zoneRouletteTimer=setInterval(tick,110);
+    // Animation owns a separate seed; never consume or change the game lottery.
+    let seed=(globalThis.crypto?.getRandomValues(new Uint32Array(1))[0]??Date.now())>>>0;
+    if(!seed)seed=0x6d2b79f5;
+    const next=()=>{seed^=seed<<13;seed^=seed>>>17;seed^=seed<<5;return seed>>>0;};
+    let index=-1;const zones=NovaArt.rouletteZones(flow);
+    const tick=()=>{
+      index=index<0?next()%zones.length:zones.length>1?(index+1+next()%(zones.length-1))%zones.length:0;
+      const zone=zones[index];show(zone,'特化ゾーン抽選中… '+NovaArt.names[zone]);
+    };
+    tick();zoneRouletteTimer=setInterval(tick,55);
   }
   function renderCzPrelude(indices=[]){
     const dark=Array.isArray(indices)?indices:[];

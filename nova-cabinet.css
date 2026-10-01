@@ -91,15 +91,6 @@ body[data-art-zone=giru] .novaArtItem[data-artwork=giru1] img,
 body[data-art-zone=sora] .novaArtItem[data-artwork=sora1] img,
 body[data-art-zone=ouma] .novaArtItem[data-artwork=ouma1] img{animation:none!important;filter:brightness(1.25) drop-shadow(0 0 12px #fff)!important}
 
-body[data-zone-roulette-lamp=sosuke] .novaArtItem[data-artwork=sosuke] img,
-body[data-zone-roulette-lamp=toto] .novaArtItem[data-artwork=toto] img,
-body[data-zone-roulette-lamp=urapi] .novaArtItem[data-artwork=urapi] img,
-body[data-zone-roulette-lamp=giru1] .novaArtItem[data-artwork=giru1] img,
-body[data-zone-roulette-lamp=sora1] .novaArtItem[data-artwork=sora1] img,
-body[data-zone-roulette-lamp=kushuri] .novaArtItem[data-artwork=kushuri] img,
-body[data-zone-roulette-lamp=nito] .novaArtItem[data-artwork=nito] img,
-body[data-zone-roulette-lamp=ouma1] .novaArtItem[data-artwork=ouma1] img{animation:none!important;filter:brightness(1.4) drop-shadow(0 0 14px #fff)!important}
-
 body[data-art-ura=true][data-art-zone=giru] .novaArtItem[data-artwork=giru1] img,
 body[data-art-ura=true][data-art-zone=sora] .novaArtItem[data-artwork=sora1] img,
 body[data-art-ura=true][data-art-zone=ouma] .novaArtItem[data-artwork=ouma1] img{animation:none!important;filter:grayscale(1) sepia(1) saturate(10) hue-rotate(315deg) brightness(1.05) drop-shadow(0 0 12px #ff2020)!important}
@@ -160,3 +151,12 @@ body[data-art-zone=nito] .novaArtItem[data-artwork=nito] img{filter:brightness(1
 #machine[data-ouma-nova-shake=true] .reel .window > .cell .novaLogoTile{animation:oumaNovaSymbolShake 60ms steps(1,end) infinite!important}
 @keyframes oumaNovaSymbolShake{0%{transform:translate(-2px,-2px)}25%{transform:translate(2px,1px)}50%{transform:translate(-1px,2px)}75%{transform:translate(2px,-1px)}100%{transform:translate(-2px,-2px)}}
 @media(prefers-reduced-motion:reduce){#machine[data-ouma-nova-shake=true] .reel .window > .cell .novaLogoTile{animation:none!important}}
+
+/* Roulette takes priority over music/CZ/zone lamps until the next BET. */
+body:is([data-zone-roulette-state=roulette],[data-zone-roulette-state=confirmed]) #machine .novaArtItem,
+body:is([data-zone-roulette-state=roulette],[data-zone-roulette-state=confirmed]) #machine .novaArtItem img{opacity:1!important;animation:none!important}
+body:is([data-zone-roulette-state=roulette],[data-zone-roulette-state=confirmed]) #machine .novaArtItem img{filter:brightness(.24) saturate(.7)!important}
+body:is([data-zone-roulette-state=roulette],[data-zone-roulette-state=confirmed]) #machine .novaArtItem[data-roulette-lit=true] img{filter:brightness(1.4) drop-shadow(0 0 14px #fff)!important}
+body[data-zone-roulette-state=confirmed] #machine .novaArtItem[data-roulette-lit=true]{animation:novaRouletteConfirmed 160ms steps(1,end) infinite!important}
+@keyframes novaRouletteConfirmed{0%,100%{filter:brightness(1)}50%{filter:brightness(.18)}}
+@media(prefers-reduced-motion:reduce){body[data-zone-roulette-state=confirmed] #machine .novaArtItem[data-roulette-lit=true]{animation:none!important}}
