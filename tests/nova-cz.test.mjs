@@ -76,15 +76,15 @@ test('live lamps and surprise rainbow change only on the third stop',()=>{
  ctx.document={getElementById:()=>machine};ctx.playOneShotSound=()=>{};ctx.sfxOutputVolume=()=>.5;
  vm.runInContext(handler,ctx);
  ctx.showCzLamp(0,{czLamp:{stage:5}});assert.equal(machine.dataset.czBlink,'');
- ctx.showCzLamp(1,{czLamp:{stage:5,rainbow:true,rainbowAt:1,totalGames:20,remaining:20}});
+ ctx.showCzLamp(1,{czLamp:{stage:5,rainbow:true,rainbowAt:2,totalGames:20,remaining:19}});
  assert.equal(machine.dataset.czBlink,'');
- assert.equal(Number(machine.dataset.czLamp),f.lampDisplayAtStop({stage:5,totalGames:20,remaining:20},1).stage);
- ctx.showCzLamp(2,{czLamp:{stage:5,rainbow:true,rainbowAt:1,totalGames:20,remaining:20}});
+ assert.equal(Number(machine.dataset.czLamp),f.lampDisplayAtStop({stage:5,totalGames:20,remaining:19},1).stage);
+ ctx.showCzLamp(2,{czLamp:{stage:5,rainbow:true,rainbowAt:2,totalGames:20,remaining:19}});
  assert.equal(machine.dataset.czBlink,'');
- assert.equal(Number(machine.dataset.czLamp),f.lampDisplayAtStop({stage:5,totalGames:20,remaining:20},2).stage);assert.equal(machine.dataset.czRainbow,'false');
- ctx.showCzLamp(3,{czLamp:{stage:5,rainbow:true,rainbowAt:1,totalGames:20,remaining:20}});
+ assert.equal(Number(machine.dataset.czLamp),f.lampDisplayAtStop({stage:5,totalGames:20,remaining:19},2).stage);assert.equal(machine.dataset.czRainbow,'false');
+ ctx.showCzLamp(3,{czLamp:{stage:5,rainbow:true,rainbowAt:2,totalGames:20,remaining:19}});
  assert.equal(machine.dataset.czBlink,'');
- assert.equal(Number(machine.dataset.czLamp),f.lampDisplayAtStop({stage:5,totalGames:20,remaining:20},3).stage);assert.equal(machine.dataset.czRainbow,'true');
+ assert.equal(Number(machine.dataset.czLamp),f.lampDisplayAtStop({stage:5,totalGames:20,remaining:19},3).stage);assert.equal(machine.dataset.czRainbow,'true');
 });
 
 test('full or rainbow lamps end CZ early with a bonus even when direct ART chance is 100%',()=>{

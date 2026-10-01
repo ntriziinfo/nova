@@ -7594,7 +7594,7 @@
         resolved.czAnnounced=true;
         updateDisplay();
         const message=resolved.flowAfter?.phase==='strong_cz'?'強CZ突入':'CZ突入';
-        showMessage(message,'リール全消灯からCZへ');showOverlay(message);
+        showMessage(message,'リール全消灯からCZへ');if(!resolved.czIntro)showOverlay(message);
       }
       return;
     }
@@ -7609,6 +7609,12 @@
     host.dataset.czBlink='';
     const lamp=resolved?.czLamp,machine=document.getElementById('machine');
     const czSpin=!!lamp||['cz','strong_cz'].includes(resolved?.flowBefore?.phase);
+    const czState=lamp||(czSpin?resolved?.flowBefore:null);
+    const intro=!!czState&&Number(czState.remaining)>0&&Number(czState.remaining)===Number(czState.totalGames);
+    machine.dataset.czIntro=String(intro);
+    if(resolved)resolved.czIntro=intro;
+    // The first game's draws and awards remain intact; only the lamps wait.
+    if(intro){machine.dataset.czLamp='0';machine.dataset.czRainbow='false';if(stopOrder===0)resolved.czLampAtBet=0;return;}
     if(czSpin&&stopOrder===0){resolved.czLampAtBet=Number(host.dataset.czLamp)||0;return;}
     if(!czSpin){machine.dataset.czLamp='0';machine.dataset.czRainbow='false';return;}
     if(stopOrder!==3)return;
@@ -8724,6 +8730,7 @@
   }
   function czThirdStopSound(resolved,previousStage){
     if(!resolved?.czLamp)return '';
+    if(resolved.czIntro)return 'assets/media/nova/cz_stop_12.wav';
     const failed=resolved.czCompleted&&!resolved.bonusHit&&resolved.flowAfter?.phase==='normal';
     if(failed)return 'assets/media/jag/cz_third_failure.wav';
     if(resolved.czLitStops?.[3])return ''; // Already played with the light itself.

@@ -10,6 +10,43 @@ function setup(){
  vm.runInContext(fs.readFileSync('nova-aim-presentation.js','utf8'),context);
  return {aim:context.NovaAim,elements,timers,hide(){context.document.hidden=true;listeners.visibilitychange();}};
 }
+
+test('CZ intro loops the supplied background and title through all first-game stops, ending at the next BET',()=>{
+ for(const phase of ['cz','strong_cz']){
+  const t=setup(),resolved={flowBefore:{phase,remaining:20,totalGames:20}};
+  const before=JSON.stringify(resolved);assert.equal(t.aim.bet(null,resolved),false);
+  const root=t.elements.find(e=>e.className==='novaAimPresentation');
+  const title=t.elements.find(e=>e.className==='novaCzIntroTitle');
+  const video=t.elements.find(e=>e.src==='assets/media/nova/cz-intro-bg.mp4');
+  assert.equal(root.hidden,false);assert.equal(root.dataset.czIntro,'true');assert.equal(title.hidden,false);
+  assert.equal(video.loop,true);assert.equal(video.muted,true);assert.equal(video.playsInline,true);assert.equal(video.paused,false);
+  video.currentTime=2;
+  for(let i=0;i<3;i++){t.aim.stop(resolved);assert.equal(root.hidden,false);assert.equal(video.paused,false);}
+  t.aim.bet(null,resolved);assert.equal(video.currentTime,2);assert.equal(t.aim.busy,false);assert.equal(t.timers.size,0);
+  assert.equal(JSON.stringify(resolved),before);
+  t.aim.bet(null,{flowBefore:{phase,remaining:19,totalGames:20}});
+  assert.equal(root.hidden,true);assert.equal(title.hidden,true);assert.equal(video.paused,true);assert.equal(video.currentTime,0);
+ }
+});
+
+test('CZ intro can resume after reload, resets cleanly, and never replaces prelude, bonus or AT aim videos',()=>{
+ const t=setup();
+ for(const resolved of [
+  {flowBefore:{phase:'normal'},czPrelude:{enter:true},flowAfter:{phase:'cz',remaining:20,totalGames:20}},
+  {flowBefore:{phase:'normal'},czPrelude:{failed:true}},
+  {flowBefore:{phase:'art',remaining:20,totalGames:20}},
+  {flowBefore:{phase:'cz',remaining:20,totalGames:20},aTypeBonusGame:true},
+  {flowBefore:{phase:'cz',remaining:20,totalGames:20},bonusPendingAtStart:true},
+  {flowBefore:{phase:'cz',remaining:0,totalGames:0}}
+ ])assert.equal(t.aim.isCzIntro(resolved),false);
+ const saved=JSON.parse(JSON.stringify({flowBefore:{phase:'cz',remaining:15,totalGames:15},czIntro:true}));
+ t.aim.bet(null,saved);t.aim.stop(saved);assert.equal(t.elements[0].hidden,false);
+ t.aim.reset();assert.equal(t.elements[0].hidden,true);
+ assert(t.elements.filter(e=>e.tag==='video'&&!e.hidden).length===0);
+ t.aim.bet({symbol:'seven',color:'red',guide:true},{flowBefore:{phase:'art'}});
+ assert.equal(t.elements.find(e=>e.src==='assets/ui/nova-shuketsu-zone.png').hidden,true);
+ assert.equal(t.elements.find(e=>e.src==='assets/media/nova/aim/seven-red.mp4').hidden,false);
+});
 test('win locks from playback for 3 seconds, plays once and defers result',()=>{
  const {aim,elements,timers}=setup();let sounds=0,results=0;
  aim.win(()=>sounds++);assert.equal(aim.busy,true);assert.equal(sounds,0);
