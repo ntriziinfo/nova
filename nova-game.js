@@ -2622,6 +2622,18 @@
     return normalState.flow?.phase==='normal'?NovaNormal.normalLabel(normalState.internal):NovaFlow.label(normalState.flow);
   }
 
+  function atCheckpointStatus(flow,progress,net){
+    // Presentation only: remaining is gross payout, not a guaranteed future net.
+    if(flow?.phase!=='art'||flow.zone||flow.entryStage||flow.initialStage||flow.atPrelude||flow.researchSortieLeft||flow.comebackLeft||flow.comebackConfirmed||flow.researchChallengeActive||flow.burstLeft)return '';
+    const pending=Number(progress?.pending)>0 || (flow.burstPending&&flow.researchChallengeSource==='threshold');
+    if(flow.burstPending&&!pending)return '';
+    const next=Number(progress?.next),profit=Number(net);
+    let remaining;try{remaining=BigInt(flow.remaining||0);}catch{return '';}
+    if(remaining<0n)return '';
+    if(!pending&&(!Number.isFinite(next)||next<=0||!Number.isFinite(profit)||remaining<BigInt(Math.ceil(Math.max(0,next-profit)))))return '';
+    return `${flow.researchUpper?'上位AT':'AT'} 残り${remaining.toLocaleString('ja-JP')}pt ＋上位ATチャレンジ`;
+  }
+
   function pendingBonusLabel(){
     if(normalState.bonusKind === "MID") return "REG";
     if(normalState.bonusKind === "BAR3") return "BAR";
@@ -5422,7 +5434,9 @@
     if($('novaInternalStatus'))$('novaInternalStatus').textContent='小役CZ抽選 / '+internal.games+'G（共通天井'+NovaNormal.ceiling(internal)+'G） / '+(internal.level==='high'?'高確（保証'+internal.highLeft+'G）':'低確')+ (normalState.flow?.phase==='art'?' / '+'AT '+(normalState.flow.atHigh?'高確（保証'+normalState.flow.atHighLeft+'G）':'低確'):'')+' / 穢れ'+internal.impurity+'pt / 特化予約 '+(session.active?(session.bonusZones||[]):(normalState.flow?.queuedZones||[])).map(z=>NovaArt.zoneName(z)).join('・');
     const flowStatus=$("novaFlowStatus");
     if(flowStatus){
-      flowStatus.textContent=session.active ? aTypeBonusLabel(session.bonusKind)+" 残り"+aTypeBonusRemainingNet()+"pt / "+NovaArt.bonusStockLabel(session,normalState.flow) : normalModeLabel();
+      const checkpointText=!session.active&&!normalState.bonusPending&&!normalState.resultCard&&!normalState.pendingZoneResult&&!normalState.ladderAwardPresentation&&!isCompleteTrialLocked()?atCheckpointStatus(normalState.flow,NovaProgress.snapshot(),profit):'';
+      flowStatus.textContent=session.active ? aTypeBonusLabel(session.bonusKind)+" 残り"+aTypeBonusRemainingNet()+"pt / "+NovaArt.bonusStockLabel(session,normalState.flow) : checkpointText||normalModeLabel();
+      flowStatus.dataset.atCheckpoint=String(!!checkpointText);
       flowStatus.dataset.phase=session.active?"bonus":NovaFlow.normalize(normalState.flow).phase;
       document.body.dataset.gamePhase=flowStatus.dataset.phase;
       document.body.dataset.burst=session.active?'':normalState.flow?.burstWon?'won':normalState.flow?.burstLeft?'challenge':normalState.flow?.burstPending?'pending':'';
