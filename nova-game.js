@@ -4147,7 +4147,6 @@
 
     if(bgm){
       if(!barBgmActive && !battleBgmActive) ensureNormalBgmSource();
-      bgm.loop = true;
       bgm.volume = bgmOutputVolumeForSource(BGM_OUTPUT_SCALE, bgm.getAttribute("src") || normalBgmSrc());
       if(!barBgmActive && !battleBgmActive) playNormalBgm();
     }
@@ -4731,6 +4730,7 @@
   }
 
   function normalBgmSrc(){
+    if(session.active||!["cz","strong_cz"].includes(normalState.flow?.phase))normalState.czBgmFinished=false;
     if(!session.active && normalState.flow?.phase==='art'){
       if(normalState.flow.initialStage==='zone'&&['kushuri_nito','kushuri','nito'].includes(normalState.flow.zone))return INITIAL_DUO_ZONE_BGM_SRC;
       const zoneTracks = {sosuke:SOSUKE_ZONE_BGM_SRC,toto:TOTO_ZONE_BGM_SRC,urapi:URAPI_ZONE_BGM_SRC,sora:SORA_ZONE_BGM_SRC,giru:GIRU_ZONE_BGM_SRC,ouma:OUMA_ZONE_BGM_SRC};
@@ -4740,7 +4740,7 @@
       const flow=normalState.flow;
       // CZ is entered on the previous stop; start its BGM with the intro on BET.
       const awaitingFirstBet=Number(flow.remaining)>0 && Number(flow.remaining)===Number(flow.totalGames) && !currentSpin?.resolved?.czIntro;
-      if(!awaitingFirstBet)return CZ_BGM_SRC;
+      if(!awaitingFirstBet&&!normalState.czBgmFinished)return CZ_BGM_SRC;
     }
     if(speedToBonusActive && SPEED_BGM_SRC) return SPEED_BGM_SRC;
     if(!session.active && isHighMode() && HIGH_MODE_BGM_SRC) return HIGH_MODE_BGM_SRC;
@@ -4749,12 +4749,23 @@
 
   function ensureNormalBgmSource(){
     if(!bgm) return "";
+    // AUTO can request BGM after playback ends but before its ended event is handled.
+    if(bgm.getAttribute('src')===CZ_BGM_SRC&&bgm.ended)normalState.czBgmFinished=true;
     const src = normalBgmSrc();
     if(src && bgm.getAttribute("src") !== src){
       bgm.setAttribute("src", src);
       try{ bgm.load(); }catch(e){}
     }
+    bgm.loop=src!==CZ_BGM_SRC;
+    bgm.onended=finishCzIntroBgm;
     return src;
+  }
+
+  function finishCzIntroBgm(){
+    if(!bgm||bgm.getAttribute('src')!==CZ_BGM_SRC||session.active||!['cz','strong_cz'].includes(normalState.flow?.phase))return;
+    normalState.czBgmFinished=true;
+    persistState();
+    playNormalBgm();
   }
 
   function playNormalBgm(){
@@ -4770,7 +4781,6 @@
       const src = ensureNormalBgmSource();
       if(!src) return;
       globalThis.NovaBeatLamps?.attach(bgm,getAudio());
-      bgm.loop = true;
       bgm.volume = bgmOutputVolumeForSource(BGM_OUTPUT_SCALE, src);
       if(bgm.paused){
         bgm.play().catch(()=>{});

@@ -34,3 +34,22 @@ test('ordinary ART uses RUSH, bonus suspends it and normal return releases it',(
  ctx.session.active=false;assert.equal(ctx.normalBgmSrc(),'rush');
  ctx.normalState.flow={phase:'normal'};assert.equal(ctx.normalBgmSrc(),'normal');
 });
+
+test('CZ intro plays once, returns to normal BGM, survives reload, and re-arms for a new CZ',()=>{
+ let saves=0,plays=0,src='normal';
+ const c=vm.createContext({session:{active:false},normalState:{flow:{phase:'cz',remaining:20,totalGames:20}},currentSpin:{resolved:{czIntro:true}},NOVA_ART_BGM_SRC:'rush',CZ_BGM_SRC:'cz',DEFAULT_NORMAL_BGM_SRC:'normal',SPEED_BGM_SRC:'',HIGH_MODE_BGM_SRC:'',speedToBonusActive:false,isHighMode:()=>false,
+  bgm:{loop:true,getAttribute:()=>src,setAttribute:(key,value)=>src=value,load(){}},persistState(){saves++;},playNormalBgm(){plays++;c.ensureNormalBgmSource();}});
+ const functions=['normalBgmSrc','ensureNormalBgmSource','finishCzIntroBgm'].map(name=>html.match(new RegExp('  function '+name+'\\([^]*?\\n  }'))[0]).join('\n');
+ vm.runInContext(constants+'\n'+functions,c);
+ c.ensureNormalBgmSource();assert.equal(src,'cz');assert.equal(c.bgm.loop,false);
+ c.bgm.onended();assert.equal(src,'normal');assert.equal(c.bgm.loop,true);assert.equal(saves,1);assert.equal(plays,1);
+ c.normalState=JSON.parse(JSON.stringify(c.normalState));c.currentSpin=null;
+ // Source setup can run before restoring the first game's pending spin.
+ c.ensureNormalBgmSource();c.currentSpin={resolved:{czIntro:true}};c.ensureNormalBgmSource();assert.equal(src,'normal');
+ c.normalState.flow.remaining=19;c.currentSpin=null;c.ensureNormalBgmSource();assert.equal(src,'normal');
+ c.finishCzIntroBgm();assert.equal(saves,1,'unrelated/stale ended event is ignored');
+ c.normalState.flow={phase:'normal'};c.ensureNormalBgmSource();assert.equal(c.normalState.czBgmFinished,false);
+ c.normalState.flow={phase:'strong_cz',remaining:20,totalGames:20};c.ensureNormalBgmSource();assert.equal(src,'normal');
+ c.currentSpin={resolved:{czIntro:true}};c.ensureNormalBgmSource();assert.equal(src,'cz');assert.equal(c.bgm.loop,false);
+ c.bgm.ended=true;c.ensureNormalBgmSource();assert.equal(src,'normal','AUTO must not restart a track waiting to dispatch ended');assert.equal(c.bgm.loop,true);
+});
