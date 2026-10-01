@@ -47,6 +47,18 @@ test('normal-state force uses the natural initial-AT route and keeps the queued 
  assert.equal(flow.initialStage,'wait');assert.equal(p.snapshot().sorties,1);
 });
 
+test('FREEZE overrides the former premium-BIG debug flag with exactly one sortie reservation',()=>{
+ for(let setting=1;setting<=6;setting++){
+  const {c}=load(setting);c.forceResult='FREEZE';
+  vm.runInContext('Math.random=()=>{throw Error("freeze flag must not reroll")}',c);
+  assert.match(c.forceResultName('FREEZE'),/出陣/);
+  assert.equal(c.takeForcedResult(),'');assert.equal(c.NovaProgress.snapshot().sorties,1);
+  assert.equal(c.normalState.bonusPending,false);assert.equal(c.takeForcedResult(),'');
+  assert.equal(c.NovaProgress.snapshot().sorties,1);
+  assert.equal(c.NovaTuning.profile(setting).denominator,setting%2?7000:10000);
+ }
+});
+
 test('other forced roles and manual/AUTO/fast shared flag consumption remain intact',()=>{
  const {c}=load();c.syncNovaProgress();c.forceResult='BELL';assert.equal(c.takeForcedResult(),'BELL');assert.equal(c.NovaProgress.snapshot().sorties,0);
  c.forceResult='URA_CHALLENGE';c.bonusActive=true;assert.equal(c.takeForcedResult(),'');assert.equal(c.forceResult,'URA_CHALLENGE');

@@ -2058,7 +2058,7 @@
   }
 
   function playPremiumBigConfirmMovie(){
-    if(A_TYPE_MODE){showOverlay('FREEZE — BIG'+NovaArt.bonusTarget()+'pt ＋ AT ＋ 特化ゾーン');showMessage('FREEZE','BIG'+NovaArt.bonusTarget()+'pt・AT確定／ギル・空・逢魔を各1/3');return true;}
+    if(A_TYPE_MODE){showOverlay('プレミアムBIG — AT ＋ 特化ゾーン');showMessage('プレミアムBIG','BIG'+NovaArt.bonusTarget()+'pt・AT確定／ギル・空・逢魔を各1/3');return true;}
   }
 
   function startPremiumBigConfirmBarAimIfNeeded(normalActiveAtSpinStart){
@@ -2292,7 +2292,7 @@
   function decideBigPremiumEffect(result, resolved, premiumForced=false){
     if(resolved?.zoneSpin)return false;
     // The Super NOVA branch has already drawn its exclusive 1:1 outcome.
-    if(resolved?.superNovaOutcome) return resolved.superNovaOutcome === "FREEZE";
+    if(resolved?.superNovaOutcome) return ['PREMIUM_BIG','FREEZE'].includes(resolved.superNovaOutcome); // FREEZE: resume old awarded saves.
     if(!isBigPremiumEffectEligible(result, resolved)) return false;
     if(A_TYPE_MODE && resolved && resolved.bonusPendingAtStart) return !!resolved.premiumBonus;
     return !!premiumForced || (!A_TYPE_MODE && Math.random() < GEKIATSU_CHANCE_ON_BIG);
@@ -2473,7 +2473,7 @@
     if(result === "SORTIE")return "ノヴァ出陣チャレンジ（10G・1回予約）";
     if(result === "URA_CHALLENGE")return "上位ATチャレンジ（10G・HOLDあり）";
     if(result === "COMEBACK")return "引き戻しゾーン（5G）";
-    if(result === "FREEZE")return "フリーズ";
+    if(result === "FREEZE")return "フリーズ（ノヴァ出陣チャレンジ）";
     if(result === "REACH_ME") return "リーチ目";
     return RESULT[result]?.name || "";
   }
@@ -2483,11 +2483,11 @@
     if(forceResult==='URA_CHALLENGE' && A_TYPE_MODE && (isATypeBonusActive() || normalState.bonusPending))return '';
     const result=forceResult;
     forceResult='';
-    if(A_TYPE_MODE && result==='SORTIE'){
+    if(A_TYPE_MODE && ['SORTIE','FREEZE'].includes(result)){
       // Use the existing persistent queue and safe entry timing, without forcing a reel role.
       syncNovaProgress();
       NovaProgress.drawSortie(settings.setting,()=>0);
-      log('強制指定：ノヴァ出陣チャレンジを1回予約（ボーナス・特化中は終了後）');
+      log('強制指定：出陣フリーズを1回予約（ボーナス・特化中は終了後）');
       return '';
     }
     return result;
@@ -2638,6 +2638,7 @@
     const next=Number(progress?.next),profit=Number(net);
     if(!Number.isFinite(next)||next<=0||!Number.isFinite(profit))return null;
     const left=pending?0:Math.ceil(Math.max(0,next-profit));
+    if(left>0)return null;
     return {text:`上位ATチャレンジまで${left.toLocaleString('ja-JP')}pt`,gold:left===0};
   }
 
@@ -3551,7 +3552,7 @@
         bonusKind:isReg ? "MID" : isBig ? "BIG" : "",
         bonusSource,
         premiumBonus:isBig && (internalBonus ? !!internalBonus.premiumBonus : bonusPendingAtStart ? !!normalState.premiumBonus : result === "BAR3"),
-        superNovaOutcome:superNovaBonus?.superNovaOutcome || (internalBonus?.premiumBonus?"FREEZE":""),
+        superNovaOutcome:superNovaBonus?.superNovaOutcome || (internalBonus?.premiumBonus?"PREMIUM_BIG":""),
         oneGameRenBonus:isBig && bonusPendingAtStart ? !!normalState.oneGameRenBonus : false,
         aTypeBonusReady:isReadyBonus
       };
@@ -5973,9 +5974,9 @@
     return ["WEAK_NOVA","STRONG_NOVA","SUPER_NOVA"].includes(result);
   }
   function drawSuperNovaBonus(){
-    const freeze = Math.random() < 0.5;
-    return {kind:"BIG",premiumBonus:freeze,superNovaOutcome:freeze?"FREEZE":"BIG",
-      source:freeze?"スーパーノヴァ目 → フリーズ":"スーパーノヴァ目 → BIG",
+    const premium = Math.random() < 0.5;
+    return {kind:"BIG",premiumBonus:premium,superNovaOutcome:premium?"PREMIUM_BIG":"BIG",
+      source:premium?"スーパーノヴァ目 → プレミアムBIG":"スーパーノヴァ目 → BIG",
       internalResult:"SUPER_NOVA",gamesSinceLastBonusAtStart:normalizeBonusAfterGames(normalState.sinceBonus)};
   }
   function buildForcedNovaGrid(result){
@@ -6027,7 +6028,7 @@
 
   document.addEventListener("DOMContentLoaded", () => {
     const forceSelect=document.getElementById('forceResult');
-    for(const [value,label] of [['ART','AT突入'],['SORTIE','ノヴァ出陣チャレンジ（10G・1回予約）'],['URA_CHALLENGE','上位ATチャレンジ（10G・HOLDあり）'],['COMEBACK','引き戻しゾーン（5G）'],['FREEZE','フリーズ'],...Object.keys(NovaNormal.rare).filter(k=>!isNovaResult(k)).map(k=>[k,RESULT[k].name]),['RARE','ATレア役'],...NovaArt.zoneIds.map(k=>['ZONE_'+k,NovaArt.zoneName(k)+'ゾーン'])]){const option=document.createElement('option');option.value=value;option.textContent=label;forceSelect.append(option);}
+    for(const [value,label] of [['ART','AT突入'],['SORTIE','ノヴァ出陣チャレンジ（10G・1回予約）'],['URA_CHALLENGE','上位ATチャレンジ（10G・HOLDあり）'],['COMEBACK','引き戻しゾーン（5G）'],['FREEZE','フリーズ（ノヴァ出陣・1回予約）'],...Object.keys(NovaNormal.rare).filter(k=>!isNovaResult(k)).map(k=>[k,RESULT[k].name]),['RARE','ATレア役'],...NovaArt.zoneIds.map(k=>['ZONE_'+k,NovaArt.zoneName(k)+'ゾーン'])]){const option=document.createElement('option');option.value=value;option.textContent=label;forceSelect.append(option);}
     const normalPanel=document.createElement('details');normalPanel.id='novaNormalConfig';
     normalPanel.innerHTML='<summary>小役CZ抽選・穢れ・状態</summary><output id="novaInternalStatus"></output><label>天井カウンター<input id="novaNormalGames" type="number" min="0" max="'+NovaNormal.ceiling()+'" value="0"></label><label>内部状態<select id="novaLevel"><option value="low">低確</option><option value="high">高確</option></select></label><label>穢れpt<input id="novaImpurity" type="number" min="0" max="100" value="0"></label><button id="novaApplyInternal" type="button">内部状態を適用</button><p>レア小役でCZを抽選します。通常モード・天国・規定GのCZ抽選はありません。スイカ・弱ノヴァで高確も抽選し、高確中は小役CZ当選率を優遇。強ノヴァは強CZ確定です。天井は朝一も共通'+NovaNormal.ceiling()+'G＋前兆、BIG／突破確定CZを各50%。リセット時の穢れ振り分けは従来どおり。穢れ100ptは次のボーナスで消費し、AT＋特化ゾーンを予約。フリーズは通常スーパーノヴァ目の1/2。</p>';
     const resetTable=document.createElement('div');resetTable.innerHTML='<table><tr><th>設定</th>'+NovaNormal.resetImpurityPoints.map(pt=>'<th>'+pt+'pt</th>').join('')+'</tr>'+NovaNormal.resetImpurityWeights.map((row,i)=>'<tr><td>'+(i+1)+'</td>'+row.map(w=>'<td>'+w+'%</td>').join('')+'</tr>').join('')+'</table>';normalPanel.append(resetTable);
@@ -6822,6 +6823,7 @@
   function restorePendingSpin(){
     const spin=currentSpin;
     if(!spin)return false;
+    delete spin.resolved.sortieFreezeUntil; // Resume the paid spin; never repeat its opening hold.
     isSpinning=true;spinCanStop=true;
     NovaBellNavi.restore(spin);
     NovaSortie.begin(spin);
@@ -7025,7 +7027,9 @@
     stopBtns.forEach(b=>b.disabled=true);
 
     if(spinWaitTimer) clearTimeout(spinWaitTimer);
-    spinWaitTimer = setTimeout(()=>{
+    spinWaitTimer = setTimeout(function unlockSpin(){
+      const freezeLeft=NovaSortie.freezeDelay(currentSpin);
+      if(freezeLeft){spinWaitTimer=setTimeout(unlockSpin,freezeLeft+spinWaitMs);return;}
       spinCanStop = true;
       if(isSpinning){
         const stopLocked = isPremiumBigConfirmStopLocked();
@@ -7087,6 +7091,7 @@
     const spec = RESULT[result];
     const lineRow = resultLineRow(result);
     const resolved = options?.oumaFailed ? {oumaFailed:true,reward:0,flowBefore:normalState.flow,flowAfter:normalState.flow} : normalActiveAtSpinStart ? resolveNormalOutcome(result, lineRow) : resolveOutcome(result);
+    if(resolved.researchSortie&&resolved.flowBefore?.researchSortieLeft===10&&!debugFastSpinActive&&!speedModeSpinAtStart)resolved.sortieFreezeUntil=Date.now()+1800;
     if(resolved.zoneStartFlow&&!debugFastSpinActive)NovaLadder.bet(resolved.zoneStartFlow);
     const reversePushGuide = zoneActiveAtSpinStart ? decideReversePushGuide(result, zoneActiveAtSpinStart ? currentGoraiZoneType() : "") : "";
     let grid = zoneActiveAtSpinStart && reversePushGuide && result === "MISS"
@@ -7191,7 +7196,7 @@
     else if(resolved.artReverse)showOverlay('逆回転！ '+resolved.flowAfter.award+'pt');
     else if(resolved.researchChallenge?.priorAim)showOverlay('ノヴァを狙え');
     else if(resolved.researchChallenge)showOverlay('上位ATチャレンジ / '+(resolved.researchChallenge.nextAim?'HOLD':'残り'+resolved.researchChallenge.left+'G'));
-    else if(resolved.researchSortie)showOverlay('右 → 中 → 左でノヴァを狙え');
+    else if(resolved.researchSortie)showOverlay(resolved.sortieFreezeUntil?'FREEZE':'右 → 中 → 左でノヴァを狙え');
     else if(!resolved.oumaFailed&&['urapi','ouma'].includes(normalState.flow?.zone))showOverlay('ノヴァを狙え');
     if(currentSpin.bonusConfirmWaitSpin){
       showBonusConfirmScreen("solid");
@@ -7252,6 +7257,11 @@
     ensureBattleBgmContinuing();
     ensureBarBgmContinuing();
 
+    if(NovaSortie.freezeDelay(currentSpin)){
+      const frozenSpin=currentSpin;
+      persistState();
+      if(!await NovaSortie.waitFreeze(frozenSpin)||currentSpin!==frozenSpin)return;
+    }
     if(!resolved.oumaFreeze&&!options?.oumaFailed)resetReelSpinOffsets();
     reels.forEach((reel,i)=>{
       reel.classList.add("spinning");

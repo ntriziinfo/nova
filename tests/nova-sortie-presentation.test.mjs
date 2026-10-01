@@ -3,6 +3,18 @@ const load=()=>{const c=vm.createContext({});for(const file of ['nova-sortie-pre
 const strips=[0,1,2].map(i=>['before',`NOVA_${i}_0`,`NOVA_${i}_1`,`NOVA_${i}_2`,'after']);
 const plain=v=>JSON.parse(JSON.stringify(v));
 const orders=[[0,1,2],[0,2,1],[1,0,2],[1,2,0],[2,0,1],[2,1,0]];
+test('opening freeze is a cancellable visual hold and cannot mutate the already drawn reward',async()=>{
+ const c=load();let finish,cleared=0;
+ c.setTimeout=fn=>{finish=fn;return 1;};c.clearTimeout=()=>cleared++;
+ const spin={resolved:{researchSortie:{won:true},sortieFreezeUntil:Date.now()+1800,reward:8,flowAfter:{remaining:'200',queuedZones:['sora']}}},before=JSON.stringify(spin);
+ vm.runInContext('Math.random=()=>{throw Error("freeze consumed RNG")}',c);
+ assert.equal(c.NovaSortie.freezeDelay(spin,spin.resolved.sortieFreezeUntil-900),900);
+ const hold=c.NovaSortie.waitFreeze(spin);finish();assert.equal(await hold,true);
+ const canceled=c.NovaSortie.waitFreeze(spin);c.NovaSortie.clear();assert.equal(await canceled,false);
+ assert.equal(c.NovaSortie.freezeDelay(spin,spin.resolved.sortieFreezeUntil+1),0);
+ assert.equal(c.NovaSortie.freezeDelay({resolved:{sortieFreezeUntil:Date.now()+1000}}),0);
+ assert.equal(JSON.stringify(spin),before);assert.equal(cleared,2);
+});
 test('only right-middle-left with an internal win aligns NOVA; every miss shifts the left by one row',()=>{
  const c=load();vm.runInContext('Math.random=()=>{throw Error("presentation consumed RNG")}',c);
  for(const won of [false,true])for(const order of orders){

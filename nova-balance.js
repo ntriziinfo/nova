@@ -10,7 +10,9 @@ globalThis.NovaBalance=(()=>{
  function zoneMean(id,options={}){
   if(NovaArt.initialZoneIds.includes(id)){
    const a=NovaArt,{values,weights:fallback,games}=a.entryQuotaRules;
-   const weights=!options.initialBoostActive&&Number.isInteger(options.setting)&&options.setting>=1&&options.setting<=6?a.entryWeights[options.setting-1]:fallback;
+   // Queued duo entry draws with config(options), which contains no setting.
+   // Match that live common quota; setting still determines the rare-role mix below.
+   const weights=fallback;
    const base=values.reduce((sum,pt,i)=>sum+pt*weights[i],0)/weights.reduce((sum,w)=>sum+w,0)/games;
    const mean=games*Object.entries(a.roleProbabilities(options.setting)).reduce((sum,[role,p])=>sum+p*(a.initialRareAwards[role]??base),0);
    // Ordinary duo stocks are unboosted. Fresh initial ATs explicitly opt in;

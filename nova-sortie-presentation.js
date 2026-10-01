@@ -1,8 +1,18 @@
 /* Sortie reel presentation only. The engine's role, payout and stock draw stay intact. */
 globalThis.NovaSortie=(()=>{
  const order=Object.freeze([2,1,0]);
- let root,host,drop=null;
+ let root,host,drop=null,freezeWait=null;
  const eligible=spin=>!!spin?.resolved?.researchSortie;
+ const freezeDelay=(spin,now=Date.now())=>eligible(spin)?Math.max(0,Math.min(1800,(Number(spin.resolved.sortieFreezeUntil)||0)-now)):0;
+ function waitFreeze(spin){
+  const delay=freezeDelay(spin);if(!delay)return Promise.resolve(true);
+  if(host)host.dataset.sortieFreeze='true';
+  if(root)root.firstChild.textContent='ノヴァ出陣チャレンジ';
+  return new Promise(resolve=>{
+   const end=completed=>{clearTimeout(timer);freezeWait=null;if(host)delete host.dataset.sortieFreeze;if(completed&&root)render(spin);resolve(completed);};
+   const timer=setTimeout(()=>end(true),delay);freezeWait=()=>end(false);
+  });
+ }
  function target(spin,index,strips){
   if(!eligible(spin))return null;
   const presses=spin.auditPressOrder||[],aligned=!!spin.resolved.researchSortie.won&&presses.length===3&&order.every((n,i)=>presses[i]===n);
@@ -37,6 +47,8 @@ globalThis.NovaSortie=(()=>{
   layout();
  }
  function clear(){
+  if(freezeWait)freezeWait();
+  if(host)delete host.dataset.sortieFreeze;
   if(root)root.hidden=true;
   if(drop){const cancel=drop;drop=null;cancel();}
   if(typeof document!=='undefined')document.querySelectorAll('.reel.sortieStopped').forEach(reel=>reel.classList.remove('sortieStopped'));
@@ -56,5 +68,5 @@ globalThis.NovaSortie=(()=>{
   });
  }
  if(typeof window!=='undefined')window.addEventListener('resize',layout);
- return {eligible,target,begin,stop:render,clear,dropLeft,flash};
+ return {eligible,target,begin,stop:render,clear,dropLeft,flash,freezeDelay,waitFreeze};
 })();

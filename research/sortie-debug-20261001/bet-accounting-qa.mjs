@@ -1,0 +1,18 @@
+import fs from 'node:fs';import assert from 'node:assert/strict';import {createRequire} from 'node:module';
+const require=createRequire(import.meta.url),{chromium}=require('C:/Users/nitro/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright');
+const browser=await chromium.connectOverCDP('http://127.0.0.1:9227'),context=await browser.newContext(),page=await context.newPage(),errors=[],rows=[];
+page.on('pageerror',e=>errors.push(e.message));
+await page.addInitScript(()=>{const play=HTMLMediaElement.prototype.play;HTMLMediaElement.prototype.play=function(){this.muted=true;return play.call(this);};const seed=sessionStorage.getItem('accountingSeed');if(seed){for(const[k,v]of Object.entries(JSON.parse(seed)))localStorage.setItem(k,v);sessionStorage.removeItem('accountingSeed');}});
+const ready=()=>page.waitForFunction(()=>typeof __jagAdminSnapshot==='function'&&__jagAdminSnapshot()!==null);
+const capture=async label=>{const row=await page.evaluate(label=>{const s=__jagAdminSnapshot();return {label,fee:s.stats.totalFee,paid:s.stats.totalPaid,net:s.stats.totalPaid-s.stats.totalFee,replayFree:s.normalState.replayFree,remaining:s.normalState.flow.remaining,count:document.querySelector('#jagCountMeter').textContent,credit:document.querySelector('#jagCreditMeter').textContent,status:document.querySelector('#novaFlowStatus').textContent};},label);rows.push(row);return row;};
+async function force(role){await page.evaluate(role=>{document.querySelector('#forceResult').value=role;document.querySelector('#applyForceBtn').click();},role);}
+async function bet(){await page.locator('#spinBtn').click();await page.waitForFunction(()=>__jagAdminSnapshot().state.isSpinning);}
+async function stop(){for(const i of [0,1,2]){await page.waitForFunction(i=>!document.querySelector('#stop'+i).disabled,i);await page.locator('#stop'+i).click();await page.waitForFunction(i=>!document.querySelector('.reel[data-reel="'+i+'"]').classList.contains('spinning'),i);}await page.waitForFunction(()=>!__jagAdminSnapshot().state.isSpinning);}
+try{
+ await page.goto('http://127.0.0.1:8765/jag.html?debug=1',{waitUntil:'domcontentloaded'});await ready();
+ await page.evaluate(()=>{__jagAdminSnapshot();const out={};for(const k of Object.keys(localStorage).filter(k=>k.startsWith('nova_slot_state_v1_'))){const d=JSON.parse(localStorage.getItem(k));if(!d?.normalState)continue;d.settings.setting=3;d.settings.audioMuted=true;Object.assign(d.normalState,{flow:{...NovaArt.enter({setting:3},()=>.99),remaining:'200'},bonusPending:false,replayFree:false,resultCard:null,pendingZoneResult:null,stockEntry:null,novaProgress:{version:167,next:2400,pending:0,sorties:0}});Object.assign(d.stats,{totalFee:10000,totalPaid:10000,slumpHigh:0,slumpLow:0,slumpHistory:[{spin:0,profit:0}]});d.runtimeState={session:{active:false,phase:'idle',resultPayout:null}};d.completeTrialState={locked:false};out[k]=JSON.stringify(d);}sessionStorage.setItem('accountingSeed',JSON.stringify(out));});
+ await page.reload({waitUntil:'domcontentloaded'});await ready();await capture('start');
+ for(const role of ['BELL','BELL','REPLAY','BELL']){await force(role);await bet();await capture(role+' BET');await stop();await capture(role+' stop');}
+ assert.equal(rows[3].fee-rows[2].fee,3);assert.equal(rows[2].paid-rows[1].paid,8);assert.equal(rows[2].remaining,'192');assert.equal(rows[3].remaining,'192');assert.equal(rows[3].count,rows[2].count);assert.equal(rows[7].fee-rows[6].fee,0);assert.deepEqual(errors,[]);
+ const report={passed:true,silent:true,rows,errors};fs.writeFileSync('research/sortie-debug-20261001/bet-accounting-qa.json',JSON.stringify(report,null,2));console.log(JSON.stringify(report));
+}finally{await context.close();await browser.close();}

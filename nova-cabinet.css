@@ -172,3 +172,5 @@ body[data-zone-roulette-state=confirmed] #machine .novaArtItem[data-roulette-lit
 body #machine .novaArtItem[data-sortie-won=true]{opacity:1!important;animation:novaRouletteConfirmed 160ms steps(1,end) infinite!important}
 body #machine .novaArtItem[data-sortie-won=true] img{opacity:1!important;animation:none!important;filter:brightness(1.4) drop-shadow(0 0 14px #ffe4a0)!important}
 @media(prefers-reduced-motion:reduce){body #machine .novaArtItem[data-sortie-won=true]{animation:none!important}}
+#machine[data-sortie-freeze="true"] .reels{filter:brightness(.28) saturate(.35);}
+#machine[data-sortie-freeze="true"] #novaSortieGuide{color:#ffe7a0;text-shadow:0 0 12px #ffbc3d;}

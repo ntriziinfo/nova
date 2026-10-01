@@ -42,13 +42,21 @@ test('natural initial-zone rare roles use the AT frequencies and the new exact a
  assert(sawWeak>0&&sawStrong>0);
 });
 
-test('BUG-002: reported duo means distinguish common fresh initial from setting-specific ordinary stocks',()=>{
+test('BUG-002: reported ordinary duo mean matches the actual queued-stock engine, with no fresh-AT multiplier',()=>{
  const mismatches=[];
  for(let setting=1;setting<=6;setting++){
-  const weights=a.entryWeights[setting-1];
-  const base=a.entryQuotaRules.values.reduce((sum,pt,i)=>sum+pt*weights[i],0)/3;
-  const expected=3*Object.entries(a.roleProbabilities(setting)).reduce((sum,[role,p])=>sum+p*(a.initialRareAwards[role]??base),0);
-  assert(Math.abs(expected-(JSON.parse(fs.readFileSync('tests/fixtures/nova-role-merge-approved.json')).entryMeans[setting-1]))<1e-9);
+  const {weights}=a.entryQuotaRules,total=weights.reduce((sum,n)=>sum+n,0);
+  let expected=0,lo=0;
+  for(let i=0;i<weights.length;i++){
+   const pick=(lo+weights[i]/2)/total;lo+=weights[i];
+   for(const [role,p]of Object.entries(a.roleProbabilities(setting))){
+    if(!p)continue;
+    let calls=0,flow={...a.enter({setting},()=>.99),remaining:'0',queuedZones:['kushuri_nito']};
+    const rng=()=>calls++===0?pick:.5;
+    for(let g=0;g<3;g++)flow=a.step(flow,{setting},rng,role==='BELL15'?'BELL':role).flow;
+    assert.equal(flow.zone,'');expected+=weights[i]/total*p*Number(flow.remaining);
+   }
+  }
   const reported=NovaBalance.zoneMean('kushuri_nito',{setting});
   if(Math.abs(reported-expected)>1e-9)mismatches.push({setting,expected,reported});
   const boost=a.initialBoostRules.values.reduce((sum,n,i)=>sum+n*a.initialBoostRules.weights[setting-1][i],0);
