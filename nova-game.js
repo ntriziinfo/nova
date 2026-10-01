@@ -3047,32 +3047,7 @@
   }
 
   function normalizeSlumpHistory(){
-    const source = Array.isArray(stats.slumpHistory) ? stats.slumpHistory : [];
-    const normalized = source
-      .map(point => ({
-        spin:Math.max(0, Number(point && point.spin) || 0),
-        profit:Number(point && point.profit) || 0
-      }))
-      .filter(point => Number.isFinite(point.profit));
-
-    if(!normalized.length || normalized[0].spin !== 0 || normalized[0].profit !== 0){
-      normalized.unshift({spin:0, profit:0});
-    }
-
-    normalized.sort((a,b)=>a.spin - b.spin);
-    const deduped = [];
-    for(const point of normalized){
-      const last = deduped[deduped.length - 1];
-      if(last && last.spin === point.spin){
-        last.profit = point.profit;
-        continue;
-      }
-      deduped.push(point);
-    }
-    stats.slumpHistory = deduped.length > SLUMP_MAX_HISTORY_POINTS
-      ? reduceSlumpPoints(deduped, Math.floor(SLUMP_MAX_HISTORY_POINTS * 0.75))
-      : deduped;
-    refreshSlumpExtremes();
+    NovaHistory.normalize(stats, reduceSlumpPoints, SLUMP_MAX_HISTORY_POINTS);
   }
 
   function recordSlumpPoint(settled=true){
@@ -3081,25 +3056,9 @@
       // Match the simulator: the regime sees settled net, not the transient BET debit.
       if(settled)NovaDecrement.observe(currentProfit());
     }
-    normalizeSlumpHistory();
-    const point = {
-      spin:Number(stats.totalSpins) || 0,
-      profit:currentProfit()
-    };
-    const last = stats.slumpHistory[stats.slumpHistory.length - 1];
-    if(last && last.spin === point.spin){
-      if(last.profit === point.profit) return;
-      last.profit = point.profit;
-      refreshSlumpExtremes();
+    if(NovaHistory.record(stats, Number(stats.totalSpins)||0, currentProfit(), reduceSlumpPoints, SLUMP_MAX_HISTORY_POINTS)){
       scheduleSlumpGraphRender();
-      return;
     }
-    stats.slumpHistory.push(point);
-    if(stats.slumpHistory.length > SLUMP_MAX_HISTORY_POINTS){
-      stats.slumpHistory = reduceSlumpPoints(stats.slumpHistory, Math.floor(SLUMP_MAX_HISTORY_POINTS * 0.75));
-    }
-    refreshSlumpExtremes();
-    scheduleSlumpGraphRender();
   }
 
   function setSlumpValue(view, value){
@@ -3121,13 +3080,6 @@
       if(profit < minProfit) minProfit = profit;
     }
     return {maxProfit, minProfit};
-  }
-
-  function refreshSlumpExtremes(){
-    const points = Array.isArray(stats.slumpHistory) ? stats.slumpHistory : [];
-    const bounds = getProfitBounds(points);
-    stats.slumpHigh = bounds.maxProfit;
-    stats.slumpLow = bounds.minProfit;
   }
 
   function scheduleSlumpGraphRender(){
@@ -3787,11 +3739,7 @@
   }
 
   function compactStatsForResume(){
-    const compact = {...stats};
-    if(Array.isArray(compact.slumpHistory) && compact.slumpHistory.length > 600){
-      compact.slumpHistory = reduceSlumpPoints(compact.slumpHistory, 450);
-    }
-    return compact;
+    return NovaHistory.compact(stats, reduceSlumpPoints);
   }
 
   function runtimeStateForStorage(){
@@ -3835,7 +3783,7 @@
     const savedAt = Date.now();
     const runtimeState = runtimeStateForStorage();
     const write=(key,value)=>{
-      try{return safeStorageSet(key,JSON.stringify(value));}
+      try{return safeStorageSet(key,NovaHistory.stringify(value));}
       catch(e){console.warn('Failed to serialize local state',e);return false;}
     };
     const preferencesOk = write(PREFERENCES_STORAGE_KEY, {savedAt, settings});

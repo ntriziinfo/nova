@@ -1,0 +1,183 @@
+{
+  "checkedAt": "2026-10-01T03:53:58.157Z",
+  "environment": "Isolated headless Edge on this PC; synthetic histories; real localStorage/IndexedDB. Graph timings cover actual graph and save functions, exclude media, audit capture and animation. Not a whole-frame or phone measurement.",
+  "graph": [
+    {
+      "points": 1000,
+      "before": {
+        "stop": {
+          "medianMs": 0.5,
+          "p95Ms": 1.7000000476837158
+        },
+        "cycle": {
+          "medianMs": 4.100000023841858,
+          "p95Ms": 10.100000023841858
+        }
+      },
+      "after": {
+        "stop": {
+          "medianMs": 0.19999992847442627,
+          "p95Ms": 0.6000000238418579
+        },
+        "cycle": {
+          "medianMs": 2.100000023841858,
+          "p95Ms": 4.5
+        }
+      }
+    },
+    {
+      "points": 20000,
+      "before": {
+        "stop": {
+          "medianMs": 8.699999928474426,
+          "p95Ms": 14.100000023841858
+        },
+        "cycle": {
+          "medianMs": 61,
+          "p95Ms": 73.60000002384186
+        }
+      },
+      "after": {
+        "stop": {
+          "medianMs": 2.299999952316284,
+          "p95Ms": 7.899999976158142
+        },
+        "cycle": {
+          "medianMs": 20.5,
+          "p95Ms": 27.399999976158142
+        }
+      }
+    }
+  ],
+  "audit": {
+    "records": 60000,
+    "times": {
+      "before": [
+        3701.5,
+        4800.799999952316,
+        3512
+      ],
+      "after": [
+        2316.8000000715256,
+        2953.399999976158,
+        2067
+      ]
+    },
+    "equivalenceChecks": [
+      {
+        "offset": 1000,
+        "limit": 200
+      },
+      {
+        "from": 330,
+        "to": 370,
+        "important": true,
+        "limit": 4,
+        "offset": 1
+      },
+      {
+        "from": 19990,
+        "to": 20001,
+        "exportAll": true,
+        "limit": 0
+      },
+      {
+        "from": 999999
+      },
+      {},
+      {
+        "pendingConflict": true
+      }
+    ]
+  },
+  "baselineCommit": "e24db447f569d25511ad28e961f4baff23fe9451",
+  "unchangedMathFiles": [
+    {
+      "file": "nova-art.js",
+      "sha256": "328afb8bc3ddefa16d57fb2bced5df6a44126af05f5712071f4e75a05595be99"
+    },
+    {
+      "file": "nova-normal.js",
+      "sha256": "50e2022ad4c0bf561a058bfbff1156d1d952abf11fc3c8510face972280109ce"
+    },
+    {
+      "file": "nova-flow.js",
+      "sha256": "a4612a3019040db121e87e495ae8b8b1c4a0105803f5222374a2c1140c8c3c2b"
+    },
+    {
+      "file": "nova-balance.js",
+      "sha256": "fbbc4ac8a9618a14a4bb260b004c47a04ae768a49873f02c4302e400cd2ee25d"
+    },
+    {
+      "file": "nova-progress.js",
+      "sha256": "ed1b90aae32faef76cab4e315720c6a2b33d188c87e1ae258c02f47400252b27"
+    },
+    {
+      "file": "nova-decrement.js",
+      "sha256": "a58f72c810431683b056905bb01841fec90bcd3bb0c87c7be3ab4f0f1b6419ea"
+    },
+    {
+      "file": "nova-tuning.js",
+      "sha256": "4a1bb10a6052b77e68c5eda5a422393df5e03c2157c63103cdcab42963015f2f"
+    }
+  ],
+  "browserVerification": {
+    "passed": true,
+    "silent": true,
+    "gains": [
+      {
+        "game": 1,
+        "role": "BELL",
+        "gain": 200,
+        "award": "200",
+        "remaining": "0"
+      },
+      {
+        "game": 2,
+        "role": "WEAK_NOVA",
+        "gain": 200,
+        "award": "400",
+        "remaining": "0"
+      },
+      {
+        "game": 3,
+        "role": "STRONG_NOVA",
+        "gain": 400,
+        "award": "800",
+        "remaining": "800"
+      }
+    ],
+    "midSpinReload": true,
+    "largeGraphReload": true,
+    "graphPoints": 14999,
+    "auditExportRecords": 8,
+    "errors": []
+  },
+  "autoVerification": {
+    "passed": true,
+    "silent": true,
+    "result": {
+      "spins": 3,
+      "awards": [
+        200,
+        200,
+        200
+      ],
+      "remaining": "600"
+    },
+    "errors": []
+  },
+  "tests": {
+    "passed": 53,
+    "files": [
+      "nova-history",
+      "nova-audit-storage",
+      "nova-spin-resume",
+      "nova-audit121",
+      "nova-bonus-alignment",
+      "nova-bonus-stock145",
+      "nova-fast-audit",
+      "nova-decrement170"
+    ]
+  }
+}

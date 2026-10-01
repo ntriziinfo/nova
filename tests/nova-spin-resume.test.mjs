@@ -24,10 +24,10 @@ function harness(saved=null){
   NovaAim:{bet:noop,stop:noop},NovaInitialDuo:{begin:noop,stop:noop},NovaLadder:{bet:noop,stop:noop},NovaReelMotion:{start:noop},
   setReelColumn:noop,renderCzPrelude:noop,syncCzPreludeGlow:noop,updateDisplay:noop,syncCabinetControlState:noop,prepareManualBonusOutcome:noop,startOumaReverseAudio:noop
  });
- for(const file of ['nova-tuning.js','nova-art.js','nova-normal.js','nova-flow.js','nova-balance.js','nova-spin-resume.js'])vm.runInContext(fs.readFileSync(file,'utf8'),c,{filename:file});
+ for(const file of ['nova-tuning.js','nova-art.js','nova-normal.js','nova-flow.js','nova-balance.js','nova-spin-resume.js','nova-history.js'])vm.runInContext(fs.readFileSync(file,'utf8'),c,{filename:file});
  // Navigation renderer is tested separately with DOM stubs; restore must not draw an order.
  c.NovaBellNavi={restore:spin=>{c.shownOrder=json(spin.bellNaviOrder);},clear:noop};
- for(const name of ['canUsePlayState','load','runtimeStateForStorage','compactStatsForResume','updateStorageStatus','persistState','restorePendingSpin'])vm.runInContext(fn(name),c);
+ for(const name of ['reduceSlumpPoints','canUsePlayState','load','runtimeStateForStorage','compactStatsForResume','updateStorageStatus','persistState','restorePendingSpin'])vm.runInContext(fn(name),c);
  return {c,storage,errors,timers,$};
 }
 function spin(c,overrides={}){

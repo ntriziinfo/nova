@@ -92,8 +92,11 @@ globalThis.NovaAudit=(()=>{
       if(this.queue.length>=100&&!this.busy)this.flush();
       else if(!this.timer)this.timer=setTimeout(()=>{this.timer=null;this.flush();},500);
     }
+    metasFor(records){
+      return [...new Set(records.map(r=>r.run))].map(run=>this.metas.get(run)).filter(Boolean);
+    }
     journal(){
-      try{const records=this.queue,metas=[...this.metas.values()].filter(m=>records.some(r=>r.run===m.id));if(records.length||this.inputs.length)this.storage.setItem(this.journalKey,JSON.stringify({scope:this.scope,metas,records,inputs:this.inputs}));else this.storage.removeItem(this.journalKey);}
+      try{const records=this.queue,metas=this.metasFor(records);if(records.length||this.inputs.length)this.storage.setItem(this.journalKey,JSON.stringify({scope:this.scope,metas,records,inputs:this.inputs}));else this.storage.removeItem(this.journalKey);}
       catch(e){this.error='履歴の退避に失敗しました。JSONを書き出してください：'+e.message;this.notify();}
     }
     async flush(){
@@ -101,7 +104,7 @@ globalThis.NovaAudit=(()=>{
       if(this.busy){await this.busy.catch(()=>{});if(this.queue.length&&!this.error)return this.flush();return;}
       if(!this.queue.length){this.notify();return;}
       const identities=new Map();for(const r of this.queue){const key=r.run+'/'+r.seq;if(identities.has(key)&&identities.get(key)!==r.writer){this.error='別タブの同じ試打履歴と競合しました。全件をメモリに保持中です。JSONを書き出してください';this.journal();this.notify();return;}identities.set(key,r.writer);}
-      this.journal();const batch=this.queue.slice(),metas=copy([...this.metas.values()].filter(m=>batch.some(r=>r.run===m.id)));
+      this.journal();const batch=this.queue.slice(),metas=copy(this.metasFor(batch));
       this.busy=new Promise((resolve,reject)=>{let tx;try{tx=this.db.transaction(['runs','records'],'readwrite');for(const m of metas){const check=tx.objectStore('runs').get(m.id);check.onsuccess=()=>{const existing=check.result,first=batch.find(r=>r.run===m.id);if(existing&&existing.seq>=first.seq&&existing.writer!==first.writer){reject(Error('別タブの同じ試打履歴と競合しました。JSONを書き出してください'));tx.abort();return;}tx.objectStore('runs').put(m);for(const r of batch.filter(r=>r.run===m.id))tx.objectStore('records').put(r);};}tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error||Error('保存中断'));}catch(e){reject(e);}});
       this.notify();try{await this.busy;this.queue.splice(0,batch.length);this.error='';this.journal();if(!this.queue.length){for(const {key,raw} of this.recovered)if(this.storage.getItem(key)===raw)this.storage.removeItem(key);this.recovered=[];}}
       catch(e){this.error='履歴保存エラー。未保存分はメモリに保持中です。JSONを書き出してください：'+e.message;}
@@ -113,7 +116,22 @@ globalThis.NovaAudit=(()=>{
       const meta=this.metas.get(run);if(!meta)return {rows,summary,meta:null};
       const pending=new Map(this.queue.filter(r=>r.run===run).map(r=>[r.seq+'/'+r.writer,r]));
       const take=r=>{if(r.game<from||r.game>to)return;summary.count++;summary.bet+=r.bet;summary.paid+=r.paid;summary.boundaries+=r.boundary?1:0;summary.first??=r;summary.last=r;if(exportAll)all.push(r);if(!important||r.important){if(summary.matches>=offset&&rows.length<limit)rows.push(r);summary.matches++;}};
-      if(this.db)await new Promise((resolve,reject)=>{const tx=this.db.transaction('records'),req=tx.objectStore('records').openCursor(IDBKeyRange.bound([run,0],[run,Number.MAX_SAFE_INTEGER]));req.onerror=()=>reject(req.error);req.onsuccess=()=>{const c=req.result;if(!c){resolve();return;}pending.delete(c.value.seq+'/'+c.value.writer);take(c.value);c.continue();};});
+      if(this.db)await new Promise((resolve,reject)=>{
+        // Keep one read transaction for a consistent snapshot, but cross the IndexedDB
+        // event boundary once per batch instead of once per saved checkpoint.
+        const tx=this.db.transaction('records'),store=tx.objectStore('records'),size=1000;
+        tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error||Error('履歴読み込み中断'));
+        const next=(seq,exclude)=>{
+          const req=store.getAll(IDBKeyRange.bound([run,seq],[run,Number.MAX_SAFE_INTEGER],exclude),size);
+          req.onerror=()=>reject(req.error);
+          req.onsuccess=()=>{
+            const batch=req.result;
+            for(const row of batch){pending.delete(row.seq+'/'+row.writer);take(row);}
+            if(batch.length===size&&batch.at(-1).seq<Number.MAX_SAFE_INTEGER)next(batch.at(-1).seq,true);
+          };
+        };
+        next(0,false);
+      });
       for(const r of [...pending.values()].sort((a,b)=>a.seq-b.seq))take(r);
       return {meta:copy(meta),rows,summary,records:exportAll?all:undefined,error:this.error};
     }
