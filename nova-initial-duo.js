@@ -27,7 +27,7 @@ globalThis.NovaInitialDuo=(()=>{
   Object.assign(root.style,rect);Object.assign(video.style,rect);
  }
  function begin(resolved){
-  const flow=resolved?.flowBefore;if(!eligible(flow)){clear();return false;}if(!init())return false;
+  const flow=resolved?.zoneStartFlow||resolved?.flowBefore;if(!eligible(flow)){clear();return false;}if(!init())return false;
   const game=Math.max(0,Math.min(2,Number(flow.initialIndex)||0)),ids=gameCharacters(game);
   rank=0;root.dataset.game=String(game+1);root.dataset.stop='0';root.dataset.pair=String(ids.length===2);
   for(const actor of actors)actor.hidden=!ids.includes(actor.dataset.character);

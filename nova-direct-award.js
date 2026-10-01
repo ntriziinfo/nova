@@ -30,7 +30,8 @@ globalThis.NovaDirectAward=(()=>{
  function show(resolved){
   const pt=amount(resolved);if(!pt||!init())return false;
   const label='＋'+pt+'pt';root.dataset.pt=String(pt);root.setAttribute('aria-label',(resolved.zoneAward?'ゾーン上乗せ ':'直乗せ ')+label);
-  root.dataset.duo=String(resolved.flowBefore?.initialVersion===148&&resolved.flowBefore?.initialStage==='zone');
+  const flow=resolved.zoneStartFlow||resolved.flowBefore;
+  root.dataset.duo=String(flow?.initialVersion===148&&flow?.initialStage==='zone');
   const request=++imageRequest;
   // A reused img can keep painting its old bitmap while the next src decodes.
   // The fallback always contains this spin's real amount, never the previous award.

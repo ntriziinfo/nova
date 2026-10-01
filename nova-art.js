@@ -392,7 +392,7 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
   if(forced==='STRONG_SUICA')forced='WEAK_SUICA';
   if(forced==='CHANCE_A'||forced==='CHANCE_B')forced='MISS';
   const c=config(options);if(options.setting){c.rare=Math.min(.99,c.rare*rareFactor(options.setting));const factor=(1+.2*biasFor(options.setting))*zoneEntryScale[validSetting(options.setting)-1];c.big=Math.min(1,c.big*factor);c.zone=Math.min(1-c.big,c.zone*factor);}let s=normalize(prepareBet(value,options,rng)),freeOumaSpin=['ouma','urapi'].includes(s.zone)&&s.zero,result='MISS',message='',internalBonus=null,reverse=false,queuedEntered=false;
-  let atOutcome=null,aim=null,zoneAward=0,atPrelude=null;const finish=()=>{const z=s.zone,name=zoneName(s);s=settleZone(s);message=`${name}ゾーン終了 / ${'＋'+s.award+'pt'}`;};
+  let atOutcome=null,aim=null,zoneAward=0,atPrelude=null,zoneStartFlow=null;const finish=()=>{const z=s.zone,name=zoneName(s);s=settleZone(s);message=`${name}ゾーン終了 / ${'＋'+s.award+'pt'}`;};
   if(s.researchSortieLeft){
   const result=drawInitialRole(options.setting,rng);s.researchSortieLeft--;
   const natural=rng()<s.researchSortieRate;
@@ -438,8 +438,8 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
   if(forced.startsWith('ZONE_')){s=startZone(s,forced.slice(5),{...c,setting:options.setting},rng);return {atOutcome,result,flow:s,message:zoneName(s)+'ゾーン突入'};}
   if(!s.zone&&!s.atPrelude&&s.queuedZones.length){queuedEntered=true;const z=s.queuedZones.shift();if(z==='kushuri_nito'){
   s.initialVersion=148;s.initialStage='entry';s.entryQuota=String(drawEntryQuota(c,rng));
-  s=startZone(s,z,{...c,setting:options.setting},rng);return stepInitialZone(s,options,rng,forced);
- }s=startZone(s,z,{...c,setting:options.setting,allowUra:true},rng);}
+  s=startZone(s,z,{...c,setting:options.setting},rng);const started=normalize(s);return {...stepInitialZone(s,options,rng,forced),zoneStartFlow:started};
+ }s=startZone(s,z,{...c,setting:options.setting,allowUra:true},rng);zoneStartFlow=normalize(s);}
   if(!s.zone&&!s.atPrelude&&integer(s.stock)>0n){s.stock=(integer(s.stock)-1n).toString();return {result:'MISS',flow:s,internalBonus:{kind:'BIG',source:'空ゾーンストック',internalResult:'BIG'}};}
   if(!s.zone&&!s.atPrelude&&integer(s.remaining)===0n)return stepComeback(beginComeback(s),options,rng,forced);
   const mix=atMix(options.setting);c.rare=mix.chance;const roll=rng();result=s.zone?(roll<.6?'REPLAY':roll<.9?'BELL':'MISS'):drawAtRole(options.setting,s.researchUpper,rng);
@@ -489,7 +489,7 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
    if(!s.zone&&!s.entryStage&&!s.burstPending&&!s.atPrelude&&!internalBonus&&integer(s.remaining)===0n){message='引き戻しゾーン突入 / 残り5G';return {atPrelude,atOutcome,result,flow:beginComeback(s),comebackEvent:'entry',message};}
   }
   if(s.burstPending&&!value.burstPending)message+=(message?' / ':'')+challengeName(s)+'獲得！';
-  return {atPrelude,atOutcome,aim,zoneAward,result,flow:s,message,internalBonus,reverse,oumaFreeze:freeOumaSpin,zoneSpin:!!value.zone||queuedEntered};
+  return {atPrelude,atOutcome,aim,zoneAward,result,flow:s,message,internalBonus,reverse,oumaFreeze:freeOumaSpin,zoneSpin:!!value.zone||queuedEntered,...(zoneStartFlow?{zoneStartFlow}:{})};
  }
  function label(v){const s=normalize(v);if(s.researchSortieLeft)return 'ノヴァ出陣 / 残り'+s.researchSortieLeft+'G / ストック'+s.researchSortieHits+'個';if(s.researchChallengeActive||s.burstPending)return '上位ATチャレンジ / '+(s.researchAim?'ノヴァを狙え / HOLD':'残り'+(s.burstLeft||10)+'G');if(s.initialStage)return s.initialStage==='wait'?'AT準備中 / 残り'+s.initialWait+'G':s.initialStage==='entry'?'初期pt獲得ゾーン / '+({seven:'赤7を狙え！',roulette:'キャラルーレット',confirmed:zoneName(s.pendingZone)+'ゾーン確定'}[s.entryStage]||'準備中'):'初期pt獲得 / '+zoneName(s)+' 残り'+s.zoneLeft+'G / 確保'+s.award+'pt';if(s.atPrelude)return 'AT '+s.remaining+'pt / 特化ゾーン前兆';if(s.comebackLeft)return '引き戻しゾーン 残り'+s.comebackLeft+'G / ランプ点灯でAT復活';if(s.comebackConfirmed)return '引き戻し成功！ '+zoneName(s.pendingZone)+'ゾーン / AT復活';return (s.researchUpper?('上位AT / '):s.burstLeft?challengeName(s)+' 残り'+s.burstLeft+'G / ':s.burstPending?challengeName(s)+'待機 / ':'')+`AT ${s.remaining}pt / 特化ストック${integer(s.sets)+BigInt(s.queuedZones.length)}個${s.entryStage?' / '+({seven:'赤7を狙え・減算停止',roulette:'ルーレット・減算停止',confirmed:zoneName(s.pendingZone)+'ゾーン確定'}[s.entryStage]):''}${s.zone?' / '+zoneName(s)+' '+(s.zero?'0G連':s.oumaPending?'BETで継続抽選':s.zoneLeft+'G'):''}${integer(s.stock)>0n?' / BIGストック '+s.stock:''}${s.zone?' / 獲得'+s.award+'pt':''}`;}
   function beginResearchSortie(value,rng=Math.random,setting=value?.modelSetting||3){

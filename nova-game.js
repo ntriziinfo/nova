@@ -3510,6 +3510,7 @@
         czChance:artStep?.czChance,
         czLamp:artStep?.czLamp,
         aim:artStep?.aim,
+        zoneStartFlow:artStep?.zoneStartFlow,
         researchSortie:artStep?.researchSortie,
         researchChallenge:artStep?.researchChallenge,
         burstEvent:artStep?.burstEvent,
@@ -4735,12 +4736,14 @@
     log("演出をスキップ");
   }
 
+  function presentedArtFlow(){return isSpinning&&currentSpin?.resolved?.zoneStartFlow||normalState.flow;}
   function normalBgmSrc(){
     if(session.active||!["cz","strong_cz"].includes(normalState.flow?.phase))normalState.czBgmFinished=false;
     if(!session.active && normalState.flow?.phase==='art'){
-      if(normalState.flow.initialStage==='zone'&&['kushuri_nito','kushuri','nito'].includes(normalState.flow.zone))return INITIAL_DUO_ZONE_BGM_SRC;
+      const flow=presentedArtFlow();
+      if(flow.initialStage==='zone'&&['kushuri_nito','kushuri','nito'].includes(flow.zone))return INITIAL_DUO_ZONE_BGM_SRC;
       const zoneTracks = {sosuke:SOSUKE_ZONE_BGM_SRC,toto:TOTO_ZONE_BGM_SRC,urapi:URAPI_ZONE_BGM_SRC,sora:SORA_ZONE_BGM_SRC,giru:GIRU_ZONE_BGM_SRC,ouma:OUMA_ZONE_BGM_SRC};
-      return zoneTracks[normalState.flow.zone] || NOVA_ART_BGM_SRC;
+      return zoneTracks[flow.zone] || NOVA_ART_BGM_SRC;
     }
     if(!session.active && ["cz","strong_cz"].includes(normalState.flow?.phase)){
       const flow=normalState.flow;
@@ -4776,7 +4779,7 @@
 
   function playNormalBgm(){
     if(globalThis.NovaRushConfirm?.active)return;
-    const initialDuoZone=normalState.flow?.initialStage==='zone'&&['kushuri_nito','kushuri','nito'].includes(normalState.flow.zone);
+    const initialDuoZone=NovaInitialDuo.eligible(presentedArtFlow());
     if(normalState.resultCard || normalState.pendingZoneResult || normalState.ladderAwardPresentation || (NovaDirectAward.busy&&!initialDuoZone)){pauseNormalBgm();return;}
     if(debugFastSpinActive) return;
     if(session.active) return;
@@ -5482,8 +5485,8 @@
       document.body.dataset.burst=session.active?'':normalState.flow?.burstWon?'won':normalState.flow?.burstLeft?'challenge':normalState.flow?.burstPending?'pending':'';
 
       document.body.dataset.bonusTier=session.active?NovaArt.bonusTier(session.bonusTier):'';
-      document.body.dataset.artZone=session.active?'':normalState.flow?.zone||'';
-      document.body.dataset.artUra=String(!session.active&&!!normalState.flow?.zone&&!!normalState.flow?.ura);
+      document.body.dataset.artZone=session.active?'':presentedArtFlow()?.zone||'';
+      document.body.dataset.artUra=String(!session.active&&!!presentedArtFlow()?.zone&&!!presentedArtFlow()?.ura);
       document.body.dataset.totoColor=document.body.dataset.artZone==='toto'?(normalState.flow?.color||'white'):'white';
     }
     $("modeTag").className = "modeTag " + ((active || isNovaRisingMode()) ? "active" : "");
@@ -6825,7 +6828,7 @@
     NovaAim.bet(spin.resolved.aim,spin.resolved);
     NovaInitialDuo.begin(spin.resolved);
     NovaInitialDuo.stop(spin.stopped.filter(Boolean).length);
-    NovaLadder.bet(spin.resolved.flowBefore);
+    NovaLadder.bet(spin.resolved.zoneStartFlow||spin.resolved.flowBefore);
     NovaLadder.stop(spin.stopped.filter(Boolean).length);
     if(spin.resolved.flowBefore?.entryStage==='roulette')showZoneRoulette(spin.stopped.every(Boolean)?spin.resolved.flowAfter:spin.resolved.flowBefore);
     renderCzPrelude(spin.resolved.blackoutReels||[]);
@@ -7084,6 +7087,7 @@
     const spec = RESULT[result];
     const lineRow = resultLineRow(result);
     const resolved = options?.oumaFailed ? {oumaFailed:true,reward:0,flowBefore:normalState.flow,flowAfter:normalState.flow} : normalActiveAtSpinStart ? resolveNormalOutcome(result, lineRow) : resolveOutcome(result);
+    if(resolved.zoneStartFlow&&!debugFastSpinActive)NovaLadder.bet(resolved.zoneStartFlow);
     const reversePushGuide = zoneActiveAtSpinStart ? decideReversePushGuide(result, zoneActiveAtSpinStart ? currentGoraiZoneType() : "") : "";
     let grid = zoneActiveAtSpinStart && reversePushGuide && result === "MISS"
       ? buildReversePushMissGrid()
@@ -7182,6 +7186,7 @@
     playRareCueVoice(currentSpin);
     playGiruLadderBetVoice(currentSpin);
     NovaSortie.begin(currentSpin);
+    if(resolved.zoneStartFlow)updateDisplay();
     if(resolved.oumaFreeze)showOverlay(NovaArt.zoneName(normalState.flow)+'フリーズ！ 0G連');
     else if(resolved.artReverse)showOverlay('逆回転！ '+resolved.flowAfter.award+'pt');
     else if(resolved.researchChallenge?.priorAim)showOverlay('ノヴァを狙え');
@@ -8864,12 +8869,12 @@
     document.getElementById('machine').dataset.atPreludeActive='false';
   }
   function playInitialDuoStop(spin,order){
-    if(debugFastSpinActive||speedToBonusActive||!NovaInitialDuo.eligible(spin?.resolved?.flowBefore))return;
+    if(debugFastSpinActive||speedToBonusActive||!NovaInitialDuo.eligible(spin?.resolved?.zoneStartFlow||spin?.resolved?.flowBefore))return;
     if(!NovaInitialDuo.stop(order))return;
     playOneShotSound(order===3?'assets/media/nova/initial-duo-final-stop.mp3':'assets/media/nova/initial-duo-stop.mp3',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
   }
   function playStopSound(i, stopOrder=null){
-    if(globalThis.NovaInitialDuo?.eligible(currentSpin?.resolved?.flowBefore))return;
+    if(globalThis.NovaInitialDuo?.eligible(currentSpin?.resolved?.zoneStartFlow||currentSpin?.resolved?.flowBefore))return;
     const prelude=currentSpin?.resolved?.czPrelude||currentSpin?.resolved?.atPrelude;
     if(prelude&&!prelude.announce&&stopOrder>0&&stopOrder<=prelude.after){
       playOneShotSound('assets/media/jag/cz_third_failure.wav',sfxOutputVolume());

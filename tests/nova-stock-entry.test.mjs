@@ -46,3 +46,13 @@ test('restored preparation renders even before the status bar has been mounted',
  const c=vm.createContext({document:{createElement:()=>panel,getElementById:id=>id==='machine'?host:null},NovaArt:{zoneName:z=>z}});
  vm.runInContext(fs.readFileSync('nova-stock-entry.js','utf8'),c);c.NovaStockEntry.show({zone:'sora',stage:'prepare'});assert.equal(panel.hidden,false);assert.equal(panel.style.width,'500px');
 });
+test('the first queued zone game exposes its pre-draw display state without consuming another game',()=>{
+ const c=vm.createContext({});for(const file of ['nova-tuning.js','nova-art.js'])vm.runInContext(fs.readFileSync(file,'utf8'),c);
+ for(const zone of [...c.NovaArt.zoneIds,'kushuri_nito']){
+  const flow={...c.NovaArt.enter({setting:3},()=>.5),queuedZones:[zone,'sora']},out=c.NovaArt.step(flow,{setting:3},()=>.5),view=out.zoneStartFlow;
+  assert(view,zone);assert.equal(view.zone,c.NovaArt.baseZone(zone));assert.equal(view.ura,zone.startsWith('ura_'));assert.deepEqual(plain(view.queuedZones),['sora']);
+  assert.deepEqual(flow.queuedZones,[zone,'sora']);
+  if(zone==='kushuri_nito'){assert.equal(view.initialIndex,0);assert.equal(out.flow.initialIndex,1);assert.equal(view.zoneLeft,3);assert.equal(view.award,'0');}
+  if(['sosuke','giru','ura_giru'].includes(zone)){assert.equal(view.ladderRevealed,false);assert.equal(out.flow.ladderRevealed,true);}
+ }
+});
