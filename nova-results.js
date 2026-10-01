@@ -24,7 +24,7 @@ globalThis.NovaResults=(()=>{
   }
  }catch{positions={};}
  const key=()=>active?active.character+'-'+active.color:'sosuke-red';
- const layout=()=>({...defaults,...positions[key()]});
+ const layout=()=>({...defaults,...(active?.character==='all'?{x:14,y:28,w:72,h:36,numberX:20,numberY:80,numberW:60,numberH:13,font:8}:{}),...positions[key()]});
  function loadImage(character,color){
   const src='assets/illustrations/'+(characterImages[character]||characterImages.sosuke),cached=images.get(src);
   if(cached&&!cached.failed)return cached;
@@ -38,21 +38,24 @@ globalThis.NovaResults=(()=>{
   return entry;
  }
  function apply(){if(!active||!root)return;const p=layout();card.style.cssText=`left:${p.x}%;top:${p.y}%;width:${p.w}%;height:${p.h}%;`;
-  const cw=card.clientWidth,duo=active.character==='kushuri_nito';
-  art.style.cssText=`left:${(duo?-5:1)+p.imageX}%;top:${3+p.imageY}%;width:${(duo?57:46)*p.scale/100}%;height:${94*p.scale/100}%;`;
+  const cw=card.clientWidth,duo=active.character==='kushuri_nito',all=active.character==='all';
+  art.style.cssText=`left:${(all?4:duo?-5:1)+p.imageX}%;top:${(all?23:3)+p.imageY}%;width:${(all?92:duo?57:46)*p.scale/100}%;height:${(all?56:94)*p.scale/100}%;`;
   const font=Math.min(cw*p.font/100,cw*p.numberW/100/((String(active.pt).length+2)*.72));
   fallback.querySelector('output').style.cssText=`left:${p.numberX}%;top:${p.numberY}%;width:${p.numberW}%;height:${p.numberH}%;font-size:${font}px;`;
+  for(const [selector,scale] of [['strong',.048],['span',.034],['.novaResultNext',.032]])fallback.querySelector(selector).style.fontSize=all?cw*scale+'px':'';
  }
  function init(){if(root)return;const machine=document.getElementById('machine');if(!machine)return;
   root=document.createElement('div');root.className='novaResultsLayer';root.hidden=true;
-  root.innerHTML='<div class="novaResultCard"><div class="novaResultArt"><img draggable="false" alt=""><output class="novaResultNumber"></output><img class="novaResultPartner" src="assets/illustrations/lamps-20260928/kushuri.png" alt="くしゅり" draggable="false" hidden></div><div class="novaResultFallback" role="status"><strong>RESULT</strong><span></span><output></output></div></div>';
+  root.innerHTML='<div class="novaResultCard"><div class="novaResultArt"><img draggable="false" alt=""><output class="novaResultNumber"></output><img class="novaResultPartner" src="assets/illustrations/lamps-20260928/kushuri.png" alt="くしゅり" draggable="false" hidden><div class="novaResultEnsemble" hidden></div></div><div class="novaResultFallback" role="status"><strong>RESULT</strong><span></span><output></output><small class="novaResultNext" hidden>次のBETで上位ATチャレンジ</small></div></div>';
   machine.append(root);card=root.firstElementChild;art=card.firstElementChild;num=art.querySelector('output');fallback=card.querySelector('.novaResultFallback');
   // Both background colors share the same unmodified character image.
   for(const character of chars)for(const color of ['red','blue'])loadImage(character,color);
   for(const character of initialChars)loadImage(character,'initial');
+  const ensemble=art.querySelector('.novaResultEnsemble');
+  for(const character of ['kushuri','nito',...chars]){const img=document.createElement('img');img.src='assets/illustrations/'+characterImages[character];img.alt=names[character];img.draggable=false;ensemble.append(img);}
   const button=document.createElement('button');button.id='novaResultAdjust';button.textContent='リザルト調整';document.body.append(button);
   panel=document.createElement('dialog');panel.className='novaResultSettings';panel.innerHTML='<h3>リザルト配置</h3><label>確認画像 <select id="novaResultSelect"></select></label><div class="novaResultFields"></div><button type="button" id="novaResultReset">この画像を初期位置へ</button> <button type="button" id="novaResultClose">閉じる</button><p>変更はこのブラウザに画像別で自動保存します。画像は縦横比を維持します。</p>';document.body.append(panel);
-  select=panel.querySelector('select');select.innerHTML=chars.flatMap(id=>['red','blue'].map(c=>`<option value="${id}-${c}">${names[id]}・${c==='red'?'赤':'青'}</option>`)).join('')+initialChars.map(id=>`<option value="${id}-initial">${names[id]}・初期pt</option>`).join('');
+  select=panel.querySelector('select');select.innerHTML=chars.flatMap(id=>['red','blue'].map(c=>`<option value="${id}-${c}">${names[id]}・${c==='red'?'赤':'青'}</option>`)).join('')+initialChars.map(id=>`<option value="${id}-initial">${names[id]}・初期pt</option>`).join('')+'<option value="all-gold">全キャラ・有利区間終了</option>';
   const fields={x:'表示枠 X（%）',y:'表示枠 Y（%）',w:'表示枠 幅（%）',h:'表示枠 高さ（%）',imageX:'画像 X（%）',imageY:'画像 Y（%）',scale:'画像倍率（%）',numberX:'獲得pt X（%）',numberY:'獲得pt Y（%）',numberW:'獲得pt 幅（%）',numberH:'獲得pt 高さ（%）',font:'数字サイズ（%）'};
   panel.querySelector('.novaResultFields').innerHTML=Object.entries(fields).map(([k,label])=>`<label>${label}<input type="number" step="0.5" data-field="${k}"></label>`).join('');
   const fill=()=>panel.querySelectorAll('input').forEach(el=>el.value=layout()[el.dataset.field]);
@@ -66,13 +69,24 @@ globalThis.NovaResults=(()=>{
  function show(value){
   init();if(!root)return;
   const request=++imageRequest;active=value;root.hidden=false;root.dataset.loading='true';
+  const all=value.character==='all';
   root.dataset.initial=String(value.color==='initial');
-  root.dataset.color=value.color==='red'?'red':'blue';
+  root.dataset.color=all?'gold':value.color==='red'?'red':'blue';
+  root.dataset.all=String(all);
   root.dataset.duo=String(value.character==='kushuri_nito');
+  const ensemble=art.querySelector('.novaResultEnsemble');if(ensemble)ensemble.hidden=!all;
   const partner=art.querySelector('.novaResultPartner');if(partner)partner.hidden=value.character!=='kushuri_nito';
-  const label=`${names[value.character]} ${value.color==='initial'?'AT初期pt':value.kind==='at'?'AT総獲得':'上乗せ'}`;
+  const label=all?'有利区間終了 / 累計差枚':`${names[value.character]} ${value.color==='initial'?'AT初期pt':value.kind==='at'?'AT総獲得':'上乗せ'}`;
+  const next=fallback.querySelector('.novaResultNext');if(next)next.hidden=!all;
   num.textContent=String(value.pt);num.setAttribute('aria-label',value.pt+'pt');
-  fallback.querySelector('span').textContent=label;fallback.querySelector('output').textContent=value.pt+'pt';
+  fallback.querySelector('span').textContent=label;fallback.querySelector('output').textContent=(all&&Number(value.pt)>=0?'+':'')+value.pt+'pt';
+  if(all){
+   apply();
+   // Decode the originals before revealing the ensemble, including on a cold reload.
+   const originals=Array.from(ensemble?.querySelectorAll?.('img')||[]);
+   Promise.allSettled(originals.map(img=>img.decode())).then(()=>{if(request===imageRequest&&active===value)delete root.dataset.loading;});
+   return;
+  }
   const entry=loadImage(value.character,value.color);
   const reveal=()=>{
    if(request!==imageRequest||active!==value)return;

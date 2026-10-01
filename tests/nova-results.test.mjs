@@ -27,3 +27,13 @@ test('image switches hide previous art immediately and ignore stale image loads'
  images[2].onload();await flush();assert.equal(shown.at(-1),'assets/illustrations/lamps-20260916/toto.png');assert.equal(c.num.textContent,'300');assert.equal(c.root.dataset.loading,undefined);
  c.show({character:'giru',color:'red',pt:'400'});c.hide();images[3].onload();await flush();assert.equal(shown.length,2);assert.equal(c.root.hidden,true);
 });
+
+test('checkpoint result uses all characters and cumulative net; stale single-image decode cannot replace it',async()=>{
+ const {c,images,shown,fields,flush}=presenter();
+ c.show({character:'sora',color:'blue',pt:'100'});
+ c.show({kind:'checkpoint',character:'all',color:'gold',pt:'2404'});
+ assert.equal(c.root.dataset.all,'true');assert.equal(c.root.dataset.color,'gold');
+ assert.equal(fields.span.textContent,'有利区間終了 / 累計差枚');assert.equal(fields.output.textContent,'+2404pt');
+ images[0].onload();await flush();assert.equal(shown.length,0);assert.equal(c.root.dataset.loading,undefined);
+ c.show({character:'sora',color:'blue',pt:'200'});assert.equal(c.root.dataset.all,'false');assert.equal(shown.length,1);
+});

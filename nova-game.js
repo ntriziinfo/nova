@@ -2624,14 +2624,36 @@
 
   function atCheckpointStatus(flow,progress,net){
     // Presentation only: remaining is gross payout, not a guaranteed future net.
-    if(flow?.phase!=='art'||flow.zone||flow.entryStage||flow.initialStage||flow.atPrelude||flow.researchSortieLeft||flow.comebackLeft||flow.comebackConfirmed||flow.researchChallengeActive||flow.burstLeft)return '';
+    if(flow?.phase!=='art'||flow.zone||flow.entryStage||flow.initialStage||flow.atPrelude||flow.researchSortieLeft||flow.comebackLeft||flow.comebackConfirmed||flow.researchChallengeActive||flow.burstLeft)return null;
     const pending=Number(progress?.pending)>0 || (flow.burstPending&&flow.researchChallengeSource==='threshold');
-    if(flow.burstPending&&!pending)return '';
+    if(flow.burstPending&&flow.researchChallengeSource!=='threshold')return null;
     const next=Number(progress?.next),profit=Number(net);
-    let remaining;try{remaining=BigInt(flow.remaining||0);}catch{return '';}
-    if(remaining<0n)return '';
-    if(!pending&&(!Number.isFinite(next)||next<=0||!Number.isFinite(profit)||remaining<BigInt(Math.ceil(Math.max(0,next-profit)))))return '';
-    return `${flow.researchUpper?'上位AT':'AT'} 残り${remaining.toLocaleString('ja-JP')}pt ＋上位ATチャレンジ`;
+    if(!Number.isFinite(next)||next<=0||!Number.isFinite(profit))return null;
+    let remaining;try{remaining=BigInt(flow.remaining||0);}catch{return null;}
+    if(remaining<0n)return null;
+    const left=pending?0:Math.ceil(Math.max(0,next-profit));
+    return {text:`上位ATチャレンジまで${left.toLocaleString('ja-JP')}pt`,gold:remaining>=BigInt(left)};
+  }
+
+  function checkpointResultCard(flow,progress,lastShown,net){
+    // Wait for the same safe boundary as the engine; do not skip an active zone/challenge.
+    if(!['normal','art'].includes(flow?.phase)||flow.zone||flow.entryStage||flow.initialStage||flow.atPrelude||flow.researchSortieLeft||flow.researchChallengeActive||flow.burstLeft)return null;
+    if(flow.burstPending&&flow.researchChallengeSource!=='threshold')return null;
+    const waiting=Math.max(0,Math.floor(Number(progress?.pending)||0))+Number(!!(flow.burstPending&&flow.researchChallengeSource==='threshold'));
+    const line=Number(progress?.next)-2400*waiting,profit=Number(net);
+    if(!waiting||!Number.isFinite(line)||line<=0||line<=(Number(lastShown)||0)||!Number.isFinite(profit))return null;
+    return {kind:'checkpoint',character:'all',color:'gold',pt:String(profit),checkpoint:line};
+  }
+
+  function showCheckpointResultIfReady(replaceResult=false){
+    if(!A_TYPE_MODE||debugFastSpinActive||session.active||normalState.bonusPending||isCompleteTrialLocked()||isSpinning)return false;
+    if(normalState.flow?.phase==='normal'&&normalState.internal?.prelude)return false;
+    if((normalState.resultCard&&!replaceResult)||normalState.pendingZoneResult||normalState.ladderAwardPresentation||NovaAim.busy||NovaDirectAward.busy)return false;
+    const card=checkpointResultCard(normalState.flow,NovaProgress.snapshot(),normalState.checkpointResultShown,currentProfit());
+    if(!card)return false;
+    normalState.checkpointResultShown=card.checkpoint;
+    displayNovaResult(card);
+    return true;
   }
 
   function pendingBonusLabel(){
@@ -5434,9 +5456,9 @@
     if($('novaInternalStatus'))$('novaInternalStatus').textContent='小役CZ抽選 / '+internal.games+'G（共通天井'+NovaNormal.ceiling(internal)+'G） / '+(internal.level==='high'?'高確（保証'+internal.highLeft+'G）':'低確')+ (normalState.flow?.phase==='art'?' / '+'AT '+(normalState.flow.atHigh?'高確（保証'+normalState.flow.atHighLeft+'G）':'低確'):'')+' / 穢れ'+internal.impurity+'pt / 特化予約 '+(session.active?(session.bonusZones||[]):(normalState.flow?.queuedZones||[])).map(z=>NovaArt.zoneName(z)).join('・');
     const flowStatus=$("novaFlowStatus");
     if(flowStatus){
-      const checkpointText=!session.active&&!normalState.bonusPending&&!normalState.resultCard&&!normalState.pendingZoneResult&&!normalState.ladderAwardPresentation&&!isCompleteTrialLocked()?atCheckpointStatus(normalState.flow,NovaProgress.snapshot(),profit):'';
-      flowStatus.textContent=session.active ? aTypeBonusLabel(session.bonusKind)+" 残り"+aTypeBonusRemainingNet()+"pt / "+NovaArt.bonusStockLabel(session,normalState.flow) : checkpointText||normalModeLabel();
-      flowStatus.dataset.atCheckpoint=String(!!checkpointText);
+      const checkpointStatus=normalState.resultCard?.kind==='checkpoint'?{text:'上位ATチャレンジまで0pt',gold:true}:!session.active&&!normalState.bonusPending&&!normalState.resultCard&&!normalState.pendingZoneResult&&!normalState.ladderAwardPresentation&&!isCompleteTrialLocked()?atCheckpointStatus(normalState.flow,NovaProgress.snapshot(),profit):null;
+      flowStatus.textContent=session.active ? aTypeBonusLabel(session.bonusKind)+" 残り"+aTypeBonusRemainingNet()+"pt / "+NovaArt.bonusStockLabel(session,normalState.flow) : checkpointStatus?.text||normalModeLabel();
+      flowStatus.dataset.atCheckpoint=String(!!checkpointStatus?.gold);
       flowStatus.dataset.phase=session.active?"bonus":NovaFlow.normalize(normalState.flow).phase;
       document.body.dataset.gamePhase=flowStatus.dataset.phase;
       document.body.dataset.burst=session.active?'':normalState.flow?.burstWon?'won':normalState.flow?.burstLeft?'challenge':normalState.flow?.burstPending?'pending':'';
@@ -6839,6 +6861,8 @@
       stopAllReels();
       return;
     }
+    // A queued ending (including after a zone result/reload) consumes no BET or RNG.
+    if(showCheckpointResultIfReady(true)){persistState();updateDisplay();scheduleNextAuto();return;}
     applyQueuedControlInput();
 
     if(isRogiThirdStopHoldActive()){
@@ -7810,6 +7834,7 @@
       pendingForceResult = "";
       const finishedSpin = currentSpin;
       currentSpin = null;
+      showCheckpointResultIfReady();
       updateDisplay();
       setTimeout(()=>clearReelVideos(), 900);
       if(A_TYPE_MODE && resolved.aTypeBonusReady){

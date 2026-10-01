@@ -13,6 +13,14 @@
 .novaResultPartner[hidden]{display:none!important}
 .novaResultsLayer[data-duo=true] .novaResultArt>img{position:absolute;left:0;top:0;width:70%;height:100%;object-fit:contain}
 .novaResultsLayer[data-duo=true] .novaResultArt>.novaResultPartner{left:40%}
+.novaResultsLayer[data-all=true] .novaResultCard{background:radial-gradient(ellipse at 50% 0%,#967330,#392407 58%,#120e06);border:2px solid #ffe493;box-shadow:inset 0 0 26px #ffd76c33,0 0 18px #ffcb6255}
+.novaResultsLayer[data-all=true] .novaResultArt>img{display:none}
+.novaResultEnsemble[hidden],.novaResultNext[hidden]{display:none!important}
+.novaResultEnsemble{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));width:100%;height:100%}
+.novaResultEnsemble img{display:block;width:100%;height:100%;object-fit:contain;max-width:none}
+.novaResultsLayer[data-all=true] .novaResultFallback strong{left:0;width:100%;top:3%}
+.novaResultsLayer[data-all=true] .novaResultFallback span{left:0;width:100%;top:15%;color:#fff0bd;font-weight:bold}
+.novaResultNext{position:absolute;left:0;width:100%;bottom:2%;font-size:clamp(9px,1.1vw,15px);color:#fff0bd}
 #novaResultAdjust{position:fixed;left:12px;bottom:60px;z-index:100;padding:9px 12px;background:#221826;color:#fff;border:1px solid #a968b1;border-radius:6px}
 .novaResultSettings{position:fixed;inset:70px 15px auto auto;margin:0;z-index:10000;width:320px;max-height:75vh;overflow:auto;background:#17131e;color:white;border:1px solid #ba81c6;border-radius:10px;padding:16px}
 .novaResultSettings label{display:grid;gap:4px;font-size:12px}.novaResultFields{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
