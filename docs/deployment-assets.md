@@ -28,6 +28,10 @@ python scripts/package-deploy-assets.py --tag nova-assets-YYYYMMDD-N --output ..
 
 アーカイブは作業フォルダの外に置き、Gitへ直接追加しない。アーカイブ取得に失敗した場合は以前の公開版を維持する。
 
+### 小容量音源の例外
+
+`assets/media/nova/audiostock_932814.mp3`（242,415 bytes）は `.gitattributes` で個別にLFS対象から外し、原本を無変換のままGitへ格納する。既存の約1 GBの素材アーカイブは更新せず、Git cloneでこの音源も配信できる。原本と公開ファイルのSHA-256は `docs/cz-bgm-20261001.md` に記録する。その他のLFS素材の検査は従来どおり行う。
+
 ## 根拠
 
 [GitHub Releasesの容量・帯域](https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases#storage-and-bandwidth-quotas)：添付1個は2GiB未満、リリース総容量・帯域には上限を設けていない。

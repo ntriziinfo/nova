@@ -43,7 +43,7 @@
   const NOVA_ART_BGM_SRC = "assets/media/nova/RUSH.wav";
   const NOVA_BIG_BGM_SRC = "assets/media/nova/BIG.wav";
 
-  const CZ_BGM_SRC = "assets/media/nova/audiostock_933855.wav";
+  const CZ_BGM_SRC = "assets/media/nova/audiostock_932814.mp3";
   const DEFAULT_NORMAL_BGM_SRC = "assets/media/nova/audiostock_1117081.wav";
   const HIGH_MODE_BGM_SRC = "";
 
@@ -4702,7 +4702,12 @@
       const zoneTracks = {sosuke:SOSUKE_ZONE_BGM_SRC,toto:TOTO_ZONE_BGM_SRC,urapi:URAPI_ZONE_BGM_SRC,sora:SORA_ZONE_BGM_SRC,giru:GIRU_ZONE_BGM_SRC,ouma:OUMA_ZONE_BGM_SRC};
       return zoneTracks[normalState.flow.zone] || NOVA_ART_BGM_SRC;
     }
-    if(!session.active && ["cz","strong_cz"].includes(normalState.flow?.phase)) return CZ_BGM_SRC;
+    if(!session.active && ["cz","strong_cz"].includes(normalState.flow?.phase)){
+      const flow=normalState.flow;
+      // CZ is entered on the previous stop; start its BGM with the intro on BET.
+      const awaitingFirstBet=Number(flow.remaining)>0 && Number(flow.remaining)===Number(flow.totalGames) && !currentSpin?.resolved?.czIntro;
+      if(!awaitingFirstBet)return CZ_BGM_SRC;
+    }
     if(speedToBonusActive && SPEED_BGM_SRC) return SPEED_BGM_SRC;
     if(!session.active && isHighMode() && HIGH_MODE_BGM_SRC) return HIGH_MODE_BGM_SRC;
     return DEFAULT_NORMAL_BGM_SRC;
