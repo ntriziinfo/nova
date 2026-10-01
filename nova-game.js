@@ -2463,13 +2463,14 @@
     if(result==='CHANCE_A'||result==='CHANCE_B')return 'MISS';
     if(result === "BONUS_SPECIAL")return "NEBULA";
     if(result==='BURST')return '';
-    if(result==='FREEZE'||result==='ART'||result==='COMEBACK'||result==='URA_CHALLENGE'||result==='RARE'||result.startsWith('ZONE_'))return result;
+    if(result==='FREEZE'||result==='ART'||result==='COMEBACK'||result==='URA_CHALLENGE'||result==='SORTIE'||result==='RARE'||result.startsWith('ZONE_'))return result;
     if(result === "REACH_ME") return "REACH_ME";
     return A_TYPE_MODE && result ? normalizeATypeResult(result) : result;
   }
 
   function forceResultName(result){
 
+    if(result === "SORTIE")return "ノヴァ出陣チャレンジ（10G・1回予約）";
     if(result === "URA_CHALLENGE")return "上位ATチャレンジ（10G・HOLDあり）";
     if(result === "COMEBACK")return "引き戻しゾーン（5G）";
     if(result === "FREEZE")return "フリーズ";
@@ -2482,6 +2483,13 @@
     if(forceResult==='URA_CHALLENGE' && A_TYPE_MODE && (isATypeBonusActive() || normalState.bonusPending))return '';
     const result=forceResult;
     forceResult='';
+    if(A_TYPE_MODE && result==='SORTIE'){
+      // Use the existing persistent queue and safe entry timing, without forcing a reel role.
+      syncNovaProgress();
+      NovaProgress.drawSortie(settings.setting,()=>0);
+      log('強制指定：ノヴァ出陣チャレンジを1回予約（ボーナス・特化中は終了後）');
+      return '';
+    }
     return result;
   }
 
@@ -6010,7 +6018,7 @@
 
   document.addEventListener("DOMContentLoaded", () => {
     const forceSelect=document.getElementById('forceResult');
-    for(const [value,label] of [['ART','AT突入'],['URA_CHALLENGE','上位ATチャレンジ（10G・HOLDあり）'],['COMEBACK','引き戻しゾーン（5G）'],['FREEZE','フリーズ'],...Object.keys(NovaNormal.rare).filter(k=>!isNovaResult(k)).map(k=>[k,RESULT[k].name]),['RARE','ATレア役'],...NovaArt.zoneIds.map(k=>['ZONE_'+k,NovaArt.zoneName(k)+'ゾーン'])]){const option=document.createElement('option');option.value=value;option.textContent=label;forceSelect.append(option);}
+    for(const [value,label] of [['ART','AT突入'],['SORTIE','ノヴァ出陣チャレンジ（10G・1回予約）'],['URA_CHALLENGE','上位ATチャレンジ（10G・HOLDあり）'],['COMEBACK','引き戻しゾーン（5G）'],['FREEZE','フリーズ'],...Object.keys(NovaNormal.rare).filter(k=>!isNovaResult(k)).map(k=>[k,RESULT[k].name]),['RARE','ATレア役'],...NovaArt.zoneIds.map(k=>['ZONE_'+k,NovaArt.zoneName(k)+'ゾーン'])]){const option=document.createElement('option');option.value=value;option.textContent=label;forceSelect.append(option);}
     const normalPanel=document.createElement('details');normalPanel.id='novaNormalConfig';
     normalPanel.innerHTML='<summary>小役CZ抽選・穢れ・状態</summary><output id="novaInternalStatus"></output><label>天井カウンター<input id="novaNormalGames" type="number" min="0" max="'+NovaNormal.ceiling()+'" value="0"></label><label>内部状態<select id="novaLevel"><option value="low">低確</option><option value="high">高確</option></select></label><label>穢れpt<input id="novaImpurity" type="number" min="0" max="100" value="0"></label><button id="novaApplyInternal" type="button">内部状態を適用</button><p>レア小役でCZを抽選します。通常モード・天国・規定GのCZ抽選はありません。スイカ・弱ノヴァで高確も抽選し、高確中は小役CZ当選率を優遇。強ノヴァは強CZ確定です。天井は朝一も共通'+NovaNormal.ceiling()+'G＋前兆、BIG／突破確定CZを各50%。リセット時の穢れ振り分けは従来どおり。穢れ100ptは次のボーナスで消費し、AT＋特化ゾーンを予約。フリーズは通常スーパーノヴァ目の1/2。</p>';
     const resetTable=document.createElement('div');resetTable.innerHTML='<table><tr><th>設定</th>'+NovaNormal.resetImpurityPoints.map(pt=>'<th>'+pt+'pt</th>').join('')+'</tr>'+NovaNormal.resetImpurityWeights.map((row,i)=>'<tr><td>'+(i+1)+'</td>'+row.map(w=>'<td>'+w+'%</td>').join('')+'</tr>').join('')+'</table>';normalPanel.append(resetTable);
