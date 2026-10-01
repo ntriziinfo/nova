@@ -30,6 +30,7 @@ globalThis.NovaSortie=(()=>{
   if(!eligible(spin)||!init())return;
   root.hidden=false;
   const stopped=spin.stopped||[],next=order.find(i=>!stopped[i]);
+  if(stopped.length===3&&stopped.every(Boolean)&&spin.resolved.researchSortie.won)flash(spin.resolved.researchSortie.zone);
   root.firstChild.textContent=stopped.every(Boolean)?(spin.resolved.researchSortie.won?'特化ゾーン獲得！':'ノヴァ不揃い'):'逆押しでノヴァを狙え';
   for(const cell of root.querySelectorAll('[data-reel]')){const i=Number(cell.dataset.reel);cell.dataset.stopped=String(!!stopped[i]);cell.dataset.next=String(i===next);}
   for(const reel of host.querySelectorAll('.reel')){const i=Number(reel.dataset.reel);reel.classList.toggle('sortieStopped',!!stopped[i]);reel.style.setProperty('--ouma-rattle-speed',[35,41.5,30.5][i]+'ms');reel.style.setProperty('--ouma-rattle-delay',[0,-15.5,-8.5][i]+'ms');}
@@ -39,6 +40,12 @@ globalThis.NovaSortie=(()=>{
   if(root)root.hidden=true;
   if(drop){const cancel=drop;drop=null;cancel();}
   if(typeof document!=='undefined')document.querySelectorAll('.reel.sortieStopped').forEach(reel=>reel.classList.remove('sortieStopped'));
+  flash('');
+ }
+ function flash(zone){
+  if(typeof document==='undefined')return;
+  const base=String(zone||'').replace(/^(ura_|normal_)/,''),artwork={giru:'giru1',sora:'sora1',ouma:'ouma1'},id=artwork[base]||base;
+  document.querySelectorAll('.novaArtItem').forEach(lamp=>{lamp.dataset.sortieWon=String(lamp.dataset.artwork===id||(id==='kushuri_nito'&&['kushuri','nito'].includes(lamp.dataset.artwork)));});
  }
  function begin(spin){clear();render(spin);}
  function dropLeft(reel,strip,top,html,motion){
@@ -49,5 +56,5 @@ globalThis.NovaSortie=(()=>{
   });
  }
  if(typeof window!=='undefined')window.addEventListener('resize',layout);
- return {eligible,target,begin,stop:render,clear,dropLeft};
+ return {eligible,target,begin,stop:render,clear,dropLeft,flash};
 })();

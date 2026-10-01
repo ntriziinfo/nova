@@ -44,7 +44,7 @@ test('immediate common-role stop lands without advancing time and remains stoppe
  }
 });
 test('both bells and replay request immediate landing outside the sortie aim',()=>{
- const line=readGameSource().split('\n').find(line=>line.includes('await NovaReelMotion.stop(i,'));
+ const line=readGameSource().split('\n').find(line=>line.includes('await NovaReelMotion.stop(i,')&&line.includes('immediate:'));
  assert.match(line,/immediate:!sortieTarget&&\['BELL','BELL15','REPLAY'\].includes\(spin.result\)&&!spin.manualBonusStop/);
 });
 

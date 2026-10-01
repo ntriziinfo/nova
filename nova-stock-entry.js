@@ -1,0 +1,23 @@
+/* Free presentation for an already awarded queue item; never steps the engine. */
+globalThis.NovaStockEntry=(()=>{
+ let panel;
+ function eligible(flow){return flow?.phase==='art'&&flow.queuedZones?.length>0&&!flow.zone&&!flow.initialStage&&!flow.entryStage&&!flow.atPrelude&&!flow.researchSortieLeft&&!flow.burstPending&&!flow.researchChallengeActive&&!flow.comebackLeft;}
+ function matches(entry,flow){return eligible(flow)&&entry?.zone===flow.queuedZones[0]&&entry.count===flow.queuedZones.length&&['prepare','seven','ready'].includes(entry.stage);}
+ function prepare(flow){return {zone:flow.queuedZones[0],count:flow.queuedZones.length,stage:'prepare'};}
+ function spin(entry,flow,columns){return {result:'BIG',lineRow:1,grid:[0,1,2].map(r=>columns.map(c=>c[r])),stopped:[false,false,false],pendingStopColumns:[null,null,null],visualStopping:[false,false,false],auditPressOrder:[],auditStopOrder:[],resolved:{stockEntry:true,reward:0,flowBefore:{...flow,entryStage:'seven',pendingZone:entry.zone},flowAfter:{...flow,entryStage:'roulette',pendingZone:entry.zone}}};}
+ function show(entry){
+  if(!panel){panel=document.createElement('div');panel.id='novaStockPreparation';panel.setAttribute('role','status');document.getElementById('machine').append(panel);}
+  panel.hidden=!entry||entry.stage==='seven';if(panel.hidden)return;
+  panel.textContent=entry.stage==='ready'?NovaArt.zoneName(entry.zone)+'ゾーン / 次のBETで開始':'特化ゾーン準備中 / 次のBETで7を狙え';
+  layout();
+ }
+ function layout(){
+  if(!panel||panel.hidden)return;
+  const host=document.getElementById('machine'),reels=host.querySelector('.reels'),status=document.getElementById('novaFlowStatus'),b=host.getBoundingClientRect(),r=reels.getBoundingClientRect(),scale=b.width/host.offsetWidth||1;
+  const bottom=(r.top-b.top)/scale-5,top=Math.max(status?(status.getBoundingClientRect().bottom-b.top)/scale+4:0,bottom-r.width/scale*.26);
+  Object.assign(panel.style,{left:(r.left-b.left)/scale+'px',top:top+'px',width:r.width/scale+'px',height:Math.max(40,bottom-top)+'px',fontSize:r.width/scale*.036+'px'});
+ }
+ function hide(){if(panel)panel.hidden=true;}
+ if(typeof window!=='undefined')window.addEventListener('resize',layout);
+ return {eligible,matches,prepare,spin,show,hide};
+})();

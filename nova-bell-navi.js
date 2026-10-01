@@ -21,7 +21,7 @@ globalThis.NovaBellNavi=(()=>{
   return {color,mark:strength===2||strength===1&&rng()<.5?'!!':'!'};
  }
  function drawOrder(rng=Math.random){return orders[Math.min(5,Math.max(0,Math.floor(rng()*6)))].slice();}
- function stopOrder(spin){return spin?.resolved?.researchSortie?[2,1,0]:spin?.bellNaviOrder?.slice()||(spin?.resolved?.aim||spin?.zoneActiveAtStart?[2,1,0]:[0,1,2]);}
+ function stopOrder(spin){return spin?.resolved?.researchSortie||spin?.resolved?.stockEntry?[2,1,0]:spin?.bellNaviOrder?.slice()||(spin?.resolved?.aim||spin?.zoneActiveAtStart?[2,1,0]:[0,1,2]);}
  function init(){
   if(root)return true;
   host=document.getElementById('machine');if(!host)return false;

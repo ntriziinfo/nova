@@ -108,6 +108,8 @@ body[data-art-ura=true][data-art-zone=ouma] .novaArtItem[data-artwork=ouma1] img
 #novaSortieGuide span{background:#1c0619e8;border:1px solid #9d233b;border-radius:4px}
 #novaSortieGuide [data-next=true]{color:#fff;background:#971b35;border-color:#ffe5a4}
 #novaSortieGuide [data-stopped=true]{opacity:.35}
+#novaStockPreparation{position:absolute;z-index:62;display:flex;align-items:center;justify-content:center;text-align:center;color:#ffe4a0;background:linear-gradient(135deg,#220514ed,#070817ed);border:1px solid #debb61;border-radius:6px;font-weight:900;text-shadow:0 2px 4px #000;pointer-events:none}
+#novaStockPreparation[hidden]{display:none!important}
 /* The active zone character stays fully lit despite music sequence opacity. */
 body[data-art-zone=sosuke] .novaArtItem[data-artwork=sosuke],
 body[data-art-zone=toto] .novaArtItem[data-artwork=toto],
@@ -167,3 +169,6 @@ body:is([data-zone-roulette-state=roulette],[data-zone-roulette-state=confirmed]
 body[data-zone-roulette-state=confirmed] #machine .novaArtItem[data-roulette-lit=true]{animation:novaRouletteConfirmed 160ms steps(1,end) infinite!important}
 @keyframes novaRouletteConfirmed{0%,100%{filter:brightness(1)}50%{filter:brightness(.18)}}
 @media(prefers-reduced-motion:reduce){body[data-zone-roulette-state=confirmed] #machine .novaArtItem[data-roulette-lit=true]{animation:none!important}}
+body #machine .novaArtItem[data-sortie-won=true]{opacity:1!important;animation:novaRouletteConfirmed 160ms steps(1,end) infinite!important}
+body #machine .novaArtItem[data-sortie-won=true] img{opacity:1!important;animation:none!important;filter:brightness(1.4) drop-shadow(0 0 14px #ffe4a0)!important}
+@media(prefers-reduced-motion:reduce){body #machine .novaArtItem[data-sortie-won=true]{animation:none!important}}

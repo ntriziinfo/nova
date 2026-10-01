@@ -4994,6 +4994,7 @@
   }
   function applyNormalResult(result, resolved, lineRow=1){
     try{
+    delete normalState.stockEntry; // An actual engine game invalidates any prior presentation ticket.
     if(typeof debugFastSpinActive!=='undefined' && debugFastSpinActive){const audit=fastAtAuditMessage(result,resolved);if(audit)log(`${audit} / ${stats.totalSpins}G`);}
     const completedLadderPresentation=normalState.ladderAwardPresentation?.started?normalState.ladderAwardPresentation:null;
     playStrongNovaSound(result,resolved);
@@ -5444,6 +5445,7 @@
   }
 
   function updateDisplay(){
+    NovaStockEntry.show(!session.active&&!normalState.resultCard&&NovaStockEntry.matches(normalState.stockEntry,normalState.flow)?normalState.stockEntry:null);
     if(!debugFastSpinActive){
       const pending=normalState.ladderAwardPresentation;
       NovaLadder.sync(normalState.resultCard||session.active?null:pending?.flow||normalState.flow,isSpinning);
@@ -5741,6 +5743,7 @@
     NovaInitialDuo.clear();
     NovaBellNavi.clear();
     NovaSortie.clear();
+    NovaStockEntry.hide();
     NovaDirectAward.clear();
     stopAutoPlay("初期化のためオート停止");
     pauseNormalBgm();
@@ -5809,6 +5812,7 @@
     NovaInitialDuo.clear();
     NovaBellNavi.clear();
     NovaSortie.clear();
+    NovaStockEntry.hide();
     NovaDirectAward.clear();
     stopDebugFastSpin(`${reason}のため高速停止`);
     stopSpeedToBonus(`${reason}のためSPEED停止`);
@@ -6857,6 +6861,66 @@
     return true;
   }
 
+  function tryStockEntry(){
+    if(session.active||normalState.bonusPending||normalState.pendingZoneResult||NovaProgress.snapshot().pending>0||!NovaStockEntry.eligible(normalState.flow))return false;
+    if(normalState.ladderAwardPresentation){
+      const card=normalState.ladderAwardPresentation.card;delete normalState.ladderAwardPresentation;
+      displayNovaResult(card);persistState();updateDisplay();scheduleNextAuto();return true;
+    }
+    let entry=normalState.stockEntry;
+    if(!NovaStockEntry.matches(entry,normalState.flow))entry=null;
+    if(entry&&Date.now()<Number(entry.notBefore||0)){scheduleNextAuto();return true;}
+    if(entry?.stage==='ready'){
+      NovaStockEntry.hide();delete normalState.stockEntry;
+      const src=ZONE_START_VOICE_SRCS[entry.zone];
+      if(src)playOneShotSound(src,voiceOutputVolume(),{allowDuringPremiumConfirm:true});
+      return false;
+    }
+    NovaSortie.clear();NovaBellNavi.clear();NovaDirectAward.clear();NovaAim.hide();NovaLadder.hide();showZoneRoulette(null);
+    normalState.resultCard=null;NovaResults.hide();pauseNormalBgm();
+    if(!entry){
+      normalState.stockEntry=NovaStockEntry.prepare(normalState.flow);
+      normalState.stockEntry.notBefore=Date.now()+700;
+      $('resultText').textContent='特化ゾーン準備中 / 次のBETで7を狙え';
+      persistState();updateDisplay();scheduleNextAuto();return true;
+    }
+    entry.stage='seven';
+    currentSpin=NovaStockEntry.spin(entry,normalState.flow,[0,1,2].map(i=>getReelWindowFromStrip(i,'7',1)));
+    currentSpin.spec=RESULT.BIG;
+    isSpinning=true;spinCanStop=false;
+    reels.forEach((reel,i)=>{reel.classList.add('spinning');NovaReelMotion.start(i,reel,REEL_STRIPS[i],currentReelTopIndex(i),false,cellHtml);});
+    NovaAim.bet(null,currentSpin.resolved);
+    // A separate visual draw must not advance the game lottery.
+    playRandomAimVoice('seven',()=>crypto.getRandomValues(new Uint32Array(1))[0]/4294967296);
+    $('resultText').textContent='7を狙え / 特化ストックの突入演出';
+    const spin=currentSpin;
+    spinWaitTimer=setTimeout(()=>{spinWaitTimer=null;if(currentSpin!==spin)return;spinCanStop=true;syncCabinetControlState();},spinWaitMsForMode(false));
+    persistState();updateDisplay();syncCabinetControlState();scheduleNextAuto();return true;
+  }
+  function finishStockEntry(){
+    const spin=currentSpin;if(!spin?.resolved?.stockEntry)return;
+    if(spinWaitTimer){clearTimeout(spinWaitTimer);spinWaitTimer=null;}
+    spin.finishing=true;isSpinning=false;spinCanStop=false;currentSpin=null;
+    normalState.stockEntry={...NovaStockEntry.prepare(normalState.flow),stage:'ready',notBefore:Date.now()+500};
+    NovaAim.stop(spin.resolved);NovaSortie.flash(normalState.stockEntry.zone);
+    $('resultText').textContent=NovaArt.zoneName(normalState.stockEntry.zone)+'ゾーン / 次のBETで開始';
+    persistState();updateDisplay();syncCabinetControlState();scheduleNextAuto();
+  }
+  async function stopStockEntryReel(i,options={}){
+    const spin=currentSpin;
+    if(!spin?.resolved?.stockEntry||!spinCanStop||spin.stopped[i]||(!options.visualReady&&spin.visualStopping?.[i]))return;
+    const col=spin.grid.map(row=>row[i]);
+    if(!options.visualReady){
+      (spin.auditPressOrder ||= []).push(i);spin.visualStopping ||= [false,false,false];spin.visualStopping[i]=true;
+      spin.pendingStopColumns[i]=col;persistState();stopBtns[i].disabled=true;
+      if(!await NovaReelMotion.stop(i,col)||currentSpin!==spin)return;
+    }
+    stopReel(i,col,'',spin.spec.cls,1,(spin.auditStopOrder||[]).length+1);
+    spin.stopped[i]=true;spin.pendingStopColumns[i]=null;(spin.auditStopOrder ||= []).push(i);
+    spin.auditGrid ||= [[],[],[]];col.forEach((s,r)=>spin.auditGrid[r][i]=s);
+    if(spin.stopped.every(Boolean))finishStockEntry();
+    else{persistState();syncCabinetControlState();}
+  }
   async function spin(options={}){
     if(!canUsePlayState())return;
     if(NovaLadder.busy||NovaAim.busy||NovaDirectAward.busy)return;
@@ -6882,6 +6946,7 @@
     }
     // A queued ending (including after a zone result/reload) consumes no BET or RNG.
     if(showCheckpointResultIfReady(true)){persistState();updateDisplay();scheduleNextAuto();return;}
+    if(tryStockEntry())return;
     applyQueuedControlInput();
 
     if(isRogiThirdStopHoldActive()){
@@ -7224,6 +7289,7 @@
 
   function stopSingleReel(i, options={}){
     if(!canUsePlayState())return;
+    if(currentSpin?.resolved?.stockEntry){void stopStockEntryReel(i,options);return;}
     if(currentSpin?.resolved?.oumaFreeze&&!options.oumaAuto)return;
     if(!isSpinning || !currentSpin || currentSpin.stopped[i]) return;
     if(options.keyboardTurbo){
@@ -7774,6 +7840,7 @@
   }
 
   function finishSpin(result, resolved, lineRow=1){
+    if(resolved?.stockEntry){finishStockEntry();return;}
     if(!isSpinning || (currentSpin && currentSpin.finishing)) return;
     try{
     NovaBellNavi.clear();
