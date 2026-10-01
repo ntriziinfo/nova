@@ -1,0 +1,7380 @@
+{
+  "date": "2026-10-01",
+  "status": "pilot",
+  "gamesPerTrial": 30000,
+  "trialsPerSettingAndVariant": 60,
+  "options": {
+    "rng": "xoshiro128",
+    "exactGames": true,
+    "completeLimitPt": 10000,
+    "stopAtComplete": true,
+    "rareSortie": true
+  },
+  "definition": "Pooled actual payout / charged BET. 30,000 total games including bonus, or cumulative net +10,000pt stop. Same reset seeds, independent trials. Only actually charged BETs during quota-consuming AT are restored.",
+  "seconds": 66.756,
+  "summary": [
+    {
+      "setting": 1,
+      "before": {
+        "trials": 60,
+        "rtp": 0.9285489103616489,
+        "ci95": [
+          0.8893696874835397,
+          0.967728133239758
+        ],
+        "win": 0.36666666666666664,
+        "complete": 0.08333333333333333,
+        "meanGames": 29202.45
+      },
+      "after": {
+        "trials": 60,
+        "rtp": 1.2175125077071343,
+        "ci95": [
+          1.1740147791085913,
+          1.2610102363056772
+        ],
+        "win": 0.9166666666666666,
+        "complete": 0.7333333333333333,
+        "meanGames": 20618.583333333332
+      }
+    },
+    {
+      "setting": 2,
+      "before": {
+        "trials": 60,
+        "rtp": 0.9981820203701093,
+        "ci95": [
+          0.9685402480464707,
+          1.027823792693748
+        ],
+        "win": 0.48333333333333334,
+        "complete": 0.13333333333333333,
+        "meanGames": 28575.733333333334
+      },
+      "after": {
+        "trials": 60,
+        "rtp": 1.2983583302126904,
+        "ci95": [
+          1.2575501015111703,
+          1.3391665589142105
+        ],
+        "win": 0.9666666666666667,
+        "complete": 0.8833333333333333,
+        "meanGames": 17604.95
+      }
+    },
+    {
+      "setting": 3,
+      "before": {
+        "trials": 60,
+        "rtp": 0.9915390950103834,
+        "ci95": [
+          0.954625050129739,
+          1.028453139891028
+        ],
+        "win": 0.45,
+        "complete": 0.2,
+        "meanGames": 28542.766666666666
+      },
+      "after": {
+        "trials": 60,
+        "rtp": 1.2606623276826068,
+        "ci95": [
+          1.229797884647223,
+          1.2915267707179905
+        ],
+        "win": 1,
+        "complete": 0.85,
+        "meanGames": 20048.733333333334
+      }
+    },
+    {
+      "setting": 4,
+      "before": {
+        "trials": 60,
+        "rtp": 1.026026102417446,
+        "ci95": [
+          0.9941649129498658,
+          1.0578872918850262
+        ],
+        "win": 0.5333333333333333,
+        "complete": 0.13333333333333333,
+        "meanGames": 28298.933333333334
+      },
+      "after": {
+        "trials": 60,
+        "rtp": 1.2950725584050498,
+        "ci95": [
+          1.2595121718923854,
+          1.3306329449177141
+        ],
+        "win": 1,
+        "complete": 0.9,
+        "meanGames": 18217.9
+      }
+    },
+    {
+      "setting": 5,
+      "before": {
+        "trials": 60,
+        "rtp": 1.051433514012973,
+        "ci95": [
+          1.0194382979480487,
+          1.083428730077897
+        ],
+        "win": 0.7,
+        "complete": 0.16666666666666666,
+        "meanGames": 29221.966666666667
+      },
+      "after": {
+        "trials": 60,
+        "rtp": 1.2666187782927232,
+        "ci95": [
+          1.2175377779513628,
+          1.3156997786340836
+        ],
+        "win": 0.95,
+        "complete": 0.8166666666666667,
+        "meanGames": 18260.1
+      }
+    },
+    {
+      "setting": 6,
+      "before": {
+        "trials": 60,
+        "rtp": 1.1507511245186075,
+        "ci95": [
+          1.120266843702733,
+          1.181235405334482
+        ],
+        "win": 0.9166666666666666,
+        "complete": 0.3,
+        "meanGames": 27062.483333333334
+      },
+      "after": {
+        "trials": 60,
+        "rtp": 1.405396545005106,
+        "ci95": [
+          1.3450740361663585,
+          1.4657190538438536
+        ],
+        "win": 0.9833333333333333,
+        "complete": 0.9333333333333333,
+        "meanGames": 14473.183333333332
+      }
+    }
+  ],
+  "rows": [
+    {
+      "setting": 2,
+      "trial": 0,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52518,
+      "totalPaid": 51336,
+      "net": -1182,
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "trial": 0,
+      "atBetRefund": true,
+      "games": 16644,
+      "totalBet": 29811,
+      "totalPaid": 39813,
+      "net": 10002,
+      "complete": true
+    },
+    {
+      "setting": 2,
+      "trial": 1,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52629,
+      "totalPaid": 49397,
+      "net": -3232,
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "trial": 1,
+      "atBetRefund": true,
+      "games": 27031,
+      "totalBet": 48027,
+      "totalPaid": 58028,
+      "net": 10001,
+      "complete": true
+    },
+    {
+      "setting": 2,
+      "trial": 2,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52428,
+      "totalPaid": 54906,
+      "net": 2478,
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "trial": 2,
+      "atBetRefund": true,
+      "games": 16201,
+      "totalBet": 28623,
+      "totalPaid": 38632,
+      "net": 10009,
+      "complete": true
+    },
+    {
+      "setting": 2,
+      "trial": 3,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52617,
+      "totalPaid": 48910,
+      "net": -3707,
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "trial": 3,
+      "atBetRefund": true,
+      "games": 14031,
+      "totalBet": 25191,
+      "totalPaid": 35198,
+      "net": 10007,
+      "complete": true
+    },
+    {
+      "setting": 2,
+      "trial": 4,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53580,
+      "totalPaid": 51281,
+      "net": -2299,
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "trial": 4,
+      "atBetRefund": true,
+      "games": 6278,
+      "totalBet": 11667,
+      "totalPaid": 21674,
+      "net": 10007,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 0,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52695,
+      "totalPaid": 49838,
+      "net": -2857,
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "trial": 0,
+      "atBetRefund": true,
+      "games": 21401,
+      "totalBet": 37902,
+      "totalPaid": 47910,
+      "net": 10008,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 1,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52353,
+      "totalPaid": 46634,
+      "net": -5719,
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "trial": 1,
+      "atBetRefund": true,
+      "games": 15156,
+      "totalBet": 27150,
+      "totalPaid": 37155,
+      "net": 10005,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 2,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53031,
+      "totalPaid": 51838,
+      "net": -1193,
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "trial": 2,
+      "atBetRefund": true,
+      "games": 21179,
+      "totalBet": 38124,
+      "totalPaid": 48134,
+      "net": 10010,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 3,
+      "atBetRefund": false,
+      "games": 27521,
+      "totalBet": 49251,
+      "totalPaid": 59255,
+      "net": 10004,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 3,
+      "atBetRefund": true,
+      "games": 13640,
+      "totalBet": 24759,
+      "totalPaid": 34762,
+      "net": 10003,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 4,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52383,
+      "totalPaid": 42678,
+      "net": -9705,
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "trial": 4,
+      "atBetRefund": true,
+      "games": 21854,
+      "totalBet": 39234,
+      "totalPaid": 49236,
+      "net": 10002,
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "trial": 0,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52065,
+      "totalPaid": 44215,
+      "net": -7850,
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "trial": 0,
+      "atBetRefund": true,
+      "games": 7514,
+      "totalBet": 13689,
+      "totalPaid": 23694,
+      "net": 10005,
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "trial": 1,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52710,
+      "totalPaid": 54234,
+      "net": 1524,
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "trial": 1,
+      "atBetRefund": true,
+      "games": 7807,
+      "totalBet": 14307,
+      "totalPaid": 24307,
+      "net": 10000,
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "trial": 2,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52698,
+      "totalPaid": 58984,
+      "net": 6286,
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "trial": 2,
+      "atBetRefund": true,
+      "games": 18885,
+      "totalBet": 33657,
+      "totalPaid": 43662,
+      "net": 10005,
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "trial": 3,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53079,
+      "totalPaid": 62456,
+      "net": 9377,
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "trial": 3,
+      "atBetRefund": true,
+      "games": 11080,
+      "totalBet": 20037,
+      "totalPaid": 30040,
+      "net": 10003,
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "trial": 4,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52089,
+      "totalPaid": 43897,
+      "net": -8192,
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "trial": 4,
+      "atBetRefund": true,
+      "games": 29404,
+      "totalBet": 52290,
+      "totalPaid": 62299,
+      "net": 10009,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 0,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 47388,
+      "totalPaid": 53777,
+      "net": 6389,
+      "complete": false
+    },
+    {
+      "setting": 6,
+      "trial": 0,
+      "atBetRefund": true,
+      "games": 24916,
+      "totalBet": 39753,
+      "totalPaid": 49756,
+      "net": 10003,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 1,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 47064,
+      "totalPaid": 52018,
+      "net": 4954,
+      "complete": false
+    },
+    {
+      "setting": 6,
+      "trial": 1,
+      "atBetRefund": true,
+      "games": 10005,
+      "totalBet": 16758,
+      "totalPaid": 26764,
+      "net": 10006,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 2,
+      "atBetRefund": false,
+      "games": 27559,
+      "totalBet": 44055,
+      "totalPaid": 54066,
+      "net": 10011,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 2,
+      "atBetRefund": true,
+      "games": 14861,
+      "totalBet": 23601,
+      "totalPaid": 33610,
+      "net": 10009,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 3,
+      "atBetRefund": false,
+      "games": 27998,
+      "totalBet": 43992,
+      "totalPaid": 53994,
+      "net": 10002,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 3,
+      "atBetRefund": true,
+      "games": 24070,
+      "totalBet": 37938,
+      "totalPaid": 47942,
+      "net": 10004,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 4,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 47370,
+      "totalPaid": 55333,
+      "net": 7963,
+      "complete": false
+    },
+    {
+      "setting": 6,
+      "trial": 4,
+      "atBetRefund": true,
+      "games": 18142,
+      "totalBet": 29013,
+      "totalPaid": 39020,
+      "net": 10007,
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "trial": 0,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52695,
+      "totalPaid": 58525,
+      "net": 5830,
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "trial": 0,
+      "atBetRefund": true,
+      "games": 14711,
+      "totalBet": 26286,
+      "totalPaid": 36287,
+      "net": 10001,
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "trial": 1,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52908,
+      "totalPaid": 56962,
+      "net": 4054,
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "trial": 1,
+      "atBetRefund": true,
+      "games": 17434,
+      "totalBet": 30978,
+      "totalPaid": 40981,
+      "net": 10003,
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "trial": 2,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52524,
+      "totalPaid": 49431,
+      "net": -3093,
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "trial": 2,
+      "atBetRefund": true,
+      "games": 27086,
+      "totalBet": 47886,
+      "totalPaid": 57896,
+      "net": 10010,
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "trial": 3,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52701,
+      "totalPaid": 54319,
+      "net": 1618,
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "trial": 3,
+      "atBetRefund": true,
+      "games": 10049,
+      "totalBet": 17928,
+      "totalPaid": 27930,
+      "net": 10002,
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "trial": 4,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53343,
+      "totalPaid": 62754,
+      "net": 9411,
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "trial": 4,
+      "atBetRefund": true,
+      "games": 10818,
+      "totalBet": 19593,
+      "totalPaid": 29594,
+      "net": 10001,
+      "complete": true
+    },
+    {
+      "setting": 1,
+      "trial": 0,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52950,
+      "totalPaid": 47237,
+      "net": -5713,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 0,
+      "atBetRefund": true,
+      "games": 18387,
+      "totalBet": 32961,
+      "totalPaid": 42962,
+      "net": 10001,
+      "complete": true
+    },
+    {
+      "setting": 1,
+      "trial": 1,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53217,
+      "totalPaid": 55246,
+      "net": 2029,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 1,
+      "atBetRefund": true,
+      "games": 27513,
+      "totalBet": 49386,
+      "totalPaid": 59387,
+      "net": 10001,
+      "complete": true
+    },
+    {
+      "setting": 1,
+      "trial": 2,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52566,
+      "totalPaid": 47065,
+      "net": -5501,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 2,
+      "atBetRefund": true,
+      "games": 12145,
+      "totalBet": 22176,
+      "totalPaid": 32182,
+      "net": 10006,
+      "complete": true
+    },
+    {
+      "setting": 1,
+      "trial": 3,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 51810,
+      "totalPaid": 34870,
+      "net": -16940,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 3,
+      "atBetRefund": true,
+      "games": 25949,
+      "totalBet": 46383,
+      "totalPaid": 56385,
+      "net": 10002,
+      "complete": true
+    },
+    {
+      "setting": 1,
+      "trial": 4,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 51957,
+      "totalPaid": 38332,
+      "net": -13625,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 4,
+      "atBetRefund": true,
+      "games": 30000,
+      "totalBet": 52824,
+      "totalPaid": 57118,
+      "net": 4294,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 5,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52710,
+      "totalPaid": 52086,
+      "net": -624,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 5,
+      "atBetRefund": true,
+      "games": 22380,
+      "totalBet": 40185,
+      "totalPaid": 50190,
+      "net": 10005,
+      "complete": true
+    },
+    {
+      "setting": 1,
+      "trial": 6,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52389,
+      "totalPaid": 40861,
+      "net": -11528,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 6,
+      "atBetRefund": true,
+      "games": 30000,
+      "totalBet": 53448,
+      "totalPaid": 60086,
+      "net": 6638,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 7,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 51966,
+      "totalPaid": 39451,
+      "net": -12515,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 7,
+      "atBetRefund": true,
+      "games": 30000,
+      "totalBet": 52014,
+      "totalPaid": 41824,
+      "net": -10190,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 8,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53304,
+      "totalPaid": 61119,
+      "net": 7815,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 8,
+      "atBetRefund": true,
+      "games": 11139,
+      "totalBet": 20277,
+      "totalPaid": 30280,
+      "net": 10003,
+      "complete": true
+    },
+    {
+      "setting": 1,
+      "trial": 9,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52179,
+      "totalPaid": 42140,
+      "net": -10039,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 9,
+      "atBetRefund": true,
+      "games": 21135,
+      "totalBet": 37416,
+      "totalPaid": 47416,
+      "net": 10000,
+      "complete": true
+    },
+    {
+      "setting": 2,
+      "trial": 5,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52686,
+      "totalPaid": 52980,
+      "net": 294,
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "trial": 5,
+      "atBetRefund": true,
+      "games": 15256,
+      "totalBet": 27462,
+      "totalPaid": 37462,
+      "net": 10000,
+      "complete": true
+    },
+    {
+      "setting": 2,
+      "trial": 6,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52905,
+      "totalPaid": 55756,
+      "net": 2851,
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "trial": 6,
+      "atBetRefund": true,
+      "games": 24943,
+      "totalBet": 44244,
+      "totalPaid": 54248,
+      "net": 10004,
+      "complete": true
+    },
+    {
+      "setting": 2,
+      "trial": 7,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52107,
+      "totalPaid": 40175,
+      "net": -11932,
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "trial": 7,
+      "atBetRefund": true,
+      "games": 30000,
+      "totalBet": 52743,
+      "totalPaid": 56939,
+      "net": 4196,
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "trial": 8,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52350,
+      "totalPaid": 49621,
+      "net": -2729,
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "trial": 8,
+      "atBetRefund": true,
+      "games": 16192,
+      "totalBet": 28848,
+      "totalPaid": 38856,
+      "net": 10008,
+      "complete": true
+    },
+    {
+      "setting": 2,
+      "trial": 9,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52395,
+      "totalPaid": 48378,
+      "net": -4017,
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "trial": 9,
+      "atBetRefund": true,
+      "games": 12264,
+      "totalBet": 22308,
+      "totalPaid": 32308,
+      "net": 10000,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 5,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52425,
+      "totalPaid": 45369,
+      "net": -7056,
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "trial": 5,
+      "atBetRefund": true,
+      "games": 22144,
+      "totalBet": 39666,
+      "totalPaid": 49666,
+      "net": 10000,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 6,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52464,
+      "totalPaid": 48664,
+      "net": -3800,
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "trial": 6,
+      "atBetRefund": true,
+      "games": 18160,
+      "totalBet": 32202,
+      "totalPaid": 42205,
+      "net": 10003,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 7,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52617,
+      "totalPaid": 49609,
+      "net": -3008,
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "trial": 7,
+      "atBetRefund": true,
+      "games": 12847,
+      "totalBet": 23346,
+      "totalPaid": 33348,
+      "net": 10002,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 8,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52155,
+      "totalPaid": 39394,
+      "net": -12761,
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "trial": 8,
+      "atBetRefund": true,
+      "games": 30000,
+      "totalBet": 53136,
+      "totalPaid": 59334,
+      "net": 6198,
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "trial": 9,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52758,
+      "totalPaid": 51698,
+      "net": -1060,
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "trial": 9,
+      "atBetRefund": true,
+      "games": 30000,
+      "totalBet": 52956,
+      "totalPaid": 59031,
+      "net": 6075,
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "trial": 5,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52278,
+      "totalPaid": 43775,
+      "net": -8503,
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "trial": 5,
+      "atBetRefund": true,
+      "games": 30000,
+      "totalBet": 53211,
+      "totalPaid": 59867,
+      "net": 6656,
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "trial": 6,
+      "atBetRefund": false,
+      "games": 25336,
+      "totalBet": 45255,
+      "totalPaid": 55255,
+      "net": 10000,
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "trial": 6,
+      "atBetRefund": true,
+      "games": 11683,
+      "totalBet": 21039,
+      "totalPaid": 31041,
+      "net": 10002,
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "trial": 7,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52359,
+      "totalPaid": 49922,
+      "net": -2437,
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "trial": 7,
+      "atBetRefund": true,
+      "games": 18784,
+      "totalBet": 33348,
+      "totalPaid": 43350,
+      "net": 10002,
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "trial": 8,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53082,
+      "totalPaid": 50521,
+      "net": -2561,
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "trial": 8,
+      "atBetRefund": true,
+      "games": 9716,
+      "totalBet": 17904,
+      "totalPaid": 27912,
+      "net": 10008,
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "trial": 9,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52617,
+      "totalPaid": 57305,
+      "net": 4688,
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "trial": 9,
+      "atBetRefund": true,
+      "games": 12084,
+      "totalBet": 21732,
+      "totalPaid": 31736,
+      "net": 10004,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 5,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 46578,
+      "totalPaid": 48078,
+      "net": 1500,
+      "complete": false
+    },
+    {
+      "setting": 6,
+      "trial": 5,
+      "atBetRefund": true,
+      "games": 15910,
+      "totalBet": 25755,
+      "totalPaid": 35759,
+      "net": 10004,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 6,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 47217,
+      "totalPaid": 54443,
+      "net": 7226,
+      "complete": false
+    },
+    {
+      "setting": 6,
+      "trial": 6,
+      "atBetRefund": true,
+      "games": 13249,
+      "totalBet": 21390,
+      "totalPaid": 31390,
+      "net": 10000,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 7,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 47754,
+      "totalPaid": 56873,
+      "net": 9119,
+      "complete": false
+    },
+    {
+      "setting": 6,
+      "trial": 7,
+      "atBetRefund": true,
+      "games": 8942,
+      "totalBet": 14892,
+      "totalPaid": 24900,
+      "net": 10008,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 8,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 47268,
+      "totalPaid": 54887,
+      "net": 7619,
+      "complete": false
+    },
+    {
+      "setting": 6,
+      "trial": 8,
+      "atBetRefund": true,
+      "games": 13620,
+      "totalBet": 22383,
+      "totalPaid": 32384,
+      "net": 10001,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 9,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 46950,
+      "totalPaid": 51728,
+      "net": 4778,
+      "complete": false
+    },
+    {
+      "setting": 6,
+      "trial": 9,
+      "atBetRefund": true,
+      "games": 30000,
+      "totalBet": 46893,
+      "totalPaid": 52842,
+      "net": 5949,
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "trial": 5,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 51984,
+      "totalPaid": 49340,
+      "net": -2644,
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "trial": 5,
+      "atBetRefund": true,
+      "games": 30000,
+      "totalBet": 52380,
+      "totalPaid": 53319,
+      "net": 939,
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "trial": 6,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53208,
+      "totalPaid": 61374,
+      "net": 8166,
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "trial": 6,
+      "atBetRefund": true,
+      "games": 21633,
+      "totalBet": 38409,
+      "totalPaid": 48418,
+      "net": 10009,
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "trial": 7,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52896,
+      "totalPaid": 50949,
+      "net": -1947,
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "trial": 7,
+      "atBetRefund": true,
+      "games": 30000,
+      "totalBet": 52854,
+      "totalPaid": 55151,
+      "net": 2297,
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "trial": 8,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53217,
+      "totalPaid": 59535,
+      "net": 6318,
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "trial": 8,
+      "atBetRefund": true,
+      "games": 14698,
+      "totalBet": 26217,
+      "totalPaid": 36218,
+      "net": 10001,
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "trial": 9,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52092,
+      "totalPaid": 43423,
+      "net": -8669,
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "trial": 9,
+      "atBetRefund": true,
+      "games": 30000,
+      "totalBet": 52953,
+      "totalPaid": 60094,
+      "net": 7141,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 10,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52014,
+      "totalPaid": 40699,
+      "net": -11315,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 10,
+      "atBetRefund": true,
+      "games": 24768,
+      "totalBet": 43776,
+      "totalPaid": 53776,
+      "net": 10000,
+      "complete": true
+    },
+    {
+      "setting": 1,
+      "trial": 11,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53142,
+      "totalPaid": 51046,
+      "net": -2096,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 11,
+      "atBetRefund": true,
+      "games": 18862,
+      "totalBet": 33885,
+      "totalPaid": 43887,
+      "net": 10002,
+      "complete": true
+    },
+    {
+      "setting": 1,
+      "trial": 12,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53952,
+      "totalPaid": 53781,
+      "net": -171,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 12,
+      "atBetRefund": true,
+      "games": 19880,
+      "totalBet": 36228,
+      "totalPaid": 46234,
+      "net": 10006,
+      "complete": true
+    },
+    {
+      "setting": 1,
+      "trial": 13,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53205,
+      "totalPaid": 52801,
+      "net": -404,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 13,
+      "atBetRefund": true,
+      "games": 23512,
+      "totalBet": 42123,
+      "totalPaid": 52124,
+      "net": 10001,
+      "complete": true
+    },
+    {
+      "setting": 1,
+      "trial": 14,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52944,
+      "totalPaid": 44087,
+      "net": -8857,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 14,
+      "atBetRefund": true,
+      "games": 30000,
+      "totalBet": 53715,
+      "totalPaid": 55889,
+      "net": 2174,
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "trial": 10,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53658,
+      "totalPaid": 59322,
+      "net": 5664,
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "trial": 10,
+      "atBetRefund": true,
+      "games": 17211,
+      "totalBet": 30909,
+      "totalPaid": 40910,
+      "net": 10001,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 11,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52299,
+      "totalPaid": 52409,
+      "net": 110,
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "trial": 11,
+      "atBetRefund": true,
+      "games": 23696,
+      "totalBet": 42108,
+      "totalPaid": 52111,
+      "net": 10003,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 12,
+      "atBetRefund": false,
+      "games": 20239,
+      "totalBet": 36297,
+      "totalPaid": 46298,
+      "net": 10001,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 12,
+      "atBetRefund": true,
+      "games": 12711,
+      "totalBet": 22656,
+      "totalPaid": 32660,
+      "net": 10004,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 13,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52194,
+      "totalPaid": 40776,
+      "net": -11418,
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "trial": 13,
+      "atBetRefund": true,
+      "games": 27602,
+      "totalBet": 49110,
+      "totalPaid": 59117,
+      "net": 10007,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 14,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52209,
+      "totalPaid": 35308,
+      "net": -16901,
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "trial": 14,
+      "atBetRefund": true,
+      "games": 25965,
+      "totalBet": 46851,
+      "totalPaid": 56861,
+      "net": 10010,
+      "complete": true
+    },
+    {
+      "setting": 2,
+      "trial": 10,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52899,
+      "totalPaid": 51139,
+      "net": -1760,
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "trial": 10,
+      "atBetRefund": true,
+      "games": 18292,
+      "totalBet": 32931,
+      "totalPaid": 42931,
+      "net": 10000,
+      "complete": true
+    },
+    {
+      "setting": 2,
+      "trial": 11,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52506,
+      "totalPaid": 45489,
+      "net": -7017,
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "trial": 11,
+      "atBetRefund": true,
+      "games": 19308,
+      "totalBet": 34530,
+      "totalPaid": 44537,
+      "net": 10007,
+      "complete": true
+    },
+    {
+      "setting": 2,
+      "trial": 12,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53352,
+      "totalPaid": 54511,
+      "net": 1159,
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "trial": 12,
+      "atBetRefund": true,
+      "games": 19010,
+      "totalBet": 34152,
+      "totalPaid": 44163,
+      "net": 10011,
+      "complete": true
+    },
+    {
+      "setting": 2,
+      "trial": 13,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52467,
+      "totalPaid": 53884,
+      "net": 1417,
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "trial": 13,
+      "atBetRefund": true,
+      "games": 30000,
+      "totalBet": 52938,
+      "totalPaid": 62391,
+      "net": 9453,
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "trial": 14,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52872,
+      "totalPaid": 56586,
+      "net": 3714,
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "trial": 14,
+      "atBetRefund": true,
+      "games": 10287,
+      "totalBet": 18825,
+      "totalPaid": 28829,
+      "net": 10004,
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "trial": 10,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53424,
+      "totalPaid": 57491,
+      "net": 4067,
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "trial": 10,
+      "atBetRefund": true,
+      "games": 10566,
+      "totalBet": 19188,
+      "totalPaid": 29195,
+      "net": 10007,
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "trial": 11,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52902,
+      "totalPaid": 53663,
+      "net": 761,
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "trial": 11,
+      "atBetRefund": true,
+      "games": 28478,
+      "totalBet": 50694,
+      "totalPaid": 60699,
+      "net": 10005,
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "trial": 12,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52695,
+      "totalPaid": 60466,
+      "net": 7771,
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "trial": 12,
+      "atBetRefund": true,
+      "games": 9193,
+      "totalBet": 16779,
+      "totalPaid": 26786,
+      "net": 10007,
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "trial": 13,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52503,
+      "totalPaid": 47317,
+      "net": -5186,
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "trial": 13,
+      "atBetRefund": true,
+      "games": 21845,
+      "totalBet": 38952,
+      "totalPaid": 48957,
+      "net": 10005,
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "trial": 14,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52230,
+      "totalPaid": 51803,
+      "net": -427,
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "trial": 14,
+      "atBetRefund": true,
+      "games": 14170,
+      "totalBet": 25227,
+      "totalPaid": 35227,
+      "net": 10000,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 10,
+      "atBetRefund": false,
+      "games": 13297,
+      "totalBet": 21705,
+      "totalPaid": 31709,
+      "net": 10004,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 10,
+      "atBetRefund": true,
+      "games": 13254,
+      "totalBet": 21645,
+      "totalPaid": 31646,
+      "net": 10001,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 11,
+      "atBetRefund": false,
+      "games": 19611,
+      "totalBet": 31269,
+      "totalPaid": 41280,
+      "net": 10011,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 11,
+      "atBetRefund": true,
+      "games": 15168,
+      "totalBet": 24570,
+      "totalPaid": 34572,
+      "net": 10002,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 12,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 47241,
+      "totalPaid": 53377,
+      "net": 6136,
+      "complete": false
+    },
+    {
+      "setting": 6,
+      "trial": 12,
+      "atBetRefund": true,
+      "games": 15145,
+      "totalBet": 24885,
+      "totalPaid": 34889,
+      "net": 10004,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 13,
+      "atBetRefund": false,
+      "games": 19004,
+      "totalBet": 30633,
+      "totalPaid": 40642,
+      "net": 10009,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 13,
+      "atBetRefund": true,
+      "games": 14230,
+      "totalBet": 23181,
+      "totalPaid": 33181,
+      "net": 10000,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 14,
+      "atBetRefund": false,
+      "games": 25587,
+      "totalBet": 41010,
+      "totalPaid": 51010,
+      "net": 10000,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 14,
+      "atBetRefund": true,
+      "games": 7915,
+      "totalBet": 13413,
+      "totalPaid": 23416,
+      "net": 10003,
+      "complete": true
+    },
+    {
+      "setting": 2,
+      "trial": 15,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52671,
+      "totalPaid": 45153,
+      "net": -7518,
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "trial": 15,
+      "atBetRefund": true,
+      "games": 19220,
+      "totalBet": 34464,
+      "totalPaid": 44465,
+      "net": 10001,
+      "complete": true
+    },
+    {
+      "setting": 2,
+      "trial": 16,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53118,
+      "totalPaid": 52252,
+      "net": -866,
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "trial": 16,
+      "atBetRefund": true,
+      "games": 11732,
+      "totalBet": 21528,
+      "totalPaid": 31538,
+      "net": 10010,
+      "complete": true
+    },
+    {
+      "setting": 2,
+      "trial": 17,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52719,
+      "totalPaid": 54745,
+      "net": 2026,
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "trial": 17,
+      "atBetRefund": true,
+      "games": 20114,
+      "totalBet": 35871,
+      "totalPaid": 45878,
+      "net": 10007,
+      "complete": true
+    },
+    {
+      "setting": 2,
+      "trial": 18,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53745,
+      "totalPaid": 60396,
+      "net": 6651,
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "trial": 18,
+      "atBetRefund": true,
+      "games": 16404,
+      "totalBet": 29610,
+      "totalPaid": 39619,
+      "net": 10009,
+      "complete": true
+    },
+    {
+      "setting": 2,
+      "trial": 19,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52923,
+      "totalPaid": 58455,
+      "net": 5532,
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "trial": 19,
+      "atBetRefund": true,
+      "games": 9400,
+      "totalBet": 17196,
+      "totalPaid": 27198,
+      "net": 10002,
+      "complete": true
+    },
+    {
+      "setting": 1,
+      "trial": 15,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53256,
+      "totalPaid": 57104,
+      "net": 3848,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 15,
+      "atBetRefund": true,
+      "games": 8350,
+      "totalBet": 15420,
+      "totalPaid": 25420,
+      "net": 10000,
+      "complete": true
+    },
+    {
+      "setting": 1,
+      "trial": 16,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53325,
+      "totalPaid": 57043,
+      "net": 3718,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 16,
+      "atBetRefund": true,
+      "games": 11446,
+      "totalBet": 21105,
+      "totalPaid": 31108,
+      "net": 10003,
+      "complete": true
+    },
+    {
+      "setting": 1,
+      "trial": 17,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52722,
+      "totalPaid": 54670,
+      "net": 1948,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 17,
+      "atBetRefund": true,
+      "games": 15147,
+      "totalBet": 27438,
+      "totalPaid": 37439,
+      "net": 10001,
+      "complete": true
+    },
+    {
+      "setting": 1,
+      "trial": 18,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52875,
+      "totalPaid": 52791,
+      "net": -84,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 18,
+      "atBetRefund": true,
+      "games": 17853,
+      "totalBet": 32379,
+      "totalPaid": 42383,
+      "net": 10004,
+      "complete": true
+    },
+    {
+      "setting": 1,
+      "trial": 19,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53064,
+      "totalPaid": 45199,
+      "net": -7865,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 19,
+      "atBetRefund": true,
+      "games": 27373,
+      "totalBet": 49398,
+      "totalPaid": 59405,
+      "net": 10007,
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "trial": 10,
+      "atBetRefund": false,
+      "games": 17000,
+      "totalBet": 30273,
+      "totalPaid": 40284,
+      "net": 10011,
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "trial": 10,
+      "atBetRefund": true,
+      "games": 9580,
+      "totalBet": 17355,
+      "totalPaid": 27364,
+      "net": 10009,
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "trial": 11,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52692,
+      "totalPaid": 56561,
+      "net": 3869,
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "trial": 11,
+      "atBetRefund": true,
+      "games": 18261,
+      "totalBet": 32316,
+      "totalPaid": 42317,
+      "net": 10001,
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "trial": 12,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52704,
+      "totalPaid": 57904,
+      "net": 5200,
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "trial": 12,
+      "atBetRefund": true,
+      "games": 19326,
+      "totalBet": 34296,
+      "totalPaid": 44307,
+      "net": 10011,
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "trial": 13,
+      "atBetRefund": false,
+      "games": 27669,
+      "totalBet": 49035,
+      "totalPaid": 59039,
+      "net": 10004,
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "trial": 13,
+      "atBetRefund": true,
+      "games": 19537,
+      "totalBet": 34953,
+      "totalPaid": 44961,
+      "net": 10008,
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "trial": 14,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 51807,
+      "totalPaid": 48766,
+      "net": -3041,
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "trial": 14,
+      "atBetRefund": true,
+      "games": 30000,
+      "totalBet": 52113,
+      "totalPaid": 56581,
+      "net": 4468,
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "trial": 15,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52827,
+      "totalPaid": 51236,
+      "net": -1591,
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "trial": 15,
+      "atBetRefund": true,
+      "games": 11537,
+      "totalBet": 20850,
+      "totalPaid": 30852,
+      "net": 10002,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 16,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53679,
+      "totalPaid": 60967,
+      "net": 7288,
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "trial": 16,
+      "atBetRefund": true,
+      "games": 12812,
+      "totalBet": 23178,
+      "totalPaid": 33186,
+      "net": 10008,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 17,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53538,
+      "totalPaid": 57316,
+      "net": 3778,
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "trial": 17,
+      "atBetRefund": true,
+      "games": 14965,
+      "totalBet": 27228,
+      "totalPaid": 37229,
+      "net": 10001,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 18,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53019,
+      "totalPaid": 59385,
+      "net": 6366,
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "trial": 18,
+      "atBetRefund": true,
+      "games": 20456,
+      "totalBet": 36429,
+      "totalPaid": 46430,
+      "net": 10001,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 19,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53421,
+      "totalPaid": 56080,
+      "net": 2659,
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "trial": 19,
+      "atBetRefund": true,
+      "games": 14023,
+      "totalBet": 25524,
+      "totalPaid": 35527,
+      "net": 10003,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 15,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 48411,
+      "totalPaid": 56889,
+      "net": 8478,
+      "complete": false
+    },
+    {
+      "setting": 6,
+      "trial": 15,
+      "atBetRefund": true,
+      "games": 13737,
+      "totalBet": 22500,
+      "totalPaid": 32507,
+      "net": 10007,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 16,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 47001,
+      "totalPaid": 53624,
+      "net": 6623,
+      "complete": false
+    },
+    {
+      "setting": 6,
+      "trial": 16,
+      "atBetRefund": true,
+      "games": 14591,
+      "totalBet": 23724,
+      "totalPaid": 33732,
+      "net": 10008,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 17,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 47217,
+      "totalPaid": 53617,
+      "net": 6400,
+      "complete": false
+    },
+    {
+      "setting": 6,
+      "trial": 17,
+      "atBetRefund": true,
+      "games": 10895,
+      "totalBet": 17970,
+      "totalPaid": 27970,
+      "net": 10000,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 18,
+      "atBetRefund": false,
+      "games": 27136,
+      "totalBet": 42873,
+      "totalPaid": 52881,
+      "net": 10008,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 18,
+      "atBetRefund": true,
+      "games": 9109,
+      "totalBet": 15243,
+      "totalPaid": 25246,
+      "net": 10003,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 19,
+      "atBetRefund": false,
+      "games": 6529,
+      "totalBet": 11589,
+      "totalPaid": 21600,
+      "net": 10011,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 19,
+      "atBetRefund": true,
+      "games": 6584,
+      "totalBet": 11550,
+      "totalPaid": 21556,
+      "net": 10006,
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "trial": 15,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52116,
+      "totalPaid": 40129,
+      "net": -11987,
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "trial": 15,
+      "atBetRefund": true,
+      "games": 30000,
+      "totalBet": 52974,
+      "totalPaid": 62657,
+      "net": 9683,
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "trial": 16,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53370,
+      "totalPaid": 61007,
+      "net": 7637,
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "trial": 16,
+      "atBetRefund": true,
+      "games": 16577,
+      "totalBet": 29766,
+      "totalPaid": 39766,
+      "net": 10000,
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "trial": 17,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52179,
+      "totalPaid": 45679,
+      "net": -6500,
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "trial": 17,
+      "atBetRefund": true,
+      "games": 30000,
+      "totalBet": 52731,
+      "totalPaid": 60631,
+      "net": 7900,
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "trial": 18,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52836,
+      "totalPaid": 51411,
+      "net": -1425,
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "trial": 18,
+      "atBetRefund": true,
+      "games": 22036,
+      "totalBet": 39537,
+      "totalPaid": 49538,
+      "net": 10001,
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "trial": 19,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52275,
+      "totalPaid": 59025,
+      "net": 6750,
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "trial": 19,
+      "atBetRefund": true,
+      "games": 17183,
+      "totalBet": 30213,
+      "totalPaid": 40216,
+      "net": 10003,
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "trial": 15,
+      "atBetRefund": false,
+      "games": 24721,
+      "totalBet": 43803,
+      "totalPaid": 53804,
+      "net": 10001,
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "trial": 15,
+      "atBetRefund": true,
+      "games": 11960,
+      "totalBet": 21825,
+      "totalPaid": 31830,
+      "net": 10005,
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "trial": 16,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52968,
+      "totalPaid": 55513,
+      "net": 2545,
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "trial": 16,
+      "atBetRefund": true,
+      "games": 14149,
+      "totalBet": 25653,
+      "totalPaid": 35656,
+      "net": 10003,
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "trial": 17,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52659,
+      "totalPaid": 53570,
+      "net": 911,
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "trial": 17,
+      "atBetRefund": true,
+      "games": 23518,
+      "totalBet": 41919,
+      "totalPaid": 51927,
+      "net": 10008,
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "trial": 18,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52197,
+      "totalPaid": 49470,
+      "net": -2727,
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "trial": 18,
+      "atBetRefund": true,
+      "games": 13833,
+      "totalBet": 24867,
+      "totalPaid": 34872,
+      "net": 10005,
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "trial": 19,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53565,
+      "totalPaid": 61591,
+      "net": 8026,
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "trial": 19,
+      "atBetRefund": true,
+      "games": 17700,
+      "totalBet": 31785,
+      "totalPaid": 41786,
+      "net": 10001,
+      "complete": true
+    },
+    {
+      "setting": 1,
+      "trial": 20,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53247,
+      "totalPaid": 52144,
+      "net": -1103,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 20,
+      "atBetRefund": true,
+      "games": 11413,
+      "totalBet": 20697,
+      "totalPaid": 30700,
+      "net": 10003,
+      "complete": true
+    },
+    {
+      "setting": 1,
+      "trial": 21,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 51810,
+      "totalPaid": 39051,
+      "net": -12759,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 21,
+      "atBetRefund": true,
+      "games": 10274,
+      "totalBet": 18705,
+      "totalPaid": 28711,
+      "net": 10006,
+      "complete": true
+    },
+    {
+      "setting": 1,
+      "trial": 22,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53304,
+      "totalPaid": 62901,
+      "net": 9597,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 22,
+      "atBetRefund": true,
+      "games": 16638,
+      "totalBet": 29940,
+      "totalPaid": 39946,
+      "net": 10006,
+      "complete": true
+    },
+    {
+      "setting": 1,
+      "trial": 23,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53175,
+      "totalPaid": 52605,
+      "net": -570,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 23,
+      "atBetRefund": true,
+      "games": 5993,
+      "totalBet": 11124,
+      "totalPaid": 21132,
+      "net": 10008,
+      "complete": true
+    },
+    {
+      "setting": 1,
+      "trial": 24,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52854,
+      "totalPaid": 44488,
+      "net": -8366,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 24,
+      "atBetRefund": true,
+      "games": 18827,
+      "totalBet": 34104,
+      "totalPaid": 44115,
+      "net": 10011,
+      "complete": true
+    },
+    {
+      "setting": 2,
+      "trial": 20,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52914,
+      "totalPaid": 50575,
+      "net": -2339,
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "trial": 20,
+      "atBetRefund": true,
+      "games": 8557,
+      "totalBet": 15606,
+      "totalPaid": 25606,
+      "net": 10000,
+      "complete": true
+    },
+    {
+      "setting": 2,
+      "trial": 21,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52959,
+      "totalPaid": 53551,
+      "net": 592,
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "trial": 21,
+      "atBetRefund": true,
+      "games": 21333,
+      "totalBet": 38169,
+      "totalPaid": 48172,
+      "net": 10003,
+      "complete": true
+    },
+    {
+      "setting": 2,
+      "trial": 22,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52434,
+      "totalPaid": 49270,
+      "net": -3164,
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "trial": 22,
+      "atBetRefund": true,
+      "games": 29209,
+      "totalBet": 51693,
+      "totalPaid": 61701,
+      "net": 10008,
+      "complete": true
+    },
+    {
+      "setting": 2,
+      "trial": 23,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52776,
+      "totalPaid": 45729,
+      "net": -7047,
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "trial": 23,
+      "atBetRefund": true,
+      "games": 10761,
+      "totalBet": 19509,
+      "totalPaid": 29514,
+      "net": 10005,
+      "complete": true
+    },
+    {
+      "setting": 2,
+      "trial": 24,
+      "atBetRefund": false,
+      "games": 25154,
+      "totalBet": 44898,
+      "totalPaid": 54903,
+      "net": 10005,
+      "complete": true
+    },
+    {
+      "setting": 2,
+      "trial": 24,
+      "atBetRefund": true,
+      "games": 18422,
+      "totalBet": 32886,
+      "totalPaid": 42893,
+      "net": 10007,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 20,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53184,
+      "totalPaid": 54567,
+      "net": 1383,
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "trial": 20,
+      "atBetRefund": true,
+      "games": 15494,
+      "totalBet": 28026,
+      "totalPaid": 38030,
+      "net": 10004,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 21,
+      "atBetRefund": false,
+      "games": 19189,
+      "totalBet": 34122,
+      "totalPaid": 44128,
+      "net": 10006,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 21,
+      "atBetRefund": true,
+      "games": 14237,
+      "totalBet": 25404,
+      "totalPaid": 35405,
+      "net": 10001,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 22,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53373,
+      "totalPaid": 56341,
+      "net": 2968,
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "trial": 22,
+      "atBetRefund": true,
+      "games": 24226,
+      "totalBet": 43314,
+      "totalPaid": 53323,
+      "net": 10009,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 23,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53217,
+      "totalPaid": 58572,
+      "net": 5355,
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "trial": 23,
+      "atBetRefund": true,
+      "games": 21327,
+      "totalBet": 38004,
+      "totalPaid": 48007,
+      "net": 10003,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 24,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52563,
+      "totalPaid": 49065,
+      "net": -3498,
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "trial": 24,
+      "atBetRefund": true,
+      "games": 29113,
+      "totalBet": 52116,
+      "totalPaid": 62120,
+      "net": 10004,
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "trial": 20,
+      "atBetRefund": false,
+      "games": 13367,
+      "totalBet": 24291,
+      "totalPaid": 34293,
+      "net": 10002,
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "trial": 20,
+      "atBetRefund": true,
+      "games": 11461,
+      "totalBet": 20832,
+      "totalPaid": 30832,
+      "net": 10000,
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "trial": 21,
+      "atBetRefund": false,
+      "games": 23240,
+      "totalBet": 41424,
+      "totalPaid": 51430,
+      "net": 10006,
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "trial": 21,
+      "atBetRefund": true,
+      "games": 14917,
+      "totalBet": 26391,
+      "totalPaid": 36398,
+      "net": 10007,
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "trial": 22,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52704,
+      "totalPaid": 52400,
+      "net": -304,
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "trial": 22,
+      "atBetRefund": true,
+      "games": 10258,
+      "totalBet": 18351,
+      "totalPaid": 28357,
+      "net": 10006,
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "trial": 23,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 51633,
+      "totalPaid": 40106,
+      "net": -11527,
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "trial": 23,
+      "atBetRefund": true,
+      "games": 30000,
+      "totalBet": 52449,
+      "totalPaid": 56438,
+      "net": 3989,
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "trial": 24,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52836,
+      "totalPaid": 58418,
+      "net": 5582,
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "trial": 24,
+      "atBetRefund": true,
+      "games": 21814,
+      "totalBet": 38523,
+      "totalPaid": 48527,
+      "net": 10004,
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "trial": 20,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52551,
+      "totalPaid": 51065,
+      "net": -1486,
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "trial": 20,
+      "atBetRefund": true,
+      "games": 30000,
+      "totalBet": 52773,
+      "totalPaid": 56635,
+      "net": 3862,
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "trial": 21,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53103,
+      "totalPaid": 54044,
+      "net": 941,
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "trial": 21,
+      "atBetRefund": true,
+      "games": 16706,
+      "totalBet": 30198,
+      "totalPaid": 40198,
+      "net": 10000,
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "trial": 22,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52284,
+      "totalPaid": 49480,
+      "net": -2804,
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "trial": 22,
+      "atBetRefund": true,
+      "games": 23345,
+      "totalBet": 41667,
+      "totalPaid": 51671,
+      "net": 10004,
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "trial": 23,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52764,
+      "totalPaid": 53628,
+      "net": 864,
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "trial": 23,
+      "atBetRefund": true,
+      "games": 14504,
+      "totalBet": 26070,
+      "totalPaid": 36073,
+      "net": 10003,
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "trial": 24,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53058,
+      "totalPaid": 57763,
+      "net": 4705,
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "trial": 24,
+      "atBetRefund": true,
+      "games": 24514,
+      "totalBet": 43662,
+      "totalPaid": 53663,
+      "net": 10001,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 20,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 47571,
+      "totalPaid": 56366,
+      "net": 8795,
+      "complete": false
+    },
+    {
+      "setting": 6,
+      "trial": 20,
+      "atBetRefund": true,
+      "games": 12125,
+      "totalBet": 19566,
+      "totalPaid": 29572,
+      "net": 10006,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 21,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 47901,
+      "totalPaid": 56412,
+      "net": 8511,
+      "complete": false
+    },
+    {
+      "setting": 6,
+      "trial": 21,
+      "atBetRefund": true,
+      "games": 9880,
+      "totalBet": 16248,
+      "totalPaid": 26249,
+      "net": 10001,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 22,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 47406,
+      "totalPaid": 55912,
+      "net": 8506,
+      "complete": false
+    },
+    {
+      "setting": 6,
+      "trial": 22,
+      "atBetRefund": true,
+      "games": 16277,
+      "totalBet": 26040,
+      "totalPaid": 36047,
+      "net": 10007,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 23,
+      "atBetRefund": false,
+      "games": 13538,
+      "totalBet": 21972,
+      "totalPaid": 31974,
+      "net": 10002,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 23,
+      "atBetRefund": true,
+      "games": 4930,
+      "totalBet": 8640,
+      "totalPaid": 18641,
+      "net": 10001,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 24,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 47706,
+      "totalPaid": 56383,
+      "net": 8677,
+      "complete": false
+    },
+    {
+      "setting": 6,
+      "trial": 24,
+      "atBetRefund": true,
+      "games": 13596,
+      "totalBet": 22347,
+      "totalPaid": 32350,
+      "net": 10003,
+      "complete": true
+    },
+    {
+      "setting": 1,
+      "trial": 25,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52887,
+      "totalPaid": 56186,
+      "net": 3299,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 25,
+      "atBetRefund": true,
+      "games": 18600,
+      "totalBet": 33225,
+      "totalPaid": 43225,
+      "net": 10000,
+      "complete": true
+    },
+    {
+      "setting": 1,
+      "trial": 26,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52455,
+      "totalPaid": 46782,
+      "net": -5673,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 26,
+      "atBetRefund": true,
+      "games": 18677,
+      "totalBet": 33357,
+      "totalPaid": 43368,
+      "net": 10011,
+      "complete": true
+    },
+    {
+      "setting": 1,
+      "trial": 27,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53028,
+      "totalPaid": 47307,
+      "net": -5721,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 27,
+      "atBetRefund": true,
+      "games": 15874,
+      "totalBet": 28437,
+      "totalPaid": 38448,
+      "net": 10011,
+      "complete": true
+    },
+    {
+      "setting": 1,
+      "trial": 28,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52683,
+      "totalPaid": 42878,
+      "net": -9805,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 28,
+      "atBetRefund": true,
+      "games": 10303,
+      "totalBet": 18876,
+      "totalPaid": 28880,
+      "net": 10004,
+      "complete": true
+    },
+    {
+      "setting": 1,
+      "trial": 29,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53253,
+      "totalPaid": 55122,
+      "net": 1869,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 29,
+      "atBetRefund": true,
+      "games": 20144,
+      "totalBet": 35997,
+      "totalPaid": 46007,
+      "net": 10010,
+      "complete": true
+    },
+    {
+      "setting": 2,
+      "trial": 25,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52671,
+      "totalPaid": 49073,
+      "net": -3598,
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "trial": 25,
+      "atBetRefund": true,
+      "games": 30000,
+      "totalBet": 53172,
+      "totalPaid": 61277,
+      "net": 8105,
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "trial": 26,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52638,
+      "totalPaid": 44519,
+      "net": -8119,
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "trial": 26,
+      "atBetRefund": true,
+      "games": 23353,
+      "totalBet": 41604,
+      "totalPaid": 51612,
+      "net": 10008,
+      "complete": true
+    },
+    {
+      "setting": 2,
+      "trial": 27,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52728,
+      "totalPaid": 54321,
+      "net": 1593,
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "trial": 27,
+      "atBetRefund": true,
+      "games": 18848,
+      "totalBet": 33540,
+      "totalPaid": 43546,
+      "net": 10006,
+      "complete": true
+    },
+    {
+      "setting": 2,
+      "trial": 28,
+      "atBetRefund": false,
+      "games": 24940,
+      "totalBet": 44424,
+      "totalPaid": 54426,
+      "net": 10002,
+      "complete": true
+    },
+    {
+      "setting": 2,
+      "trial": 28,
+      "atBetRefund": true,
+      "games": 8998,
+      "totalBet": 16404,
+      "totalPaid": 26406,
+      "net": 10002,
+      "complete": true
+    },
+    {
+      "setting": 2,
+      "trial": 29,
+      "atBetRefund": false,
+      "games": 20116,
+      "totalBet": 36042,
+      "totalPaid": 46042,
+      "net": 10000,
+      "complete": true
+    },
+    {
+      "setting": 2,
+      "trial": 29,
+      "atBetRefund": true,
+      "games": 14448,
+      "totalBet": 25998,
+      "totalPaid": 36006,
+      "net": 10008,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 25,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53226,
+      "totalPaid": 60626,
+      "net": 7400,
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "trial": 25,
+      "atBetRefund": true,
+      "games": 22730,
+      "totalBet": 40419,
+      "totalPaid": 50423,
+      "net": 10004,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 26,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52551,
+      "totalPaid": 47747,
+      "net": -4804,
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "trial": 26,
+      "atBetRefund": true,
+      "games": 30000,
+      "totalBet": 52857,
+      "totalPaid": 60564,
+      "net": 7707,
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "trial": 27,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52560,
+      "totalPaid": 50852,
+      "net": -1708,
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "trial": 27,
+      "atBetRefund": true,
+      "games": 30000,
+      "totalBet": 53178,
+      "totalPaid": 60108,
+      "net": 6930,
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "trial": 28,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52644,
+      "totalPaid": 53201,
+      "net": 557,
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "trial": 28,
+      "atBetRefund": true,
+      "games": 30000,
+      "totalBet": 52758,
+      "totalPaid": 62494,
+      "net": 9736,
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "trial": 29,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 51807,
+      "totalPaid": 46354,
+      "net": -5453,
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "trial": 29,
+      "atBetRefund": true,
+      "games": 12027,
+      "totalBet": 21219,
+      "totalPaid": 31222,
+      "net": 10003,
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "trial": 25,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52323,
+      "totalPaid": 55004,
+      "net": 2681,
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "trial": 25,
+      "atBetRefund": true,
+      "games": 15247,
+      "totalBet": 27090,
+      "totalPaid": 37100,
+      "net": 10010,
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "trial": 26,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53352,
+      "totalPaid": 58295,
+      "net": 4943,
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "trial": 26,
+      "atBetRefund": true,
+      "games": 20059,
+      "totalBet": 35874,
+      "totalPaid": 45880,
+      "net": 10006,
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "trial": 27,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52425,
+      "totalPaid": 48702,
+      "net": -3723,
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "trial": 27,
+      "atBetRefund": true,
+      "games": 29371,
+      "totalBet": 52293,
+      "totalPaid": 62297,
+      "net": 10004,
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "trial": 28,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52218,
+      "totalPaid": 46767,
+      "net": -5451,
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "trial": 28,
+      "atBetRefund": true,
+      "games": 21274,
+      "totalBet": 37866,
+      "totalPaid": 47877,
+      "net": 10011,
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "trial": 29,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52749,
+      "totalPaid": 51751,
+      "net": -998,
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "trial": 29,
+      "atBetRefund": true,
+      "games": 26990,
+      "totalBet": 47784,
+      "totalPaid": 57789,
+      "net": 10005,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 25,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 46071,
+      "totalPaid": 45547,
+      "net": -524,
+      "complete": false
+    },
+    {
+      "setting": 6,
+      "trial": 25,
+      "atBetRefund": true,
+      "games": 30000,
+      "totalBet": 46827,
+      "totalPaid": 52151,
+      "net": 5324,
+      "complete": false
+    },
+    {
+      "setting": 6,
+      "trial": 26,
+      "atBetRefund": false,
+      "games": 16100,
+      "totalBet": 26142,
+      "totalPaid": 36145,
+      "net": 10003,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 26,
+      "atBetRefund": true,
+      "games": 12235,
+      "totalBet": 20346,
+      "totalPaid": 30350,
+      "net": 10004,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 27,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 47007,
+      "totalPaid": 51392,
+      "net": 4385,
+      "complete": false
+    },
+    {
+      "setting": 6,
+      "trial": 27,
+      "atBetRefund": true,
+      "games": 20644,
+      "totalBet": 32895,
+      "totalPaid": 42905,
+      "net": 10010,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 28,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 47334,
+      "totalPaid": 55263,
+      "net": 7929,
+      "complete": false
+    },
+    {
+      "setting": 6,
+      "trial": 28,
+      "atBetRefund": true,
+      "games": 9882,
+      "totalBet": 16449,
+      "totalPaid": 26453,
+      "net": 10004,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 29,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 46647,
+      "totalPaid": 49236,
+      "net": 2589,
+      "complete": false
+    },
+    {
+      "setting": 6,
+      "trial": 29,
+      "atBetRefund": true,
+      "games": 4827,
+      "totalBet": 8517,
+      "totalPaid": 18527,
+      "net": 10010,
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "trial": 25,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52290,
+      "totalPaid": 49560,
+      "net": -2730,
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "trial": 25,
+      "atBetRefund": true,
+      "games": 30000,
+      "totalBet": 52182,
+      "totalPaid": 50942,
+      "net": -1240,
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "trial": 26,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52842,
+      "totalPaid": 55962,
+      "net": 3120,
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "trial": 26,
+      "atBetRefund": true,
+      "games": 12975,
+      "totalBet": 23457,
+      "totalPaid": 33462,
+      "net": 10005,
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "trial": 27,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 51435,
+      "totalPaid": 34555,
+      "net": -16880,
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "trial": 27,
+      "atBetRefund": true,
+      "games": 30000,
+      "totalBet": 52176,
+      "totalPaid": 51837,
+      "net": -339,
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "trial": 28,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52368,
+      "totalPaid": 54754,
+      "net": 2386,
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "trial": 28,
+      "atBetRefund": true,
+      "games": 22481,
+      "totalBet": 40044,
+      "totalPaid": 50049,
+      "net": 10005,
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "trial": 29,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 51999,
+      "totalPaid": 43123,
+      "net": -8876,
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "trial": 29,
+      "atBetRefund": true,
+      "games": 30000,
+      "totalBet": 52110,
+      "totalPaid": 45937,
+      "net": -6173,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 30,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52722,
+      "totalPaid": 49341,
+      "net": -3381,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 30,
+      "atBetRefund": true,
+      "games": 30000,
+      "totalBet": 52563,
+      "totalPaid": 50587,
+      "net": -1976,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 31,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52794,
+      "totalPaid": 48574,
+      "net": -4220,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 31,
+      "atBetRefund": true,
+      "games": 11833,
+      "totalBet": 21660,
+      "totalPaid": 31667,
+      "net": 10007,
+      "complete": true
+    },
+    {
+      "setting": 1,
+      "trial": 32,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53340,
+      "totalPaid": 55403,
+      "net": 2063,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 32,
+      "atBetRefund": true,
+      "games": 30000,
+      "totalBet": 53619,
+      "totalPaid": 62709,
+      "net": 9090,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 33,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53229,
+      "totalPaid": 55450,
+      "net": 2221,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 33,
+      "atBetRefund": true,
+      "games": 15094,
+      "totalBet": 27057,
+      "totalPaid": 37064,
+      "net": 10007,
+      "complete": true
+    },
+    {
+      "setting": 1,
+      "trial": 34,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52281,
+      "totalPaid": 41142,
+      "net": -11139,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 34,
+      "atBetRefund": true,
+      "games": 30000,
+      "totalBet": 52704,
+      "totalPaid": 52597,
+      "net": -107,
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "trial": 30,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53037,
+      "totalPaid": 51631,
+      "net": -1406,
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "trial": 30,
+      "atBetRefund": true,
+      "games": 5151,
+      "totalBet": 9834,
+      "totalPaid": 19843,
+      "net": 10009,
+      "complete": true
+    },
+    {
+      "setting": 2,
+      "trial": 31,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52704,
+      "totalPaid": 53130,
+      "net": 426,
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "trial": 31,
+      "atBetRefund": true,
+      "games": 10855,
+      "totalBet": 19830,
+      "totalPaid": 29838,
+      "net": 10008,
+      "complete": true
+    },
+    {
+      "setting": 2,
+      "trial": 32,
+      "atBetRefund": false,
+      "games": 13265,
+      "totalBet": 24300,
+      "totalPaid": 34305,
+      "net": 10005,
+      "complete": true
+    },
+    {
+      "setting": 2,
+      "trial": 32,
+      "atBetRefund": true,
+      "games": 14889,
+      "totalBet": 27141,
+      "totalPaid": 37145,
+      "net": 10004,
+      "complete": true
+    },
+    {
+      "setting": 2,
+      "trial": 33,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52320,
+      "totalPaid": 43121,
+      "net": -9199,
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "trial": 33,
+      "atBetRefund": true,
+      "games": 15990,
+      "totalBet": 28365,
+      "totalPaid": 38371,
+      "net": 10006,
+      "complete": true
+    },
+    {
+      "setting": 2,
+      "trial": 34,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52428,
+      "totalPaid": 44839,
+      "net": -7589,
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "trial": 34,
+      "atBetRefund": true,
+      "games": 13469,
+      "totalBet": 24144,
+      "totalPaid": 34146,
+      "net": 10002,
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "trial": 30,
+      "atBetRefund": false,
+      "games": 28479,
+      "totalBet": 51183,
+      "totalPaid": 61192,
+      "net": 10009,
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "trial": 30,
+      "atBetRefund": true,
+      "games": 20118,
+      "totalBet": 36108,
+      "totalPaid": 46109,
+      "net": 10001,
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "trial": 31,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52746,
+      "totalPaid": 58936,
+      "net": 6190,
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "trial": 31,
+      "atBetRefund": true,
+      "games": 16753,
+      "totalBet": 29994,
+      "totalPaid": 39999,
+      "net": 10005,
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "trial": 32,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53460,
+      "totalPaid": 56792,
+      "net": 3332,
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "trial": 32,
+      "atBetRefund": true,
+      "games": 18663,
+      "totalBet": 33759,
+      "totalPaid": 43760,
+      "net": 10001,
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "trial": 33,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52917,
+      "totalPaid": 53843,
+      "net": 926,
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "trial": 33,
+      "atBetRefund": true,
+      "games": 24686,
+      "totalBet": 43653,
+      "totalPaid": 53656,
+      "net": 10003,
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "trial": 34,
+      "atBetRefund": false,
+      "games": 10023,
+      "totalBet": 18429,
+      "totalPaid": 28433,
+      "net": 10004,
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "trial": 34,
+      "atBetRefund": true,
+      "games": 6977,
+      "totalBet": 12990,
+      "totalPaid": 22998,
+      "net": 10008,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 30,
+      "atBetRefund": false,
+      "games": 21568,
+      "totalBet": 38781,
+      "totalPaid": 48785,
+      "net": 10004,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 30,
+      "atBetRefund": true,
+      "games": 16053,
+      "totalBet": 28845,
+      "totalPaid": 38849,
+      "net": 10004,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 31,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52275,
+      "totalPaid": 42285,
+      "net": -9990,
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "trial": 31,
+      "atBetRefund": true,
+      "games": 30000,
+      "totalBet": 53259,
+      "totalPaid": 55905,
+      "net": 2646,
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "trial": 32,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52563,
+      "totalPaid": 54734,
+      "net": 2171,
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "trial": 32,
+      "atBetRefund": true,
+      "games": 16889,
+      "totalBet": 30192,
+      "totalPaid": 40192,
+      "net": 10000,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 33,
+      "atBetRefund": false,
+      "games": 17898,
+      "totalBet": 32133,
+      "totalPaid": 42134,
+      "net": 10001,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 33,
+      "atBetRefund": true,
+      "games": 12035,
+      "totalBet": 21777,
+      "totalPaid": 31787,
+      "net": 10010,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 34,
+      "atBetRefund": false,
+      "games": 23350,
+      "totalBet": 42234,
+      "totalPaid": 52237,
+      "net": 10003,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 34,
+      "atBetRefund": true,
+      "games": 20217,
+      "totalBet": 36294,
+      "totalPaid": 46296,
+      "net": 10002,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 30,
+      "atBetRefund": false,
+      "games": 9673,
+      "totalBet": 16140,
+      "totalPaid": 26140,
+      "net": 10000,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 30,
+      "atBetRefund": true,
+      "games": 6216,
+      "totalBet": 10815,
+      "totalPaid": 20817,
+      "net": 10002,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 31,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 47325,
+      "totalPaid": 55334,
+      "net": 8009,
+      "complete": false
+    },
+    {
+      "setting": 6,
+      "trial": 31,
+      "atBetRefund": true,
+      "games": 6665,
+      "totalBet": 11610,
+      "totalPaid": 21621,
+      "net": 10011,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 32,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 46527,
+      "totalPaid": 47984,
+      "net": 1457,
+      "complete": false
+    },
+    {
+      "setting": 6,
+      "trial": 32,
+      "atBetRefund": true,
+      "games": 20133,
+      "totalBet": 32193,
+      "totalPaid": 42195,
+      "net": 10002,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 33,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 46821,
+      "totalPaid": 53125,
+      "net": 6304,
+      "complete": false
+    },
+    {
+      "setting": 6,
+      "trial": 33,
+      "atBetRefund": true,
+      "games": 8039,
+      "totalBet": 13503,
+      "totalPaid": 23508,
+      "net": 10005,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 34,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 47358,
+      "totalPaid": 54650,
+      "net": 7292,
+      "complete": false
+    },
+    {
+      "setting": 6,
+      "trial": 34,
+      "atBetRefund": true,
+      "games": 14939,
+      "totalBet": 24105,
+      "totalPaid": 34116,
+      "net": 10011,
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "trial": 30,
+      "atBetRefund": false,
+      "games": 26815,
+      "totalBet": 47724,
+      "totalPaid": 57733,
+      "net": 10009,
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "trial": 30,
+      "atBetRefund": true,
+      "games": 25336,
+      "totalBet": 44955,
+      "totalPaid": 54957,
+      "net": 10002,
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "trial": 31,
+      "atBetRefund": false,
+      "games": 25802,
+      "totalBet": 45912,
+      "totalPaid": 55912,
+      "net": 10000,
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "trial": 31,
+      "atBetRefund": true,
+      "games": 12967,
+      "totalBet": 23517,
+      "totalPaid": 33524,
+      "net": 10007,
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "trial": 32,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52263,
+      "totalPaid": 40382,
+      "net": -11881,
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "trial": 32,
+      "atBetRefund": true,
+      "games": 30000,
+      "totalBet": 52962,
+      "totalPaid": 54197,
+      "net": 1235,
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "trial": 33,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52488,
+      "totalPaid": 48854,
+      "net": -3634,
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "trial": 33,
+      "atBetRefund": true,
+      "games": 23505,
+      "totalBet": 41619,
+      "totalPaid": 51625,
+      "net": 10006,
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "trial": 34,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53037,
+      "totalPaid": 55733,
+      "net": 2696,
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "trial": 34,
+      "atBetRefund": true,
+      "games": 14111,
+      "totalBet": 25464,
+      "totalPaid": 35475,
+      "net": 10011,
+      "complete": true
+    },
+    {
+      "setting": 1,
+      "trial": 35,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53178,
+      "totalPaid": 53433,
+      "net": 255,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 35,
+      "atBetRefund": true,
+      "games": 30000,
+      "totalBet": 53388,
+      "totalPaid": 55346,
+      "net": 1958,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 36,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52533,
+      "totalPaid": 37546,
+      "net": -14987,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 36,
+      "atBetRefund": true,
+      "games": 30000,
+      "totalBet": 53049,
+      "totalPaid": 52261,
+      "net": -788,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 37,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52077,
+      "totalPaid": 37927,
+      "net": -14150,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 37,
+      "atBetRefund": true,
+      "games": 30000,
+      "totalBet": 53037,
+      "totalPaid": 60367,
+      "net": 7330,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 38,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52575,
+      "totalPaid": 44889,
+      "net": -7686,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 38,
+      "atBetRefund": true,
+      "games": 29955,
+      "totalBet": 53583,
+      "totalPaid": 63587,
+      "net": 10004,
+      "complete": true
+    },
+    {
+      "setting": 1,
+      "trial": 39,
+      "atBetRefund": false,
+      "games": 11314,
+      "totalBet": 20370,
+      "totalPaid": 30373,
+      "net": 10003,
+      "complete": true
+    },
+    {
+      "setting": 1,
+      "trial": 39,
+      "atBetRefund": true,
+      "games": 7707,
+      "totalBet": 14013,
+      "totalPaid": 24022,
+      "net": 10009,
+      "complete": true
+    },
+    {
+      "setting": 2,
+      "trial": 35,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52401,
+      "totalPaid": 49375,
+      "net": -3026,
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "trial": 35,
+      "atBetRefund": true,
+      "games": 18718,
+      "totalBet": 33468,
+      "totalPaid": 43475,
+      "net": 10007,
+      "complete": true
+    },
+    {
+      "setting": 2,
+      "trial": 36,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52581,
+      "totalPaid": 52224,
+      "net": -357,
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "trial": 36,
+      "atBetRefund": true,
+      "games": 30000,
+      "totalBet": 53169,
+      "totalPaid": 62305,
+      "net": 9136,
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "trial": 37,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52065,
+      "totalPaid": 44503,
+      "net": -7562,
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "trial": 37,
+      "atBetRefund": true,
+      "games": 22086,
+      "totalBet": 39021,
+      "totalPaid": 49025,
+      "net": 10004,
+      "complete": true
+    },
+    {
+      "setting": 2,
+      "trial": 38,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52785,
+      "totalPaid": 56521,
+      "net": 3736,
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "trial": 38,
+      "atBetRefund": true,
+      "games": 15595,
+      "totalBet": 28224,
+      "totalPaid": 38232,
+      "net": 10008,
+      "complete": true
+    },
+    {
+      "setting": 2,
+      "trial": 39,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52803,
+      "totalPaid": 54610,
+      "net": 1807,
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "trial": 39,
+      "atBetRefund": true,
+      "games": 12287,
+      "totalBet": 22329,
+      "totalPaid": 32329,
+      "net": 10000,
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "trial": 35,
+      "atBetRefund": false,
+      "games": 7966,
+      "totalBet": 14763,
+      "totalPaid": 24763,
+      "net": 10000,
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "trial": 35,
+      "atBetRefund": true,
+      "games": 9272,
+      "totalBet": 16806,
+      "totalPaid": 26812,
+      "net": 10006,
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "trial": 36,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52764,
+      "totalPaid": 50969,
+      "net": -1795,
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "trial": 36,
+      "atBetRefund": true,
+      "games": 17317,
+      "totalBet": 31230,
+      "totalPaid": 41232,
+      "net": 10002,
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "trial": 37,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52941,
+      "totalPaid": 58346,
+      "net": 5405,
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "trial": 37,
+      "atBetRefund": true,
+      "games": 28224,
+      "totalBet": 49917,
+      "totalPaid": 59920,
+      "net": 10003,
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "trial": 38,
+      "atBetRefund": false,
+      "games": 10032,
+      "totalBet": 18069,
+      "totalPaid": 28070,
+      "net": 10001,
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "trial": 38,
+      "atBetRefund": true,
+      "games": 9033,
+      "totalBet": 16383,
+      "totalPaid": 26385,
+      "net": 10002,
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "trial": 39,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52725,
+      "totalPaid": 46048,
+      "net": -6677,
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "trial": 39,
+      "atBetRefund": true,
+      "games": 9022,
+      "totalBet": 16452,
+      "totalPaid": 26454,
+      "net": 10002,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 35,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53346,
+      "totalPaid": 57844,
+      "net": 4498,
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "trial": 35,
+      "atBetRefund": true,
+      "games": 24981,
+      "totalBet": 44931,
+      "totalPaid": 54938,
+      "net": 10007,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 36,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 51969,
+      "totalPaid": 47276,
+      "net": -4693,
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "trial": 36,
+      "atBetRefund": true,
+      "games": 19936,
+      "totalBet": 35517,
+      "totalPaid": 45522,
+      "net": 10005,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 37,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52566,
+      "totalPaid": 54280,
+      "net": 1714,
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "trial": 37,
+      "atBetRefund": true,
+      "games": 29424,
+      "totalBet": 51894,
+      "totalPaid": 61894,
+      "net": 10000,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 38,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52224,
+      "totalPaid": 43077,
+      "net": -9147,
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "trial": 38,
+      "atBetRefund": true,
+      "games": 26172,
+      "totalBet": 46677,
+      "totalPaid": 56681,
+      "net": 10004,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 39,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53016,
+      "totalPaid": 52701,
+      "net": -315,
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "trial": 39,
+      "atBetRefund": true,
+      "games": 20953,
+      "totalBet": 37653,
+      "totalPaid": 47657,
+      "net": 10004,
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "trial": 35,
+      "atBetRefund": false,
+      "games": 29987,
+      "totalBet": 53631,
+      "totalPaid": 63635,
+      "net": 10004,
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "trial": 35,
+      "atBetRefund": true,
+      "games": 6228,
+      "totalBet": 11712,
+      "totalPaid": 21715,
+      "net": 10003,
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "trial": 36,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52473,
+      "totalPaid": 48565,
+      "net": -3908,
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "trial": 36,
+      "atBetRefund": true,
+      "games": 22171,
+      "totalBet": 39858,
+      "totalPaid": 49869,
+      "net": 10011,
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "trial": 37,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52770,
+      "totalPaid": 51859,
+      "net": -911,
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "trial": 37,
+      "atBetRefund": true,
+      "games": 7112,
+      "totalBet": 13068,
+      "totalPaid": 23068,
+      "net": 10000,
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "trial": 38,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52404,
+      "totalPaid": 54956,
+      "net": 2552,
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "trial": 38,
+      "atBetRefund": true,
+      "games": 30000,
+      "totalBet": 52428,
+      "totalPaid": 60585,
+      "net": 8157,
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "trial": 39,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52866,
+      "totalPaid": 54524,
+      "net": 1658,
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "trial": 39,
+      "atBetRefund": true,
+      "games": 20064,
+      "totalBet": 35529,
+      "totalPaid": 45529,
+      "net": 10000,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 35,
+      "atBetRefund": false,
+      "games": 14513,
+      "totalBet": 23598,
+      "totalPaid": 33600,
+      "net": 10002,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 35,
+      "atBetRefund": true,
+      "games": 12720,
+      "totalBet": 20604,
+      "totalPaid": 30609,
+      "net": 10005,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 36,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 47133,
+      "totalPaid": 52928,
+      "net": 5795,
+      "complete": false
+    },
+    {
+      "setting": 6,
+      "trial": 36,
+      "atBetRefund": true,
+      "games": 8436,
+      "totalBet": 14007,
+      "totalPaid": 24008,
+      "net": 10001,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 37,
+      "atBetRefund": false,
+      "games": 22107,
+      "totalBet": 35637,
+      "totalPaid": 45641,
+      "net": 10004,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 37,
+      "atBetRefund": true,
+      "games": 13821,
+      "totalBet": 22494,
+      "totalPaid": 32495,
+      "net": 10001,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 38,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 47403,
+      "totalPaid": 56754,
+      "net": 9351,
+      "complete": false
+    },
+    {
+      "setting": 6,
+      "trial": 38,
+      "atBetRefund": true,
+      "games": 8018,
+      "totalBet": 13689,
+      "totalPaid": 23689,
+      "net": 10000,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 39,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 46881,
+      "totalPaid": 54338,
+      "net": 7457,
+      "complete": false
+    },
+    {
+      "setting": 6,
+      "trial": 39,
+      "atBetRefund": true,
+      "games": 16705,
+      "totalBet": 26742,
+      "totalPaid": 36743,
+      "net": 10001,
+      "complete": true
+    },
+    {
+      "setting": 1,
+      "trial": 40,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53409,
+      "totalPaid": 54978,
+      "net": 1569,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 40,
+      "atBetRefund": true,
+      "games": 21517,
+      "totalBet": 38538,
+      "totalPaid": 48543,
+      "net": 10005,
+      "complete": true
+    },
+    {
+      "setting": 1,
+      "trial": 41,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53010,
+      "totalPaid": 44673,
+      "net": -8337,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 41,
+      "atBetRefund": true,
+      "games": 29669,
+      "totalBet": 53562,
+      "totalPaid": 63564,
+      "net": 10002,
+      "complete": true
+    },
+    {
+      "setting": 1,
+      "trial": 42,
+      "atBetRefund": false,
+      "games": 25312,
+      "totalBet": 45546,
+      "totalPaid": 55547,
+      "net": 10001,
+      "complete": true
+    },
+    {
+      "setting": 1,
+      "trial": 42,
+      "atBetRefund": true,
+      "games": 13035,
+      "totalBet": 23784,
+      "totalPaid": 33784,
+      "net": 10000,
+      "complete": true
+    },
+    {
+      "setting": 1,
+      "trial": 43,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 51711,
+      "totalPaid": 31750,
+      "net": -19961,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 43,
+      "atBetRefund": true,
+      "games": 30000,
+      "totalBet": 52758,
+      "totalPaid": 54189,
+      "net": 1431,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 44,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53115,
+      "totalPaid": 53417,
+      "net": 302,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 44,
+      "atBetRefund": true,
+      "games": 10458,
+      "totalBet": 18834,
+      "totalPaid": 28835,
+      "net": 10001,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 40,
+      "atBetRefund": false,
+      "games": 29678,
+      "totalBet": 53181,
+      "totalPaid": 63183,
+      "net": 10002,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 40,
+      "atBetRefund": true,
+      "games": 14405,
+      "totalBet": 26478,
+      "totalPaid": 36482,
+      "net": 10004,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 41,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52209,
+      "totalPaid": 43482,
+      "net": -8727,
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "trial": 41,
+      "atBetRefund": true,
+      "games": 30000,
+      "totalBet": 52500,
+      "totalPaid": 53575,
+      "net": 1075,
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "trial": 42,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52941,
+      "totalPaid": 54584,
+      "net": 1643,
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "trial": 42,
+      "atBetRefund": true,
+      "games": 5864,
+      "totalBet": 10896,
+      "totalPaid": 20904,
+      "net": 10008,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 43,
+      "atBetRefund": false,
+      "games": 21035,
+      "totalBet": 38004,
+      "totalPaid": 48005,
+      "net": 10001,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 43,
+      "atBetRefund": true,
+      "games": 13497,
+      "totalBet": 24288,
+      "totalPaid": 34288,
+      "net": 10000,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 44,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 51882,
+      "totalPaid": 37956,
+      "net": -13926,
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "trial": 44,
+      "atBetRefund": true,
+      "games": 30000,
+      "totalBet": 53034,
+      "totalPaid": 58583,
+      "net": 5549,
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "trial": 40,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53172,
+      "totalPaid": 57992,
+      "net": 4820,
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "trial": 40,
+      "atBetRefund": true,
+      "games": 19182,
+      "totalBet": 34185,
+      "totalPaid": 44194,
+      "net": 10009,
+      "complete": true
+    },
+    {
+      "setting": 2,
+      "trial": 41,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53319,
+      "totalPaid": 58505,
+      "net": 5186,
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "trial": 41,
+      "atBetRefund": true,
+      "games": 14325,
+      "totalBet": 25698,
+      "totalPaid": 35700,
+      "net": 10002,
+      "complete": true
+    },
+    {
+      "setting": 2,
+      "trial": 42,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52746,
+      "totalPaid": 54392,
+      "net": 1646,
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "trial": 42,
+      "atBetRefund": true,
+      "games": 13649,
+      "totalBet": 24357,
+      "totalPaid": 34358,
+      "net": 10001,
+      "complete": true
+    },
+    {
+      "setting": 2,
+      "trial": 43,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53121,
+      "totalPaid": 50822,
+      "net": -2299,
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "trial": 43,
+      "atBetRefund": true,
+      "games": 18622,
+      "totalBet": 33540,
+      "totalPaid": 43541,
+      "net": 10001,
+      "complete": true
+    },
+    {
+      "setting": 2,
+      "trial": 44,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52929,
+      "totalPaid": 55090,
+      "net": 2161,
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "trial": 44,
+      "atBetRefund": true,
+      "games": 17464,
+      "totalBet": 30897,
+      "totalPaid": 40901,
+      "net": 10004,
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "trial": 40,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52887,
+      "totalPaid": 50539,
+      "net": -2348,
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "trial": 40,
+      "atBetRefund": true,
+      "games": 14971,
+      "totalBet": 26805,
+      "totalPaid": 36814,
+      "net": 10009,
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "trial": 41,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52167,
+      "totalPaid": 41851,
+      "net": -10316,
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "trial": 41,
+      "atBetRefund": true,
+      "games": 30000,
+      "totalBet": 52452,
+      "totalPaid": 54555,
+      "net": 2103,
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "trial": 42,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52788,
+      "totalPaid": 49846,
+      "net": -2942,
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "trial": 42,
+      "atBetRefund": true,
+      "games": 29303,
+      "totalBet": 52104,
+      "totalPaid": 62108,
+      "net": 10004,
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "trial": 43,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52788,
+      "totalPaid": 60754,
+      "net": 7966,
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "trial": 43,
+      "atBetRefund": true,
+      "games": 22516,
+      "totalBet": 39657,
+      "totalPaid": 49659,
+      "net": 10002,
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "trial": 44,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53673,
+      "totalPaid": 63262,
+      "net": 9589,
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "trial": 44,
+      "atBetRefund": true,
+      "games": 10710,
+      "totalBet": 19503,
+      "totalPaid": 29513,
+      "net": 10010,
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "trial": 40,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53226,
+      "totalPaid": 60730,
+      "net": 7504,
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "trial": 40,
+      "atBetRefund": true,
+      "games": 11629,
+      "totalBet": 21033,
+      "totalPaid": 31033,
+      "net": 10000,
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "trial": 41,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52869,
+      "totalPaid": 58293,
+      "net": 5424,
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "trial": 41,
+      "atBetRefund": true,
+      "games": 17048,
+      "totalBet": 30489,
+      "totalPaid": 40489,
+      "net": 10000,
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "trial": 42,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52641,
+      "totalPaid": 53514,
+      "net": 873,
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "trial": 42,
+      "atBetRefund": true,
+      "games": 17144,
+      "totalBet": 30735,
+      "totalPaid": 40743,
+      "net": 10008,
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "trial": 43,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52233,
+      "totalPaid": 45279,
+      "net": -6954,
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "trial": 43,
+      "atBetRefund": true,
+      "games": 21342,
+      "totalBet": 38004,
+      "totalPaid": 48007,
+      "net": 10003,
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "trial": 44,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52509,
+      "totalPaid": 57901,
+      "net": 5392,
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "trial": 44,
+      "atBetRefund": true,
+      "games": 9328,
+      "totalBet": 16725,
+      "totalPaid": 26726,
+      "net": 10001,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 40,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 46833,
+      "totalPaid": 50635,
+      "net": 3802,
+      "complete": false
+    },
+    {
+      "setting": 6,
+      "trial": 40,
+      "atBetRefund": true,
+      "games": 18863,
+      "totalBet": 30234,
+      "totalPaid": 40243,
+      "net": 10009,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 41,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 47487,
+      "totalPaid": 54972,
+      "net": 7485,
+      "complete": false
+    },
+    {
+      "setting": 6,
+      "trial": 41,
+      "atBetRefund": true,
+      "games": 10168,
+      "totalBet": 17154,
+      "totalPaid": 27157,
+      "net": 10003,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 42,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 47325,
+      "totalPaid": 54882,
+      "net": 7557,
+      "complete": false
+    },
+    {
+      "setting": 6,
+      "trial": 42,
+      "atBetRefund": true,
+      "games": 10819,
+      "totalBet": 17622,
+      "totalPaid": 27633,
+      "net": 10011,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 43,
+      "atBetRefund": false,
+      "games": 22820,
+      "totalBet": 36798,
+      "totalPaid": 46799,
+      "net": 10001,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 43,
+      "atBetRefund": true,
+      "games": 11464,
+      "totalBet": 18921,
+      "totalPaid": 28927,
+      "net": 10006,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 44,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 46089,
+      "totalPaid": 40900,
+      "net": -5189,
+      "complete": false
+    },
+    {
+      "setting": 6,
+      "trial": 44,
+      "atBetRefund": true,
+      "games": 30000,
+      "totalBet": 47151,
+      "totalPaid": 51514,
+      "net": 4363,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 45,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53412,
+      "totalPaid": 61777,
+      "net": 8365,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 45,
+      "atBetRefund": true,
+      "games": 13553,
+      "totalBet": 24636,
+      "totalPaid": 34645,
+      "net": 10009,
+      "complete": true
+    },
+    {
+      "setting": 1,
+      "trial": 46,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52563,
+      "totalPaid": 40109,
+      "net": -12454,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 46,
+      "atBetRefund": true,
+      "games": 22625,
+      "totalBet": 40842,
+      "totalPaid": 50842,
+      "net": 10000,
+      "complete": true
+    },
+    {
+      "setting": 1,
+      "trial": 47,
+      "atBetRefund": false,
+      "games": 20617,
+      "totalBet": 36921,
+      "totalPaid": 46931,
+      "net": 10010,
+      "complete": true
+    },
+    {
+      "setting": 1,
+      "trial": 47,
+      "atBetRefund": true,
+      "games": 23031,
+      "totalBet": 41118,
+      "totalPaid": 51120,
+      "net": 10002,
+      "complete": true
+    },
+    {
+      "setting": 1,
+      "trial": 48,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53634,
+      "totalPaid": 58725,
+      "net": 5091,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 48,
+      "atBetRefund": true,
+      "games": 17108,
+      "totalBet": 30912,
+      "totalPaid": 40916,
+      "net": 10004,
+      "complete": true
+    },
+    {
+      "setting": 1,
+      "trial": 49,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53286,
+      "totalPaid": 54149,
+      "net": 863,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 49,
+      "atBetRefund": true,
+      "games": 10283,
+      "totalBet": 19059,
+      "totalPaid": 29062,
+      "net": 10003,
+      "complete": true
+    },
+    {
+      "setting": 2,
+      "trial": 45,
+      "atBetRefund": false,
+      "games": 7507,
+      "totalBet": 14061,
+      "totalPaid": 24063,
+      "net": 10002,
+      "complete": true
+    },
+    {
+      "setting": 2,
+      "trial": 45,
+      "atBetRefund": true,
+      "games": 9523,
+      "totalBet": 17682,
+      "totalPaid": 27689,
+      "net": 10007,
+      "complete": true
+    },
+    {
+      "setting": 2,
+      "trial": 46,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52455,
+      "totalPaid": 48201,
+      "net": -4254,
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "trial": 46,
+      "atBetRefund": true,
+      "games": 30000,
+      "totalBet": 53352,
+      "totalPaid": 61753,
+      "net": 8401,
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "trial": 47,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52854,
+      "totalPaid": 54975,
+      "net": 2121,
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "trial": 47,
+      "atBetRefund": true,
+      "games": 22773,
+      "totalBet": 40551,
+      "totalPaid": 50552,
+      "net": 10001,
+      "complete": true
+    },
+    {
+      "setting": 2,
+      "trial": 48,
+      "atBetRefund": false,
+      "games": 29464,
+      "totalBet": 52872,
+      "totalPaid": 62882,
+      "net": 10010,
+      "complete": true
+    },
+    {
+      "setting": 2,
+      "trial": 48,
+      "atBetRefund": true,
+      "games": 11125,
+      "totalBet": 20541,
+      "totalPaid": 30546,
+      "net": 10005,
+      "complete": true
+    },
+    {
+      "setting": 2,
+      "trial": 49,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52641,
+      "totalPaid": 43829,
+      "net": -8812,
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "trial": 49,
+      "atBetRefund": true,
+      "games": 17430,
+      "totalBet": 31461,
+      "totalPaid": 41461,
+      "net": 10000,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 45,
+      "atBetRefund": false,
+      "games": 25890,
+      "totalBet": 45858,
+      "totalPaid": 55858,
+      "net": 10000,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 45,
+      "atBetRefund": true,
+      "games": 10676,
+      "totalBet": 19065,
+      "totalPaid": 29070,
+      "net": 10005,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 46,
+      "atBetRefund": false,
+      "games": 12367,
+      "totalBet": 22608,
+      "totalPaid": 32616,
+      "net": 10008,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 46,
+      "atBetRefund": true,
+      "games": 7006,
+      "totalBet": 13089,
+      "totalPaid": 23090,
+      "net": 10001,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 47,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52779,
+      "totalPaid": 50024,
+      "net": -2755,
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "trial": 47,
+      "atBetRefund": true,
+      "games": 25841,
+      "totalBet": 46254,
+      "totalPaid": 56262,
+      "net": 10008,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 48,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52647,
+      "totalPaid": 47080,
+      "net": -5567,
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "trial": 48,
+      "atBetRefund": true,
+      "games": 20790,
+      "totalBet": 37242,
+      "totalPaid": 47243,
+      "net": 10001,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 49,
+      "atBetRefund": false,
+      "games": 26582,
+      "totalBet": 47124,
+      "totalPaid": 57126,
+      "net": 10002,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 49,
+      "atBetRefund": true,
+      "games": 10512,
+      "totalBet": 19077,
+      "totalPaid": 29082,
+      "net": 10005,
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "trial": 45,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52446,
+      "totalPaid": 48472,
+      "net": -3974,
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "trial": 45,
+      "atBetRefund": true,
+      "games": 8257,
+      "totalBet": 15057,
+      "totalPaid": 25062,
+      "net": 10005,
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "trial": 46,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52773,
+      "totalPaid": 51950,
+      "net": -823,
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "trial": 46,
+      "atBetRefund": true,
+      "games": 9762,
+      "totalBet": 17949,
+      "totalPaid": 27958,
+      "net": 10009,
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "trial": 47,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52200,
+      "totalPaid": 44049,
+      "net": -8151,
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "trial": 47,
+      "atBetRefund": true,
+      "games": 30000,
+      "totalBet": 52497,
+      "totalPaid": 56725,
+      "net": 4228,
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "trial": 48,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52863,
+      "totalPaid": 53417,
+      "net": 554,
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "trial": 48,
+      "atBetRefund": true,
+      "games": 9276,
+      "totalBet": 16929,
+      "totalPaid": 26938,
+      "net": 10009,
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "trial": 49,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52728,
+      "totalPaid": 59005,
+      "net": 6277,
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "trial": 49,
+      "atBetRefund": true,
+      "games": 16181,
+      "totalBet": 28752,
+      "totalPaid": 38753,
+      "net": 10001,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 45,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 47208,
+      "totalPaid": 53316,
+      "net": 6108,
+      "complete": false
+    },
+    {
+      "setting": 6,
+      "trial": 45,
+      "atBetRefund": true,
+      "games": 8327,
+      "totalBet": 14229,
+      "totalPaid": 24233,
+      "net": 10004,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 46,
+      "atBetRefund": false,
+      "games": 16774,
+      "totalBet": 27357,
+      "totalPaid": 37367,
+      "net": 10010,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 46,
+      "atBetRefund": true,
+      "games": 13964,
+      "totalBet": 23031,
+      "totalPaid": 33032,
+      "net": 10001,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 47,
+      "atBetRefund": false,
+      "games": 24916,
+      "totalBet": 39780,
+      "totalPaid": 49784,
+      "net": 10004,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 47,
+      "atBetRefund": true,
+      "games": 6195,
+      "totalBet": 10902,
+      "totalPaid": 20904,
+      "net": 10002,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 48,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 47184,
+      "totalPaid": 54090,
+      "net": 6906,
+      "complete": false
+    },
+    {
+      "setting": 6,
+      "trial": 48,
+      "atBetRefund": true,
+      "games": 16277,
+      "totalBet": 26172,
+      "totalPaid": 36181,
+      "net": 10009,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 49,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 45564,
+      "totalPaid": 36362,
+      "net": -9202,
+      "complete": false
+    },
+    {
+      "setting": 6,
+      "trial": 49,
+      "atBetRefund": true,
+      "games": 11193,
+      "totalBet": 18555,
+      "totalPaid": 28559,
+      "net": 10004,
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "trial": 45,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52689,
+      "totalPaid": 60213,
+      "net": 7524,
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "trial": 45,
+      "atBetRefund": true,
+      "games": 15712,
+      "totalBet": 28011,
+      "totalPaid": 38014,
+      "net": 10003,
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "trial": 46,
+      "atBetRefund": false,
+      "games": 27323,
+      "totalBet": 48672,
+      "totalPaid": 58682,
+      "net": 10010,
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "trial": 46,
+      "atBetRefund": true,
+      "games": 7614,
+      "totalBet": 14082,
+      "totalPaid": 24083,
+      "net": 10001,
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "trial": 47,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52848,
+      "totalPaid": 57375,
+      "net": 4527,
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "trial": 47,
+      "atBetRefund": true,
+      "games": 30000,
+      "totalBet": 52482,
+      "totalPaid": 61907,
+      "net": 9425,
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "trial": 48,
+      "atBetRefund": false,
+      "games": 24742,
+      "totalBet": 43653,
+      "totalPaid": 53654,
+      "net": 10001,
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "trial": 48,
+      "atBetRefund": true,
+      "games": 9224,
+      "totalBet": 16740,
+      "totalPaid": 26744,
+      "net": 10004,
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "trial": 49,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53586,
+      "totalPaid": 63460,
+      "net": 9874,
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "trial": 49,
+      "atBetRefund": true,
+      "games": 23191,
+      "totalBet": 41520,
+      "totalPaid": 51528,
+      "net": 10008,
+      "complete": true
+    },
+    {
+      "setting": 2,
+      "trial": 50,
+      "atBetRefund": false,
+      "games": 22806,
+      "totalBet": 40920,
+      "totalPaid": 50928,
+      "net": 10008,
+      "complete": true
+    },
+    {
+      "setting": 2,
+      "trial": 50,
+      "atBetRefund": true,
+      "games": 16362,
+      "totalBet": 29115,
+      "totalPaid": 39119,
+      "net": 10004,
+      "complete": true
+    },
+    {
+      "setting": 2,
+      "trial": 51,
+      "atBetRefund": false,
+      "games": 11292,
+      "totalBet": 20682,
+      "totalPaid": 30684,
+      "net": 10002,
+      "complete": true
+    },
+    {
+      "setting": 2,
+      "trial": 51,
+      "atBetRefund": true,
+      "games": 8100,
+      "totalBet": 15141,
+      "totalPaid": 25146,
+      "net": 10005,
+      "complete": true
+    },
+    {
+      "setting": 2,
+      "trial": 52,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53115,
+      "totalPaid": 55246,
+      "net": 2131,
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "trial": 52,
+      "atBetRefund": true,
+      "games": 18205,
+      "totalBet": 32826,
+      "totalPaid": 42832,
+      "net": 10006,
+      "complete": true
+    },
+    {
+      "setting": 2,
+      "trial": 53,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53280,
+      "totalPaid": 61250,
+      "net": 7970,
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "trial": 53,
+      "atBetRefund": true,
+      "games": 6132,
+      "totalBet": 11529,
+      "totalPaid": 21531,
+      "net": 10002,
+      "complete": true
+    },
+    {
+      "setting": 2,
+      "trial": 54,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52374,
+      "totalPaid": 41065,
+      "net": -11309,
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "trial": 54,
+      "atBetRefund": true,
+      "games": 30000,
+      "totalBet": 52962,
+      "totalPaid": 49855,
+      "net": -3107,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 50,
+      "atBetRefund": false,
+      "games": 28221,
+      "totalBet": 50634,
+      "totalPaid": 60634,
+      "net": 10000,
+      "complete": true
+    },
+    {
+      "setting": 1,
+      "trial": 50,
+      "atBetRefund": true,
+      "games": 22189,
+      "totalBet": 39528,
+      "totalPaid": 49528,
+      "net": 10000,
+      "complete": true
+    },
+    {
+      "setting": 1,
+      "trial": 51,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53226,
+      "totalPaid": 55878,
+      "net": 2652,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 51,
+      "atBetRefund": true,
+      "games": 15968,
+      "totalBet": 28716,
+      "totalPaid": 38725,
+      "net": 10009,
+      "complete": true
+    },
+    {
+      "setting": 1,
+      "trial": 52,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52557,
+      "totalPaid": 36388,
+      "net": -16169,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 52,
+      "atBetRefund": true,
+      "games": 30000,
+      "totalBet": 53187,
+      "totalPaid": 49883,
+      "net": -3304,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 53,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52200,
+      "totalPaid": 43206,
+      "net": -8994,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 53,
+      "atBetRefund": true,
+      "games": 30000,
+      "totalBet": 52827,
+      "totalPaid": 58001,
+      "net": 5174,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 54,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52080,
+      "totalPaid": 41147,
+      "net": -10933,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 54,
+      "atBetRefund": true,
+      "games": 30000,
+      "totalBet": 52656,
+      "totalPaid": 59038,
+      "net": 6382,
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "trial": 50,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 51810,
+      "totalPaid": 41194,
+      "net": -10616,
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "trial": 50,
+      "atBetRefund": true,
+      "games": 20640,
+      "totalBet": 36864,
+      "totalPaid": 46873,
+      "net": 10009,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 51,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52770,
+      "totalPaid": 50571,
+      "net": -2199,
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "trial": 51,
+      "atBetRefund": true,
+      "games": 8519,
+      "totalBet": 15693,
+      "totalPaid": 25697,
+      "net": 10004,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 52,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52017,
+      "totalPaid": 46507,
+      "net": -5510,
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "trial": 52,
+      "atBetRefund": true,
+      "games": 19504,
+      "totalBet": 34965,
+      "totalPaid": 44966,
+      "net": 10001,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 53,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52068,
+      "totalPaid": 44561,
+      "net": -7507,
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "trial": 53,
+      "atBetRefund": true,
+      "games": 16933,
+      "totalBet": 30333,
+      "totalPaid": 40334,
+      "net": 10001,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 54,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52386,
+      "totalPaid": 43587,
+      "net": -8799,
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "trial": 54,
+      "atBetRefund": true,
+      "games": 22777,
+      "totalBet": 40656,
+      "totalPaid": 50656,
+      "net": 10000,
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "trial": 50,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52104,
+      "totalPaid": 46441,
+      "net": -5663,
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "trial": 50,
+      "atBetRefund": true,
+      "games": 22883,
+      "totalBet": 40350,
+      "totalPaid": 50350,
+      "net": 10000,
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "trial": 51,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52419,
+      "totalPaid": 49473,
+      "net": -2946,
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "trial": 51,
+      "atBetRefund": true,
+      "games": 22749,
+      "totalBet": 40377,
+      "totalPaid": 50377,
+      "net": 10000,
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "trial": 52,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52278,
+      "totalPaid": 47720,
+      "net": -4558,
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "trial": 52,
+      "atBetRefund": true,
+      "games": 14028,
+      "totalBet": 24840,
+      "totalPaid": 34842,
+      "net": 10002,
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "trial": 53,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52509,
+      "totalPaid": 58031,
+      "net": 5522,
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "trial": 53,
+      "atBetRefund": true,
+      "games": 22105,
+      "totalBet": 39318,
+      "totalPaid": 49322,
+      "net": 10004,
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "trial": 54,
+      "atBetRefund": false,
+      "games": 19493,
+      "totalBet": 34731,
+      "totalPaid": 44734,
+      "net": 10003,
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "trial": 54,
+      "atBetRefund": true,
+      "games": 14012,
+      "totalBet": 25242,
+      "totalPaid": 35246,
+      "net": 10004,
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "trial": 50,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52254,
+      "totalPaid": 48364,
+      "net": -3890,
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "trial": 50,
+      "atBetRefund": true,
+      "games": 3736,
+      "totalBet": 7248,
+      "totalPaid": 17253,
+      "net": 10005,
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "trial": 51,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52944,
+      "totalPaid": 59330,
+      "net": 6386,
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "trial": 51,
+      "atBetRefund": true,
+      "games": 4225,
+      "totalBet": 8202,
+      "totalPaid": 18213,
+      "net": 10011,
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "trial": 52,
+      "atBetRefund": false,
+      "games": 24806,
+      "totalBet": 44076,
+      "totalPaid": 54076,
+      "net": 10000,
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "trial": 52,
+      "atBetRefund": true,
+      "games": 18228,
+      "totalBet": 32139,
+      "totalPaid": 42144,
+      "net": 10005,
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "trial": 53,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52491,
+      "totalPaid": 58919,
+      "net": 6428,
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "trial": 53,
+      "atBetRefund": true,
+      "games": 12015,
+      "totalBet": 21648,
+      "totalPaid": 31650,
+      "net": 10002,
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "trial": 54,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53097,
+      "totalPaid": 62878,
+      "net": 9781,
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "trial": 54,
+      "atBetRefund": true,
+      "games": 23828,
+      "totalBet": 41958,
+      "totalPaid": 51965,
+      "net": 10007,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 50,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 47007,
+      "totalPaid": 51280,
+      "net": 4273,
+      "complete": false
+    },
+    {
+      "setting": 6,
+      "trial": 50,
+      "atBetRefund": true,
+      "games": 26681,
+      "totalBet": 42375,
+      "totalPaid": 52376,
+      "net": 10001,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 51,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 46422,
+      "totalPaid": 50233,
+      "net": 3811,
+      "complete": false
+    },
+    {
+      "setting": 6,
+      "trial": 51,
+      "atBetRefund": true,
+      "games": 15115,
+      "totalBet": 24585,
+      "totalPaid": 34586,
+      "net": 10001,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 52,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 47025,
+      "totalPaid": 54130,
+      "net": 7105,
+      "complete": false
+    },
+    {
+      "setting": 6,
+      "trial": 52,
+      "atBetRefund": true,
+      "games": 26640,
+      "totalBet": 42378,
+      "totalPaid": 52386,
+      "net": 10008,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 53,
+      "atBetRefund": false,
+      "games": 27081,
+      "totalBet": 43032,
+      "totalPaid": 53033,
+      "net": 10001,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 53,
+      "atBetRefund": true,
+      "games": 15359,
+      "totalBet": 24948,
+      "totalPaid": 34950,
+      "net": 10002,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 54,
+      "atBetRefund": false,
+      "games": 29506,
+      "totalBet": 47340,
+      "totalPaid": 57341,
+      "net": 10001,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 54,
+      "atBetRefund": true,
+      "games": 10784,
+      "totalBet": 17559,
+      "totalPaid": 27559,
+      "net": 10000,
+      "complete": true
+    },
+    {
+      "setting": 1,
+      "trial": 55,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52062,
+      "totalPaid": 36382,
+      "net": -15680,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 55,
+      "atBetRefund": true,
+      "games": 30000,
+      "totalBet": 52752,
+      "totalPaid": 58435,
+      "net": 5683,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 56,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52626,
+      "totalPaid": 46671,
+      "net": -5955,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 56,
+      "atBetRefund": true,
+      "games": 17311,
+      "totalBet": 31308,
+      "totalPaid": 41314,
+      "net": 10006,
+      "complete": true
+    },
+    {
+      "setting": 1,
+      "trial": 57,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52509,
+      "totalPaid": 41325,
+      "net": -11184,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 57,
+      "atBetRefund": true,
+      "games": 17256,
+      "totalBet": 31299,
+      "totalPaid": 41300,
+      "net": 10001,
+      "complete": true
+    },
+    {
+      "setting": 1,
+      "trial": 58,
+      "atBetRefund": false,
+      "games": 16683,
+      "totalBet": 30300,
+      "totalPaid": 40300,
+      "net": 10000,
+      "complete": true
+    },
+    {
+      "setting": 1,
+      "trial": 58,
+      "atBetRefund": true,
+      "games": 5941,
+      "totalBet": 11151,
+      "totalPaid": 21158,
+      "net": 10007,
+      "complete": true
+    },
+    {
+      "setting": 1,
+      "trial": 59,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52248,
+      "totalPaid": 40708,
+      "net": -11540,
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "trial": 59,
+      "atBetRefund": true,
+      "games": 30000,
+      "totalBet": 53097,
+      "totalPaid": 60309,
+      "net": 7212,
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "trial": 55,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52272,
+      "totalPaid": 45597,
+      "net": -6675,
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "trial": 55,
+      "atBetRefund": true,
+      "games": 30000,
+      "totalBet": 52818,
+      "totalPaid": 50463,
+      "net": -2355,
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "trial": 56,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53373,
+      "totalPaid": 52503,
+      "net": -870,
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "trial": 56,
+      "atBetRefund": true,
+      "games": 20604,
+      "totalBet": 37101,
+      "totalPaid": 47111,
+      "net": 10010,
+      "complete": true
+    },
+    {
+      "setting": 2,
+      "trial": 57,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52611,
+      "totalPaid": 46194,
+      "net": -6417,
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "trial": 57,
+      "atBetRefund": true,
+      "games": 17188,
+      "totalBet": 30393,
+      "totalPaid": 40399,
+      "net": 10006,
+      "complete": true
+    },
+    {
+      "setting": 2,
+      "trial": 58,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52272,
+      "totalPaid": 47849,
+      "net": -4423,
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "trial": 58,
+      "atBetRefund": true,
+      "games": 22173,
+      "totalBet": 39375,
+      "totalPaid": 49385,
+      "net": 10010,
+      "complete": true
+    },
+    {
+      "setting": 2,
+      "trial": 59,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53022,
+      "totalPaid": 51908,
+      "net": -1114,
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "trial": 59,
+      "atBetRefund": true,
+      "games": 17864,
+      "totalBet": 32037,
+      "totalPaid": 42038,
+      "net": 10001,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 55,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53166,
+      "totalPaid": 51369,
+      "net": -1797,
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "trial": 55,
+      "atBetRefund": true,
+      "games": 22801,
+      "totalBet": 41115,
+      "totalPaid": 51116,
+      "net": 10001,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 56,
+      "atBetRefund": false,
+      "games": 27249,
+      "totalBet": 49032,
+      "totalPaid": 59036,
+      "net": 10004,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 56,
+      "atBetRefund": true,
+      "games": 15452,
+      "totalBet": 27975,
+      "totalPaid": 37982,
+      "net": 10007,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 57,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52872,
+      "totalPaid": 47690,
+      "net": -5182,
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "trial": 57,
+      "atBetRefund": true,
+      "games": 30000,
+      "totalBet": 53106,
+      "totalPaid": 57364,
+      "net": 4258,
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "trial": 58,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52737,
+      "totalPaid": 47699,
+      "net": -5038,
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "trial": 58,
+      "atBetRefund": true,
+      "games": 26236,
+      "totalBet": 46713,
+      "totalPaid": 56719,
+      "net": 10006,
+      "complete": true
+    },
+    {
+      "setting": 3,
+      "trial": 59,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52626,
+      "totalPaid": 47815,
+      "net": -4811,
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "trial": 59,
+      "atBetRefund": true,
+      "games": 18298,
+      "totalBet": 32817,
+      "totalPaid": 42820,
+      "net": 10003,
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "trial": 55,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52626,
+      "totalPaid": 51726,
+      "net": -900,
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "trial": 55,
+      "atBetRefund": true,
+      "games": 12660,
+      "totalBet": 22770,
+      "totalPaid": 32775,
+      "net": 10005,
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "trial": 56,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53514,
+      "totalPaid": 51998,
+      "net": -1516,
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "trial": 56,
+      "atBetRefund": true,
+      "games": 19927,
+      "totalBet": 35754,
+      "totalPaid": 45760,
+      "net": 10006,
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "trial": 57,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52320,
+      "totalPaid": 50431,
+      "net": -1889,
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "trial": 57,
+      "atBetRefund": true,
+      "games": 19584,
+      "totalBet": 34893,
+      "totalPaid": 44894,
+      "net": 10001,
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "trial": 58,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52665,
+      "totalPaid": 52713,
+      "net": 48,
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "trial": 58,
+      "atBetRefund": true,
+      "games": 17156,
+      "totalBet": 30993,
+      "totalPaid": 40995,
+      "net": 10002,
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "trial": 59,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52893,
+      "totalPaid": 57642,
+      "net": 4749,
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "trial": 59,
+      "atBetRefund": true,
+      "games": 23125,
+      "totalBet": 40995,
+      "totalPaid": 51002,
+      "net": 10007,
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "trial": 55,
+      "atBetRefund": false,
+      "games": 24453,
+      "totalBet": 43476,
+      "totalPaid": 53478,
+      "net": 10002,
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "trial": 55,
+      "atBetRefund": true,
+      "games": 12227,
+      "totalBet": 22143,
+      "totalPaid": 32149,
+      "net": 10006,
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "trial": 56,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52650,
+      "totalPaid": 56248,
+      "net": 3598,
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "trial": 56,
+      "atBetRefund": true,
+      "games": 12803,
+      "totalBet": 23301,
+      "totalPaid": 33308,
+      "net": 10007,
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "trial": 57,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52284,
+      "totalPaid": 57500,
+      "net": 5216,
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "trial": 57,
+      "atBetRefund": true,
+      "games": 24818,
+      "totalBet": 43890,
+      "totalPaid": 53900,
+      "net": 10010,
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "trial": 58,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 52902,
+      "totalPaid": 58757,
+      "net": 5855,
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "trial": 58,
+      "atBetRefund": true,
+      "games": 9731,
+      "totalBet": 17745,
+      "totalPaid": 27746,
+      "net": 10001,
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "trial": 59,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 53148,
+      "totalPaid": 61135,
+      "net": 7987,
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "trial": 59,
+      "atBetRefund": true,
+      "games": 6859,
+      "totalBet": 12948,
+      "totalPaid": 22958,
+      "net": 10010,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 55,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 45918,
+      "totalPaid": 41534,
+      "net": -4384,
+      "complete": false
+    },
+    {
+      "setting": 6,
+      "trial": 55,
+      "atBetRefund": true,
+      "games": 25567,
+      "totalBet": 40509,
+      "totalPaid": 50520,
+      "net": 10011,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 56,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 44991,
+      "totalPaid": 35395,
+      "net": -9596,
+      "complete": false
+    },
+    {
+      "setting": 6,
+      "trial": 56,
+      "atBetRefund": true,
+      "games": 30000,
+      "totalBet": 45321,
+      "totalPaid": 39492,
+      "net": -5829,
+      "complete": false
+    },
+    {
+      "setting": 6,
+      "trial": 57,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 46452,
+      "totalPaid": 47739,
+      "net": 1287,
+      "complete": false
+    },
+    {
+      "setting": 6,
+      "trial": 57,
+      "atBetRefund": true,
+      "games": 11331,
+      "totalBet": 18591,
+      "totalPaid": 28599,
+      "net": 10008,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 58,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 47175,
+      "totalPaid": 53367,
+      "net": 6192,
+      "complete": false
+    },
+    {
+      "setting": 6,
+      "trial": 58,
+      "atBetRefund": true,
+      "games": 13705,
+      "totalBet": 22296,
+      "totalPaid": 32304,
+      "net": 10008,
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "trial": 59,
+      "atBetRefund": false,
+      "games": 30000,
+      "totalBet": 47610,
+      "totalPaid": 55540,
+      "net": 7930,
+      "complete": false
+    },
+    {
+      "setting": 6,
+      "trial": 59,
+      "atBetRefund": true,
+      "games": 11508,
+      "totalBet": 18969,
+      "totalPaid": 28980,
+      "net": 10011,
+      "complete": true
+    }
+  ],
+  "proposalOnly": false,
+  "releaseDecision": "User adopted remaining AT quota as net take-home points after the pilot RTP increase was disclosed. No lottery retuning included.",
+  "sourceHashes": {
+    "nova-art.js": "1fa89345130c899c8db5cbc8a6520711ba596099b60dc14b30095afac60551bb",
+    "nova-tuning.js": "4a1bb10a6052b77e68c5eda5a422393df5e03c2157c63103cdcab42963015f2f",
+    "nova-normal.js": "50e2022ad4c0bf561a058bfbff1156d1d952abf11fc3c8510face972280109ce",
+    "nova-flow.js": "a01ae6c12fcf577c4cd5d7e3d099afad55aaad95930088763bc61ef06238fd19",
+    "nova-progress.js": "ed1b90aae32faef76cab4e315720c6a2b33d188c87e1ae258c02f47400252b27",
+    "nova-decrement.js": "a58f72c810431683b056905bb01841fec90bcd3bb0c87c7be3ab4f0f1b6419ea",
+    "scripts/zone-v2-model.mjs": "6046103e21fd9952e05d8b66aa359033ed4d250933cfb6cd3ad3bbccab3af6b7"
+  }
+}

@@ -164,12 +164,12 @@ test('replay entitlement and zero-game cost exemptions survive pending saves',()
  }
 });
 
-test('displayed RTP uses the current approved estimates and BIG fields use the engine target',()=>{
+test('displayed RTP uses the current pilot estimates and BIG fields use the engine target',()=>{
  const {c}=harness();vm.runInContext(fn('targetRtpText'),c);
- const estimates=['94.75','96.58','99.07','100.34','106.00','113.58'];
+ const estimates=['121.75','129.84','126.07','129.51','126.66','140.54'];
  for(let setting=1;setting<=6;setting++){
   assert(c.targetRtpText(setting).startsWith(estimates[setting-1]+'%'));
-  assert(c.targetRtpText(setting).includes('×'+(setting===6?800:400)+'回'));
+  assert(c.targetRtpText(setting).includes('×60回'));
  }
  assert.equal(c.NovaArt.bonusTarget(),50);
  for(const field of ['midMulInput','bigMulInput','bigAddInput'])assert(fn('applySettings').includes('$("'+field+'").value = NovaArt.bonusTarget()'));
@@ -221,7 +221,7 @@ test('custom lottery and complete limits suppress standard RTP; presentation pre
   for(let n=1;n<=6;n++)assert.equal(c.targetRtpText(n),'未試算（独自設定）');
  }
  c.settings={...standard,audioMuted:true,voiceVolume:.1,autoDelay:2,title:'表示変更'};
- assert(c.targetRtpText(6).startsWith('113.58%'));
+ assert(c.targetRtpText(6).startsWith('140.54%'));
  c.settings={...standard,novaFlow:{...standard.novaFlow,czChance:String(c.NovaFlow.defaults.czChance)}};
  assert(c.NovaBalance.usesStandardSettings(c.settings));
 });

@@ -75,7 +75,7 @@ export function simulate(setting,games,seed,options={}){
   if(flow.phase==='art'){
    if(a.queueResearchThreshold)flow=a.queueResearchThreshold(flow,a.observeResearchNet?paid-fee:Math.max(0,paid-(treatmentStart?.paid??paid)-(treatmentStart?.comebackPaid||0)));
    const prior=flow;flow=a.prepareBet(flow,c,rng);if(!prior.zone&&flow.zone)zoneEntry(flow);
-   if(!flow.zero)bet(flow.zone?'zone':'at');else counts.zero++;
+   if(!flow.zero){const charged=bet(flow.zone?'zone':'at');if(options.atBetRefund!==false&&a.restoreBetCost)flow=a.restoreBetCost(flow,charged);}else counts.zero++;
    if(!flow.zero)atLevelMetrics[flow.atLevel||0].games++;
    const eligible=!flow.researchSortieLeft&&!flow.zone&&!flow.entryStage&&!flow.queuedZones?.length&&Number(flow.stock||0)===0&&Number(flow.remaining)>0;
    const s=a.step(flow,{...c,netPt:options.netGuard===false?0:paid-fee},rng);

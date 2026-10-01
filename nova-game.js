@@ -2411,7 +2411,7 @@
 
   function targetRtpText(settingNo = settings.setting){
     if(A_TYPE_MODE && !NovaBalance.usesStandardSettings(settings))return "未試算（独自設定）";
-    if(A_TYPE_MODE){const profile=NovaBalance.profile(settingNo);return profile.verifiedModel?((profile.measuredRtp??profile.target)*100).toFixed(2)+`%（CZ・初期pt調整版・3万G×${profile.trials}回・停止込み推定）`:"未集計（変更前"+((profile.measuredRtp??profile.target)*100).toFixed(1)+"%）";}
+    if(A_TYPE_MODE){const profile=NovaBalance.profile(settingNo);return profile.verifiedModel?((profile.measuredRtp??profile.target)*100).toFixed(2)+`%（${profile.verificationLabel||"推定"}・3万G×${profile.trials}回・停止込み）`:"未集計（変更前"+((profile.measuredRtp??profile.target)*100).toFixed(1)+"%）";}
   }
 
   function refreshRtpViews(){
@@ -2964,6 +2964,7 @@
     if(session.active){
       session.cost = (Number(session.cost) || 0) + SPIN_COST;
     }
+    if(A_TYPE_MODE&&!session.active&&!normalState.bonusPending)normalState.flow=NovaArt.restoreBetCost(normalState.flow,SPIN_COST);
     recordSlumpPoint(false);
     updateCompleteTrialState("BET");
   }
@@ -8016,7 +8017,7 @@
     if(A_TYPE_MODE) result = normalizeATypeResult(result);
     readSettings();
     const normalDirect = !session.active;
-    if(A_TYPE_MODE&&normalDirect&&normalState.flow?.phase==='art')normalState.flow=NovaArt.prepareBet(normalState.flow,{...settings.novaArt,setting:settings.setting});
+    if(normalDirect){countTotalSpinIfNeeded(false);chargeSpinCost();}
     const spec = RESULT[result];
     const lineRow = resultLineRow(result);
     const resolved = normalDirect ? resolveNormalOutcome(result, lineRow) : resolveOutcome(result);
@@ -8038,8 +8039,6 @@
     }
 
     if(normalDirect){
-      countTotalSpinIfNeeded(false);
-      chargeSpinCost();
       applyNormalResult(result, resolved, lineRow);
       if(A_TYPE_MODE && resolved.aTypeBonusReady){
         setTimeout(()=>startBonusSessionNow({
