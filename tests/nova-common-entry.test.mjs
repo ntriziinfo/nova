@@ -1,0 +1,59 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {loadModel} from '../scripts/zone-v2-model.mjs';
+import {xoshiro128,xoshiro128State} from '../scripts/zone-v2-rng.mjs';
+loadModel();const a=NovaArt;
+const reload=s=>a.normalize(JSON.parse(JSON.stringify(s)));
+
+test('fresh entry uses identical quota, multiplier, challenge and three rare upgrades for every setting',()=>{
+ const reference=[];
+ for(let setting=1;setting<=6;setting++)for(let seed=0;seed<128;seed++){
+  const rng=xoshiro128('common-initial-proof-'+seed),c={setting};let flow=a.enterInitial(c,rng);
+  const actual={quota:flow.entryQuota,multiplier:flow.initialMultiplier,challenge:flow.burstPending,awards:[],roles:[]};
+  if(!actual.challenge){
+   for(let g=0;g<12&&flow.initialStage;g++){
+    flow=a.prepareBet(reload(flow),c,rng);const out=a.step(flow,c,rng);flow=out.flow;
+    if(out.initialAward&&Number.isFinite(out.zoneAward)){actual.awards.push(out.zoneAward);actual.roles.push(out.result);}
+   }
+   assert.equal(actual.awards.length,3);
+  }
+  if(setting===1)reference.push(actual);else assert.deepEqual(actual,reference[seed]);
+ }
+ for(let setting=1;setting<=6;setting++)assert(Math.abs(NovaBalance.zoneMean('kushuri_nito',{setting,initialBoostActive:true})-306.22060381355936)<1e-9);
+});
+
+test('saved multipliers 3-5 and fixed initial plans remain earned; later duo stock is never boosted',()=>{
+ for(const initialMultiplier of [3,4,5]){
+  let s=reload({...a.enterInitial({setting:6},()=>.99),initialMultiplier,initialBoostActive:true,initialStage:'zone',zone:'kushuri_nito',initialPlan:[50,100,50],initialIndex:1,zoneLeft:2,award:String(50*initialMultiplier),remaining:'0'});
+  for(let g=0;g<2;g++)s=a.step(reload(s),{setting:6},()=>.99,'BELL').flow;
+  assert.equal(s.remaining,String(200*initialMultiplier));assert.equal(s.initialBoostActive,false);
+  const next=a.step({...s,queuedZones:['kushuri_nito']},{setting:6},()=>.999999,'BELL');
+  assert.equal(next.zoneAward,100);
+ }
+ // Existing ordinary-stock tables are intentionally preserved.
+ assert.equal(a.drawEntryQuota({setting:1},()=>.5),150);
+ assert.equal(a.drawEntryQuota({setting:6},()=>.5),200);
+ assert.equal(a.drawEntryQuota({setting:1},()=>.5,true),200);
+ assert.equal(a.drawEntryQuota({setting:6},()=>.5,true),200);
+});
+
+test('weak zone chances are 30/50 percent for every setting and regime, using the pre-role high state',()=>{
+ for(let setting=1;setting<=6;setting++){
+  NovaDecrement.reset(setting,xoshiro128State('common-zone-'+setting));
+  for(const low of [false,true]){
+   const saved=NovaDecrement.snapshot();saved.low=low;NovaDecrement.bind(saved,setting);
+   for(const upper of [false,true])for(const high of [false,true])for(const role of ['WEAK_SUICA','WEAK_NOVA']){
+    const chance=high?.5:.3;assert.equal(a.extraZoneChance(setting,role,upper,high),chance);
+    for(const roll of [chance-1e-9,chance]){
+     const draws=high?[.999,roll,.5]:[.999,.999,roll,.5];
+     const out=a.resolveAtRole({atHigh:high,atHighLeft:10,researchUpper:upper},role,setting,()=>draws.shift()??.999);
+     assert.equal(!!out.zone,roll<chance);
+    }
+   }
+  }
+  // Promotion on this role does not apply the high-rate lottery until a later role.
+  const draws=[0,.999,.4];const state={};
+  const out=a.resolveAtRole(state,'WEAK_NOVA',setting,()=>draws.shift()??.999);
+  assert(out.promoted);assert(state.atHigh);assert.equal(out.zone,'');
+ }
+});

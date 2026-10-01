@@ -1,0 +1,627 @@
+{
+  "proposalOnly": false,
+  "options": {
+    "rng": "xoshiro128",
+    "exactGames": true,
+    "completeLimitPt": 10000,
+    "stopAtComplete": true,
+    "rareSortie": true,
+    "decrementAudit": true
+  },
+  "games": 30000,
+  "trials": 400,
+  "hashes": {
+    "nova-tuning.js": "4a1bb10a6052b77e68c5eda5a422393df5e03c2157c63103cdcab42963015f2f",
+    "nova-decrement.js": "a58f72c810431683b056905bb01841fec90bcd3bb0c87c7be3ab4f0f1b6419ea",
+    "nova-art.js": "2abad240ef7ea32d3ae7086e6063f1f94bf5e747370b70244f12c11061aa7d0d",
+    "nova-balance.js": "17a6631ac5c9dec0076ba8bb7bdfa1b3afb7ea303839d41af871d4fef87059ee",
+    "nova-normal.js": "6809ae641db691f6626a7f99a2c476f49ce6353589362a763ff55cedc4d973c2",
+    "nova-flow.js": "60a2c218cdfd79e03d7b580f798dd42dfe88baaf24d8dc74555aa25c0ff78790",
+    "nova-progress.js": "ed1b90aae32faef76cab4e315720c6a2b33d188c87e1ae258c02f47400252b27",
+    "scripts/zone-v2-model.mjs": "3c65c5308985e1e6b65e54bae981e01aafa4e6502d97773c1e3d64474bd34821"
+  },
+  "plan": {
+    "proposal1": {
+      "setting": 1,
+      "commonEntry": true,
+      "initialWeights": [
+        0.5,
+        0.5,
+        0,
+        0,
+        0
+      ],
+      "zoneLow": 0.3,
+      "zoneHigh": 0.5,
+      "czFactor": 0.56
+    },
+    "proposal2": {
+      "setting": 2,
+      "commonEntry": true,
+      "initialWeights": [
+        0.5,
+        0.5,
+        0,
+        0,
+        0
+      ],
+      "zoneLow": 0.3,
+      "zoneHigh": 0.5,
+      "czFactor": 0.867
+    },
+    "proposal3": {
+      "setting": 3,
+      "commonEntry": true,
+      "initialWeights": [
+        0.5,
+        0.5,
+        0,
+        0,
+        0
+      ],
+      "zoneLow": 0.3,
+      "zoneHigh": 0.5,
+      "czFactor": 0.752
+    },
+    "proposal4": {
+      "setting": 4,
+      "commonEntry": true,
+      "initialWeights": [
+        0.5,
+        0.5,
+        0,
+        0,
+        0
+      ],
+      "zoneLow": 0.3,
+      "zoneHigh": 0.5,
+      "czFactor": 0.963
+    },
+    "proposal5": {
+      "setting": 5,
+      "commonEntry": true,
+      "initialWeights": [
+        0.5,
+        0.5,
+        0,
+        0,
+        0
+      ],
+      "zoneLow": 0.3,
+      "zoneHigh": 0.5,
+      "czFactor": 1.069
+    },
+    "proposal6": {
+      "setting": 6,
+      "commonEntry": true,
+      "initialWeights": [
+        0.5,
+        0.5,
+        0,
+        0,
+        0
+      ],
+      "zoneLow": 0.3,
+      "zoneHigh": 0.5,
+      "czFactor": 1.148
+    }
+  },
+  "seconds": 682.873,
+  "summary": {
+    "proposal1": {
+      "n": 400,
+      "rtp": 0.9474734401976854,
+      "rtpCi95": [
+        0.9341104012105126,
+        0.9608364791848583
+      ],
+      "win": 0.365,
+      "complete": 0.0675,
+      "bet": 20811243,
+      "paid": 19718100,
+      "meanNet": -2732.8575,
+      "atZoneDenom": 72.8061287342162,
+      "zoneHits": 32470,
+      "ordinaryG": 2364015,
+      "directDenom": 275.4620135166628,
+      "normalAtDenom": 673.1821805198041,
+      "normalCzDenom": 323.7543628449343,
+      "initialMean": 305.77946436360463,
+      "initialAwardShare": 0.20439240753229054,
+      "completedAT": 11917,
+      "zeroAtZone": 0.4141142905093564,
+      "zeroAtAward": 0.36762608038935973,
+      "meanGross": 1386.2942854745322,
+      "zoneHitsPerAT": 2.660904590081396,
+      "meanInitialCompleted": 291.0338172358815,
+      "meanZoneAward": 1095.8789963917093,
+      "meanDirect": 13.744650499286733,
+      "bins": {
+        "0-499": 0.3551229336242343,
+        "500-999": 0.2679365612150709,
+        "1000-1999": 0.1810858437526223,
+        "2000-2999": 0.07644541411429051,
+        "3000-4999": 0.06696316186959805,
+        "5000-9999": 0.04581690022656709,
+        "10000+": 0.00662918519761685
+      }
+    },
+    "proposal2": {
+      "n": 400,
+      "rtp": 0.9657595234954091,
+      "rtpCi95": [
+        0.9536209340290631,
+        0.977898112961755
+      ],
+      "win": 0.405,
+      "complete": 0.0825,
+      "bet": 20624859,
+      "paid": 19918654,
+      "meanNet": -1765.5125,
+      "atZoneDenom": 73.18082004838409,
+      "zoneHits": 32242,
+      "ordinaryG": 2359496,
+      "directDenom": 171.40026151387477,
+      "normalAtDenom": 550.045348260469,
+      "normalCzDenom": 228.57954712758752,
+      "initialMean": 305.2251581689617,
+      "initialAwardShare": 0.24288507984037846,
+      "completedAT": 13989,
+      "zeroAtZone": 0.43627135606548,
+      "zeroAtAward": 0.3567803274001001,
+      "meanGross": 1189.355993995282,
+      "zoneHitsPerAT": 2.2671384659375224,
+      "meanInitialCompleted": 290.33168918435916,
+      "meanZoneAward": 876.6809636142683,
+      "meanDirect": 18.655014654371293,
+      "bins": {
+        "0-499": 0.37543784402030167,
+        "500-999": 0.2850096504396311,
+        "1000-1999": 0.18300092930159412,
+        "2000-2999": 0.06605189791979413,
+        "3000-4999": 0.056901851454714415,
+        "5000-9999": 0.031167345771677745,
+        "10000+": 0.0024304810922867967
+      }
+    },
+    "proposal3": {
+      "n": 400,
+      "rtp": 0.9907289569645896,
+      "rtpCi95": [
+        0.9782716867862213,
+        1.003186227142958
+      ],
+      "win": 0.4925,
+      "complete": 0.09,
+      "bet": 20548497,
+      "paid": 20357991,
+      "meanNet": -476.265,
+      "atZoneDenom": 73.4012015819823,
+      "zoneHits": 33123,
+      "ordinaryG": 2431268,
+      "directDenom": 276.249062606522,
+      "normalAtDenom": 593.4302387672591,
+      "normalCzDenom": 267.6049879600963,
+      "initialMean": 305.7787937119025,
+      "initialAwardShare": 0.21410526652737605,
+      "completedAT": 12973,
+      "zeroAtZone": 0.4264241116164341,
+      "zeroAtAward": 0.37369922145995527,
+      "meanGross": 1319.5168426732444,
+      "zoneHitsPerAT": 2.4941802204578742,
+      "meanInitialCompleted": 290.8116858089879,
+      "meanZoneAward": 1034.66507361443,
+      "meanDirect": 12.99930625144531,
+      "bins": {
+        "0-499": 0.3642179912125183,
+        "500-999": 0.27133276805673323,
+        "1000-1999": 0.1839975333384722,
+        "2000-2999": 0.06791027518692669,
+        "3000-4999": 0.06760194249595314,
+        "5000-9999": 0.04008324982656286,
+        "10000+": 0.004856239882833577
+      }
+    },
+    "proposal4": {
+      "n": 400,
+      "rtp": 1.0033871068799918,
+      "rtpCi95": [
+        0.9909716312422787,
+        1.0158025825177048
+      ],
+      "win": 0.545,
+      "complete": 0.1075,
+      "bet": 20349225,
+      "paid": 20418150,
+      "meanNet": 172.3125,
+      "atZoneDenom": 73.34768101434769,
+      "zoneHits": 32967,
+      "ordinaryG": 2418053,
+      "directDenom": 177.57604465006978,
+      "normalAtDenom": 519.2209830648493,
+      "normalCzDenom": 222.43796266257704,
+      "initialMean": 306.87622079143455,
+      "initialAwardShare": 0.24277386849550878,
+      "completedAT": 14387,
+      "zeroAtZone": 0.43886842288176825,
+      "zeroAtAward": 0.3660943907694446,
+      "meanGross": 1188.335441718218,
+      "zoneHitsPerAT": 2.2452213804128727,
+      "meanInitialCompleted": 292.03100020852156,
+      "meanZoneAward": 878.8440953638701,
+      "meanDirect": 18.03642176965316,
+      "bins": {
+        "0-499": 0.37513032598873985,
+        "500-999": 0.28233822200597763,
+        "1000-1999": 0.1847501216375895,
+        "2000-2999": 0.06714394939876277,
+        "3000-4999": 0.05748244943351637,
+        "5000-9999": 0.030166122193647043,
+        "10000+": 0.002988809341766873
+      }
+    },
+    "proposal5": {
+      "n": 400,
+      "rtp": 1.0599940885832138,
+      "rtpCi95": [
+        1.0460548759575428,
+        1.0739333012088847
+      ],
+      "win": 0.695,
+      "complete": 0.2475,
+      "bet": 19582446,
+      "paid": 20757277,
+      "meanNet": 2937.0775,
+      "atZoneDenom": 73.5024013363959,
+      "zoneHits": 33523,
+      "ordinaryG": 2464021,
+      "directDenom": 917.0156308150354,
+      "normalAtDenom": 439.3356469689251,
+      "normalCzDenom": 185.05785633817928,
+      "initialMean": 304.4576373515798,
+      "initialAwardShare": 0.2512046732354983,
+      "completedAT": 15534,
+      "zeroAtZone": 0.4401956997553753,
+      "zeroAtAward": 0.4248744689069139,
+      "meanGross": 1112.7057422428222,
+      "zoneHitsPerAT": 2.085425518218102,
+      "meanInitialCompleted": 288.5122956096305,
+      "meanZoneAward": 828.8361014548732,
+      "meanDirect": 3.557036178704777,
+      "bins": {
+        "0-499": 0.3836745204068495,
+        "500-999": 0.2776490279387151,
+        "1000-1999": 0.1912578859276426,
+        "2000-2999": 0.07023303720870348,
+        "3000-4999": 0.05439680700399124,
+        "5000-9999": 0.0218874726406592,
+        "10000+": 0.0009012488734389082
+      }
+    },
+    "proposal6": {
+      "n": 800,
+      "rtp": 1.1358475464860702,
+      "rtpCi95": [
+        1.1270170923909306,
+        1.1446780005812098
+      ],
+      "win": 0.8775,
+      "complete": 0.34125,
+      "bet": 34149531,
+      "paid": 38788661,
+      "meanNet": 5798.9125,
+      "atZoneDenom": 74.0916059352636,
+      "zoneHits": 60924,
+      "ordinaryG": 4513957,
+      "directDenom": 750.5748254073827,
+      "normalAtDenom": 443.35852564102566,
+      "normalCzDenom": 197.96473703041144,
+      "initialMean": 305.9835123994865,
+      "initialAwardShare": 0.27468111331911477,
+      "completedAT": 30791,
+      "zeroAtZone": 0.4536390503718619,
+      "zeroAtAward": 0.4340554058003962,
+      "meanGross": 1022.7770452404924,
+      "zoneHitsPerAT": 1.9110129583319801,
+      "meanInitialCompleted": 289.90289370270534,
+      "meanZoneAward": 741.6881556298919,
+      "meanDirect": 3.8774317170601797,
+      "bins": {
+        "0-499": 0.3918677535643532,
+        "500-999": 0.2864473385080056,
+        "1000-1999": 0.1907050761586178,
+        "2000-2999": 0.07011789159169887,
+        "3000-4999": 0.04796856224221363,
+        "5000-9999": 0.012568607710045143,
+        "10000+": 0.000324770225065766
+      }
+    }
+  },
+  "trialsPerSetting": {
+    "1": 400,
+    "2": 400,
+    "3": 400,
+    "4": 400,
+    "5": 400,
+    "6": 800
+  },
+  "seedBySetting": {
+    "1": "NOVA-common-entry-independent-20261001",
+    "2": "NOVA-common-entry-independent-20261001",
+    "3": "NOVA-common-entry-refined-independent-20261001",
+    "4": "NOVA-common-entry-independent-20261001",
+    "5": "NOVA-common-entry-independent-20261001",
+    "6": "NOVA-common-entry-s6-final-independent-20261001"
+  },
+  "sourceBySetting": {
+    "1": "validation",
+    "2": "validation",
+    "3": "refined-validation",
+    "4": "validation",
+    "5": "validation",
+    "6": "s6-final-validation"
+  },
+  "proposalStatus": "adopted",
+  "sourceRevision": "0859241e58eb8620ed4ed4ce71de4dd606e51c35",
+  "approvedChanges": {
+    "freshInitialQuotaWeights": [
+      8,
+      12,
+      6,
+      1
+    ],
+    "freshInitialMultipliers": [
+      1,
+      2
+    ],
+    "freshInitialMultiplierWeights": [
+      0.5,
+      0.5
+    ],
+    "weakAtZoneChance": {
+      "low": 0.3,
+      "high": 0.5
+    },
+    "normalWeakCzAdjustments": [
+      0.56,
+      0.867,
+      0.752,
+      0.963,
+      1.069,
+      1.148
+    ]
+  },
+  "initialEquality": {
+    "sameInitialResults": true,
+    "seedsPerSetting": 3000,
+    "settings": 6,
+    "mean": 306.22060381355936,
+    "perGame": {
+      "50": 0.6403528719397363,
+      "100": 0.35898046139359696,
+      "200": 0.0006666666666666666
+    },
+    "exactDistribution": {
+      "150": 0.13128892407960518,
+      "200": 0.2208008768627855,
+      "250": 0.12378050310325303,
+      "300": 0.1548293383530814,
+      "350": 0.00045974833884728286,
+      "400": 0.22092974383444786,
+      "450": 4.2690191462649087e-7,
+      "500": 0.12378074242356063,
+      "600": 0.02354041442162436,
+      "700": 0.00045974833884728286,
+      "800": 0.00012886697166235975,
+      "900": 4.2690191462649087e-7,
+      "1000": 2.393203075957313e-7,
+      "1200": 1.4814814814814814e-10
+    },
+    "histograms": [
+      {
+        "150": 385,
+        "200": 628,
+        "250": 354,
+        "300": 427,
+        "350": 2,
+        "400": 617,
+        "500": 351,
+        "600": 58,
+        "700": 1
+      },
+      {
+        "150": 385,
+        "200": 628,
+        "250": 354,
+        "300": 427,
+        "350": 2,
+        "400": 617,
+        "500": 351,
+        "600": 58,
+        "700": 1
+      },
+      {
+        "150": 385,
+        "200": 628,
+        "250": 354,
+        "300": 427,
+        "350": 2,
+        "400": 617,
+        "500": 351,
+        "600": 58,
+        "700": 1
+      },
+      {
+        "150": 385,
+        "200": 628,
+        "250": 354,
+        "300": 427,
+        "350": 2,
+        "400": 617,
+        "500": 351,
+        "600": 58,
+        "700": 1
+      },
+      {
+        "150": 385,
+        "200": 628,
+        "250": 354,
+        "300": 427,
+        "350": 2,
+        "400": 617,
+        "500": 351,
+        "600": 58,
+        "700": 1
+      },
+      {
+        "150": 385,
+        "200": 628,
+        "250": 354,
+        "300": 427,
+        "350": 2,
+        "400": 617,
+        "500": 351,
+        "600": 58,
+        "700": 1
+      }
+    ],
+    "description": "Identical quota, multiplier, rare-role results and all three awards for the same RNG seed across settings; initial upper-challenge entry also identical. Common quota weights [8,12,6,1]/27 and uniform shuffling equal three independent 50/100 draws with P(100)=1/3 before rare-role upgrades."
+  },
+  "definitions": {
+    "initialMean": "Fresh initial duo zone only, including rare-role upgrades; the 5% initial upper-challenge route bypasses this zone.",
+    "rtp": "Sum of actual payouts / sum of charged BET. A replay makes the following BET free.",
+    "complete": "Cumulative session net reaches +10,000pt; stop there, otherwise run 30,000 total games including bonus.",
+    "normalAtDenom": "Normal games / fresh AT entries; excludes CZ, bonus and AT games."
+  },
+  "productionValidation": {
+    "gamesPerTrial": 30000,
+    "totalTrials": 2800,
+    "seconds": 652.272,
+    "hashes": {
+      "nova-tuning.js": "4a1bb10a6052b77e68c5eda5a422393df5e03c2157c63103cdcab42963015f2f",
+      "nova-decrement.js": "a58f72c810431683b056905bb01841fec90bcd3bb0c87c7be3ab4f0f1b6419ea",
+      "nova-art.js": "328afb8bc3ddefa16d57fb2bced5df6a44126af05f5712071f4e75a05595be99",
+      "nova-balance.js": "26da728b1064d018c97395b114374301a6dc6313a1ac13a8ec6a33a5b6fbd8ff",
+      "nova-normal.js": "50e2022ad4c0bf561a058bfbff1156d1d952abf11fc3c8510face972280109ce",
+      "nova-flow.js": "60a2c218cdfd79e03d7b580f798dd42dfe88baaf24d8dc74555aa25c0ff78790",
+      "nova-progress.js": "ed1b90aae32faef76cab4e315720c6a2b33d188c87e1ae258c02f47400252b27",
+      "scripts/zone-v2-model.mjs": "3c65c5308985e1e6b65e54bae981e01aafa4e6502d97773c1e3d64474bd34821"
+    },
+    "summary": [
+      {
+        "setting": 1,
+        "trials": 400,
+        "matching": 400,
+        "rtp": 0.9474734401976854,
+        "win": 0.365,
+        "complete": 0.0675
+      },
+      {
+        "setting": 2,
+        "trials": 400,
+        "matching": 400,
+        "rtp": 0.9657595234954091,
+        "win": 0.405,
+        "complete": 0.0825
+      },
+      {
+        "setting": 3,
+        "trials": 400,
+        "matching": 400,
+        "rtp": 0.9907289569645896,
+        "win": 0.4925,
+        "complete": 0.09
+      },
+      {
+        "setting": 4,
+        "trials": 400,
+        "matching": 400,
+        "rtp": 1.0033871068799918,
+        "win": 0.545,
+        "complete": 0.1075
+      },
+      {
+        "setting": 5,
+        "trials": 400,
+        "matching": 400,
+        "rtp": 1.0599940885832138,
+        "win": 0.695,
+        "complete": 0.2475
+      },
+      {
+        "setting": 6,
+        "trials": 800,
+        "matching": 800,
+        "rtp": 1.1358475464860702,
+        "win": 0.8775,
+        "complete": 0.34125
+      }
+    ],
+    "mismatches": []
+  },
+  "productionInitialEquality": {
+    "sameAsProposal": true,
+    "seedsPerSetting": 3000,
+    "settings": 6
+  },
+  "browserValidation": {
+    "manual": {
+      "passed": true,
+      "silent": true,
+      "gains": [
+        {
+          "game": 1,
+          "role": "BELL",
+          "gain": 200,
+          "award": "200",
+          "remaining": "0"
+        },
+        {
+          "game": 2,
+          "role": "WEAK_NOVA",
+          "gain": 200,
+          "award": "400",
+          "remaining": "0"
+        },
+        {
+          "game": 3,
+          "role": "STRONG_NOVA",
+          "gain": 400,
+          "award": "800",
+          "remaining": "800"
+        }
+      ],
+      "midSpinReload": true,
+      "errors": []
+    },
+    "auto": {
+      "passed": true,
+      "silent": true,
+      "result": {
+        "spins": 3,
+        "awards": [
+          200,
+          200,
+          200
+        ],
+        "remaining": "600"
+      },
+      "errors": []
+    }
+  },
+  "regressionValidation": {
+    "fullSuite": {
+      "tests": 509,
+      "passed": 507,
+      "failed": 2
+    },
+    "correctedFailures": {
+      "file": "tests/nova-spin-resume.test.mjs",
+      "reason": "Previous RTP labels and trial counts replaced with the adopted estimates.",
+      "rerunTests": 18,
+      "passed": 18,
+      "failed": 0
+    },
+    "remainingFailures": 0
+  }
+}

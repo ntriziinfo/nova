@@ -1,12 +1,12 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
 const ctx=vm.createContext({});for(const f of ['nova-tuning.js','nova-art.js','nova-balance.js'])vm.runInContext(fs.readFileSync(f,'utf8'),ctx);const a=ctx.NovaArt,b=ctx.NovaBalance;
-test('published RTP metadata identifies the approved CZ/initial-point evidence and sample counts',()=>{
- const report=JSON.parse(fs.readFileSync('docs/cz-initial-validation-20261001.json'));
- const measured=report.productionValidation.summary.map(r=>r.rtp);
+test('published RTP metadata identifies the approved common-initial evidence and sample counts',()=>{
+ const report=JSON.parse(fs.readFileSync('docs/at-common-entry-validation-20261001.json'));
+ const measured=Array.from({length:6},(_,i)=>report.summary['proposal'+(i+1)].rtp);
  for(let i=0;i<6;i++){
   const p=b.profile(i+1);assert.equal(p.target,b.targets[i]);assert.equal(p.measuredRtp,measured[i]);
-  assert.equal(p.verifiedModel,'cz-initial-20261001-30000g-complete-stop');assert.equal(p.trials,i===4?1000:600);
-  assert.equal(p.previousVerifiedModel,'role-merge-20260930-30000g-complete-stop');
+  assert.equal(p.verifiedModel,'at-common-entry-20261001-30000g-complete-stop');assert.equal(p.trials,i===5?800:400);
+  assert.equal(p.previousVerifiedModel,'cz-initial-20261001-30000g-complete-stop');
   assert.equal(report.trialsPerSetting[i+1],p.trials);
  }
 });

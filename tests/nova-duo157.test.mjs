@@ -37,12 +37,12 @@ test('natural initial-zone rare roles use the AT frequencies and the new exact a
    total+=Number(s.remaining);
   }
   // Independent approved target includes rare-role rewrites (not just the sealed base).
-  const meanFactor=a.initialBoostRules.weights[setting-1].reduce((s,p,i)=>s+p*(i+1),0);const mean=meanFactor*JSON.parse(fs.readFileSync('tests/fixtures/nova-role-merge-approved.json')).entryMeans[setting-1];assert(Math.abs(total/count-mean)<7,`${setting}: ${total/count} vs ${mean}`);
+  const mean=306.22060381355936;assert(Math.abs(total/count-mean)<7,`${setting}: ${total/count} vs ${mean}`);
  }
  assert(sawWeak>0&&sawStrong>0);
 });
 
-test('BUG-002: reported duo mean must include the setting-specific initial base weights',()=>{
+test('BUG-002: reported duo means distinguish common fresh initial from setting-specific ordinary stocks',()=>{
  const mismatches=[];
  for(let setting=1;setting<=6;setting++){
   const weights=a.entryWeights[setting-1];
@@ -52,9 +52,10 @@ test('BUG-002: reported duo mean must include the setting-specific initial base 
   const reported=NovaBalance.zoneMean('kushuri_nito',{setting});
   if(Math.abs(reported-expected)>1e-9)mismatches.push({setting,expected,reported});
   const boost=a.initialBoostRules.values.reduce((sum,n,i)=>sum+n*a.initialBoostRules.weights[setting-1][i],0);
-  assert(Math.abs(NovaBalance.zoneMean('kushuri_nito',{setting,initialBoostActive:true})-expected*boost)<1e-9);
+  const commonUnboosted=204.14706920903956;
+  assert(Math.abs(NovaBalance.zoneMean('kushuri_nito',{setting,initialBoostActive:true})-commonUnboosted*boost)<1e-9);
   for(const initialMultiplier of a.initialBoostRules.values){
-   assert(Math.abs(NovaBalance.zoneMean('kushuri_nito',{setting,initialBoostActive:true,initialMultiplier})-expected*initialMultiplier)<1e-9);
+   assert(Math.abs(NovaBalance.zoneMean('kushuri_nito',{setting,initialBoostActive:true,initialMultiplier})-commonUnboosted*initialMultiplier)<1e-9);
    assert.equal(NovaBalance.zoneMean('kushuri_nito',{setting,initialMultiplier}),reported);
   }
  }

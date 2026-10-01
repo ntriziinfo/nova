@@ -5,11 +5,11 @@ loadModel();const a=NovaArt,n=NovaNormal;
 const reload=s=>a.normalize(JSON.parse(JSON.stringify(s)));
 const zone=s=>a.prepareBet({...s,initialStage:'entry',entryStage:'confirmed',pendingZone:'kushuri_nito'}, {setting:s.modelSetting},()=>.99);
 
-test('every setting draws all five approved multipliers once, before the initial challenge',()=>{
+test('every setting draws the same two multipliers once, before the initial challenge',()=>{
  for(let setting=1;setting<=6;setting++){
-  const expected=setting<=4?[.05,.75,.16,.03,.01]:[.02,.10,.40,.43,.05];
+  const expected=[.5,.5,0,0,0];
   assert.deepEqual(a.initialBoostRules.weights[setting-1],expected);let edge=0;
-  for(let i=0;i<5;i++){
+  for(let i=0;i<2;i++){
    let calls=0;const rng=()=>[.999999,edge+expected[i]/2,.99][calls++];
    const fresh=a.enterInitial({setting},rng);assert.equal(calls,3);assert.equal(fresh.initialMultiplier,i+1);assert(fresh.initialBoostActive);assert(!fresh.burstPending);
    let s=zone(reload(fresh));
@@ -26,7 +26,7 @@ test('every setting draws all five approved multipliers once, before the initial
 
 test('initial upper-challenge route and legacy saves cannot boost later duo stocks',()=>{
  let draw=0;const fresh=a.enterInitial({setting:6},()=>[.99,.999,0][draw++]);
- assert.equal(fresh.initialMultiplier,5);assert.equal(fresh.initialStage,'');assert.equal(fresh.initialBoostActive,false);assert(fresh.burstPending);
+ assert.equal(fresh.initialMultiplier,2);assert.equal(fresh.initialStage,'');assert.equal(fresh.initialBoostActive,false);assert(fresh.burstPending);
  const stock=a.step({...fresh,burstPending:false,researchChallengeSource:'',queuedZones:['kushuri_nito']},{setting:6},()=>.999999,'BELL');assert.equal(stock.zoneAward,100);
  const legacy={...zone(a.enterInitial({setting:6},()=>.99)),initialPlan:[50,100,50],initialIndex:1,award:'50',zoneLeft:2};
  delete legacy.initialMultiplier;delete legacy.initialBoostActive;
@@ -36,7 +36,7 @@ test('initial upper-challenge route and legacy saves cannot boost later duo stoc
 });
 
 test('CZ entry factor is setting-specific after the cap; strong NOVA remains certain',()=>{
- assert.deepEqual(n.czEntryFactors,[.5092,.5053,.4696,.4812,.255,.2148]);
+ assert.deepEqual(n.czEntryFactors,[.56*.5092,.867*.5053,.752*.4696,.963*.4812,1.069*.255,1.148*.2148]);
  for(let setting=1;setting<=6;setting++){
   for(const level of ['low','high']){
    const p=n.roleCzRate({level},'WEAK_SUICA',setting);

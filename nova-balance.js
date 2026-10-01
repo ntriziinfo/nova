@@ -1,16 +1,16 @@
-/* Normal/upper AT net 5/8pt/G. Approved CZ/initial-point estimates: docs/cz-initial-validation-20261001.json. */
+/* Normal/upper AT net 5/8pt/G. Approved estimates: docs/at-common-entry-validation-20261001.json. */
 globalThis.NovaBalance=(()=>{
  // Prior S4: docs/s4-140-report.md, 6,000 independent 30,000G trials, +10,000pt stop.
  // Approved 2026-10-01 estimates, not guaranteed RTP.
  const targets=[0.945,0.965,0.985,1.005,1.055,1.14];
- // 30,000G, S5 1,000 trials; others 600; cumulative +10,000pt stop.
- const measuredRtp=[0.9468254563537776,0.9675267655402311,0.9848638245823915,1.005759399475681,1.047563751564595,1.1424375155045963];
+ // 30,000G, S1-5 400 trials each; S6 800; cumulative +10,000pt stop.
+ const measuredRtp=[0.9474734401976854,0.9657595234954091,0.9907289569645896,1.0033871068799918,1.0599940885832138,1.1358475464860702];
  const normal=[[354.112628,570.311235,6.592194,128,7.464630],[335.340933,496.870459,6.554256,192,7.482946],[318.675842,391.096799,6.455407,124,7.452119],[295.728558,359.759320,6.248231,184,7.301746],[288.226978,283.780845,6.120643,120,7.250883],[276.519476,276.524590,5.897360,176,7.245667]];
  // Exact reward recursion: 50pt grid below the threshold, translation-invariant tail above it.
  function zoneMean(id,options={}){
   if(NovaArt.initialZoneIds.includes(id)){
    const a=NovaArt,{values,weights:fallback,games}=a.entryQuotaRules;
-   const weights=Number.isInteger(options.setting)&&options.setting>=1&&options.setting<=6?a.entryWeights[options.setting-1]:fallback;
+   const weights=!options.initialBoostActive&&Number.isInteger(options.setting)&&options.setting>=1&&options.setting<=6?a.entryWeights[options.setting-1]:fallback;
    const base=values.reduce((sum,pt,i)=>sum+pt*weights[i],0)/weights.reduce((sum,w)=>sum+w,0)/games;
    const mean=games*Object.entries(a.roleProbabilities(options.setting)).reduce((sum,[role,p])=>sum+p*(a.initialRareAwards[role]??base),0);
    // Ordinary duo stocks are unboosted. Fresh initial ATs explicitly opt in;
@@ -70,7 +70,7 @@ globalThis.NovaBalance=(()=>{
  }
  const giruMean=(setting,ura=false)=>zoneMean(ura?'ura_giru':'giru',{setting});
  // Entry scales fitted with the normal-mode / ceiling / impurity / freeze simulation.
- function profile(setting){const i=Math.max(0,Math.min(5,Math.round(Number(setting)||1)-1)),scale=.21*(1+.12*NovaArt.settingBias[i]);return {setting:i+1,target:targets[i],measuredRtp:measuredRtp[i],scale,directDenom:NovaArt.defaults['direct'+(i+1)]/scale,czDenom:120/scale,strongDenom:600/scale,verifiedModel:'cz-initial-20261001-30000g-complete-stop',trials:i===4?1000:600,previousVerifiedModel:'role-merge-20260930-30000g-complete-stop'};}
+ function profile(setting){const i=Math.max(0,Math.min(5,Math.round(Number(setting)||1)-1)),scale=.21*(1+.12*NovaArt.settingBias[i]);return {setting:i+1,target:targets[i],measuredRtp:measuredRtp[i],scale,directDenom:NovaArt.defaults['direct'+(i+1)]/scale,czDenom:120/scale,strongDenom:600/scale,verifiedModel:'at-common-entry-20261001-30000g-complete-stop',trials:i===5?800:400,previousVerifiedModel:'cz-initial-20261001-30000g-complete-stop'};}
  const profiles=targets.map((_,i)=>profile(i+1));
  // Estimates describe the approved defaults, not user-edited lottery settings.
  function usesStandardSettings(settings={}){

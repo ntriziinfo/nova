@@ -1,0 +1,341 @@
+{
+  "source": "Accepted in-memory proposal results, before production implementation; only attribution-only episodes/awards fields omitted.",
+  "trials": [
+    {
+      "setting": 1,
+      "seed": "NOVA-common-entry-independent-20261001-S1-0",
+      "games": 30000,
+      "options": {
+        "rng": "xoshiro128",
+        "exactGames": true,
+        "completeLimitPt": 10000,
+        "stopAtComplete": true,
+        "rareSortie": true,
+        "decrementAudit": true
+      },
+      "sha256": "b833b08d8dfa8003ca79da848d7e07aec12a65e7a1780db1b6a022cb92255702"
+    },
+    {
+      "setting": 1,
+      "seed": "NOVA-common-entry-independent-20261001-S1-1",
+      "games": 30000,
+      "options": {
+        "rng": "xoshiro128",
+        "exactGames": true,
+        "completeLimitPt": 10000,
+        "stopAtComplete": true,
+        "rareSortie": true,
+        "decrementAudit": true
+      },
+      "sha256": "f9bdbede5aa1b1208e58f17f3d40a432748eaa03fe3258f78d696abc1644b94f"
+    },
+    {
+      "setting": 1,
+      "seed": "NOVA-common-entry-independent-20261001-S1-2",
+      "games": 30000,
+      "options": {
+        "rng": "xoshiro128",
+        "exactGames": true,
+        "completeLimitPt": 10000,
+        "stopAtComplete": true,
+        "rareSortie": true,
+        "decrementAudit": true
+      },
+      "sha256": "0196c3016d43f36647cf651526848cb4f0bb27c2c498de4f25251e7128a853d4"
+    },
+    {
+      "setting": 1,
+      "seed": "NOVA-common-entry-independent-20261001-S1-3",
+      "games": 30000,
+      "options": {
+        "rng": "xoshiro128",
+        "exactGames": true,
+        "completeLimitPt": 10000,
+        "stopAtComplete": true,
+        "rareSortie": true,
+        "decrementAudit": true
+      },
+      "sha256": "3033c0695bbe2006c57c159a1f769d1c39f7caa1577640c3554b2d3151a052cd"
+    },
+    {
+      "setting": 2,
+      "seed": "NOVA-common-entry-independent-20261001-S2-0",
+      "games": 30000,
+      "options": {
+        "rng": "xoshiro128",
+        "exactGames": true,
+        "completeLimitPt": 10000,
+        "stopAtComplete": true,
+        "rareSortie": true,
+        "decrementAudit": true
+      },
+      "sha256": "8a0d9f8f61896bb52855abf02efd317e6b7aa131669122281ee4acf7d64a60d3"
+    },
+    {
+      "setting": 2,
+      "seed": "NOVA-common-entry-independent-20261001-S2-1",
+      "games": 30000,
+      "options": {
+        "rng": "xoshiro128",
+        "exactGames": true,
+        "completeLimitPt": 10000,
+        "stopAtComplete": true,
+        "rareSortie": true,
+        "decrementAudit": true
+      },
+      "sha256": "47e7274da5e1f117423bef9bb301eb715eb54c908f037eb66d4e05e9dffb4cec"
+    },
+    {
+      "setting": 2,
+      "seed": "NOVA-common-entry-independent-20261001-S2-2",
+      "games": 30000,
+      "options": {
+        "rng": "xoshiro128",
+        "exactGames": true,
+        "completeLimitPt": 10000,
+        "stopAtComplete": true,
+        "rareSortie": true,
+        "decrementAudit": true
+      },
+      "sha256": "ba3f10f0194b6716f29878744215ecd76b93117ce5a1a66968bf8903d7400f8a"
+    },
+    {
+      "setting": 2,
+      "seed": "NOVA-common-entry-independent-20261001-S2-3",
+      "games": 30000,
+      "options": {
+        "rng": "xoshiro128",
+        "exactGames": true,
+        "completeLimitPt": 10000,
+        "stopAtComplete": true,
+        "rareSortie": true,
+        "decrementAudit": true
+      },
+      "sha256": "0321d97e1d637029ebc41ee635b298e49c2800536702777f572c4b09303d7feb"
+    },
+    {
+      "setting": 3,
+      "seed": "NOVA-common-entry-refined-independent-20261001-S3-0",
+      "games": 30000,
+      "options": {
+        "rng": "xoshiro128",
+        "exactGames": true,
+        "completeLimitPt": 10000,
+        "stopAtComplete": true,
+        "rareSortie": true,
+        "decrementAudit": true
+      },
+      "sha256": "d2c7911d62f7e18767e80d0396eee5afc3bc07bdc37b0c9bb49218b93bc0dc13"
+    },
+    {
+      "setting": 3,
+      "seed": "NOVA-common-entry-refined-independent-20261001-S3-1",
+      "games": 30000,
+      "options": {
+        "rng": "xoshiro128",
+        "exactGames": true,
+        "completeLimitPt": 10000,
+        "stopAtComplete": true,
+        "rareSortie": true,
+        "decrementAudit": true
+      },
+      "sha256": "73b29c7b4de2b6cdfe053a0339b17e62830a0008d9916dd489efb1d76c73d2b2"
+    },
+    {
+      "setting": 3,
+      "seed": "NOVA-common-entry-refined-independent-20261001-S3-2",
+      "games": 30000,
+      "options": {
+        "rng": "xoshiro128",
+        "exactGames": true,
+        "completeLimitPt": 10000,
+        "stopAtComplete": true,
+        "rareSortie": true,
+        "decrementAudit": true
+      },
+      "sha256": "4ce4f92701ff1bab3eedce2fa49bcc3e159c925af190ba9af7975eaa51fe1f91"
+    },
+    {
+      "setting": 3,
+      "seed": "NOVA-common-entry-refined-independent-20261001-S3-3",
+      "games": 30000,
+      "options": {
+        "rng": "xoshiro128",
+        "exactGames": true,
+        "completeLimitPt": 10000,
+        "stopAtComplete": true,
+        "rareSortie": true,
+        "decrementAudit": true
+      },
+      "sha256": "0c2cc25e4308cb5247234958fc29b4da6f7fec578d133bd40363b13b64d90f80"
+    },
+    {
+      "setting": 4,
+      "seed": "NOVA-common-entry-independent-20261001-S4-0",
+      "games": 30000,
+      "options": {
+        "rng": "xoshiro128",
+        "exactGames": true,
+        "completeLimitPt": 10000,
+        "stopAtComplete": true,
+        "rareSortie": true,
+        "decrementAudit": true
+      },
+      "sha256": "d4989db7b1afb271b019a1327f82f1dea7fdfeb0dedf1cc292c99463e23f4e47"
+    },
+    {
+      "setting": 4,
+      "seed": "NOVA-common-entry-independent-20261001-S4-1",
+      "games": 30000,
+      "options": {
+        "rng": "xoshiro128",
+        "exactGames": true,
+        "completeLimitPt": 10000,
+        "stopAtComplete": true,
+        "rareSortie": true,
+        "decrementAudit": true
+      },
+      "sha256": "ba8150f0a7c5c8f6b5e4c9efca170ee56be075d38524884d45e9a0ee4560f440"
+    },
+    {
+      "setting": 4,
+      "seed": "NOVA-common-entry-independent-20261001-S4-2",
+      "games": 30000,
+      "options": {
+        "rng": "xoshiro128",
+        "exactGames": true,
+        "completeLimitPt": 10000,
+        "stopAtComplete": true,
+        "rareSortie": true,
+        "decrementAudit": true
+      },
+      "sha256": "17befed2ce7166b585cbdd121225daf26abfd2210562f90dcdd3e2239509b39a"
+    },
+    {
+      "setting": 4,
+      "seed": "NOVA-common-entry-independent-20261001-S4-3",
+      "games": 30000,
+      "options": {
+        "rng": "xoshiro128",
+        "exactGames": true,
+        "completeLimitPt": 10000,
+        "stopAtComplete": true,
+        "rareSortie": true,
+        "decrementAudit": true
+      },
+      "sha256": "a6ac9d4ed30e65cdb3f35f8e94c0e24669365de87bf008ac8b0c5048afabea94"
+    },
+    {
+      "setting": 5,
+      "seed": "NOVA-common-entry-independent-20261001-S5-0",
+      "games": 30000,
+      "options": {
+        "rng": "xoshiro128",
+        "exactGames": true,
+        "completeLimitPt": 10000,
+        "stopAtComplete": true,
+        "rareSortie": true,
+        "decrementAudit": true
+      },
+      "sha256": "b21e8fd4cf11aac46744d975f9a45061418dddb678e7939c7f8280bb30505647"
+    },
+    {
+      "setting": 5,
+      "seed": "NOVA-common-entry-independent-20261001-S5-1",
+      "games": 30000,
+      "options": {
+        "rng": "xoshiro128",
+        "exactGames": true,
+        "completeLimitPt": 10000,
+        "stopAtComplete": true,
+        "rareSortie": true,
+        "decrementAudit": true
+      },
+      "sha256": "809a7dfdb66be9ce96823e6e1508f1a58584baed4f2aeeb1aa275293950907da"
+    },
+    {
+      "setting": 5,
+      "seed": "NOVA-common-entry-independent-20261001-S5-2",
+      "games": 30000,
+      "options": {
+        "rng": "xoshiro128",
+        "exactGames": true,
+        "completeLimitPt": 10000,
+        "stopAtComplete": true,
+        "rareSortie": true,
+        "decrementAudit": true
+      },
+      "sha256": "fc69a975a7626be390b57c12103b90da899d3196b69f10eedd486ed17ac08ee1"
+    },
+    {
+      "setting": 5,
+      "seed": "NOVA-common-entry-independent-20261001-S5-3",
+      "games": 30000,
+      "options": {
+        "rng": "xoshiro128",
+        "exactGames": true,
+        "completeLimitPt": 10000,
+        "stopAtComplete": true,
+        "rareSortie": true,
+        "decrementAudit": true
+      },
+      "sha256": "b56445d6fb92734b413053de0daeb20fff091f1ac54be8823ce51b634d5815c4"
+    },
+    {
+      "setting": 6,
+      "seed": "NOVA-common-entry-s6-final-independent-20261001-S6-0",
+      "games": 30000,
+      "options": {
+        "rng": "xoshiro128",
+        "exactGames": true,
+        "completeLimitPt": 10000,
+        "stopAtComplete": true,
+        "rareSortie": true,
+        "decrementAudit": true
+      },
+      "sha256": "38a2f5e1bb42ad01d4937475118fbeb264d30ed9505859ffe7fb550572e24d85"
+    },
+    {
+      "setting": 6,
+      "seed": "NOVA-common-entry-s6-final-independent-20261001-S6-1",
+      "games": 30000,
+      "options": {
+        "rng": "xoshiro128",
+        "exactGames": true,
+        "completeLimitPt": 10000,
+        "stopAtComplete": true,
+        "rareSortie": true,
+        "decrementAudit": true
+      },
+      "sha256": "1e69d4b8f6589b5ec1d0b80edb269789d2e4118c874f98848ff88c894e16588c"
+    },
+    {
+      "setting": 6,
+      "seed": "NOVA-common-entry-s6-final-independent-20261001-S6-2",
+      "games": 30000,
+      "options": {
+        "rng": "xoshiro128",
+        "exactGames": true,
+        "completeLimitPt": 10000,
+        "stopAtComplete": true,
+        "rareSortie": true,
+        "decrementAudit": true
+      },
+      "sha256": "4ff9ae4006a4b3e0444edb80718c0177785e5e316209a949f617c67f4d08a65a"
+    },
+    {
+      "setting": 6,
+      "seed": "NOVA-common-entry-s6-final-independent-20261001-S6-3",
+      "games": 30000,
+      "options": {
+        "rng": "xoshiro128",
+        "exactGames": true,
+        "completeLimitPt": 10000,
+        "stopAtComplete": true,
+        "rareSortie": true,
+        "decrementAudit": true
+      },
+      "sha256": "cebb7eeeaf5cf3ede64eca0e56f951d4b8d6ba20a2b7b7ac0645edd8900c83cc"
+    }
+  ]
+}
