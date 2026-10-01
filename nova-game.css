@@ -6507,5 +6507,9 @@ body{
 /* Storage warnings stay visible independently of game/result overlays. */
 .storageStatus { position:fixed; bottom:12px; left:12px; right:12px; z-index:100000; display:flex; gap:12px; align-items:center; padding:12px 16px; border:1px solid #ff9f7e; border-radius:8px; background:#421a16; color:#fff; font-size:14px; line-height:1.5; box-shadow:0 2px 16px #0009; }
 .storageStatus[hidden] { display:none; }
+.playAccessStatus { position:fixed; inset:0; z-index:100001; display:grid; place-items:center; padding:24px; background:#080a12f5; color:#fff; }
+.playAccessStatus[hidden] { display:none; }
+.playAccessStatus>div { max-width:480px; padding:24px; border:1px solid #d2aa63; border-radius:12px; background:#171a25; font-size:16px; line-height:1.7; }
+.playAccessStatus button { padding:10px 20px; border:1px solid #d2aa63; border-radius:6px; background:#453621; color:#fff; cursor:pointer; }
 .storageStatus button { flex:none; padding:8px 12px; color:#fff; background:#7d3022; border:1px solid #ffb39a; border-radius:6px; cursor:pointer; }
 @media(max-width:600px) { .storageStatus { bottom:4px; left:4px; right:4px; gap:8px; padding:8px; font-size:12px; } }

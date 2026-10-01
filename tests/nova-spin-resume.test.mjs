@@ -11,7 +11,8 @@ function harness(saved=null){
  const storage=new Map(saved?[['state',JSON.stringify(saved)]]:[]),errors=[],timers=[],elements=new Map();
  const $=id=>{if(!elements.has(id))elements.set(id,{dataset:{},classList:{toggle:noop},disabled:false,textContent:''});return elements.get(id);};
  const c=vm.createContext({console:{warn:(...args)=>errors.push(args)},settings:{setting:1,title:'NOVA',audioBalanceVersion:12,masterVolume:.7},stats:{roleStatVersion:1,totalSpins:0,normalSpins:0,highSpins:0,totalFee:0,totalPaid:0,slumpHistory:[]},normalState:{},session:{active:false},completeTrialState:{},
-  safeStorageGet:key=>storage.get(key)||null,safeStorageSet:(key,value)=>{storage.set(key,value);return true;},
+  safeStorageGet:key=>storage.has(key)?storage.get(key):null,safeStorageSet:(key,value)=>{storage.set(key,value);return true;},
+  storageRestoreBlocked:false,playAccess:{owned:()=>true},
   PREFERENCES_STORAGE_KEY:'preferences',STORAGE_KEY:'state',STORAGE_RESUME_KEY:'resume',
   A_TYPE_MODE:true,AUDIO_BALANCE_VERSION:12,ROLE_STAT_COUNTER_VERSION:1,DEFAULT_COMPLETE_LIMIT_PT:10000,DEFAULT_MASTER_VOLUME:.7,DEFAULT_BGM_VOLUME:.2,DEFAULT_SFX_VOLUME:.3,DEFAULT_PAYOUT_VOLUME:.3,
   SETTING:{1:{},2:{},3:{},4:{},5:{},6:{}},RESULT:Object.fromEntries(['BELL','REPLAY','NEBULA','MISS','BIG','STRONG_NOVA'].map(k=>[k,{name:k,label:k,cls:k}])),
@@ -26,12 +27,56 @@ function harness(saved=null){
  for(const file of ['nova-tuning.js','nova-art.js','nova-normal.js','nova-flow.js','nova-balance.js','nova-spin-resume.js'])vm.runInContext(fs.readFileSync(file,'utf8'),c,{filename:file});
  // Navigation renderer is tested separately with DOM stubs; restore must not draw an order.
  c.NovaBellNavi={restore:spin=>{c.shownOrder=json(spin.bellNaviOrder);},clear:noop};
- for(const name of ['load','runtimeStateForStorage','compactStatsForResume','updateStorageStatus','persistState','restorePendingSpin'])vm.runInContext(fn(name),c);
+ for(const name of ['canUsePlayState','load','runtimeStateForStorage','compactStatsForResume','updateStorageStatus','persistState','restorePendingSpin'])vm.runInContext(fn(name),c);
  return {c,storage,errors,timers,$};
 }
 function spin(c,overrides={}){
  return {result:'BELL',spec:c.RESULT.BELL,lineRow:1,grid:[['7','R','B'],['B','B','B'],['R','7','R']],resolved:{reward:15,flowBefore:{phase:'normal'},flowAfter:{phase:'normal'}},stopped:[false,false,false],normalActiveAtStart:true,bellNaviOrder:[2,0,1],...overrides};
 }
+
+function copyStorage(from,to){for(const [key,value] of from.storage)to.storage.set(key,value);}
+
+test('corrupt preferences or either game copy still restore points, stock and an unpaid spin',()=>{
+ const base=harness();base.c.load();base.c.stats.totalPaid=3456;
+ base.c.normalState.flow=base.c.NovaArt.normalize({phase:'art',payoutVersion:1,remaining:'850',stock:'2'});
+ base.c.currentSpin=spin(base.c);base.c.persistState();
+ for(const key of ['preferences','state','resume'])for(const bad of ['{invalid','null','[]','42','{}','']){
+  const h=harness();copyStorage(base,h);h.storage.set(key,bad);
+  assert.equal(h.c.load(),true,key+' '+bad);
+  assert.equal(h.c.stats.totalPaid,3456);assert.equal(h.c.normalState.flow.remaining,'850');assert.equal(h.c.normalState.flow.stock,'2');assert.equal(h.c.currentSpin.resolved.reward,15);
+  vm.runInContext('Math.random=()=>{throw Error("saving must not redraw")}',h.c);
+  assert(h.c.persistState());const again=harness();copyStorage(h,again);assert(again.c.load());assert.equal(again.c.stats.totalPaid,3456);
+ }
+});
+
+test('no recoverable game copy blocks saving and leaves the original records untouched',()=>{
+ const h=harness();h.storage.set('preferences',JSON.stringify({settings:{title:'NOVA'}}));h.storage.set('state','{broken');h.storage.set('resume','[]');
+ const original=[...h.storage];assert.equal(h.c.load(),false);assert.equal(h.c.canUsePlayState(),false);
+ assert.equal(h.c.persistState(),false);assert.deepEqual([...h.storage],original);
+});
+
+test('a restore migration exception cannot overwrite the saved source',()=>{
+ const base=harness();base.c.load();base.c.persistState();const h=harness();copyStorage(base,h);
+ h.c.NovaFlow={...h.c.NovaFlow,normalize(){throw Error('migration failed');}};
+ const original=[...h.storage];assert.equal(h.c.load(),false);assert.equal(h.c.persistState(),false);assert.deepEqual([...h.storage],original);
+});
+
+test('admin setting updates commit both copies, preferences and pending runtime together',()=>{
+ const h=harness(),c=h.c;c.load();c.settings.audioMuted=false;c.currentSpin=spin(c);c.persistState();
+ c.readSettings=noop;c.log=noop;vm.runInContext(fn('applyAdminSettings'),c);
+ c.applyAdminSettings({audioMuted:true});
+ for(const key of ['state','resume','preferences']){const saved=JSON.parse(h.storage.get(key));assert.equal(saved.settings.audioMuted,true);assert(saved.savedAt>0);}
+ const again=harness();copyStorage(h,again);assert(again.c.load());assert.equal(again.c.settings.audioMuted,true);assert.equal(again.c.currentSpin.resolved.reward,15);
+ c.safeStorageSet=()=>false;c.applyAdminSettings({audioMuted:false});assert.equal(h.$('storageStatus').hidden,false);
+});
+
+test('a tab without ownership cannot overwrite state or apply an admin change',()=>{
+ const a=harness();a.c.load();a.c.stats.totalPaid=4000;a.c.persistState();
+ const stale=harness();copyStorage(a,stale);stale.c.load();stale.c.stats.totalPaid=3456;stale.c.playAccess={owned:()=>false};
+ stale.c.readSettings=()=>{throw Error('non-owner must not read/apply controls');};stale.c.log=noop;
+ vm.runInContext(fn('applyAdminSettings'),stale.c);
+ const original=[...stale.storage];assert.equal(stale.c.persistState(),false);stale.c.applyAdminSettings({audioMuted:true});assert.deepEqual([...stale.storage],original);
+});
 
 test('first boot completes all migrations and reload retains the same active zone probabilities',()=>{
  const h=harness();h.c.load();assert.deepEqual(h.errors,[]);

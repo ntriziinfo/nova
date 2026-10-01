@@ -10,6 +10,28 @@
   const STORAGE_KEY = bootPlaySessionId ? `${MACHINE_STORAGE_KEY}_session_${bootPlaySessionId}` : MACHINE_STORAGE_KEY;
   const STORAGE_RESUME_KEY = STORAGE_KEY + "_resume";
   const PREFERENCES_STORAGE_KEY = "nova_slot_preferences_v1_" + bootMachineId;
+  let storageRestoreBlocked = false;
+  let playAccess = null;
+
+  function canUsePlayState(){
+    return !storageRestoreBlocked && !!playAccess?.owned();
+  }
+
+  function showPlayBlocked(reason){
+    const panel=$('playAccessStatus');
+    if(!panel)return;
+    const messages={
+      occupied:'別のタブでこの台が開いています。先に開いたタブを閉じてから再読み込みしてください。',
+      unsupported:'このブラウザでは台の重複起動を確認できません。最新のブラウザでHTTPSの公開ページを開いてください。',
+      restore:'保存データを復旧できませんでした。上書きを防ぐため遊技を停止しています。保存データを削除せず、管理者へ連絡してください。',
+      error:'台の起動を確認できませんでした。再読み込みしてください。'
+    };
+    $('playAccessMessage').textContent=messages[reason] || messages.error;
+    panel.hidden=false;
+    for(const child of document.body.children)if(child!==panel)child.inert=true;
+    $('reloadPlayAccess').onclick=()=>location.reload();
+    $('reloadPlayAccess').focus();
+  }
 
   const SOSUKE_ZONE_BGM_SRC = "assets/media/nova/sosuke-bgm.wav";
   const TOTO_ZONE_BGM_SRC = "assets/media/nova/toto-bgm.wav";
@@ -3544,10 +3566,24 @@
   }
 
   function load(){
+    const read=(key,kind)=>{
+      const raw=safeStorageGet(key);
+      if(raw===null || raw===undefined)return {data:null,present:false};
+      try{
+        const data=JSON.parse(raw);
+        const object=value=>!!value && typeof value==='object' && !Array.isArray(value);
+        if(!object(data) || !object(data.settings) || (kind==='game' && !object(data.stats)))throw new Error('Invalid saved record');
+        return {data,present:true};
+      }catch(error){console.warn('Failed to read NOVA saved record',key,error);return {data:null,present:true};}
+    };
+    const preferences=read(PREFERENCES_STORAGE_KEY,'preferences');
+    const full=read(STORAGE_KEY,'game'),resume=read(STORAGE_RESUME_KEY,'game');
+    storageRestoreBlocked=!!((full.present || resume.present) && !full.data && !resume.data);
+    if(storageRestoreBlocked)return false;
     try{
-      const preferenceData = JSON.parse(safeStorageGet(PREFERENCES_STORAGE_KEY) || "null");
-      const fullData = JSON.parse(safeStorageGet(STORAGE_KEY));
-      const resumeData = JSON.parse(safeStorageGet(STORAGE_RESUME_KEY));
+      const preferenceData = preferences.data;
+      const fullData = full.data;
+      const resumeData = resume.data;
       let data = fullData;
       if(resumeData && (!data || Number(resumeData.savedAt || 0) > Number(data.savedAt || 0))){
         data = {
@@ -3746,7 +3782,8 @@
       spinCanStop = false;
       // The unfinished BET is already counted; normal/high counters settle at the final stop.
       if(currentSpin)stats.totalSpins=Math.max(0,Number(data?.stats?.totalSpins)||0);
-    }catch(e){console.warn('Failed to restore NOVA state',e);}
+      return true;
+    }catch(e){storageRestoreBlocked=true;console.warn('Failed to restore NOVA state',e);return false;}
   }
 
   function compactStatsForResume(){
@@ -3790,6 +3827,7 @@
   }
 
   function persistState(){
+    if(!canUsePlayState())return false;
     // Commit the result and removal of the pending spin together, after finishSpin returns.
     if(currentSpin?.finishing)return false;
     if(A_TYPE_MODE)syncNovaProgress();
@@ -3902,6 +3940,7 @@
   }
 
   function pushAdminState(snapshot){
+    if(!canUsePlayState())return;
     if(!ADMIN_SERVER || !window.fetch || !machineId || machineId === "null" || machineId === "undefined") return;
     return fetch(`${ADMIN_SERVER}/api/machines/${encodeURIComponent(machineId)}/state`, {
       method:"POST",
@@ -3914,6 +3953,7 @@
   }
 
   function pushAdminStateOnExit(snapshot){
+    if(!canUsePlayState())return;
     if(!ADMIN_SERVER || !machineId || machineId === "null" || machineId === "undefined") return;
     const url = `${ADMIN_SERVER}/api/machines/${encodeURIComponent(machineId)}/state`;
     const body = JSON.stringify(snapshot || adminSnapshot());
@@ -3947,6 +3987,7 @@
   }
 
   function latestAdminSnapshot(){
+    if(!canUsePlayState())return null;
     readSettings();
     normalizeSlumpHistory();
     persistState();
@@ -3961,6 +4002,7 @@
   };
   window.__jagPushAdminState = ()=>pushAdminState(latestAdminSnapshot());
   window.__jagClearLocalPlayState = ()=>{
+    if(!canUsePlayState())return;
     try{
       if(window.localStorage){
         localStorage.removeItem(STORAGE_KEY);
@@ -3971,7 +4013,7 @@
   };
 
   function applyAdminSettings(nextSettings){
-    if(!nextSettings) return;
+    if(!canUsePlayState() || !nextSettings) return;
     const setValue = (id, value)=>{
       const el = $(id);
       if(el && value !== undefined && value !== null) el.value = value;
@@ -3994,12 +4036,13 @@
       settings.completeLimitPt = Math.max(1, Math.round(Number(nextSettings.completeLimitPt) || DEFAULT_COMPLETE_LIMIT_PT));
     }
     readSettings();
-    safeStorageSet(STORAGE_KEY, JSON.stringify({settings, stats, normalState, completeTrialState}));
+    const saved=persistState();
     updateDisplay();
-    log("管理画面から設定を更新");
+    log(saved ? "管理画面から設定を更新・保存" : "管理画面から設定を更新しましたが、保存できませんでした");
   }
 
   function handleAdminCommand(command){
+    if(!canUsePlayState())return;
     if(!command || !command.type) return;
     if(command.type === "applySettings"){
       applyAdminSettings(command.settings || {});
@@ -4031,12 +4074,14 @@
   }
 
   async function pollAdminCommands(){
-    if(!window.fetch || !ADMIN_SERVER || !machineId) return;
+    if(!canUsePlayState() || !window.fetch || !ADMIN_SERVER || !machineId) return;
     try{
       const res = await fetch(`${ADMIN_SERVER}/api/machines/${encodeURIComponent(machineId)}/commands/poll?since=${encodeURIComponent(adminCommandLastId)}`, {cache:"no-store"});
+      if(!canUsePlayState())return;
       if(res.ok){
         setAdminConnectionState("online");
         const data = await res.json();
+        if(!canUsePlayState())return;
         const commands = Array.isArray(data.commands) ? data.commands : [];
         for(const row of commands){
           const command = row.command || row;
@@ -6802,6 +6847,7 @@
   }
 
   async function spin(options={}){
+    if(!canUsePlayState())return;
     if(NovaLadder.busy||NovaAim.busy||NovaDirectAward.busy)return;
     if(NovaResults.editing)return;
     if(normalState.flow?.phase==='art'&&!Number.isFinite(normalState.resultAtStartPaid))normalState.resultAtStartPaid=Number(stats.totalPaid)||0;
@@ -7162,6 +7208,7 @@
   }
 
   function stopSingleReel(i, options={}){
+    if(!canUsePlayState())return;
     if(currentSpin?.resolved?.oumaFreeze&&!options.oumaAuto)return;
     if(!isSpinning || !currentSpin || currentSpin.stopped[i]) return;
     if(options.keyboardTurbo){
@@ -8296,6 +8343,7 @@
   }
 
   function runDebugFastStep(){
+    if(!canUsePlayState())return false;
     if(!canPlayCompleteTrial()) return false;
     if(isSpinning) return false;
     if(sessionStartGuard) return false;
@@ -9207,7 +9255,7 @@
 
     let exitStatePushed = false;
     const persistAndPushExitState = ()=>{
-      if(exitStatePushed) return;
+      if(exitStatePushed || !canUsePlayState()) return;
       exitStatePushed = true;
       readSettings();
       persistState();
@@ -9223,28 +9271,44 @@
     });
   }
 
-  load();
-  if(!normalState.internal) normalState.internal=NovaNormal.reset(Math.random,settings.setting);
-  persistState();
-  initializePlaySessionBaseline();
-  loadPageZoom();
-  loadPagePan();
-  loadLayoutDefaultState();
-  loadLayoutEdit();
-  applySettings();
-  setup();
-  $("retryStateSave")?.addEventListener("click",()=>persistState());
-  setupPlayAudit();
-  persistState();
-  connectAdminCommands();
-  if(!restorePendingSpin()){
-    reels.forEach((_,i)=>setRandomReel(i));
-    showMessage("READY",`BIG ${NovaArt.bonusTarget()}pt / AT初期150～1,500pt＋レア役加算 / 設定${settings.setting}`);
+  function bootGame(){
+    if(!load()){showPlayBlocked('restore');return;}
+    if(!normalState.internal) normalState.internal=NovaNormal.reset(Math.random,settings.setting);
+    persistState();
+    initializePlaySessionBaseline();
+    loadPageZoom();
+    loadPagePan();
+    loadLayoutDefaultState();
+    loadLayoutEdit();
+    applySettings();
+    setup();
+    $("retryStateSave")?.addEventListener("click",()=>persistState());
+    setupPlayAudit();
+    persistState();
+    connectAdminCommands();
+    if(!restorePendingSpin()){
+      reels.forEach((_,i)=>setRandomReel(i));
+      showMessage("READY",`BIG ${NovaArt.bonusTarget()}pt / AT初期150～1,500pt＋レア役加算 / 設定${settings.setting}`);
+    }
+    if($("forceResult")) $("forceResult").value = forceResult;
+    if($("premiumForceStatus")) $("premiumForceStatus").value = forcePremiumEffect ? "ON" : "OFF";
+    updateDisplay();
+    updateAutoUi();
+    updateDebugFastUi();
+    requestBackgroundLogoSync();
   }
-  if($("forceResult")) $("forceResult").value = forceResult;
-  if($("premiumForceStatus")) $("premiumForceStatus").value = forcePremiumEffect ? "ON" : "OFF";
-  updateDisplay();
-  updateAutoUi();
-  updateDebugFastUi();
-  requestBackgroundLogoSync();
+
+  playAccess=NovaPlayAccess.create(STORAGE_KEY,{blocked:showPlayBlocked});
+  window.addEventListener('pagehide',()=>{if(!playAccess.owned())playAccess.close();});
+  playAccess.start(()=>{
+    bootGame();
+    // Register after setup's final save, so pagehide commits before releasing ownership.
+    window.addEventListener('pagehide',()=>{
+      playAccess.close();
+      stopAutoPlay();stopSpeedToBonus();stopDebugFastSpin();
+      if(adminPushTimer)clearTimeout(adminPushTimer);
+      if(adminCommandPollTimer)clearTimeout(adminCommandPollTimer);
+    });
+  });
+  window.addEventListener('pageshow',event=>{if(event.persisted)location.reload();});
 })();

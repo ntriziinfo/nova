@@ -21,7 +21,7 @@
 <link rel="preload" as="image" href="assets/buttons/btn_speed_half_blue.png">
 <link rel="preload" as="image" href="assets/controls/start_lever_ball.png">
 <link rel="preload" as="image" href="assets/controls/stop_button_red_cut.png">
-<link rel="stylesheet" href="nova-game.css?v=20261001-save-status">
+<link rel="stylesheet" href="nova-game.css?v=20261001-save-recovery">
 <link rel="stylesheet" href="nova-cabinet.css?v=20260928-prelude-glow-163">
 <link rel="stylesheet" href="nova-artwork.css?v=20260928-cz-rainbow-155">
 <script src="nova-artwork.js?v=20260928-cz-rainbow-155" defer></script>
@@ -69,6 +69,7 @@
 </head>
 <body>
 <div id="storageStatus" class="storageStatus" role="alert" hidden><span id="storageStatusMessage"></span><button id="retryStateSave" type="button">再保存</button></div>
+<div id="playAccessStatus" class="playAccessStatus" role="alertdialog" aria-modal="true" aria-labelledby="playAccessMessage" hidden><div><p id="playAccessMessage"></p><button id="reloadPlayAccess" type="button">再読み込み</button></div></div>
 <div class="confetti" id="confetti"></div>
 <div class="overlay" id="overlay"><div class="overlayText" id="overlayText">WIN</div></div>
 <button class="debugToggleBtn" id="debugToggleBtn" type="button">デバッグ</button>
@@ -768,7 +769,8 @@
 <audio id="voiceSound" preload="auto"></audio>
 
 <script src="nova-spin-resume.js?v=20260929-spin-resume"></script>
-<script src="nova-game.js?v=20261001-save-status"></script>
+<script src="nova-play-access.js?v=20261001-save-recovery"></script>
+<script src="nova-game.js?v=20261001-save-recovery"></script>
 <button type="button" id="novaSymbolPreviewOpen">ノヴァ目を確認</button>
 <dialog id="novaSymbolPreview"><h2>ノヴァ目</h2><label>出目<select id="novaPatternSelect"><option value="WEAK_NOVA">弱ノヴァ目：左3連</option><option value="STRONG_MIDDLE">強ノヴァ目：左・中3連</option><option value="STRONG_RIGHT">強ノヴァ目：左・右3連</option><option value="SUPER_NOVA" selected>スーパーノヴァ目：全リール3連</option></select></label><p id="novaPatternDescription"></p><div id="novaSymbolPreviewGrid"></div><p>出目の確認用です。通常時のスーパーはBIG・フリーズ各50%。ボーナス中は対象外。弱・強と自然出現率は未設定。</p><button type="button" id="novaSymbolPreviewClose">閉じる</button></dialog>
 </body>
