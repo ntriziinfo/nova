@@ -74,7 +74,9 @@
   const chance=document.getElementById('stLamp');
   function syncLamp(){
     const stage=Number(machine.dataset.czLamp)||0;
-    const order=NovaFlow.lampCharacters;
+    const savedOrder=String(machine.dataset.czOrder||'').split(',');
+    const order=savedOrder.length===NovaFlow.lampCharacters.length&&new Set(savedOrder).size===savedOrder.length&&savedOrder.every(id=>NovaFlow.lampCharacters.includes(id))
+      ? savedOrder : NovaFlow.lampCharacters;
     for(const [id,item] of items){
       const index=order.indexOf(id);
       item.dataset.czLit=String(index>=0&&index<stage);
@@ -86,7 +88,7 @@
   }
   lampMode.addEventListener('change',syncLamp);
   const lampObserver=new MutationObserver(syncLamp);
-  lampObserver.observe(machine,{attributes:true,attributeFilter:['class','data-cz-lamp','data-cz-rainbow','data-cz-blink']});
+  lampObserver.observe(machine,{attributes:true,attributeFilter:['class','data-cz-lamp','data-cz-rainbow','data-cz-blink','data-cz-order']});
   if(chance)lampObserver.observe(chance,{attributes:true,attributeFilter:['class']});
   syncLamp();
   const status=panel.querySelector('#novaArtStatus');

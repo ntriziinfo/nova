@@ -61,6 +61,59 @@ globalThis.NovaFlow = (() => {
     return {stage:Math.min(lamp.stage,Math.ceil(6*elapsed/lamp.totalGames)),rainbow};
   }
   const lampCharacters=Object.freeze(['kushuri','nito','sosuke','toto','urapi','giru1','sora1','ouma1']);
+  // CZ setting hints. A recognizable prefix is reserved even on ineligible settings.
+  const lampHints=Object.freeze([
+    {id:'min2',minimumSetting:2,prefix:['nito','kushuri','sosuke'],rates:[0,.10,.10,.10,.10,.10]},
+    {id:'min3',minimumSetting:3,prefix:['toto','sora1','giru1'],rates:[0,0,.07,.07,.07,.07]},
+    {id:'min4',minimumSetting:4,prefix:['urapi','giru1','ouma1'],rates:[0,0,0,.03,.03,.03]},
+    {id:'min5',minimumSetting:5,prefix:['sora1','toto','sosuke'],rates:[0,0,0,0,.005,.005]},
+    {id:'min6',minimumSetting:6,prefix:['ouma1','nito','kushuri'],rates:[0,0,0,0,0,.003]},
+    {id:'odd',prefix:['sosuke','giru1','toto'],rates:[.08,.03,.08,.03,.08,.03]},
+    {id:'even',prefix:['kushuri','nito','sora1'],rates:[.03,.08,.03,.08,.03,.08]},
+    {id:'highWeak',prefix:['giru1','urapi','sora1'],rates:[.01,.015,.02,.03,.04,.05]},
+    {id:'highStrong',prefix:['kushuri','ouma1','giru1'],rates:[.002,.003,.005,.01,.02,.03]}
+  ].map(hint=>Object.freeze({...hint,prefix:Object.freeze(hint.prefix),rates:Object.freeze(hint.rates)})));
+  function lampSeed(value){
+    if(Number.isFinite(value?.timingSeed))return value.timingSeed>>>0;
+    if(Number.isFinite(value?.lampRoll)&&Number.isFinite(value?.rainbowRoll)){
+      return (Math.floor(value.lampRoll*4294967296)^Math.imul(Math.floor(value.rainbowRoll*4294967296),31))>>>0;
+    }
+    return null;
+  }
+  function lampHintForOrder(order){
+    return lampHints.find(hint=>hint.prefix.every((id,index)=>order?.[index]===id))?.id||'';
+  }
+  // Reuse only the CZ's saved presentation seed, never gameplay RNG. Stage,
+  // success and remaining games cannot affect the order or the selected hint.
+  function lampPresentation(value,setting=1){
+    let seed=lampSeed(value);
+    if(seed===null)return {order:[...lampCharacters],hint:'',minimumSetting:0};
+    const settingIndex=Math.max(0,Math.min(5,Math.round(Number(setting)||1)-1));
+    const random=()=>{
+      seed=(seed+0x6d2b79f5)>>>0;
+      let mixed=Math.imul(seed^(seed>>>15),seed|1);
+      mixed^=mixed+Math.imul(mixed^(mixed>>>7),mixed|61);
+      return ((mixed^(mixed>>>14))>>>0)/4294967296;
+    };
+    const shuffle=characters=>{
+      const order=[...characters];
+      for(let i=order.length-1;i>0;i--){const index=Math.floor(random()*(i+1));[order[i],order[index]]=[order[index],order[i]];}
+      return order;
+    };
+    let roll=random();
+    for(const hint of lampHints){
+      const rate=hint.rates[settingIndex];
+      if(roll<rate){
+        const rest=shuffle(lampCharacters.filter(id=>!hint.prefix.includes(id)));
+        return {order:[...hint.prefix,...rest],hint:hint.id,minimumSetting:hint.minimumSetting||0};
+      }
+      roll-=rate;
+    }
+    let order;
+    do{order=shuffle(lampCharacters);}while(lampHintForOrder(order));
+    return {order,hint:'',minimumSetting:0};
+  }
+  function lampOrder(value,setting=1){return lampPresentation(value,setting).order;}
   // Spread the physical lamps across the CZ, retaining the final confidence
   // tier and the original third-stop full-confirmation game. This deterministic
   // presentation seed consumes no gameplay RNG and survives saved-game reloads.
@@ -117,5 +170,5 @@ globalThis.NovaFlow = (() => {
     return s.phase==='rt'?`RT 残り${s.remaining}G / 純増1.2pt`:
       s.phase==='cz'?`CZ 残り${s.remaining}G`:s.phase==='strong_cz'?`強CZ 残り${s.remaining}G`:'通常';
   }
-  return Object.freeze({forSetting,defaults,rewriteRates,lampConfidence,lampWeights,drawLamp,lampAtStop,lampDisplayAtStop,lampCharacters,rewrite,rt,config,normalize,enterCZ,afterBonus,advance,drawEntry,drawRT,label});
+  return Object.freeze({forSetting,defaults,rewriteRates,lampConfidence,lampWeights,drawLamp,lampAtStop,lampDisplayAtStop,lampCharacters,lampSeed,lampHints,lampHintForOrder,lampPresentation,lampOrder,rewrite,rt,config,normalize,enterCZ,afterBonus,advance,drawEntry,drawRT,label});
 })();

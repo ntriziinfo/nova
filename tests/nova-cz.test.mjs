@@ -3,7 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
-const ctx=vm.createContext({});
+const ctx=vm.createContext({settings:{setting:1},normalState:{}});
 for(const f of ['nova-tuning.js','nova-art.js','nova-balance.js','nova-flow.js','nova-normal.js'])vm.runInContext(fs.readFileSync(f,'utf8'),ctx);
 const f=ctx.NovaFlow,n=ctx.NovaNormal;
 test('only rare roles rewrite losses; wins are absorbing and reload retains probability',()=>{
@@ -32,7 +32,7 @@ test('Bayes lamp weights reproduce all six final confidences for ordinary and st
   weights.forEach((w,i)=>{const win=w*f.lampConfidence[i],loss=w*(1-f.lampConfidence[i]);assert.ok(Math.abs(win/(win+loss)-f.lampConfidence[i])<1e-12);});
  }
 });
-test('losing CZ never reveals Ouma or rainbow; winners support both confirmations',()=>{
+test('losing CZ never reaches the final logical confidence tier or rainbow; winners support both confirmations',()=>{
  for(let i=0;i<1000;i++){
   const lamp=f.drawLamp({phase:'cz',remaining:1,success:false,winProbability:.7},()=>i/1000);
   assert.ok(lamp.stage<6);assert.equal(lamp.rainbow,false);

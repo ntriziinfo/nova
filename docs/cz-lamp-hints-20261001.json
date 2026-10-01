@@ -1,0 +1,182 @@
+{
+  "status": "adopted",
+  "basis": "CZ単位の内部選択率。最初の3人が順番に点灯した場合のみ判別。一斉点灯・早期確定では示唆が見えない場合がある。",
+  "patterns": [
+    {
+      "id": "min2",
+      "label": "設定2以上確定",
+      "firstThree": [
+        "にと",
+        "くしゅり",
+        "宗介"
+      ],
+      "percentBySetting": [
+        0,
+        10,
+        10,
+        10,
+        10,
+        10
+      ]
+    },
+    {
+      "id": "min3",
+      "label": "設定3以上確定",
+      "firstThree": [
+        "とと",
+        "空",
+        "ギル"
+      ],
+      "percentBySetting": [
+        0,
+        0,
+        7,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "id": "min4",
+      "label": "設定4以上確定",
+      "firstThree": [
+        "うらぴ",
+        "ギル",
+        "逢魔"
+      ],
+      "percentBySetting": [
+        0,
+        0,
+        0,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "id": "min5",
+      "label": "設定5以上確定",
+      "firstThree": [
+        "空",
+        "とと",
+        "宗介"
+      ],
+      "percentBySetting": [
+        0,
+        0,
+        0,
+        0,
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "id": "min6",
+      "label": "設定6確定",
+      "firstThree": [
+        "逢魔",
+        "にと",
+        "くしゅり"
+      ],
+      "percentBySetting": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0.3
+      ]
+    },
+    {
+      "id": "odd",
+      "label": "奇数示唆",
+      "firstThree": [
+        "宗介",
+        "ギル",
+        "とと"
+      ],
+      "percentBySetting": [
+        8,
+        3,
+        8,
+        3,
+        8,
+        3
+      ]
+    },
+    {
+      "id": "even",
+      "label": "偶数示唆",
+      "firstThree": [
+        "くしゅり",
+        "にと",
+        "空"
+      ],
+      "percentBySetting": [
+        3,
+        8,
+        3,
+        8,
+        3,
+        8
+      ]
+    },
+    {
+      "id": "highWeak",
+      "label": "高設定示唆・弱",
+      "firstThree": [
+        "ギル",
+        "うらぴ",
+        "空"
+      ],
+      "percentBySetting": [
+        1,
+        1.5,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "id": "highStrong",
+      "label": "高設定示唆・強",
+      "firstThree": [
+        "くしゅり",
+        "逢魔",
+        "ギル"
+      ],
+      "percentBySetting": [
+        0.2,
+        0.3,
+        0.5,
+        1,
+        2,
+        3
+      ]
+    }
+  ],
+  "normalRandomPercentBySetting": [
+    87.8,
+    77.2,
+    69.5,
+    65,
+    62.5,
+    60.2
+  ],
+  "verification": {
+    "testsPassed": 51,
+    "comparisonCzCases": 600,
+    "comparisonCzGames": 10536,
+    "outcomesAndLampTimingIdentical": true,
+    "gameplayRandomCallsIdentical": true,
+    "guaranteedPrefixesExcludedFromOrdinaryRandom": true,
+    "browser": {
+      "silent": true,
+      "firstGameDark": true,
+      "thirdStopOnly": true,
+      "midSpinReload": true,
+      "errors": []
+    }
+  }
+}

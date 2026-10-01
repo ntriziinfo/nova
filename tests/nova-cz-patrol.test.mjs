@@ -2,7 +2,7 @@ import {readGameSource} from '../scripts/game-source.mjs';
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
 const html=readGameSource(),calls=[],machine={dataset:{czLamp:'0',czRainbow:'false'}};
 const ctx=vm.createContext({document:{getElementById:()=>machine},sfxOutputVolume:()=>.6,playOneShotSound(){},playLockedBonusConfirmSound:(...args)=>calls.push(args)});
-vm.runInContext(fs.readFileSync('nova-flow.js','utf8'),ctx);
+vm.runInContext(fs.readFileSync('nova-flow.js','utf8'),ctx);ctx.settings={setting:1};ctx.normalState={};
 for(const name of ['playCzConfirmedSound','showCzLamp'])vm.runInContext(html.match(new RegExp('  function '+name+'\\([^]*?\\n  }'))[0],ctx);
 test('full and rainbow confirmation play exactly once despite repeated finish callbacks',()=>{
  for(const rainbow of [false,true]){

@@ -608,7 +608,7 @@
     return {kind:'spin',result,message:resolved.artMessage||'',mode:debugFastSpinActive?'fast':autoPlay?'auto':speedToBonusActive?'speed':'manual',forced:pendingForceResult||'',
       researchSortie:resolved.researchSortie,researchChallenge:resolved.researchChallenge,
       aim:resolved.aim,burstEvent:resolved.burstEvent,burstReward:resolved.burstReward,comebackEvent:resolved.comebackEvent,atOutcome:resolved.atOutcome,zoneAward:resolved.zoneAward,
-      artSetWon:resolved.artSetWon,novaRushConfirmed:resolved.novaRushConfirmed,oumaFreeze:resolved.oumaFreeze,czLamp:resolved.czLamp,bonusHit:resolved.bonusHit,bonusSource:resolved.bonusSource,
+      artSetWon:resolved.artSetWon,novaRushConfirmed:resolved.novaRushConfirmed,oumaFreeze:resolved.oumaFreeze,czLamp:resolved.czLamp,czLampPresentation:resolved.czLampPresentation,bonusHit:resolved.bonusHit,bonusSource:resolved.bonusSource,
       normalBellNavi:resolved.normalBellNavi,bellNaviOrder:currentSpin?.bellNaviOrder,rareNavi:currentSpin?.rareNavi,rareCueVoice:currentSpin?.rareCueVoice,rareNaviSoundPlayed:currentSpin?.rareNaviSoundPlayed,
       pressOrder:debugFastSpinActive?'simulation':currentSpin?.auditPressOrder,stopOrder:debugFastSpinActive?'simulation':currentSpin?.auditStopOrder,grid:debugFastSpinActive?undefined:currentSpin?.auditGrid,visualResult:!debugFastSpinActive&&NovaAim.hasGuide(resolved.aim)&&currentSpin?.aimAligned===false?'MISS':result,
       flowBefore:resolved.flowBefore,flowAfter:resolved.flowAfter,manualLineupMiss:resolved.manualLineupMiss,bonusWaitSpin:resolved.bonusWaitSpin,czEntry:resolved.czEntry,czPrelude:resolved.czPrelude,atPrelude:resolved.atPrelude,czChance:resolved.czChance,czCompleted:resolved.czCompleted};
@@ -6766,6 +6766,7 @@
     renderCzPrelude(spin.resolved.blackoutReels||[]);
     syncCzPreludeGlow(spin.resolved);
     if(spin.resolved.czLampAtBet!=null)document.getElementById('machine').dataset.czLamp=String(spin.resolved.czLampAtBet);
+    if(spin.resolved.czLamp)document.getElementById('machine').dataset.czOrder=(spin.resolved.czLampPresentation?.order||NovaFlow.lampOrder(spin.resolved.czLamp,settings.setting)).join(',');
     reels.forEach((reel,i)=>{
       const column=spin.stopped[i]&&spin.auditGrid?.every(row=>row?.[i])?spin.auditGrid.map(row=>row[i]):spin.grid.map(row=>row[i]);
       setReelColumn(i,column,i===1?spin.spec.label:'',spin.spec.cls,spin.stopped[i]?spin.lineRow:null);
@@ -7559,6 +7560,18 @@
     const lamp=resolved?.czLamp,machine=document.getElementById('machine');
     const czSpin=!!lamp||['cz','strong_cz'].includes(resolved?.flowBefore?.phase);
     const czState=lamp||(czSpin?resolved?.flowBefore:null);
+    let order='';
+    if(czSpin){
+      const key=String(NovaFlow.lampSeed(czState));
+      let presentation=resolved.czLampPresentation||normalState.czLampPresentation;
+      if(!presentation||presentation.key!==key){
+        presentation={key,setting:settings.setting,...NovaFlow.lampPresentation(czState,settings.setting)};
+      }
+      normalState.czLampPresentation=presentation;
+      resolved.czLampPresentation=presentation;
+      order=presentation.order.join(',');
+    }else normalState.czLampPresentation=null;
+    if(machine.dataset.czOrder!==order)machine.dataset.czOrder=order;
     const intro=!!czState&&Number(czState.remaining)>0&&Number(czState.remaining)===Number(czState.totalGames);
     machine.dataset.czIntro=String(intro);
     if(resolved)resolved.czIntro=intro;

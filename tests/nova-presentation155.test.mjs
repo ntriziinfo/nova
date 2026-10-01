@@ -6,7 +6,7 @@ import vm from 'node:vm';
 import {createHash} from 'node:crypto';
 
 const html=readGameSource();
-test('Ouma lighting switches all eight CZ lamps to fast rainbow; clearing CZ restores normal modes',()=>{
+test('final lamp slot switches all eight CZ lamps to fast rainbow; clearing CZ restores normal modes',()=>{
  const c=vm.createContext({});
  vm.runInContext(fs.readFileSync('nova-flow.js','utf8'),c);
  const order=c.NovaFlow.lampCharacters;
