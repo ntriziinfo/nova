@@ -610,7 +610,7 @@
       aim:resolved.aim,burstEvent:resolved.burstEvent,burstReward:resolved.burstReward,comebackEvent:resolved.comebackEvent,atOutcome:resolved.atOutcome,zoneAward:resolved.zoneAward,
       artSetWon:resolved.artSetWon,novaRushConfirmed:resolved.novaRushConfirmed,oumaFreeze:resolved.oumaFreeze,czLamp:resolved.czLamp,czLampPresentation:resolved.czLampPresentation,bonusHit:resolved.bonusHit,bonusSource:resolved.bonusSource,
       normalBellNavi:resolved.normalBellNavi,bellNaviOrder:currentSpin?.bellNaviOrder,rareNavi:currentSpin?.rareNavi,rareCueVoice:currentSpin?.rareCueVoice,rareNaviSoundPlayed:currentSpin?.rareNaviSoundPlayed,
-      pressOrder:debugFastSpinActive?'simulation':currentSpin?.auditPressOrder,stopOrder:debugFastSpinActive?'simulation':currentSpin?.auditStopOrder,grid:debugFastSpinActive?undefined:currentSpin?.auditGrid,visualResult:!debugFastSpinActive&&NovaAim.hasGuide(resolved.aim)&&currentSpin?.aimAligned===false?'MISS':result,
+      pressOrder:debugFastSpinActive?'simulation':currentSpin?.auditPressOrder,stopOrder:debugFastSpinActive?'simulation':currentSpin?.auditStopOrder,grid:debugFastSpinActive?undefined:currentSpin?.auditGrid,visualResult:!debugFastSpinActive&&resolved.researchSortie?(isNovaGrid(currentSpin?.auditGrid)?'SUPER_NOVA':'MISS'):!debugFastSpinActive&&NovaAim.hasGuide(resolved.aim)&&currentSpin?.aimAligned===false?'MISS':result,
       flowBefore:resolved.flowBefore,flowAfter:resolved.flowAfter,manualLineupMiss:resolved.manualLineupMiss,bonusWaitSpin:resolved.bonusWaitSpin,czEntry:resolved.czEntry,czPrelude:resolved.czPrelude,atPrelude:resolved.atPrelude,czChance:resolved.czChance,czCompleted:resolved.czCompleted};
   }
   function setupPlayAudit(){
@@ -5740,6 +5740,7 @@
     globalThis.NovaRushConfirm?.reset();
     NovaInitialDuo.clear();
     NovaBellNavi.clear();
+    NovaSortie.clear();
     NovaDirectAward.clear();
     stopAutoPlay("初期化のためオート停止");
     pauseNormalBgm();
@@ -5807,6 +5808,7 @@
     globalThis.NovaRushConfirm?.reset();
     NovaInitialDuo.clear();
     NovaBellNavi.clear();
+    NovaSortie.clear();
     NovaDirectAward.clear();
     stopDebugFastSpin(`${reason}のため高速停止`);
     stopSpeedToBonus(`${reason}のためSPEED停止`);
@@ -6815,6 +6817,7 @@
     if(!spin)return false;
     isSpinning=true;spinCanStop=true;
     NovaBellNavi.restore(spin);
+    NovaSortie.begin(spin);
     NovaAim.bet(spin.resolved.aim,spin.resolved);
     NovaInitialDuo.begin(spin.resolved);
     NovaInitialDuo.stop(spin.stopped.filter(Boolean).length);
@@ -6827,7 +6830,7 @@
     if(spin.resolved.czLamp)document.getElementById('machine').dataset.czOrder=(spin.resolved.czLampPresentation?.order||NovaFlow.lampOrder(spin.resolved.czLamp,settings.setting)).join(',');
     reels.forEach((reel,i)=>{
       const column=spin.stopped[i]&&spin.auditGrid?.every(row=>row?.[i])?spin.auditGrid.map(row=>row[i]):spin.grid.map(row=>row[i]);
-      setReelColumn(i,column,i===1?spin.spec.label:'',spin.spec.cls,spin.stopped[i]?spin.lineRow:null);
+      setReelColumn(i,column,NovaSortie.eligible(spin)?'':i===1?spin.spec.label:'',spin.spec.cls,spin.stopped[i]&&!NovaSortie.eligible(spin)?spin.lineRow:null);
       reel.classList.toggle('spinning',!spin.stopped[i]);
       stopBtns[i].disabled=spin.stopped[i]||!!spin.pendingStopColumns[i];
       if(!spin.stopped[i])NovaReelMotion.start(i,reel,REEL_STRIPS[i],currentReelTopIndex(i),!!spin.artReverse,cellHtml);
@@ -6942,6 +6945,7 @@
 
     fadeAimWinSoundsOnBet();
     NovaDirectAward.clear();
+    NovaSortie.clear();
     isSpinning = true;
     if(normalState.resultCard){normalState.resultCard=null;NovaResults.hide();}
     jagLastGamePayout = 0;
@@ -7104,7 +7108,7 @@
     currentSpin.manualBonusStop = false; // Fixed-G prototype: bonus starts on the next confirmed spin.
     if(!debugFastSpinActive&&NovaBellNavi.begin(currentSpin)){
       if(result==='BELL15')currentSpin.grid=buildNovaReelGrid(result,1,currentSpin.bellNaviOrder[0]);
-      playOneShotSound('assets/media/nova/bell-navi.wav',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
+      if(!resolved.researchSortie)playOneShotSound('assets/media/nova/bell-navi.wav',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
       playBellNaviVoice(currentSpin);
     }
     playZoneRouletteBetVoice(resolved);
@@ -7112,11 +7116,12 @@
     playRareNaviSound(currentSpin);
     playRareCueVoice(currentSpin);
     playGiruLadderBetVoice(currentSpin);
+    NovaSortie.begin(currentSpin);
     if(resolved.oumaFreeze)showOverlay(NovaArt.zoneName(normalState.flow)+'フリーズ！ 0G連');
     else if(resolved.artReverse)showOverlay('逆回転！ '+resolved.flowAfter.award+'pt');
     else if(resolved.researchChallenge?.priorAim)showOverlay('ノヴァを狙え');
     else if(resolved.researchChallenge)showOverlay('上位ATチャレンジ / '+(resolved.researchChallenge.nextAim?'HOLD':'残り'+resolved.researchChallenge.left+'G'));
-    else if(resolved.researchSortie)showOverlay('ノヴァ出陣 / 残り'+resolved.flowAfter.researchSortieLeft+'G');
+    else if(resolved.researchSortie)showOverlay('右 → 中 → 左でノヴァを狙え');
     else if(!resolved.oumaFailed&&['urapi','ouma'].includes(normalState.flow?.zone))showOverlay('ノヴァを狙え');
     if(currentSpin.bonusConfirmWaitSpin){
       showBonusConfirmScreen("solid");
@@ -7258,6 +7263,8 @@
       ? manualStopColumnForReel(i, currentSpin)
       : [grid[0][i], grid[1][i], grid[2][i]]);
     if(!options.visualReady&&NovaReelMotion.has(i)){col=nearestCommonStopColumn(i,currentSpin,column=>NovaReelMotion.distance(i,column))||col;}
+    const sortieTarget=NovaSortie.target(currentSpin,i,REEL_STRIPS);
+    if(sortieTarget){col=options.visualColumn||sortieTarget.column;setGridColumn(grid,i,col);}
     if(currentSpin.manualBonusStop && stopOrder === 3 && !options.visualColumn){
       col = manualBonusFinalColumnForReel(i, currentSpin, col);
     }
@@ -7273,18 +7280,20 @@
       persistState();
       Promise.resolve().then(async()=>{
         if(currentSpin!==spin||!isSpinning)return;
-        const landed=await NovaReelMotion.stop(i,col,{immediate:['BELL','BELL15','REPLAY'].includes(spin.result)&&!spin.manualBonusStop});
+        let landed=await NovaReelMotion.stop(i,sortieTarget?.drop?sortieTarget.landing:col,{immediate:!sortieTarget&&['BELL','BELL15','REPLAY'].includes(spin.result)&&!spin.manualBonusStop});
+        if(landed&&sortieTarget?.drop&&currentSpin===spin&&isSpinning)landed=await NovaSortie.dropLeft(reels[i],REEL_STRIPS[i],sortieTarget.top,cellHtml,NovaReelMotion);
         if(landed&&currentSpin===spin&&isSpinning)stopSingleReel(i,{...options,visualReady:true,visualColumn:col});
       }).catch(error=>{console.error(error);spin.visualStopping[i]=false;spin.pendingStopColumns[i]=null;stopBtns[i].disabled=false;persistState();});
       return;
     }
-    const label = i === 1 ? spec.label : "";
+    const label = sortieTarget ? "" : i === 1 ? spec.label : "";
 
-    stopReel(i, col, label, spec.cls, currentSpin.manualBonusStop || result === "MISS" ? null : lineRow, stopOrder);
+    stopReel(i, col, label, spec.cls, sortieTarget || currentSpin.manualBonusStop || result === "MISS" ? null : lineRow, stopOrder);
     (currentSpin.auditStopOrder ||= []).push(i);
     currentSpin.auditGrid ||= [[],[],[]];
     for(let row=0;row<3;row++)currentSpin.auditGrid[row][i]=col[row];
     currentSpin.stopped[i] = true;
+    NovaSortie.stop(currentSpin);
     if(currentSpin.pendingStopColumns)currentSpin.pendingStopColumns[i]=null;
     NovaBellNavi.stop(currentSpin);
     playBellNaviVoice(currentSpin);
@@ -7407,7 +7416,7 @@
   }
 
   function playRareNaviSound(spin){
-    if(debugFastSpinActive||speedToBonusActive||!spin?.rareNavi||spin.rareNaviSoundPlayed)return;
+    if(debugFastSpinActive||speedToBonusActive||!spin?.rareNavi||spin.rareNaviSoundPlayed||spin.resolved?.researchSortie)return;
     spin.rareNaviSoundPlayed=true;
     playOneShotSound('assets/media/nova/rare-navi.mp3',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
   }
@@ -7432,6 +7441,7 @@
     const characters=Object.keys(RARE_CUE_VOICE_SRCS);
     const character=characters[Math.min(characters.length-1,Math.max(0,Math.floor(rng()*characters.length)))];
     spin.rareCueVoicePlayed=true;spin.rareCueVoice={character,grade};
+    if(spin.resolved?.researchSortie)return; // Preserve the selection draw; the sortie cue replaces its sound.
     playOneShotSound(RARE_CUE_VOICE_SRCS[character][grade],voiceOutputVolume(),{allowDuringPremiumConfirm:true});
   }
 
@@ -7447,6 +7457,7 @@
     const src=stage===3?(BELL_NAVI_COMPLETE_VOICE_SRCS[spin.bellNaviVoiceCharacter]||BELL_NAVI_COMPLETE_VOICE_SRCS.sosuke):BELL_NAVI_VOICE_SRCS[spin.bellNaviVoiceCharacter][reel];
     if(!src)return;
     spin.bellNaviVoiceStage=stage;
+    if(spin.resolved?.researchSortie)return; // Preserve the selection draw without an unrelated bell voice.
     playOneShotSound(src,voiceOutputVolume(),{allowDuringPremiumConfirm:true});
   }
 

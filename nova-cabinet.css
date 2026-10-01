@@ -99,9 +99,15 @@ body[data-art-ura=true][data-art-zone=ouma] .novaArtItem[data-artwork=ouma1] img
 #machine[data-ouma-fail-dim=true] .reel .window{filter:brightness(.25)!important}
 #machine[data-ouma-freeze=lift] button,#machine[data-ouma-freeze=hold] button,#machine[data-ouma-freeze=fail] button{pointer-events:none}
 #machine[data-ouma-freeze=bet] button:not(#spinBtn){pointer-events:none}
-#machine[data-ouma-freeze=lift] .reel .window,#machine[data-ouma-freeze=bet] .reel .window,#machine[data-ouma-freeze=hold] .reel .window{animation:oumaReelRattle var(--ouma-rattle-speed,35ms) steps(1,end) var(--ouma-rattle-delay,0ms) infinite!important}
+#machine[data-ouma-freeze=lift] .reel .window,#machine[data-ouma-freeze=bet] .reel .window,#machine[data-ouma-freeze=hold] .reel .window,#machine .reel.sortieStopped .window{animation:oumaReelRattle var(--ouma-rattle-speed,35ms) steps(1,end) var(--ouma-rattle-delay,0ms) infinite!important}
 @keyframes oumaReelRattle{0%{transform:translate(-3px,-4px)}20%{transform:translate(4px,3px)}40%{transform:translate(-4px,2px)}60%{transform:translate(3px,-3px)}80%{transform:translate(0,4px)}100%{transform:translate(-3px,-4px)}}
-@media(prefers-reduced-motion:reduce){#machine[data-ouma-freeze] .reel .window{animation-name:oumaReelRattleReduced!important}}
+@media(prefers-reduced-motion:reduce){#machine[data-ouma-freeze] .reel .window,#machine .reel.sortieStopped .window{animation-name:oumaReelRattleReduced!important}}
+#novaSortieGuide{position:absolute;z-index:61;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:1fr 1fr;gap:1px 4px;text-align:center;color:#fff0c4;text-shadow:0 1px 3px #000;pointer-events:none;font-weight:900}
+#novaSortieGuide[hidden]{display:none!important}
+#novaSortieGuide strong{grid-column:1/-1;background:#31050de8;border-radius:4px}
+#novaSortieGuide span{background:#1c0619e8;border:1px solid #9d233b;border-radius:4px}
+#novaSortieGuide [data-next=true]{color:#fff;background:#971b35;border-color:#ffe5a4}
+#novaSortieGuide [data-stopped=true]{opacity:.35}
 /* The active zone character stays fully lit despite music sequence opacity. */
 body[data-art-zone=sosuke] .novaArtItem[data-artwork=sosuke],
 body[data-art-zone=toto] .novaArtItem[data-artwork=toto],
