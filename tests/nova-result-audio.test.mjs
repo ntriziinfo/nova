@@ -22,6 +22,7 @@ test('AT roulette BET plays its voice once; fixed initial roulette keeps the ord
 });
 test('background music stays paused through result callbacks and resumes after result dismissal',()=>{
  let plays=0,pauses=0;const c=vm.createContext({NovaDirectAward:{busy:false},normalState:{resultCard:{kind:'zone'}},debugFastSpinActive:false,session:{active:false},bonusConfirmBgmHold:false,barBgmActive:false,battleBgmActive:false,bgm:{paused:true,play(){plays++;return Promise.resolve();}},pauseNormalBgm(){pauses++;},ensureNormalBgmSource:()=> 'at.wav',bgmOutputVolumeForSource:()=>.5,BGM_OUTPUT_SCALE:1,getAudio(){}});
+ c.NovaInitialDuo={eligible:()=>false};c.presentedArtFlow=()=>null;
  vm.runInContext(fn('playNormalBgm'),c);c.playNormalBgm();c.playNormalBgm();assert.equal(plays,0);assert.equal(pauses,2);
  c.normalState.resultCard=null;c.normalState.pendingZoneResult={kind:'zone'};c.playNormalBgm();assert.equal(plays,0);
  c.normalState.pendingZoneResult=null;c.NovaDirectAward.busy=true;c.playNormalBgm();assert.equal(plays,0);

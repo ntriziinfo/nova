@@ -7,7 +7,7 @@ const html=readGameSource();
 const fn=name=>html.match(new RegExp('  function '+name+'\\([^]*?\\n  }'))[0];
 function setup(autoPlay=true){
  const calls=[],after=[];
- const c=vm.createContext({autoPlay,A_TYPE_MODE:true,debugFastSpinActive:false,normalState:{},session:{active:false},
+ const c=vm.createContext({$:()=>null,autoPlay,A_TYPE_MODE:true,debugFastSpinActive:false,normalState:{},session:{active:false},
   bonusEndBgmPlaying:false,bonusConfirmSoundPlaying:false,oumaPresentation:null,isSpinning:false,
   NovaInitialDuo:{clear(){}},NovaDirectAward:{deferResult:()=>false,clear(){}},NovaAim:{busy:false,hide(){},afterWin:callback=>after.push(callback)},NovaLadder:{hide(){}},NovaResults:{show:card=>calls.push(['show',card])},
   pauseNormalBgm(){},stopAutoPlay:reason=>{c.autoPlay=false;calls.push(['stop',reason]);},stopSpeedToBonus(){},

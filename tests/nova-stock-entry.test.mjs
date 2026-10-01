@@ -7,7 +7,7 @@ function harness(){
  const c=vm.createContext({Date:{now:()=>now+=1000},normalState:{flow},session:{active:false},currentSpin:null,isSpinning:false,spinCanStop:false,spinWaitTimer:null,RESULT:{BIG:{cls:'big'}},$: $,stopBtns:[{},{},{}],reels:[0,1,2].map(i=>$('reel'+i)),REEL_STRIPS:[[],[],[]],
   NovaProgress:{snapshot:()=>({pending:0})},NovaSortie:{clear:noop,flash:noop},NovaBellNavi:{clear:noop},NovaDirectAward:{clear:noop},NovaAim:{hide:noop,bet:noop,stop:noop},NovaLadder:{hide:noop},NovaResults:{hide:noop},NovaArt:{zoneName:z=>z},NovaReelMotion:{start:noop,stop:async()=>true},
   getReelWindowFromStrip:()=>['BELL','7','REPLAY'],currentReelTopIndex:()=>0,cellHtml:noop,showZoneRoulette:noop,pauseNormalBgm:noop,persistState:noop,updateDisplay:noop,scheduleNextAuto:noop,syncCabinetControlState:noop,stopReel:noop,
-  playRandomAimVoice:noop,playOneShotSound:noop,voiceOutputVolume:()=>1,ZONE_START_VOICE_SRCS:{},setTimeout:f=>{f();return 1;},clearTimeout:noop,spinWaitMsForMode:()=>500,displayNovaResult:card=>{c.normalState.resultCard=card;}});
+  playSevenAimVoice:resolved=>{c.voiceZone=resolved.flowBefore.pendingZone;},playOneShotSound:noop,voiceOutputVolume:()=>1,ZONE_START_VOICE_SRCS:{},setTimeout:f=>{f();return 1;},clearTimeout:noop,spinWaitMsForMode:()=>500,displayNovaResult:card=>{c.normalState.resultCard=card;}});
  for(const file of ['nova-stock-entry.js','nova-spin-resume.js'])vm.runInContext(fs.readFileSync(file,'utf8'),c);
  c.NovaStockEntry.show=noop;c.NovaStockEntry.hide=noop;
  const source=fs.readFileSync('nova-game.js','utf8');vm.runInContext(source.slice(source.indexOf('  function tryStockEntry(){'),source.indexOf('  async function spin(options={}')),c);
@@ -17,6 +17,7 @@ test('each queued stock has a free preparation and seven stop before engine cons
  const c=harness(),flowBefore=JSON.stringify(c.normalState.flow);
  assert.equal(c.tryStockEntry(),true);assert.equal(c.normalState.stockEntry.stage,'prepare');assert.equal(c.isSpinning,false);
  assert.equal(c.tryStockEntry(),true);assert.equal(c.normalState.stockEntry.stage,'seven');assert.equal(c.isSpinning,true);
+ assert.equal(c.voiceZone,'ura_giru');
  await c.stopStockEntryReel(2);await c.stopStockEntryReel(1);await c.stopStockEntryReel(0);
  assert.equal(c.normalState.stockEntry.stage,'ready');assert.equal(c.isSpinning,false);assert.equal(c.currentSpin,null);assert.equal(JSON.stringify(c.normalState.flow),flowBefore);
  assert.equal(c.tryStockEntry(),false);assert.equal(c.normalState.stockEntry,undefined);

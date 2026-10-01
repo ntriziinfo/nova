@@ -21,6 +21,22 @@ test('zone seven cues match the character on hits and misses, including reverse 
   const {c,sounds}=setup();let draws=0;c.playAimBetPresentation({aim:{symbol,color:'blue',guide},flowBefore:{phase:'art',zone}},()=>{draws++;return .5;});assert.equal(draws,0);
  }
 });
+
+test('queued zone entrance and its first game use their awarded character, preserving the existing game RNG consumption',()=>{
+ for(const zone of ['toto','sora','ura_sora']){
+  const {c,sounds}=setup(),character=zone.replace(/^ura_/,'');let draws=0;
+  c.playSevenAimVoice({stockEntry:true,flowBefore:{phase:'art',entryStage:'seven',pendingZone:zone}},()=>{draws++;return 0;});
+  assert.equal(sounds.at(-1).src,'assets/media/nova/aim-seven-'+character+'.wav');assert.equal(draws,0);
+  const before={...c.NovaArt.enter({setting:3},()=>.5),queuedZones:[zone]};
+  const out=c.NovaArt.step(before,{setting:3},()=>.5);
+  const resolved={flowBefore:before,flowAfter:out.flow,zoneStartFlow:out.zoneStartFlow,aim:{...out.aim,guide:true}};
+  c.playAimBetPresentation(resolved,()=>{draws++;return 0;});
+  assert.equal(sounds.at(-1).src,'assets/media/nova/aim-seven-'+character+'.wav');assert.equal(draws,1);
+  c.playNebulaAimVoice(resolved,()=>{throw Error('nebula changed game RNG');});
+  assert.equal(sounds.at(-1).src,'assets/media/nova/aim-nebula-'+character+'.wav');
+  c.playZoneContinueVoice('nebula',resolved);assert.equal(sounds.at(-1).src,'assets/media/nova/continue-'+character+'.wav');
+ }
+});
 test('zone nebula guides play the matching voice or registered fallback on BET, including misses and reverse zones',()=>{
  for(const [zone,ura] of [['toto',false],['sora',false],['sora',true],['ura_sora',false],['giru',false],['ura_giru',false],['ouma',false],['ouma',true],['ura_ouma',false]])for(const color of ['blue','red','rainbow'])for(const result of ['NEBULA','MISS'])for(const roll of [0,.5,.999999]){
   const {c,sounds}=setup();let draws=0;

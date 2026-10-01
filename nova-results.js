@@ -11,6 +11,15 @@ globalThis.NovaResults=(()=>{
   if(before?.zone&&!after?.zone)return {kind:'zone',...pick('zone',before.zone,setting,rng),pt:String(after?.award??before.award??0)};
   return null;
  }
+ function chain(previous,before,after,card){
+  const points=value=>/^\d+$/.test(String(value??''))?BigInt(value):0n;
+  const pending=after?.phase==='art'&&!after.burstPending&&!after.researchChallengeActive&&!after.researchSortieLeft&&!!(after.queuedZones?.length||points(after.sets)>0n||after.entryStage);
+  if(!card)return {state:after?.phase==='art'&&(before?.zone||after.zone||pending)?previous||null:null,card:null};
+  const totalPt=(points(card.pt)+(previous?.open?points(previous.totalPt):0n)).toString();
+  const zoneCount=(previous?.open?Math.max(0,Math.floor(Number(previous.zoneCount)||0)):0)+1;
+  const state={totalPt,zoneCount,open:pending};
+  return {state,card:zoneCount>1||pending?{...card,totalPt,zoneCount}:card};
+ }
  const characterImages={sosuke:'lamps-20260916/sosuke.png',toto:'lamps-20260916/toto.png',urapi:'lamps-20260916/urapi.png',giru:'lamps-20260916/giru1.png',sora:'lamps-20260916/sora1.png',ouma:'lamps-20260916/ouma1.png',kushuri:'lamps-20260928/kushuri.png',nito:'lamps-20260928/nito.png',kushuri_nito:'lamps-20260928/nito.png'};
  const defaults={x:22,y:34,w:56,h:23,imageX:0,imageY:0,scale:100,numberX:47,numberY:51,numberW:51,numberH:30,font:10};
  const images=new Map();
@@ -40,13 +49,16 @@ globalThis.NovaResults=(()=>{
  function apply(){if(!active||!root)return;const p=layout();card.style.cssText=`left:${p.x}%;top:${p.y}%;width:${p.w}%;height:${p.h}%;`;
   const cw=card.clientWidth,duo=active.character==='kushuri_nito',all=active.character==='all';
   art.style.cssText=`left:${(all?4:duo?-5:1)+p.imageX}%;top:${(all?23:3)+p.imageY}%;width:${(all?92:duo?57:46)*p.scale/100}%;height:${(all?56:94)*p.scale/100}%;`;
-  const font=Math.min(cw*p.font/100,cw*p.numberW/100/((String(active.pt).length+2)*.72));
-  fallback.querySelector('output').style.cssText=`left:${p.numberX}%;top:${p.numberY}%;width:${p.numberW}%;height:${p.numberH}%;font-size:${font}px;`;
+  const chained=active.totalPt!=null,mainHeight=p.numberH*(chained?.65:1);
+  const font=Math.min(cw*p.font/100,cw*p.numberW/100/((String(active.pt).length+2)*.72),chained?card.clientHeight*mainHeight/100*.95:Infinity);
+  fallback.querySelector('output').style.cssText=`left:${p.numberX}%;top:${p.numberY}%;width:${p.numberW}%;height:${mainHeight}%;font-size:${font}px;`;
+  const total=fallback.querySelector('.novaResultTotal');
+  if(total)total.style.cssText=`left:${p.numberX}%;top:${p.numberY+mainHeight}%;width:${p.numberW}%;height:${p.numberH-mainHeight}%;font-size:${Math.min(cw*.035,cw*p.numberW/100/((String(active.totalPt||0).length+7)*.75))}px;`;
   for(const [selector,scale] of [['strong',.048],['span',.034],['.novaResultNext',.032]])fallback.querySelector(selector).style.fontSize=all?cw*scale+'px':'';
  }
  function init(){if(root)return;const machine=document.getElementById('machine');if(!machine)return;
   root=document.createElement('div');root.className='novaResultsLayer';root.hidden=true;
-  root.innerHTML='<div class="novaResultCard"><div class="novaResultArt"><img draggable="false" alt=""><output class="novaResultNumber"></output><img class="novaResultPartner" src="assets/illustrations/lamps-20260928/kushuri.png" alt="くしゅり" draggable="false" hidden><div class="novaResultEnsemble" hidden></div></div><div class="novaResultFallback" role="status"><strong>RESULT</strong><span></span><output></output><small class="novaResultNext" hidden>次のBETで上位ATチャレンジ</small></div></div>';
+  root.innerHTML='<div class="novaResultCard"><div class="novaResultArt"><img draggable="false" alt=""><output class="novaResultNumber"></output><img class="novaResultPartner" src="assets/illustrations/lamps-20260928/kushuri.png" alt="くしゅり" draggable="false" hidden><div class="novaResultEnsemble" hidden></div></div><div class="novaResultFallback" role="status"><strong>RESULT</strong><span></span><output></output><small class="novaResultTotal" hidden></small><small class="novaResultNext" hidden>次のBETで上位ATチャレンジ</small></div></div>';
   machine.append(root);card=root.firstElementChild;art=card.firstElementChild;num=art.querySelector('output');fallback=card.querySelector('.novaResultFallback');
   // Both background colors share the same unmodified character image.
   for(const character of chars)for(const color of ['red','blue'])loadImage(character,color);
@@ -76,8 +88,9 @@ globalThis.NovaResults=(()=>{
   root.dataset.duo=String(value.character==='kushuri_nito');
   const ensemble=art.querySelector('.novaResultEnsemble');if(ensemble)ensemble.hidden=!all;
   const partner=art.querySelector('.novaResultPartner');if(partner)partner.hidden=value.character!=='kushuri_nito';
-  const label=all?'有利区間終了 / 累計差枚':`${names[value.character]} ${value.color==='initial'?'AT初期pt':value.kind==='at'?'AT総獲得':'上乗せ'}`;
+  const label=all?'有利区間終了 / 累計差枚':`${names[value.character]} ${value.color==='initial'?'AT初期pt':value.kind==='at'?'AT総獲得':value.totalPt!=null?'ゾーン / 今回':'上乗せ'}`;
   const next=fallback.querySelector('.novaResultNext');if(next)next.hidden=!all;
+  const total=fallback.querySelector('.novaResultTotal');if(total){total.hidden=value.totalPt==null;total.textContent=value.totalPt==null?'':'連続特化 合計 '+value.totalPt+'pt';}
   num.textContent=String(value.pt);num.setAttribute('aria-label',value.pt+'pt');
   fallback.querySelector('span').textContent=label;fallback.querySelector('output').textContent=(all&&Number(value.pt)>=0?'+':'')+value.pt+'pt';
   if(all){
@@ -98,5 +111,5 @@ globalThis.NovaResults=(()=>{
  }
  function hide(){imageRequest++;if(root)root.hidden=true;active=null;}
  if(typeof document!=='undefined')document.addEventListener('DOMContentLoaded',init);
- return {pick,transition,show,hide,get visible(){return !!active},get editing(){return !!panel?.open}};
+ return {pick,transition,chain,show,hide,get visible(){return !!active},get editing(){return !!panel?.open}};
 })();

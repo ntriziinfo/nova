@@ -4992,10 +4992,16 @@
     NovaAim.hide();
     NovaInitialDuo.clear();
     normalState.resultCard=card;NovaResults.show(card);
+    $('overlay')?.classList.remove('show');
     pauseNormalBgm();
     // Keep AUTO selected; its audio gate waits for the complete eyecatch before BET.
     stopSpeedToBonus('リザルト表示');
     playLockedBonusConfirmSound('assets/media/nova/result-eyecatch.wav',bgmOutputVolume(BGM_OUTPUT_SCALE));
+  }
+  function trackZoneResult(card,before,after){
+    const tracked=NovaResults.chain(normalState.zoneResultChain,before,after,card);
+    if(tracked.state)normalState.zoneResultChain=tracked.state;else delete normalState.zoneResultChain;
+    return tracked.card;
   }
   function applyNormalResult(result, resolved, lineRow=1){
     try{
@@ -5034,7 +5040,7 @@
     normalState.sinceBonus = normalizeBonusAfterGames(resolved.ceilingAfter);
     if(A_TYPE_MODE){
       normalState.flow = NovaFlow.normalize(resolved.flowAfter);
-      const zoneCard=resolved.comebackEvent==='entry'?null:NovaResults.transition(resolved.flowBefore,normalState.flow,settings.setting);
+      const zoneCard=trackZoneResult(resolved.comebackEvent==='entry'?null:NovaResults.transition(resolved.flowBefore,normalState.flow,settings.setting),resolved.zoneStartFlow||resolved.flowBefore,normalState.flow);
       if(zoneCard){
         if(!debugFastSpinActive&&NovaLadder.eligible(resolved.flowBefore)){
           normalState.ladderAwardPresentation={card:zoneCard,flow:resolved.flowBefore,started:false,promoted:result!=="MISS"};
@@ -6897,7 +6903,7 @@
     reels.forEach((reel,i)=>{reel.classList.add('spinning');NovaReelMotion.start(i,reel,REEL_STRIPS[i],currentReelTopIndex(i),false,cellHtml);});
     NovaAim.bet(null,currentSpin.resolved);
     // A separate visual draw must not advance the game lottery.
-    playRandomAimVoice('seven',()=>crypto.getRandomValues(new Uint32Array(1))[0]/4294967296);
+    playSevenAimVoice(currentSpin.resolved,()=>crypto.getRandomValues(new Uint32Array(1))[0]/4294967296);
     $('resultText').textContent='7を狙え / 特化ストックの突入演出';
     const spin=currentSpin;
     spinWaitTimer=setTimeout(()=>{spinWaitTimer=null;if(currentSpin!==spin)return;spinCanStop=true;syncCabinetControlState();},spinWaitMsForMode(false));
@@ -7553,10 +7559,15 @@
 
   function playSevenAimVoice(resolved,rng=Math.random){
     if(debugFastSpinActive||speedToBonusActive)return;
-    const flow=resolved?.flowBefore;
-    const zone=!resolved?.aTypeBonusGame&&flow?.phase==='art'&&!flow.entryStage?String(flow.zone||'').replace(/^ura_/,''):'';
+    const before=resolved?.flowBefore,flow=resolved?.zoneStartFlow||before;
+    const priorZone=!resolved?.aTypeBonusGame&&before?.phase==='art'&&!before.entryStage?String(before.zone||'').replace(/^ura_/,''):'';
+    const zone=resolved?.stockEntry?String(before?.pendingZone||'').replace(/^(normal_|ura_)/,''):!resolved?.aTypeBonusGame&&flow?.phase==='art'&&!flow.entryStage?String(flow.zone||'').replace(/^ura_/,''):'';
     if(!zone){playRandomAimVoice('seven',rng);return;}
     const src=SEVEN_ZONE_VOICE_SRCS[zone];
+    if(resolved?.stockEntry&&!src){playRandomAimVoice('seven',rng);return;}
+    // The first queued-zone game previously drew a random voice. Keep that
+    // draw so fixing the character cannot shift subsequent game lotteries.
+    if(!resolved?.stockEntry&&!priorZone)rng();
     if(src)playOneShotSound(src,voiceOutputVolume(),{allowDuringPremiumConfirm:true});
   }
 
@@ -7566,7 +7577,7 @@
       if(resolved.initialBonusGame)playRandomAimVoice('nebula',rng);
       return;
     }
-    const flow=resolved?.flowBefore;
+    const flow=resolved?.zoneStartFlow||resolved?.flowBefore;
     if(flow?.phase!=='art'||!flow.zone||flow.entryStage)return;
     const src=NEBULA_ZONE_VOICE_SRCS[String(flow.zone).replace(/^ura_/,'')];
     if(src)playOneShotSound(src,voiceOutputVolume(),{allowDuringPremiumConfirm:true});
@@ -7640,7 +7651,7 @@
 
   function playZoneContinueVoice(symbol,resolved){
     if(debugFastSpinActive||speedToBonusActive||symbol!=='nebula'||resolved?.aTypeBonusGame||resolved?.flowBefore?.phase!=='art')return;
-    const src=ZONE_CONTINUE_VOICE_SRCS[String(resolved.flowBefore.zone||'').replace(/^ura_/,'')];
+    const src=ZONE_CONTINUE_VOICE_SRCS[String((resolved.zoneStartFlow||resolved.flowBefore).zone||'').replace(/^ura_/,'')];
     if(src)playOneShotSound(src,voiceOutputVolume(),{allowDuringPremiumConfirm:true});
   }
 
@@ -7836,7 +7847,7 @@
     presentation.stage='lift';$('spinBtn').disabled=true;
     const machine=document.getElementById('machine');machine.dataset.oumaFreeze='lift';
     normalState.flow=NovaArt.prepareBet(previous,{...settings.novaArt,setting:settings.setting},Math.random);
-    normalState.pendingZoneResult=NovaResults.transition(previous,normalState.flow,settings.setting);
+    normalState.pendingZoneResult=trackZoneResult(NovaResults.transition(previous,normalState.flow,settings.setting),previous,normalState.flow);
     persistState();
 
     const audio=new Audio('assets/media/nova/uuufa.wav');oumaIntroAudio=audio;
@@ -8926,7 +8937,7 @@
   function showOverlay(text){
     if(debugFastSpinActive || speedToBonusActive) return;
     const o = $("overlay");
-    if(isRogiThirdStopHoldActive()){
+    if(normalState.resultCard||isRogiThirdStopHoldActive()){
       if(o) o.classList.remove("show");
       return;
     }
