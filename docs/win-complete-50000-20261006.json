@@ -1,0 +1,288 @@
+{
+  "version": "win-complete-20261006-50000g-complete-stop",
+  "proposalOnly": false,
+  "approvedDate": "2026-10-06",
+  "gamesPerTrial": 50000,
+  "trialsPerSetting": 1000,
+  "definitions": {
+    "games": "各設定・各リセット試行の実回転上限50,000G。ボーナスを含み、0G連は回転に含めない。",
+    "win": "終了時の累計差枚が0ptを超えた試行の割合。",
+    "reach": "50,000G以内に累計差枚が一度でも＋10,000ptに到達した割合。単発ATの獲得払い出しではない。",
+    "stop": "累計差枚＋10,000pt到達でコンプリート停止。未到達は50,000Gで終了。",
+    "rtp": "全試行の実払い出し合計 ÷ 実BET合計。未消化ATpt・未消化ストックを含めない。",
+    "method": "承認された候補の各設定1,000回の試算値を掲載。採用コードでコンプリート停止・5万G完走の両経路を再現照合。設定1〜3の候補検証は前回分、4〜6は高設定目標変更後の検証分。ゲーム本体の追加確認は別ファイルに記録。勝敗の事前割当はしない。",
+    "interval": "95%区間は独立リセット試行間のばらつきによる統計誤差。モデルや実機操作との差は含まない。"
+  },
+  "options": {
+    "rng": "xoshiro128",
+    "exactGames": true,
+    "completeLimitPt": 10000,
+    "stopAtComplete": true,
+    "rareSortie": true,
+    "atBetRefund": true
+  },
+  "provenance": {
+    "proposal": "research/high-targets-50k-20261006/report.json",
+    "baseCommit": "f9d7416e0d0dd8be54855dc892840b8011a9452e",
+    "priorModel": "net-quota-20261006-50000g-complete-stop",
+    "note": "Adopted candidate results. Production implementation is replay-checked against the saved candidate trials; runtime smoke results are recorded separately."
+  },
+  "settings": [
+    {
+      "setting": 1,
+      "id": "s1-final-v2",
+      "parameters": {
+        "setting": 1,
+        "cz": 1.06,
+        "zone": 0.85,
+        "netZone": 0.65,
+        "netStart": 5000,
+        "seed": "confirm-win-reach-50k-20261006-v2"
+      },
+      "target": {
+        "win": 0.25,
+        "reach": 0.05
+      },
+      "result": {
+        "n": 1000,
+        "rtp": 0.9177727611441433,
+        "rtpCi95": [
+          0.9111710920043397,
+          0.924374430283947
+        ],
+        "win": 0.245,
+        "winCi95": [
+          0.21935194381744014,
+          0.2725997744616191
+        ],
+        "reach": 0.051,
+        "reachCi95": [
+          0.03900075064262791,
+          0.06643580428795079
+        ],
+        "meanNet": -7050.718,
+        "median": -6454.5,
+        "p10": -19771.2,
+        "p90": 4910.600000000001,
+        "meanGames": 49058.264,
+        "normalAtDenominator": 789.5468910184978,
+        "normalCzDenominator": 458.6431003456624
+      }
+    },
+    {
+      "setting": 2,
+      "id": "s2-final-v2",
+      "parameters": {
+        "setting": 2,
+        "cz": 0.9,
+        "zone": 1,
+        "netZone": 0.8,
+        "netStart": 5000,
+        "seed": "confirm-win-reach-50k-20261006-v2"
+      },
+      "target": {
+        "win": 0.3,
+        "reach": 0.07
+      },
+      "result": {
+        "n": 1000,
+        "rtp": 0.9468790298379116,
+        "rtpCi95": [
+          0.9409241485068819,
+          0.9528339111689413
+        ],
+        "win": 0.32,
+        "winCi95": [
+          0.2918235055211273,
+          0.3495541779699734
+        ],
+        "reach": 0.08,
+        "reachCi95": [
+          0.06474778552394919,
+          0.09846680928861887
+        ],
+        "meanNet": -4504.589,
+        "median": -4481.5,
+        "p10": -15245.199999999999,
+        "p90": 6902.600000000002,
+        "meanGames": 48571.951,
+        "normalAtDenominator": 685.6053731946268,
+        "normalCzDenominator": 324.35559675461815
+      }
+    },
+    {
+      "setting": 3,
+      "id": "s3-final-v2",
+      "parameters": {
+        "setting": 3,
+        "cz": 1.6,
+        "zone": 0.6,
+        "netZone": 0.85,
+        "netStart": 5000,
+        "seed": "confirm-win-reach-50k-20261006-v2"
+      },
+      "target": {
+        "win": 0.4,
+        "reach": 0.1
+      },
+      "result": {
+        "n": 1000,
+        "rtp": 0.9692053866290151,
+        "rtpCi95": [
+          0.9632244579606937,
+          0.9751863152973366
+        ],
+        "win": 0.405,
+        "winCi95": [
+          0.3749938490885732,
+          0.43573326164284115
+        ],
+        "reach": 0.118,
+        "reachCi95": [
+          0.0994512436719432,
+          0.13947250684805915
+        ],
+        "meanNet": -2566.72,
+        "median": -2223.5,
+        "p10": -13213.5,
+        "p90": 10002,
+        "meanGames": 47858.209,
+        "normalAtDenominator": 582.1308149889578,
+        "normalCzDenominator": 261.5026761926859
+      }
+    },
+    {
+      "setting": 4,
+      "id": "high-s4",
+      "parameters": {
+        "setting": 4,
+        "cz": 1.2,
+        "zone": 0.8,
+        "netZone": 0.75,
+        "netStart": 5000,
+        "seed": "confirm-high-targets-20261006"
+      },
+      "target": {
+        "win": 0.5,
+        "reach": 0.15
+      },
+      "result": {
+        "n": 1000,
+        "rtp": 0.9935491019287035,
+        "rtpCi95": [
+          0.9881297460921128,
+          0.9989684577652942
+        ],
+        "win": 0.483,
+        "winCi95": [
+          0.4521519062661586,
+          0.5139782082857787
+        ],
+        "reach": 0.135,
+        "reachCi95": [
+          0.11521104013883013,
+          0.15758259582923498
+        ],
+        "meanNet": -535.057,
+        "median": -212,
+        "p10": -10178.3,
+        "p90": 10002,
+        "meanGames": 47649.197,
+        "normalAtDenominator": 532.5557827690245,
+        "normalCzDenominator": 226.56615371450576
+      }
+    },
+    {
+      "setting": 5,
+      "id": "high-s5-v3",
+      "parameters": {
+        "setting": 5,
+        "cz": 0.73,
+        "zone": 1,
+        "netZone": 0.64,
+        "netStart": 5000,
+        "seed": "confirm-high-targets-20261006-v3"
+      },
+      "target": {
+        "win": 0.6,
+        "reach": 0.2
+      },
+      "result": {
+        "n": 1000,
+        "rtp": 1.009034238988335,
+        "rtpCi95": [
+          1.0028385477230235,
+          1.0152299302536467
+        ],
+        "win": 0.608,
+        "winCi95": [
+          0.577383077246373,
+          0.6377903126589666
+        ],
+        "reach": 0.187,
+        "reachCi95": [
+          0.16404741574204446,
+          0.21234822277303605
+        ],
+        "meanNet": 732.1,
+        "median": 2405.5,
+        "p10": -11353.8,
+        "p90": 10004,
+        "meanGames": 46562.835,
+        "normalAtDenominator": 583.2549952603111,
+        "normalCzDenominator": 276.47558128265445
+      }
+    },
+    {
+      "setting": 6,
+      "id": "high-s6-v2",
+      "parameters": {
+        "setting": 6,
+        "cz": 0.565,
+        "zone": 1,
+        "seed": "confirm-high-targets-20261006-v2"
+      },
+      "target": {
+        "win": 0.7,
+        "reach": 0.25
+      },
+      "result": {
+        "n": 1000,
+        "rtp": 1.040504639169754,
+        "rtpCi95": [
+          1.0345204601928826,
+          1.0464888181466256
+        ],
+        "win": 0.682,
+        "winCi95": [
+          0.6524860173381151,
+          0.7101209915764388
+        ],
+        "reach": 0.263,
+        "reachCi95": [
+          0.23665639362281327,
+          0.29115755630713597
+        ],
+        "meanNet": 2845.218,
+        "median": 3677,
+        "p10": -6584.599999999999,
+        "p90": 10006,
+        "meanGames": 45688.943,
+        "normalAtDenominator": 651.6862642556872,
+        "normalCzDenominator": 337.85074035453596
+      }
+    }
+  ],
+  "sourceHashes": {
+    "nova-tuning.js": "4a1bb10a6052b77e68c5eda5a422393df5e03c2157c63103cdcab42963015f2f",
+    "nova-art.js": "3969c749b403680084633b3bdacecf5460b0d63e32d86bc60b4b4abfeba27cd5",
+    "nova-normal.js": "606883e63babb534cb4defd3563288bb29b1b9ba2e900fbb904ad891980cc4c4",
+    "nova-decrement.js": "a58f72c810431683b056905bb01841fec90bcd3bb0c87c7be3ab4f0f1b6419ea",
+    "nova-progress.js": "ed1b90aae32faef76cab4e315720c6a2b33d188c87e1ae258c02f47400252b27",
+    "nova-flow.js": "2b4c6587f123b27c2ed837c9a7b955e4478c2768dce6ca6b794ab5a0de3d4c4e",
+    "nova-balance.js": "0ece75b2d45a0cfbd614d63ae3bbb6cf10a788a9bf6030ce1339e5a033d88393",
+    "nova-game.js": "76d0462dae661cd9b4de39f5682c643be1b6525f879c524c9c9fb0b73ad6b12b",
+    "scripts/zone-v2-model.mjs": "6046103e21fd9952e05d8b66aa359033ed4d250933cfb6cd3ad3bbccab3af6b7",
+    "scripts/zone-v2-rng.mjs": "0e5424d7a743850591b4029b730d93267c986633a0be83942a69a19b18c8fcce"
+  }
+}

@@ -37,17 +37,20 @@ test('saved multipliers 3-5 and fixed initial plans remain earned; later duo sto
  assert.equal(a.drawEntryQuota({setting:6},()=>.5,true),200);
 });
 
-test('weak zone chances are 15/25 percent for every setting and regime, using the pre-role high state',()=>{
+test('adopted weak zone chances use setting and net tiers, with the pre-role high state',()=>{
+ const scales=[.85,1,.6,.8,1,1],netScales=[.65,.8,.85,.75,.64,1];
  for(let setting=1;setting<=6;setting++){
   NovaDecrement.reset(setting,xoshiro128State('common-zone-'+setting));
   for(const low of [false,true]){
    const saved=NovaDecrement.snapshot();saved.low=low;NovaDecrement.bind(saved,setting);
-   for(const upper of [false,true])for(const high of [false,true])for(const role of ['WEAK_SUICA','WEAK_NOVA']){
-    const chance=high?.25:.15;assert.equal(a.extraZoneChance(setting,role,upper,high),chance);
+   for(const upper of [false,true])for(const high of [false,true])for(const role of ['WEAK_SUICA','WEAK_NOVA'])for(const net of [-10000,0,4999,5000,5001,20000]){
+    const chance=(high?.25:.15)*scales[setting-1]*(net>=5000?netScales[setting-1]:1);assert.equal(a.extraZoneChance(setting,role,upper,high,net),chance);
     for(const roll of [chance-1e-9,chance]){
      const draws=high?[.999,roll,.5]:[.999,.999,roll,.5];
-     const out=a.resolveAtRole({atHigh:high,atHighLeft:10,researchUpper:upper},role,setting,()=>draws.shift()??.999);
+     const state={atHigh:high,atHighLeft:10,researchUpper:upper,remaining:'8000',sets:'2',queuedZones:['sora']};
+     const out=a.resolveAtRole(state,role,setting,()=>draws.shift()??.999,net);
      assert.equal(!!out.zone,roll<chance);
+     assert.equal(state.remaining,'8000');assert.equal(state.sets,'2');assert.deepEqual(state.queuedZones,['sora']);
     }
    }
   }

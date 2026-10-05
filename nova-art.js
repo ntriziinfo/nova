@@ -370,10 +370,14 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
  const lossRewardControl=Object.freeze({enabled:false,threshold:-2000,multiplier:1});
  const netRewardControl=Object.freeze({enabled:false,startRatio:0,floor:1});
  function netRewardFactor(){return 1;}
- function extraZoneChance(setting,role,upper=false,high=false){
+ const weakAtZoneScales=Object.freeze([.85,1,.6,.8,1,1]);
+ const weakAtNetZoneScales=Object.freeze([.65,.8,.85,.75,.64,1]);
+ function extraZoneChance(setting,role,upper=false,high=false,netPt=0){
   if(!['WEAK_SUICA','WEAK_NOVA'].includes(role))return 0;
-  // Common to every setting; the high state before this role determines the draw.
-  return high?.25:.15;
+  // Approved 50k win/complete targets: change future weak-role zone draws only.
+  // At +5,000pt, settings 1-5 reduce these draws; earned quota/stock stay intact.
+  const i=validSetting(setting)-1;
+  return (high?.25:.15)*weakAtZoneScales[i]*(netPt>=5000?weakAtNetZoneScales[i]:1);
  }
  function resolveAtRole(s,role,setting,rng=Math.random,netPt=0){
   const rules=commonAtRulesFor(setting),wasHigh=!!s.atHigh,held=wasHigh&&s.atHighLeft>0;
@@ -383,7 +387,7 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
   if(shared){
    if(!wasHigh&&rng()<.15){s.atHigh=true;s.atHighLeft=10;out.promoted=true;}
    if(rng()<Math.min(1,shared.hit*rules.direct))out.direct=drawAmount(shared);
-   if(rng()<Math.min(1,extraZoneChance(setting,role,false,wasHigh)))out.zone=pickAtZone(setting,false,rng);
+   if(rng()<Math.min(1,extraZoneChance(setting,role,false,wasHigh,netPt)))out.zone=pickAtZone(setting,false,rng);
   }
   if(role==='STRONG_NOVA'){
    const r=rng();
