@@ -67,7 +67,7 @@ test('already active zones, selected entries and queued awards keep precedence o
 test('AUTO uses the live entry path to consume multiple bonus stocks without stopping',()=>{
  const html=readGameSource(),rng=xoshiro128(145);
  let spins=0;
- const ctx=vm.createContext({autoPlay:true,A_TYPE_MODE:true,isSpinning:false,bonusEndBgmPlaying:false,
+ const ctx=vm.createContext({stopSuperSpeedIfNeeded:()=>false,autoPlay:true,A_TYPE_MODE:true,isSpinning:false,bonusEndBgmPlaying:false,
   bonusConfirmSoundPlaying:false,oumaPresentation:null,session:{active:false},normalState:{flow:a.afterBonus(a.enter({},rng),{},3)},
   canPlayCompleteTrial:()=>true,isRogiThirdStopHoldActive:()=>false,queueAutoStep(){},autoDelayMs:()=>0,
   spin:()=>{spins++;ctx.normalState.flow=a.step(a.prepareBet(ctx.normalState.flow,{},rng),{},rng).flow;}});
@@ -77,7 +77,7 @@ test('AUTO uses the live entry path to consume multiple bonus stocks without sto
 });
 
 test('audit distinguishes the first AT win, extra zone stocks and their consumption',()=>{
- const ctx=vm.createContext({Date});vm.runInContext(fs.readFileSync('nova-audit.js','utf8'),ctx);
+ const ctx=vm.createContext({stopSuperSpeedIfNeeded:()=>false,Date});vm.runInContext(fs.readFileSync('nova-audit.js','utf8'),ctx);
  const {describe}=ctx.NovaAudit;
  const snapshot=(sets,flow={phase:'normal'})=>({flow,bonus:{active:true,sets},internal:{}});
  assert.ok(describe(snapshot(0),snapshot(1),{artSetWon:1}).includes('ネビュラ揃い / AT確定'));

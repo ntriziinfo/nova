@@ -576,6 +576,10 @@
   let autoPlay = false;
   let autoTimer = null;
   let autoWatchdogTimer = null;
+  let superSpeedActive = false;
+  let superSpeedAllowed = false; // Authoritative server permission; never restored from local storage.
+  let superSpeedPermissionTimer = null;
+  let superSpeedNextBetAt = 0;
   let speedToBonusActive = false;
   let speedToBonusTimer = null;
   let speedToBonusCount = 0;
@@ -1370,6 +1374,7 @@
       completeBonusEndBgmSequence(callback);
     };
     const audio = new Audio(premiumEndVoiceSrc || BONUS_END_BGM_SRC);
+    audio.playbackRate=superSpeedActive?6:1;
     bonusEndBgmAudio = audio;
     audio.volume = premiumEndVoiceSrc
       ? voiceOutputVolumeForSource(PREMIUM_VOICE_OUTPUT_SCALE, premiumEndVoiceSrc)
@@ -3922,6 +3927,8 @@
         isSpinning,
         spinCanStop,
         autoPlay,
+        superSpeedActive,
+        superSpeedAllowed,
         forceResult,
         forcePremiumEffect,
         resultText: $("resultText") ? $("resultText").textContent : ""
@@ -4067,12 +4074,13 @@
   async function pollAdminCommands(){
     if(!canUsePlayState() || !window.fetch || !ADMIN_SERVER || !machineId) return;
     try{
-      const res = await fetch(`${ADMIN_SERVER}/api/machines/${encodeURIComponent(machineId)}/commands/poll?since=${encodeURIComponent(adminCommandLastId)}`, {cache:"no-store"});
+      const res = await fetch(`${ADMIN_SERVER}/api/machines/${encodeURIComponent(machineId)}/commands/poll?since=${encodeURIComponent(adminCommandLastId)}`, {cache:"no-store",signal:AbortSignal.timeout(10000)});
       if(!canUsePlayState())return;
       if(res.ok){
         setAdminConnectionState("online");
         const data = await res.json();
         if(!canUsePlayState())return;
+        applySuperSpeedPermission(data.controls?.superSpeedAllowed === true);
         const commands = Array.isArray(data.commands) ? data.commands : [];
         for(const row of commands){
           const command = row.command || row;
@@ -4080,8 +4088,8 @@
           adminCommandLastId = Math.max(adminCommandLastId, Number(row.id || command.id || row.createdAtMs || 0) || 0);
         }
         safeStorageSet(ADMIN_COMMAND_LAST_ID_KEY, String(adminCommandLastId));
-      }else setAdminConnectionState("offline");
-    }catch(e){ setAdminConnectionState("offline"); }
+      }else {setAdminConnectionState("offline");applySuperSpeedPermission(false);}
+    }catch(e){ setAdminConnectionState("offline");applySuperSpeedPermission(false); }
     adminCommandPollTimer = setTimeout(pollAdminCommands, 5000);
   }
 
@@ -7019,6 +7027,8 @@
     const battleRoundAtSpinStart = battleActiveAtSpinStart ? battleRoundNumber() : 0;
     const speedModeSpinAtStart = speedToBonusActive && speedModeSpinRequest && normalActiveAtSpinStart;
     const spinWaitMs = spinWaitMsForMode(speedModeSpinAtStart);
+    const superSpeedStartedAt = superSpeedActive ? performance.now() : null;
+    if(superSpeedActive)superSpeedNextBetAt=superSpeedStartedAt+autoStopDelayMs(2)+autoScaledDelayMs(RESULT_WAIT_MS)+autoDelayMs();
 
     fadeAimWinSoundsOnBet();
     NovaDirectAward.clear();
@@ -7161,6 +7171,8 @@
       normalActiveAtStart:normalActiveAtSpinStart,
       speedModeAtStart:speedModeSpinAtStart,
       autoStopAtStart:autoPlay,
+      superSpeedAtStart:superSpeedActive,
+      superSpeedStartedAt,
       bonusAnnouncementTiming,
       bonusAnnouncementLit:false,
       reachMeLine,
@@ -7274,18 +7286,24 @@
       reel.classList.add("spinning");
       if(!resolved.oumaFreeze&&!options?.oumaFailed)setRandomReel(i);
       const strip = REEL_STRIPS[i] || REEL_STRIPS[0];
-      if(A_TYPE_MODE&&!resolved.oumaFreeze){NovaReelMotion.start(i,reel,strip,options?.oumaFailed?Math.max(0,oumaStoppedTops[i]):currentReelTopIndex(i),!!currentSpin?.artReverse,cellHtml);}
+      if(A_TYPE_MODE&&!resolved.oumaFreeze){
+        // Keep the already drawn symbols and stop order; omit only the costly
+        // continuous-strip animation while consuming games at sixfold speed.
+        if(!currentSpin.superSpeedAtStart)NovaReelMotion.start(i,reel,strip,options?.oumaFailed?Math.max(0,oumaStoppedTops[i]):currentReelTopIndex(i),!!currentSpin?.artReverse,cellHtml);
+      }
       else if(!resolved.oumaFreeze){const reelStepMs=Math.max(16,REEL_FULL_ROTATION_MS/strip.length);spinIntervals[i]=setInterval(()=>setRandomReel(i),reelStepMs);}
     });
 
     // オート/SPEED中だけ自動停止。手動時はストップ/左中右を押すまで止まらない。
     if(resolved.oumaFreeze){startOumaReverseAudio(currentSpin);}
     if(!resolved.oumaFreeze&&(autoPlay || speedModeSpinAtStart)){
+      const scheduledSpin=currentSpin;
       const stopOrder = NovaBellNavi.stopOrder(currentSpin);
       stopOrder.forEach((i,idx)=>{
         const normalAutoStopDelay = autoStopDelayMs(idx);
-        const delay = resolved.oumaFreeze ? spinWaitMs + 150 + idx * 300 : speedModeSpinAtStart ? speedModeStopDelay(i) : normalAutoStopDelay;
-        setTimeout(()=>stopSingleReel(i,{oumaAuto:!!resolved.oumaFreeze}), delay);
+        const delay = resolved.oumaFreeze ? spinWaitMs + 150 + idx * 300 : speedModeSpinAtStart ? speedModeStopDelay(i)
+          : superSpeedStartedAt!==null ? Math.max(0,normalAutoStopDelay-(performance.now()-superSpeedStartedAt)) : normalAutoStopDelay;
+        setTimeout(()=>{if(currentSpin===scheduledSpin)stopSingleReel(i,{oumaAuto:!!resolved.oumaFreeze});}, delay);
       });
     }
     persistState();
@@ -7460,7 +7478,8 @@
       const resultEnding=!!normalState.pendingZoneResult ||
         (!!r?.flowBefore?.zone&&!r?.flowAfter?.zone) ||
         (r?.flowBefore?.phase==='art'&&r?.flowAfter?.phase==='normal'&&!r.bonusHit&&!r.aTypeBonusReady);
-      const resultWaitMs = (resultEnding || NovaLadder.eligible(r?.flowBefore) || currentSpin.speedModeAtStart || isPremiumBigFinalBonusSpin(currentSpin)) ? 0 : autoResultWaitMs;
+      const resultWaitMs = (resultEnding || NovaLadder.eligible(r?.flowBefore) || currentSpin.speedModeAtStart || isPremiumBigFinalBonusSpin(currentSpin)) ? 0
+        : currentSpin.superSpeedAtStart && superSpeedActive ? Math.max(0,currentSpin.superSpeedStartedAt+autoStopDelayMs(2)+autoResultWaitMs-performance.now()) : autoResultWaitMs;
       setTimeout(()=>{
         if(currentSpin){
           prepareManualBonusOutcome(currentSpin);
@@ -7485,10 +7504,11 @@
     }
 
     // Follow the current bell guide, including AUTO enabled after BET.
+    const scheduledSpin=currentSpin;
     const stopOrder = NovaBellNavi.stopOrder(currentSpin);
     stopOrder.forEach((i,idx)=>{
       if(!currentSpin.stopped[i]){
-        setTimeout(()=>stopSingleReel(i), idx * 180);
+        setTimeout(()=>{if(currentSpin===scheduledSpin)stopSingleReel(i);}, NovaSuperSpeed.delay(idx * 180,!!scheduledSpin.superSpeedAtStart));
       }
     });
   }
@@ -8128,7 +8148,7 @@
   }
 
   function autoScaledDelayMs(ms, minMs=50){
-    return Math.max(minMs, Math.round((Number(ms) || 0) / AUTO_SPEED_MULTIPLIER));
+    return NovaSuperSpeed.delay(Math.max(minMs, Math.round((Number(ms) || 0) / AUTO_SPEED_MULTIPLIER)),superSpeedActive);
   }
 
   function autoDelayMs(){
@@ -8162,7 +8182,7 @@
     autoTimer = setTimeout(()=>{
       autoTimer = null;
       runAutoStep();
-    }, Math.max(50, delayMs));
+    }, Math.max(superSpeedActive ? 8 : 50, delayMs));
   }
 
   function startAutoWatchdog(){
@@ -8185,6 +8205,7 @@
   function stopAutoPlay(reason){
     if(!autoPlay && !autoTimer) return;
     autoPlay = false;
+    superSpeedActive = false;
     if(autoTimer){
       clearTimeout(autoTimer);
       autoTimer = null;
@@ -8210,6 +8231,7 @@
 
   function runAutoStep(){
     if(!autoPlay) return;
+    if(stopSuperSpeedIfNeeded()) return;
     if(bonusEndBgmPlaying || bonusConfirmSoundPlaying){
       queueAutoStep(autoPollDelayMs());
       return;
@@ -8251,6 +8273,7 @@
 
   function scheduleNextAuto(){
     if(!autoPlay) return;
+    if(stopSuperSpeedIfNeeded()) return;
     if(bonusEndBgmPlaying || bonusConfirmSoundPlaying){
       queueAutoStep(autoPollDelayMs());
       return;
@@ -8261,7 +8284,9 @@
       return;
     }
     readSettings();
-    queueAutoStep(autoDelayMs());
+    // Anchor all deadlines to BET so DOM/rendering time does not compound the
+    // sixfold interval. Never catch up by resolving more than one spin at once.
+    queueAutoStep(superSpeedActive?Math.max(0,superSpeedNextBetAt-performance.now()):autoDelayMs());
   }
 
   function speedToBonusUnavailableReason(){
@@ -8304,6 +8329,7 @@
   }
 
   function updateSpeedToBonusUi(){
+    updateSuperSpeedUi();
     const btn = $("speedAutoBtn");
     const menu = $("speedModeMenu");
     const state = $("speedModeState");
@@ -8354,6 +8380,57 @@
     showMessage("SPEED MODE", `通常時のみ / AUTOの${SPEED_MODE_MULTIPLIER}倍速 / 上限${SPEED_MODE_MAX_SPINS_PER_SECOND}G/s / BGMあり・演出なし`);
     log(`[SPEED] 通常時SPEED開始 AUTOx${SPEED_MODE_MULTIPLIER} / max ${SPEED_MODE_MAX_SPINS_PER_SECOND}G/s / BGMあり・演出なし`);
     scheduleNextSpeedToBonus(0);
+  }
+
+  function superSpeedUnavailableReason(){
+    if(!superSpeedAllowed) return "管理画面で使用許可をONにしてください";
+    if(!canUsePlayState()) return "台の起動確認中です";
+    if(isCompleteTrialLocked()) return "COMPLETE到達のため使用できません";
+    if(NovaSuperSpeed.atConfirmed(normalState.flow,session,normalState)) return "AT確定後は使用できません";
+    if(debugFastSpinActive) return "デバッグ試走中です";
+    if(isSpinning) return "現在の回転停止後に開始できます";
+    if(bonusEndBgmPlaying || bonusConfirmSoundPlaying) return "告知の終了後に開始できます";
+    return "";
+  }
+
+  function updateSuperSpeedUi(){
+    const btn=$("superSpeedBtn");
+    if(!btn)return;
+    const reason=superSpeedUnavailableReason();
+    btn.disabled=!superSpeedActive && !!reason;
+    btn.classList.toggle('on',superSpeedActive);
+    btn.setAttribute('aria-pressed',String(superSpeedActive));
+    btn.title=superSpeedActive?'超ハイスピード中（6倍） / 押すと停止':reason || '超ハイスピード / 通常AUTOの6倍 / AT確定で停止';
+  }
+
+  function applySuperSpeedPermission(allowed){
+    clearTimeout(superSpeedPermissionTimer);
+    superSpeedAllowed=allowed===true;
+    // Fail closed if a hung request/background tab prevents fresh permission checks.
+    if(superSpeedAllowed)superSpeedPermissionTimer=setTimeout(()=>applySuperSpeedPermission(false),15000);
+    if(!superSpeedAllowed && superSpeedActive)stopAutoPlay('管理画面の使用許可OFF、または接続切れのため超ハイスピード停止');
+    updateSuperSpeedUi();
+  }
+
+  function stopSuperSpeedIfNeeded(){
+    if(!superSpeedActive)return false;
+    const confirmed=NovaSuperSpeed.atConfirmed(normalState.flow,session,normalState);
+    if(!superSpeedAllowed || confirmed){
+      stopAutoPlay(confirmed?'AT確定のため超ハイスピード停止':'超ハイスピード使用許可OFF');
+      return true;
+    }
+    return false;
+  }
+
+  function startSuperSpeed(){
+    if(superSpeedActive){stopAutoPlay('超ハイスピード停止');return;}
+    if(superSpeedUnavailableReason()){updateSuperSpeedUi();return;}
+    stopSpeedToBonus('超ハイスピード開始');
+    superSpeedActive=true;
+    if(autoPlay){updateAutoUi();queueAutoStep(0);}
+    else startAutoPlay();
+    if(!autoPlay)superSpeedActive=false;
+    updateSuperSpeedUi();
   }
 
   function stopSpeedToBonus(reason="SPEED停止"){
@@ -8679,6 +8756,7 @@
     if(bonusConfirmSoundAudio){
       bonusConfirmSoundAudio.onended = null;
       bonusConfirmSoundAudio.onerror = null;
+      bonusConfirmSoundAudio.playbackRate = 1;
       bonusConfirmSoundAudio = null;
     }
     updateAutoUi();
@@ -8768,6 +8846,7 @@
       prepareCharacterVoiceAudio(audio,src);
       audio.onended = finish;
       audio.onerror = finish;
+      audio.playbackRate=superSpeedActive?6:1;
 
       const p = audio.play();
       if(p && typeof p.catch === "function") p.catch(()=>setTimeout(finish, 250));
@@ -9282,6 +9361,7 @@
         setSpeedModeMenuOpen(!speedModeMenuOpen);
       });
     }
+    $("superSpeedBtn")?.addEventListener('click',e=>{e.stopPropagation();e.preventDefault();startSuperSpeed();});
     if($("speedModeMenu")){
       $("speedModeMenu").addEventListener("click", e=>e.stopPropagation());
     }

@@ -6513,3 +6513,13 @@ body{
 .playAccessStatus button { padding:10px 20px; border:1px solid #d2aa63; border-radius:6px; background:#453621; color:#fff; cursor:pointer; }
 .storageStatus button { flex:none; padding:8px 12px; color:#fff; background:#7d3022; border:1px solid #ffb39a; border-radius:6px; cursor:pointer; }
 @media(max-width:600px) { .storageStatus { bottom:4px; left:4px; right:4px; gap:8px; padding:8px; font-size:12px; } }
+.playControls .autoArea .superSpeedBtn{
+  position:absolute;left:120%;top:0;width:100%;height:100%;min-width:0;min-height:0;
+  aspect-ratio:1;border-radius:50%;padding:0;border:3px solid #f6df84;
+  background:radial-gradient(circle at 35% 25%,#fff9d2 0%,#f9dc6b 23%,#d99c21 58%,#75430b 100%);
+  color:#55310a;font:900 36px/1 "Yu Gothic",sans-serif;text-shadow:0 1px 1px #fff7bd;
+  box-shadow:inset 0 0 0 3px #916010,0 0 14px #e7b13680;cursor:pointer;
+}
+.playControls .autoArea .superSpeedBtn:disabled{opacity:.38;filter:saturate(.5);cursor:not-allowed;}
+.playControls .autoArea .superSpeedBtn.on{box-shadow:inset 0 0 0 3px #916010,0 0 18px #ffdd63,0 0 35px #ffb523;}
+.superSpeedBtn:focus-visible{outline:3px solid white;outline-offset:5px;}

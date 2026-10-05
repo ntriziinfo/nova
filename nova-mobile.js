@@ -32,7 +32,7 @@
     return !target || target.disabled || ['lift','hold','fail'].includes(freeze)
       || (freeze === 'bet' && target.id !== 'spinBtn') || getComputedStyle(target).pointerEvents === 'none';
   };
-  const mappings = [['spinBtn','BET'], ['stop0','左'], ['stop1','中'], ['stop2','右'], ['quickAutoBtn','AUTO']];
+  const mappings = [['spinBtn','BET'], ['stop0','左'], ['stop1','中'], ['stop2','右'], ['quickAutoBtn','AUTO'], ['superSpeedBtn','超']];
   const pairs = mappings.map(([id,label]) => {
     const target = document.getElementById(id);
     const button = document.createElement('button');
@@ -52,7 +52,8 @@
     for (const {target,button,id,label} of pairs) {
       button.disabled = locked(target);
       button.textContent = id.startsWith('stop') ? label : target?.textContent || label;
-      if (id === 'quickAutoBtn') button.setAttribute('aria-pressed', String(!!target?.classList.contains('on')));
+      if (id === 'quickAutoBtn' || id === 'superSpeedBtn') button.setAttribute('aria-pressed', String(!!target?.classList.contains('on')));
+      if(id==='superSpeedBtn'){button.title=target?.title || '';button.setAttribute('aria-label','超ハイスピードモード');}
     }
   };
   const observer = new MutationObserver(sync);
