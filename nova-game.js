@@ -743,6 +743,7 @@
     ...Object.values(BELL_NAVI_VOICE_SRCS).flat(),...Object.values(BELL_NAVI_COMPLETE_VOICE_SRCS),
     ...Object.values(AIM_VOICE_SRCS).flat(),...Object.values(ZONE_START_VOICE_SRCS),
     ...Object.values(ZONE_CONTINUE_VOICE_SRCS),'assets/media/nova/bonus_confirm.wav',
+    'assets/media/nova/cz-entry-voice.wav',
     OUMA_NOVA_VOICE_SRCS.aim,...OUMA_NOVA_VOICE_SRCS.wins,
     ...Object.values(GIRU_LADDER_VOICE_SRCS).flat(),
     ...Object.values(RARE_CUE_VOICE_SRCS).flatMap(bank=>Object.values(bank)),
@@ -7193,6 +7194,7 @@
     }
     playZoneRouletteBetVoice(resolved);
     playAimBetPresentation(resolved);
+    playCzIntroBetVoice(resolved);
     playRareNaviSound(currentSpin);
     playRareCueVoice(currentSpin);
     playGiruLadderBetVoice(currentSpin);
@@ -7598,6 +7600,12 @@
     if(flow?.phase!=='art'||flow.entryStage!=='roulette'||flow.initialStage)return;
     resolved.zoneRouletteVoicePlayed=true;
     playOneShotSound('assets/media/nova/aim/zone-roulette-confirm.wav?v=20260919-roulette-voice',voiceOutputVolume(),{allowDuringPremiumConfirm:true});
+  }
+
+  function playCzIntroBetVoice(resolved){
+    if(debugFastSpinActive||speedToBonusActive||!NovaAim.isCzIntro(resolved)||resolved.czIntroVoicePlayed)return;
+    resolved.czIntroVoicePlayed=true;
+    playOneShotSound('assets/media/nova/cz-entry-voice.wav',voiceOutputVolume(),{allowDuringPremiumConfirm:true});
   }
 
   function playAimBetPresentation(resolved,rng=Math.random){

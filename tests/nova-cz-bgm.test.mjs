@@ -53,3 +53,25 @@ test('CZ intro plays once, returns to normal BGM, survives reload, and re-arms f
  c.currentSpin={resolved:{czIntro:true}};c.ensureNormalBgmSource();assert.equal(src,'cz');assert.equal(c.bgm.loop,false);
  c.bgm.ended=true;c.ensureNormalBgmSource();assert.equal(src,'normal','AUTO must not restart a track waiting to dispatch ended');assert.equal(c.bgm.loop,true);
 });
+
+test('CZ entry voice plays once on the title BET, preserves reload guards and never changes lottery state',()=>{
+ const sounds=[],c=vm.createContext({debugFastSpinActive:false,speedToBonusActive:false,voiceOutputVolume:()=>.6,playOneShotSound:(src,volume,options)=>sounds.push({src,volume,options})});
+ const aim=fs.readFileSync('nova-aim-presentation.js','utf8').match(/ function isCzIntro\([^]*?\n }/)[0];
+ vm.runInContext(aim+'\nglobalThis.NovaAim={isCzIntro};\nMath.random=()=>{throw Error("Unexpected lottery draw");};\n'+html.match(/  function playCzIntroBetVoice\([^]*?\n  }/)[0],c);
+ for(const phase of ['cz','strong_cz']){
+  const resolved={flowBefore:{phase,remaining:20,totalGames:20},flowAfter:{phase,remaining:19,totalGames:20}};
+  const before=JSON.stringify(resolved);c.playCzIntroBetVoice(resolved);c.playCzIntroBetVoice(resolved);
+  c.playCzIntroBetVoice(JSON.parse(JSON.stringify(resolved)));
+  const {czIntroVoicePlayed,...engine}=resolved;assert.equal(czIntroVoicePlayed,true);assert.equal(JSON.stringify(engine),before);
+ }
+ assert.equal(sounds.length,2);assert(sounds.every(s=>s.src==='assets/media/nova/cz-entry-voice.wav'&&s.volume===.6&&s.options.allowDuringPremiumConfirm));
+ for(const resolved of [
+  {flowBefore:{phase:'normal'},czPrelude:{enter:true},flowAfter:{phase:'cz',remaining:20,totalGames:20}},
+  {flowBefore:{phase:'normal'},czPrelude:{failed:true}},
+  {flowBefore:{phase:'cz',remaining:19,totalGames:20}},
+  {flowBefore:{phase:'art',remaining:20,totalGames:20}},
+  {flowBefore:{phase:'cz',remaining:20,totalGames:20},aTypeBonusGame:true},
+  {flowBefore:{phase:'cz',remaining:20,totalGames:20},bonusPendingAtStart:true}
+ ])c.playCzIntroBetVoice(resolved);
+ c.debugFastSpinActive=true;c.playCzIntroBetVoice({flowBefore:{phase:'cz',remaining:20,totalGames:20}});assert.equal(sounds.length,2);
+});
