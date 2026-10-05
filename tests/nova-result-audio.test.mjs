@@ -31,7 +31,7 @@ test('background music stays paused through result callbacks and resumes after r
 test('normal SUPER NOVA plays once at SFX volume; reverse freeze omits this extra sound',()=>{
  for(const oumaFreeze of [false,true]){
   const sounds=[];const c=vm.createContext({superSpeedActive:false,isLadderShutterSpin:()=>false,currentSpin:{result:'SUPER_NOVA',resolved:{oumaFreeze}},sfxOutputVolume:()=>.5,playOneShotSound:(...args)=>sounds.push(args)});
-  vm.runInContext(fn('playStopSound'),c);c.playStopSound(2,3);c.playStopSound(2,3);
+  vm.runInContext(fn('isComebackChanceSpin')+fn('playStopSound'),c);c.playStopSound(2,3);c.playStopSound(2,3);
   assert.deepEqual(sounds.map(args=>args.slice(0,2)),oumaFreeze?[]:[['assets/media/nova/super-nova-stop.wav',.5]]);
  }
 });

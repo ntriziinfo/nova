@@ -27,7 +27,7 @@ test('final lamp slot switches all eight CZ lamps to fast rainbow; clearing CZ r
 test('each displayed rare navigation plays the supplied effect once on BET in manual and AUTO',()=>{
  const sounds=[],c=vm.createContext({debugFastSpinActive:false,speedToBonusActive:false,sfxOutputVolume:()=>.37,playOneShotSound:(...args)=>sounds.push(args)});
  vm.runInContext(fs.readFileSync('nova-bell-navi.js','utf8'),c);
- vm.runInContext(html.match(/  function playRareNaviSound\([^]*?\n  }/)[0],c);
+ for(const name of ['isComebackChanceSpin','playRareNaviSound'])vm.runInContext(html.match(new RegExp('  function '+name+'\\([^]*?\\n  }'))[0],c);
  const variants=new Set();
  for(const autoStopAtStart of [false,true])for(const result of ['WEAK_SUICA','STRONG_SUICA','CHANCE_A','CHANCE_B','WEAK_NOVA','STRONG_NOVA','SUPER_NOVA'])for(const roll of [0,.999]){
   const spin={result,autoStopAtStart,resolved:{flowBefore:{phase:'art'}}};

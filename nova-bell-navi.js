@@ -53,8 +53,9 @@ globalThis.NovaBellNavi=(()=>{
  }
  function render(){
   if(!init())return;
+  // Also hide saved cues on resume; comeback reveals the role only on the reels.
   // Retain the existing visual draws in begin(); sortie owns the visible guide.
-  if(active?.resolved?.researchSortie){root.hidden=true;return;}
+  if(active?.resolved?.researchSortie||active?.resolved?.comebackEvent||active?.resolved?.flowBefore?.comebackLeft){root.hidden=true;return;}
   const signal=active?.rareNavi,order=active?.bellNaviOrder||(!active&&previewing?[0,1,2]:null),stopped=active?.stopped||[];
   root.hidden=(!order&&!signal)||!!(active&&stopped.every(Boolean));
   root.dataset.preview=String(!active&&previewing);

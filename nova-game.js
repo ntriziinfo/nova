@@ -7516,8 +7516,12 @@
     playStopSound(i, stopOrder);
   }
 
+  function isComebackChanceSpin(resolved){
+    return !!(resolved?.flowBefore?.comebackLeft||['continue','success','failure'].includes(resolved?.comebackEvent));
+  }
+
   function playRareNaviSound(spin){
-    if(debugFastSpinActive||speedToBonusActive||!spin?.rareNavi||spin.rareNaviSoundPlayed||spin.resolved?.researchSortie)return;
+    if(debugFastSpinActive||speedToBonusActive||!spin?.rareNavi||spin.rareNaviSoundPlayed||spin.resolved?.researchSortie||isComebackChanceSpin(spin.resolved))return;
     spin.rareNaviSoundPlayed=true;
     playOneShotSound('assets/media/nova/rare-navi.mp3',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
   }
@@ -7542,7 +7546,8 @@
     const characters=Object.keys(RARE_CUE_VOICE_SRCS);
     const character=characters[Math.min(characters.length-1,Math.max(0,Math.floor(rng()*characters.length)))];
     spin.rareCueVoicePlayed=true;spin.rareCueVoice={character,grade};
-    if(spin.resolved?.researchSortie)return; // Preserve the selection draw; the sortie cue replaces its sound.
+    // Keep the character draw so hiding a cue cannot shift later game lotteries.
+    if(spin.resolved?.researchSortie||isComebackChanceSpin(spin.resolved))return;
     playOneShotSound(RARE_CUE_VOICE_SRCS[character][grade],voiceOutputVolume(),{allowDuringPremiumConfirm:true});
   }
 
@@ -9020,17 +9025,17 @@
     playOneShotSound(src,sfxOutputVolume(),{allowDuringPremiumConfirm:true});
   }
   function playWeakNovaSound(result,resolved){
-    if(result!=='WEAK_NOVA' || resolved?.weakNovaSoundPlayed)return;
+    if(result!=='WEAK_NOVA' || resolved?.weakNovaSoundPlayed || isComebackChanceSpin(resolved))return;
     if(resolved)resolved.weakNovaSoundPlayed=true;
     playOneShotSound('assets/media/nova/weak-nova.wav',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
   }
   function playStrongNovaSound(result,resolved){
-    if(result!=='STRONG_NOVA' || resolved?.strongNovaSoundPlayed)return;
+    if(result!=='STRONG_NOVA' || resolved?.strongNovaSoundPlayed || isComebackChanceSpin(resolved))return;
     if(resolved)resolved.strongNovaSoundPlayed=true;
     playOneShotSound('assets/media/nova/strong_nova.wav',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
   }
   function playChanceSound(result,resolved){
-    if(!['CHANCE_A','CHANCE_B'].includes(result)||resolved?.chanceSoundPlayed)return;
+    if(!['CHANCE_A','CHANCE_B'].includes(result)||resolved?.chanceSoundPlayed||isComebackChanceSpin(resolved))return;
     if(resolved)resolved.chanceSoundPlayed=true;
     playWinSound(false);
   }
@@ -9068,7 +9073,7 @@
       playOneShotSound(stopOrder===3?(currentSpin?.result==='MISS'?'assets/media/nova/ouma-fail.wav':'assets/media/nova/shutter-close.wav'):'assets/media/nova/shutter.wav',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
       return;
     }
-    if(stopOrder===3&&currentSpin?.result==='SUPER_NOVA'){
+    if(stopOrder===3&&currentSpin?.result==='SUPER_NOVA'&&!isComebackChanceSpin(currentSpin.resolved)){
       if(currentSpin.superNovaStopSoundPlayed)return;
       currentSpin.superNovaStopSoundPlayed=true;
       if(currentSpin.resolved?.oumaFreeze)return;
