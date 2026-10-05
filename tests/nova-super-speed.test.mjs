@@ -6,7 +6,7 @@ const source=fs.readFileSync('nova-game.js','utf8');
 const fn=name=>source.match(new RegExp('  function '+name+'\\([^]*?\\n  }'))[0];
 function setup(){
  const timers=new Map();let id=0;
- const button={classList:{toggle(){}},setAttribute(){}};
+ const button={classList:{toggle(name,value){button[name]=value;}},setAttribute(name,value){button[name]=value;}};
  const debugButton={setAttribute(){}},debugStatus={};
  const c=vm.createContext({superSpeedActive:false,superSpeedPending:false,superSpeedAllowed:false,superSpeedDebugAllowed:false,superSpeedPermissionTimer:null,
   SLOT_DEBUG_ENABLED:true,VERTEX_CONTROLLER_ENABLED:false,SLOT_PLAY_SESSION:false,
@@ -15,7 +15,7 @@ function setup(){
   canUsePlayState:()=>true,isCompleteTrialLocked:()=>false,$:id=>({superSpeedBtn:button,debugSuperSpeedBtn:debugButton,debugSuperSpeedStatus:debugStatus}[id]),
   setTimeout(fn,ms){timers.set(++id,{fn,ms});return id;},clearTimeout(id){timers.delete(id);},
   stopSpeedToBonus(){},stopAutoPlay(reason){c.autoPlay=false;c.superSpeedActive=false;c.superSpeedPending=false;c.reason=reason;},
-  startAutoPlay(){c.autoPlay=true;},updateAutoUi(){},queueAutoStep(){},AUTO_SPEED_MULTIPLIER:2,MIN_SPIN_WAIT_MS:500,
+  startAutoPlay(){c.autoPlay=true;},updateAutoUi(){c.updateSuperSpeedUi();},log(){},queueAutoStep(){},AUTO_SPEED_MULTIPLIER:2,MIN_SPIN_WAIT_MS:500,
   settings:{autoDelay:.5}});
  vm.runInContext(fs.readFileSync('nova-super-speed.js','utf8'),c);
  for(const name of ['canDebugSuperSpeed','hasSuperSpeedPermission','setSuperSpeedDebugPermission','superSpeedUnavailableReason','updateSuperSpeedUi','applySuperSpeedPermission','stopSuperSpeedIfNeeded','startSuperSpeed','autoScaledDelayMs','autoDelayMs','autoStopDelayMs','autoPollDelayMs'])vm.runInContext(fn(name),c);
@@ -44,10 +44,12 @@ test('debug permission cannot bypass managed play or disabled debugging',()=>{
  }
 });
 
-test('debug permission still stops on AT confirmation and rejects starting during AT',()=>{
+test('AT confirmation returns to normal AUTO and rejects restarting super speed during AT',()=>{
  const {c,button}=setup();c.setSuperSpeedDebugPermission(true);c.startSuperSpeed();
- c.session={active:true,bonusArtSets:1};assert.equal(c.stopSuperSpeedIfNeeded(),true);assert.equal(c.autoPlay,false);
- c.startSuperSpeed();assert.equal(c.autoPlay,false);assert.equal(button.disabled,true);
+ c.session={active:true,bonusArtSets:1};assert.equal(c.stopSuperSpeedIfNeeded(),false);assert.equal(c.autoPlay,true);
+ assert.equal(c.superSpeedActive,false);assert.equal(button.on,false);assert.equal(button['aria-pressed'],'false');
+ c.startSuperSpeed();assert.equal(c.autoPlay,true);assert.equal(c.superSpeedActive,false);assert.equal(button.disabled,true);
+ c.stopAutoPlay('user');
  c.session={active:false};c.normalState.flow.phase='art';c.startSuperSpeed();assert.equal(c.autoPlay,false);
 });
 
@@ -73,7 +75,7 @@ test('pending speed cancels on user STOP, debug OFF, server OFF or an AT win in 
   if(end==='debug')c.setSuperSpeedDebugPermission(false);
   if(end==='server')c.applySuperSpeedPermission(false);
   if(end==='AT'){c.session={active:true,bonusArtSets:1};c.isSpinning=false;c.stopSuperSpeedIfNeeded();}
-  assert.equal(c.superSpeedPending,false);assert.equal(c.superSpeedActive,false);assert.equal(c.autoPlay,false);
+  assert.equal(c.superSpeedPending,false);assert.equal(c.superSpeedActive,false);assert.equal(c.autoPlay,end==='AT');
  }
 });
 
@@ -90,11 +92,11 @@ test('permission is required, reversible, and expires if server is unreachable',
  c.applySuperSpeedPermission(false);assert.equal(c.autoPlay,false);assert.equal(button.disabled,true);
  c.applySuperSpeedPermission(true);c.startSuperSpeed();assert.equal(timers.size,1);[...timers.values()][0].fn();assert.equal(c.autoPlay,false);assert.equal(c.superSpeedAllowed,false);
 });
-test('CZ and non-winning bonus continue; AT win or premium guarantee stops before another BET',()=>{
+test('CZ and non-winning bonus stay fast; AT win returns to normal AUTO before another BET',()=>{
  const {c}=setup();c.applySuperSpeedPermission(true);c.startSuperSpeed();
  for(const phase of ['normal','cz','strong_cz']){c.normalState.flow.phase=phase;assert.equal(c.stopSuperSpeedIfNeeded(),false);}
  c.session={active:true,bonusArtSets:0};assert.equal(c.stopSuperSpeedIfNeeded(),false);
- c.session.bonusArtSets=1;assert.equal(c.stopSuperSpeedIfNeeded(),true);assert.equal(c.autoPlay,false);
+ c.session.bonusArtSets=1;assert.equal(c.stopSuperSpeedIfNeeded(),false);assert.equal(c.autoPlay,true);assert.equal(c.superSpeedActive,false);
  assert.equal(c.NovaSuperSpeed.atConfirmed({phase:'art'}),true);
  assert.equal(c.NovaSuperSpeed.atConfirmed({phase:'normal'},{},{bonusPending:true,premiumBonus:true}),true);
  assert.equal(c.NovaSuperSpeed.atConfirmed({phase:'normal'},{},{bonusPending:true,prepSets:1}),true);
@@ -105,4 +107,41 @@ test('all AUTO spin, stop, result and inter-game delays use exactly one sixth, w
  c.superSpeedActive=true;
  const after=[c.autoDelayMs(),c.autoPollDelayMs(),...[0,1,2].map(i=>c.autoStopDelayMs(i)),c.autoScaledDelayMs(1000)];
  before.forEach((v,i)=>assert.equal(after[i],v/6));
+});
+
+test('every AT confirmation route schedules the next BET at normal AUTO speed without changing game state',()=>{
+ for(const route of ['art','bonus','premium','prep']){
+  const {c,timers,button}=setup();let spins=0,logs=0;
+  Object.assign(c,{A_TYPE_MODE:true,oumaPresentation:null,readSettings(){},canPlayCompleteTrial:()=>true,
+   isRogiThirdStopHoldActive:()=>false,spin(){spins++;c.isSpinning=true;},log(){logs++;}});
+  for(const name of ['queueAutoStep','runAutoStep','scheduleNextAuto'])vm.runInContext(fn(name),c);
+  const normalDelay=c.autoDelayMs();c.setSuperSpeedDebugPermission(true);c.startSuperSpeed();
+  if(route==='art')c.normalState.flow={phase:'art',remaining:'750',sets:'2'};
+  if(route==='bonus')c.session={active:true,bonusArtSets:1};
+  if(route==='premium')Object.assign(c.normalState,{bonusPending:true,premiumBonus:true});
+  if(route==='prep')Object.assign(c.normalState,{bonusPending:true,prepSets:1});
+  const state=JSON.stringify([c.normalState,c.session]);
+  vm.runInContext('Math.random=()=>{throw Error("mode switch must not draw");}',c);
+  c.scheduleNextAuto();
+  assert.equal(c.autoPlay,true);assert.equal(c.superSpeedActive,false);assert.equal(c.superSpeedPending,false);
+  assert.equal(button.disabled,true);assert.equal(button.on,false);assert.equal(logs,1);
+  assert.equal(timers.size,1);const scheduled=timers.get(c.autoTimer);assert.equal(scheduled.ms,normalDelay);
+  timers.delete(c.autoTimer);scheduled.fn();assert.equal(spins,1);assert.equal(logs,1);
+  assert.equal(JSON.stringify([c.normalState,c.session]),state);
+ }
+});
+
+test('AUTO handoff respects audio, manual STOP and permission revocation; AT exit stays at normal speed',()=>{
+ const {c}=setup();let spins=0;const waits=[];
+ Object.assign(c,{A_TYPE_MODE:true,oumaPresentation:null,isRogiThirdStopHoldActive:()=>false,canPlayCompleteTrial:()=>true,
+  queueAutoStep:ms=>waits.push(ms),spin:()=>spins++});
+ vm.runInContext(fn('runAutoStep'),c);
+ c.setSuperSpeedDebugPermission(true);c.startSuperSpeed();c.normalState.flow.phase='art';
+ c.bonusConfirmSoundPlaying=true;c.runAutoStep();
+ assert.equal(c.autoPlay,true);assert.equal(c.superSpeedActive,false);assert.equal(spins,0);assert.equal(waits.at(-1),75);
+ c.bonusConfirmSoundPlaying=false;c.runAutoStep();assert.equal(spins,1);assert.equal(waits.at(-1),250);
+ c.normalState.flow.phase='normal';c.runAutoStep();assert.equal(c.superSpeedActive,false);assert.equal(spins,2);
+ c.stopAutoPlay('user');c.runAutoStep();assert.equal(spins,2);
+ c.startSuperSpeed();c.normalState.flow.phase='art';c.setSuperSpeedDebugPermission(false);
+ c.runAutoStep();assert.equal(c.autoPlay,false);assert.equal(spins,2);
 });
