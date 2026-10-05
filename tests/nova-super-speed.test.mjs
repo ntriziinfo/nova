@@ -8,13 +8,13 @@ function setup(){
  const timers=new Map();let id=0;
  const button={classList:{toggle(){}},setAttribute(){}};
  const debugButton={setAttribute(){}},debugStatus={};
- const c=vm.createContext({superSpeedActive:false,superSpeedAllowed:false,superSpeedDebugAllowed:false,superSpeedPermissionTimer:null,
+ const c=vm.createContext({superSpeedActive:false,superSpeedPending:false,superSpeedAllowed:false,superSpeedDebugAllowed:false,superSpeedPermissionTimer:null,
   SLOT_DEBUG_ENABLED:true,VERTEX_CONTROLLER_ENABLED:false,SLOT_PLAY_SESSION:false,
   normalState:{flow:{phase:'normal'}},session:{active:false},autoPlay:false,autoTimer:null,isSpinning:false,
   debugFastSpinActive:false,bonusEndBgmPlaying:false,bonusConfirmSoundPlaying:false,
   canUsePlayState:()=>true,isCompleteTrialLocked:()=>false,$:id=>({superSpeedBtn:button,debugSuperSpeedBtn:debugButton,debugSuperSpeedStatus:debugStatus}[id]),
   setTimeout(fn,ms){timers.set(++id,{fn,ms});return id;},clearTimeout(id){timers.delete(id);},
-  stopSpeedToBonus(){},stopAutoPlay(reason){c.autoPlay=false;c.superSpeedActive=false;c.reason=reason;},
+  stopSpeedToBonus(){},stopAutoPlay(reason){c.autoPlay=false;c.superSpeedActive=false;c.superSpeedPending=false;c.reason=reason;},
   startAutoPlay(){c.autoPlay=true;},updateAutoUi(){},queueAutoStep(){},AUTO_SPEED_MULTIPLIER:2,MIN_SPIN_WAIT_MS:500,
   settings:{autoDelay:.5}});
  vm.runInContext(fs.readFileSync('nova-super-speed.js','utf8'),c);
@@ -49,6 +49,40 @@ test('debug permission still stops on AT confirmation and rejects starting durin
  c.session={active:true,bonusArtSets:1};assert.equal(c.stopSuperSpeedIfNeeded(),true);assert.equal(c.autoPlay,false);
  c.startSuperSpeed();assert.equal(c.autoPlay,false);assert.equal(button.disabled,true);
  c.session={active:false};c.normalState.flow.phase='art';c.startSuperSpeed();assert.equal(c.autoPlay,false);
+});
+
+test('manual and AUTO spins accept super speed immediately but keep current spin timing',()=>{
+ for(const autoPlay of [false,true]){
+  const {c,button}=setup();c.isSpinning=true;c.autoPlay=autoPlay;c.setSuperSpeedDebugPermission(true);
+  assert.equal(button.disabled,false,'permission clears disabled state during a spin');
+  const delay=c.autoDelayMs();c.startSuperSpeed();
+  assert.equal(c.autoPlay,true);assert.equal(c.superSpeedPending,true);assert.equal(c.superSpeedActive,false);
+  assert.equal(c.autoDelayMs(),delay,'in-flight game retains its previous speed');
+  assert.match(button.title,/次のゲーム/);assert.equal(c.stopSuperSpeedIfNeeded(),false);assert.equal(c.superSpeedPending,true);
+  c.isSpinning=false;c.stopSuperSpeedIfNeeded();
+  assert.equal(c.superSpeedPending,false);assert.equal(c.superSpeedActive,true);assert.equal(c.autoDelayMs(),delay/6);
+ }
+});
+
+test('pending speed cancels on user STOP, debug OFF, server OFF or an AT win in the current spin',()=>{
+ for(const end of ['user','debug','server','AT']){
+  const {c}=setup();c.isSpinning=true;
+  if(end==='server')c.applySuperSpeedPermission(true);else c.setSuperSpeedDebugPermission(true);
+  c.startSuperSpeed();assert.equal(c.superSpeedPending,true);
+  if(end==='user')c.startSuperSpeed();
+  if(end==='debug')c.setSuperSpeedDebugPermission(false);
+  if(end==='server')c.applySuperSpeedPermission(false);
+  if(end==='AT'){c.session={active:true,bonusArtSets:1};c.isSpinning=false;c.stopSuperSpeedIfNeeded();}
+  assert.equal(c.superSpeedPending,false);assert.equal(c.superSpeedActive,false);assert.equal(c.autoPlay,false);
+ }
+});
+
+test('pending speed waits through result audio and disabled state explains AT restriction',()=>{
+ const {c,button,debugStatus}=setup();c.isSpinning=true;c.setSuperSpeedDebugPermission(true);c.startSuperSpeed();
+ c.isSpinning=false;c.bonusConfirmSoundPlaying=true;c.stopSuperSpeedIfNeeded();assert.equal(c.superSpeedPending,true);
+ c.bonusConfirmSoundPlaying=false;c.stopSuperSpeedIfNeeded();assert.equal(c.superSpeedActive,true);
+ c.stopAutoPlay();c.normalState.flow.phase='art';c.updateSuperSpeedUi();
+ assert.equal(button.disabled,true);assert.match(debugStatus.textContent,/AT確定後は使用できません/);
 });
 test('permission is required, reversible, and expires if server is unreachable',()=>{
  const {c,button,timers}=setup();c.startSuperSpeed();assert.equal(c.autoPlay,false);

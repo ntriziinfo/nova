@@ -6521,5 +6521,6 @@ body{
   box-shadow:none;cursor:pointer;
 }
 .playControls .autoArea .superSpeedBtn:disabled{opacity:.38;filter:saturate(.5);cursor:not-allowed;}
+.playControls .autoArea .superSpeedBtn:not(:disabled){opacity:1;filter:none;}
 .playControls .autoArea .superSpeedBtn.on{box-shadow:0 0 18px #ffdd63,0 0 35px #ffb523;}
 .superSpeedBtn:focus-visible{outline:3px solid white;outline-offset:5px;}

@@ -577,6 +577,7 @@
   let autoTimer = null;
   let autoWatchdogTimer = null;
   let superSpeedActive = false;
+  let superSpeedPending = false; // Finish the current spin before switching presentation speed.
   let superSpeedAllowed = false; // Authoritative server permission; never restored from local storage.
   let superSpeedDebugAllowed = false; // Standalone debugging only; cleared by page reload.
   let superSpeedPermissionTimer = null;
@@ -3929,6 +3930,7 @@
         spinCanStop,
         autoPlay,
         superSpeedActive,
+        superSpeedPending,
         superSpeedAllowed,
         superSpeedDebugAllowed,
         forceResult,
@@ -8111,7 +8113,7 @@
     }
 
     if(autoPlay){
-      status.textContent = "オート中：Aタイプを2倍速で自動消化";
+      status.textContent = superSpeedPending ? "超ハイスピード予約：次のゲームから開始" : superSpeedActive ? "超ハイスピード中：通常AUTOの6倍 / AT確定で停止" : "オート中：Aタイプを2倍速で自動消化";
       status.style.color = "var(--green)";
     }else{
       status.textContent = "オート停止中";
@@ -8208,6 +8210,7 @@
     if(!autoPlay && !autoTimer) return;
     autoPlay = false;
     superSpeedActive = false;
+    superSpeedPending = false;
     if(autoTimer){
       clearTimeout(autoTimer);
       autoTimer = null;
@@ -8404,12 +8407,13 @@
     if(isCompleteTrialLocked()) return "COMPLETE到達のため使用できません";
     if(NovaSuperSpeed.atConfirmed(normalState.flow,session,normalState)) return "AT確定後は使用できません";
     if(debugFastSpinActive) return "デバッグ試走中です";
-    if(isSpinning) return "現在の回転停止後に開始できます";
     if(bonusEndBgmPlaying || bonusConfirmSoundPlaying) return "告知の終了後に開始できます";
     return "";
   }
 
   function updateSuperSpeedUi(){
+    const reason=superSpeedUnavailableReason();
+    const running=superSpeedActive || superSpeedPending;
     const debugBtn=$("debugSuperSpeedBtn");
     if(debugBtn){
       debugBtn.disabled=!canDebugSuperSpeed();
@@ -8418,15 +8422,14 @@
     }
     const debugStatus=$("debugSuperSpeedStatus");
     if(debugStatus)debugStatus.textContent=canDebugSuperSpeed()
-      ? (superSpeedDebugAllowed ? '使用許可ON：金色の「超」ボタンで開始。AT確定で停止します。再読み込みで許可OFF。' : '単独試打用。ONにすると金色の「超」ボタンが使えます。再読み込みで許可OFF。')
+      ? (superSpeedDebugAllowed ? `使用許可ON：${superSpeedPending ? '次のゲームから開始します。' : reason || '金色の「超」ボタンで開始。AT確定で停止します。'} 再読み込みで許可OFF。` : '単独試打用。ONにすると金色の「超」ボタンが使えます。再読み込みで許可OFF。')
       : '管理画面から起動した台は、管理画面で使用許可を切り替えてください。';
     const btn=$("superSpeedBtn");
     if(!btn)return;
-    const reason=superSpeedUnavailableReason();
-    btn.disabled=!superSpeedActive && !!reason;
-    btn.classList.toggle('on',superSpeedActive);
-    btn.setAttribute('aria-pressed',String(superSpeedActive));
-    btn.title=superSpeedActive?'超ハイスピード中（6倍） / 押すと停止':reason || '超ハイスピード / 通常AUTOの6倍 / AT確定で停止';
+    btn.disabled=!running && !!reason;
+    btn.classList.toggle('on',running);
+    btn.setAttribute('aria-pressed',String(running));
+    btn.title=superSpeedPending ? '次のゲームから超ハイスピード（6倍） / 押すと取消・AUTO停止' : superSpeedActive?'超ハイスピード中（6倍） / 押すと停止':reason || '超ハイスピード / 通常AUTOの6倍 / AT確定で停止';
   }
 
   function applySuperSpeedPermission(allowed){
@@ -8434,28 +8437,34 @@
     superSpeedAllowed=allowed===true;
     // Fail closed if a hung request/background tab prevents fresh permission checks.
     if(superSpeedAllowed)superSpeedPermissionTimer=setTimeout(()=>applySuperSpeedPermission(false),15000);
-    if(!hasSuperSpeedPermission() && superSpeedActive)stopAutoPlay('管理画面の使用許可OFF、または接続切れのため超ハイスピード停止');
+    if(!hasSuperSpeedPermission() && (superSpeedActive || superSpeedPending))stopAutoPlay('管理画面の使用許可OFF、または接続切れのため超ハイスピード停止');
     updateSuperSpeedUi();
   }
 
   function stopSuperSpeedIfNeeded(){
-    if(!superSpeedActive)return false;
+    if(!superSpeedActive && !superSpeedPending)return false;
     const confirmed=NovaSuperSpeed.atConfirmed(normalState.flow,session,normalState);
     if(!hasSuperSpeedPermission() || confirmed){
       stopAutoPlay(confirmed?'AT確定のため超ハイスピード停止':'超ハイスピード使用許可OFF');
       return true;
     }
+    if(superSpeedPending && !isSpinning && !bonusEndBgmPlaying && !bonusConfirmSoundPlaying){
+      superSpeedPending=false;
+      superSpeedActive=true;
+      updateAutoUi();
+    }
     return false;
   }
 
   function startSuperSpeed(){
-    if(superSpeedActive){stopAutoPlay('超ハイスピード停止');return;}
+    if(superSpeedActive || superSpeedPending){stopAutoPlay('超ハイスピード停止');return;}
     if(superSpeedUnavailableReason()){updateSuperSpeedUi();return;}
     stopSpeedToBonus('超ハイスピード開始');
-    superSpeedActive=true;
+    superSpeedPending=isSpinning;
+    superSpeedActive=!isSpinning;
     if(autoPlay){updateAutoUi();queueAutoStep(0);}
     else startAutoPlay();
-    if(!autoPlay)superSpeedActive=false;
+    if(!autoPlay){superSpeedActive=false;superSpeedPending=false;}
     updateSuperSpeedUi();
   }
 
