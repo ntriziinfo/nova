@@ -43,7 +43,7 @@
   const NOVA_ART_BGM_SRC = "assets/media/nova/RUSH.wav";
   const NOVA_BIG_BGM_SRC = "assets/media/nova/BIG.wav";
 
-  const CZ_BGM_SRC = "assets/media/nova/audiostock_932814.mp3";
+  const CZ_BGM_SRC = "assets/media/nova/audiostock_860274.mp3";
   const DEFAULT_NORMAL_BGM_SRC = "assets/media/nova/audiostock_1117081.wav";
   const HIGH_MODE_BGM_SRC = "";
 

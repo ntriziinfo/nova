@@ -6,3 +6,6 @@ assets/ui/super-speed-gold-20261006.png -filter -diff -merge -text
 
 # Small CZ entry voice ships directly; existing media archive stays unchanged.
 assets/media/nova/cz-entry-voice.wav -filter -diff -merge -text
+
+# Replacement CZ BGM ships directly; preserve the original media archive.
+assets/media/nova/audiostock_860274.mp3 -filter -diff -merge -text
