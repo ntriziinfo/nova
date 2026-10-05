@@ -1,3 +1,5 @@
 assets/** filter=lfs diff=lfs merge=lfs -text
 # Keep this small original MP3 in Git; no replacement of the 1 GB LFS bundle needed.
 assets/media/nova/audiostock_932814.mp3 -filter -diff -merge -text
+# Ship the new button directly without replacing the existing LFS asset archive.
+assets/ui/super-speed-gold-20261006.png -filter -diff -merge -text
