@@ -373,7 +373,7 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
  function extraZoneChance(setting,role,upper=false,high=false){
   if(!['WEAK_SUICA','WEAK_NOVA'].includes(role))return 0;
   // Common to every setting; the high state before this role determines the draw.
-  return high?.50:.30;
+  return high?.25:.15;
  }
  function resolveAtRole(s,role,setting,rng=Math.random,netPt=0){
   const rules=commonAtRulesFor(setting),wasHigh=!!s.atHigh,held=wasHigh&&s.atHighLeft>0;

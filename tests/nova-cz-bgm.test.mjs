@@ -1,9 +1,9 @@
 import {readGameSource} from '../scripts/game-source.mjs';
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
 const html=readGameSource();
-const fn=html.match(/  function normalBgmSrc\([^]*?\n  }/)[0];
+const fn=html.match(/^  function presentedArtFlow\(.*$/m)[0]+'\n'+html.match(/  function normalBgmSrc\([^]*?\n  }/)[0];
 const constants=[...html.matchAll(/  const \w+_ZONE_BGM_SRC = "[^"]+";/g)].map(m=>m[0]).join('\n');
-const ctx=vm.createContext({session:{active:false},normalState:{flow:{phase:'normal'}},currentSpin:null,NOVA_ART_BGM_SRC:'rush',CZ_BGM_SRC:'cz',DEFAULT_NORMAL_BGM_SRC:'normal',SPEED_BGM_SRC:'speed',HIGH_MODE_BGM_SRC:'high',speedToBonusActive:false,isHighMode:()=>false});vm.runInContext(constants+'\n'+fn,ctx);
+const ctx=vm.createContext({isSpinning:false,session:{active:false},normalState:{flow:{phase:'normal'}},currentSpin:null,NOVA_ART_BGM_SRC:'rush',CZ_BGM_SRC:'cz',DEFAULT_NORMAL_BGM_SRC:'normal',SPEED_BGM_SRC:'speed',HIGH_MODE_BGM_SRC:'high',speedToBonusActive:false,isHighMode:()=>false});vm.runInContext(constants+'\n'+fn,ctx);
 
 test('CZ BGM waits for the first BET, survives a pending-spin reload and continues after the intro',()=>{
  ctx.session.active=false;

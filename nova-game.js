@@ -2418,7 +2418,7 @@
 
   function targetRtpText(settingNo = settings.setting){
     if(A_TYPE_MODE && !NovaBalance.usesStandardSettings(settings))return "未試算（独自設定）";
-    if(A_TYPE_MODE){const profile=NovaBalance.profile(settingNo);return profile.verifiedModel?((profile.measuredRtp??profile.target)*100).toFixed(2)+`%（${profile.verificationLabel||"推定"}・3万G×${profile.trials}回・停止込み）`:"未集計（変更前"+((profile.measuredRtp??profile.target)*100).toFixed(1)+"%）";}
+    if(A_TYPE_MODE){const profile=NovaBalance.profile(settingNo);return profile.verifiedModel?((profile.measuredRtp??profile.target)*100).toFixed(2)+`%（${profile.verificationLabel||"推定"}・${(profile.gamesPerTrial||30000)/10000}万G×${profile.trials}回・停止込み）`:"未集計（変更前"+((profile.measuredRtp??profile.target)*100).toFixed(1)+"%）";}
   }
 
   function refreshRtpViews(){
@@ -5906,7 +5906,7 @@
   }
 
   function ensureMorningResetControl(){
-    if($("morningResetBtn") && $("tenKSimBtn")) return;
+    if($("morningResetBtn") && $("tenKSimBtn") && $("fiftyKSimBtn")) return;
     const anchor = $("debugFastStatus");
     if(!anchor || !anchor.parentNode) return;
     const row = document.createElement("div");
@@ -5919,6 +5919,12 @@
     simBtn.type = "button";
     simBtn.textContent = "1万回転試算";
     row.appendChild(simBtn);
+    const fiftyKBtn = document.createElement("button");
+    fiftyKBtn.className = "subBtn";
+    fiftyKBtn.id = "fiftyKSimBtn";
+    fiftyKBtn.type = "button";
+    fiftyKBtn.textContent = "5万回転試算";
+    row.appendChild(fiftyKBtn);
     const help = document.createElement("div");
     help.className = "help";
     help.style.margin = "-2px 0 10px";
@@ -5928,35 +5934,51 @@
   }
 
   function runTenKSimulation(){
+    return runCountSimulation(DEBUG_ONE_CLICK_SIM_SPINS);
+  }
+
+  async function runCountSimulation(targetSpins){
+    if(![10000,50000].includes(targetSpins)) return;
     if(debugOneClickSimActive) return;
+    const label = `${targetSpins/10000}万回転試算`;
+    const tag = `[SIM${targetSpins}]`;
     if(isSpinning){
-      showMessage("1万回転試算待機", "現在の回転停止後に実行してください。");
+      showMessage(`${label}待機`, "現在の回転停止後に実行してください。");
       return;
     }
 
     readSettings();
-    resetRuntimeForMorning("1万回転試算リセット");
+    resetRuntimeForMorning(`${label}リセット`);
     debugOneClickSimActive = true;
     debugFastSpinActive = true;
     debugFastSpinCount = 0;
     updateDebugFastUi();
 
-    const targetSpins = DEBUG_ONE_CLICK_SIM_SPINS;
     let spun = 0;
     let safety = 0;
     const safetyLimit = targetSpins * 12;
+    let failed = false;
 
     try{
-      while(spun < targetSpins && safety < safetyLimit && !isCompleteTrialLocked()){
+      // Yield without drawing randomness so long trials remain stoppable.
+      await new Promise(resolve=>setTimeout(resolve,0));
+      while(debugFastSpinActive && spun < targetSpins && safety < safetyLimit && !isCompleteTrialLocked()){
         safety++;
         if(runDebugFastStep()){
           spun++;
           debugFastSpinCount = spun;
         }
+        if(safety%250===0){
+          updateDebugFastUi();
+          showMessage(`${label}中`, `${spun.toLocaleString()} / ${targetSpins.toLocaleString()}G`);
+          await new Promise(resolve=>setTimeout(resolve,0));
+        }
       }
+      if(safety>=safetyLimit && spun<targetSpins && !isCompleteTrialLocked()) throw new Error("ゲーム進行が停止したため試算を中断しました。");
     }catch(e){
-      showMessage("1万回転試算エラー", e && e.message ? e.message : String(e));
-      log(`[SIM10000] ERROR ${e && e.message ? e.message : e}`);
+      failed = true;
+      showMessage(`${label}エラー`, e && e.message ? e.message : String(e));
+      log(`${tag} ERROR ${e && e.message ? e.message : e}`);
     }finally{
       debugOneClickSimActive = false;
       debugFastSpinActive = false;
@@ -5964,17 +5986,19 @@
       updateDisplay();
       persistState();
     }
+    if(failed) return;
 
     const profit = currentProfit();
     const rtpText = stats.totalFee > 0 ? `${(currentRtp() * 100).toFixed(2)}%` : "-";
     if(isCompleteTrialLocked()){
-      showMessage("1万回転試算 COMPLETE", `${debugFastSpinCount}Gで打ち止め / 損益${formatSigned(profit)}pt / 機械割${rtpText}`);
+      showMessage(`${label} COMPLETE`, `${debugFastSpinCount}Gで打ち止め / 損益${formatSigned(profit)}pt / 機械割${rtpText}`);
       $("resultText").textContent = `COMPLETE / ${debugFastSpinCount}G / ${formatSigned(profit)}pt`;
-      log(`[SIM10000] COMPLETE / ${debugFastSpinCount}G / 損益${formatSigned(profit)}pt / 機械割${rtpText}`);
+      log(`${tag} COMPLETE / ${debugFastSpinCount}G / 損益${formatSigned(profit)}pt / 機械割${rtpText}`);
     }else{
-      showMessage("1万回転試算完了", `${debugFastSpinCount}G / 損益${formatSigned(profit)}pt / 機械割${rtpText}`);
-      $("resultText").textContent = `試算完了 / ${debugFastSpinCount}G / ${formatSigned(profit)}pt`;
-      log(`[SIM10000] 完了 / ${debugFastSpinCount}G / 損益${formatSigned(profit)}pt / 機械割${rtpText}`);
+      const status = spun===targetSpins ? "完了" : "中断";
+      showMessage(`${label}${status}`, `${debugFastSpinCount}G / 損益${formatSigned(profit)}pt / 機械割${rtpText}`);
+      $("resultText").textContent = `試算${status} / ${debugFastSpinCount}G / ${formatSigned(profit)}pt`;
+      log(`${tag} ${status} / ${debugFastSpinCount}G / 損益${formatSigned(profit)}pt / 機械割${rtpText}`);
     }
   }
 
@@ -8523,6 +8547,7 @@
     const stopBtn = $("debugFastStopBtn");
     const status = $("debugFastStatus");
     const simBtn = $("tenKSimBtn");
+    const fiftyKBtn = $("fiftyKSimBtn");
     if(!startBtn || !stopBtn || !status) return;
 
     startBtn.textContent = isCompleteTrialLocked() ? "朝一リセットして高速回転" : `高速回転 ${DEBUG_FAST_SPINS_PER_SECOND}G/s`;
@@ -8530,6 +8555,7 @@
     startBtn.disabled = debugFastSpinActive;
     stopBtn.disabled = !debugFastSpinActive;
     if(simBtn) simBtn.disabled = debugFastSpinActive || debugOneClickSimActive || isSpinning;
+    if(fiftyKBtn) fiftyKBtn.disabled = debugFastSpinActive || debugOneClickSimActive || isSpinning;
 
     if(isCompleteTrialLocked()){
       status.textContent = "COMPLETE / 朝一リセットで高速回転を再開できます";
@@ -8655,6 +8681,8 @@
       session.remain = Math.max(0, (session.remain || 0) - 1);
     }
     countTotalSpinIfNeeded(aTypeBonusActiveAtSpinStart);
+    // The trial horizon includes bonus games, but never the free 0G chain.
+    const countedSimulationGame = session.active || !normalState.flow?.zero;
     chargeSpinCost();
     jagLastGamePayout = 0;
     if(!normalState.bonusPending && !session.active) jagChanceHold = false;
@@ -8686,7 +8714,7 @@
           gamesSinceLastBonus:resolved.gamesSinceLastBonusAtStart
         });
       }
-      return true;
+      return countedSimulationGame;
     }
 
     applyResult(result, resolved, lineRow);
@@ -9323,6 +9351,7 @@
     ensureMorningResetControl();
     onClick("morningResetBtn", ()=>morningResetGame(true));
     onClick("tenKSimBtn", runTenKSimulation);
+    onClick("fiftyKSimBtn", ()=>runCountSimulation(50000));
     onClick("resetBtn", resetGame);
     if($("settingSelect")){
       $("settingSelect").addEventListener("change", ()=>{

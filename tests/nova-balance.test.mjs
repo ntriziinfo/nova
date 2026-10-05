@@ -1,13 +1,13 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
 const ctx=vm.createContext({});for(const f of ['nova-tuning.js','nova-art.js','nova-balance.js'])vm.runInContext(fs.readFileSync(f,'utf8'),ctx);const a=ctx.NovaArt,b=ctx.NovaBalance;
-test('RTP metadata identifies the BET-refund pilot without claiming the old target estimates',()=>{
- const report=JSON.parse(fs.readFileSync('docs/at-bet-refund-validation-20261001.json'));
- const measured=Array.from({length:6},(_,i)=>report.summary[i].after.rtp);
+test('RTP metadata identifies the adopted 50,000G complete-stop estimates',()=>{
+ const report=JSON.parse(fs.readFileSync('docs/rtp-50000-20261006.json'));
+ const measured=report.settings.map(s=>s.stopped.rtp);
  for(let i=0;i<6;i++){
   const p=b.profile(i+1);assert.equal(p.target,b.targets[i]);assert.equal(p.measuredRtp,measured[i]);
-  assert.equal(p.verifiedModel,'at-bet-refund-20261001-pilot');assert.equal(p.trials,60);
-  assert.equal(p.previousVerifiedModel,'at-common-entry-20261001-30000g-complete-stop');
-  assert.equal(report.trialsPerSettingAndVariant,p.trials);
+  assert.equal(p.verifiedModel,'net-quota-20261006-50000g-complete-stop');assert.equal(p.trials,1000);
+  assert.equal(p.previousVerifiedModel,'at-bet-refund-20261001-pilot');
+  assert.equal(report.trialsPerSetting,p.trials);assert.equal(report.gamesPerTrial,p.gamesPerTrial);
  }
 });
 

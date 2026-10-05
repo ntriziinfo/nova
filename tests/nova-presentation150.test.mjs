@@ -64,8 +64,8 @@ test('layout preview does not inject a bell order into a non-navigation spin',()
 
 test('initial-zone music stays within the shared three-game zone and uses the BGM mixer',()=>{
  const html=readGameSource(),constants=[...html.matchAll(/  const \w+_ZONE_BGM_SRC = "[^"]+";/g)].map(m=>m[0]).join('\n');
- const c=vm.createContext({session:{active:false},normalState:{flow:{}},NOVA_ART_BGM_SRC:'at',CZ_BGM_SRC:'cz',DEFAULT_NORMAL_BGM_SRC:'normal',speedToBonusActive:false,isHighMode:()=>false});
- vm.runInContext(constants+'\n'+html.match(/  function normalBgmSrc\([^]*?\n  }/)[0],c);
+ const c=vm.createContext({isSpinning:false,currentSpin:null,session:{active:false},normalState:{flow:{}},NOVA_ART_BGM_SRC:'at',CZ_BGM_SRC:'cz',DEFAULT_NORMAL_BGM_SRC:'normal',speedToBonusActive:false,isHighMode:()=>false});
+ vm.runInContext(constants+'\n'+html.match(/^  function presentedArtFlow\(.*$/m)[0]+'\n'+html.match(/  function normalBgmSrc\([^]*?\n  }/)[0],c);
  for(const zone of ['kushuri_nito','kushuri','nito']){
   c.normalState.flow={phase:'art',zone,initialStage:'zone'};assert.equal(c.normalBgmSrc(),'assets/media/nova/initial-duo-bgm.mp3');
   c.normalState.flow.initialStage='wait';assert.equal(c.normalBgmSrc(),'at');

@@ -36,7 +36,7 @@ test('initial upper-challenge route and legacy saves cannot boost later duo stoc
 });
 
 test('CZ entry factor is setting-specific after the cap; strong NOVA remains certain',()=>{
- assert.deepEqual(n.czEntryFactors,[.56*.5092,.867*.5053,.752*.4696,.963*.4812,1.069*.255,1.148*.2148]);
+ assert.deepEqual(n.czEntryFactors,[0.15968512,0.30710466509999995,0.227774784,0.37535043600000007,0.21262409999999998,0.199738224]);
  for(let setting=1;setting<=6;setting++){
   for(const level of ['low','high']){
    const p=n.roleCzRate({level},'WEAK_SUICA',setting);

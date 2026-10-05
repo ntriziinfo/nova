@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import fs from 'node:fs';import {createHash} from 'node:crypto';
+import fs from 'node:fs';import {gunzipSync} from 'node:zlib';
 import vm from 'node:vm';
 import {loadModel,simulate} from '../scripts/zone-v2-model.mjs';
 import {xoshiro128} from '../scripts/zone-v2-rng.mjs';
@@ -49,6 +49,13 @@ test('all six 15pt bell orders survive navigation, save and AUTO without redrawi
  }
 });
 
-test('production reproduces the approved common-initial proposal over 30,000G with the same seeds',()=>{const fixture=JSON.parse(fs.readFileSync('tests/fixtures/nova-common-entry-digests.json'));for(const trial of fixture.trials){loadModel();const actual=simulate(trial.setting,trial.games,trial.seed,trial.options);assert.equal(createHash('sha256').update(JSON.stringify(actual)).digest('hex'),trial.sha256,'Setting '+trial.setting);}});
+test('production reproduces an approved 50,000G trial for every setting',()=>{
+ const rows=JSON.parse(gunzipSync(fs.readFileSync('docs/rtp-50000-20261006-rows.json.gz')));
+ const options={rng:'xoshiro128',exactGames:true,completeLimitPt:10000,stopAtComplete:true,rareSortie:true,atBetRefund:true};
+ for(let setting=1;setting<=6;setting++){
+  const trial=rows.find(r=>r.setting===setting);loadModel();const actual=simulate(setting,50000,trial.seed,options);
+  for(const field of ['games','totalBet','totalPaid','net','peak','firstComplete','counts'])assert.deepEqual(actual[field],trial[field],'Setting '+setting+' / '+field);
+ }
+});
 
 test('15pt bells retain bell counters and payout sound',()=>{const source=fs.readFileSync('nova-game.js','utf8');const c=vm.createContext({A_TYPE_MODE:true,NovaNormal:{rare:{}},stats:{bellCount:0},PAYOUT_3PT_BELL_SOUND_SRC:'bell',BELL_PAYOUT_SOUND_OUTPUT_SCALE:.5,isPremiumBigBonusPieroSound:()=>false,currentSpin:null});for(const name of ['countRoleStat','payoutSoundSrcFor','payoutSoundScaleFor'])vm.runInContext(source.match(new RegExp('  function '+name+'\\([^]*?\\n  }'))[0],c);c.countRoleStat('BELL15');assert.equal(c.stats.bellCount,1);assert.equal(c.payoutSoundSrcFor('BELL15',15),'bell');assert.equal(c.payoutSoundScaleFor('BELL15',15),.5);});
