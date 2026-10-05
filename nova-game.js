@@ -576,6 +576,7 @@
   let autoPlay = false;
   let autoTimer = null;
   let autoWatchdogTimer = null;
+  let czIntroVoiceHold = null;
   let superSpeedActive = false;
   let superSpeedPending = false; // Finish the current spin before switching presentation speed.
   let superSpeedAllowed = false; // Authoritative server permission; never restored from local storage.
@@ -5721,6 +5722,7 @@
     stopDebugFastSpin("初期化のため高速停止");
     stopSpeedToBonus("初期化のためSPEED停止");
     if(!confirm("統計と現在の状態を初期化しますか？")) return;
+    clearCzIntroVoiceHold(true);
     NovaAim.reset();
     globalThis.NovaRushConfirm?.reset();
     NovaInitialDuo.clear();
@@ -5790,6 +5792,7 @@
   }
 
   function resetRuntimeForMorning(reason="朝一リセット"){
+    clearCzIntroVoiceHold(true);
     NovaAim.reset();
     globalThis.NovaRushConfirm?.reset();
     NovaInitialDuo.clear();
@@ -6952,6 +6955,7 @@
       stopAllReels();
       return;
     }
+    if(isCzIntroVoiceHolding())return;
     // A queued ending (including after a zone result/reload) consumes no BET or RNG.
     if(showCheckpointResultIfReady(true)){persistState();updateDisplay();scheduleNextAuto();return;}
     if(tryStockEntry())return;
@@ -7605,7 +7609,48 @@
   function playCzIntroBetVoice(resolved){
     if(debugFastSpinActive||speedToBonusActive||!NovaAim.isCzIntro(resolved)||resolved.czIntroVoicePlayed)return;
     resolved.czIntroVoicePlayed=true;
-    playOneShotSound('assets/media/nova/cz-entry-voice.wav',voiceOutputVolume(),{allowDuringPremiumConfirm:true});
+    clearCzIntroVoiceHold(true);
+    holdCzIntroVoice(playOneShotSound('assets/media/nova/cz-entry-voice.wav',voiceOutputVolume(),{allowDuringPremiumConfirm:true}));
+  }
+
+  function isCzIntroVoiceHolding(){
+    return !!czIntroVoiceHold&&!superSpeedActive;
+  }
+
+  function clearCzIntroVoiceHold(stopAudio=false){
+    const hold=czIntroVoiceHold;
+    if(!hold)return;
+    czIntroVoiceHold=null;
+    clearTimeout(hold.timer);
+    hold.audio.removeEventListener('ended',hold.finish);
+    hold.audio.removeEventListener('error',hold.fail);
+    hold.audio.removeEventListener('playing',hold.progress);
+    hold.audio.removeEventListener('timeupdate',hold.progress);
+    if(stopAudio)hold.audio.pause();
+  }
+
+  function holdCzIntroVoice(playback){
+    if(!playback)return;
+    const {audio,promise}=playback,hold={audio,timer:null};
+    czIntroVoiceHold=hold;
+    hold.finish=()=>{if(czIntroVoiceHold===hold)clearCzIntroVoiceHold();};
+    hold.fail=()=>{if(czIntroVoiceHold===hold)clearCzIntroVoiceHold(true);};
+    let lastTime=-1;
+    hold.progress=()=>{
+      if(czIntroVoiceHold!==hold)return;
+      if(audio.ended){hold.finish();return;}
+      if(audio.currentTime===lastTime)return;
+      lastTime=audio.currentTime;
+      clearTimeout(hold.timer);
+      // Wait for ended, allowing loading/buffering; abandon only stalled playback.
+      hold.timer=setTimeout(hold.fail,10000);
+    };
+    audio.addEventListener('ended',hold.finish);
+    audio.addEventListener('error',hold.fail);
+    audio.addEventListener('playing',hold.progress);
+    audio.addEventListener('timeupdate',hold.progress);
+    hold.progress();
+    if(promise&&typeof promise.then==='function')promise.then(hold.progress,hold.fail);
   }
 
   function playAimBetPresentation(resolved,rng=Math.random){
@@ -8773,6 +8818,7 @@
       prepareCharacterVoiceAudio(audio,src);
       const p = audio.play();
       if(p && typeof p.catch === "function") p.catch(()=>{});
+      return {audio,promise:p};
     }catch(e){}
   }
 

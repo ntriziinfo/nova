@@ -55,7 +55,7 @@ test('CZ intro plays once, returns to normal BGM, survives reload, and re-arms f
 });
 
 test('CZ entry voice plays once on the title BET, preserves reload guards and never changes lottery state',()=>{
- const sounds=[],c=vm.createContext({debugFastSpinActive:false,speedToBonusActive:false,voiceOutputVolume:()=>.6,playOneShotSound:(src,volume,options)=>sounds.push({src,volume,options})});
+ const sounds=[],c=vm.createContext({debugFastSpinActive:false,speedToBonusActive:false,voiceOutputVolume:()=>.6,clearCzIntroVoiceHold(){},holdCzIntroVoice(){},playOneShotSound:(src,volume,options)=>sounds.push({src,volume,options})});
  const aim=fs.readFileSync('nova-aim-presentation.js','utf8').match(/ function isCzIntro\([^]*?\n }/)[0];
  vm.runInContext(aim+'\nglobalThis.NovaAim={isCzIntro};\nMath.random=()=>{throw Error("Unexpected lottery draw");};\n'+html.match(/  function playCzIntroBetVoice\([^]*?\n  }/)[0],c);
  for(const phase of ['cz','strong_cz']){
