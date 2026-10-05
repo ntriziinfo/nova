@@ -7,18 +7,49 @@ const fn=name=>source.match(new RegExp('  function '+name+'\\([^]*?\\n  }'))[0];
 function setup(){
  const timers=new Map();let id=0;
  const button={classList:{toggle(){}},setAttribute(){}};
- const c=vm.createContext({superSpeedActive:false,superSpeedAllowed:false,superSpeedPermissionTimer:null,
+ const debugButton={setAttribute(){}},debugStatus={};
+ const c=vm.createContext({superSpeedActive:false,superSpeedAllowed:false,superSpeedDebugAllowed:false,superSpeedPermissionTimer:null,
+  SLOT_DEBUG_ENABLED:true,VERTEX_CONTROLLER_ENABLED:false,SLOT_PLAY_SESSION:false,
   normalState:{flow:{phase:'normal'}},session:{active:false},autoPlay:false,autoTimer:null,isSpinning:false,
   debugFastSpinActive:false,bonusEndBgmPlaying:false,bonusConfirmSoundPlaying:false,
-  canUsePlayState:()=>true,isCompleteTrialLocked:()=>false,$:()=>button,
+  canUsePlayState:()=>true,isCompleteTrialLocked:()=>false,$:id=>({superSpeedBtn:button,debugSuperSpeedBtn:debugButton,debugSuperSpeedStatus:debugStatus}[id]),
   setTimeout(fn,ms){timers.set(++id,{fn,ms});return id;},clearTimeout(id){timers.delete(id);},
   stopSpeedToBonus(){},stopAutoPlay(reason){c.autoPlay=false;c.superSpeedActive=false;c.reason=reason;},
   startAutoPlay(){c.autoPlay=true;},updateAutoUi(){},queueAutoStep(){},AUTO_SPEED_MULTIPLIER:2,MIN_SPIN_WAIT_MS:500,
   settings:{autoDelay:.5}});
  vm.runInContext(fs.readFileSync('nova-super-speed.js','utf8'),c);
- for(const name of ['superSpeedUnavailableReason','updateSuperSpeedUi','applySuperSpeedPermission','stopSuperSpeedIfNeeded','startSuperSpeed','autoScaledDelayMs','autoDelayMs','autoStopDelayMs','autoPollDelayMs'])vm.runInContext(fn(name),c);
- return {c,button,timers};
+ for(const name of ['canDebugSuperSpeed','hasSuperSpeedPermission','setSuperSpeedDebugPermission','superSpeedUnavailableReason','updateSuperSpeedUi','applySuperSpeedPermission','stopSuperSpeedIfNeeded','startSuperSpeed','autoScaledDelayMs','autoDelayMs','autoStopDelayMs','autoPollDelayMs'])vm.runInContext(fn(name),c);
+ return {c,button,debugButton,debugStatus,timers};
 }
+
+test('standalone debug permission enables the button without starting AUTO, and OFF stops it',()=>{
+ const {c,button,debugButton,timers}=setup();
+ c.setSuperSpeedDebugPermission(true);
+ assert.equal(button.disabled,false);assert.equal(c.autoPlay,false);assert.equal(c.superSpeedAllowed,false);
+ assert.equal(debugButton.textContent,'超ハイスピード使用許可：ON');assert.equal(timers.size,0);
+ c.startSuperSpeed();assert.equal(c.superSpeedActive,true);
+ c.applySuperSpeedPermission(false);assert.equal(c.superSpeedActive,true,'server state does not overwrite standalone debug permission');
+ c.setSuperSpeedDebugPermission(false);assert.equal(c.autoPlay,false);assert.equal(button.disabled,true);
+ assert.equal(setup().c.superSpeedDebugAllowed,false,'fresh page starts with debug permission OFF');
+});
+
+test('debug permission cannot bypass managed play or disabled debugging',()=>{
+ for(const flags of [{VERTEX_CONTROLLER_ENABLED:true},{SLOT_PLAY_SESSION:true},{SLOT_DEBUG_ENABLED:false}]){
+  const {c,button,debugButton}=setup();Object.assign(c,flags);
+  c.setSuperSpeedDebugPermission(true);assert.equal(c.superSpeedDebugAllowed,false);assert.equal(debugButton.disabled,true);assert.equal(button.disabled,true);
+  c.superSpeedDebugAllowed=true;assert.equal(c.hasSuperSpeedPermission(),false);
+  c.startSuperSpeed();assert.equal(c.autoPlay,false);
+  c.applySuperSpeedPermission(true);c.startSuperSpeed();assert.equal(c.superSpeedActive,true);
+  c.applySuperSpeedPermission(false);assert.equal(c.autoPlay,false);
+ }
+});
+
+test('debug permission still stops on AT confirmation and rejects starting during AT',()=>{
+ const {c,button}=setup();c.setSuperSpeedDebugPermission(true);c.startSuperSpeed();
+ c.session={active:true,bonusArtSets:1};assert.equal(c.stopSuperSpeedIfNeeded(),true);assert.equal(c.autoPlay,false);
+ c.startSuperSpeed();assert.equal(c.autoPlay,false);assert.equal(button.disabled,true);
+ c.session={active:false};c.normalState.flow.phase='art';c.startSuperSpeed();assert.equal(c.autoPlay,false);
+});
 test('permission is required, reversible, and expires if server is unreachable',()=>{
  const {c,button,timers}=setup();c.startSuperSpeed();assert.equal(c.autoPlay,false);
  c.applySuperSpeedPermission(true);assert.equal(button.disabled,false);c.startSuperSpeed();assert.equal(c.superSpeedActive,true);

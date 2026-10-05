@@ -578,6 +578,7 @@
   let autoWatchdogTimer = null;
   let superSpeedActive = false;
   let superSpeedAllowed = false; // Authoritative server permission; never restored from local storage.
+  let superSpeedDebugAllowed = false; // Standalone debugging only; cleared by page reload.
   let superSpeedPermissionTimer = null;
   let superSpeedNextBetAt = 0;
   let speedToBonusActive = false;
@@ -3929,6 +3930,7 @@
         autoPlay,
         superSpeedActive,
         superSpeedAllowed,
+        superSpeedDebugAllowed,
         forceResult,
         forcePremiumEffect,
         resultText: $("resultText") ? $("resultText").textContent : ""
@@ -8382,8 +8384,22 @@
     scheduleNextSpeedToBonus(0);
   }
 
+  function canDebugSuperSpeed(){
+    return SLOT_DEBUG_ENABLED && !VERTEX_CONTROLLER_ENABLED && !SLOT_PLAY_SESSION;
+  }
+
+  function hasSuperSpeedPermission(){
+    return superSpeedAllowed || (canDebugSuperSpeed() && superSpeedDebugAllowed);
+  }
+
+  function setSuperSpeedDebugPermission(allowed){
+    superSpeedDebugAllowed = canDebugSuperSpeed() && allowed === true;
+    stopSuperSpeedIfNeeded();
+    updateSuperSpeedUi();
+  }
+
   function superSpeedUnavailableReason(){
-    if(!superSpeedAllowed) return "管理画面で使用許可をONにしてください";
+    if(!hasSuperSpeedPermission()) return canDebugSuperSpeed() ? "デバッグで超ハイスピード使用許可をONにしてください" : "管理画面で使用許可をONにしてください";
     if(!canUsePlayState()) return "台の起動確認中です";
     if(isCompleteTrialLocked()) return "COMPLETE到達のため使用できません";
     if(NovaSuperSpeed.atConfirmed(normalState.flow,session,normalState)) return "AT確定後は使用できません";
@@ -8394,6 +8410,16 @@
   }
 
   function updateSuperSpeedUi(){
+    const debugBtn=$("debugSuperSpeedBtn");
+    if(debugBtn){
+      debugBtn.disabled=!canDebugSuperSpeed();
+      debugBtn.textContent=`超ハイスピード使用許可：${superSpeedDebugAllowed ? 'ON' : 'OFF'}`;
+      debugBtn.setAttribute('aria-pressed',String(superSpeedDebugAllowed));
+    }
+    const debugStatus=$("debugSuperSpeedStatus");
+    if(debugStatus)debugStatus.textContent=canDebugSuperSpeed()
+      ? (superSpeedDebugAllowed ? '使用許可ON：金色の「超」ボタンで開始。AT確定で停止します。再読み込みで許可OFF。' : '単独試打用。ONにすると金色の「超」ボタンが使えます。再読み込みで許可OFF。')
+      : '管理画面から起動した台は、管理画面で使用許可を切り替えてください。';
     const btn=$("superSpeedBtn");
     if(!btn)return;
     const reason=superSpeedUnavailableReason();
@@ -8408,14 +8434,14 @@
     superSpeedAllowed=allowed===true;
     // Fail closed if a hung request/background tab prevents fresh permission checks.
     if(superSpeedAllowed)superSpeedPermissionTimer=setTimeout(()=>applySuperSpeedPermission(false),15000);
-    if(!superSpeedAllowed && superSpeedActive)stopAutoPlay('管理画面の使用許可OFF、または接続切れのため超ハイスピード停止');
+    if(!hasSuperSpeedPermission() && superSpeedActive)stopAutoPlay('管理画面の使用許可OFF、または接続切れのため超ハイスピード停止');
     updateSuperSpeedUi();
   }
 
   function stopSuperSpeedIfNeeded(){
     if(!superSpeedActive)return false;
     const confirmed=NovaSuperSpeed.atConfirmed(normalState.flow,session,normalState);
-    if(!superSpeedAllowed || confirmed){
+    if(!hasSuperSpeedPermission() || confirmed){
       stopAutoPlay(confirmed?'AT確定のため超ハイスピード停止':'超ハイスピード使用許可OFF');
       return true;
     }
@@ -9323,6 +9349,7 @@
     });
     if($("debugFastStartBtn")) $("debugFastStartBtn").addEventListener("click", startDebugFastSpin);
     if($("debugFastStopBtn")) $("debugFastStopBtn").addEventListener("click", ()=>stopDebugFastSpin());
+    onClick("debugSuperSpeedBtn", ()=>setSuperSpeedDebugPermission(!superSpeedDebugAllowed));
     if(slumpSeekRange){
       slumpSeekRange.addEventListener("input", ()=>{
         const max = Number(slumpSeekRange.max) || 0;

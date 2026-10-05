@@ -653,6 +653,8 @@
 
       <div class="card secret" id="secretPanel">
         <h2>非公開デバッグ</h2>
+        <button class="subBtn" id="debugSuperSpeedBtn" type="button" disabled aria-pressed="false">超ハイスピード使用許可：OFF</button>
+        <p class="help" id="debugSuperSpeedStatus">単独試打用。ONにすると金色の「超」ボタンが使えます。再読み込みで許可OFF。</p>
         <details><summary>CZ設定</summary>
         <p>CZは突入時抽選＋レア小役で当選へ書き換え。成功でボーナスまたはAT、失敗で通常へ。CZ・強CZは15〜20G。第三停止で点灯・最終失敗を告知。突然の全員レインボーは当たり確定。</p>
         <label>CZ 最短G<input type="number" min="1" max="100" data-flow-config="czGames"></label>
@@ -776,7 +778,7 @@
 <script src="nova-spin-resume.js?v=20260929-spin-resume"></script>
 <script src="nova-play-access.js?v=20261001-save-recovery"></script>
 <script src="nova-history.js?v=20261001-history-performance"></script>
-<script src="nova-game.js?v=20261005-super-speed"></script>
+<script src="nova-game.js?v=20261006-super-speed-debug"></script>
 <button type="button" id="novaSymbolPreviewOpen">ノヴァ目を確認</button>
 <dialog id="novaSymbolPreview"><h2>ノヴァ目</h2><label>出目<select id="novaPatternSelect"><option value="WEAK_NOVA">弱ノヴァ目：左3連</option><option value="STRONG_MIDDLE">強ノヴァ目：左・中3連</option><option value="STRONG_RIGHT">強ノヴァ目：左・右3連</option><option value="SUPER_NOVA" selected>スーパーノヴァ目：全リール3連</option></select></label><p id="novaPatternDescription"></p><div id="novaSymbolPreviewGrid"></div><p>出目の確認用です。通常時のスーパーはBIG・フリーズ各50%。ボーナス中は対象外。弱・強と自然出現率は未設定。</p><button type="button" id="novaSymbolPreviewClose">閉じる</button></dialog>
 </body>
