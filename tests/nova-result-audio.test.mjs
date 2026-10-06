@@ -36,7 +36,7 @@ test('normal SUPER NOVA plays once at SFX volume; reverse freeze omits this extr
  }
 });
 test('eyecatch holds next spin until ended, without a fixed release timer',()=>{
- let audio;const c=vm.createContext({superSpeedActive:false,debugFastSpinActive:false,speedToBonusActive:false,A_TYPE_MODE:true,SEVEN_CONFIRM_SOUND_SRC:'seven',oneShotSoundCache:new Map(),bonusConfirmSoundPlaying:false,bonusConfirmSoundAudio:null,bonusConfirmSoundTimer:null,updateAutoUi(){},soundOutputVolume:(src,v)=>v,prepareCharacterVoiceAudio(){},setTimeout(){throw Error('unexpected timeout')},clearTimeout(){},Audio:class{constructor(src){audio=this;this.src=src;}pause(){}getAttribute(){return this.src;}play(){return Promise.resolve();}}});
+ let audio;const c=vm.createContext({watchPlaybackProgress:()=>()=>{},superSpeedActive:false,debugFastSpinActive:false,speedToBonusActive:false,A_TYPE_MODE:true,SEVEN_CONFIRM_SOUND_SRC:'seven',oneShotSoundCache:new Map(),bonusConfirmSoundPlaying:false,bonusConfirmSoundAudio:null,bonusConfirmSoundTimer:null,updateAutoUi(){},soundOutputVolume:(src,v)=>v,prepareCharacterVoiceAudio(){},setTimeout(){throw Error('unexpected timeout')},clearTimeout(){},Audio:class{constructor(src){audio=this;this.src=src;}pause(){}getAttribute(){return this.src;}play(){return Promise.resolve();}}});
  vm.runInContext(fn('clearBonusConfirmSoundLock')+'\n'+fn('playLockedBonusConfirmSound'),c);
  c.playLockedBonusConfirmSound('assets/media/nova/result-eyecatch.wav',.5);
  assert.equal(c.bonusConfirmSoundPlaying,true);assert.equal(audio.volume,.5);

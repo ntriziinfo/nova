@@ -101,7 +101,7 @@ globalThis.NovaAim=(()=>{
   host.dataset.aimActive='true';video.hidden=false;video.currentTime=0;layout();
   let started=false;
   const start=()=>{
-   if(started||token!==winToken)return;started=true;pendingStart=null;video.onplaying=null;video.onerror=null;
+   if(started||token!==winToken)return;started=true;pendingStart=null;clearTimeout(winTimer);video.onplaying=null;video.onerror=null;
    playSound();
    if(playDelayedVoice)winVoiceTimer=setTimeout(()=>{winVoiceTimer=null;if(token===winToken)playDelayedVoice();},2000);
    winTimer=setTimeout(()=>{
@@ -111,6 +111,9 @@ globalThis.NovaAim=(()=>{
    },3000);
   };
   pendingStart=start;video.onplaying=start;video.onerror=start;
+  // A buffering video can leave play() pending without playing or error.
+  // Keep the existing sound/three-second presentation even on a failed load.
+  winTimer=setTimeout(start,10000);
   video.play().catch(start);
   // Hidden muted videos may defer playback until visible. Keep the award's
   // sound and three-second input lock progressing independently of that frame.

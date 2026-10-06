@@ -1253,6 +1253,7 @@
       bonusEndBgmTimer = null;
     }
     if(bonusEndBgmAudio){
+      bonusEndBgmAudio.novaCancelPlaybackWatch?.();
       bonusEndBgmAudio.onended = null;
       bonusEndBgmAudio.onerror = null;
       try{ bonusEndBgmAudio.pause(); }catch(e){}
@@ -1331,12 +1332,13 @@
       }catch(e){}
     }
     const finish = ()=>{
-      if(!bonusEndBgmPlaying) return;
+      if(!bonusEndBgmPlaying || bonusEndBgmAudio !== audio) return;
       if(bonusEndBgmTimer){
         clearTimeout(bonusEndBgmTimer);
         bonusEndBgmTimer = null;
       }
       if(bonusEndBgmAudio){
+        bonusEndBgmAudio.novaCancelPlaybackWatch?.();
         bonusEndBgmAudio.onended = null;
         bonusEndBgmAudio.onerror = null;
         try{ bonusEndBgmAudio.pause(); }catch(e){}
@@ -1356,6 +1358,7 @@
     }
     audio.onended = finish;
     audio.onerror = finish;
+    audio.novaCancelPlaybackWatch = watchPlaybackProgress(audio,finish);
 
     try{
       const p = audio.play();
@@ -7849,7 +7852,7 @@
   var oumaReverseAudio=null,oumaReverseLoadTimer=null,oumaIntroAudio=null,oumaStoppedTops=[0,0,0];
   function clearOumaReverseAudio(){
     clearTimeout(oumaReverseLoadTimer);oumaReverseLoadTimer=null;
-    if(oumaReverseAudio){const audio=oumaReverseAudio;oumaReverseAudio=null;audio.onerror=null;audio.onended=null;audio.onplaying=null;audio.pause();try{audio.removeAttribute("src");audio.load();}catch(e){}}
+    if(oumaReverseAudio){const audio=oumaReverseAudio;oumaReverseAudio=null;audio.novaCancelPlaybackWatch?.();audio.onerror=null;audio.onended=null;audio.onplaying=null;audio.pause();try{audio.removeAttribute("src");audio.load();}catch(e){}}
   }
   function startOumaReverseAudio(spin){
     if(!spin?.resolved?.oumaFreeze)return;
@@ -7857,7 +7860,7 @@
     const audio=new Audio('assets/media/nova/ouma-reverse-v2.wav');oumaReverseAudio=audio;
     audio.preload='auto';audio.volume=sfxOutputVolumeForSource(SFX_OUTPUT_SCALE,'assets/media/nova/ouma-reverse-v2.wav');
     let started=false,fallback=null;
-    const useFallback=()=>{if(fallback===null)fallback={time:performance.now(),offset:audio.currentTime||0};};
+    const useFallback=()=>{audio.novaCancelPlaybackWatch?.();if(fallback===null)fallback={time:performance.now(),offset:audio.currentTime||0};};
     const clock=()=>fallback?(performance.now()-fallback.time)/1000+fallback.offset:audio.currentTime;
     const begin=()=>{
       if(started||currentSpin!==spin||oumaReverseAudio!==audio)return;
@@ -7868,6 +7871,10 @@
       },Math.max(0,oumaStoppedTops[i])));
     };
     audio.onerror=()=>{useFallback();begin();};
+    audio.novaCancelPlaybackWatch=watchPlaybackProgress(audio,()=>{
+      if(oumaReverseAudio!==audio)return;
+      useFallback();begin();audio.onended?.();
+    });
     oumaReverseLoadTimer=setTimeout(()=>{if(!started){audio.pause();useFallback();begin();}},3000);
     const play=audio.play();
     if(play?.then)play.then(()=>{if(oumaReverseAudio!==audio||currentSpin!==spin){audio.pause();return;}if(fallback)audio.pause();begin();}).catch(()=>{if(oumaReverseAudio!==audio||currentSpin!==spin)return;useFallback();begin();});else begin();
@@ -8235,7 +8242,7 @@
     if(autoWatchdogTimer) return;
     autoWatchdogTimer = setInterval(()=>{
       if(!autoPlay) return;
-      if(autoTimer || isSpinning || bonusEndBgmPlaying || bonusConfirmSoundPlaying || pendingAtStartTimer) return;
+      if(autoTimer || bonusEndBgmPlaying || bonusConfirmSoundPlaying || pendingAtStartTimer) return;
       if(!canPlayCompleteTrial({allowOumaPresentation:true})) return;
       queueAutoStep(autoScaledDelayMs(100));
     }, 500);
@@ -8274,6 +8281,10 @@
     currentSpin.autoStopAtStart = true;
     currentSpin.manualBonusStop = false;
     stopAllReels();
+    // A stop can be rejected by a transient lock. Retry only after this whole
+    // sequence has had time to land, without replaying stopped reels or BETs.
+    const spin=currentSpin;
+    setTimeout(()=>{if(currentSpin===spin)spin.autoStopTakeoverScheduled=false;},1500);
     return true;
   }
 
@@ -8849,6 +8860,22 @@
     }catch(e){}
   }
 
+  function watchPlaybackProgress(audio,onStall){
+    let cancelled=false,timer=null,lastTime=Number(audio.currentTime)||0,lastProgress=performance.now();
+    const cancel=()=>{cancelled=true;clearTimeout(timer);};
+    const check=()=>{
+      if(cancelled)return;
+      const time=Number(audio.currentTime)||0,now=performance.now();
+      if(time!==lastTime){lastTime=time;lastProgress=now;}
+      // Healthy playback always waits for its real end, regardless of length.
+      // Only loading/interruption with no progress gets a bounded recovery.
+      if(audio.ended || now-lastProgress>=10000){cancel();audio.pause();onStall();return;}
+      timer=setTimeout(check,1000);
+    };
+    timer=setTimeout(check,1000);
+    return cancel;
+  }
+
   function clearBonusConfirmSoundLock(){
     bonusConfirmSoundPlaying = false;
     if(bonusConfirmSoundTimer){
@@ -8856,6 +8883,7 @@
       bonusConfirmSoundTimer = null;
     }
     if(bonusConfirmSoundAudio){
+      bonusConfirmSoundAudio.novaCancelPlaybackWatch?.();
       bonusConfirmSoundAudio.onended = null;
       bonusConfirmSoundAudio.onerror = null;
       bonusConfirmSoundAudio.playbackRate = 1;
@@ -8949,6 +8977,7 @@
       audio.onended = finish;
       audio.onerror = finish;
       audio.playbackRate=superSpeedActive?6:1;
+      audio.novaCancelPlaybackWatch = watchPlaybackProgress(audio,finish);
 
       const p = audio.play();
       if(p && typeof p.catch === "function") p.catch(()=>setTimeout(finish, 250));

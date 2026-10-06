@@ -196,3 +196,23 @@ test('opening sortie freeze and Ouma freeze retain ordinary AUTO until all AT wo
  c.oumaPresentation=null;c.runAutoStep();assert.equal(spins,6);
  c.normalState.flow={phase:'normal'};c.runAutoStep();assert.equal(c.superSpeedActive,true);assert.equal(spins,7);
 });
+
+test('watchdog recovers a spinning bonus with no remaining AUTO callback',()=>{
+ const {c}=setup();let watchdog,queued=0;
+ Object.assign(c,{autoPlay:true,isSpinning:true,autoWatchdogTimer:null,pendingAtStartTimer:null,
+  setInterval(cb){watchdog=cb;return 1;},canPlayCompleteTrial:()=>true,queueAutoStep(){queued++;}});
+ vm.runInContext(fn('startAutoWatchdog'),c);c.startAutoWatchdog();watchdog();
+ assert.equal(queued,1,'an in-flight spin must still be polled when its stop callbacks were missed');
+ c.autoPlay=false;watchdog();assert.equal(queued,1,'manual STOP stays stopped');
+});
+
+test('AUTO retries a rejected stop sequence without duplicating in-flight stops',()=>{
+ const {c,timers}=setup();let stops=0;
+ Object.assign(c,{autoPlay:true,isSpinning:true,spinCanStop:true,currentSpin:{resolved:{},stopped:[false,false,false]},
+  isPremiumBigConfirmStopLocked:()=>false,stopAllReels(){stops++;}});
+ vm.runInContext(fn('requestAutoStopCurrentSpin'),c);
+ c.requestAutoStopCurrentSpin();c.requestAutoStopCurrentSpin();assert.equal(stops,1);
+ assert.equal(timers.size,1,'release the takeover latch so a missed stop can be retried');
+ [...timers.values()][0].fn();c.requestAutoStopCurrentSpin();assert.equal(stops,2);
+ c.currentSpin.resolved.oumaFreeze=true;[...timers.values()].at(-1).fn();c.requestAutoStopCurrentSpin();assert.equal(stops,2);
+});

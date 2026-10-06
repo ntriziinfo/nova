@@ -67,7 +67,7 @@ test('reset cancels pending playback and result callbacks',()=>{
 test('delayed voice starts two seconds after video playback, once, and reset cancels it',()=>{
  const t=setup();let sounds=0,voices=0;
  t.aim.win(()=>sounds++,'nebula',{},()=>voices++);
- assert.equal(t.timers.size,0);assert.equal(voices,0);
+ assert.equal(t.timers.size,1);assert.equal(voices,0); // Loading watchdog, not the voice timer.
  const video=t.elements.find(e=>e.src==='assets/media/nova/aim/nebula-win.mp4'),start=video.onplaying;
  start();start();assert.equal(sounds,1);
  const voiceTimers=[...t.timers.values()].filter(timer=>timer.ms===2000);
@@ -99,6 +99,17 @@ test('hidden seven and nebula wins keep the full lock without waiting for video 
 test('reset while waiting for visible playback cannot start an old sound when hidden',()=>{
  const t=setup();let sounds=0;t.aim.win(()=>sounds++);t.aim.reset();t.hide();
  assert.equal(sounds,0);assert.equal(t.aim.busy,false);assert.equal(t.timers.size,0);
+});
+
+test('a visible win whose video never starts releases AUTO after a bounded loading wait',()=>{
+ const t=setup();let sounds=0,results=0;
+ t.aim.win(()=>sounds++);t.aim.afterWin(()=>results++);
+ const video=t.elements.at(-1),lateStart=video.onplaying;
+ const loading=[...t.timers.values()].find(timer=>timer.ms===10000);
+ assert.ok(loading,'missing playing/error events must not lock AUTO forever');
+ loading.fn();assert.equal(sounds,1);assert.equal(results,0);
+ [...t.timers.values()].find(timer=>timer.ms===3000).fn();
+ assert.equal(t.aim.busy,false);assert.equal(results,1);lateStart();assert.equal(sounds,1);
 });
 test('consecutive wins create independent nonlooping audio instances',()=>{
  const html=readGameSource(),audios=[];
