@@ -1,0 +1,649 @@
+{
+  "proposalOnly": false,
+  "createdAt": "2026-10-07T03:06:18.141Z",
+  "definitions": {
+    "games": "各設定・各リセット試行の実回転上限50,000G。ボーナスを含み、0G連は回転に含めない。",
+    "win": "終了時の累計差枚が0ptを超えた試行の割合。",
+    "reach": "50,000G以内に累計差枚が一度でも＋10,000ptに到達した割合。単発ATの獲得払い出しではない。",
+    "stop": "累計差枚＋10,000pt到達でコンプリート停止。未到達は50,000Gで終了。",
+    "rtp": "全試行の実払い出し合計 ÷ 実BET合計。未消化ATpt・未消化ストックを含めない。",
+    "method": "現行版の設定別CZ当選係数／弱レア役のAT特化当選係数のみを変更。100回の感度比較と300回の調整試算後、別シードの各設定1,000回で検証。再調整した設定は、さらに別シードの1,000回で検証し、その設定の集計を差し替える。現行版の比較値は既存の各設定500回。",
+    "interval": "95%区間は独立リセット試行間のばらつきによる統計誤差。モデルや実機操作との差は含まない。",
+    "target": "設定1は94%を中心値、設定2〜6は指定された範囲の機械割を優先。勝率・万pt率は調整結果として報告。"
+  },
+  "gamesPerTrial": 50000,
+  "trialsPerSetting": 1000,
+  "options": {
+    "rng": "xoshiro128",
+    "exactGames": true,
+    "completeLimitPt": 10000,
+    "stopAtComplete": true,
+    "rareSortie": true,
+    "atBetRefund": true
+  },
+  "sourceHashes": {
+    "nova-tuning.js": "4a1bb10a6052b77e68c5eda5a422393df5e03c2157c63103cdcab42963015f2f",
+    "nova-decrement.js": "a58f72c810431683b056905bb01841fec90bcd3bb0c87c7be3ab4f0f1b6419ea",
+    "nova-art.js": "1f6a1d7c5a2f668b189c9d78ce4712a2cf7a694dd6af19f50b6c2ae17f353701",
+    "nova-balance.js": "e05afcc9fab87cba2e32eb112871eb176737f5dd94afb41cf53e18b51af22efa",
+    "nova-flow.js": "a01ae6c12fcf577c4cd5d7e3d099afad55aaad95930088763bc61ef06238fd19",
+    "nova-normal.js": "2f0f122034725ad8a1e3234abf395600fbadce0ece3a405c7c4ac0c77f28f789",
+    "nova-progress.js": "47d1cfe8c782d18c030216cd598b14cddb3d203e9754a8060418317c74887323",
+    "scripts/zone-v2-model.mjs": "9886d245e12ca052109479f32856eebc5517e9c20d377482ff26cc710c9d4c39",
+    "scripts/zone-v2-rng.mjs": "0e5424d7a743850591b4029b730d93267c986633a0be83942a69a19b18c8fcce"
+  },
+  "variantHashes": {
+    "s1-polished": {
+      "nova-tuning.js": "4a1bb10a6052b77e68c5eda5a422393df5e03c2157c63103cdcab42963015f2f",
+      "nova-decrement.js": "a58f72c810431683b056905bb01841fec90bcd3bb0c87c7be3ab4f0f1b6419ea",
+      "nova-art.js": "32e7d42daac9b2482651c653f81c9ff1146e36b5eb310f7b0684b48e0b7c1c07",
+      "nova-balance.js": "41f199410f1afddaddfc69c29feda1968e550bc2f1768dc66885acfbfa8b2176",
+      "nova-flow.js": "2b4c6587f123b27c2ed837c9a7b955e4478c2768dce6ca6b794ab5a0de3d4c4e",
+      "nova-normal.js": "458ad142f0eee3fd562311d67451d9615dd1acf1915cc7fd634b3a0e1bf1b76e",
+      "nova-progress.js": "47d1cfe8c782d18c030216cd598b14cddb3d203e9754a8060418317c74887323"
+    },
+    "s2-refined": {
+      "nova-tuning.js": "4a1bb10a6052b77e68c5eda5a422393df5e03c2157c63103cdcab42963015f2f",
+      "nova-decrement.js": "a58f72c810431683b056905bb01841fec90bcd3bb0c87c7be3ab4f0f1b6419ea",
+      "nova-art.js": "aa3da0916473d6213a8b78ff04f2ea14d10b9670328d8e79add08524c0dabc30",
+      "nova-balance.js": "41f199410f1afddaddfc69c29feda1968e550bc2f1768dc66885acfbfa8b2176",
+      "nova-flow.js": "2b4c6587f123b27c2ed837c9a7b955e4478c2768dce6ca6b794ab5a0de3d4c4e",
+      "nova-normal.js": "9c2dece355e05dd32e829ed55bec190a89a30ab8099c64c6fc0fc6a5feb79191",
+      "nova-progress.js": "47d1cfe8c782d18c030216cd598b14cddb3d203e9754a8060418317c74887323"
+    },
+    "s3-refined": {
+      "nova-tuning.js": "4a1bb10a6052b77e68c5eda5a422393df5e03c2157c63103cdcab42963015f2f",
+      "nova-decrement.js": "a58f72c810431683b056905bb01841fec90bcd3bb0c87c7be3ab4f0f1b6419ea",
+      "nova-art.js": "7f428933f2a61d01bf88ab4310ab7fd61cb0e32c6ec795e053350fb1d87f4643",
+      "nova-balance.js": "41f199410f1afddaddfc69c29feda1968e550bc2f1768dc66885acfbfa8b2176",
+      "nova-flow.js": "2b4c6587f123b27c2ed837c9a7b955e4478c2768dce6ca6b794ab5a0de3d4c4e",
+      "nova-normal.js": "606883e63babb534cb4defd3563288bb29b1b9ba2e900fbb904ad891980cc4c4",
+      "nova-progress.js": "47d1cfe8c782d18c030216cd598b14cddb3d203e9754a8060418317c74887323"
+    },
+    "s4-final": {
+      "nova-tuning.js": "4a1bb10a6052b77e68c5eda5a422393df5e03c2157c63103cdcab42963015f2f",
+      "nova-decrement.js": "a58f72c810431683b056905bb01841fec90bcd3bb0c87c7be3ab4f0f1b6419ea",
+      "nova-art.js": "aa3da0916473d6213a8b78ff04f2ea14d10b9670328d8e79add08524c0dabc30",
+      "nova-balance.js": "41f199410f1afddaddfc69c29feda1968e550bc2f1768dc66885acfbfa8b2176",
+      "nova-flow.js": "2b4c6587f123b27c2ed837c9a7b955e4478c2768dce6ca6b794ab5a0de3d4c4e",
+      "nova-normal.js": "558c3041ea8b1fe286044c8b465a8033fe6ba0887724cfc1be4e7a8915bf0800",
+      "nova-progress.js": "47d1cfe8c782d18c030216cd598b14cddb3d203e9754a8060418317c74887323"
+    },
+    "s5-final": {
+      "nova-tuning.js": "4a1bb10a6052b77e68c5eda5a422393df5e03c2157c63103cdcab42963015f2f",
+      "nova-decrement.js": "a58f72c810431683b056905bb01841fec90bcd3bb0c87c7be3ab4f0f1b6419ea",
+      "nova-art.js": "ff21da16c5fb1bbfc4bff1cbafbc365560f8e8e781cdcc49afd8ba7a9a8493ce",
+      "nova-balance.js": "41f199410f1afddaddfc69c29feda1968e550bc2f1768dc66885acfbfa8b2176",
+      "nova-flow.js": "2b4c6587f123b27c2ed837c9a7b955e4478c2768dce6ca6b794ab5a0de3d4c4e",
+      "nova-normal.js": "606883e63babb534cb4defd3563288bb29b1b9ba2e900fbb904ad891980cc4c4",
+      "nova-progress.js": "47d1cfe8c782d18c030216cd598b14cddb3d203e9754a8060418317c74887323"
+    },
+    "s6-refined": {
+      "nova-tuning.js": "4a1bb10a6052b77e68c5eda5a422393df5e03c2157c63103cdcab42963015f2f",
+      "nova-decrement.js": "a58f72c810431683b056905bb01841fec90bcd3bb0c87c7be3ab4f0f1b6419ea",
+      "nova-art.js": "aa3da0916473d6213a8b78ff04f2ea14d10b9670328d8e79add08524c0dabc30",
+      "nova-balance.js": "41f199410f1afddaddfc69c29feda1968e550bc2f1768dc66885acfbfa8b2176",
+      "nova-flow.js": "2b4c6587f123b27c2ed837c9a7b955e4478c2768dce6ca6b794ab5a0de3d4c4e",
+      "nova-normal.js": "9db2252f9350eef94839ca97b92ac017ab6eda40c18437ebe4cbd61ac620d498",
+      "nova-progress.js": "47d1cfe8c782d18c030216cd598b14cddb3d203e9754a8060418317c74887323"
+    }
+  },
+  "plan": {
+    "s1-polished": {
+      "setting": 1,
+      "cz": 1.04,
+      "zone": 1.17
+    },
+    "s2-refined": {
+      "setting": 2,
+      "cz": 1.13,
+      "zone": 1
+    },
+    "s3-refined": {
+      "setting": 3,
+      "cz": 1,
+      "zone": 1.14
+    },
+    "s4-final": {
+      "setting": 4,
+      "cz": 1.04,
+      "zone": 1
+    },
+    "s5-final": {
+      "setting": 5,
+      "cz": 1,
+      "zone": 1.11
+    },
+    "s6-refined": {
+      "setting": 6,
+      "cz": 1.225,
+      "zone": 1
+    }
+  },
+  "settings": [
+    {
+      "setting": 1,
+      "target": {
+        "aim": 94
+      },
+      "validationBatch": "polish",
+      "validationSeed": "rtp-final-s1-20261007",
+      "changes": {
+        "setting": 1,
+        "passed": true,
+        "games": 50000,
+        "changes": {
+          "czMultiplier": 1.04,
+          "weakAtZoneMultiplier": 1.17
+        },
+        "normalLowCzBefore": 0.042293671162670944,
+        "normalLowCzAfter": 0.04398541800917778,
+        "weakAtZoneBefore": 0.1275,
+        "weakAtZoneAfter": 0.149175
+      },
+      "before": {
+        "trials": 500,
+        "rtp": 0.9070265472017265,
+        "win": 0.22,
+        "reach": 0.054
+      },
+      "after": {
+        "n": 1000,
+        "rtp": 0.9432678231604955,
+        "rtpCi95": [
+          0.9367975207179694,
+          0.9497381256030216
+        ],
+        "win": 0.321,
+        "winCi95": [
+          0.29279598173175475,
+          0.3505740479621731
+        ],
+        "reach": 0.095,
+        "reachCi95": [
+          0.07834495566471479,
+          0.11475483219026154
+        ],
+        "meanNet": -4780.706,
+        "median": -4413.5,
+        "p10": -17588.3,
+        "p90": 8402.200000000008,
+        "meanGames": 48132.878,
+        "normalAtDenominator": 791.9070293215217,
+        "normalCzDenominator": 448.95687885010267,
+        "atZoneDenominator": 147.45642152493932,
+        "sortieDenominator": 6965.684225759768
+      },
+      "rtpDeltaPoints": 3.6241275958769026,
+      "winDeltaPoints": 10.100000000000001,
+      "reachDeltaPoints": 4.1000000000000005
+    },
+    {
+      "setting": 2,
+      "target": {
+        "min": 96,
+        "max": 98,
+        "aim": 97
+      },
+      "validationBatch": "refinement",
+      "validationSeed": "rtp-confirm-20261007",
+      "changes": {
+        "setting": 2,
+        "passed": true,
+        "games": 50000,
+        "changes": {
+          "czMultiplier": 1.13,
+          "weakAtZoneMultiplier": 1
+        },
+        "normalLowCzBefore": 0.0701376768059037,
+        "normalLowCzAfter": 0.07925557479067118,
+        "weakAtZoneBefore": 0.15,
+        "weakAtZoneAfter": 0.15
+      },
+      "before": {
+        "trials": 500,
+        "rtp": 0.9418740400034055,
+        "win": 0.294,
+        "reach": 0.064
+      },
+      "after": {
+        "n": 1000,
+        "rtp": 0.9599993577373014,
+        "rtpCi95": [
+          0.9540244771327157,
+          0.9659742383418871
+        ],
+        "win": 0.371,
+        "winCi95": [
+          0.3416057971728489,
+          0.40138154266243997
+        ],
+        "reach": 0.101,
+        "reachCi95": [
+          0.08382372191011535,
+          0.12123014316182433
+        ],
+        "meanNet": -3375.62,
+        "median": -3011.5,
+        "p10": -14257.8,
+        "p90": 10000,
+        "meanGames": 48304.874,
+        "normalAtDenominator": 652.4710347661064,
+        "normalCzDenominator": 296.8274560763302,
+        "atZoneDenominator": 145.20355215827337,
+        "sortieDenominator": 10186.603542808942
+      },
+      "rtpDeltaPoints": 1.8125317733895918,
+      "winDeltaPoints": 7.700000000000001,
+      "reachDeltaPoints": 3.7000000000000006
+    },
+    {
+      "setting": 3,
+      "target": {
+        "min": 97,
+        "max": 98,
+        "aim": 97.5
+      },
+      "validationBatch": "refinement",
+      "validationSeed": "rtp-confirm-20261007",
+      "changes": {
+        "setting": 3,
+        "passed": true,
+        "games": 50000,
+        "changes": {
+          "czMultiplier": 1,
+          "weakAtZoneMultiplier": 1.14
+        },
+        "normalLowCzBefore": 0.09255186624768863,
+        "normalLowCzAfter": 0.09255186624768863,
+        "weakAtZoneBefore": 0.09,
+        "weakAtZoneAfter": 0.10259999999999998
+      },
+      "before": {
+        "trials": 500,
+        "rtp": 0.9664391719377061,
+        "win": 0.402,
+        "reach": 0.124
+      },
+      "after": {
+        "n": 1000,
+        "rtp": 0.9793420765374434,
+        "rtpCi95": [
+          0.9732197065217807,
+          0.9854644465531062
+        ],
+        "win": 0.447,
+        "winCi95": [
+          0.4164454520911983,
+          0.47796019915895915
+        ],
+        "reach": 0.151,
+        "reachCi95": [
+          0.13014576187205482,
+          0.1745254133412458
+        ],
+        "meanNet": -1705.412,
+        "median": -1337,
+        "p10": -12945.8,
+        "p90": 10003,
+        "meanGames": 47356.275,
+        "normalAtDenominator": 588.049103065288,
+        "normalCzDenominator": 260.26376469446825,
+        "atZoneDenominator": 209.72926727999825,
+        "sortieDenominator": 6962.110408703323
+      },
+      "rtpDeltaPoints": 1.2902904599737308,
+      "winDeltaPoints": 4.499999999999998,
+      "reachDeltaPoints": 2.6999999999999997
+    },
+    {
+      "setting": 4,
+      "target": {
+        "min": 100,
+        "max": 101,
+        "aim": 100.5
+      },
+      "validationBatch": "validation",
+      "validationSeed": "rtp-validation-20261007",
+      "changes": {
+        "setting": 4,
+        "passed": true,
+        "games": 50000,
+        "changes": {
+          "czMultiplier": 1.04,
+          "weakAtZoneMultiplier": 1
+        },
+        "normalLowCzBefore": 0.10851501351789734,
+        "normalLowCzAfter": 0.11285561405861325,
+        "weakAtZoneBefore": 0.12,
+        "weakAtZoneAfter": 0.12
+      },
+      "before": {
+        "trials": 500,
+        "rtp": 0.9931927156565139,
+        "win": 0.512,
+        "reach": 0.138
+      },
+      "after": {
+        "n": 1000,
+        "rtp": 1.001646069061893,
+        "rtpCi95": [
+          0.9960958428133668,
+          1.007196295310419
+        ],
+        "win": 0.521,
+        "winCi95": [
+          0.4900158579684162,
+          0.5518234122909556
+        ],
+        "reach": 0.173,
+        "reachCi95": [
+          0.15081885011185353,
+          0.19768394156364588
+        ],
+        "meanNet": 135.144,
+        "median": 466.5,
+        "p10": -9547.9,
+        "p90": 10003,
+        "meanGames": 47143.276,
+        "normalAtDenominator": 524.5683772165503,
+        "normalCzDenominator": 220.3427684711691,
+        "atZoneDenominator": 183.4524330854317,
+        "sortieDenominator": 9971.0820642978
+      },
+      "rtpDeltaPoints": 0.8453353405379005,
+      "winDeltaPoints": 0.9000000000000008,
+      "reachDeltaPoints": 3.4999999999999973
+    },
+    {
+      "setting": 5,
+      "target": {
+        "min": 102,
+        "max": 103,
+        "aim": 102.5
+      },
+      "validationBatch": "validation",
+      "validationSeed": "rtp-validation-20261007",
+      "changes": {
+        "setting": 5,
+        "passed": true,
+        "games": 36792,
+        "changes": {
+          "czMultiplier": 1,
+          "weakAtZoneMultiplier": 1.11
+        },
+        "normalLowCzBefore": 0.06659396740217079,
+        "normalLowCzAfter": 0.06659396740217079,
+        "weakAtZoneBefore": 0.15,
+        "weakAtZoneAfter": 0.1665
+      },
+      "before": {
+        "trials": 500,
+        "rtp": 1.0054101637493436,
+        "win": 0.606,
+        "reach": 0.162
+      },
+      "after": {
+        "n": 1000,
+        "rtp": 1.0210320632129903,
+        "rtpCi95": [
+          1.0146072844987337,
+          1.027456841927247
+        ],
+        "win": 0.669,
+        "winCi95": [
+          0.6392355125320964,
+          0.6974709957457036
+        ],
+        "reach": 0.238,
+        "reachCi95": [
+          0.21263910590157722,
+          0.26536618895769143
+        ],
+        "meanNet": 1682.914,
+        "median": 4110.5,
+        "p10": -10895.6,
+        "p90": 10005,
+        "meanGames": 45930.292,
+        "normalAtDenominator": 591.309660834868,
+        "normalCzDenominator": 280.1271413641114,
+        "atZoneDenominator": 141.15485670515804,
+        "sortieDenominator": 6936.015101177892
+      },
+      "rtpDeltaPoints": 1.5621899463646782,
+      "winDeltaPoints": 6.300000000000006,
+      "reachDeltaPoints": 7.599999999999999
+    },
+    {
+      "setting": 6,
+      "target": {
+        "min": 107,
+        "max": 108,
+        "aim": 107.5
+      },
+      "validationBatch": "refinement",
+      "validationSeed": "rtp-confirm-20261007",
+      "changes": {
+        "setting": 6,
+        "passed": true,
+        "games": 29333,
+        "changes": {
+          "czMultiplier": 1.225,
+          "weakAtZoneMultiplier": 1
+        },
+        "normalLowCzBefore": 0.03404332949761881,
+        "normalLowCzAfter": 0.04170307863458305,
+        "weakAtZoneBefore": 0.15,
+        "weakAtZoneAfter": 0.15
+      },
+      "before": {
+        "trials": 500,
+        "rtp": 1.0477311852548823,
+        "win": 0.722,
+        "reach": 0.27
+      },
+      "after": {
+        "n": 1000,
+        "rtp": 1.075515433538825,
+        "rtpCi95": [
+          1.069602903867784,
+          1.0814279632098662
+        ],
+        "win": 0.831,
+        "winCi95": [
+          0.8065158387363724,
+          0.852950754399437
+        ],
+        "reach": 0.359,
+        "reachCi95": [
+          0.3298590732294146,
+          0.3892201121719476
+        ],
+        "meanNet": 5041.437,
+        "median": 6615.5,
+        "p10": -2826.2999999999997,
+        "p90": 10007,
+        "meanGames": 43254.102,
+        "normalAtDenominator": 597.7883460671468,
+        "normalCzDenominator": 296.5632682144766,
+        "atZoneDenominator": 143.46248673081533,
+        "sortieDenominator": 10264.381110583769
+      },
+      "rtpDeltaPoints": 2.778424828394277,
+      "winDeltaPoints": 10.899999999999999,
+      "reachDeltaPoints": 8.899999999999997
+    }
+  ],
+  "verification": {
+    "proposalOnly": true,
+    "passed": true,
+    "sourceHashes": {
+      "nova-tuning.js": "4a1bb10a6052b77e68c5eda5a422393df5e03c2157c63103cdcab42963015f2f",
+      "nova-decrement.js": "a58f72c810431683b056905bb01841fec90bcd3bb0c87c7be3ab4f0f1b6419ea",
+      "nova-art.js": "3969c749b403680084633b3bdacecf5460b0d63e32d86bc60b4b4abfeba27cd5",
+      "nova-balance.js": "41f199410f1afddaddfc69c29feda1968e550bc2f1768dc66885acfbfa8b2176",
+      "nova-flow.js": "2b4c6587f123b27c2ed837c9a7b955e4478c2768dce6ca6b794ab5a0de3d4c4e",
+      "nova-normal.js": "606883e63babb534cb4defd3563288bb29b1b9ba2e900fbb904ad891980cc4c4",
+      "nova-progress.js": "47d1cfe8c782d18c030216cd598b14cddb3d203e9754a8060418317c74887323"
+    },
+    "checks": [
+      {
+        "setting": 4,
+        "passed": true,
+        "games": 50000,
+        "changes": {
+          "czMultiplier": 1.04,
+          "weakAtZoneMultiplier": 1
+        },
+        "normalLowCzBefore": 0.10851501351789734,
+        "normalLowCzAfter": 0.11285561405861325,
+        "weakAtZoneBefore": 0.12,
+        "weakAtZoneAfter": 0.12
+      },
+      {
+        "setting": 5,
+        "passed": true,
+        "games": 36792,
+        "changes": {
+          "czMultiplier": 1,
+          "weakAtZoneMultiplier": 1.11
+        },
+        "normalLowCzBefore": 0.06659396740217079,
+        "normalLowCzAfter": 0.06659396740217079,
+        "weakAtZoneBefore": 0.15,
+        "weakAtZoneAfter": 0.1665
+      },
+      {
+        "setting": 2,
+        "passed": true,
+        "games": 50000,
+        "changes": {
+          "czMultiplier": 1.13,
+          "weakAtZoneMultiplier": 1
+        },
+        "normalLowCzBefore": 0.0701376768059037,
+        "normalLowCzAfter": 0.07925557479067118,
+        "weakAtZoneBefore": 0.15,
+        "weakAtZoneAfter": 0.15
+      },
+      {
+        "setting": 3,
+        "passed": true,
+        "games": 50000,
+        "changes": {
+          "czMultiplier": 1,
+          "weakAtZoneMultiplier": 1.14
+        },
+        "normalLowCzBefore": 0.09255186624768863,
+        "normalLowCzAfter": 0.09255186624768863,
+        "weakAtZoneBefore": 0.09,
+        "weakAtZoneAfter": 0.10259999999999998
+      },
+      {
+        "setting": 6,
+        "passed": true,
+        "games": 29333,
+        "changes": {
+          "czMultiplier": 1.225,
+          "weakAtZoneMultiplier": 1
+        },
+        "normalLowCzBefore": 0.03404332949761881,
+        "normalLowCzAfter": 0.04170307863458305,
+        "weakAtZoneBefore": 0.15,
+        "weakAtZoneAfter": 0.15
+      },
+      {
+        "setting": 1,
+        "passed": true,
+        "games": 50000,
+        "changes": {
+          "czMultiplier": 1.04,
+          "weakAtZoneMultiplier": 1.17
+        },
+        "normalLowCzBefore": 0.042293671162670944,
+        "normalLowCzAfter": 0.04398541800917778,
+        "weakAtZoneBefore": 0.1275,
+        "weakAtZoneAfter": 0.149175
+      }
+    ]
+  },
+  "adopted": true,
+  "adoptedAt": "2026-10-07T03:10:32.721Z",
+  "authorization": "User approved publishing this exact six-setting allocation on 2026-10-07.",
+  "sourceHashFormat": "sha256-utf8-lf",
+  "baselineSourceHashes": {
+    "nova-tuning.js": "4a1bb10a6052b77e68c5eda5a422393df5e03c2157c63103cdcab42963015f2f",
+    "nova-decrement.js": "a58f72c810431683b056905bb01841fec90bcd3bb0c87c7be3ab4f0f1b6419ea",
+    "nova-art.js": "3969c749b403680084633b3bdacecf5460b0d63e32d86bc60b4b4abfeba27cd5",
+    "nova-balance.js": "41f199410f1afddaddfc69c29feda1968e550bc2f1768dc66885acfbfa8b2176",
+    "nova-flow.js": "2b4c6587f123b27c2ed837c9a7b955e4478c2768dce6ca6b794ab5a0de3d4c4e",
+    "nova-normal.js": "606883e63babb534cb4defd3563288bb29b1b9ba2e900fbb904ad891980cc4c4",
+    "nova-progress.js": "47d1cfe8c782d18c030216cd598b14cddb3d203e9754a8060418317c74887323",
+    "scripts/zone-v2-model.mjs": "9886d245e12ca052109479f32856eebc5517e9c20d377482ff26cc710c9d4c39",
+    "scripts/zone-v2-rng.mjs": "0e5424d7a743850591b4029b730d93267c986633a0be83942a69a19b18c8fcce"
+  },
+  "parameters": {
+    "czEntryFactors": {
+      "before": [
+        0.16926622720000004,
+        0.27639419859,
+        0.36443965440000003,
+        0.45042052320000003,
+        0.15521559299999999,
+        0.11285209655999999
+      ],
+      "after": [
+        0.17603687628800005,
+        0.31232544440669996,
+        0.36443965440000003,
+        0.46843734412800003,
+        0.15521559299999999,
+        0.138243818286
+      ]
+    },
+    "weakAtZoneScales": {
+      "before": [
+        0.85,
+        1,
+        0.6,
+        0.8,
+        1,
+        1
+      ],
+      "after": [
+        0.9944999999999999,
+        1,
+        0.6839999999999999,
+        0.8,
+        1.11,
+        1
+      ]
+    }
+  },
+  "ledgers": {
+    "1": {
+      "bet": 84267981,
+      "paid": 79487275
+    },
+    "2": {
+      "bet": 84389145,
+      "paid": 81013525
+    },
+    "3": {
+      "bet": 82554861,
+      "paid": 80849449
+    },
+    "4": {
+      "bet": 82101051,
+      "paid": 82236195
+    },
+    "5": {
+      "bet": 80016591,
+      "paid": 81699505
+    },
+    "6": {
+      "bet": 66760353,
+      "paid": 71801790
+    }
+  }
+}

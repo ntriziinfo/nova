@@ -370,11 +370,11 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
  const lossRewardControl=Object.freeze({enabled:false,threshold:-2000,multiplier:1});
  const netRewardControl=Object.freeze({enabled:false,startRatio:0,floor:1});
  function netRewardFactor(){return 1;}
- const weakAtZoneScales=Object.freeze([.85,1,.6,.8,1,1]);
+ const weakAtZoneScales=Object.freeze([0.9944999999999999,1,0.6839999999999999,0.8,1.11,1]);
  const weakAtNetZoneScales=Object.freeze([.65,.8,.85,.75,.64,1]);
  function extraZoneChance(setting,role,upper=false,high=false,netPt=0){
   if(!['WEAK_SUICA','WEAK_NOVA'].includes(role))return 0;
-  // Approved 50k win/complete targets: change future weak-role zone draws only.
+  // Approved 50k RTP targets: change future weak-role zone draws only.
   // At +5,000pt, settings 1-5 reduce these draws; earned quota/stock stay intact.
   const i=validSetting(setting)-1;
   return (high?.25:.15)*weakAtZoneScales[i]*(netPt>=5000?weakAtNetZoneScales[i]:1);
