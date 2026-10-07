@@ -8,7 +8,7 @@ globalThis.NovaTuning=(()=>{
  const initialMeans=Object.freeze([180,190,200,210,220,230]);
  // The replay reduction applies only to ordinary play, not the shared CZ table.
  // extraZone is before the live AT multiplier: .04 × .25 = .01 for settings 5/6.
- const defaults=profiles.map((p,i)=>({...p,base:30,replay:i===5?.54:(1+.004*(i+1-3))*.45,normalReplayReduction:.01,extraZone:i>=4?.04:.01,upper:1.5,groups:[70,29.1,.9],thresholdBands:[]}));
+ const defaults=profiles.map((p,i)=>({...p,base:i===5?42:33.5,replay:i===5?.54:(1+.004*(i+1-3))*.45,normalReplayReduction:.01,extraZone:i>=4?.04:.01,upper:1.5,groups:[70,29.1,.9],thresholdBands:[]}));
  const limits={cz:[0,100],zone:[0,100],direct:[0,100],denominator:[1,1e9],base:[20,100],replay:[0,.9],normalReplayReduction:[0,.9],extraZone:[0,1],upper:[0,100]};
  const distributions={tiers:[5,1],weights:[10,1],groups:[3,100]};
  function validate(p){

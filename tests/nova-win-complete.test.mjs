@@ -32,7 +32,11 @@ test('net tier affects only future weak-role zones, including upper AT; strong N
    const ordinary=NovaArt.extraZoneChance(setting,role,upper,high,4999);
    const highNet=NovaArt.extraZoneChance(setting,role,upper,high,5000);
    const recovered=NovaArt.extraZoneChance(setting,role,upper,high,-20000);assert.equal(NovaArt.extraZoneChance(setting,role,upper,high,0),recovered);assert(ordinary<=recovered);
-   if(setting===6)assert.equal(highNet,ordinary);else assert(highNet<ordinary);
+   if(setting===6){
+    // Setting 6 has no discrete 5,000pt tier; its new gradual ramp is already active.
+    const rampRatio=NovaArt.positiveNetZoneFactor(setting,5000)/NovaArt.positiveNetZoneFactor(setting,4999);
+    assert(Math.abs(highNet/ordinary-rampRatio)<1e-12);
+   }else assert(highNet<ordinary);
   }
  }
 });

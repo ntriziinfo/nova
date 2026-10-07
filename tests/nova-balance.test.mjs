@@ -1,12 +1,12 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
 const ctx=vm.createContext({});for(const f of ['nova-tuning.js','nova-art.js','nova-balance.js'])vm.runInContext(fs.readFileSync(f,'utf8'),ctx);const a=ctx.NovaArt,b=ctx.NovaBalance;
-test('RTP metadata identifies the adopted 10,000G cash accounting and dual-cap estimates',()=>{
- const report=JSON.parse(fs.readFileSync('docs/replay-dual-cap-20261007.json')),group=report.results[0];
+test('RTP metadata identifies the approved 50,000G common-base win calibration',()=>{
+ const report=JSON.parse(fs.readFileSync('docs/win-base30-20261007.json'));
  for(let i=0;i<6;i++){
-  const p=b.profile(i+1);assert.equal(p.target,null);assert.equal(p.measuredRtp,group.settings[i].rtp);
-  assert.equal(p.winTarget,report.historicalTargets.win[i]);assert.equal(p.completeTarget,report.historicalTargets.reach[i]);assert.equal(p.targetGamesPerTrial,50000);
-  assert.equal(p.verifiedModel,'replay-dual-cap-20261007-10000g');assert.equal(p.previousVerifiedModel,'win-a-20261007-50000g-complete-stop');
-  assert.equal(group.trialsPerSetting,p.trials);assert.equal(group.gamesPerTrial,p.gamesPerTrial);
+  const p=b.profile(i+1),r=report.results[i];assert.equal(p.target,null);assert.equal(p.measuredRtp,r.rtp);
+  assert.equal(p.winTarget,report.manifest.targets[i]);assert.equal(p.completeTarget,i>=4?[.2,.25][i-4]:null);
+  assert.equal(p.targetGamesPerTrial,50000);assert.equal(p.gamesPerTrial,50000);assert.equal(p.trials,r.n);
+  assert.equal(p.verifiedModel,'win-base30-20261007-50000g');assert.equal(p.previousVerifiedModel,'replay-dual-cap-20261007-10000g');
  }
 });
 

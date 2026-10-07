@@ -25,8 +25,8 @@ test('previous RTP report reconciles all 6,000 stopped trials',()=>{
  }
 });
 
-test('base tuning retains approved CZ and non-positive AT weak-role probabilities',()=>{
- loadModel();const report=JSON.parse(fs.readFileSync('docs/rtp-targets-50000-20261007.json'));
+test('historical base tuning retains its approved CZ and non-positive AT weak-role probabilities',()=>{
+ loadModel('../tests/fixtures/pre-win-base30');const report=JSON.parse(fs.readFileSync('docs/rtp-targets-50000-20261007.json'));
  const current=JSON.parse(fs.readFileSync('docs/win-a-50000-20261007.json'));
  assert.deepEqual(NovaNormal.czEntryFactors,current.parameters.czEntryFactors);
  for(const result of report.settings){

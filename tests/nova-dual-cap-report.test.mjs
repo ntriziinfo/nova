@@ -8,9 +8,9 @@ import {loadModel,simulate} from '../scripts/zone-v2-model.mjs';
 const report=JSON.parse(fs.readFileSync('docs/replay-dual-cap-20261007.json'));
 const rows=JSON.parse(gunzipSync(fs.readFileSync('docs/replay-dual-cap-20261007-rows.json.gz')));
 
-test('dual-cap report matches current source and reconciles every trial in both horizons',()=>{
+test('historical dual-cap report matches its frozen source and reconciles every trial in both horizons',()=>{
  assert(report.adopted);assert.equal(rows.length,12000);
- for(const [f,digest]of Object.entries(report.sourceHashes))assert.equal(createHash('sha256').update(fs.readFileSync(f,'utf8').replaceAll('\r\n','\n')).digest('hex'),digest,f);
+ for(const [f,digest]of Object.entries(report.sourceHashes))assert.equal(createHash('sha256').update(fs.readFileSync(fs.existsSync('tests/fixtures/pre-win-base30/'+f)?'tests/fixtures/pre-win-base30/'+f:f,'utf8').replaceAll('\r\n','\n')).digest('hex'),digest,f);
  for(const group of report.results)for(const result of group.settings){
   const data=rows.filter(r=>r.horizon===group.gamesPerTrial&&r.setting===result.setting);assert.equal(data.length,1000);assert.equal(new Set(data.map(r=>r.seed)).size,1000);
   for(const row of data){
@@ -27,13 +27,13 @@ test('cash-refund simulator reproduces horizon, MY stop and net stop trials',()=
  for(const horizon of [10000,50000]){
   const data=rows.filter(r=>r.horizon===horizon),sample=[data.find(r=>!r.firstComplete),data.find(r=>r.firstComplete?.reason==='my'),data.find(r=>r.firstComplete?.reason==='net')].filter(Boolean);
   for(const expected of sample){
-   loadModel();const actual=simulate(expected.setting,horizon,expected.seed,report.options);
+   loadModel('../tests/fixtures/pre-win-base30');const actual=simulate(expected.setting,horizon,expected.seed,report.options);
    for(const key of ['games','totalBet','totalPaid','net','peak','lowestNet','maxMy','firstComplete','counts'])assert.deepEqual(actual[key],expected[key],key);
   }
  }
 });
 
-test('default current completion limits match explicit 10k net and 15k MY settings',()=>{
+test('historical default completion limits match explicit 10k net and 15k MY settings',()=>{
  const r=rows.find(r=>r.horizon===50000&&r.firstComplete?.reason==='net');assert(r);
- const {completeLimitPt,completeMyLimitPt,...options}=report.options;loadModel();const actual=simulate(r.setting,r.horizon,r.seed,options);assert.deepEqual(actual.firstComplete,r.firstComplete);assert.equal(actual.net,r.net);
+ const {completeLimitPt,completeMyLimitPt,...options}=report.options;loadModel('../tests/fixtures/pre-win-base30');const actual=simulate(r.setting,r.horizon,r.seed,options);assert.deepEqual(actual.firstComplete,r.firstComplete);assert.equal(actual.net,r.net);
 });

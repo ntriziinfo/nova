@@ -6,7 +6,7 @@ import {loadModel,simulate} from '../scripts/zone-v2-model.mjs';
 import {xoshiro128} from '../scripts/zone-v2-rng.mjs';
 const near=(a,b)=>assert(Math.abs(a-b)<1e-10,`${a} != ${b}`);
 const retired=['STRONG_SUICA','CHANCE_A','CHANCE_B'];
-test('all state role tables retire chance eyes and strong suika; AT realizes 5/8pt net',()=>{
+test('all state role tables retire chance eyes and strong suika; AT realizes 4.5/7pt net',()=>{
  loadModel();const a=NovaArt,n=NovaNormal;
  for(let setting=1;setting<=6;setting++){
   for(const row of [n.roleProbabilities(setting),n.normalRoleProbabilities(setting),a.preparationProbabilities(setting),a.comebackRoleProbabilities(setting),a.roleProbabilities(setting),a.roleProbabilities(setting,true)]){
@@ -15,7 +15,7 @@ test('all state role tables retire chance eyes and strong suika; AT realizes 5/8
   }
   for(const upper of [false,true]){
    const row=a.roleProbabilities(setting,upper);
-   near(Object.entries(row).reduce((s,[r,p])=>s+p*a.payout(r),0)-3*(1-row.REPLAY),upper?8:5);
+   near(Object.entries(row).reduce((s,[r,p])=>s+p*a.payout(r),0)-3*(1-row.REPLAY),upper?7:4.5);
    if(upper)assert.equal(row.BELL,0);else near(row.BELL,row.BELL15);
   }
   for(const tier of ['normal','upper']){const p=a.bonusRoleProbabilities(setting,tier);near(1-(p.BELL/(p.BELL+p.NEBULA))**7,a.bonusRules[tier].atChance);}
@@ -49,7 +49,7 @@ test('all six 15pt bell orders survive navigation, save and AUTO without redrawi
  }
 });
 
-test('production reproduces full-horizon and highest-peak approved 50,000G trials for every setting',()=>{
+test('historical A plan reproduces full-horizon and highest-peak approved 50,000G trials for every setting',()=>{
  const rows=JSON.parse(gunzipSync(fs.readFileSync('docs/win-a-50000-20261007-rows.json.gz')));
  const options={rng:'xoshiro128',exactGames:true,completeLimitPt:10000,stopAtComplete:true,rareSortie:true,atBetRefund:true,replayRefund:false,completeMyLimitPt:0};
  for(let setting=1;setting<=6;setting++){
@@ -58,7 +58,7 @@ test('production reproduces full-horizon and highest-peak approved 50,000G trial
   const peak=data.reduce((best,row)=>row.peak>best.peak?row:best);
   assert(full);assert(peak.peak>0);
   for(const trial of [full,peak]){
-   loadModel();const actual=simulate(setting,50000,trial.seed,options);
+   loadModel('../tests/fixtures/pre-win-base30');const actual=simulate(setting,50000,trial.seed,options);
    for(const field of ['games','totalBet','totalPaid','net','peak','firstComplete','counts'])assert.deepEqual(actual[field],trial[field],'Setting '+setting+' / '+field);
   }
  }

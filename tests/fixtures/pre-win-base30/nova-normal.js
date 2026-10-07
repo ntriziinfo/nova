@@ -53,14 +53,12 @@ globalThis.NovaNormal=(()=>{
  // Keep the shared role table unchanged for CZ, preparation and comeback draws.
  function normalRoleProbabilities(setting=3){
   const key=Math.max(1,Math.min(6,Math.round(Number(setting)||3))),r={...roleProbabilities(key)};
-  // Replay and miss absorb the base adjustment; rare roles and bells stay intact.
+  const reduction=NovaTuning.profile(key).normalReplayReduction;
+  r.MISS+=reduction;r.REPLAY-=reduction;
   r.NAVI_BELL=1/NovaTuning.normalBellDenominators[key-1];
   if(key===6)r.BELL-=r.NAVI_BELL;
   else r.MISS=1-Object.entries(r).reduce((sum,[role,p])=>sum+(role==='MISS'?0:p),0);
-  const otherPaid=Object.entries(r).reduce((sum,[role,p])=>sum+p*(role==='NAVI_BELL'?8:pay(role)),0);
-  r.REPLAY=(3-50/NovaTuning.normalBase(key)-otherPaid)/3;
-  r.MISS=1-Object.entries(r).reduce((sum,[role,p])=>sum+(role==='MISS'?0:p),0);
-  if(Object.values(r).some(p=>!Number.isFinite(p)||p<0||p>1))throw new RangeError('Invalid normal base probabilities');
+  if(Object.values(r).some(p=>!Number.isFinite(p)||p<0||p>1))throw new RangeError('Invalid normal bell navigation probabilities');
   return r;
  }
  const normalRoleEntries=[1,2,3,4,5,6].map(setting=>{
@@ -73,8 +71,8 @@ globalThis.NovaNormal=(()=>{
  const redistributionNormalRoles=[{"WEAK_SUICA":0.010648,"STRONG_SUICA":0.0025168,"CHANCE_A":0.00433664,"CHANCE_B":0.00650496,"WEAK_NOVA":0.0075625,"STRONG_NOVA":0.00038720000000000003,"REPLAY":0.4464,"BELL":0.005951592437810937,"MISS":0.5156923075621891},{"WEAK_SUICA":0.010823999999999999,"STRONG_SUICA":0.0025583999999999997,"CHANCE_A":0.0066124800000000004,"CHANCE_B":0.00440832,"WEAK_NOVA":0.0076875,"STRONG_NOVA":0.0003936,"REPLAY":0.4482,"BELL":0.005504552437810947,"MISS":0.513811147562189},{"WEAK_SUICA":0.011,"STRONG_SUICA":0.0026,"CHANCE_A":0.0044800000000000005,"CHANCE_B":0.006719999999999999,"WEAK_NOVA":0.0078125,"STRONG_NOVA":0.0004,"REPLAY":0.45,"BELL":0.00505751243781094,"MISS":0.511929987562189},{"WEAK_SUICA":0.011176,"STRONG_SUICA":0.0026416,"CHANCE_A":0.006827519999999999,"CHANCE_B":0.00455168,"WEAK_NOVA":0.0079375,"STRONG_NOVA":0.0004064,"REPLAY":0.45180000000000003,"BELL":0.004610472437810949,"MISS":0.510048827562189},{"WEAK_SUICA":0.011352,"STRONG_SUICA":0.0026831999999999997,"CHANCE_A":0.004623360000000001,"CHANCE_B":0.006935040000000001,"WEAK_NOVA":0.0080625,"STRONG_NOVA":0.0004128,"REPLAY":0.4536,"BELL":0.004163432437810944,"MISS":0.5081676675621891},{"WEAK_SUICA":0.0161392,"STRONG_SUICA":0.0027248,"CHANCE_A":0.009859584,"CHANCE_B":0.006573056000000001,"WEAK_NOVA":0.0114625,"STRONG_NOVA":0.00041920000000000005,"REPLAY":0.54,"BELL":0.005089320634920632,"MISS":0.40773233936507935}];
  const redistributionNormalUp=[0.16711383671904947,0.16711383671904945,0.16711383671904942,0.16711383671904947,0.16711383671904945,0.15935451336359055];
  // Apply after the existing cap, equally in low/high and decrement intervals.
- // Approved win-rate calibration (2026-10-07); common base30 and net4.5/7. Initial AT draws stay common.
- const czEntryFactors=Object.freeze([0.22268664850432007,0.4148931203498602,0.45184686111129607,0.6193210126716288,0.20954105055,0.48247092581814]);
+ // Approved win-rate calibration (2026-10-07). Initial AT draws stay common.
+ const czEntryFactors=Object.freeze([0.19364056391680007,0.3841602966202409,0.40817241292800005,0.52933419886464,0.15521559299999999,0.138243818286]);
  function roleCzRate(value,role,setting=1,options={}){
   if(role==='STRONG_NOVA')return 1;
   if(!['WEAK_SUICA','WEAK_NOVA'].includes(role))return 0;

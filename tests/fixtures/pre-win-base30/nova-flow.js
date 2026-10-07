@@ -1,0 +1,174 @@
+/* Pure game-flow rules. Licensed visual/audio assets are not processed here. */
+globalThis.NovaFlow = (() => {
+  const defaults = Object.freeze({czGames:15,strongGames:15,czMaxGames:20,strongMaxGames:20,czChance:.4,strongChance:.7,czDenom:120,strongDenom:600});
+  const rt = Object.freeze({games:50,replay:.6,bell:.3,miss:.1,netPerGame:1.2});
+  const bounded=(value,fallback,min,max)=>Number.isFinite(Number(value))?Math.min(max,Math.max(min,Number(value))):fallback;
+  function config(value={}){
+    value=value&&typeof value==='object'?value:{};
+    const czGames=Math.round(bounded(value.czGames===10&&value.czMaxGames==null?15:value.czGames,15,1,100));
+    const strongGames=Math.round(bounded(value.strongGames===10&&value.strongMaxGames==null?15:value.strongGames,15,1,100));
+    return {czGames,strongGames,czMaxGames:Math.round(bounded(value.czMaxGames,Math.max(20,czGames),czGames,100)),strongMaxGames:Math.round(bounded(value.strongMaxGames,Math.max(20,strongGames),strongGames,100)),
+      czChance:bounded(value.czChance,.4,0,1),strongChance:bounded(value.strongChance,.7,0,1),
+      czDenom:bounded(value.czDenom,120,2,100000),strongDenom:bounded(value.strongDenom,600,2,100000)};
+  }
+  function forSetting(value={},setting){
+    const cfg=config(value),i=Math.max(0,Math.min(5,Math.round(Number(setting)||1)-1));
+    // Keep explicit debug overrides and guaranteed/rare-CZ probabilities.
+    if(cfg.czChance===defaults.czChance)cfg.czChance=[.5504,.556,.5588,.5792,.5932,.6336][i];
+    if(cfg.strongChance===defaults.strongChance)cfg.strongChance=[.7752,.778,.7794,.7896,.7966,.8168][i];
+    cfg.rewriteRates={WEAK_SUICA:[0.1782292065925642,0.1782292065925642,0.1782292065925642,0.17822920659256422,0.1782292065925642,0.17072897405726453][i],WEAK_NOVA:[0.1782292065925642,0.1782292065925642,0.1782292065925642,0.17822920659256422,0.1782292065925642,0.17072897405726453][i],STRONG_NOVA:1,...value.rewriteRates};
+    return cfg;
+  }
+  const rewriteRates=Object.freeze({WEAK_SUICA:0.1782292065925642,WEAK_NOVA:0.1782292065925642,STRONG_NOVA:1});
+  const lampConfidence=Object.freeze([.01,.05,.30,.60,.80,1]);
+  function rewrite(value,role,options={},random=Math.random){
+    const state=normalize(value);
+    if(!['cz','strong_cz'].includes(state.phase))return state;
+    const rate=bounded(options?.rewriteRates?.[role],rewriteRates[role]||0,0,1);
+    state.winProbability+= (1-state.winProbability)*rate;
+    if(!state.success && rate>0 && random()<rate)state.success=true;
+    return state;
+  }
+  // Exponential tilting gives a marginal lamp distribution whose mean is p.
+  // Bayes weighting makes P(win | final lamp i) exactly lampConfidence[i].
+  function lampWeights(p){
+    if(p<=.01)return [1,0,0,0,0,0];
+    if(p>=1)return [0,0,0,0,0,1];
+    let lo=-1000,hi=1000,w;
+    for(let n=0;n<70;n++){
+      const t=(lo+hi)/2,logs=lampConfidence.map(q=>t*q),m=Math.max(...logs);
+      w=logs.map(v=>Math.exp(v-m));const z=w.reduce((a,b)=>a+b,0);
+      w=w.map(v=>v/z);
+      if(w.reduce((a,v,i)=>a+v*lampConfidence[i],0)<p)lo=t;else hi=t;
+    }
+    return w;
+  }
+  function drawLamp(value,random=Math.random){
+    const s=normalize(value),p=s.winProbability??(s.success?1:0);
+    const rollValue=s.lampRoll??random(),rainbowValue=s.rainbowRoll??random();
+    const timingSeed=(Math.floor(rollValue*4294967296)^Math.imul(Math.floor(rainbowValue*4294967296),31))>>>0;
+    if(p<.01)return {stage:s.success?6:1,rainbow:false,timingSeed};
+    const w=lampWeights(p).map((v,i)=>v*(s.success?lampConfidence[i]:1-lampConfidence[i]));
+    let roll=rollValue*w.reduce((a,b)=>a+b,0),index=w.findIndex(v=>(roll-=v)<0);
+    if(index<0)index=s.success?5:0;
+    const rainbow=index===5&&s.success&&rainbowValue<.5;
+    return {stage:rainbow?5:index+1,rainbow,rainbowAt:1+Math.floor(rainbowValue*2*s.totalGames),timingSeed};
+  }
+  function lampAtStop(lamp,stopOrder){
+    if(!lamp||stopOrder!==3)return null;
+    const elapsed=lamp.totalGames-lamp.remaining+1;
+    const rainbow=!!lamp.rainbow&&elapsed>=(lamp.rainbowAt||1);
+    return {stage:Math.min(lamp.stage,Math.ceil(6*elapsed/lamp.totalGames)),rainbow};
+  }
+  const lampCharacters=Object.freeze(['kushuri','nito','sosuke','toto','urapi','giru1','sora1','ouma1']);
+  // CZ setting hints. A recognizable prefix is reserved even on ineligible settings.
+  const lampHints=Object.freeze([
+    {id:'min2',minimumSetting:2,prefix:['nito','kushuri','sosuke'],rates:[0,.10,.10,.10,.10,.10]},
+    {id:'min3',minimumSetting:3,prefix:['toto','sora1','giru1'],rates:[0,0,.07,.07,.07,.07]},
+    {id:'min4',minimumSetting:4,prefix:['urapi','giru1','ouma1'],rates:[0,0,0,.03,.03,.03]},
+    {id:'min5',minimumSetting:5,prefix:['sora1','toto','sosuke'],rates:[0,0,0,0,.005,.005]},
+    {id:'min6',minimumSetting:6,prefix:['ouma1','nito','kushuri'],rates:[0,0,0,0,0,.003]},
+    {id:'odd',prefix:['sosuke','giru1','toto'],rates:[.08,.03,.08,.03,.08,.03]},
+    {id:'even',prefix:['kushuri','nito','sora1'],rates:[.03,.08,.03,.08,.03,.08]},
+    {id:'highWeak',prefix:['giru1','urapi','sora1'],rates:[.01,.015,.02,.03,.04,.05]},
+    {id:'highStrong',prefix:['kushuri','ouma1','giru1'],rates:[.002,.003,.005,.01,.02,.03]}
+  ].map(hint=>Object.freeze({...hint,prefix:Object.freeze(hint.prefix),rates:Object.freeze(hint.rates)})));
+  function lampSeed(value){
+    if(Number.isFinite(value?.timingSeed))return value.timingSeed>>>0;
+    if(Number.isFinite(value?.lampRoll)&&Number.isFinite(value?.rainbowRoll)){
+      return (Math.floor(value.lampRoll*4294967296)^Math.imul(Math.floor(value.rainbowRoll*4294967296),31))>>>0;
+    }
+    return null;
+  }
+  function lampHintForOrder(order){
+    return lampHints.find(hint=>hint.prefix.every((id,index)=>order?.[index]===id))?.id||'';
+  }
+  // Reuse only the CZ's saved presentation seed, never gameplay RNG. Stage,
+  // success and remaining games cannot affect the order or the selected hint.
+  function lampPresentation(value,setting=1){
+    let seed=lampSeed(value);
+    if(seed===null)return {order:[...lampCharacters],hint:'',minimumSetting:0};
+    const settingIndex=Math.max(0,Math.min(5,Math.round(Number(setting)||1)-1));
+    const random=()=>{
+      seed=(seed+0x6d2b79f5)>>>0;
+      let mixed=Math.imul(seed^(seed>>>15),seed|1);
+      mixed^=mixed+Math.imul(mixed^(mixed>>>7),mixed|61);
+      return ((mixed^(mixed>>>14))>>>0)/4294967296;
+    };
+    const shuffle=characters=>{
+      const order=[...characters];
+      for(let i=order.length-1;i>0;i--){const index=Math.floor(random()*(i+1));[order[i],order[index]]=[order[index],order[i]];}
+      return order;
+    };
+    let roll=random();
+    for(const hint of lampHints){
+      const rate=hint.rates[settingIndex];
+      if(roll<rate){
+        const rest=shuffle(lampCharacters.filter(id=>!hint.prefix.includes(id)));
+        return {order:[...hint.prefix,...rest],hint:hint.id,minimumSetting:hint.minimumSetting||0};
+      }
+      roll-=rate;
+    }
+    let order;
+    do{order=shuffle(lampCharacters);}while(lampHintForOrder(order));
+    return {order,hint:'',minimumSetting:0};
+  }
+  function lampOrder(value,setting=1){return lampPresentation(value,setting).order;}
+  // Spread the physical lamps across the CZ, retaining the final confidence
+  // tier and the original third-stop full-confirmation game. This deterministic
+  // presentation seed consumes no gameplay RNG and survives saved-game reloads.
+  function lampDisplayAtStop(lamp,stopOrder){
+    if(!lamp||!Number.isInteger(stopOrder)||stopOrder<1||stopOrder>3)return null;
+    const total=Math.max(1,Number(lamp.totalGames)||1),elapsed=Math.max(1,total-(Number(lamp.remaining)||1)+1);
+    const stopped=(elapsed-1)*3+(stopOrder===3?3:0),target=Math.min(8,Math.max(1,Number(lamp.stage)||1)+2);
+    const deadline=target===8?(Math.floor(5*total/6)+1)*3:total*3;
+    let stage=0;
+    for(let next=1;next<=target;next++){
+      let seed=((lamp.timingSeed||0)^Math.imul(next,0x9e3779b9))>>>0;
+      seed=Math.imul(seed^(seed>>>16),0x21f0aaad);seed=Math.imul(seed^(seed>>>15),0x735a2d97);
+      const fraction=.1+.8*((seed^(seed>>>15))>>>0)/4294967296;
+      const scheduled=next===8?deadline:Math.max(1,Math.ceil(deadline*(next-1+fraction)/target));
+      if(stopped>=scheduled)stage=next;
+    }
+    const rainbow=!!lamp.rainbow&&(elapsed>(lamp.rainbowAt||1)||(elapsed===(lamp.rainbowAt||1)&&stopOrder===3));
+    return {stage,rainbow};
+  }
+  function normalize(value){
+    if(value?.phase==='art')return NovaArt.normalize(value);
+    if(value?.phase==='rt')return NovaArt.normalize({...value,phase:'art'});
+    const phase=['cz','strong_cz','rt'].includes(value?.phase)?value.phase:'normal';
+    const remaining=Math.max(0,Math.min(phase==='rt'?50:100,Math.floor(Number(value?.remaining)||0)));
+    return phase==='normal'||remaining===0?{phase:'normal',remaining:0,success:false}:{phase,remaining,success:!!value.success,winProbability:bounded(value?.winProbability,phase==='strong_cz'?.7:.4,0,1),
+      totalGames:Math.max(remaining,Math.round(bounded(value?.totalGames,10,1,100))),
+      lampRoll:Number.isFinite(value?.lampRoll)?bounded(value.lampRoll,0,0,.999999999):null,
+      rainbowRoll:Number.isFinite(value?.rainbowRoll)?bounded(value.rainbowRoll,0,0,.999999999):null};
+  }
+  function enterCZ(strong,options=defaults,random=Math.random){
+    const cfg=config(options),success=random()<(strong?cfg.strongChance:cfg.czChance);
+    const min=strong?cfg.strongGames:cfg.czGames,max=strong?cfg.strongMaxGames:cfg.czMaxGames;
+    const games=min+Math.min(max-min,Math.floor(random()*(max-min+1)));
+    return {phase:strong?'strong_cz':'cz',remaining:games,success,winProbability:strong?cfg.strongChance:cfg.czChance,totalGames:games,lampRoll:random(),rainbowRoll:random()};
+  }
+  function afterBonus(value,options,sets=0,random=Math.random){return NovaArt.afterBonus(value,options,sets,random);}
+  function advance(value){
+    const state=normalize(value);
+    return normalize({...state,remaining:Math.max(0,state.remaining-1)});
+  }
+  function drawEntry(options=defaults,random=Math.random){
+    const cfg=config(options),roll=random();
+    if(roll<1/cfg.strongDenom)return 'STRONG_CZ';
+    if(roll<1/cfg.strongDenom+1/cfg.czDenom)return 'CZ';
+    return '';
+  }
+  function drawRT(random=Math.random){
+    const roll=random();
+    return roll<rt.replay?'REPLAY':roll<rt.replay+rt.bell?'BELL':'MISS';
+  }
+  function label(value){
+    if(value?.phase==='art'||value?.phase==='rt')return NovaArt.label(value);
+    const s=normalize(value);
+    return s.phase==='rt'?`RT 残り${s.remaining}G / 純増1.2pt`:
+      s.phase==='cz'?`CZ 残り${s.remaining}G`:s.phase==='strong_cz'?`強CZ 残り${s.remaining}G`:'通常';
+  }
+  return Object.freeze({forSetting,defaults,rewriteRates,lampConfidence,lampWeights,drawLamp,lampAtStop,lampDisplayAtStop,lampCharacters,lampSeed,lampHints,lampHintForOrder,lampPresentation,lampOrder,rewrite,rt,config,normalize,enterCZ,afterBonus,advance,drawEntry,drawRT,label});
+})();

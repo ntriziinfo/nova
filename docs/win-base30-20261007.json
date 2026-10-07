@@ -1,0 +1,1311 @@
+{
+  "generatedAt": "2026-10-07T08:55:54.592Z",
+  "manifest": {
+    "targets": [
+      0.15,
+      0.2,
+      0.3,
+      0.45,
+      0.6,
+      0.7
+    ],
+    "settings": [
+      {
+        "setting": 1,
+        "file": "balanced",
+        "variant": "balanced",
+        "trials": 500
+      },
+      {
+        "setting": 2,
+        "file": "balanced",
+        "variant": "balanced",
+        "trials": 500
+      },
+      {
+        "setting": 3,
+        "file": "selected",
+        "variant": "selected",
+        "trials": 500
+      },
+      {
+        "setting": 4,
+        "file": "fourfinal",
+        "variant": "fourfinal",
+        "trials": 1000
+      },
+      {
+        "setting": 5,
+        "file": "balanced",
+        "variant": "balanced",
+        "trials": 500
+      },
+      {
+        "setting": 6,
+        "file": "balanced",
+        "variant": "balanced",
+        "trials": 500
+      }
+    ]
+  },
+  "spec": {
+    "settings": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "zone": [
+      1.055,
+      1.03,
+      1.075,
+      1.05,
+      1.086,
+      1.15
+    ],
+    "positive": {
+      "5": {
+        "start": 3000,
+        "end": 6500,
+        "floor": 0.5
+      },
+      "6": {
+        "start": 3000,
+        "end": 6500,
+        "floor": 0.3
+      }
+    },
+    "decrement": {
+      "5": {
+        "netEnter": 6000,
+        "netExit": 4500
+      },
+      "6": {
+        "netEnter": 6500,
+        "netExit": 5000
+      }
+    },
+    "cz": [
+      1.15,
+      1.08,
+      1.107,
+      1.17,
+      1.35,
+      3.49
+    ]
+  },
+  "results": [
+    {
+      "setting": 1,
+      "target": 0.15,
+      "validationFile": "balanced",
+      "seedPrefix": "base30-confirm-20261007-v3",
+      "baseline": {
+        "n": 200,
+        "rtp": 0.9264614326103943,
+        "rtp95": [
+          0.9184878847145309,
+          0.9344349805062576
+        ],
+        "win": 0.08,
+        "winCount": 16,
+        "win95": [
+          0.049840585889759974,
+          0.12598948826714396
+        ],
+        "net10000": 0,
+        "net10000_95": [
+          1.734723475976807e-18,
+          0.018845326377266575
+        ],
+        "complete": 0.065,
+        "net": -10921.245,
+        "games": 49503.48,
+        "base": 30.01087588522334,
+        "normalPerAt": 785.7724098454494,
+        "normalPerCz": 421.52686851317327,
+        "atZoneDenom": 159.15251503152956,
+        "atHigh": 0.21705531646869292,
+        "atEntries": 43.675
+      },
+      "n": 500,
+      "rtp": 0.9456745882173058,
+      "rtp95": [
+        0.9412796382647508,
+        0.9500695381698607
+      ],
+      "win": 0.134,
+      "winCount": 67,
+      "win95": [
+        0.10691500187152081,
+        0.16666601534633546
+      ],
+      "net10000": 0,
+      "net10000_95": [
+        4.336808689942018e-19,
+        0.007624340461552241
+      ],
+      "complete": 0.094,
+      "net": -7951.56,
+      "games": 48789.69,
+      "base": 29.98742111854511,
+      "normalPerAt": 747.1126272178691,
+      "normalPerCz": 385.97545541260496,
+      "atZoneDenom": 156.30174059517125,
+      "atHigh": 0.21743764506495986,
+      "atEntries": 44.412
+    },
+    {
+      "setting": 2,
+      "target": 0.2,
+      "validationFile": "balanced",
+      "seedPrefix": "base30-confirm-20261007-v3",
+      "baseline": {
+        "n": 200,
+        "rtp": 0.9551998084020757,
+        "rtp95": [
+          0.9492425752215996,
+          0.9611570415825519
+        ],
+        "win": 0.16,
+        "winCount": 32,
+        "win95": [
+          0.1156741203158702,
+          0.21714070162067106
+        ],
+        "net10000": 0,
+        "net10000_95": [
+          1.734723475976807e-18,
+          0.018845326377266575
+        ],
+        "complete": 0.035,
+        "net": -6683.625,
+        "games": 49729.14,
+        "base": 30.008610171251547,
+        "normalPerAt": 592.6289428233797,
+        "normalPerCz": 254.4398001795262,
+        "atZoneDenom": 167.49108327192337,
+        "atHigh": 0.20972195912433012,
+        "atEntries": 55.005
+      },
+      "n": 500,
+      "rtp": 0.9644163592599425,
+      "rtp95": [
+        0.9609813813944617,
+        0.9678513371254234
+      ],
+      "win": 0.184,
+      "winCount": 92,
+      "win95": [
+        0.1524894793781606,
+        0.22032910379354043
+      ],
+      "net10000": 0,
+      "net10000_95": [
+        4.336808689942018e-19,
+        0.007624340461552241
+      ],
+      "complete": 0.028,
+      "net": -5310.748,
+      "games": 49748.966,
+      "base": 30.00763694078842,
+      "normalPerAt": 576.829992124293,
+      "normalPerCz": 238.26884630171827,
+      "atZoneDenom": 163.37249802103358,
+      "atHigh": 0.208993940253021,
+      "atEntries": 55.868
+    },
+    {
+      "setting": 3,
+      "target": 0.3,
+      "validationFile": "selected",
+      "seedPrefix": "base30-confirm-20261007-v1",
+      "baseline": {
+        "n": 200,
+        "rtp": 0.9575625468979216,
+        "rtp95": [
+          0.9512995509043016,
+          0.9638255428915417
+        ],
+        "win": 0.185,
+        "winCount": 37,
+        "win95": [
+          0.13730192800616042,
+          0.2445706276115175
+        ],
+        "net10000": 0,
+        "net10000_95": [
+          1.734723475976807e-18,
+          0.018845326377266575
+        ],
+        "complete": 0.045,
+        "net": -6299.73,
+        "games": 49482.47,
+        "base": 29.9890093532855,
+        "normalPerAt": 564.7077286238853,
+        "normalPerCz": 240.32172489489153,
+        "atZoneDenom": 232.09598927724508,
+        "atHigh": 0.21033803265412204,
+        "atEntries": 57.19
+      },
+      "n": 500,
+      "rtp": 0.9710918622578582,
+      "rtp95": [
+        0.967461074537495,
+        0.9747226499782213
+      ],
+      "win": 0.278,
+      "winCount": 139,
+      "win95": [
+        0.2405366075286252,
+        0.31884859963630413
+      ],
+      "net10000": 0.002,
+      "net10000_95": [
+        0.00035313639455927456,
+        0.011240706705146758
+      ],
+      "complete": 0.048,
+      "net": -4300.826,
+      "games": 49591.872,
+      "base": 29.985974585072036,
+      "normalPerAt": 526.6938179888565,
+      "normalPerCz": 218.8714132142562,
+      "atZoneDenom": 224.10038430185165,
+      "atHigh": 0.2061234939722575,
+      "atEntries": 60.304
+    },
+    {
+      "setting": 4,
+      "target": 0.45,
+      "validationFile": "fourfinal",
+      "seedPrefix": "base30-confirm-20261007-v5",
+      "baseline": {
+        "n": 200,
+        "rtp": 0.9685671323189559,
+        "rtp95": [
+          0.9635548869249149,
+          0.9735793777129969
+        ],
+        "win": 0.215,
+        "winCount": 43,
+        "win95": [
+          0.1637187625450758,
+          0.27702307348996613
+        ],
+        "net10000": 0,
+        "net10000_95": [
+          1.734723475976807e-18,
+          0.018845326377266575
+        ],
+        "complete": 0.02,
+        "net": -4697.93,
+        "games": 49819.72,
+        "base": 30.00483485589549,
+        "normalPerAt": 490.92642036634584,
+        "normalPerCz": 200.45306458769093,
+        "atZoneDenom": 208.8579498861048,
+        "atHigh": 0.204961538997263,
+        "atEntries": 64.42
+      },
+      "n": 1000,
+      "rtp": 0.9890150816746632,
+      "rtp95": [
+        0.9870873317860038,
+        0.9909428315633226
+      ],
+      "win": 0.432,
+      "winCount": 432,
+      "win95": [
+        0.40161609445686075,
+        0.4629043446971748
+      ],
+      "net10000": 0,
+      "net10000_95": [
+        2.168404344971009e-19,
+        0.0038267584855551234
+      ],
+      "complete": 0.016,
+      "net": -1644.173,
+      "games": 49891.829,
+      "base": 30.011234192463196,
+      "normalPerAt": 442.6029070354295,
+      "normalPerCz": 174.73667161944448,
+      "atZoneDenom": 215.9832299605304,
+      "atHigh": 0.20266613187647253,
+      "atEntries": 69.349
+    },
+    {
+      "setting": 5,
+      "target": 0.6,
+      "validationFile": "balanced",
+      "seedPrefix": "base30-confirm-20261007-v3",
+      "baseline": {
+        "n": 200,
+        "rtp": 0.9681237212947857,
+        "rtp95": [
+          0.9567229607596635,
+          0.979524481829908
+        ],
+        "win": 0.5,
+        "winCount": 100,
+        "win95": [
+          0.43136085960389187,
+          0.5686391403961082
+        ],
+        "net10000": 0.085,
+        "net10000_95": [
+          0.05374575017747561,
+          0.13189587071565567
+        ],
+        "complete": 0.18,
+        "net": -4479.74,
+        "games": 46845.075,
+        "base": 30.007006942185164,
+        "normalPerAt": 640.5976821192053,
+        "normalPerCz": 326.24030354131537,
+        "atZoneDenom": 137.7426189431455,
+        "atHigh": 0.21423907663946895,
+        "atEntries": 48.32
+      },
+      "n": 500,
+      "rtp": 0.9927026534485301,
+      "rtp95": [
+        0.9866969375590616,
+        0.9987083693379987
+      ],
+      "win": 0.628,
+      "winCount": 314,
+      "win95": [
+        0.5848089173303663,
+        0.6692392515114762
+      ],
+      "net10000": 0.098,
+      "net10000_95": [
+        0.07492391886460623,
+        0.12720605086648182
+      ],
+      "complete": 0.19,
+      "net": -1031.012,
+      "games": 47095.292,
+      "base": 30.0008625078362,
+      "normalPerAt": 588.4778495795703,
+      "normalPerCz": 287.4466438486404,
+      "atZoneDenom": 139.28661667912337,
+      "atHigh": 0.21702653480336975,
+      "atEntries": 51.376
+    },
+    {
+      "setting": 6,
+      "target": 0.7,
+      "validationFile": "balanced",
+      "seedPrefix": "base30-confirm-20261007-v3",
+      "baseline": {
+        "n": 200,
+        "rtp": 0.9411683169124127,
+        "rtp95": [
+          0.9296325932920838,
+          0.9527040405327415
+        ],
+        "win": 0.29,
+        "winCount": 58,
+        "win95": [
+          0.23154025607067882,
+          0.3563747810077731
+        ],
+        "net10000": 0.055,
+        "net10000_95": [
+          0.03098534170345884,
+          0.0957869987723084
+        ],
+        "complete": 0.1,
+        "net": -8586.275,
+        "games": 48648.815,
+        "base": 29.98821767947087,
+        "normalPerAt": 627.9496547756041,
+        "normalPerCz": 317.69158742480107,
+        "atZoneDenom": 145.86766101694914,
+        "atHigh": 0.21230198362448358,
+        "atEntries": 52.14
+      },
+      "n": 500,
+      "rtp": 1.0127055314879576,
+      "rtp95": [
+        1.0073075881677414,
+        1.0181034748081739
+      ],
+      "win": 0.712,
+      "winCount": 356,
+      "win95": [
+        0.6708105507601558,
+        0.749956728884146
+      ],
+      "net10000": 0.152,
+      "net10000_95": [
+        0.12319239267380164,
+        0.18611414828743875
+      ],
+      "complete": 0.26,
+      "net": 1752.662,
+      "games": 45981.6,
+      "base": 29.9999360195456,
+      "normalPerAt": 442.1703706032125,
+      "normalPerCz": 202.51606680103657,
+      "atZoneDenom": 169.06827569928006,
+      "atHigh": 0.20401531311076082,
+      "atEntries": 63.626
+    }
+  ],
+  "rates": [
+    {
+      "source": "final",
+      "setting": 1,
+      "cz": [
+        {
+          "regime": "非減算",
+          "level": "低確",
+          "chance": 0.0556415537816099
+        },
+        {
+          "regime": "非減算",
+          "level": "高確",
+          "chance": 0.10872315552214236
+        }
+      ],
+      "at": [
+        {
+          "netPt": 0,
+          "high": false,
+          "chance": 0.15737962499999997
+        },
+        {
+          "netPt": 0,
+          "high": true,
+          "chance": 0.26229937499999995
+        },
+        {
+          "netPt": 3000,
+          "high": false,
+          "chance": 0.007868981250000006
+        },
+        {
+          "netPt": 3000,
+          "high": true,
+          "chance": 0.01311496875000001
+        },
+        {
+          "netPt": 5000,
+          "high": false,
+          "chance": 0.005114837812500004
+        },
+        {
+          "netPt": 5000,
+          "high": true,
+          "chance": 0.008524729687500007
+        },
+        {
+          "netPt": 6500,
+          "high": false,
+          "chance": 0.005114837812500004
+        },
+        {
+          "netPt": 6500,
+          "high": true,
+          "chance": 0.008524729687500007
+        },
+        {
+          "netPt": 10000,
+          "high": false,
+          "chance": 0.005114837812500004
+        },
+        {
+          "netPt": 10000,
+          "high": true,
+          "chance": 0.008524729687500007
+        }
+      ],
+      "netControl": {
+        "enabled": false
+      },
+      "positiveZone": {
+        "start": 0,
+        "end": 1500,
+        "floor": 0.05,
+        "boost": 1,
+        "sortie": true
+      },
+      "normalRoles": {
+        "WEAK_SUICA": 0.0240064,
+        "STRONG_SUICA": 0,
+        "CHANCE_A": 0,
+        "CHANCE_B": 0,
+        "WEAK_NOVA": 0.0075625,
+        "STRONG_NOVA": 0.00038720000000000003,
+        "REPLAY": 0.3698940646102819,
+        "BELL": 0.005951592437810937,
+        "MISS": 0.5881982429519071,
+        "NAVI_BELL": 0.004
+      },
+      "atRoles": [
+        {
+          "WEAK_SUICA": 0.03099152542372881,
+          "STRONG_SUICA": 0,
+          "CHANCE_A": 0,
+          "CHANCE_B": 0,
+          "WEAK_NOVA": 0.0078125,
+          "STRONG_NOVA": 0.0006666666666666666,
+          "BELL": 0.26073311316051845,
+          "BELL15": 0.26073311316051845,
+          "REPLAY": 0.43906308158856766
+        },
+        {
+          "WEAK_SUICA": 0.03099152542372881,
+          "STRONG_SUICA": 0,
+          "CHANCE_A": 0,
+          "CHANCE_B": 0,
+          "WEAK_NOVA": 0.0078125,
+          "STRONG_NOVA": 0.0006666666666666666,
+          "BELL": 0,
+          "BELL15": 0.5777052436440678,
+          "REPLAY": 0.3828240642655367
+        }
+      ],
+      "czBaseSuccess": 0.5504,
+      "strongCzBaseSuccess": 0.7752,
+      "initial": {
+        "version": 20261007,
+        "quota": 300,
+        "point": 100,
+        "rareAwards": {
+          "WEAK_SUICA": 150,
+          "CHANCE_A": 150,
+          "WEAK_NOVA": 150,
+          "STRONG_SUICA": 200,
+          "CHANCE_B": 200,
+          "STRONG_NOVA": 200,
+          "SUPER_NOVA": 200
+        }
+      }
+    },
+    {
+      "source": "final",
+      "setting": 2,
+      "cz": [
+        {
+          "regime": "非減算",
+          "level": "低確",
+          "chance": 0.10528310555192759
+        },
+        {
+          "regime": "非減算",
+          "level": "高確",
+          "chance": 0.20374963335110735
+        }
+      ],
+      "at": [
+        {
+          "netPt": 0,
+          "high": false,
+          "chance": 0.1545
+        },
+        {
+          "netPt": 0,
+          "high": true,
+          "chance": 0.2575
+        },
+        {
+          "netPt": 3000,
+          "high": false,
+          "chance": 0.007725000000000007
+        },
+        {
+          "netPt": 3000,
+          "high": true,
+          "chance": 0.012875000000000011
+        },
+        {
+          "netPt": 5000,
+          "high": false,
+          "chance": 0.006180000000000006
+        },
+        {
+          "netPt": 5000,
+          "high": true,
+          "chance": 0.01030000000000001
+        },
+        {
+          "netPt": 6500,
+          "high": false,
+          "chance": 0.006180000000000006
+        },
+        {
+          "netPt": 6500,
+          "high": true,
+          "chance": 0.01030000000000001
+        },
+        {
+          "netPt": 10000,
+          "high": false,
+          "chance": 0.006180000000000006
+        },
+        {
+          "netPt": 10000,
+          "high": true,
+          "chance": 0.01030000000000001
+        }
+      ],
+      "netControl": {
+        "enabled": false
+      },
+      "positiveZone": {
+        "start": 0,
+        "end": 1500,
+        "floor": 0.05,
+        "boost": 1,
+        "sortie": true
+      },
+      "normalRoles": {
+        "WEAK_SUICA": 0.0244032,
+        "STRONG_SUICA": 0,
+        "CHANCE_A": 0,
+        "CHANCE_B": 0,
+        "WEAK_NOVA": 0.0076875,
+        "STRONG_NOVA": 0.0003936,
+        "REPLAY": 0.36984812683250406,
+        "BELL": 0.005504552437810947,
+        "MISS": 0.5879963540630183,
+        "NAVI_BELL": 0.004166666666666667
+      },
+      "atRoles": [
+        {
+          "WEAK_SUICA": 0.03099152542372881,
+          "STRONG_SUICA": 0,
+          "CHANCE_A": 0,
+          "CHANCE_B": 0,
+          "WEAK_NOVA": 0.0078125,
+          "STRONG_NOVA": 0.0006666666666666666,
+          "BELL": 0.26073311316051845,
+          "BELL15": 0.26073311316051845,
+          "REPLAY": 0.43906308158856766
+        },
+        {
+          "WEAK_SUICA": 0.03099152542372881,
+          "STRONG_SUICA": 0,
+          "CHANCE_A": 0,
+          "CHANCE_B": 0,
+          "WEAK_NOVA": 0.0078125,
+          "STRONG_NOVA": 0.0006666666666666666,
+          "BELL": 0,
+          "BELL15": 0.5777052436440678,
+          "REPLAY": 0.3828240642655367
+        }
+      ],
+      "czBaseSuccess": 0.556,
+      "strongCzBaseSuccess": 0.778,
+      "initial": {
+        "version": 20261007,
+        "quota": 300,
+        "point": 100,
+        "rareAwards": {
+          "WEAK_SUICA": 150,
+          "CHANCE_A": 150,
+          "WEAK_NOVA": 150,
+          "STRONG_SUICA": 200,
+          "CHANCE_B": 200,
+          "STRONG_NOVA": 200,
+          "SUPER_NOVA": 200
+        }
+      }
+    },
+    {
+      "source": "final",
+      "setting": 3,
+      "cz": [
+        {
+          "regime": "非減算",
+          "level": "低確",
+          "chance": 0.11474950584853427
+        },
+        {
+          "regime": "非減算",
+          "level": "高確",
+          "chance": 0.22419678706805557
+        }
+      ],
+      "at": [
+        {
+          "netPt": 0,
+          "high": false,
+          "chance": 0.11029499999999999
+        },
+        {
+          "netPt": 0,
+          "high": true,
+          "chance": 0.183825
+        },
+        {
+          "netPt": 3000,
+          "high": false,
+          "chance": 0.011029499999999996
+        },
+        {
+          "netPt": 3000,
+          "high": true,
+          "chance": 0.018382499999999996
+        },
+        {
+          "netPt": 5000,
+          "high": false,
+          "chance": 0.009375074999999997
+        },
+        {
+          "netPt": 5000,
+          "high": true,
+          "chance": 0.015625124999999993
+        },
+        {
+          "netPt": 6500,
+          "high": false,
+          "chance": 0.009375074999999997
+        },
+        {
+          "netPt": 6500,
+          "high": true,
+          "chance": 0.015625124999999993
+        },
+        {
+          "netPt": 10000,
+          "high": false,
+          "chance": 0.009375074999999997
+        },
+        {
+          "netPt": 10000,
+          "high": true,
+          "chance": 0.015625124999999993
+        }
+      ],
+      "netControl": {
+        "enabled": false
+      },
+      "positiveZone": {
+        "start": 500,
+        "end": 3000,
+        "floor": 0.1,
+        "boost": 1,
+        "sortie": true
+      },
+      "normalRoles": {
+        "WEAK_SUICA": 0.0248,
+        "STRONG_SUICA": 0,
+        "CHANCE_A": 0,
+        "CHANCE_B": 0,
+        "WEAK_NOVA": 0.0078125,
+        "STRONG_NOVA": 0.0004,
+        "REPLAY": 0.36976354171173115,
+        "BELL": 0.00505751243781094,
+        "MISS": 0.5878186197635014,
+        "NAVI_BELL": 0.004347826086956522
+      },
+      "atRoles": [
+        {
+          "WEAK_SUICA": 0.03099152542372881,
+          "STRONG_SUICA": 0,
+          "CHANCE_A": 0,
+          "CHANCE_B": 0,
+          "WEAK_NOVA": 0.0078125,
+          "STRONG_NOVA": 0.0006666666666666666,
+          "BELL": 0.26073311316051845,
+          "BELL15": 0.26073311316051845,
+          "REPLAY": 0.43906308158856766
+        },
+        {
+          "WEAK_SUICA": 0.03099152542372881,
+          "STRONG_SUICA": 0,
+          "CHANCE_A": 0,
+          "CHANCE_B": 0,
+          "WEAK_NOVA": 0.0078125,
+          "STRONG_NOVA": 0.0006666666666666666,
+          "BELL": 0,
+          "BELL15": 0.5777052436440678,
+          "REPLAY": 0.3828240642655367
+        }
+      ],
+      "czBaseSuccess": 0.5588,
+      "strongCzBaseSuccess": 0.7794,
+      "initial": {
+        "version": 20261007,
+        "quota": 300,
+        "point": 100,
+        "rareAwards": {
+          "WEAK_SUICA": 150,
+          "CHANCE_A": 150,
+          "WEAK_NOVA": 150,
+          "STRONG_SUICA": 200,
+          "CHANCE_B": 200,
+          "STRONG_NOVA": 200,
+          "SUPER_NOVA": 200
+        }
+      }
+    },
+    {
+      "source": "final",
+      "setting": 4,
+      "cz": [
+        {
+          "regime": "非減算",
+          "level": "低確",
+          "chance": 0.14920640734689253
+        },
+        {
+          "regime": "非減算",
+          "level": "高確",
+          "chance": 0.28982542858224286
+        }
+      ],
+      "at": [
+        {
+          "netPt": 0,
+          "high": false,
+          "chance": 0.126
+        },
+        {
+          "netPt": 0,
+          "high": true,
+          "chance": 0.21000000000000002
+        },
+        {
+          "netPt": 3000,
+          "high": false,
+          "chance": 0.012599999999999997
+        },
+        {
+          "netPt": 3000,
+          "high": true,
+          "chance": 0.020999999999999998
+        },
+        {
+          "netPt": 5000,
+          "high": false,
+          "chance": 0.009449999999999998
+        },
+        {
+          "netPt": 5000,
+          "high": true,
+          "chance": 0.01575
+        },
+        {
+          "netPt": 6500,
+          "high": false,
+          "chance": 0.009449999999999998
+        },
+        {
+          "netPt": 6500,
+          "high": true,
+          "chance": 0.01575
+        },
+        {
+          "netPt": 10000,
+          "high": false,
+          "chance": 0.009449999999999998
+        },
+        {
+          "netPt": 10000,
+          "high": true,
+          "chance": 0.01575
+        }
+      ],
+      "netControl": {
+        "enabled": false
+      },
+      "positiveZone": {
+        "start": 500,
+        "end": 3000,
+        "floor": 0.1,
+        "boost": 1,
+        "sortie": true
+      },
+      "normalRoles": {
+        "WEAK_SUICA": 0.0251968,
+        "STRONG_SUICA": 0,
+        "CHANCE_A": 0,
+        "CHANCE_B": 0,
+        "WEAK_NOVA": 0.0079375,
+        "STRONG_NOVA": 0.0004064,
+        "REPLAY": 0.3696350391557364,
+        "BELL": 0.004610472437810949,
+        "MISS": 0.5876683338609981,
+        "NAVI_BELL": 0.004545454545454545
+      },
+      "atRoles": [
+        {
+          "WEAK_SUICA": 0.03099152542372881,
+          "STRONG_SUICA": 0,
+          "CHANCE_A": 0,
+          "CHANCE_B": 0,
+          "WEAK_NOVA": 0.0078125,
+          "STRONG_NOVA": 0.0006666666666666666,
+          "BELL": 0.26073311316051845,
+          "BELL15": 0.26073311316051845,
+          "REPLAY": 0.43906308158856766
+        },
+        {
+          "WEAK_SUICA": 0.03099152542372881,
+          "STRONG_SUICA": 0,
+          "CHANCE_A": 0,
+          "CHANCE_B": 0,
+          "WEAK_NOVA": 0.0078125,
+          "STRONG_NOVA": 0.0006666666666666666,
+          "BELL": 0,
+          "BELL15": 0.5777052436440678,
+          "REPLAY": 0.3828240642655367
+        }
+      ],
+      "czBaseSuccess": 0.5792,
+      "strongCzBaseSuccess": 0.7896,
+      "initial": {
+        "version": 20261007,
+        "quota": 300,
+        "point": 100,
+        "rareAwards": {
+          "WEAK_SUICA": 150,
+          "CHANCE_A": 150,
+          "WEAK_NOVA": 150,
+          "STRONG_SUICA": 200,
+          "CHANCE_B": 200,
+          "STRONG_NOVA": 200,
+          "SUPER_NOVA": 200
+        }
+      }
+    },
+    {
+      "source": "final",
+      "setting": 5,
+      "cz": [
+        {
+          "regime": "非減算",
+          "level": "低確",
+          "chance": 0.18847387730475265
+        },
+        {
+          "regime": "非減算",
+          "level": "高確",
+          "chance": 0.20954105055
+        },
+        {
+          "regime": "減算",
+          "level": "低確",
+          "chance": 0.022475463998232643
+        },
+        {
+          "regime": "減算",
+          "level": "高確",
+          "chance": 0.04495092799646529
+        }
+      ],
+      "at": [
+        {
+          "netPt": 0,
+          "high": false,
+          "chance": 0.18081900000000004
+        },
+        {
+          "netPt": 0,
+          "high": true,
+          "chance": 0.30136500000000005
+        },
+        {
+          "netPt": 3000,
+          "high": false,
+          "chance": 0.18081900000000004
+        },
+        {
+          "netPt": 3000,
+          "high": true,
+          "chance": 0.30136500000000005
+        },
+        {
+          "netPt": 5000,
+          "high": false,
+          "chance": 0.0826601142857143
+        },
+        {
+          "netPt": 5000,
+          "high": true,
+          "chance": 0.13776685714285716
+        },
+        {
+          "netPt": 6500,
+          "high": false,
+          "chance": 0.05786208000000001
+        },
+        {
+          "netPt": 6500,
+          "high": true,
+          "chance": 0.09643680000000002
+        },
+        {
+          "netPt": 10000,
+          "high": false,
+          "chance": 0.05786208000000001
+        },
+        {
+          "netPt": 10000,
+          "high": true,
+          "chance": 0.09643680000000002
+        }
+      ],
+      "netControl": {
+        "enabled": true,
+        "lowMean": 150000,
+        "highMean": 183333.33333333334,
+        "lowCz": 0.25,
+        "highCz": 2.4,
+        "lowAt": 0.25,
+        "highAt": 0.25,
+        "netEnter": 6000,
+        "netExit": 4500,
+        "netCz": 0.25,
+        "netAt": 0.25
+      },
+      "positiveZone": {
+        "start": 3000,
+        "end": 6500,
+        "floor": 0.5,
+        "boost": 1,
+        "sortie": false
+      },
+      "normalRoles": {
+        "WEAK_SUICA": 0.0255936,
+        "STRONG_SUICA": 0,
+        "CHANCE_A": 0,
+        "CHANCE_B": 0,
+        "WEAK_NOVA": 0.0080625,
+        "STRONG_NOVA": 0.0004128,
+        "REPLAY": 0.3694563452452025,
+        "BELL": 0.004163432437810944,
+        "MISS": 0.5875494175550818,
+        "NAVI_BELL": 0.004761904761904762
+      },
+      "atRoles": [
+        {
+          "WEAK_SUICA": 0.03099152542372881,
+          "STRONG_SUICA": 0,
+          "CHANCE_A": 0,
+          "CHANCE_B": 0,
+          "WEAK_NOVA": 0.0078125,
+          "STRONG_NOVA": 0.0006666666666666666,
+          "BELL": 0.26073311316051845,
+          "BELL15": 0.26073311316051845,
+          "REPLAY": 0.43906308158856766
+        },
+        {
+          "WEAK_SUICA": 0.03099152542372881,
+          "STRONG_SUICA": 0,
+          "CHANCE_A": 0,
+          "CHANCE_B": 0,
+          "WEAK_NOVA": 0.0078125,
+          "STRONG_NOVA": 0.0006666666666666666,
+          "BELL": 0,
+          "BELL15": 0.5777052436440678,
+          "REPLAY": 0.3828240642655367
+        }
+      ],
+      "czBaseSuccess": 0.5932,
+      "strongCzBaseSuccess": 0.7966,
+      "initial": {
+        "version": 20261007,
+        "quota": 300,
+        "point": 100,
+        "rareAwards": {
+          "WEAK_SUICA": 150,
+          "CHANCE_A": 150,
+          "WEAK_NOVA": 150,
+          "STRONG_SUICA": 200,
+          "CHANCE_B": 200,
+          "STRONG_NOVA": 200,
+          "SUPER_NOVA": 200
+        }
+      }
+    },
+    {
+      "source": "final",
+      "setting": 6,
+      "cz": [
+        {
+          "regime": "非減算",
+          "level": "低確",
+          "chance": 0.277183196142286
+        },
+        {
+          "regime": "非減算",
+          "level": "高確",
+          "chance": 0.48247092581814
+        },
+        {
+          "regime": "減算",
+          "level": "低確",
+          "chance": 0.0363859361086737
+        },
+        {
+          "regime": "減算",
+          "level": "高確",
+          "chance": 0.0727718722173474
+        }
+      ],
+      "at": [
+        {
+          "netPt": 0,
+          "high": false,
+          "chance": 0.1725
+        },
+        {
+          "netPt": 0,
+          "high": true,
+          "chance": 0.2875
+        },
+        {
+          "netPt": 3000,
+          "high": false,
+          "chance": 0.1725
+        },
+        {
+          "netPt": 3000,
+          "high": true,
+          "chance": 0.2875
+        },
+        {
+          "netPt": 5000,
+          "high": false,
+          "chance": 0.10350000000000001
+        },
+        {
+          "netPt": 5000,
+          "high": true,
+          "chance": 0.17250000000000001
+        },
+        {
+          "netPt": 6500,
+          "high": false,
+          "chance": 0.051750000000000004
+        },
+        {
+          "netPt": 6500,
+          "high": true,
+          "chance": 0.08625000000000001
+        },
+        {
+          "netPt": 10000,
+          "high": false,
+          "chance": 0.051750000000000004
+        },
+        {
+          "netPt": 10000,
+          "high": true,
+          "chance": 0.08625000000000001
+        }
+      ],
+      "netControl": {
+        "enabled": true,
+        "lowMean": 60000,
+        "highMean": 90000,
+        "lowCz": 0.25,
+        "highCz": 1.95,
+        "lowAt": 0.25,
+        "highAt": 0.25,
+        "netEnter": 6500,
+        "netExit": 5000,
+        "netCz": 0.25,
+        "netAt": 0.25
+      },
+      "positiveZone": {
+        "start": 3000,
+        "end": 6500,
+        "floor": 0.3,
+        "boost": 1,
+        "sortie": false
+      },
+      "normalRoles": {
+        "WEAK_SUICA": 0.03529664,
+        "STRONG_SUICA": 0,
+        "CHANCE_A": 0,
+        "CHANCE_B": 0,
+        "WEAK_NOVA": 0.0114625,
+        "STRONG_NOVA": 0.00041920000000000005,
+        "REPLAY": 0.3602796427513228,
+        "BELL": 0.00008932063492063207,
+        "MISS": 0.5874526966137565,
+        "NAVI_BELL": 0.005
+      },
+      "atRoles": [
+        {
+          "WEAK_SUICA": 0.03099152542372881,
+          "STRONG_SUICA": 0,
+          "CHANCE_A": 0,
+          "CHANCE_B": 0,
+          "WEAK_NOVA": 0.0078125,
+          "STRONG_NOVA": 0.0006666666666666666,
+          "BELL": 0.26073311316051845,
+          "BELL15": 0.26073311316051845,
+          "REPLAY": 0.43906308158856766
+        },
+        {
+          "WEAK_SUICA": 0.03099152542372881,
+          "STRONG_SUICA": 0,
+          "CHANCE_A": 0,
+          "CHANCE_B": 0,
+          "WEAK_NOVA": 0.0078125,
+          "STRONG_NOVA": 0.0006666666666666666,
+          "BELL": 0,
+          "BELL15": 0.5777052436440678,
+          "REPLAY": 0.3828240642655367
+        }
+      ],
+      "czBaseSuccess": 0.6336,
+      "strongCzBaseSuccess": 0.8168,
+      "initial": {
+        "version": 20261007,
+        "quota": 300,
+        "point": 100,
+        "rareAwards": {
+          "WEAK_SUICA": 150,
+          "CHANCE_A": 150,
+          "WEAK_NOVA": 150,
+          "STRONG_SUICA": 200,
+          "CHANCE_B": 200,
+          "STRONG_NOVA": 200,
+          "SUPER_NOVA": 200
+        }
+      }
+    }
+  ],
+  "adopted": true,
+  "adoptedAt": "2026-10-07T14:00:41.582Z",
+  "baselineCommit": "cb8c66fc731814af73c17f08272815c92620f523",
+  "sourceHashes": {
+    "nova-art.js": "fa93d5f5e905c160c3f1ceffa511f09883aefff9c973f4b2a7d13c66ffd039ce",
+    "nova-normal.js": "b74c1a441820122309d0d0f453a554ef3d2cd3a7469ee069ef08f00f318d76b4",
+    "nova-flow.js": "a01ae6c12fcf577c4cd5d7e3d099afad55aaad95930088763bc61ef06238fd19",
+    "nova-tuning.js": "26ab2f821eebb4744fe20de717bc58c50a0869277395b92e41b5e9ee963f9f54",
+    "nova-decrement.js": "4453adbabda617b7aff2be25fa41abaef0d8577a28140e5330c55e6f9cdcb3de",
+    "nova-progress.js": "3d02469b2727693056c4672903722beef77bc71b72d398fd2686417b416f481f",
+    "nova-balance.js": "c0b93ab8c18c7753d207667f8df3ea8012357dfb9071cf0e0ea5c03fb3e9e75d",
+    "nova-complete.js": "afee692d2328871c922f6229030b58958a763a10ebe8ae5194ca0a4ac56f62d2",
+    "nova-game.js": "6dcd6a668061d308582ae41e65faacf865e8b0618bc12196800d1c0750175227",
+    "jag.html": "7b53580bd7be7a13ebd387f787173e7f38204854e6493c4c249d350a0064ecc2",
+    "scripts/zone-v2-model.mjs": "24c65422dccf22fc0d3adf185417a6124386b2900777cfca3f78331a9618422c",
+    "scripts/zone-v2-rng.mjs": "0e5424d7a743850591b4029b730d93267c986633a0be83942a69a19b18c8fcce"
+  },
+  "rowsSha256": "04489d34caac8a5c9fe7f01b8d2e13449e1fcfa9f6f780195517a18988a283d3",
+  "options": {
+    "rng": "xoshiro128",
+    "exactGames": true,
+    "stopAtComplete": true,
+    "completeLimitPt": 10000,
+    "completeMyLimitPt": 15000,
+    "rareSortie": true,
+    "atBetRefund": true,
+    "replayRefund": true
+  }
+}

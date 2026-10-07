@@ -23,14 +23,14 @@ test('AT, bonus, preparation and zone draws do not read the normal lottery',()=>
  assert.deepEqual(trace(),before);
 });
 
-test('independent AT/bonus distributions normalize and retain the approved 5/8pt per game',()=>{
+test('independent AT/bonus distributions normalize and retain the approved 4.5/7pt per game',()=>{
  const a=load().NovaArt;
  for(let setting=1;setting<=6;setting++)for(const upper of [false,true]){
   const row=a.roleProbabilities(setting,upper);
   assert.ok(Object.values(row).every(p=>p>=0&&p<=1));
   assert.ok(Math.abs(Object.values(row).reduce((s,p)=>s+p,0)-1)<1e-12);
   const net=Object.entries(row).reduce((sum,[role,p])=>sum+p*a.payout(role),0)-3*(1-row.REPLAY);
-  assert.ok(Math.abs(net-(upper?8:5))<1e-12);
+  assert.ok(Math.abs(net-(upper?7:4.5))<1e-12);
  }
  const actual={},random=rng();const N=200000;
  for(let i=0;i<N;i++){const role=a.step(a.normalize({payoutVersion:1,remaining:150}),{setting:3},random).result;actual[role]=(actual[role]||0)+1;}

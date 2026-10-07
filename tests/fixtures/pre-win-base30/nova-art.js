@@ -138,8 +138,7 @@ globalThis.NovaArt=(()=>{
  function drawInitialMultiplier(setting,rng){return initialBoostRules.values[weightedChallenge(initialBoostRules.weights[validSetting(setting)-1],rng)];}
  // The base plan is sealed; rare roles in the duo zone can upgrade that game's award.
  const initialRareAwards=Object.freeze({WEAK_SUICA:100,CHANCE_A:100,WEAK_NOVA:100,STRONG_SUICA:200,CHANCE_B:200,STRONG_NOVA:200,SUPER_NOVA:200});
- // Initial and sortie games retain their existing cash role mix.
- function drawInitialRole(setting,rng){let roll=rng();for(const [role,p]of Object.entries(roleProbabilities(setting,false,5)))if((roll-=p)<0)return role==='BELL15'?'BELL':role;return 'REPLAY';}
+ function drawInitialRole(setting,rng){let roll=rng();for(const [role,p]of Object.entries(roleProbabilities(setting)))if((roll-=p)<0)return role==='BELL15'?'BELL':role;return 'REPLAY';}
 
  // Plan the three actual roles once; saved games replay the same awards.
  function scriptedInitialRoles(setting,rng){return Array.from({length:3},()=>drawInitialRole(setting,rng));}
@@ -266,8 +265,8 @@ const tuning={"weak":128,"strong":1500,"other":1.15,"tilts":[-0.28,-0.28,-0.28,0
   const chance=Object.values(r).reduce((a,b)=>a+b,0),mean=6*r.WEAK_SUICA/chance;return {r,chance,mean};
  }
  function drawAtRare(setting,rng){const {r,chance}=atMix(setting);let roll=rng()*chance;for(const [role,p]of Object.entries(r))if((roll-=p)<0)return role;return 'STRONG_NOVA';}
- function roleProbabilities(setting=3,upper=false,target=upper?7:4.5){
-  const {r,chance,mean}=atMix(setting),share=upper?1:0.5;
+ function roleProbabilities(setting=3,upper=false){
+  const {r,chance,mean}=atMix(setting),share=upper?1:0.5,target=upper?8:5;
   const bell=(target-chance*(mean-3))/(5+7*share);
   return {...r,BELL:bell*(1-share),BELL15:bell*share,REPLAY:1-chance-bell};
  }
@@ -383,8 +382,8 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
  const lossRewardControl=Object.freeze({enabled:false,threshold:-2000,multiplier:1});
  const netRewardControl=Object.freeze({enabled:false,startRatio:0,floor:1});
  function netRewardFactor(){return 1;}
- const weakAtZoneScales=Object.freeze([1.0491974999999998,1.03,0.7353,0.8400000000000001,1.2054600000000002,1.15]);
- const positiveNetZoneRules=Object.freeze([{"start":0,"end":1500,"floor":0.05,"boost":1,"sortie":true},{"start":0,"end":1500,"floor":0.05,"boost":1,"sortie":true},{"start":500,"end":3000,"floor":0.1,"boost":1,"sortie":true},{"start":500,"end":3000,"floor":0.1,"boost":1,"sortie":true},{"start":3000,"end":6500,"floor":0.5,"boost":1,"sortie":false},{"start":3000,"end":6500,"floor":0.3,"boost":1,"sortie":false}].map(Object.freeze));
+ const weakAtZoneScales=Object.freeze([0.9944999999999999,1,0.6839999999999999,0.8,1.11,1]);
+ const positiveNetZoneRules=Object.freeze([{"start":0,"end":1500,"floor":0.05,"boost":1,"sortie":true},{"start":0,"end":1500,"floor":0.05,"boost":1,"sortie":true},{"start":500,"end":3000,"floor":0.1,"boost":1,"sortie":true},{"start":500,"end":3000,"floor":0.1,"boost":1,"sortie":true},{"start":5000,"end":8500,"floor":0.75,"boost":1,"sortie":false},{"start":5000,"end":8500,"floor":0.45,"boost":1,"sortie":false}].map(Object.freeze));
  function positiveNetZoneFactor(setting,netPt=0){const r=positiveNetZoneRules[validSetting(setting)-1],progress=Math.max(0,Math.min(1,(Number(netPt)-r.start)/(r.end-r.start)));return r.boost+(r.floor-r.boost)*progress;}
  const weakAtNetZoneScales=Object.freeze([.65,.8,.85,.75,.64,1]);
  function extraZoneChance(setting,role,upper=false,high=false,netPt=0){
