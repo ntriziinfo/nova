@@ -1,7 +1,31 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
 const c=vm.createContext({});vm.runInContext(fs.readFileSync('nova-results.js','utf8'),c);const r=c.NovaResults;
 test('parity favors red 60/40 for odd and blue 60/40 for even',()=>{for(let s=1;s<=6;s++){let red=0;for(let i=0;i<1000;i++)if(r.pick('zone','giru',s,()=>i/1000).color==='red')red++;assert.equal(red,s%2?600:400);}});
-test('AT uniformly selects all 12 and is independent of setting',()=>{const choices=new Set();for(let i=0;i<12;i++){const a=r.pick('at','',1,()=>(i+.5)/12),b=r.pick('at','',6,()=>(i+.5)/12);assert.deepEqual(a,b);choices.add(a.character+a.color);}assert.equal(choices.size,12);});
+test('AT boss result is absent on setting 1, exactly 10 percent on settings 2-6, and leaves regular images balanced',()=>{
+ for(let setting=1;setting<=6;setting++){
+  const counts=new Map();let draws=0;
+  for(let i=0;i<12000;i++){
+   const card=r.pick('at','',setting,()=>{draws++;return (i+.5)/12000;});
+   const key=card.character+'-'+card.color;counts.set(key,(counts.get(key)||0)+1);
+  }
+  assert.equal(draws,12000,'exactly one RNG draw per result');
+  assert.equal(counts.get('boss-blue')||0,setting===1?0:1200);
+  counts.delete('boss-blue');assert.equal(counts.size,12);
+  for(const count of counts.values())assert.equal(count,setting===1?1000:900);
+ }
+});
+test('AT hint boundary, saved setting strings, and non-AT results never create false setting hints',()=>{
+ for(const setting of [2,3,4,5,6,'2','6']){
+  assert.equal(r.pick('at','',setting,()=>.099999).character,'boss');
+  assert.equal(r.pick('at','',setting,()=>.1).character,'sosuke');
+ }
+ for(const setting of [1,'1',undefined,0,7,2.5,'invalid'])assert.notEqual(r.pick('at','',setting,()=>0).character,'boss');
+ for(let setting=1;setting<=6;setting++)for(const zone of ['sosuke','toto','urapi','giru','sora','ouma','kushuri_nito']){
+  let draws=0;
+  const result=r.transition({zone,award:'500'},{zone:'',award:'500'},setting,()=>{draws++;return .05;});
+  assert.equal(result.character,zone);assert.equal(result.pt,'500');assert.equal(draws,zone==='kushuri_nito'?0:1);
+ }
+});
 test('zone result includes final increment and preserves large point values',()=>{const before={zone:'ouma',award:'100'},after={zone:'',award:'300'};assert.equal(r.transition(before,after,1,()=>0).pt,'300');assert.equal(r.transition(before,{zone:'ouma',award:'300'},1),null);assert.equal(r.transition(before,{zone:'',award:'9007199254740999'},1).pt,'9007199254740999');});
 function presenter(){
  const source=fs.readFileSync('nova-results.js','utf8'),images=[],shown=[],fields={span:{},output:{},'.novaResultTotal':{}};
@@ -18,6 +42,16 @@ test('decoded result images show synchronously and cold/error requests show the 
  c.show({character:'sora',color:'red',pt:'900'});assert.equal(c.root.dataset.color,'red');assert.equal(images.length,1);assert.equal(c.root.dataset.loading,undefined);
  c.show({character:'ouma',color:'red',pt:'1000'});images[1].onerror();await flush();assert.equal(c.root.dataset.loading,'true');assert.equal(fields.output.textContent,'1000pt');
  c.show({character:'ouma',color:'red',pt:'1200'});assert.equal(images.length,3);assert.equal(fields.output.textContent,'1200pt');images[2].onload();await flush();assert.equal(c.root.dataset.loading,undefined);
+});
+
+test('boss result uses the supplied original, preserves payout and saved card, and shares the normal result lifecycle',async()=>{
+ const {c,images,shown,fields,flush}=presenter();
+ const saved=JSON.parse(JSON.stringify({kind:'at',...r.pick('at','',2,()=>.05),pt:'1537'})),before=JSON.stringify(saved);
+ c.show(saved);assert.equal(images[0].src,'assets/illustrations/result-boss.png');assert.equal(fields.output.textContent,'1537pt');assert.equal(fields.span.textContent,'AT総獲得');
+ images[0].onload();await flush();assert.equal(c.root.dataset.loading,undefined);assert.equal(shown.at(-1),'assets/illustrations/result-boss.png');
+ assert.equal(c.root.dataset.color,'blue');assert.equal(c.root.dataset.all,'false');assert.equal(JSON.stringify(saved),before);
+ c.hide();assert.equal(c.root.hidden,true);c.show(saved);assert.equal(c.root.dataset.loading,undefined);assert.equal(images.length,1);
+ c.show({kind:'zone',character:'sora',color:'red',pt:'500'});images[1].onload();await flush();assert.equal(shown.at(-1),'assets/illustrations/lamps-20260916/sora1.png');
 });
 
 test('consecutive zones total actual awards across a save, including the final zone, without changing prizes or RNG',()=>{
