@@ -9,6 +9,9 @@
 .novaResultTotal[hidden]{display:none!important}
 .novaResultCard{position:absolute;box-sizing:border-box;background:radial-gradient(ellipse at 15% 20%,#3589eb,#103d89 55%,#081937);border:1px solid #e9c36d;border-radius:8px;overflow:hidden;box-shadow:inset 0 0 24px #0006}
 .novaResultsLayer[data-color=red] .novaResultCard{background:radial-gradient(ellipse at 15% 20%,#f05c6e,#981c39 55%,#390c20)}
+.novaResultsLayer[data-color=purple] .novaResultCard{background:radial-gradient(ellipse at 15% 20%,#b06bf0,#602493 55%,#240d43);border-color:#deb6ff}
+.novaResultsLayer[data-color=gold] .novaResultCard{background:radial-gradient(ellipse at 15% 20%,#ffe59b,#a36b13 55%,#422506);border-color:#fff0b3;box-shadow:inset 0 0 24px #70450066,0 0 14px #ffd76c55}
+.novaResultsLayer[data-color=rainbow] .novaResultCard{background:linear-gradient(125deg,#ab224a 0%,#a64c18 17%,#918016 32%,#247d50 48%,#1677a1 64%,#493aa4 80%,#982785 100%);border-color:#fff3c7;box-shadow:inset 0 0 24px #0006,0 0 16px #f3ceff66}
 .novaResultArt{position:absolute}
 .novaResultArt>img{width:100%;height:100%;object-fit:contain;display:block;max-width:none;filter:none!important}
 .novaResultNumber{display:none}

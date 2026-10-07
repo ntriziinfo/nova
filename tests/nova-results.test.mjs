@@ -1,7 +1,7 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
 const c=vm.createContext({});vm.runInContext(fs.readFileSync('nova-results.js','utf8'),c);const r=c.NovaResults;
 test('parity favors red 60/40 for odd and blue 60/40 for even',()=>{for(let s=1;s<=6;s++){let red=0;for(let i=0;i<1000;i++)if(r.pick('zone','giru',s,()=>i/1000).color==='red')red++;assert.equal(red,s%2?600:400);}});
-test('AT boss result is absent on setting 1, exactly 10 percent on settings 2-6, and leaves regular images balanced',()=>{
+test('AT hint percentages are unconditional, setting-gated and exclusive, leaving regular images balanced with one draw',()=>{
  for(let setting=1;setting<=6;setting++){
   const counts=new Map();let draws=0;
   for(let i=0;i<12000;i++){
@@ -9,15 +9,17 @@ test('AT boss result is absent on setting 1, exactly 10 percent on settings 2-6,
    const key=card.character+'-'+card.color;counts.set(key,(counts.get(key)||0)+1);
   }
   assert.equal(draws,12000,'exactly one RNG draw per result');
-  assert.equal(counts.get('boss-blue')||0,setting===1?0:1200);
-  counts.delete('boss-blue');assert.equal(counts.size,12);
-  for(const count of counts.values())assert.equal(count,setting===1?1000:900);
+  const expected={'boss-blue':setting>=2?1200:0,'sora2-purple':setting>=4?360:0,'ouma2-gold':setting>=5?240:0,'group-rainbow':setting===6?120:0};
+  for(const [key,count] of Object.entries(expected)){assert.equal(counts.get(key)||0,count);counts.delete(key);}
+  assert.equal(counts.size,12);
+  const regularCount=(12000-Object.values(expected).reduce((a,b)=>a+b,0))/12;
+  for(const count of counts.values())assert.equal(count,regularCount);
  }
 });
 test('AT hint boundary, saved setting strings, and non-AT results never create false setting hints',()=>{
  for(const setting of [2,3,4,5,6,'2','6']){
   assert.equal(r.pick('at','',setting,()=>.099999).character,'boss');
-  assert.equal(r.pick('at','',setting,()=>.1).character,'sosuke');
+  assert.equal(r.pick('at','',setting,()=>.1).character,Number(setting)>=4?'sora2':'sosuke');
  }
  for(const setting of [1,'1',undefined,0,7,2.5,'invalid'])assert.notEqual(r.pick('at','',setting,()=>0).character,'boss');
  for(let setting=1;setting<=6;setting++)for(const zone of ['sosuke','toto','urapi','giru','sora','ouma','kushuri_nito']){
@@ -26,11 +28,18 @@ test('AT hint boundary, saved setting strings, and non-AT results never create f
   assert.equal(result.character,zone);assert.equal(result.pt,'500');assert.equal(draws,zone==='kushuri_nito'?0:1);
  }
 });
+test('purple, gold and rainbow hint thresholds include their lower boundary and exclude the next interval',()=>{
+ for(const [setting,roll,character,color] of [
+  [3,.10,'sosuke','red'],[4,.10,'sora2','purple'],[4,.129999,'sora2','purple'],[4,.13,'sosuke','red'],
+  [5,.13,'ouma2','gold'],[5,.149999,'ouma2','gold'],[5,.15,'sosuke','red'],
+  [6,.15,'group','rainbow'],[6,.159999,'group','rainbow'],[6,.16,'sosuke','red']
+ ])assert.deepEqual({...r.pick('at','',setting,()=>roll)},{character,color});
+});
 test('zone result includes final increment and preserves large point values',()=>{const before={zone:'ouma',award:'100'},after={zone:'',award:'300'};assert.equal(r.transition(before,after,1,()=>0).pt,'300');assert.equal(r.transition(before,{zone:'ouma',award:'300'},1),null);assert.equal(r.transition(before,{zone:'',award:'9007199254740999'},1).pt,'9007199254740999');});
 function presenter(){
- const source=fs.readFileSync('nova-results.js','utf8'),images=[],shown=[],fields={span:{},output:{},'.novaResultTotal':{}};
+ const source=fs.readFileSync('nova-results.js','utf8'),images=[],shown=[],fields={span:{},output:{},'.novaResultTotal':{},'.novaResultNext':{}};
  const c=vm.createContext({root:{hidden:true,dataset:{}},art:{querySelector:()=>({replaceWith:img=>shown.push(img.src)})},num:{setAttribute(){}},fallback:{querySelector:tag=>fields[tag]},names:{sora:'空',ouma:'逢魔'},init(){},apply(){},Image:class{constructor(){images.push(this);this.naturalWidth=100;}decode(){return Promise.resolve();}}});
- vm.runInContext(source.match(/ const characterImages=.*;/)[0]+'const images=new Map();let imageRequest=0,active=null;'+source.slice(source.indexOf(' function loadImage('),source.indexOf(' function apply('))+source.slice(source.indexOf(' function show(value)'),source.indexOf(" if(typeof document")),c);
+ vm.runInContext(source.match(/ const settingHints=\[[^]*?\n \];/)[0]+source.match(/ const characterImages=.*;/)[0]+'const images=new Map();let imageRequest=0,active=null;'+source.slice(source.indexOf(' function loadImage('),source.indexOf(' function apply('))+source.slice(source.indexOf(' function show(value)'),source.indexOf(" if(typeof document")),c);
  const flush=()=>new Promise(resolve=>setImmediate(resolve));
  return {c,images,shown,fields,flush};
 }
@@ -66,6 +75,22 @@ test('consecutive zones total actual awards across a save, including the final z
  assert.equal(draws,2);assert.equal(after.award,'300');assert.equal(secondAfter.award,'500');
  const resumed=r.chain(second.state,{phase:'art'},secondAfter,null);assert.equal(resumed.state,null);
  const later=r.chain(resumed.state,before,{...after,queuedZones:[]},r.transition(before,after,3,rng));assert.equal(later.card.totalPt,undefined);
+});
+
+test('new setting hint cards restore supplied art, exact colors and payout without becoming checkpoint results',async()=>{
+ const {c,images,shown,fields,flush}=presenter();
+ for(const [index,character,color,roll] of [[0,'sora2','purple',.11],[1,'ouma2','gold',.14],[2,'group','rainbow',.155]]){
+  const saved=JSON.parse(JSON.stringify({kind:'at',...r.pick('at','',6,()=>roll),pt:'2500'}));
+  c.show(saved);assert.equal(images[index].src,`assets/illustrations/result-${character}.png`);
+  images[index].onload();await flush();assert.equal(shown.at(-1),`assets/illustrations/result-${character}.png`);
+  assert.equal(c.root.dataset.color,color);assert.equal(c.root.dataset.all,'false');assert.equal(c.root.dataset.loading,undefined);
+  assert.equal(fields.span.textContent,'AT総獲得');assert.equal(fields.output.textContent,'2500pt');assert.equal(fields['.novaResultNext'].hidden,true);
+  c.hide();c.show(saved);assert.equal(images.length,index+1);assert.equal(c.root.dataset.loading,undefined);
+ }
+ c.show({kind:'checkpoint',character:'all',color:'gold',pt:'2400'});
+ assert.equal(c.root.dataset.all,'true');assert.equal(fields['.novaResultNext'].hidden,false);
+ c.show({kind:'at',character:'ouma2',color:'gold',pt:'2500'});
+ assert.equal(c.root.dataset.all,'false');assert.equal(fields['.novaResultNext'].hidden,true);assert.equal(c.root.dataset.color,'gold');
 });
 
 test('chain handles BIG zone stock, pending results, large totals and reset/challenge boundaries',()=>{
