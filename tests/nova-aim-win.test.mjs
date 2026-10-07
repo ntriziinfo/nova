@@ -47,6 +47,42 @@ test('CZ intro can resume after reload, resets cleanly, and never replaces prelu
  assert.equal(t.elements.find(e=>e.src==='assets/ui/nova-shuketsu-zone.png').hidden,true);
  assert.equal(t.elements.find(e=>e.src==='assets/media/nova/aim/seven-red.mp4').hidden,false);
 });
+test('comeback fire and title loop across BETs and stops without touching the draw or locking AUTO',()=>{
+ const t=setup();t.aim.stop({comebackEvent:'entry',flowBefore:{phase:'art'}});
+ const root=t.elements[0],video=t.elements.find(e=>e.src==='assets/media/nova/comeback-fire.mp4'),title=t.elements.find(e=>e.className==='novaComebackTitle');
+ assert.equal(root.hidden,false);assert.equal(root.dataset.comeback,'true');assert.equal(title.hidden,false);
+ assert.equal(video.loop,true);assert.equal(video.muted,true);assert.equal(video.playsInline,true);
+ video.currentTime=2;
+ for(let left=5;left>1;left--){
+  const spin={flowBefore:{phase:'art',comebackLeft:left},flowAfter:{phase:'art',comebackLeft:left-1},comebackEvent:'continue'};
+  const before=JSON.stringify(spin);
+  assert.equal(t.aim.bet(null,spin),false);t.aim.stop(spin);
+  assert.equal(video.currentTime,2);assert.equal(video.paused,false);assert.equal(root.hidden,false);
+  assert.equal(JSON.stringify(spin),before);assert.equal(t.aim.busy,false);assert.equal(t.timers.size,0);
+ }
+});
+
+test('comeback success and failure stay concealed until the third stop then reveal the character or result',()=>{
+ for(const comebackEvent of ['success','failure']){
+  const t=setup(),spin={flowBefore:{phase:'art',comebackLeft:1},flowAfter:{phase:comebackEvent==='success'?'art':'normal',comebackLeft:0},comebackEvent};
+  t.aim.bet(null,spin);
+  const root=t.elements[0],video=t.elements.find(e=>e.src==='assets/media/nova/comeback-fire.mp4'),title=t.elements.find(e=>e.className==='novaComebackTitle');
+  assert.equal(root.hidden,false);assert.equal(title.hidden,false);video.currentTime=3;
+  t.aim.stop(spin);assert.equal(root.hidden,true);assert.equal(title.hidden,true);assert.equal(video.paused,true);assert.equal(video.currentTime,0);assert.equal(root.dataset.comeback,undefined);
+  t.aim.bet(null,{flowBefore:{phase:'art',entryStage:'seven'},flowAfter:{phase:'art',entryStage:'roulette'}});
+  assert.equal(title.hidden,true);assert.equal(video.hidden,true);assert.equal(t.elements.find(e=>e.src?.endsWith('/seven-entry-red.mp4')).hidden,false);
+ }
+});
+
+test('comeback presentation restores from pending spins and resets without covering other scenes',()=>{
+ const t=setup(),spin=JSON.parse(JSON.stringify({flowBefore:{phase:'art',comebackLeft:3},comebackEvent:'continue'}));
+ t.aim.bet(null,spin);t.aim.stop(spin);assert.equal(t.elements[0].hidden,false);
+ t.aim.reset();assert.equal(t.elements[0].hidden,true);assert.equal(t.elements.find(e=>e.className==='novaComebackTitle').hidden,true);
+ for(const excluded of [{flowBefore:{phase:'normal',comebackLeft:3}},{flowBefore:{phase:'art',comebackLeft:0}},{flowBefore:{phase:'art',comebackLeft:3},aTypeBonusGame:true},{flowBefore:{phase:'art',comebackLeft:3},bonusPendingAtStart:true}]){
+  t.aim.bet(null,excluded);assert.equal(t.elements[0].hidden,true);
+ }
+});
+
 test('win locks from playback for 3 seconds, plays once and defers result',()=>{
  const {aim,elements,timers}=setup();let sounds=0,results=0;
  aim.win(()=>sounds++);assert.equal(aim.busy,true);assert.equal(sounds,0);

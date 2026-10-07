@@ -9,3 +9,5 @@ assets/media/nova/cz-entry-voice.wav -filter -diff -merge -text
 
 # Replacement CZ BGM ships directly; preserve the original media archive.
 assets/media/nova/audiostock_860274.mp3 -filter -diff -merge -text
+assets/media/nova/comeback-fire.mp4 -filter -diff -merge -text
+assets/ui/comeback-challenge-title.png -filter -diff -merge -text

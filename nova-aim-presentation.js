@@ -1,7 +1,7 @@
 /* Per-spin presentation only. The draw in NovaArt owns color, symbol and result. */
 globalThis.NovaAim=(()=>{
  const {setTimeout,clearTimeout}=globalThis.NovaClock||globalThis;
- let host,root,active=null,czTitle;
+ let host,root,active=null,czTitle,comebackTitle;
  const videos=new Map();
  let winLocked=false,winTimer=null,winVoiceTimer=null,winToken=0,afterWinCallbacks=[],pendingStart=null;
  function init(){
@@ -20,6 +20,8 @@ globalThis.NovaAim=(()=>{
   const entrySeven=document.createElement('video');entrySeven.muted=true;entrySeven.loop=true;entrySeven.playsInline=true;entrySeven.preload='auto';entrySeven.hidden=true;entrySeven.src='assets/media/nova/aim/seven-entry-red.mp4';entrySeven.setAttribute('aria-label','777を狙え！');root.append(entrySeven);videos.set('zone-entry-seven',entrySeven);entrySeven.load?.();
   const czIntro=document.createElement('video');czIntro.muted=true;czIntro.loop=true;czIntro.playsInline=true;czIntro.preload='auto';czIntro.hidden=true;czIntro.src='assets/media/nova/cz-intro-bg.mp4';root.append(czIntro);videos.set('cz-intro',czIntro);czIntro.load?.();
   czTitle=document.createElement('img');czTitle.className='novaCzIntroTitle';czTitle.hidden=true;czTitle.src='assets/ui/nova-shuketsu-zone.png';czTitle.alt='NOVA Familia 集結ゾーン';root.append(czTitle);
+  const comeback=document.createElement('video');comeback.muted=true;comeback.loop=true;comeback.playsInline=true;comeback.preload='auto';comeback.hidden=true;comeback.src='assets/media/nova/comeback-fire.mp4';root.append(comeback);videos.set('comeback',comeback);
+  comebackTitle=document.createElement('img');comebackTitle.className='novaComebackTitle';comebackTitle.hidden=true;comebackTitle.src='assets/ui/comeback-challenge-title.png';comebackTitle.alt='引き戻しチャレンジ';root.append(comebackTitle);
   const win=document.createElement('video');win.muted=true;win.loop=false;win.playsInline=true;win.preload='auto';win.hidden=true;win.src='assets/media/nova/aim/seven-win.mp4?v=20260918-rainbow-144';root.append(win);videos.set('win',win);
   return true;
  }
@@ -35,7 +37,8 @@ globalThis.NovaAim=(()=>{
  function hide(){
   if(active){active.pause();active.hidden=true;if(active.currentTime>0)active.currentTime=0;active=null;}
   if(czTitle)czTitle.hidden=true;
-  if(root){root.hidden=true;delete root.dataset.failed;delete root.dataset.zoneEntry;delete root.dataset.bonusWait;delete root.dataset.czIntro;delete host.dataset.aimActive;}
+  if(comebackTitle)comebackTitle.hidden=true;
+  if(root){root.hidden=true;delete root.dataset.failed;delete root.dataset.zoneEntry;delete root.dataset.bonusWait;delete root.dataset.czIntro;delete root.dataset.comeback;delete host.dataset.aimActive;}
  }
  function hasGuide(aim){return !!aim&&aim.guide!==false;}
  function drawGuide(aim,rng=Math.random){return aim.result!=='MISS'||rng()<.5;}
@@ -58,8 +61,22 @@ globalThis.NovaAim=(()=>{
   hide();active=video;root.hidden=false;root.dataset.bonusWait='true';root.dataset.color='gold';root.dataset.symbol='bonus-wait';
   host.dataset.aimActive='true';video.hidden=false;layout();video.play().catch(()=>{});
  }
- function stop(resolved){if(!isBonusWait(resolved)&&!isCzIntro(resolved))hide();}
+ function isComeback(resolved){return !resolved?.aTypeBonusGame&&!resolved?.bonusPendingAtStart&&resolved?.flowBefore?.phase==='art'&&Number(resolved.flowBefore.comebackLeft)>0;}
+ function showComeback(){
+  if(!init())return;
+  const video=videos.get('comeback');
+  if(active===video&&!root.hidden)return;
+  hide();active=video;root.hidden=false;root.dataset.comeback='true';root.dataset.symbol='comeback';
+  host.dataset.aimActive='true';video.hidden=false;comebackTitle.hidden=false;layout();video.play().catch(()=>{});
+ }
+ function stop(resolved){
+  // Reveal the winning character or result only after the last reel lands.
+  if(resolved?.comebackEvent==='success'||resolved?.comebackEvent==='failure'){hide();return;}
+  if(resolved?.comebackEvent==='entry'||isComeback(resolved)){showComeback();return;}
+  if(!isBonusWait(resolved)&&!isCzIntro(resolved))hide();
+ }
  function bet(aim,resolved={}){
+  if(isComeback(resolved)){showComeback();return false;}
   if(isCzIntro(resolved)){showCzIntro();return false;}
   if(isBonusWait(resolved)){showBonusWait();return false;}
   hide();
