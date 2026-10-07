@@ -2420,7 +2420,7 @@
   }
 
   function normalRewardFor(result, lineRow=1){
-    if(A_TYPE_MODE && result==="REPLAY")return 0;
+    if(A_TYPE_MODE && result==="REPLAY")return NovaArt.replayRefund(result);
     if(isNovaResult(result) || result === "CZ" || result === "STRONG_CZ") return 0;
     if(A_TYPE_MODE && NovaNormal.rare[result]) return NovaNormal.pay(result);
     if(A_TYPE_MODE && (result === "BIG" || result === "MID")) return 0;
@@ -2938,6 +2938,7 @@
   function chargeSpinCost(){
     clearCzReelBlackout();
     if(!session.active && normalState.flow?.phase==='art' && normalState.flow.zero)return;
+    // Only a pre-update save can still own a free-BET entitlement.
     if(A_TYPE_MODE && normalState.replayFree){normalState.replayFree=false;return;}
     stats.totalFee = (Number(stats.totalFee) || 0) + SPIN_COST;
     if(session.active){
@@ -3025,7 +3026,7 @@
   }
 
   function isCompleteLockEnabled(){
-    return COMPLETE_TRIAL_ENABLED && completeLimitPt() > 0;
+    return COMPLETE_TRIAL_ENABLED;
   }
 
   function isCompleteTrialLocked(){
@@ -3040,17 +3041,17 @@
     if(!COMPLETE_TRIAL_ENABLED) return false;
     const profit = completeTrialProfit();
 
-    const limit = completeLimitPt();
-    if(isCompleteLockEnabled() && !completeTrialState.locked && profit >= limit){
-      completeTrialState.locked = true;
+    const limit = completeLimitPt(), wasLocked=!!completeTrialState.locked;
+    NovaComplete.observe(completeTrialState,profit,limit,15000);
+    if(isCompleteLockEnabled() && !wasLocked && completeTrialState.locked){
       completeTrialState.lockedSetting = Number(settings.setting) || 1;
       completeTrialState.completeProfit = profit;
       stopAutoPlay("COMPLETE到達のためAUTO停止");
       stopSpeedToBonus("COMPLETE到達のためSPEED停止");
       stopDebugFastSpin("COMPLETE到達");
       showOverlay("コンプリートしました。");
-      showMessage("コンプリートしました。", `+${limit}pt到達 / 管理リセットまたは設定変更まで遊技できません`);
-      log(`[COMPLETE] +${limit}pt到達：${formatSigned(profit)}pt / 設定${completeTrialState.lockedSetting}`);
+      showMessage("コンプリートしました。", `${completeTrialState.reason==='my'?'MY15,000pt':'+'+limit+'pt'}到達 / 管理リセットまたは設定変更まで遊技できません`);
+      log(`[COMPLETE] ${completeTrialState.reason==='my'?'MY15,000pt':'+'+limit+'pt'}到達：${formatSigned(profit)}pt / 設定${completeTrialState.lockedSetting}`);
       persistState();
       updateDisplay();
     }
@@ -3065,7 +3066,7 @@
     stopAutoPlay("COMPLETE中のためAUTO停止");
     stopSpeedToBonus("COMPLETE中のためSPEED停止");
     stopDebugFastSpin("COMPLETE中");
-    showMessage("コンプリートしました。", `+${completeLimitPt()}pt到達 / 管理リセットまたは設定変更まで遊技できません`);
+    showMessage("コンプリートしました。", `${completeTrialState.reason==='my'?'MY15,000pt':'+'+completeLimitPt()+'pt'}到達 / 管理リセットまたは設定変更まで遊技できません`);
     showOverlay("コンプリートしました。");
     return false;
   }
@@ -3075,6 +3076,8 @@
   }
 
   function recordSlumpPoint(settled=true){
+    // Include charged BET lows; no detailed history is required for MY.
+    completeTrialState.lowestNet=Math.min(0,Number(completeTrialState.lowestNet)||0,currentProfit());
     if(A_TYPE_MODE){
       syncNovaProgress();NovaProgress.observeNet(currentProfit());
       // Match the simulator: the regime sees settled net, not the transient BET debit.
@@ -3696,6 +3699,7 @@
           completeTrialState.completeProfit = 0;
         }
       }
+      completeTrialState.lowestNet=Math.min(0,Number(completeTrialState.lowestNet)||0,Number(stats.slumpLow)||0);
       const runtime = data?.runtimeState || {};
       if(runtime.session && typeof runtime.session === "object"){
         session = {
@@ -3755,6 +3759,8 @@
       autoPlay = false;
       speedToBonusActive = false;
       currentSpin = NovaSpinResume.restore(runtime.pendingSpin, RESULT);
+      // Finish an old unpaid replay under the old rule, then consume its free BET once.
+      if(currentSpin && runtime.replayAccountingVersion!==2)currentSpin.resolved.replayAccounting="legacy";
       isSpinning = !!currentSpin;
       spinCanStop = false;
       // The unfinished BET is already counted; normal/high counters settle at the final stop.
@@ -3769,6 +3775,7 @@
 
   function runtimeStateForStorage(){
     return {
+      replayAccountingVersion:2,
       pendingSpin:NovaSpinResume.capture(currentSpin),
       session:{...session},
       jagChainCount,
@@ -3893,6 +3900,7 @@
         movieVolume: settings.movieVolume,
         rogiMovieVolume: settings.rogiMovieVolume,
         audioMuted: settings.audioMuted,
+        completeMyLimitPt:15000,
         completeLimitPt: completeLimitPt()
       },
       stats:{...adminStats, profit},
@@ -4384,7 +4392,8 @@
     const wonArtSets=Number(session.bonusArtSets)||0;
     const bonusStockSummary=NovaArt.bonusStockLabel(session,normalState.flow);
     const wonZones=Array.isArray(session.bonusZones)?session.bonusZones:[];
-    const profit = session.paid - (Number(session.cost) || 0);
+    const cashPaid=session.paid+(Number(session.replayRefund)||0);
+    const profit = cashPaid - (Number(session.cost) || 0);
     const endedSets = session.setNo || 0;
     const bonusLabel = aTypeEnd ? aTypeBonusLabel(session.bonusKind) : "";
     const premiumOneGameRen = !!(
@@ -4406,8 +4415,8 @@
     const settingVoiceAfterBonus = aTypeEnd ? pickSettingBonusEndVoiceSrc(settings.setting) : "";
 
     if(aTypeEnd){
-      showMessage(`${bonusLabel}終了`, `獲得${resultPayout}pt / 払出${session.paid}pt / BET${session.cost}pt${risingStatusText}`);
-      log(`${bonusLabel}終了：獲得${resultPayout}pt / 払出${session.paid}pt / BET${session.cost}pt${risingStatusText}`);
+      showMessage(`${bonusLabel}終了`, `獲得${resultPayout}pt / 払出${cashPaid}pt / BET${session.cost}pt${risingStatusText}`);
+      log(`${bonusLabel}終了：獲得${resultPayout}pt / 払出${cashPaid}pt / BET${session.cost}pt${risingStatusText}`);
     }else if(A_TYPE_MODE){
       showMessage("ボーナス終了", `獲得pt ${session.paid}pt`);
       log(`ボーナス終了：獲得${session.paid}pt / 損益${formatSigned(profit)}pt`);
@@ -4994,7 +5003,7 @@
     playStrongNovaSound(result,resolved);
     playWeakNovaSound(result,resolved);
     playChanceSound(result,resolved);
-    if(A_TYPE_MODE && result==="REPLAY")normalState.replayFree=true;
+    if(A_TYPE_MODE && result==="REPLAY" && resolved.replayAccounting==="legacy")normalState.replayFree=true;
     if(A_TYPE_MODE && resolved.aTypeBonusReady)jagChainBonusHandoff=true;
     if(A_TYPE_MODE && resolved.normalInternal)normalState.internal=NovaNormal.normalize(resolved.normalInternal);
     showCzPrelude(3,resolved);
@@ -5244,11 +5253,12 @@
     playStrongNovaSound(result,resolved);
     playWeakNovaSound(result,resolved);
     playChanceSound(result,resolved);
-    if(A_TYPE_MODE && result==="REPLAY")normalState.replayFree=true;
+    if(A_TYPE_MODE && result==="REPLAY" && resolved.replayAccounting==="legacy")normalState.replayFree=true;
     const info = RESULT[result];
     showCzLamp(3,resolved);
     const reward = resolved.reward;
-    jagLastGamePayout = Number(reward) || 0;
+    const replayRefund=A_TYPE_MODE && resolved.replayAccounting!=="legacy"?NovaArt.replayRefund(result,{zero:resolved.flowBefore?.zero}):0;
+    jagLastGamePayout = (Number(reward) || 0)+replayRefund;
     const baseSets = resolved.sets || 0;
     const zoneSets = resolved.zoneSets || 0;
     const stGameAdd = (resolved.add || 0) + (resolved.zoneStGames || 0);
@@ -5261,6 +5271,11 @@
       if(resolved.artSetWon){showOverlay(firstAtWin?"ネビュラ揃い AT確定":"上乗せ特化ゾーン獲得");log("ネビュラ揃い："+NovaArt.bonusStockLabel(session,normalState.flow));}
     }
 
+    if(replayRefund){
+      session.replayRefund=(Number(session.replayRefund)||0)+replayRefund;
+      stats.totalPaid+=replayRefund;
+      updateCompleteTrialState("リプレイ3pt戻し");
+    }
     if(reward > 0){
       session.paid += reward;
       jagLastBonusPayout = Math.max(0, Number(session.paid) || 0);
@@ -5496,7 +5511,7 @@
     if($("stInfoView")) $("stInfoView").textContent = stInfoText;
     if($("stInfoViewLegacy")) $("stInfoViewLegacy").textContent = stInfoText;
     if($("adminStInfoView")) $("adminStInfoView").textContent = stInfoText;
-    const payoutScaleText = `通常BIG・上位BIGとも50pt / ネビュラ揃いでAT確定 / ベル8pt（最終払い出し調整） / リプレイ再遊技`;
+    const payoutScaleText = `通常BIG・上位BIGとも50pt / ネビュラ揃いでAT確定 / ベル8pt（最終払い出し調整） / リプレイ3pt戻し・次回3pt BET`;
     if($("payoutScaleView")) $("payoutScaleView").textContent = payoutScaleText;
     if($("payoutScaleViewLegacy")) $("payoutScaleViewLegacy").textContent = payoutScaleText;
     if($("adminPayoutScaleView")) $("adminPayoutScaleView").textContent = payoutScaleText;
@@ -9653,11 +9668,12 @@
     connectAdminCommands();
     if(!restorePendingSpin()){
       reels.forEach((_,i)=>setRandomReel(i));
-      showMessage("READY",`BIG ${NovaArt.bonusTarget()}pt / AT初期150～1,500pt＋レア役加算 / 設定${settings.setting}`);
+      showMessage("READY",`BIG ${NovaArt.bonusTarget()}pt / AT初期300pt＋レア役加算 / 設定${settings.setting}`);
     }
     if($("forceResult")) $("forceResult").value = forceResult;
     if($("premiumForceStatus")) $("premiumForceStatus").value = forcePremiumEffect ? "ON" : "OFF";
     updateDisplay();
+    updateCompleteTrialState("再開");
     updateAutoUi();
     updateDebugFastUi();
     requestBackgroundLogoSync();

@@ -24,7 +24,7 @@ function harness(saved=null){
   NovaAim:{bet:noop,stop:noop},NovaSortie:{begin:noop,eligible:()=>false},NovaInitialDuo:{begin:noop,stop:noop},NovaLadder:{bet:noop,stop:noop},NovaReelMotion:{start:noop},
   setReelColumn:noop,showZoneRoulette:noop,renderCzPrelude:noop,syncCzPreludeGlow:noop,updateDisplay:noop,syncCabinetControlState:noop,prepareManualBonusOutcome:noop,startOumaReverseAudio:noop,showCheckpointResultIfReady:()=>false
  });
- for(const file of ['nova-tuning.js','nova-art.js','nova-normal.js','nova-flow.js','nova-balance.js','nova-spin-resume.js','nova-history.js'])vm.runInContext(fs.readFileSync(file,'utf8'),c,{filename:file});
+ for(const file of ['nova-complete.js','nova-tuning.js','nova-art.js','nova-normal.js','nova-flow.js','nova-balance.js','nova-spin-resume.js','nova-history.js'])vm.runInContext(fs.readFileSync(file,'utf8'),c,{filename:file});
  // Navigation renderer is tested separately with DOM stubs; restore must not draw an order.
  c.NovaBellNavi={restore:spin=>{c.shownOrder=json(spin.bellNaviOrder);},clear:noop};
  for(const name of ['reduceSlumpPoints','canUsePlayState','load','runtimeStateForStorage','compactStatsForResume','updateStorageStatus','persistState','restorePendingSpin'])vm.runInContext(fn(name),c);
@@ -164,12 +164,12 @@ test('replay entitlement and zero-game cost exemptions survive pending saves',()
  }
 });
 
-test('displayed RTP uses the adopted 50k estimates and BIG fields use the engine target',()=>{
+test('displayed RTP uses the adopted 10k dual-cap estimates and BIG fields use the engine target',()=>{
  const {c}=harness();vm.runInContext(fn('targetRtpText'),c);
- const estimates=JSON.parse(fs.readFileSync('docs/win-a-50000-20261007.json')).settings.map(s=>(100*s.after.rtp).toFixed(2));
+ const estimates=JSON.parse(fs.readFileSync('docs/replay-dual-cap-20261007.json')).results[0].settings.map(s=>(100*s.rtp).toFixed(2));
  for(let setting=1;setting<=6;setting++){
   assert(c.targetRtpText(setting).startsWith(estimates[setting-1]+'%'));
-  assert(c.targetRtpText(setting).includes('5万G×1000回'));
+  assert(c.targetRtpText(setting).includes('1万G×1000回'));
  }
  assert.equal(c.NovaArt.bonusTarget(),50);
  for(const field of ['midMulInput','bigMulInput','bigAddInput'])assert(fn('applySettings').includes('$("'+field+'").value = NovaArt.bonusTarget()'));
@@ -224,4 +224,17 @@ test('custom lottery and complete limits suppress standard RTP; presentation pre
  assert(c.targetRtpText(6).startsWith((100*c.NovaBalance.profile(6).measuredRtp).toFixed(2)+'%'));
  c.settings={...standard,novaFlow:{...standard.novaFlow,czChance:String(c.NovaFlow.defaults.czChance)}};
  assert(c.NovaBalance.usesStandardSettings(c.settings));
+});
+
+test('pre-update pending replay finishes with one legacy free BET; new saves retain cash accounting',()=>{
+ const base=harness();base.c.load();base.c.currentSpin=spin(base.c,{result:'REPLAY',resolved:{reward:0,flowBefore:{phase:'normal'},flowAfter:{phase:'normal'}}});base.c.persistState();
+ const old=JSON.parse(base.storage.get('state'));delete old.runtimeState.replayAccountingVersion;
+ const h=harness(old);assert(h.c.load());assert.equal(h.c.currentSpin.resolved.replayAccounting,'legacy');
+ h.c.persistState();const again=harness(JSON.parse(h.storage.get('state')));assert(again.c.load());assert.equal(again.c.currentSpin.resolved.replayAccounting,'legacy');
+ const modern=JSON.parse(base.storage.get('state'));modern.runtimeState.pendingSpin.resolved.reward=3;
+ const cash=harness(modern);cash.c.load();assert.equal(cash.c.currentSpin.resolved.reward,3);assert.notEqual(cash.c.currentSpin.resolved.replayAccounting,'legacy');
+});
+test('MY low-water mark and completion reason persist with detailed history empty',()=>{
+ const h=harness();h.c.load();h.c.completeTrialState={lowestNet:-8000,locked:true,reason:'my',completeProfit:7000,completeMy:15000,maxMy:15000};h.c.stats.slumpHistory=[];h.c.persistState();
+ const again=harness(JSON.parse(h.storage.get('state')));assert(again.c.load());assert.equal(again.c.completeTrialState.lowestNet,-8000);assert.equal(again.c.completeTrialState.reason,'my');assert.equal(again.c.completeTrialState.locked,true);
 });

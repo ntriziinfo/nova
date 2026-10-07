@@ -1,11 +1,11 @@
 import {readGameSource} from '../scripts/game-source.mjs';
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
 const html=readGameSource(),fn=name=>html.match(new RegExp('  function '+name+'\\([^]*?\\n  }'))[0];
-test('replay consumes no quota and grants exactly one free BET, surviving saved state',()=>{
+test('legacy replay entitlement grants exactly one free BET; new replay consumes its cash refund',()=>{
  const ctx=vm.createContext({});for(const f of ['nova-tuning.js','nova-art.js','nova-normal.js'])vm.runInContext(fs.readFileSync(f,'utf8'),ctx);
  vm.runInContext(`const A_TYPE_MODE=true,SPIN_COST=3,stats={totalFee:0},session={active:true,cost:0},normalState=JSON.parse('{"replayFree":true}');const clearCzReelBlackout=()=>{};const recordSlumpPoint=()=>{},updateCompleteTrialState=()=>{};`+fn('chargeSpinCost'),ctx);
  ctx.chargeSpinCost();assert.equal(vm.runInContext('stats.totalFee',ctx),0);ctx.chargeSpinCost();assert.equal(vm.runInContext('stats.totalFee',ctx),3);
- assert.equal(ctx.NovaArt.step({...ctx.NovaArt.enter(),remaining:'80'},{},()=>.99,'REPLAY').flow.remaining,'80');
+ assert.equal(ctx.NovaArt.step({...ctx.NovaArt.enter(),remaining:'80'},{},()=>.99,'REPLAY').flow.remaining,'77');
  assert.equal(ctx.NovaNormal.pay('REPLAY'),0);
 });
 test('preparation rares can award ART and a zone, misses cannot',()=>{

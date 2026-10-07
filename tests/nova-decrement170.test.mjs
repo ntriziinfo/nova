@@ -87,7 +87,7 @@ test('v170 tuning exactly replays pre-integration independent 30,000G trial ledg
  const fixture=JSON.parse(fs.readFileSync('tests/fixtures/nova-decrement170-trials.json'));
  for(const expected of fixture.trials){
   loadModel('../tests/fixtures/pre-role-merge',true,Object.fromEntries([1,2,3,4,5,6].map(s=>[s,{normalReplayReduction:0,extraZone:0,...(s===5?{cz:2.45}:{})}])));
-  const actual=simulate(expected.setting,30000,expected.seed,{...fixture.options,decrementAudit:true});
+  const {lowestNet,maxMy,completeReason,...actual}=simulate(expected.setting,30000,expected.seed,{...fixture.options,decrementAudit:true});
   assert.deepEqual(json(actual),expected,expected.seed);
  }
 });

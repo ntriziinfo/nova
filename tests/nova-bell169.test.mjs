@@ -60,7 +60,7 @@ test('historical pre-merge: normal navigation survives the display pipeline but 
 test('historical pre-merge: with decrement disabled, 30,000G ledgers replay the v169 calibration trials',()=>{
  const fixture=JSON.parse(fs.readFileSync('tests/fixtures/nova-bell169-session-digests.json','utf8'));
  for(const trial of fixture.trials){
-  loadV169();const actual=simulate(trial.setting,trial.games,trial.seed,{...fixture.options,decrement:false});
+  loadV169();const {lowestNet,maxMy,completeReason,...actual}=simulate(trial.setting,trial.games,trial.seed,{...fixture.options,decrement:false});
   assert.equal(createHash('sha256').update(JSON.stringify(JSON.parse(JSON.stringify(actual)))).digest('hex'),trial.sha256,trial.seed);
  }
 });

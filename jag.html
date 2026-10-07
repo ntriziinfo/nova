@@ -48,8 +48,9 @@
 <script src="nova-aim-presentation.js?v=20261007-rare-sortie-nebula"></script>
 <script src="nova-tuning.js?v=20260930-fine-balance-173"></script>
 <script src="nova-decrement.js?v=20261007-win-a"></script>
-<script src="nova-art.js?v=20261007-win-a"></script>
-<script src="nova-balance.js?v=20261007-win-a"></script>
+<script src="nova-art.js?v=20261007-replay-dual-cap"></script>
+<script src="nova-complete.js?v=20261007-dual-cap"></script>
+<script src="nova-balance.js?v=20261007-replay-dual-cap"></script>
 <script src="nova-normal.js?v=20261007-win-a"></script>
 <script src="nova-flow.js?v=20261001-cz-lamp-order"></script>
 <script src="nova-progress.js?v=20261007-positive-net"></script>
@@ -663,7 +664,7 @@
         <label>CZ 突入率 1/<input type="number" min="2" max="100000" data-flow-config="czDenom"></label>
         <label>強CZ 突入率 1/<input type="number" min="2" max="100000" data-flow-config="strongDenom"></label>
         <button type="button" id="saveFlowConfig">CZ設定を保存</button><output id="flowConfigStatus"></output>
-        <p>AT残ptは手取りで管理します。通常AT・上位ATの残pt消化中は、実際に投入したBETを残ptに加え、払い出し分を減らします（BET3pt・8ptベルなら残ptは差し引き5pt減少）。リプレイ後の無料BETでは加算しません。通常ATは純増5pt/G、上位ATは純増8pt/G、BIGは50pt。表示機械割は手取り管理版を各設定30,000G×60回、累計差枚＋10,000pt停止で試算した予備値です。CZ・通常・AT設定やコンプリート条件を変更した場合は「未試算（独自設定）」と表示します。</p></details>
+        <p>AT残ptは手取りで管理します。通常AT・上位ATの残pt消化中は、BET3ptを残ptへ戻し、払い出し分を減らします（8ptベルなら残ptは5pt減少）。リプレイは3ptを払い戻し、次のBETも3ptです。リプレイによる手取りと残ptの増減はありません。通常ATは純増5pt/G、上位ATは純増8pt/G、BIGは50pt。リプレイの戻しはBIGの50pt消化に含めません。累計差枚＋10,000ptか、最低差枚からの回復幅MY15,000ptの、先に到達した方で停止します。表示機械割は各設定10,000G×1,000回・二重上限停止込みの試算です。CZ・通常・AT設定や差枚上限を変更した場合は「未試算（独自設定）」と表示します。</p></details>
         <button class="subBtn" id="debugNovaPatternsBtn" type="button">ノヴァ目3段階を確認</button>
         <div class="field">
           <label>次回転の出目指定</label>
@@ -672,7 +673,7 @@
             <option value="MISS">ハズレ</option>
             <option value="CZ">CZ突入</option>
             <option value="STRONG_CZ">強CZ突入</option>
-            <option value="REPLAY">リプレイ（次回BET無料）</option>
+            <option value="REPLAY">リプレイ（3pt戻し）</option>
             <option value="BELL">ベル（8pt）</option>
             <option value="BELL15">15ptベル（第1ナビのリールに7）</option>
 
@@ -775,7 +776,7 @@
 <script src="nova-spin-resume.js?v=20260929-spin-resume"></script>
 <script src="nova-play-access.js?v=20261001-save-recovery"></script>
 <script src="nova-history.js?v=20261001-history-performance"></script>
-<script src="nova-game.js?v=20261007-win-a"></script>
+<script src="nova-game.js?v=20261007-replay-dual-cap"></script>
 <button type="button" id="novaSymbolPreviewOpen">ノヴァ目を確認</button>
 <dialog id="novaSymbolPreview"><h2>ノヴァ目</h2><label>出目<select id="novaPatternSelect"><option value="WEAK_NOVA">弱ノヴァ目：左3連</option><option value="STRONG_MIDDLE">強ノヴァ目：左・中3連</option><option value="STRONG_RIGHT">強ノヴァ目：左・右3連</option><option value="SUPER_NOVA" selected>スーパーノヴァ目：全リール3連</option></select></label><p id="novaPatternDescription"></p><div id="novaSymbolPreviewGrid"></div><p>出目の確認用です。通常時のスーパーはBIG・フリーズ各50%。ボーナス中は対象外。弱・強と自然出現率は未設定。</p><button type="button" id="novaSymbolPreviewClose">閉じる</button></dialog>
 </body>
