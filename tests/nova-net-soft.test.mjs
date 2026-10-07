@@ -4,13 +4,13 @@ test('legacy payout guards stay disabled',()=>{
  for(let setting=1;setting<=6;setting++)for(const net of [-50000,-2000,0,2000,4000,5000,50000])assert.equal(a.netRewardFactor(setting,net),1);
  assert.equal(a.netRewardControl.enabled,false);
 });
-test('net outside the adopted weak-zone tier neither changes AT outcomes nor consumes extra randomness',()=>{
+test('net outside the weak-zone suppression range neither changes AT outcomes nor consumes extra randomness',()=>{
  for(let setting=1;setting<=6;setting++)for(const treatment of [0,1,2,3,4,5])for(const role of ['WEAK_NOVA','STRONG_NOVA','WEAK_SUICA','STRONG_SUICA','CHANCE_A','CHANCE_B']){
   const s={...a.enter({},()=>.5),atLevel:treatment};
   const run=netPt=>{let calls=0;return [a.step(s,{setting,netPt},()=>{calls++;return .1;},role),()=>calls];};
   const [base,count]=run(0);
   const weak=['WEAK_NOVA','WEAK_SUICA','STRONG_SUICA'].includes(role);
-  const nets=[-50000,2000,4999,...(setting===6||!weak?[5000,50000]:[])];
+  const nets=weak?[-50000,0,Math.min(4999,a.positiveNetZoneRules[setting-1].start)]:[-50000,0,2000,4999,5000,50000];
   for(const netPt of nets){const [actual,n]=run(netPt);assert.deepEqual(actual,base);assert.equal(n(),count());}
  }
 });

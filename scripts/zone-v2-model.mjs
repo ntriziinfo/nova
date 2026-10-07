@@ -50,7 +50,7 @@ export function simulate(setting,games,seed,options={}){
   if(!roleSortieRates||!['WEAK_SUICA','WEAK_NOVA','STRONG_NOVA'].includes(role))return;
   rare.eligibleRoles[role]=(rare.eligibleRoles[role]||0)+1;
   const byPhase=rare.eligibleByPhase[phase] ||= {};byPhase[role]=(byPhase[role]||0)+1;
-  const chance=roleSortieRates?.[role]||0;
+  const chance=options.roleSortieRates?roleSortieRates[role]||0:globalThis.NovaProgress?.sortieChance?.(setting,role,paid-fee)??roleSortieRates?.[role]??0;
   if(options.rareSortie&&!forcedRare&&chance>0&&entryRng()<chance){rare.triggered++;rare.pending++;rare.byPhase[phase]=(rare.byPhase[phase]||0)+1;rare.triggersByRole[role]=(rare.triggersByRole[role]||0)+1;if(rare.audit)rare.audit.push({type:'trigger',game:count,phase,role});}
  };
  const bet=phase=>{track();if(options.stopAtComplete!==false&&options.completeLimitPt&&paid-fee>=options.completeLimitPt)throw sessionEnd;if(count>=games&&!cutoff)cutoff={games:count,totalBet:fee,totalPaid:paid,net:paid-fee,peak,phase};if(options.exactGames!==false&&!options.settleEnd&&count>=games)throw sessionEnd;if(options.recordBlocks&&count>0&&count%options.recordBlocks===0)saveBlock();count++;globalThis.NovaDecrement?.beforeBet(phase);counts[phase]++;normalGap++;

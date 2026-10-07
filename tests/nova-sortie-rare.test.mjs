@@ -30,7 +30,7 @@ test('sortie draws only real rare roles, with the approved fixed rates and no RN
 
 test('manual, AUTO and fast play use the same single resolved-role lottery; resume cannot reroll it',()=>{
  const source=fs.readFileSync('nova-game.js','utf8');let draws=0;
- const c=vm.createContext({A_TYPE_MODE:true,settings:{setting:4},NovaProgress:{drawSortie:(setting,role,resolved)=>{draws++;assert.equal(setting,4);assert.equal(role,'STRONG_NOVA');assert.equal(resolved.reward,1);return true;}}});
+ const c=vm.createContext({A_TYPE_MODE:true,settings:{setting:4},currentProfit:()=>4997,NovaProgress:{drawSortie:(setting,role,resolved,rng,net)=>{draws++;assert.equal(net,4997);assert.equal(typeof rng,'function');assert.equal(setting,4);assert.equal(role,'STRONG_NOVA');assert.equal(resolved.reward,1);return true;}}});
  vm.runInContext(source.match(/  function drawRareSortie\([^]*?\n  }/)[0],c);
  const out={reward:1};c.drawRareSortie('STRONG_NOVA',out);assert.equal(out.sortieWon,true);assert.equal(draws,1);
  assert.equal((source.match(/    drawRareSortie\(result,resolved\);/g)||[]).length,2);

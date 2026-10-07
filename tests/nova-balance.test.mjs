@@ -1,13 +1,13 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
 const ctx=vm.createContext({});for(const f of ['nova-tuning.js','nova-art.js','nova-balance.js'])vm.runInContext(fs.readFileSync(f,'utf8'),ctx);const a=ctx.NovaArt,b=ctx.NovaBalance;
 test('RTP metadata identifies the adopted 50,000G complete-stop estimates',()=>{
- const report=JSON.parse(fs.readFileSync('docs/rtp-targets-50000-20261007.json'));
+ const report=JSON.parse(fs.readFileSync('docs/positive-net-50000-20261007.json'));
  const measured=report.settings.map(s=>s.after.rtp);
  for(let i=0;i<6;i++){
   const p=b.profile(i+1);assert.equal(p.target,b.targets[i]);assert.equal(p.measuredRtp,measured[i]);
-  assert.equal(p.target,report.settings[i].target.aim/100);assert.equal(p.winTarget,null);assert.equal(p.completeTarget,null);
-  assert.equal(p.verifiedModel,'rtp-targets-20261007-50000g-complete-stop');assert.equal(p.trials,1000);
-  assert.equal(p.previousVerifiedModel,'rare-sortie-20261007-50000g-complete-stop');
+  assert.equal(p.target,null);assert.equal(p.winTarget,null);assert.equal(p.completeTarget,report.settings[i].target.reach);
+  assert.equal(p.verifiedModel,'positive-net-20261007-50000g-complete-stop');assert.equal(p.trials,1000);
+  assert.equal(p.previousVerifiedModel,'rtp-targets-20261007-50000g-complete-stop');
   assert.equal(report.trialsPerSetting,p.trials);assert.equal(report.gamesPerTrial,p.gamesPerTrial);
  }
 });

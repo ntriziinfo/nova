@@ -49,12 +49,16 @@ test('all six 15pt bell orders survive navigation, save and AUTO without redrawi
  }
 });
 
-test('production reproduces both complete and full-horizon approved 50,000G trials for every setting',()=>{
- const rows=JSON.parse(gunzipSync(fs.readFileSync('docs/rtp-targets-50000-20261007-rows.json.gz')));
+test('production reproduces full-horizon and highest-peak approved 50,000G trials for every setting',()=>{
+ const rows=JSON.parse(gunzipSync(fs.readFileSync('docs/positive-net-50000-20261007-rows.json.gz')));
  const options={rng:'xoshiro128',exactGames:true,completeLimitPt:10000,stopAtComplete:true,rareSortie:true,atBetRefund:true};
  for(let setting=1;setting<=6;setting++){
-  for(const complete of [false,true]){
-   const trial=rows.find(r=>r.setting===setting&&!!r.firstComplete===complete);assert(trial);loadModel();const actual=simulate(setting,50000,trial.seed,options);
+  const data=rows.filter(r=>r.setting===setting),full=data.find(r=>!r.firstComplete);
+  // Some suppressed settings had no complete in this batch; replay their highest peak.
+  const peak=data.reduce((best,row)=>row.peak>best.peak?row:best);
+  assert(full);assert(peak.peak>0);
+  for(const trial of [full,peak]){
+   loadModel();const actual=simulate(setting,50000,trial.seed,options);
    for(const field of ['games','totalBet','totalPaid','net','peak','firstComplete','counts'])assert.deepEqual(actual[field],trial[field],'Setting '+setting+' / '+field);
   }
  }

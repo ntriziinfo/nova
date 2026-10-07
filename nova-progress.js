@@ -12,17 +12,17 @@ globalThis.NovaProgress=(()=>{
  }
  function reset(){state=empty();latestNet=0;}
  function observeNet(net){latestNet=Number(net)||0;while(Number(net)>=state.next){state.next+=2400;state.pending++;state.earned++;}}
- // Fixed probabilities per real rare role, calibrated against the total-game target.
+ // Base rates per real rare role; settings 1-4 also apply the current-net ramp.
  const sortieWeakRates=Object.freeze([0,.00397,.00276,.00390,.00272,.00383,.00212]);
- function sortieChance(setting,role){
+ function sortieChance(setting,role,netPt=0){
   const weak=sortieWeakRates[Math.max(1,Math.min(6,Math.floor(Number(setting)||3)))];
-  return role==='STRONG_NOVA'?weak*10:['WEAK_SUICA','WEAK_NOVA'].includes(role)?weak:0;
+  const rule=a.positiveNetZoneRules[Math.max(1,Math.min(6,Math.floor(Number(setting)||3)))-1],factor=rule.sortie?a.positiveNetZoneFactor(setting,netPt):1;return (role==='STRONG_NOVA'?weak*10:['WEAK_SUICA','WEAK_NOVA'].includes(role)?weak:0)*factor;
  }
  function sortieEligible(result,resolved={}){return !!sortieChance(1,result)&&!resolved.flowBefore?.zero&&!resolved.oumaFailed&&!resolved.researchSortie&&!resolved.researchChallenge&&!resolved.stockEntry;}
  function queueSortie(){state.sorties++;}
- function drawSortie(setting,result,resolved={},rng=Math.random){
+ function drawSortie(setting,result,resolved={},rng=Math.random,netPt=latestNet){
   if(!sortieEligible(result,resolved))return false;
-  const won=rng()<sortieChance(setting,result);if(won)queueSortie();return won;
+  const won=rng()<sortieChance(setting,result,netPt);if(won)queueSortie();return won;
  }
  function queueThreshold(value,net,setting=value?.modelSetting||3){
   observeNet(net);if(value?.phase!=='art')return value;const s={...value};

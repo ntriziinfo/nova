@@ -1,10 +1,10 @@
-/* Adopted RTP-priority estimates: docs/rtp-targets-50000-20261007.json. */
+/* Adopted positive-net suppression estimates: docs/positive-net-50000-20261007.json. */
 globalThis.NovaBalance=(()=>{
- // RTP is the approved priority; win/complete rates are measured outcomes.
- const targets=[.94,.97,.975,1.005,1.025,1.075];
- const winTargets=[null,null,null,null,null,null],completeTargets=[null,null,null,null,null,null];
+ // Positive-net suppression is the approved priority; RTP decreases are accepted.
+ const targets=[null,null,null,null,null,null];
+ const winTargets=[null,null,null,null,null,null],completeTargets=[null,null,null,null,.2,.25];
  // Up to 50,000 total G, 1,000 reset trials per setting; cumulative +10,000pt stop.
- const measuredRtp=[0.9432678231604955,0.9599993577373014,0.9793420765374434,1.001646069061893,1.0210320632129903,1.075515433538825];
+ const measuredRtp=[0.9053027672874425,0.9248832848638879,0.9483766851614166,0.9656582182332242,1.0227016484896154,1.0634799865245599];
  const normal=[[354.112628,570.311235,6.592194,128,7.464630],[335.340933,496.870459,6.554256,192,7.482946],[318.675842,391.096799,6.455407,124,7.452119],[295.728558,359.759320,6.248231,184,7.301746],[288.226978,283.780845,6.120643,120,7.250883],[276.519476,276.524590,5.897360,176,7.245667]];
  // Exact reward recursion: 50pt grid below the threshold, translation-invariant tail above it.
  function zoneMean(id,options={}){
@@ -72,7 +72,7 @@ globalThis.NovaBalance=(()=>{
  }
  const giruMean=(setting,ura=false)=>zoneMean(ura?'ura_giru':'giru',{setting});
  // Entry scales fitted with the normal-mode / ceiling / impurity / freeze simulation.
- function profile(setting){const i=Math.max(0,Math.min(5,Math.round(Number(setting)||1)-1)),scale=.21*(1+.12*NovaArt.settingBias[i]);return {setting:i+1,target:targets[i],winTarget:winTargets[i],completeTarget:completeTargets[i],measuredRtp:measuredRtp[i],scale,directDenom:NovaArt.defaults['direct'+(i+1)]/scale,czDenom:120/scale,strongDenom:600/scale,verifiedModel:'rtp-targets-20261007-50000g-complete-stop',verificationLabel:'機械割調整版',trials:1000,gamesPerTrial:50000,previousVerifiedModel:'rare-sortie-20261007-50000g-complete-stop'};}
+ function profile(setting){const i=Math.max(0,Math.min(5,Math.round(Number(setting)||1)-1)),scale=.21*(1+.12*NovaArt.settingBias[i]);return {setting:i+1,target:targets[i],winTarget:winTargets[i],completeTarget:completeTargets[i],measuredRtp:measuredRtp[i],scale,directDenom:NovaArt.defaults['direct'+(i+1)]/scale,czDenom:120/scale,strongDenom:600/scale,verifiedModel:'positive-net-20261007-50000g-complete-stop',verificationLabel:'差枚抑制版',trials:1000,gamesPerTrial:50000,previousVerifiedModel:'rtp-targets-20261007-50000g-complete-stop'};}
  const profiles=targets.map((_,i)=>profile(i+1));
  // Estimates describe the approved defaults, not user-edited lottery settings.
  function usesStandardSettings(settings={}){

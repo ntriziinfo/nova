@@ -3009,7 +3009,7 @@
   function drawRareSortie(result,resolved){
     if(!A_TYPE_MODE)return;
     // Draw once at BET after the real role. Saved spins never draw again on resume.
-    resolved.sortieWon=NovaProgress.drawSortie(settings.setting,result,resolved);
+    resolved.sortieWon=NovaProgress.drawSortie(settings.setting,result,resolved,Math.random,currentProfit());
   }
 
   function currentProfit(){
