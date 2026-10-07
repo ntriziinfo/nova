@@ -1,0 +1,864 @@
+{
+  "proposalOnly": false,
+  "adopted": true,
+  "adoptedAt": "2026-10-07T05:51:21.810Z",
+  "authorization": "User adopted A and requested 50,000G win rates 15/20/30/45/60/70%; existing positive-net suppression and setting 5/6 reach targets 20/25% retained. RTP decreases were previously accepted.",
+  "definitions": {
+    "games": "各設定・各リセット試行の実回転上限50,000G。ボーナスを含み、0G連は回転に含めない。",
+    "win": "終了時の累計差枚が0ptを超えた試行の割合。",
+    "reach": "50,000G以内に累計差枚が一度でも＋10,000ptに到達した割合。単発ATの獲得払い出しではない。",
+    "stop": "累計差枚＋10,000pt到達でコンプリート停止。未到達は50,000Gで終了。",
+    "rtp": "全試行の実払い出し合計 ÷ 実BET合計。未消化ATpt・未消化ストックを含めない。",
+    "method": "候補選択用シードと独立のシードで各設定1,000回検証。設定3・5・6は最初の検証で目標未達のため追調整し、さらに別シード1,000回で検証。直前の公開版との比較は独立試算の比較。",
+    "interval": "95%区間は独立リセット試行間のばらつきによる統計誤差。モデルや実機操作との差は含まない。",
+    "target": "勝率15/20/30/45/60/70%、設定5/6の万pt率20/25%。機械割は優先しない。",
+    "suppression": "累計差枚に応じて将来の弱レア役AT特化抽選を段階的に抑制。設定1〜4は出陣抽選も同じ係数で抑制。差枚が下がれば即座に緩和。新たな払い出し上限・獲得済pt/ストック削除は行わない。",
+    "initial": "初期3Gの実役を開始時に先抽選し保存。通常100・弱レア150・強レア200pt、基本300・平均306.0206038pt、全設定共通。初当たり5%の上位チャレンジ経由は別。既存セーブの獲得済み初期pt・倍率は維持。"
+  },
+  "gamesPerTrial": 50000,
+  "trialsPerSetting": 1000,
+  "options": {
+    "rng": "xoshiro128",
+    "exactGames": true,
+    "completeLimitPt": 10000,
+    "stopAtComplete": true,
+    "rareSortie": true,
+    "atBetRefund": true
+  },
+  "parameters": {
+    "czEntryFactors": [
+      0.19364056391680007,
+      0.3841602966202409,
+      0.40817241292800005,
+      0.52933419886464,
+      0.15521559299999999,
+      0.138243818286
+    ],
+    "decrement": {
+      "5": {
+        "enabled": true,
+        "lowMean": 150000,
+        "highMean": 183333.33333333334,
+        "lowCz": 0.25,
+        "highCz": 2.4,
+        "lowAt": 0.25,
+        "highAt": 0.25,
+        "netEnter": 8000,
+        "netExit": 6500,
+        "netCz": 0.25,
+        "netAt": 0.25
+      },
+      "6": {
+        "enabled": true,
+        "lowMean": 60000,
+        "highMean": 90000,
+        "lowCz": 0.25,
+        "highCz": 1.95,
+        "lowAt": 0.25,
+        "highAt": 0.25,
+        "netEnter": 9000,
+        "netExit": 7500,
+        "netCz": 0.25,
+        "netAt": 0.25
+      }
+    },
+    "positiveNetZoneRules": [
+      {
+        "start": 0,
+        "end": 1500,
+        "floor": 0.05,
+        "boost": 1,
+        "sortie": true
+      },
+      {
+        "start": 0,
+        "end": 1500,
+        "floor": 0.05,
+        "boost": 1,
+        "sortie": true
+      },
+      {
+        "start": 500,
+        "end": 3000,
+        "floor": 0.1,
+        "boost": 1,
+        "sortie": true
+      },
+      {
+        "start": 500,
+        "end": 3000,
+        "floor": 0.1,
+        "boost": 1,
+        "sortie": true
+      },
+      {
+        "start": 5000,
+        "end": 8500,
+        "floor": 0.75,
+        "boost": 1,
+        "sortie": false
+      },
+      {
+        "start": 5000,
+        "end": 8500,
+        "floor": 0.45,
+        "boost": 1,
+        "sortie": false
+      }
+    ],
+    "initial": {
+      "version": 20261007,
+      "quota": 300,
+      "point": 100,
+      "rareAwards": {
+        "WEAK_SUICA": 150,
+        "CHANCE_A": 150,
+        "WEAK_NOVA": 150,
+        "STRONG_SUICA": 200,
+        "CHANCE_B": 200,
+        "STRONG_NOVA": 200,
+        "SUPER_NOVA": 200
+      }
+    }
+  },
+  "spec": {
+    "settings": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "cz": [
+      1.1,
+      1.23,
+      1.12,
+      1.13,
+      1,
+      1
+    ],
+    "decrement": {
+      "5": {
+        "lowCz": 0.25
+      },
+      "6": {
+        "lowMean": 60000,
+        "highMean": 90000,
+        "highCz": 1.95
+      }
+    }
+  },
+  "additionalValidation": [
+    {
+      "setting": 3,
+      "reason": "First holdout win rate was below target; CZ factor was increased and independently revalidated.",
+      "prior": {
+        "n": 1000,
+        "rtp": 0.9495317700786806,
+        "rtpCi95": [
+          0.9452683565060463,
+          0.9537951836513149
+        ],
+        "win": 0.256,
+        "winCi95": [
+          0.22991972382787,
+          0.28394780268228864
+        ],
+        "reach": 0,
+        "reachCi95": [
+          0,
+          0.003826898586390522
+        ],
+        "peakRates": {
+          "3000": 0.554,
+          "5000": 0.2,
+          "10000": 0
+        },
+        "meanNet": -4389.162,
+        "bet": 86968812,
+        "paid": 82579650,
+        "normalAtDenominator": 577.4225302300515,
+        "normalCzDenominator": 251.06871654425495
+      },
+      "refitCandidateHashes": {
+        "refit3/nova-art.js": "844af9e6466651d0bfb58ccfdf207224ed36eb647ba758375f04aeba72b1b64f",
+        "refit3/nova-balance.js": "25ee486e75c6736ff25a0a20d3ef0a66845f1d477596e107e0818ee20069245c",
+        "refit3/nova-decrement.js": "d57c090c9c760e1eb37b030cc50f65eef7a3bbdf24d675aa4fe488579caa4d82",
+        "refit3/nova-flow.js": "a01ae6c12fcf577c4cd5d7e3d099afad55aaad95930088763bc61ef06238fd19",
+        "refit3/nova-normal.js": "e38d94079275cd22b387463b8f2a7b3ac8e4c965181d97352065557ad8c1aff5",
+        "refit3/nova-progress.js": "3d02469b2727693056c4672903722beef77bc71b72d398fd2686417b416f481f",
+        "refit3/nova-tuning.js": "4a1bb10a6052b77e68c5eda5a422393df5e03c2157c63103cdcab42963015f2f"
+      },
+      "seconds": 577.893
+    },
+    {
+      "setting": 5,
+      "reason": "First holdout win rate was below target; CZ factor was increased and independently revalidated.",
+      "prior": {
+        "n": 1000,
+        "rtp": 0.9804496497011076,
+        "rtpCi95": [
+          0.9723479578424553,
+          0.9885513415597599
+        ],
+        "win": 0.555,
+        "winCi95": [
+          0.524045536126136,
+          0.5855335050293611
+        ],
+        "reach": 0.179,
+        "reachCi95": [
+          0.15648172434680807,
+          0.20397514454565469
+        ],
+        "peakRates": {
+          "3000": 0.701,
+          "5000": 0.612,
+          "10000": 0.179
+        },
+        "meanNet": -1586.346,
+        "bet": 81141564,
+        "paid": 79555218,
+        "normalAtDenominator": 661.8264886853779,
+        "normalCzDenominator": 350.82505282548624
+      },
+      "refitCandidateHashes": {
+        "refit5/nova-art.js": "844af9e6466651d0bfb58ccfdf207224ed36eb647ba758375f04aeba72b1b64f",
+        "refit5/nova-balance.js": "25ee486e75c6736ff25a0a20d3ef0a66845f1d477596e107e0818ee20069245c",
+        "refit5/nova-decrement.js": "bf7a88e42cce9e2a92c5bc23a477da1e64f08ed378092600e59d9f2ee3937510",
+        "refit5/nova-flow.js": "a01ae6c12fcf577c4cd5d7e3d099afad55aaad95930088763bc61ef06238fd19",
+        "refit5/nova-normal.js": "f6725535e2e95b5f05809ea7b44832a21413d63200aa452d66b6c0f0e6dded42",
+        "refit5/nova-progress.js": "3d02469b2727693056c4672903722beef77bc71b72d398fd2686417b416f481f",
+        "refit5/nova-tuning.js": "4a1bb10a6052b77e68c5eda5a422393df5e03c2157c63103cdcab42963015f2f"
+      },
+      "seconds": 224.523
+    },
+    {
+      "setting": 6,
+      "reason": "First holdout win rate was below target; CZ factor was increased and independently revalidated.",
+      "prior": {
+        "n": 1000,
+        "rtp": 1.0273794686368745,
+        "rtpCi95": [
+          1.0206874935674504,
+          1.0340714437062986
+        ],
+        "win": 0.665,
+        "winCi95": [
+          0.6351634928775167,
+          0.6935736305889746
+        ],
+        "reach": 0.205,
+        "reachCi95": [
+          0.18112966926299381,
+          0.23112820090297662
+        ],
+        "peakRates": {
+          "3000": 0.763,
+          "5000": 0.645,
+          "10000": 0.205
+        },
+        "meanNet": 1953.048,
+        "bet": 71332575,
+        "paid": 73285623,
+        "normalAtDenominator": 659.4872217806042,
+        "normalCzDenominator": 347.3710340929312
+      },
+      "refitCandidateHashes": {
+        "refit6/nova-art.js": "844af9e6466651d0bfb58ccfdf207224ed36eb647ba758375f04aeba72b1b64f",
+        "refit6/nova-balance.js": "25ee486e75c6736ff25a0a20d3ef0a66845f1d477596e107e0818ee20069245c",
+        "refit6/nova-decrement.js": "7ba3e36a000d5a2cace298de8499b82f9c1955d0a4c205a6d8bc07faa13c3995",
+        "refit6/nova-flow.js": "a01ae6c12fcf577c4cd5d7e3d099afad55aaad95930088763bc61ef06238fd19",
+        "refit6/nova-normal.js": "f6725535e2e95b5f05809ea7b44832a21413d63200aa452d66b6c0f0e6dded42",
+        "refit6/nova-progress.js": "3d02469b2727693056c4672903722beef77bc71b72d398fd2686417b416f481f",
+        "refit6/nova-tuning.js": "4a1bb10a6052b77e68c5eda5a422393df5e03c2157c63103cdcab42963015f2f"
+      },
+      "seconds": 237.848
+    }
+  ],
+  "settings": [
+    {
+      "setting": 1,
+      "target": {
+        "win": 0.15,
+        "reach": null
+      },
+      "before": {
+        "n": 1000,
+        "rtp": 0.9053027672874425,
+        "rtpCi95": [
+          0.8999880441181234,
+          0.9106174904567617
+        ],
+        "win": 0.122,
+        "winCi95": [
+          0.10314842422860387,
+          0.1437447111027074
+        ],
+        "reach": 0,
+        "reachCi95": [
+          0,
+          0.003826898586390522
+        ],
+        "peakRates": {
+          "2000": 0.632,
+          "3000": 0.321,
+          "4000": 0.173,
+          "5000": 0.061,
+          "6000": 0.005,
+          "7000": 0.002,
+          "8000": 0.001,
+          "9000": 0,
+          "10000": 0
+        },
+        "finalRates": {
+          "2000": 0.03,
+          "3000": 0.008,
+          "4000": 0.002,
+          "5000": 0.001,
+          "6000": 0,
+          "7000": 0,
+          "8000": 0,
+          "9000": 0,
+          "10000": 0
+        },
+        "meanNet": -8268.742,
+        "median": -6633.5,
+        "p10": -18963.6,
+        "p90": 309.400000000001
+      },
+      "after": {
+        "n": 1000,
+        "rtp": 0.9165403001322958,
+        "rtpCi95": [
+          0.9114523790058182,
+          0.9216282212587734
+        ],
+        "win": 0.145,
+        "winCi95": [
+          0.12453458493047026,
+          0.168182513065867
+        ],
+        "reach": 0,
+        "reachCi95": [
+          0,
+          0.003826898586390522
+        ],
+        "peakRates": {
+          "3000": 0.363,
+          "5000": 0.09,
+          "10000": 0
+        },
+        "meanNet": -7290.623,
+        "bet": 87355011,
+        "paid": 80064388,
+        "normalAtDenominator": 780.7522788436496,
+        "normalCzDenominator": 422.5666259455904
+      },
+      "ledger": {
+        "bet": 87355011,
+        "paid": 80064388
+      }
+    },
+    {
+      "setting": 2,
+      "target": {
+        "win": 0.2,
+        "reach": null
+      },
+      "before": {
+        "n": 1000,
+        "rtp": 0.9248832848638879,
+        "rtpCi95": [
+          0.9204045071440117,
+          0.9293620625837642
+        ],
+        "win": 0.154,
+        "winCi95": [
+          0.1329558947664042,
+          0.17769231905537805
+        ],
+        "reach": 0,
+        "reachCi95": [
+          0,
+          0.003826898586390522
+        ],
+        "peakRates": {
+          "2000": 0.655,
+          "3000": 0.31,
+          "4000": 0.138,
+          "5000": 0.052,
+          "6000": 0.012,
+          "7000": 0.007,
+          "8000": 0.002,
+          "9000": 0.001,
+          "10000": 0
+        },
+        "finalRates": {
+          "2000": 0.029,
+          "3000": 0.011,
+          "4000": 0.003,
+          "5000": 0,
+          "6000": 0,
+          "7000": 0,
+          "8000": 0,
+          "9000": 0,
+          "10000": 0
+        },
+        "meanNet": -6545.473,
+        "median": -5434.5,
+        "p10": -15458.7,
+        "p90": 634.8000000000002
+      },
+      "after": {
+        "n": 1000,
+        "rtp": 0.9470522975098852,
+        "rtpCi95": [
+          0.9431203555143037,
+          0.9509842395054666
+        ],
+        "win": 0.221,
+        "winCi95": [
+          0.1963777255878074,
+          0.24775768382339855
+        ],
+        "reach": 0,
+        "reachCi95": [
+          0,
+          0.003826898586390522
+        ],
+        "peakRates": {
+          "3000": 0.408,
+          "5000": 0.067,
+          "10000": 0
+        },
+        "meanNet": -4616.242,
+        "bet": 87184935,
+        "paid": 82568693,
+        "normalAtDenominator": 597.4789731434845,
+        "normalCzDenominator": 254.35134473420632
+      },
+      "ledger": {
+        "bet": 87184935,
+        "paid": 82568693
+      }
+    },
+    {
+      "setting": 3,
+      "target": {
+        "win": 0.3,
+        "reach": null
+      },
+      "before": {
+        "n": 1000,
+        "rtp": 0.9483766851614166,
+        "rtpCi95": [
+          0.9441648506936133,
+          0.9525885196292199
+        ],
+        "win": 0.251,
+        "winCi95": [
+          0.22511335376043584,
+          0.2787924417355867
+        ],
+        "reach": 0,
+        "reachCi95": [
+          0,
+          0.003826898586390522
+        ],
+        "peakRates": {
+          "2000": 0.784,
+          "3000": 0.575,
+          "4000": 0.401,
+          "5000": 0.234,
+          "6000": 0.071,
+          "7000": 0.027,
+          "8000": 0.008,
+          "9000": 0,
+          "10000": 0
+        },
+        "finalRates": {
+          "2000": 0.111,
+          "3000": 0.054,
+          "4000": 0.022,
+          "5000": 0.006,
+          "6000": 0.001,
+          "7000": 0.001,
+          "8000": 0,
+          "9000": 0,
+          "10000": 0
+        },
+        "meanNet": -4489.098,
+        "median": -3481,
+        "p10": -12619,
+        "p90": 2193.800000000002
+      },
+      "after": {
+        "n": 1000,
+        "rtp": 0.959294177794802,
+        "rtpCi95": [
+          0.9552259323636226,
+          0.9633624232259813
+        ],
+        "win": 0.315,
+        "winCi95": [
+          0.28696340678905985,
+          0.34445254568790473
+        ],
+        "reach": 0,
+        "reachCi95": [
+          0,
+          0.003826898586390522
+        ],
+        "peakRates": {
+          "3000": 0.619,
+          "5000": 0.265,
+          "10000": 0
+        },
+        "meanNet": -3541.625,
+        "bet": 87005367,
+        "paid": 83463742,
+        "normalAtDenominator": 560.6720069957761,
+        "normalCzDenominator": 237.86204072490042
+      },
+      "ledger": {
+        "bet": 87005367,
+        "paid": 83463742
+      }
+    },
+    {
+      "setting": 4,
+      "target": {
+        "win": 0.45,
+        "reach": null
+      },
+      "before": {
+        "n": 1000,
+        "rtp": 0.9656582182332242,
+        "rtpCi95": [
+          0.9618241664751375,
+          0.9694922699913109
+        ],
+        "win": 0.347,
+        "winCi95": [
+          0.3181324408399647,
+          0.37703859012747076
+        ],
+        "reach": 0.002,
+        "reachCi95": [
+          0.000548632102457155,
+          0.007262958889587807
+        ],
+        "peakRates": {
+          "2000": 0.78,
+          "3000": 0.603,
+          "4000": 0.4,
+          "5000": 0.184,
+          "6000": 0.061,
+          "7000": 0.028,
+          "8000": 0.009,
+          "9000": 0.005,
+          "10000": 0.002
+        },
+        "finalRates": {
+          "2000": 0.152,
+          "3000": 0.088,
+          "4000": 0.047,
+          "5000": 0.022,
+          "6000": 0.011,
+          "7000": 0.003,
+          "8000": 0.002,
+          "9000": 0.002,
+          "10000": 0.002
+        },
+        "meanNet": -2978.826,
+        "median": -1878.5,
+        "p10": -10622.5,
+        "p90": 2764.000000000001
+      },
+      "after": {
+        "n": 1000,
+        "rtp": 0.9824180225929814,
+        "rtpCi95": [
+          0.9791722841606592,
+          0.9856637610253036
+        ],
+        "win": 0.437,
+        "winCi95": [
+          0.4065556939663417,
+          0.46792649525554353
+        ],
+        "reach": 0.001,
+        "reachCi95": [
+          0.0001765418290572713,
+          0.0056427029601604705
+        ],
+        "peakRates": {
+          "3000": 0.698,
+          "5000": 0.279,
+          "10000": 0.001
+        },
+        "meanNet": -1526.266,
+        "bet": 86808552,
+        "paid": 85282286,
+        "normalAtDenominator": 490.5245272921869,
+        "normalCzDenominator": 198.3325279480707
+      },
+      "ledger": {
+        "bet": 86808552,
+        "paid": 85282286
+      }
+    },
+    {
+      "setting": 5,
+      "target": {
+        "win": 0.6,
+        "reach": 0.2
+      },
+      "before": {
+        "n": 1000,
+        "rtp": 1.0227016484896154,
+        "rtpCi95": [
+          1.0167656553161553,
+          1.0286376416630756
+        ],
+        "win": 0.676,
+        "winCi95": [
+          0.6463672482447502,
+          0.7042856834528404
+        ],
+        "reach": 0.195,
+        "reachCi95": [
+          0.17162968644915114,
+          0.22070472168854713
+        ],
+        "peakRates": {
+          "2000": 0.893,
+          "3000": 0.832,
+          "4000": 0.782,
+          "5000": 0.735,
+          "6000": 0.652,
+          "7000": 0.599,
+          "8000": 0.48,
+          "9000": 0.347,
+          "10000": 0.195
+        },
+        "finalRates": {
+          "2000": 0.604,
+          "3000": 0.55,
+          "4000": 0.491,
+          "5000": 0.426,
+          "6000": 0.354,
+          "7000": 0.28,
+          "8000": 0.231,
+          "9000": 0.206,
+          "10000": 0.195
+        },
+        "meanNet": 1841.536,
+        "median": 3798.5,
+        "p10": -9164.8,
+        "p90": 10004
+      },
+      "after": {
+        "n": 1000,
+        "rtp": 0.9926075072798726,
+        "rtpCi95": [
+          0.9851821865556883,
+          1.0000328280040567
+        ],
+        "win": 0.589,
+        "winCi95": [
+          0.5582204870707944,
+          0.6190983249808281
+        ],
+        "reach": 0.176,
+        "reachCi95": [
+          0.15364903702878677,
+          0.2008307932551943
+        ],
+        "peakRates": {
+          "3000": 0.74,
+          "5000": 0.655,
+          "10000": 0.176
+        },
+        "meanNet": -601.435,
+        "bet": 81357537,
+        "paid": 80756102,
+        "normalAtDenominator": 641.1124987531172,
+        "normalCzDenominator": 329.41175747014506
+      },
+      "ledger": {
+        "bet": 81357537,
+        "paid": 80756102
+      }
+    },
+    {
+      "setting": 6,
+      "target": {
+        "win": 0.7,
+        "reach": 0.25
+      },
+      "before": {
+        "n": 1000,
+        "rtp": 1.0634799865245599,
+        "rtpCi95": [
+          1.0585657898009446,
+          1.0683941832481751
+        ],
+        "win": 0.825,
+        "winCi95": [
+          0.8002178770109885,
+          0.8472946389078577
+        ],
+        "reach": 0.236,
+        "reachCi95": [
+          0.210722931040928,
+          0.2632976714126862
+        ],
+        "peakRates": {
+          "2000": 0.936,
+          "3000": 0.885,
+          "4000": 0.836,
+          "5000": 0.787,
+          "6000": 0.726,
+          "7000": 0.663,
+          "8000": 0.558,
+          "9000": 0.458,
+          "10000": 0.236
+        },
+        "finalRates": {
+          "2000": 0.737,
+          "3000": 0.677,
+          "4000": 0.617,
+          "5000": 0.553,
+          "6000": 0.489,
+          "7000": 0.398,
+          "8000": 0.313,
+          "9000": 0.246,
+          "10000": 0.236
+        },
+        "meanNet": 4535.173,
+        "median": 5899,
+        "p10": -2786.3999999999996,
+        "p90": 10004
+      },
+      "after": {
+        "n": 1000,
+        "rtp": 1.0318251142448387,
+        "rtpCi95": [
+          1.0249715517960158,
+          1.0386786766936615
+        ],
+        "win": 0.677,
+        "winCi95": [
+          0.6473866655126974,
+          0.7052586123877205
+        ],
+        "reach": 0.222,
+        "reachCi95": [
+          0.19733260399021366,
+          0.24879515162381952
+        ],
+        "peakRates": {
+          "3000": 0.767,
+          "5000": 0.677,
+          "10000": 0.222
+        },
+        "meanNet": 2247.261,
+        "bet": 70612818,
+        "paid": 72860079,
+        "normalAtDenominator": 644.5269838766902,
+        "normalCzDenominator": 334.78133382476403
+      },
+      "ledger": {
+        "bet": 70612818,
+        "paid": 72860079
+      }
+    }
+  ],
+  "sourceHashFormat": "sha256-utf8-lf",
+  "sourceHashes": {
+    "nova-tuning.js": "4a1bb10a6052b77e68c5eda5a422393df5e03c2157c63103cdcab42963015f2f",
+    "nova-decrement.js": "aee01165cd091fd502379f22ebc2d54a7afa0f0d2e1e3fc49271f6b6fffa06af",
+    "nova-art.js": "844af9e6466651d0bfb58ccfdf207224ed36eb647ba758375f04aeba72b1b64f",
+    "nova-balance.js": "23a31dda49d6a9132f21dc534029d5bb39b65f4b50f231d60b6f09590a3a41c6",
+    "nova-flow.js": "a01ae6c12fcf577c4cd5d7e3d099afad55aaad95930088763bc61ef06238fd19",
+    "nova-normal.js": "8c6702f6677fba89a3807fc3270344a8b86ee0eab49462de35c66437dd917347",
+    "nova-progress.js": "3d02469b2727693056c4672903722beef77bc71b72d398fd2686417b416f481f",
+    "nova-game.js": "7f17700f8fac642f746ae991d482c7678a3112694c7768720eae2f3ad4ecfc30",
+    "scripts/zone-v2-model.mjs": "5797716784c5a0d03160df376914bf4cdb77a1c18412fac6c1b9095227a58fc5",
+    "scripts/zone-v2-rng.mjs": "0e5424d7a743850591b4029b730d93267c986633a0be83942a69a19b18c8fcce"
+  },
+  "candidateHashes": {
+    "final/nova-art.js": "844af9e6466651d0bfb58ccfdf207224ed36eb647ba758375f04aeba72b1b64f",
+    "final/nova-balance.js": "25ee486e75c6736ff25a0a20d3ef0a66845f1d477596e107e0818ee20069245c",
+    "final/nova-decrement.js": "aee01165cd091fd502379f22ebc2d54a7afa0f0d2e1e3fc49271f6b6fffa06af",
+    "final/nova-flow.js": "a01ae6c12fcf577c4cd5d7e3d099afad55aaad95930088763bc61ef06238fd19",
+    "final/nova-normal.js": "e38d94079275cd22b387463b8f2a7b3ac8e4c965181d97352065557ad8c1aff5",
+    "final/nova-progress.js": "3d02469b2727693056c4672903722beef77bc71b72d398fd2686417b416f481f",
+    "final/nova-tuning.js": "4a1bb10a6052b77e68c5eda5a422393df5e03c2157c63103cdcab42963015f2f"
+  },
+  "verification": [
+    {
+      "setting": 1,
+      "seed": "win-a-holdout-20261007|s1|0",
+      "passed": true
+    },
+    {
+      "setting": 1,
+      "seed": "win-a-holdout-20261007|s1|661",
+      "passed": true
+    },
+    {
+      "setting": 2,
+      "seed": "win-a-holdout-20261007|s2|5",
+      "passed": true
+    },
+    {
+      "setting": 2,
+      "seed": "win-a-holdout-20261007|s2|795",
+      "passed": true
+    },
+    {
+      "setting": 3,
+      "seed": "win-a-refit3-holdout-20261007|s3|5",
+      "passed": true
+    },
+    {
+      "setting": 3,
+      "seed": "win-a-refit3-holdout-20261007|s3|235",
+      "passed": true
+    },
+    {
+      "setting": 4,
+      "seed": "win-a-holdout-20261007|s4|0",
+      "passed": true
+    },
+    {
+      "setting": 4,
+      "seed": "win-a-holdout-20261007|s4|304",
+      "passed": true
+    },
+    {
+      "setting": 5,
+      "seed": "win-a-refit5-holdout-20261007|s5|17",
+      "passed": true
+    },
+    {
+      "setting": 5,
+      "seed": "win-a-refit5-holdout-20261007|s5|161",
+      "passed": true
+    },
+    {
+      "setting": 6,
+      "seed": "win-a-refit6-holdout-20261007|s6|10",
+      "passed": true
+    },
+    {
+      "setting": 6,
+      "seed": "win-a-refit6-holdout-20261007|s6|7",
+      "passed": true
+    }
+  ]
+}

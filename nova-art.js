@@ -125,21 +125,25 @@ globalThis.NovaArt=(()=>{
  const initialZoneIds=Object.freeze(['kushuri_nito']);
  const initialZoneId=z=>['kushuri_nito','kushuri','nito'].includes(z);
  const entryQuotaRules=Object.freeze({version:148,waitGames:3,games:3,values:Object.freeze([150,200,250,300]),weights:Object.freeze([8,12,6,1]),pointValues:Object.freeze([50,100]),pointWeights:Object.freeze([2,1])});
+ const freshInitialRules=Object.freeze({version:20261007,quota:300,point:100,rareAwards:Object.freeze({WEAK_SUICA:150,CHANCE_A:150,WEAK_NOVA:150,STRONG_SUICA:200,CHANCE_B:200,STRONG_NOVA:200,SUPER_NOVA:200})});
  const researchEntryWeights=[[0.6354105832966211,0.3110670270748763,0.05076124418701584,0.0027611454414867057],[0.4827364503295663,0.3979165543666842,0.10933335303418432,0.010013642269564929],[0.3746442278235266,0.43514331313362564,0.1684706795608236,0.021741779482023913],[0.26914350346608706,0.4431467349623512,0.24321477350531298,0.044494988066248714],[0.19722305399838924,0.4247972702808942,0.30498922781372345,0.07299044790699304],[0.13019579613189197,0.38005441300255294,0.3698054804995187,0.11994431036603637]];
- function drawEntryQuota(c,rng=Math.random,freshInitial=false){const weights=!freshInitial&&Number.isInteger(c?.setting)&&c.setting>=1&&c.setting<=6?researchEntryWeights[c.setting-1]:entryQuotaRules.weights;return entryQuotaRules.values[weightedChallenge(weights,rng)];}
- // Approved common-entry plan: fresh ATs share the full quota/multiplier distribution.
- // Retain multiplier values 3-5 for already-awarded saves, but never draw them anew.
+ function drawEntryQuota(c,rng=Math.random,freshInitial=false){const weights=!freshInitial&&Number.isInteger(c?.setting)&&c.setting>=1&&c.setting<=6?researchEntryWeights[c.setting-1]:entryQuotaRules.weights;const drawn=entryQuotaRules.values[weightedChallenge(weights,rng)];return freshInitial?freshInitialRules.quota:drawn;}
+ // Fresh ATs share a 300pt base; keep one multiplier draw for RNG continuity.
+ // Retain multiplier values 2-5 for already-awarded saves, but never draw them anew.
  // The multiplier never changes subsequent AT roles, zones or comeback rewards.
- const initialBoostRules=Object.freeze({version:20261001,values:Object.freeze([1,2,3,4,5]),weights:Object.freeze([
-  [.5,.5,0,0,0],[.5,.5,0,0,0],[.5,.5,0,0,0],
-  [.5,.5,0,0,0],[.5,.5,0,0,0],[.5,.5,0,0,0]
+ const initialBoostRules=Object.freeze({version:20261007,values:Object.freeze([1,2,3,4,5]),weights:Object.freeze([
+  [1,0,0,0,0],[1,0,0,0,0],[1,0,0,0,0],
+  [1,0,0,0,0],[1,0,0,0,0],[1,0,0,0,0]
  ].map(Object.freeze))});
  function drawInitialMultiplier(setting,rng){return initialBoostRules.values[weightedChallenge(initialBoostRules.weights[validSetting(setting)-1],rng)];}
  // The base plan is sealed; rare roles in the duo zone can upgrade that game's award.
  const initialRareAwards=Object.freeze({WEAK_SUICA:100,CHANCE_A:100,WEAK_NOVA:100,STRONG_SUICA:200,CHANCE_B:200,STRONG_NOVA:200,SUPER_NOVA:200});
  function drawInitialRole(setting,rng){let roll=rng();for(const [role,p]of Object.entries(roleProbabilities(setting)))if((roll-=p)<0)return role==='BELL15'?'BELL':role;return 'REPLAY';}
- function enterInitial(c,rng=Math.random){const s={...enter(c,rng,true),initialBoostActive:true,initialVersion:148,remaining:'0',initialStage:'wait',initialWait:entryQuotaRules.waitGames,initialPlan:[],initialIndex:0};s.initialMultiplier=drawInitialMultiplier(c?.setting,rng);if(rng()<.05){s.burstPending=true;s.burstUsed=true;s.researchChallengeSource='initial';}return s;}
- function initialFields(v){return {initialBoostActive:!!v?.initialBoostActive,initialMultiplier:initialBoostRules.values.includes(v?.initialMultiplier)?v.initialMultiplier:1,...(Number.isFinite(v?.researchChallengeSuccess)&&v.researchChallengeSuccess>=.4&&v.researchChallengeSuccess<=1?{researchChallengeSuccess:v.researchChallengeSuccess}:{}),modelSetting:validSetting(v?.modelSetting),researchSortieLeft:Math.max(0,Number(v?.researchSortieLeft)||0),researchSortieHits:Math.max(0,Number(v?.researchSortieHits)||0),researchSortieRate:Number(v?.researchSortieRate)||0,
+
+ // Plan the three actual roles once; saved games replay the same awards.
+ function scriptedInitialRoles(setting,rng){return Array.from({length:3},()=>drawInitialRole(setting,rng));}
+ function enterInitial(c,rng=Math.random){const s={...enter(c,rng,true),initialBoostActive:true,initialRuleVersion:freshInitialRules.version,initialVersion:148,remaining:'0',initialStage:'wait',initialWait:entryQuotaRules.waitGames,initialPlan:[],initialIndex:0};s.initialMultiplier=drawInitialMultiplier(c?.setting,rng);if(rng()<.05){s.burstPending=true;s.burstUsed=true;s.researchChallengeSource='initial';}return s;}
+ function initialFields(v){return {initialRolePlan:Array.isArray(v?.initialRolePlan)?v.initialRolePlan.slice(0,3).map(role=>['BELL','REPLAY','MISS','WEAK_SUICA','WEAK_NOVA','STRONG_NOVA'].includes(role)?role:'MISS'):[],initialRuleVersion:v?.initialRuleVersion===freshInitialRules.version?freshInitialRules.version:0,initialBoostActive:!!v?.initialBoostActive,initialMultiplier:initialBoostRules.values.includes(v?.initialMultiplier)?v.initialMultiplier:1,...(Number.isFinite(v?.researchChallengeSuccess)&&v.researchChallengeSuccess>=.4&&v.researchChallengeSuccess<=1?{researchChallengeSuccess:v.researchChallengeSuccess}:{}),modelSetting:validSetting(v?.modelSetting),researchSortieLeft:Math.max(0,Number(v?.researchSortieLeft)||0),researchSortieHits:Math.max(0,Number(v?.researchSortieHits)||0),researchSortieRate:Number(v?.researchSortieRate)||0,
   researchUpper:!!v?.researchUpper,researchThresholdUsed:!!v?.researchThresholdUsed,researchThresholdPending:!!v?.researchThresholdPending,
   researchChallengeActive:!!v?.researchChallengeActive,researchChallengeSource:v?.researchChallengeSource||'',researchAim:v?.researchAim||'',initialVersion:v?.initialVersion===148?148:131,initialStage:['wait','entry','zone'].includes(v?.initialStage)?v.initialStage:'',initialWait:Math.max(0,Math.min(entryQuotaRules.waitGames,Math.floor(Number(v?.initialWait)||0))),initialPlan:Array.isArray(v?.initialPlan)?v.initialPlan.slice(0,5).map(n=>Math.max(0,Math.floor(Number(n)||0))):[],initialIndex:Math.max(0,Math.min(5,Math.floor(Number(v?.initialIndex)||0)))};}
  // Initial ladder presentations only use amounts with the ordinary artwork.
@@ -158,6 +162,10 @@ globalThis.NovaArt=(()=>{
   return plan;
  }
  function initialZone(s,rng){
+  if(s.initialBoostActive&&s.initialRuleVersion===freshInitialRules.version){
+   const roles=scriptedInitialRoles(s.modelSetting,rng),plan=roles.map(role=>freshInitialRules.rareAwards[role]??100);
+   return {...s,entryQuota:String(plan.reduce((sum,n)=>sum+n,0)),initialStage:'zone',initialRolePlan:roles,initialPlan:plan,initialIndex:0,zoneLeft:3,award:'0',initialAward:'0',oumaPending:false,zero:false,ladder:[]};
+  }
   if(s.initialVersion===148){
    const hundreds=(Number(s.entryQuota)-150)/50;
    const plan=Array.from({length:3},(_,i)=>i<hundreds?100:50);
@@ -177,8 +185,9 @@ globalThis.NovaArt=(()=>{
   let s=normalize(value);const family=zoneRules(s,config(options)).family,index=s.initialIndex++;let n=s.initialPlan[index]||0;
   s.zoneLeft=Math.max(0,(s.initialVersion===148?3:5)-s.initialIndex);let result='MISS',aim=null;
   if(s.initialVersion===148){
-   result=initialRareAwards[forced]||['BELL','REPLAY','MISS'].includes(forced)?forced:drawInitialRole(options.setting,rng);
-   n=initialRareAwards[result]??n;if(s.initialBoostActive)n*=s.initialMultiplier;s.initialPlan[index]=n;
+   result=initialRareAwards[forced]||['BELL','REPLAY','MISS'].includes(forced)?forced:s.initialRolePlan[index]||drawInitialRole(options.setting,rng);
+   const awards=s.initialBoostActive&&s.initialRuleVersion===freshInitialRules.version?freshInitialRules.rareAwards:initialRareAwards;
+   n=awards[result]??n;if(s.initialBoostActive)n*=s.initialMultiplier;s.initialPlan[index]=n;
    s.award=(integer(s.award)+BigInt(n)).toString();
   }else if(family==='ladder'){
    s.ladderRevealed=true;s.ladderIndex=index;s.award=String(s.ladder[index]);result=index===0?'MISS':rng()<.7?'REPLAY':'BELL';
@@ -340,7 +349,7 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
   if(!value.atPrelude&&(value.queuedZones?.length||integer(value.stock)>0n||integer(value.sets)>0n))return value;
   return {...value,remaining:(integer(value.remaining)+BigInt(charged)).toString()};
  }
- function settleZone(value){const s=normalize(value);if(!s.zone)return s;s.remaining=(integer(s.remaining)+integer(s.award)).toString();s.zone='';s.color='white';s.zoneLeft=0;s.zero=false;s.oumaPending=false;if(s.initialStage==='zone'){s.initialBoostActive=false;s.initialStage='';s.initialWait=0;s.initialPlan=[];s.initialIndex=0;}return s;}
+ function settleZone(value){const s=normalize(value);if(!s.zone)return s;s.remaining=(integer(s.remaining)+integer(s.award)).toString();s.zone='';s.color='white';s.zoneLeft=0;s.zero=false;s.oumaPending=false;if(s.initialStage==='zone'){s.initialBoostActive=false;s.initialStage='';s.initialWait=0;s.initialPlan=[];s.initialRolePlan=[];s.initialIndex=0;}return s;}
  function afterBonus(v,c,won=0,rng=Math.random){
   if(v?.phase!=='art'&&integer(won)>0n){const s=enterInitial(c,rng);s.sets=(integer(won)-1n).toString();s.dryEligible=integer(won)===1n;return s;}
   const continuing=v?.phase==='art',s=continuing?normalize(v):normalize({burstVersion:burstRules.version,setQuota:config(c).initial});
@@ -510,5 +519,5 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
   s.researchSortieRate=[.1,.25,.4,.6,.8][i<0?4:i];s.researchSortieLeft=10;s.researchSortieHits=0;
   s.comebackLeft=0;s.comebackConfirmed=false;s.comebackLamp='';s.zero=false;s.dryEligible=false;return s;
  }
- return {positiveNetZoneRules,positiveNetZoneFactor,restoreBetCost,extraZoneChance,commonAtRulesFor,entryWeights:researchEntryWeights,beginResearchSortie,atPreludeRules,initialRareAwards,initialZoneIds,rouletteZones,sevenGuaranteed,initialBoostRules,entryQuotaRules,initialZoneAllowed,initialZoneWeights,pickInitialZone,drawEntryQuota,enterInitial,challengeName,burstReward,comebackRules,comebackChance,comebackRoleProbabilities,drawComebackRole,beginComeback,prepareComeback,stepComeback,burstRules,burstChance,commonAtRules,bonusRules,bonusTier,drawBonusTier,bonusLabel,bonusPayout,bonusAim,aimColors,aimColorsFor,sevenAimRules,drawSevenAim,ladderWeightsFor,ladderGuaranteed,drawLadderRole,lossRewardControl,zoneTailControl,zoneAwardFactor,netRewardControl,netLimits,netRewardFactor,superZoneChance,zoneGroups,zoneGroupWeights,upgradeGuaranteedZone,bonusSpecialRates,zoneRules,ladderTables,ladderTableFor,ladderValues,sevenValues,sevenWeights,atZoneWeights,tuning,atMix,drawAtRare,atRoleRules,pickAtZone,resolveAtRole,rareRoles,rareTotal,rareMean,rareFactor,drawRare,roleProbabilities,bonusRoleProbabilities,preparationProbabilities,drawPreparationRole,zoneRoleWeights,zoneRoleMultiplier,paidBellChance,drawPreparation,zoneEntryScale,points,bonusTarget,payout,settleZone,prepareBet,oumaFreezeRate,baseZone,zoneName,zoneIds,names,defaults,direct,zoneWeights,pickZone,bonusSpecial,settingBias,biasFor,bonusSpecialFor,advanceBonus,bonusStockLabel,bonusStockRules,bonusStockFactor,bonusStockEligible,drawPaidRole,drawBonus,config,normalize,enter,startZone,afterBonus,step,label};
+ return {scriptedInitialRoles,freshInitialRules,positiveNetZoneRules,positiveNetZoneFactor,restoreBetCost,extraZoneChance,commonAtRulesFor,entryWeights:researchEntryWeights,beginResearchSortie,atPreludeRules,initialRareAwards,initialZoneIds,rouletteZones,sevenGuaranteed,initialBoostRules,entryQuotaRules,initialZoneAllowed,initialZoneWeights,pickInitialZone,drawEntryQuota,enterInitial,challengeName,burstReward,comebackRules,comebackChance,comebackRoleProbabilities,drawComebackRole,beginComeback,prepareComeback,stepComeback,burstRules,burstChance,commonAtRules,bonusRules,bonusTier,drawBonusTier,bonusLabel,bonusPayout,bonusAim,aimColors,aimColorsFor,sevenAimRules,drawSevenAim,ladderWeightsFor,ladderGuaranteed,drawLadderRole,lossRewardControl,zoneTailControl,zoneAwardFactor,netRewardControl,netLimits,netRewardFactor,superZoneChance,zoneGroups,zoneGroupWeights,upgradeGuaranteedZone,bonusSpecialRates,zoneRules,ladderTables,ladderTableFor,ladderValues,sevenValues,sevenWeights,atZoneWeights,tuning,atMix,drawAtRare,atRoleRules,pickAtZone,resolveAtRole,rareRoles,rareTotal,rareMean,rareFactor,drawRare,roleProbabilities,bonusRoleProbabilities,preparationProbabilities,drawPreparationRole,zoneRoleWeights,zoneRoleMultiplier,paidBellChance,drawPreparation,zoneEntryScale,points,bonusTarget,payout,settleZone,prepareBet,oumaFreezeRate,baseZone,zoneName,zoneIds,names,defaults,direct,zoneWeights,pickZone,bonusSpecial,settingBias,biasFor,bonusSpecialFor,advanceBonus,bonusStockLabel,bonusStockRules,bonusStockFactor,bonusStockEligible,drawPaidRole,drawBonus,config,normalize,enter,startZone,afterBonus,step,label};
 })();

@@ -1,13 +1,13 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
 const ctx=vm.createContext({});for(const f of ['nova-tuning.js','nova-art.js','nova-balance.js'])vm.runInContext(fs.readFileSync(f,'utf8'),ctx);const a=ctx.NovaArt,b=ctx.NovaBalance;
 test('RTP metadata identifies the adopted 50,000G complete-stop estimates',()=>{
- const report=JSON.parse(fs.readFileSync('docs/positive-net-50000-20261007.json'));
+ const report=JSON.parse(fs.readFileSync('docs/win-a-50000-20261007.json'));
  const measured=report.settings.map(s=>s.after.rtp);
  for(let i=0;i<6;i++){
   const p=b.profile(i+1);assert.equal(p.target,b.targets[i]);assert.equal(p.measuredRtp,measured[i]);
-  assert.equal(p.target,null);assert.equal(p.winTarget,null);assert.equal(p.completeTarget,report.settings[i].target.reach);
-  assert.equal(p.verifiedModel,'positive-net-20261007-50000g-complete-stop');assert.equal(p.trials,1000);
-  assert.equal(p.previousVerifiedModel,'rtp-targets-20261007-50000g-complete-stop');
+  assert.equal(p.target,null);assert.equal(p.winTarget,report.settings[i].target.win);assert.equal(p.completeTarget,report.settings[i].target.reach);
+  assert.equal(p.verifiedModel,'win-a-20261007-50000g-complete-stop');assert.equal(p.trials,1000);
+  assert.equal(p.previousVerifiedModel,'positive-net-20261007-50000g-complete-stop');
   assert.equal(report.trialsPerSetting,p.trials);assert.equal(report.gamesPerTrial,p.gamesPerTrial);
  }
 });
@@ -37,7 +37,7 @@ test('bonus specials reserve ordinary zones after the first AT entitlement, with
  let bonus={bonusKind:'BIG',paid:0,bonusArtSets:0};for(let i=0;i<2;i++)bonus={...bonus,...a.advanceBonus(bonus,true,0)};
  assert.equal(bonus.bonusArtSets,2);let flow=a.afterBonus(null,{},2,()=>.5);assert.equal(flow.remaining,'0');assert.equal(flow.sets,'1');
  while(flow.initialStage)flow=a.step(flow,{},()=>.5).flow;
- assert.equal(flow.remaining,String(a.drawEntryQuota({},()=>.5)*flow.initialMultiplier));
+ assert.equal(flow.remaining,String(a.freshInitialRules.quota));
  flow={...flow,remaining:'3'};const entry=a.step(flow,{},()=>0);flow=entry.flow;assert.equal(entry.result,'BIG');assert.equal(flow.remaining,'3');assert.equal(flow.sets,'0');assert.equal(flow.entryStage,'roulette');
  flow=a.step(flow,{},()=>.99,'MISS').flow;flow=a.prepareBet(flow,{},()=>0);assert.equal(flow.zone,'sosuke');assert.equal(flow.initialStage,'');
  flow=a.step(flow,{},()=>.99).flow;flow=a.step(flow,{},()=>.99,'MISS').flow;assert.equal(flow.remaining,'53');assert.equal(flow.zone,'');

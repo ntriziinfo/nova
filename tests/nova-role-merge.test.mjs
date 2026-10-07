@@ -50,7 +50,7 @@ test('all six 15pt bell orders survive navigation, save and AUTO without redrawi
 });
 
 test('production reproduces full-horizon and highest-peak approved 50,000G trials for every setting',()=>{
- const rows=JSON.parse(gunzipSync(fs.readFileSync('docs/positive-net-50000-20261007-rows.json.gz')));
+ const rows=JSON.parse(gunzipSync(fs.readFileSync('docs/win-a-50000-20261007-rows.json.gz')));
  const options={rng:'xoshiro128',exactGames:true,completeLimitPt:10000,stopAtComplete:true,rareSortie:true,atBetRefund:true};
  for(let setting=1;setting<=6;setting++){
   const data=rows.filter(r=>r.setting===setting),full=data.find(r=>!r.firstComplete);

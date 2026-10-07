@@ -2,8 +2,8 @@
 globalThis.NovaDecrement=(()=>{
  const disabled=Object.freeze({enabled:false});
  const profiles=Object.freeze({
-  5:Object.freeze({enabled:true,lowMean:150000,highMean:183333.33333333334,lowCz:.7,highCz:2.4,lowAt:.25,highAt:.25,netEnter:8000,netExit:6500,netCz:.25,netAt:.25}),
-  6:Object.freeze({enabled:true,lowMean:9000,highMean:27000,lowCz:.25,highCz:1.8,lowAt:.25,highAt:.25,netEnter:9000,netExit:7500,netCz:.25,netAt:.25})
+  5:Object.freeze({enabled:true,lowMean:150000,highMean:183333.33333333334,lowCz:0.25,highCz:2.4,lowAt:.25,highAt:.25,netEnter:8000,netExit:6500,netCz:.25,netAt:.25}),
+  6:Object.freeze({enabled:true,lowMean:60000,highMean:90000,lowCz:.25,highCz:1.95,lowAt:.25,highAt:.25,netEnter:9000,netExit:7500,netCz:.25,netAt:.25})
  });
  const settingNo=s=>Math.max(1,Math.min(6,Math.round(Number(s)||3)));
  const rules=s=>profiles[settingNo(s)]||disabled;

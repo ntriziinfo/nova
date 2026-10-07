@@ -6,7 +6,7 @@ import vm from 'node:vm';
 import {loadModel} from '../scripts/zone-v2-model.mjs';
 import {xoshiro128} from '../scripts/zone-v2-rng.mjs';
 loadModel();const a=NovaArt;
-const initial=(plan=[50,50,50])=>({...a.enterInitial({},()=>0),initialStage:'zone',initialWait:0,zone:'kushuri_nito',initialPlan:plan,initialIndex:0,zoneLeft:3,award:'0',sets:'2',queuedZones:['ura_sora']});
+const initial=(plan=[50,50,50])=>({...a.enterInitial({},()=>0),initialRuleVersion:0,initialStage:'zone',initialWait:0,zone:'kushuri_nito',initialPlan:plan,initialIndex:0,zoneLeft:3,award:'0',sets:'2',queuedZones:['ura_sora']});
 const reload=s=>a.normalize(JSON.parse(JSON.stringify(s)));
 
 test('weak/strong roles replace only their game with 100/200; final points and saved awards match',()=>{
@@ -30,14 +30,14 @@ test('natural initial-zone rare roles use the AT frequencies and the new exact a
    let s={...a.enterInitial({setting},rng),initialBoostActive:true,initialStage:'entry',entryStage:'confirmed',pendingZone:'kushuri_nito'};
    s=a.prepareBet(s,{setting},rng);
    for(let g=0;g<3;g++){
-    const step=a.step(s,{setting},rng);const fixed=a.initialRareAwards[step.result],factor=s.initialMultiplier;
-    if(fixed){assert.equal(step.zoneAward,fixed*factor);sawWeak+=fixed===100;sawStrong+=fixed===200;}
-    else assert([50*factor,100*factor].includes(step.zoneAward));s=step.flow;
+    const step=a.step(s,{setting},rng);const fixed=a.freshInitialRules.rareAwards[step.result],factor=s.initialMultiplier;
+    if(fixed){assert.equal(step.zoneAward,fixed*factor);sawWeak+=fixed===150;sawStrong+=fixed===200;}
+    else assert.equal(step.zoneAward,100*factor);s=step.flow;
    }
    total+=Number(s.remaining);
   }
   // Independent approved target includes rare-role rewrites (not just the sealed base).
-  const mean=306.22060381355936;assert(Math.abs(total/count-mean)<7,`${setting}: ${total/count} vs ${mean}`);
+  const mean=306.0206038135593;assert(Math.abs(total/count-mean)<7,`${setting}: ${total/count} vs ${mean}`);
  }
  assert(sawWeak>0&&sawStrong>0);
 });
@@ -61,9 +61,9 @@ test('BUG-002: reported ordinary duo mean matches the actual queued-stock engine
   if(Math.abs(reported-expected)>1e-9)mismatches.push({setting,expected,reported});
   const boost=a.initialBoostRules.values.reduce((sum,n,i)=>sum+n*a.initialBoostRules.weights[setting-1][i],0);
   const commonUnboosted=204.14706920903956;
-  assert(Math.abs(NovaBalance.zoneMean('kushuri_nito',{setting,initialBoostActive:true})-commonUnboosted*boost)<1e-9);
+  assert(Math.abs(NovaBalance.zoneMean('kushuri_nito',{setting,initialBoostActive:true})-306.0206038135593*boost)<1e-9);
   for(const initialMultiplier of a.initialBoostRules.values){
-   assert(Math.abs(NovaBalance.zoneMean('kushuri_nito',{setting,initialBoostActive:true,initialMultiplier})-commonUnboosted*initialMultiplier)<1e-9);
+   assert(Math.abs(NovaBalance.zoneMean('kushuri_nito',{setting,initialBoostActive:true,initialRuleVersion:0,initialMultiplier})-commonUnboosted*initialMultiplier)<1e-9);
    assert.equal(NovaBalance.zoneMean('kushuri_nito',{setting,initialMultiplier}),reported);
   }
  }

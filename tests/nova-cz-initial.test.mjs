@@ -5,18 +5,18 @@ loadModel();const a=NovaArt,n=NovaNormal;
 const reload=s=>a.normalize(JSON.parse(JSON.stringify(s)));
 const zone=s=>a.prepareBet({...s,initialStage:'entry',entryStage:'confirmed',pendingZone:'kushuri_nito'}, {setting:s.modelSetting},()=>.99);
 
-test('every setting draws the same two multipliers once, before the initial challenge',()=>{
+test('every setting uses the same 300pt base with 150/200pt rare upgrades',()=>{
  for(let setting=1;setting<=6;setting++){
-  const expected=[.5,.5,0,0,0];
+  const expected=[1,0,0,0,0];
   assert.deepEqual(a.initialBoostRules.weights[setting-1],expected);let edge=0;
-  for(let i=0;i<2;i++){
+  for(let i=0;i<1;i++){
    let calls=0;const rng=()=>[.999999,edge+expected[i]/2,.99][calls++];
    const fresh=a.enterInitial({setting},rng);assert.equal(calls,3);assert.equal(fresh.initialMultiplier,i+1);assert(fresh.initialBoostActive);assert(!fresh.burstPending);
    let s=zone(reload(fresh));
-   for(const [role,base]of [['BELL',100],['WEAK_NOVA',100],['STRONG_NOVA',200]]){
+   for(const [role,base]of [['BELL',100],['WEAK_NOVA',150],['STRONG_NOVA',200]]){
     const r=a.step(reload(s),{setting},()=>.99,role);assert.equal(r.zoneAward,base*(i+1));s=r.flow;
    }
-   assert.equal(s.remaining,String(400*(i+1)));assert.equal(s.initialBoostActive,false);assert.equal(s.initialStage,'');
+   assert.equal(s.remaining,String(450*(i+1)));assert.equal(s.initialBoostActive,false);assert.equal(s.initialStage,'');
    const again=a.step({...s,queuedZones:['kushuri_nito']},{setting},()=>.999999,'BELL');assert.equal(again.zoneAward,100);
    assert.equal(a.normalize({...fresh,comebackLeft:5}).initialBoostActive,false);
    edge+=expected[i];
@@ -26,7 +26,7 @@ test('every setting draws the same two multipliers once, before the initial chal
 
 test('initial upper-challenge route and legacy saves cannot boost later duo stocks',()=>{
  let draw=0;const fresh=a.enterInitial({setting:6},()=>[.99,.999,0][draw++]);
- assert.equal(fresh.initialMultiplier,2);assert.equal(fresh.initialStage,'');assert.equal(fresh.initialBoostActive,false);assert(fresh.burstPending);
+ assert.equal(fresh.initialMultiplier,1);assert.equal(fresh.initialStage,'');assert.equal(fresh.initialBoostActive,false);assert(fresh.burstPending);
  const stock=a.step({...fresh,burstPending:false,researchChallengeSource:'',queuedZones:['kushuri_nito']},{setting:6},()=>.999999,'BELL');assert.equal(stock.zoneAward,100);
  const legacy={...zone(a.enterInitial({setting:6},()=>.99)),initialPlan:[50,100,50],initialIndex:1,award:'50',zoneLeft:2};
  delete legacy.initialMultiplier;delete legacy.initialBoostActive;
@@ -36,7 +36,7 @@ test('initial upper-challenge route and legacy saves cannot boost later duo stoc
 });
 
 test('CZ entry factor is setting-specific after the cap; strong NOVA remains certain',()=>{
- assert.deepEqual(n.czEntryFactors,[0.17603687628800005,0.31232544440669996,0.36443965440000003,0.46843734412800003,0.15521559299999999,0.138243818286]);
+ assert.deepEqual(n.czEntryFactors,[0.19364056391680007,0.3841602966202409,0.40817241292800005,0.52933419886464,0.15521559299999999,0.138243818286]);
  for(let setting=1;setting<=6;setting++){
   for(const level of ['low','high']){
    const p=n.roleCzRate({level},'WEAK_SUICA',setting);

@@ -17,13 +17,13 @@ test('only settings 5 and 6 use the selected time and net regimes',()=>{
   assert.equal(d.at(s),s>=5?.25:1);assert(Object.isFrozen(p));
   if(s<5){d.observe(30000);d.beforeBet('at');assert.equal(d.cz(s),1);assert.equal(d.at(s),1);}
  }
- assert.equal(d.rules(5).lowMean,150000);assert.equal(d.rules(6).lowMean,9000);
+ assert.equal(d.rules(5).lowMean,150000);assert.equal(d.rules(6).lowMean,60000);
  assert.throws(()=>d.reset(5,[0,0,0,0]));
 });
 
 test('each BET advances the independent RNG once after the initial game; reload is continuous',()=>{
  loadModel();const d=NovaDecrement,seed='decrement-clock',rng=xoshiro128(seed),p=d.rules(6);
- d.reset(6,xoshiro128State(seed));let low=rng()<.25;
+ d.reset(6,xoshiro128State(seed));let low=rng()<p.lowMean/(p.lowMean+p.highMean);
  for(let game=0;game<30000;game++){
   if(game>0&&rng()<1/(low?p.lowMean:p.highMean))low=!low;
   d.beforeBet(game%2?'bonus':'normal');assert.equal(d.snapshot().low,low);
@@ -46,7 +46,7 @@ test('net hysteresis uses the weaker factor without stacking and cannot mutate e
   d.observe(p.netEnter);assert.equal(d.cz(s),.25);assert(d.snapshot().netLow);
   d.observe(p.netExit+1);assert.equal(d.cz(s),.25);
   d.observe(p.netExit);assert.equal(d.cz(s),p.highCz);assert(!d.snapshot().netLow);
-  saved.low=true;d.bind(saved,s);d.observe(p.netEnter);assert.equal(d.cz(s),.25);
+  saved.low=true;d.bind(saved,s);d.observe(p.netEnter);assert.equal(d.cz(s),Math.min(p.lowCz,p.netCz));
   d.observe(-3000);assert.equal(d.cz(s),p.lowCz);assert.equal(d.at(s),.25);
   assert.deepEqual(flow,before);
   assert.equal(NovaNormal.roleCzRate({level:'low'},'STRONG_NOVA',s),1);

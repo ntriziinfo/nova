@@ -27,10 +27,11 @@ test('previous RTP report reconciles all 6,000 stopped trials',()=>{
 
 test('base tuning retains approved CZ and non-positive AT weak-role probabilities',()=>{
  loadModel();const report=JSON.parse(fs.readFileSync('docs/rtp-targets-50000-20261007.json'));
- assert.deepEqual(NovaNormal.czEntryFactors,report.parameters.czEntryFactors.after);
+ const current=JSON.parse(fs.readFileSync('docs/win-a-50000-20261007.json'));
+ assert.deepEqual(NovaNormal.czEntryFactors,current.parameters.czEntryFactors);
  for(const result of report.settings){
   const {setting,changes}=result;
-  assert(Math.abs(NovaNormal.roleCzRate({level:'low'},'WEAK_SUICA',setting)-changes.normalLowCzAfter)<1e-14);
+  assert(Math.abs(NovaNormal.roleCzRate({level:'low'},'WEAK_SUICA',setting)-changes.normalLowCzAfter*current.parameters.czEntryFactors[setting-1]/report.parameters.czEntryFactors.after[setting-1])<1e-14);
   assert(Math.abs(NovaArt.extraZoneChance(setting,'WEAK_NOVA')-changes.weakAtZoneAfter)<1e-14);
  }
 });

@@ -16,7 +16,7 @@ test('initial character weights exclude all three ladders only for unsupported q
    if(weights[i])assert.equal(a.pickInitialZone(setting,quota,()=>(edge+weights[i]/2)/total,131),a.zoneIds[i]);
    edge+=weights[i];
   }
-  const state={...a.enterInitial({setting},()=>.5),initialVersion:131,initialWait:1,entryQuota:String(quota)};
+  const state={...a.enterInitial({setting},()=>.5),initialRuleVersion:0,initialVersion:131,initialWait:1,entryQuota:String(quota)};
   for(const roll of [0,.1,.3,.5,.7,.9,.999999]){
    const next=a.step(state,{setting},()=>roll).flow;
    assert.equal(next.entryQuota,String(quota));assert.ok(a.initialZoneAllowed(next.pendingZone,quota,131));
@@ -26,7 +26,7 @@ test('initial character weights exclude all three ladders only for unsupported q
 
 test('ladder initial plans use only native amount and shutter images and settle the sealed quota once',()=>{
  for(const zone of ['sosuke','giru','ura_giru'])for(const quota of [300,500,1000])for(let seed=1;seed<=40;seed++){
-  const rng=xoshiro128('147/'+zone+'/'+quota+'/'+seed),base={...a.enterInitial({},rng),initialVersion:131,initialStage:'entry',entryStage:'confirmed',pendingZone:zone,entryQuota:String(quota),sets:'2'};
+  const rng=xoshiro128('147/'+zone+'/'+quota+'/'+seed),base={...a.enterInitial({},rng),initialRuleVersion:0,initialVersion:131,initialStage:'entry',entryStage:'confirmed',pendingZone:zone,entryQuota:String(quota),sets:'2'};
   let state=a.prepareBet(base,{},rng);
   assert.equal((state.ura?'ura_':'')+state.zone,zone);
   assert.equal(state.ladder.length,5);assert.equal(state.ladder[4],quota);
@@ -46,7 +46,7 @@ test('ladder initial plans use only native amount and shutter images and settle 
 
 test('saved pending initial selections migrate before confirmation while in-progress and ordinary zones stay intact',()=>{
  for(const [zone,replacement]of [['sosuke','toto'],['giru','sora'],['ura_giru','ura_sora']]){
-  const base={...a.enterInitial({},()=>.5),entryQuota:'750',initialVersion:131,initialStage:'entry',entryStage:'confirmed',pendingZone:zone,sets:'2',queuedZones:['giru']};
+  const base={...a.enterInitial({},()=>.5),entryQuota:'750',initialRuleVersion:0,initialVersion:131,initialStage:'entry',entryStage:'confirmed',pendingZone:zone,sets:'2',queuedZones:['giru']};
   const migrated=reload(base);assert.equal(migrated.pendingZone,replacement);assert.deepEqual(reload(migrated),migrated);
   const started=a.prepareBet(base,{},()=>.5);assert.equal((started.ura?'ura_':'')+started.zone,replacement);
   assert.equal(started.entryQuota,'750');assert.equal(started.sets,'2');assert.deepEqual(started.queuedZones,['giru']);

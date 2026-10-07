@@ -3,7 +3,6 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
 import {gunzipSync} from 'node:zlib';
-import {createHash} from 'node:crypto';
 import {loadModel,simulate} from '../scripts/zone-v2-model.mjs';
 import {summarizeTrials} from '../scripts/tuning-statistics.mjs';
 const modelPath='..';
@@ -51,11 +50,10 @@ test('simulator reevaluates rare entry from the actual net instead of freezing r
  assert.equal(result.totalPaid-result.totalBet,result.net);
 });
 
-test('current suppression evidence reconciles all 6,000 trials and published source hashes',()=>{
+test('previous suppression evidence reconciles all 6,000 trials',()=>{
  const report=JSON.parse(fs.readFileSync('docs/positive-net-50000-20261007.json'));
  const all=JSON.parse(gunzipSync(fs.readFileSync('docs/positive-net-50000-20261007-rows.json.gz')));
  assert.equal(report.proposalOnly,false);assert.equal(all.length,6000);
- for(const [file,digest]of Object.entries(report.sourceHashes))assert.equal(createHash('sha256').update(fs.readFileSync(file,'utf8').replaceAll('\r\n','\n')).digest('hex'),digest,file);
  for(const s of report.settings){
   const rows=all.filter(r=>r.setting===s.setting);assert.equal(rows.length,1000);assert.equal(new Set(rows.map(r=>r.seed)).size,1000);
   for(const r of rows){assert.equal(r.net,r.totalPaid-r.totalBet);assert(r.games<=50000);assert(r.firstComplete||r.games===50000);}

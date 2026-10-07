@@ -39,9 +39,9 @@ test('seven, nebula, guaranteed final nova and free nova report their own increm
  const zero=a.step({...nova,award:'100',zoneLeft:2,zero:true},{},()=>.9);assert.equal(zero.zoneAward,50);assert.equal(zero.oumaFreeze,true);assert.equal(zero.flow.zoneLeft,2);
 });
 
-test('all scripted initial zones sum to exactly the sealed quota without counting it twice',()=>{
+test('legacy scripted initial zones sum to exactly the sealed quota without counting it twice',()=>{
  for(const zone of a.initialZoneIds)for(const quota of a.entryQuotaRules.values){
-  const rng=xoshiro128(quota),base={...a.enterInitial({},rng),initialBoostActive:true,burstPending:false,researchChallengeSource:'',entryQuota:String(quota),initialStage:'entry',initialWait:0,entryStage:'confirmed',pendingZone:zone};
+  const rng=xoshiro128(quota),base={...a.enterInitial({},rng),initialRuleVersion:0,initialBoostActive:true,burstPending:false,researchChallengeSource:'',entryQuota:String(quota),initialStage:'entry',initialWait:0,entryStage:'confirmed',pendingZone:zone};
   let s=a.prepareBet(base,{},rng),total=0;
   for(let g=0;g<3;g++){const t=a.step(s,{},rng,'BELL');assert.equal(t.zoneAward,s.initialPlan[g]*base.initialMultiplier);total+=t.zoneAward;s=t.flow;}
   assert.equal(total,quota*base.initialMultiplier);assert.equal(s.award,String(total));assert.equal(s.remaining,String(total));

@@ -1,10 +1,10 @@
-/* Adopted positive-net suppression estimates: docs/positive-net-50000-20261007.json. */
+/* Adopted A-plan / win-rate estimates: docs/win-a-50000-20261007.json. */
 globalThis.NovaBalance=(()=>{
- // Positive-net suppression is the approved priority; RTP decreases are accepted.
+ // Win-rate targets and positive-net suppression take priority over RTP.
  const targets=[null,null,null,null,null,null];
- const winTargets=[null,null,null,null,null,null],completeTargets=[null,null,null,null,.2,.25];
+ const winTargets=[0.15,0.2,0.3,0.45,0.6,0.7],completeTargets=[null,null,null,null,.2,.25];
  // Up to 50,000 total G, 1,000 reset trials per setting; cumulative +10,000pt stop.
- const measuredRtp=[0.9053027672874425,0.9248832848638879,0.9483766851614166,0.9656582182332242,1.0227016484896154,1.0634799865245599];
+ const measuredRtp=[0.9165403001322958,0.9470522975098852,0.959294177794802,0.9824180225929814,0.9926075072798726,1.0318251142448387];
  const normal=[[354.112628,570.311235,6.592194,128,7.464630],[335.340933,496.870459,6.554256,192,7.482946],[318.675842,391.096799,6.455407,124,7.452119],[295.728558,359.759320,6.248231,184,7.301746],[288.226978,283.780845,6.120643,120,7.250883],[276.519476,276.524590,5.897360,176,7.245667]];
  // Exact reward recursion: 50pt grid below the threshold, translation-invariant tail above it.
  function zoneMean(id,options={}){
@@ -13,8 +13,10 @@ globalThis.NovaBalance=(()=>{
    // Queued duo entry draws with config(options), which contains no setting.
    // Match that live common quota; setting still determines the rare-role mix below.
    const weights=fallback;
-   const base=values.reduce((sum,pt,i)=>sum+pt*weights[i],0)/weights.reduce((sum,w)=>sum+w,0)/games;
-   const mean=games*Object.entries(a.roleProbabilities(options.setting)).reduce((sum,[role,p])=>sum+p*(a.initialRareAwards[role]??base),0);
+   const fresh=options.initialBoostActive&&(options.initialRuleVersion===undefined||options.initialRuleVersion===a.freshInitialRules.version);
+   const base=fresh?a.freshInitialRules.point:values.reduce((sum,pt,i)=>sum+pt*weights[i],0)/weights.reduce((sum,w)=>sum+w,0)/games;
+   const awards=fresh?a.freshInitialRules.rareAwards:a.initialRareAwards;
+   const mean=games*Object.entries(a.roleProbabilities(options.setting)).reduce((sum,[role,p])=>sum+p*(awards[role]??base),0);
    // Ordinary duo stocks are unboosted. Fresh initial ATs explicitly opt in;
    // use a saved multiplier if supplied, otherwise average its current draw.
    if(!options.initialBoostActive)return mean;
@@ -72,7 +74,7 @@ globalThis.NovaBalance=(()=>{
  }
  const giruMean=(setting,ura=false)=>zoneMean(ura?'ura_giru':'giru',{setting});
  // Entry scales fitted with the normal-mode / ceiling / impurity / freeze simulation.
- function profile(setting){const i=Math.max(0,Math.min(5,Math.round(Number(setting)||1)-1)),scale=.21*(1+.12*NovaArt.settingBias[i]);return {setting:i+1,target:targets[i],winTarget:winTargets[i],completeTarget:completeTargets[i],measuredRtp:measuredRtp[i],scale,directDenom:NovaArt.defaults['direct'+(i+1)]/scale,czDenom:120/scale,strongDenom:600/scale,verifiedModel:'positive-net-20261007-50000g-complete-stop',verificationLabel:'差枚抑制版',trials:1000,gamesPerTrial:50000,previousVerifiedModel:'rtp-targets-20261007-50000g-complete-stop'};}
+ function profile(setting){const i=Math.max(0,Math.min(5,Math.round(Number(setting)||1)-1)),scale=.21*(1+.12*NovaArt.settingBias[i]);return {setting:i+1,target:targets[i],winTarget:winTargets[i],completeTarget:completeTargets[i],measuredRtp:measuredRtp[i],scale,directDenom:NovaArt.defaults['direct'+(i+1)]/scale,czDenom:120/scale,strongDenom:600/scale,verifiedModel:'win-a-20261007-50000g-complete-stop',verificationLabel:'A案・勝率調整版',trials:1000,gamesPerTrial:50000,previousVerifiedModel:'positive-net-20261007-50000g-complete-stop'};}
  const profiles=targets.map((_,i)=>profile(i+1));
  // Estimates describe the approved defaults, not user-edited lottery settings.
  function usesStandardSettings(settings={}){

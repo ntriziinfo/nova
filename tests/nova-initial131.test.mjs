@@ -11,18 +11,19 @@ test('default unconfigured initial base has the original mean 200; configured se
  let cumulative=0;
  for(let i=0;i<4;i++){
   assert.equal(r.values[i],150+i*50);
-  assert.equal(a.enterInitial({},()=>(cumulative+r.weights[i]/2)/27).entryQuota,String(r.values[i]));
+  assert.equal(a.drawEntryQuota({},()=>(cumulative+r.weights[i]/2)/27),r.values[i]);
+  assert.equal(a.enterInitial({},()=>(cumulative+r.weights[i]/2)/27).entryQuota,'300');
   cumulative+=r.weights[i];
  }
 });
 
 test('fresh bonus win waits exactly three paid games then seven, roulette and initial zone',()=>{
  let draws=0;let s=a.afterBonus({phase:'normal'},{setting:6},2,()=>{draws++;return .5;});
- assert.equal(draws,3);assert.equal(s.remaining,'0');assert.equal(s.entryQuota,'200');assert.equal(s.sets,'1');
+ assert.equal(draws,3);assert.equal(s.remaining,'0');assert.equal(s.entryQuota,'300');assert.equal(s.sets,'1');
  for(let g=0;g<3;g++){
   assert.equal(s.initialWait,3-g);assert.equal(s.entryStage,'');assert.equal(s.zone,'');
   s=a.step(reload(s),{setting:6},()=>.5).flow;
-  assert.equal(s.remaining,'0');assert.equal(s.entryQuota,'200');assert.equal(s.sets,'1');
+  assert.equal(s.remaining,'0');assert.equal(s.entryQuota,'300');assert.equal(s.sets,'1');
  }
  assert.equal(s.initialStage,'entry');assert.equal(s.entryStage,'seven');
  let t=a.step(reload(s),{},()=>.5);assert.equal(t.result,'BIG');assert.equal(t.zoneSpin,true);assert.equal(t.flow.entryStage,'roulette');
@@ -32,7 +33,7 @@ test('fresh bonus win waits exactly three paid games then seven, roulette and in
 
 test('ordinary roles reveal every possible sealed base quota exactly once across reloads',()=>{
  for(const zone of a.initialZoneIds)for(const target of a.entryQuotaRules.values)for(let seed=1;seed<=5;seed++){
-  const rng=xoshiro128(seed+target),base={...a.enterInitial({},rng),initialBoostActive:true,burstPending:false,researchChallengeSource:'',initialStage:'entry',initialWait:0,entryQuota:String(target),entryStage:'confirmed',pendingZone:zone,sets:'2',queuedZones:['ura_sora']};
+  const rng=xoshiro128(seed+target),base={...a.enterInitial({},rng),initialRuleVersion:0,initialBoostActive:true,burstPending:false,researchChallengeSource:'',initialStage:'entry',initialWait:0,entryQuota:String(target),entryStage:'confirmed',pendingZone:zone,sets:'2',queuedZones:['ura_sora']};
   const boostedTarget=target*base.initialMultiplier;let s=a.prepareBet(reload(base),{},rng);assert.equal(s.entryStage,'');assert.equal(s.remaining,'0');
   for(let g=0;g<3;g++){
    assert.deepEqual(reload(s),s);
@@ -54,7 +55,7 @@ test('loss, resume and legacy saves never trigger a fresh initial presentation o
  assert.equal(a.afterBonus({phase:'normal'},{},0,never).phase,'normal');
  const old=a.normalize({phase:'art',payoutVersion:1,burstVersion:2,remaining:'937',entryQuota:'1000',sets:'2'});
  assert.equal(old.initialStage,'');const restored=a.afterBonus(old,{},1,never);assert.equal(restored.remaining,'937');assert.equal(restored.sets,'3');assert.equal(restored.initialStage,'');
- const waiting=a.enterInitial({},()=>.5),resumed=a.afterBonus(waiting,{},2,never);assert.equal(resumed.initialWait,3);assert.equal(resumed.remaining,'0');assert.equal(resumed.sets,'2');assert.equal(resumed.entryQuota,'200');
+ const waiting=a.enterInitial({},()=>.5),resumed=a.afterBonus(waiting,{},2,never);assert.equal(resumed.initialWait,3);assert.equal(resumed.remaining,'0');assert.equal(resumed.sets,'2');assert.equal(resumed.entryQuota,'300');
 });
 
 test('ordinary special zones retain random success and independent awards',()=>{

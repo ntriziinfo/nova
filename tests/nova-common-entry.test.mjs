@@ -19,12 +19,12 @@ test('fresh entry uses identical quota, multiplier, challenge and three rare upg
   }
   if(setting===1)reference.push(actual);else assert.deepEqual(actual,reference[seed]);
  }
- for(let setting=1;setting<=6;setting++)assert(Math.abs(NovaBalance.zoneMean('kushuri_nito',{setting,initialBoostActive:true})-306.22060381355936)<1e-9);
+ for(let setting=1;setting<=6;setting++)assert(Math.abs(NovaBalance.zoneMean('kushuri_nito',{setting,initialBoostActive:true})-306.0206038135593)<1e-9);
 });
 
 test('saved multipliers 3-5 and fixed initial plans remain earned; later duo stock is never boosted',()=>{
  for(const initialMultiplier of [3,4,5]){
-  let s=reload({...a.enterInitial({setting:6},()=>.99),initialMultiplier,initialBoostActive:true,initialStage:'zone',zone:'kushuri_nito',initialPlan:[50,100,50],initialIndex:1,zoneLeft:2,award:String(50*initialMultiplier),remaining:'0'});
+  let s=reload({...a.enterInitial({setting:6},()=>.99),initialMultiplier,initialRuleVersion:0,initialBoostActive:true,initialStage:'zone',zone:'kushuri_nito',initialPlan:[50,100,50],initialIndex:1,zoneLeft:2,award:String(50*initialMultiplier),remaining:'0'});
   for(let g=0;g<2;g++)s=a.step(reload(s),{setting:6},()=>.99,'BELL').flow;
   assert.equal(s.remaining,String(200*initialMultiplier));assert.equal(s.initialBoostActive,false);
   const next=a.step({...s,queuedZones:['kushuri_nito']},{setting:6},()=>.999999,'BELL');
@@ -33,8 +33,8 @@ test('saved multipliers 3-5 and fixed initial plans remain earned; later duo sto
  // Existing ordinary-stock tables are intentionally preserved.
  assert.equal(a.drawEntryQuota({setting:1},()=>.5),150);
  assert.equal(a.drawEntryQuota({setting:6},()=>.5),200);
- assert.equal(a.drawEntryQuota({setting:1},()=>.5,true),200);
- assert.equal(a.drawEntryQuota({setting:6},()=>.5,true),200);
+ assert.equal(a.drawEntryQuota({setting:1},()=>.5,true),300);
+ assert.equal(a.drawEntryQuota({setting:6},()=>.5,true),300);
 });
 
 test('adopted weak zone chances use setting and net tiers, with the pre-role high state',()=>{

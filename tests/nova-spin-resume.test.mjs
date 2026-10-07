@@ -166,7 +166,7 @@ test('replay entitlement and zero-game cost exemptions survive pending saves',()
 
 test('displayed RTP uses the adopted 50k estimates and BIG fields use the engine target',()=>{
  const {c}=harness();vm.runInContext(fn('targetRtpText'),c);
- const estimates=JSON.parse(fs.readFileSync('docs/positive-net-50000-20261007.json')).settings.map(s=>(100*s.after.rtp).toFixed(2));
+ const estimates=JSON.parse(fs.readFileSync('docs/win-a-50000-20261007.json')).settings.map(s=>(100*s.after.rtp).toFixed(2));
  for(let setting=1;setting<=6;setting++){
   assert(c.targetRtpText(setting).startsWith(estimates[setting-1]+'%'));
   assert(c.targetRtpText(setting).includes('5万G×1000回'));
