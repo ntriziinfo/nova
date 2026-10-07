@@ -47,7 +47,7 @@ test('normal-state force uses the natural initial-AT route and keeps the queued 
  assert.equal(flow.initialStage,'wait');assert.equal(p.snapshot().sorties,1);
 });
 
-test('FREEZE overrides the former premium-BIG debug flag with exactly one sortie reservation',()=>{
+test('old saved FREEZE debug flags remain a one-shot sortie reservation without a freeze',()=>{
  for(let setting=1;setting<=6;setting++){
   const {c}=load(setting);c.forceResult='FREEZE';
   vm.runInContext('Math.random=()=>{throw Error("freeze flag must not reroll")}',c);

@@ -11,6 +11,16 @@ function setup(){
  return {aim:context.NovaAim,elements,timers,hide(){context.document.hidden=true;listeners.visibilitychange();}};
 }
 
+test('sortie entry loops the rainbow nebula cue and never requests a seven voice or freeze',()=>{
+ const t=setup(),resolved={stockEntry:true,sortieEntry:true,reward:0,flowBefore:{phase:'art',entryStage:'seven',pendingZone:'sortie'},flowAfter:{phase:'art',entryStage:'roulette'}},before=JSON.stringify(resolved);
+ assert.equal(t.aim.bet(null,resolved),false);
+ const root=t.elements.find(e=>e.className==='novaAimPresentation'),video=t.elements.find(e=>e.src==='assets/media/nova/aim/nebula-rainbow.mp4');
+ assert.equal(root.dataset.symbol,'nebula');assert.equal(root.dataset.color,'rainbow');assert.equal(video.hidden,false);assert.equal(video.loop,true);assert.equal(video.paused,false);
+ assert.equal(t.elements.find(e=>e.src==='assets/media/nova/aim/seven-entry-red.mp4').hidden,true);
+ assert.equal(t.aim.busy,false);assert.equal(t.timers.size,0);assert.equal(JSON.stringify(resolved),before);
+ t.aim.stop(resolved);assert.equal(video.hidden,true);assert.equal(video.paused,true);
+});
+
 test('CZ intro loops the supplied background and title through all first-game stops, ending at the next BET',()=>{
  for(const phase of ['cz','strong_cz']){
   const t=setup(),resolved={flowBefore:{phase,remaining:20,totalGames:20}};

@@ -179,7 +179,7 @@ test('user STOP, super button, permission loss and COMPLETE cancel the pending r
  }
 });
 
-test('opening sortie freeze and Ouma freeze retain ordinary AUTO until all AT work ends',()=>{
+test('sortie and Ouma freeze retain ordinary AUTO until all AT work ends',()=>{
  const {c}=setup();let spins=0,challenges=0;const waits=[];
  Object.assign(c,{A_TYPE_MODE:true,oumaPresentation:null,canPlayCompleteTrial:()=>true,isRogiThirdStopHoldActive:()=>false,
   queueAutoStep:ms=>waits.push(ms),spin(){spins++;},resolveOumaChallenge(){challenges++;c.oumaPresentation.stage='lift';},requestAutoStopCurrentSpin(){waits.push('stop');}});

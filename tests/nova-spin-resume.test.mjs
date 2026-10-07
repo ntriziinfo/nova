@@ -166,10 +166,10 @@ test('replay entitlement and zero-game cost exemptions survive pending saves',()
 
 test('displayed RTP uses the adopted 50k estimates and BIG fields use the engine target',()=>{
  const {c}=harness();vm.runInContext(fn('targetRtpText'),c);
- const estimates=['91.78','94.69','96.92','99.35','100.90','104.05'];
+ const estimates=JSON.parse(fs.readFileSync('docs/rare-sortie-50000-20261007.json')).settings.map(s=>(100*s.after.stopped.rtp).toFixed(2));
  for(let setting=1;setting<=6;setting++){
   assert(c.targetRtpText(setting).startsWith(estimates[setting-1]+'%'));
-  assert(c.targetRtpText(setting).includes('5万G×1000回'));
+  assert(c.targetRtpText(setting).includes('5万G×500回'));
  }
  assert.equal(c.NovaArt.bonusTarget(),50);
  for(const field of ['midMulInput','bigMulInput','bigAddInput'])assert(fn('applySettings').includes('$("'+field+'").value = NovaArt.bonusTarget()'));
@@ -221,7 +221,7 @@ test('custom lottery and complete limits suppress standard RTP; presentation pre
   for(let n=1;n<=6;n++)assert.equal(c.targetRtpText(n),'未試算（独自設定）');
  }
  c.settings={...standard,audioMuted:true,voiceVolume:.1,autoDelay:2,title:'表示変更'};
- assert(c.targetRtpText(6).startsWith('104.05%'));
+ assert(c.targetRtpText(6).startsWith('104.77%'));
  c.settings={...standard,novaFlow:{...standard.novaFlow,czChance:String(c.NovaFlow.defaults.czChance)}};
  assert(c.NovaBalance.usesStandardSettings(c.settings));
 });

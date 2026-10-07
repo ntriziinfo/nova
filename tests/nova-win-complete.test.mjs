@@ -5,7 +5,7 @@ import {gunzipSync} from 'node:zlib';
 import {loadModel} from '../scripts/zone-v2-model.mjs';
 import {xoshiro128} from '../scripts/zone-v2-rng.mjs';
 
-test('adopted report accounts for all 6,000 trials and retains separate win/reach targets',()=>{
+test('previous approved report accounts for all 6,000 trials and retains separate win/reach targets',()=>{
  const report=JSON.parse(fs.readFileSync('docs/win-complete-50000-20261006.json'));
  const all=JSON.parse(gunzipSync(fs.readFileSync('docs/win-complete-50000-20261006-rows.json.gz')));
  assert.equal(report.proposalOnly,false);assert.equal(all.length,6000);

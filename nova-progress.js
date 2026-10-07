@@ -12,7 +12,18 @@ globalThis.NovaProgress=(()=>{
  }
  function reset(){state=empty();latestNet=0;}
  function observeNet(net){latestNet=Number(net)||0;while(Number(net)>=state.next){state.next+=2400;state.pending++;state.earned++;}}
- function drawSortie(setting,rng=Math.random){const won=rng()<1/NovaTuning.profile(setting).denominator;if(won)state.sorties++;return won;}
+ // Fixed probabilities per real rare role, calibrated against the total-game target.
+ const sortieWeakRates=Object.freeze([0,.00397,.00276,.00390,.00272,.00383,.00212]);
+ function sortieChance(setting,role){
+  const weak=sortieWeakRates[Math.max(1,Math.min(6,Math.floor(Number(setting)||3)))];
+  return role==='STRONG_NOVA'?weak*10:['WEAK_SUICA','WEAK_NOVA'].includes(role)?weak:0;
+ }
+ function sortieEligible(result,resolved={}){return !!sortieChance(1,result)&&!resolved.flowBefore?.zero&&!resolved.oumaFailed&&!resolved.researchSortie&&!resolved.researchChallenge&&!resolved.stockEntry;}
+ function queueSortie(){state.sorties++;}
+ function drawSortie(setting,result,resolved={},rng=Math.random){
+  if(!sortieEligible(result,resolved))return false;
+  const won=rng()<sortieChance(setting,result);if(won)queueSortie();return won;
+ }
  function queueThreshold(value,net,setting=value?.modelSetting||3){
   observeNet(net);if(value?.phase!=='art')return value;const s={...value};
   if(state.pending&&!s.burstPending&&!s.researchChallengeActive&&!s.burstLeft){state.pending--;s.burstPending=true;s.researchChallengeSource='threshold';}
@@ -69,5 +80,5 @@ globalThis.NovaProgress=(()=>{
  // The simulator uses the same engine and state transitions as the browser.
  globalThis.NovaArt={...a,enterInitial,afterBonus,step,queueResearchThreshold:queueThreshold,observeResearchNet:observeNet,
   resetResearchCheckpoints:reset,researchCheckpointStats:()=>({...state}),hasResearchCheckpoint:()=>state.pending>0,enterResearchCheckpoint:enterCheckpoint};
- return Object.freeze({bind,beforeBet,drawSortie,observeNet,ready,snapshot:()=>({...state}),reset});
+ return Object.freeze({bind,beforeBet,drawSortie,sortieChance,sortieEligible,queueSortie,observeNet,ready,snapshot:()=>({...state}),reset});
 })();

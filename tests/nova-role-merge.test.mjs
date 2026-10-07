@@ -50,7 +50,7 @@ test('all six 15pt bell orders survive navigation, save and AUTO without redrawi
 });
 
 test('production reproduces both complete and full-horizon approved 50,000G trials for every setting',()=>{
- const rows=JSON.parse(gunzipSync(fs.readFileSync('docs/win-complete-50000-20261006-rows.json.gz')));
+ const rows=JSON.parse(gunzipSync(fs.readFileSync('docs/rare-sortie-50000-20261007-rows.json.gz')));
  const options={rng:'xoshiro128',exactGames:true,completeLimitPt:10000,stopAtComplete:true,rareSortie:true,atBetRefund:true};
  for(let setting=1;setting<=6;setting++){
   for(const complete of [false,true]){

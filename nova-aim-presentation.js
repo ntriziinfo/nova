@@ -105,13 +105,14 @@ globalThis.NovaAim=(()=>{
   const bonusEntry=!!(resolved.bonusPendingAtStart&&resolved.bonusReady&&!resolved.bonusWaitSpin);
   const entry=zoneEntry||bonusEntry;
   if((!entry&&!hasGuide(aim))||!init())return false;
-  const video=videos.get(entry?'zone-entry-seven':aim.symbol+':'+aim.color);if(!video)return false;
-  active=video;root.dataset.color=entry?'entry':aim.color;root.dataset.symbol=entry?'seven':aim.symbol;root.dataset.zoneEntry=String(entry);root.hidden=false;
+  const sortieEntry=!!resolved.sortieEntry;
+  const video=videos.get(sortieEntry?'nebula:rainbow':entry?'zone-entry-seven':aim.symbol+':'+aim.color);if(!video)return false;
+  active=video;root.dataset.color=sortieEntry?'rainbow':entry?'entry':aim.color;root.dataset.symbol=sortieEntry?'nebula':entry?'seven':aim.symbol;root.dataset.zoneEntry=String(entry);root.hidden=false;
   // Rewind on dismissal, while hidden; seeking again on BET discards ready frames.
   host.dataset.aimActive='true';video.hidden=false;if(video.currentTime>0)video.currentTime=0;layout();
   video.play().catch(()=>{ /* Remain on this cue's first frame if autoplay is blocked. */ });
   // Bonus entrance already plays its seven voice in triggerBonusConfirmBetSoundIfNeeded.
-  return zoneEntry;
+  return zoneEntry&&!sortieEntry;
  }
  // Visual stop control does not redraw or cancel the internal award.
  function stopTarget(aim,result,order,index){

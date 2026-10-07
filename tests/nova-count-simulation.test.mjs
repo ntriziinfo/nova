@@ -41,7 +41,7 @@ test('live fast step excludes resolved 0G chains but counts bonus games',()=>{
    canUsePlayState:()=>true,canPlayCompleteTrial:()=>true,isGoraiZoneActive:()=>false,isATypeBonusActive:()=>bonus,isATypeBonusComplete:()=>false,isContinuationBattleActive:()=>false,
    takeForcedResult:()=>'', $:()=>null,countTotalSpinIfNeeded(){c.normalState.flow.zero=zero;},chargeSpinCost(){},activateReachMeBonusAnnouncementIfNeeded:()=>false,
    drawNormalResult:()=> 'BELL',drawResult:()=> 'BELL',resultLineRow:()=>1,resolveNormalOutcome:()=>({}),resolveOutcome:()=>({}),decideBigPremiumEffect:()=>false,shouldScheduleBonusAnnouncement:()=>false,
-   applyNormalResult(){c.normalState.flow.zero=false;},applyResult(){}
+   drawRareSortie(){},applyNormalResult(){c.normalState.flow.zero=false;},applyResult(){}
   });
   vm.runInContext(fn('runDebugFastStep'),c);assert.equal(c.runDebugFastStep(),expected);
  }

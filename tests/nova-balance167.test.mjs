@@ -40,7 +40,7 @@ test('cumulative checkpoints persist across reload, reset carry once, and reward
  p.observeNet(2400);assert.equal(p.snapshot().pending,0);p.observeNet(4800);assert.equal(p.snapshot().pending,1);
 });
 test('sortie trigger waits through BIG and preludes and is saved',()=>{
- const {NovaProgress:p}=load();p.reset();assert(p.drawSortie(1,()=>0));p.bind(json(p.snapshot()));
+ const {NovaProgress:p}=load();p.reset();assert(p.drawSortie(1,'WEAK_NOVA',{},()=>0));p.bind(json(p.snapshot()));
  const flow={phase:'normal'};assert.equal(p.beforeBet(flow,{setting:1},0,true,()=>.9),flow);
  const next=p.beforeBet(flow,{setting:1},0,false,()=>.9);assert.equal(next.initialStage,'wait');assert.equal(p.snapshot().sorties,1);
 });
