@@ -7,4 +7,6 @@
 .novaAimPresentation[data-cz-intro="true"] video{object-fit:cover}
 .novaCzIntroTitle,.novaComebackTitle{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:contain;pointer-events:none}
 .novaCzIntroTitle[hidden],.novaComebackTitle[hidden]{display:none!important}
+.novaAtWaitTitle{position:absolute;left:2%;top:50%;display:block;width:96%;height:auto;transform:translateY(-47%);pointer-events:none}
+.novaAtWaitTitle[hidden]{display:none!important}
 #machine[data-cz-intro="true"] .novaArtLayer{visibility:hidden}

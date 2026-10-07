@@ -1,7 +1,7 @@
 /* Per-spin presentation only. The draw in NovaArt owns color, symbol and result. */
 globalThis.NovaAim=(()=>{
  const {setTimeout,clearTimeout}=globalThis.NovaClock||globalThis;
- let host,root,active=null,czTitle,comebackTitle;
+ let host,root,active=null,czTitle,comebackTitle,atWaitTitle;
  const videos=new Map();
  let winLocked=false,winTimer=null,winVoiceTimer=null,winToken=0,afterWinCallbacks=[],pendingStart=null;
  function init(){
@@ -22,6 +22,8 @@ globalThis.NovaAim=(()=>{
   czTitle=document.createElement('img');czTitle.className='novaCzIntroTitle';czTitle.hidden=true;czTitle.src='assets/ui/nova-shuketsu-zone.png';czTitle.alt='NOVA Familia 集結ゾーン';root.append(czTitle);
   const comeback=document.createElement('video');comeback.muted=true;comeback.loop=true;comeback.playsInline=true;comeback.preload='auto';comeback.hidden=true;comeback.src='assets/media/nova/comeback-fire.mp4';root.append(comeback);videos.set('comeback',comeback);
   comebackTitle=document.createElement('img');comebackTitle.className='novaComebackTitle';comebackTitle.hidden=true;comebackTitle.src='assets/ui/comeback-challenge-title.png';comebackTitle.alt='引き戻しチャレンジ';root.append(comebackTitle);
+  const atWait=document.createElement('video');atWait.muted=true;atWait.loop=true;atWait.playsInline=true;atWait.preload='auto';atWait.hidden=true;atWait.src='assets/media/nova/at-wait-bg.mp4';root.append(atWait);videos.set('at-wait',atWait);
+  atWaitTitle=document.createElement('img');atWaitTitle.className='novaAtWaitTitle';atWaitTitle.hidden=true;atWaitTitle.src='assets/ui/nova-rush-confirmed.png';atWaitTitle.alt='ノヴァラッシュ確定';root.append(atWaitTitle);
   const win=document.createElement('video');win.muted=true;win.loop=false;win.playsInline=true;win.preload='auto';win.hidden=true;win.src='assets/media/nova/aim/seven-win.mp4?v=20260918-rainbow-144';root.append(win);videos.set('win',win);
   return true;
  }
@@ -38,11 +40,28 @@ globalThis.NovaAim=(()=>{
   if(active){active.pause();active.hidden=true;if(active.currentTime>0)active.currentTime=0;active=null;}
   if(czTitle)czTitle.hidden=true;
   if(comebackTitle)comebackTitle.hidden=true;
-  if(root){root.hidden=true;delete root.dataset.failed;delete root.dataset.zoneEntry;delete root.dataset.bonusWait;delete root.dataset.czIntro;delete root.dataset.comeback;delete host.dataset.aimActive;}
+  if(atWaitTitle)atWaitTitle.hidden=true;
+  if(root){root.hidden=true;delete root.dataset.failed;delete root.dataset.zoneEntry;delete root.dataset.bonusWait;delete root.dataset.czIntro;delete root.dataset.comeback;delete root.dataset.atWait;delete host.dataset.aimActive;}
  }
  function hasGuide(aim){return !!aim&&aim.guide!==false;}
  function drawGuide(aim,rng=Math.random){return aim.result!=='MISS'||rng()<.5;}
  function isBonusWait(resolved){return !!resolved?.bonusWaitSpin&&!resolved.aTypeBonusGame&&resolved.flowBefore?.phase!=='art';}
+ function isAtWaitFlow(flow){return flow?.phase==='art'&&flow.initialStage==='wait'&&!flow.zone;}
+ function isAtWait(resolved){return !resolved?.aTypeBonusGame&&!resolved?.bonusPendingAtStart&&isAtWaitFlow(resolved?.flowBefore);}
+ function showAtWait(){
+  if(!init())return;
+  const video=videos.get('at-wait');
+  if(active===video&&!root.hidden)return;
+  hide();active=video;root.hidden=false;root.dataset.atWait='true';root.dataset.symbol='at-wait';
+  host.dataset.aimActive='true';video.hidden=false;atWaitTitle.hidden=false;layout();video.play().catch(()=>{});
+ }
+ // Idle display covers bonus completion and saved preparation states as well as BETs.
+ function syncAtWait(flow){
+  if(winLocked)return;
+  if(isAtWaitFlow(flow)){showAtWait();return;}
+  // Keep the last preparation frame until the next BET starts the seven cue.
+  if(root?.dataset.atWait==='true'&&!(flow?.phase==='art'&&flow.initialStage==='entry'&&flow.entryStage==='seven'))hide();
+ }
  function isCzIntro(resolved){
   const flow=resolved?.flowBefore;
   return !resolved?.aTypeBonusGame&&!resolved?.bonusPendingAtStart&&['cz','strong_cz'].includes(flow?.phase)&&Number(flow.remaining)>0&&Number(flow.remaining)===Number(flow.totalGames);
@@ -73,9 +92,11 @@ globalThis.NovaAim=(()=>{
   // Reveal the winning character or result only after the last reel lands.
   if(resolved?.comebackEvent==='success'||resolved?.comebackEvent==='failure'){hide();return;}
   if(resolved?.comebackEvent==='entry'||isComeback(resolved)){showComeback();return;}
+  if(isAtWait(resolved)){showAtWait();return;}
   if(!isBonusWait(resolved)&&!isCzIntro(resolved))hide();
  }
  function bet(aim,resolved={}){
+  if(isAtWait(resolved)){showAtWait();return false;}
   if(isComeback(resolved)){showComeback();return false;}
   if(isCzIntro(resolved)){showCzIntro();return false;}
   if(isBonusWait(resolved)){showBonusWait();return false;}
@@ -143,5 +164,5 @@ globalThis.NovaAim=(()=>{
   document.addEventListener('visibilitychange',()=>{if(document.hidden)pendingStart?.();});
   window.addEventListener('resize',layout);
  }
- return {hasGuide,drawGuide,stopTarget,bet,stop,hide,layout,fail,win,afterWin,reset,isCzIntro,get busy(){return winLocked;}};
+ return {hasGuide,drawGuide,stopTarget,bet,stop,hide,layout,fail,win,afterWin,reset,isCzIntro,syncAtWait,get busy(){return winLocked;}};
 })();

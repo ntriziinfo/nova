@@ -286,9 +286,53 @@ test('gold preparation loop is excluded from AT stock bonuses and reset fully di
  const {aim,elements}=setup();
  const waiting={bonusWaitSpin:true,flowBefore:{phase:'normal'}};
  aim.bet(null,waiting);const root=elements[0];aim.reset();assert.equal(root.hidden,true);assert.equal(root.dataset.bonusWait,undefined);
- for(const excluded of [{bonusWaitSpin:true,flowBefore:{phase:'art'}},{bonusWaitSpin:true,aTypeBonusGame:true},{flowBefore:{phase:'art',initialStage:'wait'}}]){
+ for(const excluded of [{bonusWaitSpin:true,flowBefore:{phase:'art'}},{bonusWaitSpin:true,aTypeBonusGame:true}]){
   aim.bet(null,excluded);assert.equal(root.hidden,true);
  }
+ aim.bet(null,{flowBefore:{phase:'art',initialStage:'wait'}});
+ assert.equal(root.dataset.bonusWait,undefined);assert.equal(root.dataset.atWait,'true');
+ assert(elements.filter(e=>e.src?.endsWith('/bonus-nebula-win.mp4')).every(e=>e.hidden));
+});
+
+test('AT preparation loops the background and title across three games until the seven BET without changing the draw',()=>{
+ const t=setup(),entry={phase:'art',initialStage:'entry',entryStage:'seven'};
+ t.aim.syncAtWait({phase:'art',initialStage:'wait',initialWait:3});
+ const root=t.elements[0],video=t.elements.find(e=>e.src==='assets/media/nova/at-wait-bg.mp4'),title=t.elements.find(e=>e.className==='novaAtWaitTitle');
+ assert.equal(root.hidden,false);assert.equal(root.dataset.atWait,'true');assert.equal(title.hidden,false);
+ assert.equal(video.loop,true);assert.equal(video.muted,true);assert.equal(video.playsInline,true);
+ video.currentTime=2;
+ for(let left=3;left>0;left--){
+  const spin={flowBefore:{phase:'art',initialStage:'wait',initialWait:left},flowAfter:left===1?entry:{phase:'art',initialStage:'wait',initialWait:left-1}};
+  const before=JSON.stringify(spin);
+  assert.equal(t.aim.bet(null,spin),false);t.aim.stop(spin);t.aim.syncAtWait(spin.flowAfter);
+  assert.equal(root.hidden,false);assert.equal(title.hidden,false);assert.equal(video.paused,false);assert.equal(video.currentTime,2);
+  assert.equal(JSON.stringify(spin),before);assert.equal(t.aim.busy,false);assert.equal(t.timers.size,0);
+ }
+ assert.equal(t.aim.bet(null,{flowBefore:entry,flowAfter:{...entry,entryStage:'roulette'}}),true);
+ assert.equal(title.hidden,true);assert.equal(video.hidden,true);assert.equal(video.paused,true);assert.equal(video.currentTime,0);
+ assert.equal(root.dataset.atWait,undefined);assert.equal(t.elements.find(e=>e.src?.endsWith('/seven-entry-red.mp4')).hidden,false);
+ t.aim.syncAtWait({...entry,entryStage:'roulette'});
+ assert.equal(root.hidden,false,'idle sync must not dismiss the seven cue');
+});
+
+test('AT preparation restores saved spins, clears on reset or leaving preparation, and excludes other phases',()=>{
+ const t=setup(),spin=JSON.parse(JSON.stringify({flowBefore:{phase:'art',initialStage:'wait',initialWait:2}}));
+ t.aim.bet(null,spin);t.aim.stop(spin);assert.equal(t.elements[0].hidden,false);
+ t.aim.reset();assert.equal(t.elements[0].hidden,true);assert.equal(t.elements.find(e=>e.className==='novaAtWaitTitle').hidden,true);
+ for(const excluded of [{flowBefore:{phase:'normal',initialStage:'wait'}},{flowBefore:{phase:'art',initialStage:'zone',zone:'initial_duo'}},{flowBefore:{phase:'art',entryWait:3}},{...spin,aTypeBonusGame:true},{...spin,bonusPendingAtStart:true}]){
+  t.aim.bet(null,excluded);assert.equal(t.elements[0].hidden,true);
+ }
+ for(const flow of [null,{phase:'normal'},{phase:'art',initialStage:'zone',zone:'initial_duo'}]){
+  t.aim.syncAtWait(spin.flowBefore);t.aim.syncAtWait(flow);assert.equal(t.elements[0].hidden,true);
+ }
+});
+
+test('idle AT preparation cannot replace a playing win or shorten its existing lock',()=>{
+ const t=setup(),flow={phase:'art',initialStage:'wait',initialWait:3};
+ t.aim.win(()=>{});t.elements.at(-1).onplaying();
+ t.aim.syncAtWait(flow);assert.equal(t.elements[0].dataset.color,'win');assert.equal(t.aim.busy,true);
+ [...t.timers.values()].find(timer=>timer.ms===3000).fn();
+ t.aim.syncAtWait(flow);assert.equal(t.elements[0].dataset.atWait,'true');assert.equal(t.aim.busy,false);
 });
 
 test('colored zone seven/nebula guides retain their own movie after the entry replacement',()=>{
