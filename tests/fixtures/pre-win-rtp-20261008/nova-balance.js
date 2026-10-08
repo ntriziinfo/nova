@@ -1,11 +1,11 @@
-/* Approved balance: docs/win-rtp-20261008.json (settings 1–3 retain win-base30). */
+/* Approved win-priority balance: docs/win-base30-20261007.json. */
 globalThis.NovaBalance=(()=>{
- // Setting 4–6 win/RTP targets; actual trial estimates are shown separately.
- const targets=[null,null,null,1.005,1.025,1.08];
- const winTargets=[0.15,0.2,0.3,0.55,0.65,0.8],completeTargets=[null,null,null,null,null,null];
- // Up to 50,000 paid BETs, dual-cap stop. Settings 1–3: 500 trials each;
- // 4–6: 1,000 each (5 stratified 530/470 on the initial decrement state).
- const measuredRtp=[0.9456745882173058,0.9644163592599425,0.9710918622578582,1.0009307200813713,1.0202363776697478,1.070360099257712];
+ // Win-rate targets and positive-net suppression take priority over RTP.
+ const targets=[null,null,null,null,null,null];
+ const winTargets=[0.15,0.2,0.3,0.45,0.6,0.7],completeTargets=[null,null,null,null,.2,.25];
+ // Up to 50,000 total G; 500 reset trials (setting 4: 1,000); dual-cap stop.
+ // Common base30 / AT net4.5 and upper7; win-rate targets take priority.
+ const measuredRtp=[0.9456745882173058,0.9644163592599425,0.9710918622578582,0.9890150816746632,0.9927026534485301,1.0127055314879576];
  const normal=[[354.112628,570.311235,6.592194,128,7.464630],[335.340933,496.870459,6.554256,192,7.482946],[318.675842,391.096799,6.455407,124,7.452119],[295.728558,359.759320,6.248231,184,7.301746],[288.226978,283.780845,6.120643,120,7.250883],[276.519476,276.524590,5.897360,176,7.245667]];
  // Exact reward recursion: 50pt grid below the threshold, translation-invariant tail above it.
  function zoneMean(id,options={}){
@@ -74,8 +74,8 @@ globalThis.NovaBalance=(()=>{
   return V.get(0)[5];
  }
  const giruMean=(setting,ura=false)=>zoneMean(ura?'ura_giru':'giru',{setting});
- // Legacy denominator fields are informational; game lotteries use the core rules.
- function profile(setting){const i=Math.max(0,Math.min(5,Math.round(Number(setting)||1)-1)),scale=.21*(1+.12*NovaArt.settingBias[i]);return {setting:i+1,target:targets[i],winTarget:winTargets[i],completeTarget:completeTargets[i],measuredRtp:measuredRtp[i],scale,directDenom:NovaArt.defaults['direct'+(i+1)]/scale,czDenom:120/scale,strongDenom:600/scale,verifiedModel:i>=3?'win-rtp-20261008-50000g':'win-base30-20261007-50000g',verificationLabel:i>=3?'勝率・機械割調整':'勝率優先・ベース30',trials:i>=3?1000:500,gamesPerTrial:50000,targetGamesPerTrial:50000,previousVerifiedModel:i>=3?'win-base30-20261007-50000g':'replay-dual-cap-20261007-10000g'};}
+ // Entry scales fitted with the normal-mode / ceiling / impurity / freeze simulation.
+ function profile(setting){const i=Math.max(0,Math.min(5,Math.round(Number(setting)||1)-1)),scale=.21*(1+.12*NovaArt.settingBias[i]);return {setting:i+1,target:targets[i],winTarget:winTargets[i],completeTarget:completeTargets[i],measuredRtp:measuredRtp[i],scale,directDenom:NovaArt.defaults['direct'+(i+1)]/scale,czDenom:120/scale,strongDenom:600/scale,verifiedModel:'win-base30-20261007-50000g',verificationLabel:'勝率優先・ベース30',trials:i===3?1000:500,gamesPerTrial:50000,targetGamesPerTrial:50000,previousVerifiedModel:'replay-dual-cap-20261007-10000g'};}
  const profiles=targets.map((_,i)=>profile(i+1));
  // Estimates describe the approved defaults, not user-edited lottery settings.
  function usesStandardSettings(settings={}){

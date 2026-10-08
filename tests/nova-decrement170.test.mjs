@@ -13,7 +13,7 @@ test('only settings 5 and 6 use the selected time and net regimes',()=>{
   const seed='decrement-initial-'+s,p=d.rules(s),rng=xoshiro128(seed);
   d.reset(s,xoshiro128State(seed));
   assert.equal(d.snapshot().enabled,s>=5);
-  assert.equal(d.snapshot().low,s>=5&&rng()<p.lowMean/(p.lowMean+p.highMean));
+  assert.equal(d.snapshot().low,s>=5&&rng()<(p.initialLowChance??p.lowMean/(p.lowMean+p.highMean)));
   assert.equal(d.at(s),s>=5?.25:1);assert(Object.isFrozen(p));
   if(s<5){d.observe(30000);d.beforeBet('at');assert.equal(d.cz(s),1);assert.equal(d.at(s),1);}
  }
@@ -43,8 +43,8 @@ test('net hysteresis uses the weaker factor without stacking and cannot mutate e
   d.reset(s);const saved=d.snapshot();saved.low=false;d.bind(saved,s);
   const p=d.rules(s),flow={...NovaArt.enter({setting:s},()=>.5),remaining:'1850',queuedZones:['sora','giru'],sets:'3',stock:'2'},before=json(flow);
   d.observe(p.netEnter-1);assert.equal(d.cz(s),p.highCz);
-  d.observe(p.netEnter);assert.equal(d.cz(s),.25);assert(d.snapshot().netLow);
-  d.observe(p.netExit+1);assert.equal(d.cz(s),.25);
+  d.observe(p.netEnter);assert.equal(d.cz(s),Math.min(p.highCz,p.netCz));assert(d.snapshot().netLow);
+  d.observe(p.netExit+1);assert.equal(d.cz(s),Math.min(p.highCz,p.netCz));
   d.observe(p.netExit);assert.equal(d.cz(s),p.highCz);assert(!d.snapshot().netLow);
   saved.low=true;d.bind(saved,s);d.observe(p.netEnter);assert.equal(d.cz(s),Math.min(p.lowCz,p.netCz));
   d.observe(-3000);assert.equal(d.cz(s),p.lowCz);assert.equal(d.at(s),.25);

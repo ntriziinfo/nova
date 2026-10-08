@@ -74,7 +74,7 @@ globalThis.NovaNormal=(()=>{
  const redistributionNormalUp=[0.16711383671904947,0.16711383671904945,0.16711383671904942,0.16711383671904947,0.16711383671904945,0.15935451336359055];
  // Apply after the existing cap, equally in low/high and decrement intervals.
  // Approved win-rate calibration (2026-10-07); common base30 and net4.5/7. Initial AT draws stay common.
- const czEntryFactors=Object.freeze([0.22268664850432007,0.4148931203498602,0.45184686111129607,0.5945481721647636,0.16763284044,0.5017697628508656]);
+ const czEntryFactors=Object.freeze([0.22268664850432007,0.4148931203498602,0.45184686111129607,0.6193210126716288,0.20954105055,0.48247092581814]);
  function roleCzRate(value,role,setting=1,options={}){
   if(role==='STRONG_NOVA')return 1;
   if(!['WEAK_SUICA','WEAK_NOVA'].includes(role))return 0;

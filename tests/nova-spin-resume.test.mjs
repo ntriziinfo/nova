@@ -166,10 +166,10 @@ test('replay entitlement and zero-game cost exemptions survive pending saves',()
 
 test('displayed RTP uses the adopted 50k common-base win estimates and BIG fields use the engine target',()=>{
  const {c}=harness();vm.runInContext(fn('targetRtpText'),c);
- const estimates=JSON.parse(fs.readFileSync('docs/win-base30-20261007.json')).results.map(s=>(100*s.rtp).toFixed(2));
+ const estimates=JSON.parse(fs.readFileSync('docs/win-rtp-20261008.json')).results.map(s=>(100*s.rtp).toFixed(2));
  for(let setting=1;setting<=6;setting++){
   assert(c.targetRtpText(setting).startsWith(estimates[setting-1]+'%'));
-  assert(c.targetRtpText(setting).includes('5万G×'+(setting===4?1000:500)+'回'));
+  assert(c.targetRtpText(setting).includes('5万G×'+(setting>=4?1000:500)+'回'));
  }
  assert.equal(c.NovaArt.bonusTarget(),50);
  for(const field of ['midMulInput','bigMulInput','bigAddInput'])assert(fn('applySettings').includes('$("'+field+'").value = NovaArt.bonusTarget()'));

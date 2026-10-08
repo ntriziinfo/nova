@@ -10,7 +10,10 @@ const rows=JSON.parse(gunzipSync(fs.readFileSync('docs/replay-dual-cap-20261007-
 
 test('historical dual-cap report matches its frozen source and reconciles every trial in both horizons',()=>{
  assert(report.adopted);assert.equal(rows.length,12000);
- for(const [f,digest]of Object.entries(report.sourceHashes))assert.equal(createHash('sha256').update(fs.readFileSync(fs.existsSync('tests/fixtures/pre-win-base30/'+f)?'tests/fixtures/pre-win-base30/'+f:f,'utf8').replaceAll('\r\n','\n')).digest('hex'),digest,f);
+ for(const [f,digest]of Object.entries(report.sourceHashes)){
+  const frozen=['tests/fixtures/pre-win-base30/','tests/fixtures/pre-win-rtp-20261008/',''].map(prefix=>prefix+f).find(file=>fs.existsSync(file));
+  assert.equal(createHash('sha256').update(fs.readFileSync(frozen,'utf8').replaceAll('\r\n','\n')).digest('hex'),digest,f);
+ }
  for(const group of report.results)for(const result of group.settings){
   const data=rows.filter(r=>r.horizon===group.gamesPerTrial&&r.setting===result.setting);assert.equal(data.length,1000);assert.equal(new Set(data.map(r=>r.seed)).size,1000);
   for(const row of data){

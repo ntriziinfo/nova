@@ -13,10 +13,10 @@ test('positive net ramps restore recovery rates and never impose a payout cap',(
  loadModel(modelPath);const a=NovaArt;
  for(let setting=1;setting<=6;setting++){
   const rule=a.positiveNetZoneRules[setting-1];assert(Object.isFrozen(rule));
-  near(a.positiveNetZoneFactor(setting,-10000),1);near(a.positiveNetZoneFactor(setting,rule.start),1);
-  near(a.positiveNetZoneFactor(setting,(rule.start+rule.end)/2),(1+rule.floor)/2);
+  near(a.positiveNetZoneFactor(setting,-10000),rule.boost);near(a.positiveNetZoneFactor(setting,rule.start),rule.boost);
+  near(a.positiveNetZoneFactor(setting,(rule.start+rule.end)/2),(rule.boost+rule.floor)/2);
   near(a.positiveNetZoneFactor(setting,rule.end),rule.floor);near(a.positiveNetZoneFactor(setting,20000),rule.floor);
-  near(a.positiveNetZoneFactor(setting,rule.start-1),1);
+  near(a.positiveNetZoneFactor(setting,rule.start-1),rule.boost);
   const state={remaining:'9000',sets:'2',queuedZones:['ura_sora'],atHigh:false};
   a.resolveAtRole(state,'WEAK_NOVA',setting,()=>.999,15000);
   assert.equal(state.remaining,'9000');assert.equal(state.sets,'2');assert.deepEqual(state.queuedZones,['ura_sora']);

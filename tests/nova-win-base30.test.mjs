@@ -9,11 +9,13 @@ const report=JSON.parse(fs.readFileSync('docs/win-base30-20261007.json'));
 const compressed=fs.readFileSync('docs/win-base30-20261007-rows.json.gz');
 const rows=JSON.parse(gunzipSync(compressed));
 const near=(actual,expected)=>assert(Math.abs(actual-expected)<1e-10,`${actual} != ${expected}`);
+const frozen='tests/fixtures/pre-win-rtp-20261008/';
+const loadHistorical=()=>loadModel('../'+frozen);
 
-test('approved common-base report matches production and reconciles all 3,500 trials',()=>{
+test('historical common-base report matches frozen sources and reconciles all 3,500 trials',()=>{
  assert(report.adopted);assert.equal(rows.length,3500);
  assert.equal(createHash('sha256').update(compressed).digest('hex'),report.rowsSha256);
- for(const [file,hash] of Object.entries(report.sourceHashes))assert.equal(createHash('sha256').update(fs.readFileSync(file,'utf8').replaceAll('\r\n','\n')).digest('hex'),hash,file);
+ for(const [file,hash] of Object.entries(report.sourceHashes))assert.equal(createHash('sha256').update(fs.readFileSync(frozen+file,'utf8').replaceAll('\r\n','\n')).digest('hex'),hash,file);
  for(const result of report.results){
   const data=rows.filter(row=>row.setting===result.setting),sum=key=>data.reduce((total,row)=>total+Number(row[key]),0);
   assert.equal(data.length,result.n);assert.equal(new Set(data.map(row=>row.seed)).size,result.n);
@@ -27,19 +29,19 @@ test('approved common-base report matches production and reconciles all 3,500 tr
  }
 });
 
-test('live model reproduces the approved independent full-session ledgers and pending resources',()=>{
+test('historical model reproduces the prior independent full-session ledgers and pending resources',()=>{
  for(const item of report.manifest.settings){
   const data=rows.filter(row=>row.setting===item.setting);
   const sample=new Map();
   for(const index of [0,101,item.trials-1]){const row=data.find(row=>row.seed.endsWith('|'+index));assert(row);sample.set(row.seed,row);}
   for(const reason of ['net','my']){const row=data.find(row=>row.reason===reason);if(row)sample.set(row.seed,row);}
   for(const expected of sample.values()){
-   loadModel();const actual=simulate(item.setting,50000,expected.seed,report.options);
+   loadHistorical();const actual=simulate(item.setting,50000,expected.seed,report.options);
    for(const [field,key] of [['totalBet','bet'],['totalPaid','paid'],['games','games'],['net','net'],['peak','peak'],['maxMy','maxMy'],['counts','counts'],['unspentAtQuota','unspentAtQuota'],['unspentZoneStocks','unspentZoneStocks'],['completeReason','reason']])assert.deepEqual(actual[field],expected[key],`${item.setting} ${field}`);
    if(actual.firstComplete){assert.equal(actual.games,actual.firstComplete.games);assert.equal(actual.net,actual.firstComplete.net);}
    const {completeLimitPt,completeMyLimitPt,...defaults}=report.options;
    if(expected.reason==='net'){
-    loadModel();const defaultRun=simulate(item.setting,50000,expected.seed,defaults);
+    loadHistorical();const defaultRun=simulate(item.setting,50000,expected.seed,defaults);
     assert.deepEqual(defaultRun.firstComplete,actual.firstComplete);
    }
   }

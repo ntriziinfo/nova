@@ -384,9 +384,9 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
  const netRewardControl=Object.freeze({enabled:false,startRatio:0,floor:1});
  function netRewardFactor(){return 1;}
  const weakAtZoneScales=Object.freeze([1.0491974999999998,1.03,0.7353,0.8400000000000001,1.2054600000000002,1.15]);
- const positiveNetZoneRules=Object.freeze([{"start":0,"end":1500,"floor":0.05,"boost":1,"sortie":true},{"start":0,"end":1500,"floor":0.05,"boost":1,"sortie":true},{"start":500,"end":3000,"floor":0.1,"boost":1,"sortie":true},{"start":500,"end":3000,"floor":0.75,"boost":1,"sortie":true},{"start":0,"end":2000,"floor":0.27,"boost":1.3,"sortie":false},{"start":3000,"end":6500,"floor":1,"boost":1,"sortie":false}].map(Object.freeze));
+ const positiveNetZoneRules=Object.freeze([{"start":0,"end":1500,"floor":0.05,"boost":1,"sortie":true},{"start":0,"end":1500,"floor":0.05,"boost":1,"sortie":true},{"start":500,"end":3000,"floor":0.1,"boost":1,"sortie":true},{"start":500,"end":3000,"floor":0.1,"boost":1,"sortie":true},{"start":3000,"end":6500,"floor":0.5,"boost":1,"sortie":false},{"start":3000,"end":6500,"floor":0.3,"boost":1,"sortie":false}].map(Object.freeze));
  function positiveNetZoneFactor(setting,netPt=0){const r=positiveNetZoneRules[validSetting(setting)-1],progress=Math.max(0,Math.min(1,(Number(netPt)-r.start)/(r.end-r.start)));return r.boost+(r.floor-r.boost)*progress;}
- const weakAtNetZoneScales=Object.freeze([0.65,0.8,0.85,0.75,11.481481481481481,1]);
+ const weakAtNetZoneScales=Object.freeze([.65,.8,.85,.75,.64,1]);
  function extraZoneChance(setting,role,upper=false,high=false,netPt=0){
   if(!['WEAK_SUICA','WEAK_NOVA'].includes(role))return 0;
   // Approved 50k RTP targets: change future weak-role zone draws only.

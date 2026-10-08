@@ -1,0 +1,996 @@
+{
+  "adopted": true,
+  "status": "adopted",
+  "approvedAt": "2026-10-08",
+  "approval": "User approved the presented 54.7% / 67.0% / 80.0% win-rate candidate, including its disclosed complete rates.",
+  "baselineCommit": "2ae1174601bb7f03f259a4fbd786c9ccde152c51",
+  "variant": "candidate-v7",
+  "generatedAt": "2026-10-08T09:16:43.431Z",
+  "conditions": {
+    "games": 50000,
+    "netCap": 10000,
+    "myCap": 15000,
+    "base": 30,
+    "netAt": 4.5,
+    "netUpper": 7
+  },
+  "definitions": {
+    "win": "final net > 0",
+    "rtp": "sum(actual payouts) / sum(actual paid BETs)",
+    "net10000": "cumulative net reached +10,000pt",
+    "complete": "first reached +10,000pt cumulative net or MY +15,000pt",
+    "unspent": "quota and stocks at stop are excluded from payouts"
+  },
+  "options": {
+    "rng": "xoshiro128",
+    "exactGames": true,
+    "stopAtComplete": true,
+    "completeLimitPt": 10000,
+    "completeMyLimitPt": 15000,
+    "atBetRefund": true,
+    "replayRefund": true
+  },
+  "targets": {
+    "win": [
+      0.15,
+      0.2,
+      0.3,
+      0.55,
+      0.65,
+      0.8
+    ],
+    "rtp": [
+      null,
+      null,
+      null,
+      [
+        1,
+        1.01
+      ],
+      [
+        1.02,
+        1.03
+      ],
+      [
+        1.06,
+        1.1
+      ]
+    ]
+  },
+  "results": [
+    {
+      "setting": 1,
+      "target": 0.15,
+      "validationFile": "balanced",
+      "seedPrefix": "base30-confirm-20261007-v3",
+      "baseline": {
+        "n": 200,
+        "rtp": 0.9264614326103943,
+        "rtp95": [
+          0.9184878847145309,
+          0.9344349805062576
+        ],
+        "win": 0.08,
+        "winCount": 16,
+        "win95": [
+          0.049840585889759974,
+          0.12598948826714396
+        ],
+        "net10000": 0,
+        "net10000_95": [
+          1.734723475976807e-18,
+          0.018845326377266575
+        ],
+        "complete": 0.065,
+        "net": -10921.245,
+        "games": 49503.48,
+        "base": 30.01087588522334,
+        "normalPerAt": 785.7724098454494,
+        "normalPerCz": 421.52686851317327,
+        "atZoneDenom": 159.15251503152956,
+        "atHigh": 0.21705531646869292,
+        "atEntries": 43.675
+      },
+      "n": 500,
+      "rtp": 0.9456745882173058,
+      "rtp95": [
+        0.9412796382647508,
+        0.9500695381698607
+      ],
+      "win": 0.134,
+      "winCount": 67,
+      "win95": [
+        0.10691500187152081,
+        0.16666601534633546
+      ],
+      "net10000": 0,
+      "net10000_95": [
+        4.336808689942018e-19,
+        0.007624340461552241
+      ],
+      "complete": 0.094,
+      "net": -7951.56,
+      "games": 48789.69,
+      "base": 29.98742111854511,
+      "normalPerAt": 747.1126272178691,
+      "normalPerCz": 385.97545541260496,
+      "atZoneDenom": 156.30174059517125,
+      "atHigh": 0.21743764506495986,
+      "atEntries": 44.412,
+      "sourceReport": "win-base30-20261007.json",
+      "unchanged": true
+    },
+    {
+      "setting": 2,
+      "target": 0.2,
+      "validationFile": "balanced",
+      "seedPrefix": "base30-confirm-20261007-v3",
+      "baseline": {
+        "n": 200,
+        "rtp": 0.9551998084020757,
+        "rtp95": [
+          0.9492425752215996,
+          0.9611570415825519
+        ],
+        "win": 0.16,
+        "winCount": 32,
+        "win95": [
+          0.1156741203158702,
+          0.21714070162067106
+        ],
+        "net10000": 0,
+        "net10000_95": [
+          1.734723475976807e-18,
+          0.018845326377266575
+        ],
+        "complete": 0.035,
+        "net": -6683.625,
+        "games": 49729.14,
+        "base": 30.008610171251547,
+        "normalPerAt": 592.6289428233797,
+        "normalPerCz": 254.4398001795262,
+        "atZoneDenom": 167.49108327192337,
+        "atHigh": 0.20972195912433012,
+        "atEntries": 55.005
+      },
+      "n": 500,
+      "rtp": 0.9644163592599425,
+      "rtp95": [
+        0.9609813813944617,
+        0.9678513371254234
+      ],
+      "win": 0.184,
+      "winCount": 92,
+      "win95": [
+        0.1524894793781606,
+        0.22032910379354043
+      ],
+      "net10000": 0,
+      "net10000_95": [
+        4.336808689942018e-19,
+        0.007624340461552241
+      ],
+      "complete": 0.028,
+      "net": -5310.748,
+      "games": 49748.966,
+      "base": 30.00763694078842,
+      "normalPerAt": 576.829992124293,
+      "normalPerCz": 238.26884630171827,
+      "atZoneDenom": 163.37249802103358,
+      "atHigh": 0.208993940253021,
+      "atEntries": 55.868,
+      "sourceReport": "win-base30-20261007.json",
+      "unchanged": true
+    },
+    {
+      "setting": 3,
+      "target": 0.3,
+      "validationFile": "selected",
+      "seedPrefix": "base30-confirm-20261007-v1",
+      "baseline": {
+        "n": 200,
+        "rtp": 0.9575625468979216,
+        "rtp95": [
+          0.9512995509043016,
+          0.9638255428915417
+        ],
+        "win": 0.185,
+        "winCount": 37,
+        "win95": [
+          0.13730192800616042,
+          0.2445706276115175
+        ],
+        "net10000": 0,
+        "net10000_95": [
+          1.734723475976807e-18,
+          0.018845326377266575
+        ],
+        "complete": 0.045,
+        "net": -6299.73,
+        "games": 49482.47,
+        "base": 29.9890093532855,
+        "normalPerAt": 564.7077286238853,
+        "normalPerCz": 240.32172489489153,
+        "atZoneDenom": 232.09598927724508,
+        "atHigh": 0.21033803265412204,
+        "atEntries": 57.19
+      },
+      "n": 500,
+      "rtp": 0.9710918622578582,
+      "rtp95": [
+        0.967461074537495,
+        0.9747226499782213
+      ],
+      "win": 0.278,
+      "winCount": 139,
+      "win95": [
+        0.2405366075286252,
+        0.31884859963630413
+      ],
+      "net10000": 0.002,
+      "net10000_95": [
+        0.00035313639455927456,
+        0.011240706705146758
+      ],
+      "complete": 0.048,
+      "net": -4300.826,
+      "games": 49591.872,
+      "base": 29.985974585072036,
+      "normalPerAt": 526.6938179888565,
+      "normalPerCz": 218.8714132142562,
+      "atZoneDenom": 224.10038430185165,
+      "atHigh": 0.2061234939722575,
+      "atEntries": 60.304,
+      "sourceReport": "win-base30-20261007.json",
+      "unchanged": true
+    },
+    {
+      "targetWin": 0.55,
+      "targetRtp": [
+        1,
+        1.01
+      ],
+      "setting": 4,
+      "n": 1000,
+      "rtp": 1.0009307200813713,
+      "rtp95": [
+        0.9980925951020488,
+        1.0037688450606939
+      ],
+      "win": 0.547,
+      "win95": [
+        0.5160261711771321,
+        0.5776141135252257
+      ],
+      "net10000": 0.096,
+      "net10000_95": [
+        0.07925690009839675,
+        0.11583512075793179
+      ],
+      "complete": 0.15,
+      "net": 133.156,
+      "games": 47689.24,
+      "base": 29.997553327708744,
+      "normalPerAt": 454.12421200093394,
+      "normalPerCz": 180.9135837684323,
+      "atZoneDenom": 190.2142892120856,
+      "productionPreviousEstimate": {
+        "setting": 4,
+        "n": 1000,
+        "rtp": 0.9890150816746632,
+        "rtp95": [
+          0.9870873317860038,
+          0.9909428315633226
+        ],
+        "win": 0.432,
+        "win95": [
+          0.40161609445686075,
+          0.4629043446971748
+        ],
+        "net10000": 0,
+        "net10000_95": [
+          2.168404344971009e-19,
+          0.0038267584855551234
+        ],
+        "complete": 0.016,
+        "net": -1644.173,
+        "games": 49891.829,
+        "base": 30.011234192463196,
+        "normalPerAt": 442.6029070354295,
+        "normalPerCz": 174.73667161944448,
+        "atZoneDenom": 215.9832299605304
+      },
+      "mechanics": {
+        "before": {
+          "zone": [
+            {
+              "net": 0,
+              "low": 0.126,
+              "high": 0.21000000000000002,
+              "sortieWeak": 0.00272
+            },
+            {
+              "net": 3000,
+              "low": 0.012599999999999997,
+              "high": 0.020999999999999998,
+              "sortieWeak": 0.00027199999999999994
+            },
+            {
+              "net": 5000,
+              "low": 0.009449999999999998,
+              "high": 0.01575,
+              "sortieWeak": 0.00027199999999999994
+            },
+            {
+              "net": 6500,
+              "low": 0.009449999999999998,
+              "high": 0.01575,
+              "sortieWeak": 0.00027199999999999994
+            },
+            {
+              "net": 8500,
+              "low": 0.009449999999999998,
+              "high": 0.01575,
+              "sortieWeak": 0.00027199999999999994
+            }
+          ],
+          "cz": [
+            {
+              "low": false,
+              "netLow": false,
+              "lowNormal": 0.14920640734689253,
+              "highNormal": 0.28982542858224286
+            },
+            {
+              "low": false,
+              "netLow": true,
+              "lowNormal": 0.14920640734689253,
+              "highNormal": 0.28982542858224286
+            },
+            {
+              "low": true,
+              "netLow": false,
+              "lowNormal": 0.14920640734689253,
+              "highNormal": 0.28982542858224286
+            },
+            {
+              "low": true,
+              "netLow": true,
+              "lowNormal": 0.14920640734689253,
+              "highNormal": 0.28982542858224286
+            }
+          ],
+          "decrement": {
+            "enabled": false
+          },
+          "positive": {
+            "start": 500,
+            "end": 3000,
+            "floor": 0.1,
+            "boost": 1,
+            "sortie": true
+          }
+        },
+        "after": {
+          "zone": [
+            {
+              "net": 0,
+              "low": 0.126,
+              "high": 0.21000000000000002,
+              "sortieWeak": 0.00272
+            },
+            {
+              "net": 3000,
+              "low": 0.0945,
+              "high": 0.15750000000000003,
+              "sortieWeak": 0.00204
+            },
+            {
+              "net": 5000,
+              "low": 0.070875,
+              "high": 0.11812500000000002,
+              "sortieWeak": 0.00204
+            },
+            {
+              "net": 6500,
+              "low": 0.070875,
+              "high": 0.11812500000000002,
+              "sortieWeak": 0.00204
+            },
+            {
+              "net": 8500,
+              "low": 0.070875,
+              "high": 0.11812500000000002,
+              "sortieWeak": 0.00204
+            }
+          ],
+          "cz": [
+            {
+              "low": false,
+              "netLow": false,
+              "lowNormal": 0.14323815105301685,
+              "highNormal": 0.27823241143895316
+            },
+            {
+              "low": false,
+              "netLow": true,
+              "lowNormal": 0.14323815105301685,
+              "highNormal": 0.27823241143895316
+            },
+            {
+              "low": true,
+              "netLow": false,
+              "lowNormal": 0.14323815105301685,
+              "highNormal": 0.27823241143895316
+            },
+            {
+              "low": true,
+              "netLow": true,
+              "lowNormal": 0.14323815105301685,
+              "highNormal": 0.27823241143895316
+            }
+          ],
+          "decrement": {
+            "enabled": false
+          },
+          "positive": {
+            "start": 500,
+            "end": 3000,
+            "floor": 0.75,
+            "boost": 1,
+            "sortie": true
+          }
+        }
+      }
+    },
+    {
+      "targetWin": 0.65,
+      "targetRtp": [
+        1.02,
+        1.03
+      ],
+      "setting": 5,
+      "n": 1000,
+      "rtp": 1.0202363776697478,
+      "rtp95": [
+        1.015465749988818,
+        1.0250070053506777
+      ],
+      "win": 0.67,
+      "win95": [
+        0.6402544426353417,
+        0.6984444594795697
+      ],
+      "net10000": 0.349,
+      "net10000_95": [
+        0.3200859840139804,
+        0.3790696970486572
+      ],
+      "complete": 0.539,
+      "net": 2340.577,
+      "games": 38553.952,
+      "base": 30.003742953801122,
+      "normalPerAt": 646.4728743654822,
+      "normalPerCz": 330.38588858412936,
+      "atZoneDenom": 107.12275413901091,
+      "productionPreviousEstimate": {
+        "setting": 5,
+        "n": 500,
+        "rtp": 0.9927026534485301,
+        "rtp95": [
+          0.9866969375590616,
+          0.9987083693379987
+        ],
+        "win": 0.628,
+        "win95": [
+          0.5848089173303663,
+          0.6692392515114762
+        ],
+        "net10000": 0.098,
+        "net10000_95": [
+          0.07492391886460623,
+          0.12720605086648182
+        ],
+        "complete": 0.19,
+        "net": -1031.012,
+        "games": 47095.292,
+        "base": 30.0008625078362,
+        "normalPerAt": 588.4778495795703,
+        "normalPerCz": 287.4466438486404,
+        "atZoneDenom": 139.28661667912337
+      },
+      "mechanics": {
+        "before": {
+          "zone": [
+            {
+              "net": 0,
+              "low": 0.18081900000000004,
+              "high": 0.30136500000000005,
+              "sortieWeak": 0.00383
+            },
+            {
+              "net": 3000,
+              "low": 0.18081900000000004,
+              "high": 0.30136500000000005,
+              "sortieWeak": 0.00383
+            },
+            {
+              "net": 5000,
+              "low": 0.0826601142857143,
+              "high": 0.13776685714285716,
+              "sortieWeak": 0.00383
+            },
+            {
+              "net": 6500,
+              "low": 0.05786208000000001,
+              "high": 0.09643680000000002,
+              "sortieWeak": 0.00383
+            },
+            {
+              "net": 8500,
+              "low": 0.05786208000000001,
+              "high": 0.09643680000000002,
+              "sortieWeak": 0.00383
+            }
+          ],
+          "cz": [
+            {
+              "low": false,
+              "netLow": false,
+              "lowNormal": 0.18847387730475265,
+              "highNormal": 0.20954105055
+            },
+            {
+              "low": false,
+              "netLow": true,
+              "lowNormal": 0.022475463998232643,
+              "highNormal": 0.04495092799646529
+            },
+            {
+              "low": true,
+              "netLow": false,
+              "lowNormal": 0.022475463998232643,
+              "highNormal": 0.04495092799646529
+            },
+            {
+              "low": true,
+              "netLow": true,
+              "lowNormal": 0.022475463998232643,
+              "highNormal": 0.04495092799646529
+            }
+          ],
+          "decrement": {
+            "enabled": true,
+            "lowMean": 150000,
+            "highMean": 183333.33333333334,
+            "lowCz": 0.25,
+            "highCz": 2.4,
+            "lowAt": 0.25,
+            "highAt": 0.25,
+            "netEnter": 6000,
+            "netExit": 4500,
+            "netCz": 0.25,
+            "netAt": 0.25
+          },
+          "positive": {
+            "start": 3000,
+            "end": 6500,
+            "floor": 0.5,
+            "boost": 1,
+            "sortie": false
+          }
+        },
+        "after": {
+          "zone": [
+            {
+              "net": 0,
+              "low": 0.23506470000000004,
+              "high": 0.3917745000000001,
+              "sortieWeak": 0.00383
+            },
+            {
+              "net": 3000,
+              "low": 0.04882113000000001,
+              "high": 0.08136855000000003,
+              "sortieWeak": 0.00383
+            },
+            {
+              "net": 5000,
+              "low": 0.5605389000000002,
+              "high": 0.9342315000000001,
+              "sortieWeak": 0.00383
+            },
+            {
+              "net": 6500,
+              "low": 0.5605389000000002,
+              "high": 0.9342315000000001,
+              "sortieWeak": 0.00383
+            },
+            {
+              "net": 8500,
+              "low": 0.5605389000000002,
+              "high": 0.9342315000000001,
+              "sortieWeak": 0.00383
+            }
+          ],
+          "cz": [
+            {
+              "low": false,
+              "netLow": false,
+              "lowNormal": 0.15077910184380214,
+              "highNormal": 0.16763284044
+            },
+            {
+              "low": false,
+              "netLow": true,
+              "lowNormal": 0.15077910184380214,
+              "highNormal": 0.16763284044
+            },
+            {
+              "low": true,
+              "netLow": false,
+              "lowNormal": 0.017980371198586115,
+              "highNormal": 0.03596074239717223
+            },
+            {
+              "low": true,
+              "netLow": true,
+              "lowNormal": 0.017980371198586115,
+              "highNormal": 0.03596074239717223
+            }
+          ],
+          "decrement": {
+            "enabled": true,
+            "initialLowChance": 0.53,
+            "lowMean": 150000,
+            "highMean": 183333.33333333334,
+            "lowCz": 0.25,
+            "highCz": 2.4,
+            "lowAt": 0.25,
+            "highAt": 0.25,
+            "netEnter": 6000,
+            "netExit": 4500,
+            "netCz": 2.4,
+            "netAt": 0.25
+          },
+          "positive": {
+            "start": 0,
+            "end": 2000,
+            "floor": 0.27,
+            "boost": 1.3,
+            "sortie": false
+          }
+        }
+      }
+    },
+    {
+      "targetWin": 0.8,
+      "targetRtp": [
+        1.06,
+        1.1
+      ],
+      "setting": 6,
+      "n": 1000,
+      "rtp": 1.070360099257712,
+      "rtp95": [
+        1.060501119868299,
+        1.080219078647125
+      ],
+      "win": 0.8,
+      "win95": [
+        0.7740810353518655,
+        0.8236229095568015
+      ],
+      "net10000": 0.654,
+      "net10000_95": [
+        0.6239780184885133,
+        0.6828433398979359
+      ],
+      "complete": 0.784,
+      "net": 5196.021,
+      "games": 24616.324,
+      "base": 30.011289499528544,
+      "normalPerAt": 416.0949050364344,
+      "normalPerCz": 186.7522033230446,
+      "atZoneDenom": 127.14526622793898,
+      "productionPreviousEstimate": {
+        "setting": 6,
+        "n": 500,
+        "rtp": 1.0127055314879576,
+        "rtp95": [
+          1.0073075881677414,
+          1.0181034748081739
+        ],
+        "win": 0.712,
+        "win95": [
+          0.6708105507601558,
+          0.749956728884146
+        ],
+        "net10000": 0.152,
+        "net10000_95": [
+          0.12319239267380164,
+          0.18611414828743875
+        ],
+        "complete": 0.26,
+        "net": 1752.662,
+        "games": 45981.6,
+        "base": 29.9999360195456,
+        "normalPerAt": 442.1703706032125,
+        "normalPerCz": 202.51606680103657,
+        "atZoneDenom": 169.06827569928006
+      },
+      "mechanics": {
+        "before": {
+          "zone": [
+            {
+              "net": 0,
+              "low": 0.1725,
+              "high": 0.2875,
+              "sortieWeak": 0.00212
+            },
+            {
+              "net": 3000,
+              "low": 0.1725,
+              "high": 0.2875,
+              "sortieWeak": 0.00212
+            },
+            {
+              "net": 5000,
+              "low": 0.10350000000000001,
+              "high": 0.17250000000000001,
+              "sortieWeak": 0.00212
+            },
+            {
+              "net": 6500,
+              "low": 0.051750000000000004,
+              "high": 0.08625000000000001,
+              "sortieWeak": 0.00212
+            },
+            {
+              "net": 8500,
+              "low": 0.051750000000000004,
+              "high": 0.08625000000000001,
+              "sortieWeak": 0.00212
+            }
+          ],
+          "cz": [
+            {
+              "low": false,
+              "netLow": false,
+              "lowNormal": 0.277183196142286,
+              "highNormal": 0.48247092581814
+            },
+            {
+              "low": false,
+              "netLow": true,
+              "lowNormal": 0.0363859361086737,
+              "highNormal": 0.0727718722173474
+            },
+            {
+              "low": true,
+              "netLow": false,
+              "lowNormal": 0.0363859361086737,
+              "highNormal": 0.0727718722173474
+            },
+            {
+              "low": true,
+              "netLow": true,
+              "lowNormal": 0.0363859361086737,
+              "highNormal": 0.0727718722173474
+            }
+          ],
+          "decrement": {
+            "enabled": true,
+            "lowMean": 60000,
+            "highMean": 90000,
+            "lowCz": 0.25,
+            "highCz": 1.95,
+            "lowAt": 0.25,
+            "highAt": 0.25,
+            "netEnter": 6500,
+            "netExit": 5000,
+            "netCz": 0.25,
+            "netAt": 0.25
+          },
+          "positive": {
+            "start": 3000,
+            "end": 6500,
+            "floor": 0.3,
+            "boost": 1,
+            "sortie": false
+          }
+        },
+        "after": {
+          "zone": [
+            {
+              "net": 0,
+              "low": 0.1725,
+              "high": 0.2875,
+              "sortieWeak": 0.00212
+            },
+            {
+              "net": 3000,
+              "low": 0.1725,
+              "high": 0.2875,
+              "sortieWeak": 0.00212
+            },
+            {
+              "net": 5000,
+              "low": 0.1725,
+              "high": 0.2875,
+              "sortieWeak": 0.00212
+            },
+            {
+              "net": 6500,
+              "low": 0.1725,
+              "high": 0.2875,
+              "sortieWeak": 0.00212
+            },
+            {
+              "net": 8500,
+              "low": 0.1725,
+              "high": 0.2875,
+              "sortieWeak": 0.00212
+            }
+          ],
+          "cz": [
+            {
+              "low": false,
+              "netLow": false,
+              "lowNormal": 0.2882705239879775,
+              "highNormal": 0.5017697628508656
+            },
+            {
+              "low": false,
+              "netLow": true,
+              "lowNormal": 0.22704824131812384,
+              "highNormal": 0.4200338943441162
+            },
+            {
+              "low": true,
+              "netLow": false,
+              "lowNormal": 0.037841373553020655,
+              "highNormal": 0.07568274710604131
+            },
+            {
+              "low": true,
+              "netLow": true,
+              "lowNormal": 0.037841373553020655,
+              "highNormal": 0.07568274710604131
+            }
+          ],
+          "decrement": {
+            "enabled": true,
+            "lowMean": 60000,
+            "highMean": 90000,
+            "lowCz": 0.25,
+            "highCz": 1.95,
+            "lowAt": 0.25,
+            "highAt": 0.25,
+            "netEnter": 6500,
+            "netExit": 5000,
+            "netCz": 1.5,
+            "netAt": 0.25
+          },
+          "positive": {
+            "start": 3000,
+            "end": 6500,
+            "floor": 1,
+            "boost": 1,
+            "sortie": false
+          }
+        }
+      }
+    }
+  ],
+  "rowsFile": "docs/win-rtp-20261008-rows.json.gz",
+  "rowsSha256": "d4bf83849b489a557d4dbd06ed982a78c04ebfbc5b9e3f56e22b82f6a0a0c084",
+  "rowsSettings": [
+    4,
+    5,
+    6
+  ],
+  "priorRowsFile": "docs/win-base30-20261007-rows.json.gz",
+  "seedPrefix": {
+    "4": "win-rtp-independent-e-20261008",
+    "5": "win-rtp-stratified-j-20261008",
+    "6": "win-rtp-independent-f-20261008"
+  },
+  "seedSelection": [
+    {
+      "variant": "candidate-v7",
+      "setting": 5,
+      "method": "proportional stratified sampling of existing initial decrement state; no outcome selection",
+      "lowChance": 0.53,
+      "lowCount": 530,
+      "highCount": 470,
+      "scannedSeeds": 1015
+    }
+  ],
+  "provenance": [
+    {
+      "setting": 4,
+      "label": "confirm",
+      "originalVariant": "candidate-v2",
+      "fileSha256": "b4b9d677678eacfe949b0fc65759732e35564b71b400bf72e025aa0e4d4c40b6",
+      "seedPrefix": "win-rtp-independent-e-20261008",
+      "n": 1000
+    },
+    {
+      "setting": 5,
+      "label": "phasefinal",
+      "originalVariant": "candidate-v7",
+      "fileSha256": "edbb9ecb88b16094b38cde9d9101cc1ea41a77f21ae5b2af52886bb27edc22c6",
+      "seedPrefix": "win-rtp-stratified-j-20261008",
+      "n": 1000
+    },
+    {
+      "setting": 6,
+      "label": "sixconfirm",
+      "originalVariant": "candidate-v3",
+      "fileSha256": "c772dcc6b61ad7553f0ed484b6f6be6fada50e4033e64f1858c249467c16c500",
+      "seedPrefix": "win-rtp-independent-f-20261008",
+      "n": 1000
+    }
+  ],
+  "approvedCandidateSourceHashes": {
+    "nova-art.js": "8250ef7f110bc8ebe8f98bf972cca5520279825c3446d5958ae3f60457adf15d",
+    "nova-normal.js": "0d9bb09bf4ab8fb2366875ebea74fdb6a18f87a4890c4705bdb2c22bf8d58ee7",
+    "nova-flow.js": "2b4c6587f123b27c2ed837c9a7b955e4478c2768dce6ca6b794ab5a0de3d4c4e",
+    "nova-tuning.js": "8fb5e37a8b54f1e8070da0c45f1ae4a26eb870051ec7e6c25fb3490d34b5979b",
+    "nova-decrement.js": "bb52efed5cb7a253bea617bd521d036cbc9d59b5b846368e936b07f103665a8a",
+    "nova-progress.js": "3d02469b2727693056c4672903722beef77bc71b72d398fd2686417b416f481f",
+    "nova-balance.js": "c0b93ab8c18c7753d207667f8df3ea8012357dfb9071cf0e0ea5c03fb3e9e75d",
+    "nova-complete.js": "afee692d2328871c922f6229030b58958a763a10ebe8ae5194ca0a4ac56f62d2"
+  },
+  "sourceHashNormalization": "UTF-8 text with LF line endings",
+  "sourceHashes": {
+    "nova-art.js": "fc510e08a691a2c7e67d517d21bb5f9b91557bd31d4b12e420ca22afb7f2cddc",
+    "nova-normal.js": "c9e4dd150fcf606e4548fb344b6731af85697a15306e3315d81e2c7af902e622",
+    "nova-flow.js": "a01ae6c12fcf577c4cd5d7e3d099afad55aaad95930088763bc61ef06238fd19",
+    "nova-tuning.js": "26ab2f821eebb4744fe20de717bc58c50a0869277395b92e41b5e9ee963f9f54",
+    "nova-decrement.js": "611e1af8431893dbb89e657f7638d7aae96f0bdb61aa0daa8d12dc58415f95b6",
+    "nova-progress.js": "3d02469b2727693056c4672903722beef77bc71b72d398fd2686417b416f481f",
+    "nova-balance.js": "d11fa06e50a80af9df47499487722f9bf479b342ab5a33496f876f63b5d5ee42",
+    "nova-complete.js": "afee692d2328871c922f6229030b58958a763a10ebe8ae5194ca0a4ac56f62d2",
+    "nova-game.js": "4736e1efd26e7eecb51cb61316b115118e857e584a6fd668d200b6b35187dfd7",
+    "jag.html": "c46bc4ace214995c06345326bea967dac3be6f561771e1a92c41ad1e0d0f62e6",
+    "scripts/zone-v2-model.mjs": "24c65422dccf22fc0d3adf185417a6124386b2900777cfca3f78331a9618422c",
+    "scripts/zone-v2-rng.mjs": "0e5424d7a743850591b4029b730d93267c986633a0be83942a69a19b18c8fcce"
+  },
+  "researchAudit": {
+    "status": "pass",
+    "label": "validation",
+    "rows": 3000,
+    "replayed": 11,
+    "checks": [
+      "source hashes",
+      "all ledgers",
+      "aggregate RTP and win/reach rates",
+      "paid BET count",
+      "exact 50,000-game horizon",
+      "dual complete caps",
+      "deterministic replay including pending points and stocks"
+    ]
+  },
+  "unchanged": [
+    "settings 1–3 (exact seeded session comparison passed)",
+    "normal base 30G/50pt",
+    "normal AT net 4.5pt/G",
+    "upper AT net 7pt/G",
+    "role occurrence probabilities",
+    "initial points",
+    "direct award sizes and strong NOVA lottery",
+    "earned points and stock",
+    "comeback and bonus",
+    "double complete caps",
+    "decrement regime durations"
+  ],
+  "limitations": [
+    "simulation of shared core rules, not a fresh browser endurance run",
+    "finite independent sample; point estimates are not guaranteed rates",
+    "+10,000pt reach probability rises substantially",
+    "RTP uses actual paid BETs until early stop; it is not an uncapped 50,000-game RTP"
+  ],
+  "resetNote": "New initialLowChance applies to setting 5 on reset only. Saved regimes, earned quota and stocks are preserved."
+}

@@ -2,8 +2,8 @@
 globalThis.NovaDecrement=(()=>{
  const disabled=Object.freeze({enabled:false});
  const profiles=Object.freeze({
-  5:Object.freeze({enabled:true,initialLowChance:.53,lowMean:150000,highMean:183333.33333333334,lowCz:0.25,highCz:2.4,lowAt:.25,highAt:.25,netEnter:6000,netExit:4500,netCz:2.4,netAt:.25}),
-  6:Object.freeze({enabled:true,lowMean:60000,highMean:90000,lowCz:.25,highCz:1.95,lowAt:.25,highAt:.25,netEnter:6500,netExit:5000,netCz:1.5,netAt:.25})
+  5:Object.freeze({enabled:true,lowMean:150000,highMean:183333.33333333334,lowCz:0.25,highCz:2.4,lowAt:.25,highAt:.25,netEnter:6000,netExit:4500,netCz:.25,netAt:.25}),
+  6:Object.freeze({enabled:true,lowMean:60000,highMean:90000,lowCz:.25,highCz:1.95,lowAt:.25,highAt:.25,netEnter:6500,netExit:5000,netCz:.25,netAt:.25})
  });
  const settingNo=s=>Math.max(1,Math.min(6,Math.round(Number(s)||3)));
  const rules=s=>profiles[settingNo(s)]||disabled;
@@ -24,7 +24,7 @@ globalThis.NovaDecrement=(()=>{
   if(!rng.some(Boolean))rng[0]=1;
   state={version:170,setting,enabled:p.enabled&&enabled,rng:[...rng],low:false,netLow:false,
    games:0,lowGames:0,entries:0,exits:0,initialLow:false,lowByPhase:{},netGames:0,netEntries:0,netExits:0,peakObserved:0};
-  state.initialLow=state.low=state.enabled&&random()<(p.initialLowChance??p.lowMean/(p.lowMean+p.highMean));
+  state.initialLow=state.low=state.enabled&&random()<p.lowMean/(p.lowMean+p.highMean);
   state.entries=state.low?1:0;return state;
  }
  function bind(value,setting=3){

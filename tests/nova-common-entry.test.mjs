@@ -38,7 +38,7 @@ test('saved multipliers 3-5 and fixed initial plans remain earned; later duo sto
 });
 
 test('adopted weak zone chances use setting and net tiers, with the pre-role high state',()=>{
- const scales=[1.0491974999999998,1.03,0.7353,0.8400000000000001,1.2054600000000002,1.15],netScales=[.65,.8,.85,.75,.64,1];
+ const scales=[1.0491974999999998,1.03,0.7353,0.8400000000000001,1.2054600000000002,1.15],netScales=[.65,.8,.85,.75,11.481481481481481,1];
  for(let setting=1;setting<=6;setting++){
   NovaDecrement.reset(setting,xoshiro128State('common-zone-'+setting));
   for(const low of [false,true]){
