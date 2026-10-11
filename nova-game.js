@@ -702,6 +702,7 @@
   const layoutEditSaveDefaultBtn = $("layoutEditSaveDefaultBtn");
   const layoutEditResetBtn = $("layoutEditResetBtn");
   const layoutEditCloseBtn = $("layoutEditCloseBtn");
+  NovaRemainingCounters.addLayoutControls(document.querySelector('.layoutEditorGroups'));
   const layoutEditInputs = [...document.querySelectorAll(".layoutEditInput")];
   const effectSkipBtn = $("effectSkipBtn");
 
@@ -858,6 +859,7 @@
   const SLOT_ZOOM_ANCHOR_Y = 500;
 
   const LAYOUT_DEFAULTS = Object.freeze({
+    ...NovaRemainingCounters.defaults,
     navi:{...NovaBellNavi.defaults},
     reels:{x:22.7, y:41.4, w:54.0, h:37.4, gap:0.2},
     chance:{x:22.0, y:85.8, w:11.9, h:11.0},
@@ -1103,6 +1105,7 @@
     });
     syncLayoutEditInputs();
     NovaBellNavi.layout();
+    NovaRemainingCounters.measure();
     if(saveValue) safeStorageSet(LAYOUT_EDIT_STORAGE_KEY, JSON.stringify(layoutEditState));
   }
 
@@ -1154,6 +1157,7 @@
     }
     document.body.classList.toggle("layoutEditOpen", layoutEditOpen);
     NovaBellNavi.preview(layoutEditOpen);
+    if(layoutEditOpen)NovaRemainingCounters.measure();
   }
 
   function changePageZoom(delta){
@@ -5460,7 +5464,14 @@
     return {state,count:Math.max(0,Math.floor(paid-state.paid))};
   }
 
+  function renderRemainingCounters(){
+    const spin=isSpinning?currentSpin:null;
+    NovaRemainingCounters.render(normalState.flow,{spin,bonus:session.active,bonusPending:normalState.bonusPending,
+      czPrelude:normalState.internal?.prelude?.presentation==='reel'&&!spin?.resolved?.czPrelude?.announce});
+  }
+
   function updateDisplay(){
+    renderRemainingCounters();
     NovaStockEntry.show(!session.active&&!normalState.resultCard&&NovaStockEntry.matches(normalState.stockEntry,normalState.flow,NovaProgress.snapshot())?normalState.stockEntry:null);
     if(!debugFastSpinActive){
       const pending=normalState.ladderAwardPresentation;
@@ -7236,6 +7247,7 @@
     playRareCueVoice(currentSpin);
     playGiruLadderBetVoice(currentSpin);
     NovaSortie.begin(currentSpin);
+    renderRemainingCounters();
     if(resolved.zoneStartFlow)updateDisplay();
     if(resolved.oumaFreeze)showOverlay(NovaArt.zoneName(normalState.flow)+'フリーズ！ 0G連');
     else if(resolved.artReverse)showOverlay('逆回転！ '+resolved.flowAfter.award+'pt');
