@@ -28,3 +28,16 @@ test('zone music does not override CZ or normal music',()=>{
     assert.equal(c.normalBgmSrc(),phase==='normal'?'normal':'cz');
   }
 });
+
+test('sortie BGM starts with active games, covers the final spinning game, and returns to the next phase',()=>{
+  const c=context();
+  c.normalState.flow={phase:'art',researchSortieLeft:0};assert.equal(c.normalBgmSrc(),'at','queued stock is not an active challenge');
+  for(const remaining of [10,9,1]){
+    c.normalState.flow.researchSortieLeft=remaining;assert.equal(c.normalBgmSrc(),'assets/media/nova/sortie-bgm.mp3');
+  }
+  c.normalState.flow.researchSortieLeft=0;c.isSpinning=true;c.currentSpin={resolved:{researchSortie:{finished:true}}};
+  assert.equal(c.normalBgmSrc(),'assets/media/nova/sortie-bgm.mp3','pre-drawn final game must retain the challenge BGM');
+  c.isSpinning=false;c.currentSpin=null;assert.equal(c.normalBgmSrc(),'at');
+  c.normalState.flow.zone='toto';assert.equal(c.normalBgmSrc(),'assets/media/nova/toto-bgm.wav');
+  c.normalState.flow={phase:'normal'};assert.equal(c.normalBgmSrc(),'normal');
+});

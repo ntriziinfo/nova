@@ -1,0 +1,14 @@
+{
+  "originalFile": "audiostock_1196296.mp3",
+  "source": "sortie-bgm.mp3",
+  "originalUnmodified": true,
+  "bytes": 1259101,
+  "sha256": "d4f8e150163816bf7766d9abb23cf88cf5677800f9493e6d7b432fda3cea0c28",
+  "durationSeconds": 31.413605,
+  "sampleRate": 44100,
+  "channels": 2,
+  "category": "bgm",
+  "trigger": "Active sortie challenge; shared BGM player returns to the next phase on exit",
+  "loop": true,
+  "usage": "User-provided copyrighted audio for the requested NOVA BGM only. No training use."
+}

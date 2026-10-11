@@ -26,3 +26,5 @@ assets/media/nova/sortie-award.source.json -filter -diff -merge text
 assets/media/nova/sortie-stop-1.mp3 -filter -diff -merge -text
 assets/media/nova/sortie-stop-2.mp3 -filter -diff -merge -text
 assets/media/nova/sortie-stops.sources.json -filter -diff -merge text
+assets/media/nova/sortie-bgm.mp3 -filter -diff -merge -text
+assets/media/nova/sortie-bgm.source.json -filter -diff -merge text

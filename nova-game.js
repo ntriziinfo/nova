@@ -40,6 +40,7 @@
   const GIRU_ZONE_BGM_SRC = "assets/media/nova/giru-bgm.wav";
   const OUMA_ZONE_BGM_SRC = "assets/media/nova/oumafreez.wav";
   const INITIAL_DUO_ZONE_BGM_SRC = "assets/media/nova/initial-duo-bgm.mp3";
+  const SORTIE_ZONE_BGM_SRC = "assets/media/nova/sortie-bgm.mp3";
   const NOVA_ART_BGM_SRC = "assets/media/nova/RUSH.wav";
   const NOVA_BIG_BGM_SRC = "assets/media/nova/BIG.wav";
 
@@ -770,6 +771,8 @@
   const resultEyecatchPreload = new Audio('assets/media/nova/result-eyecatch.wav');
   const initialDuoBgmPreload = new Audio(INITIAL_DUO_ZONE_BGM_SRC);
   initialDuoBgmPreload.preload='auto';initialDuoBgmPreload.load();
+  const sortieBgmPreload = new Audio(SORTIE_ZONE_BGM_SRC);
+  sortieBgmPreload.preload='auto';sortieBgmPreload.load();
   resultEyecatchPreload.preload='auto';resultEyecatchPreload.load();
   oneShotSoundCache.set('assets/media/nova/result-eyecatch.wav',resultEyecatchPreload);
   const oumaFailPreload = new Audio('assets/media/nova/ouma-fail.wav');
@@ -4746,6 +4749,7 @@
     if(session.active||!["cz","strong_cz"].includes(normalState.flow?.phase))normalState.czBgmFinished=false;
     if(!session.active && normalState.flow?.phase==='art'){
       const flow=presentedArtFlow();
+      if(flow.researchSortieLeft>0 || isSpinning&&currentSpin?.resolved?.researchSortie)return SORTIE_ZONE_BGM_SRC;
       if(flow.initialStage==='zone'&&['kushuri_nito','kushuri','nito'].includes(flow.zone))return INITIAL_DUO_ZONE_BGM_SRC;
       const zoneTracks = {sosuke:SOSUKE_ZONE_BGM_SRC,toto:TOTO_ZONE_BGM_SRC,urapi:URAPI_ZONE_BGM_SRC,sora:SORA_ZONE_BGM_SRC,giru:GIRU_ZONE_BGM_SRC,ouma:OUMA_ZONE_BGM_SRC};
       return zoneTracks[flow.zone] || NOVA_ART_BGM_SRC;
@@ -7423,8 +7427,7 @@
       persistState();
       Promise.resolve().then(async()=>{
         if(currentSpin!==spin||!isSpinning)return;
-        let landed=await NovaReelMotion.stop(i,sortieTarget?.drop?sortieTarget.landing:col,{immediate:!sortieTarget&&['BELL','BELL15','REPLAY'].includes(spin.result)&&!spin.manualBonusStop});
-        if(landed&&sortieTarget?.drop&&currentSpin===spin&&isSpinning)landed=await NovaSortie.dropLeft(reels[i],REEL_STRIPS[i],sortieTarget.top,cellHtml,NovaReelMotion);
+        const landed=await NovaReelMotion.stop(i,col,{immediate:!sortieTarget&&['BELL','BELL15','REPLAY'].includes(spin.result)&&!spin.manualBonusStop});
         if(landed&&currentSpin===spin&&isSpinning)stopSingleReel(i,{...options,visualReady:true,visualColumn:col});
       }).catch(error=>{console.error(error);spin.visualStopping[i]=false;spin.pendingStopColumns[i]=null;stopBtns[i].disabled=false;persistState();});
       return;

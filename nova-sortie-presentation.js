@@ -4,7 +4,7 @@ globalThis.NovaSortie=(()=>{
  const characters={sosuke:['sosuke','宗介'],toto:['toto','とと'],urapi:['urapi','うらぴ'],giru:['giru1','ギル'],sora:['sora1','空'],ouma:['ouma1','逢魔'],nito:['nito','にと'],kushuri:['kushuri','くしゅり']};
  const candidates=['sosuke','toto','urapi','giru','sora','ouma','kushuri_nito'];
  const previews=new WeakMap();
- let root,host,drop=null,reveal,portraits,caption,actors=[],animation=null,revealSpin=null,revealStage=-1;
+ let root,host,reveal,portraits,caption,actors=[],animation=null,revealSpin=null,revealStage=-1;
  let soundPlayer=null,awardSound=null,awardFrame=0,removeSoundListeners=null;
  let holdUntil=0,holdTimer=null,holdToken=0;
  const waitMs=()=>Math.max(0,Math.ceil(holdUntil-performance.now()));
@@ -89,7 +89,7 @@ globalThis.NovaSortie=(()=>{
   if(top<0)throw Error('Missing sortie NOVA column');
   const windowAt=n=>[0,1,2].map(row=>strip[((n+row)%strip.length+strip.length)%strip.length]);
   const shift=index===0&&!aligned;
-  return {aligned,drop:shift,top,column:windowAt(top-(shift?1:0)),landing:windowAt(top)};
+  return {aligned,column:windowAt(top-(shift?1:0))};
  }
  function init(){
   if(root)return true;
@@ -147,7 +147,6 @@ globalThis.NovaSortie=(()=>{
   if(root)root.hidden=true;
   animation?.cancel();animation=null;revealSpin=null;revealStage=-1;
   if(reveal)reveal.hidden=true;
-  if(drop){const cancel=drop;drop=null;cancel();}
   if(typeof document!=='undefined')document.querySelectorAll('.reel.sortieStopped').forEach(reel=>reel.classList.remove('sortieStopped'));
   flash('');
  }
@@ -157,15 +156,8 @@ globalThis.NovaSortie=(()=>{
   document.querySelectorAll('.novaArtItem').forEach(lamp=>{lamp.dataset.sortieWon=String(lamp.dataset.artwork===id||(id==='kushuri_nito'&&['kushuri','nito'].includes(lamp.dataset.artwork)));});
  }
  function begin(spin){clear();render(spin);}
- function dropLeft(reel,strip,top,html,motion){
-  return new Promise(resolve=>{
-   const start=performance.now();
-   drop=()=>{motion.clear(0);resolve(false);};
-   motion.start(0,reel,strip,top,false,html,{duration:180,steps:1,clock:()=>Math.max(0,performance.now()-start)/1000,done:()=>{drop=null;resolve(true);}});
-  });
- }
  if(typeof window!=='undefined')window.addEventListener('resize',layout);
- return {eligible,label,target,begin,stop:render,clear,dropLeft,flash,awardScale,
+ return {eligible,label,target,begin,stop:render,clear,flash,awardScale,
   get busy(){return waitMs()>0;},get waitMs(){return waitMs();},
   setSoundPlayer:player=>{soundPlayer=player;},
   updateVolume:volume=>{if(awardSound)awardSound.volume=Math.max(0,Math.min(1,Number(volume)||0));}
