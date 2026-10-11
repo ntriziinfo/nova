@@ -5,6 +5,28 @@ import vm from 'node:vm';
 const ctx=vm.createContext({});
 for(const file of ['nova-art.js','nova-remaining-counters.js'])vm.runInContext(fs.readFileSync(file,'utf8'),ctx);
 const snapshot=(...args)=>JSON.parse(JSON.stringify(ctx.NovaRemainingCounters.snapshot(...args)));
+const current=(...args)=>JSON.parse(JSON.stringify(ctx.NovaRemainingCounters.current(...args)));
+
+test('the shared display switches between CZ, AT and the active zone without changing banked points',()=>{
+ const flow=Object.freeze({phase:'art',remaining:'1234',zone:'sora',ura:true,zoneLeft:5});
+ assert.deepEqual(current(flow),{mode:'zone',label:'裏空ゾーン',value:'5',unit:'G',active:true,hold:false});
+ assert.deepEqual(current({...flow,zone:''}),{mode:'at',label:'AT残り',value:'1,234',unit:'pt',active:true,hold:false});
+ assert.equal(current({phase:'cz',remaining:12}).mode,'cz');
+ assert.equal(current({phase:'strong_cz',remaining:8}).label,'強CZ残り');
+ assert.equal(current({phase:'normal'}).mode,'idle');
+ assert.equal(flow.remaining,'1234');
+});
+
+test('shared display clears old zone units and HOLD, hides prelude counts, and does not leak future results',()=>{
+ const flow=Object.freeze({phase:'art',remaining:'100',researchChallengeActive:true,burstLeft:0,researchAim:'nova'});
+ assert.equal(current(flow).hold,true);
+ const next=current({phase:'art',remaining:'100'});assert.equal(next.hold,false);assert.equal(next.unit,'pt');
+ const prelude=current({phase:'cz',remaining:15},{czPrelude:true});assert.equal(prelude.mode,'idle');assert.equal(prelude.unit,'');
+ assert.equal(current({phase:'art',remaining:'100',burstPending:true}).label,'上位AT準備');
+ const pending={spin:{resolved:{flowAfter:{phase:'art',zone:'sora',zoneLeft:5,remaining:'1000'}}}};
+ assert.equal(current({phase:'art',remaining:'100',zone:'sora',zoneLeft:1},pending).value,'1');
+ assert.equal(current({phase:'normal'},{bonus:true}).label,'ボーナス中');
+});
 test('normal and prelude do not claim an active CZ; CZ counts stay separate from AT points',()=>{
  assert.equal(snapshot({phase:'normal',remaining:0}).atcounter.value,'—');
  for(const phase of ['cz','strong_cz']){
