@@ -1,0 +1,22 @@
+{
+  "date": "2026-10-12",
+  "feature": "出陣チャレンジのキャラクターフェードと第三停止確定表示",
+  "behavior": {
+    "betAndFirstTwoStops": "同じ候補キャラを520msでフェードイン・フェードアウト",
+    "winningThirdStop": "実際に獲得したキャラを220msで表示し、次BETまで保持。裏ゾーンは裏の名称、くしゅり＆にとは2人で表示",
+    "losingThirdStop": "キャラは表示しない",
+    "candidateOnMiss": "ゲーム抽選と独立した表示用乱数で選び、そのゲームの途中表示で共通使用",
+    "manualWrongOrder": "図柄を外しても内部で獲得した場合はそのキャラを確定表示",
+    "scope": "画像は既存の提供原本をimgで表示。原本・抽選・pt・ストック・ゲーム待機時間は変更しない"
+  },
+  "verification": {
+    "relatedUnitTests": 86,
+    "syntaxAndAssetReferences": "passed",
+    "routeConfig": "passed",
+    "localBrowser": "passed: desktop real AUTO BET/first/second/third stop; desktop/mobile fade, win, miss, duo, clear and placement checks",
+    "browserErrors": 0,
+    "browserScript": "research/sortie-character-20261012/browser-smoke.mjs",
+    "browserResults": "research/sortie-character-20261012/local-smoke.json",
+    "audio": "muted; test browsers closed"
+  }
+}

@@ -1,0 +1,401 @@
+{
+  "status": "pass",
+  "base": "http://127.0.0.1:52702",
+  "muted": true,
+  "results": [
+    {
+      "name": "desktop",
+      "realEvents": [
+        {
+          "stage": 0,
+          "won": false,
+          "zone": "",
+          "hidden": false,
+          "confirmed": "false",
+          "characters": [
+            "giru"
+          ],
+          "overlay": false
+        },
+        {
+          "stage": 1,
+          "won": false,
+          "zone": "",
+          "hidden": false,
+          "confirmed": "false",
+          "characters": [
+            "giru"
+          ],
+          "overlay": false
+        },
+        {
+          "stage": 2,
+          "won": false,
+          "zone": "",
+          "hidden": false,
+          "confirmed": "false",
+          "characters": [
+            "giru"
+          ],
+          "overlay": false
+        },
+        {
+          "stage": 3,
+          "won": false,
+          "zone": "",
+          "hidden": true,
+          "confirmed": "false",
+          "characters": [
+            "giru"
+          ],
+          "overlay": false
+        }
+      ],
+      "previews": [
+        {
+          "zone": "ura_sora",
+          "won": true,
+          "fade": [
+            {
+              "stage": "0",
+              "opacity": 0.838356,
+              "characters": [
+                "sora"
+              ]
+            },
+            {
+              "stage": "1",
+              "opacity": 0.838356,
+              "characters": [
+                "sora"
+              ]
+            },
+            {
+              "stage": "2",
+              "opacity": 0.838356,
+              "characters": [
+                "sora"
+              ]
+            }
+          ],
+          "final": {
+            "hidden": false,
+            "confirmed": "true",
+            "caption": "裏空ゾーン獲得！",
+            "rect": {
+              "x": 267.90625,
+              "y": 733.265625,
+              "width": 518.390625,
+              "height": 194.46875,
+              "top": 733.265625,
+              "right": 786.296875,
+              "bottom": 927.734375,
+              "left": 267.90625
+            },
+            "reels": {
+              "x": 267.90625,
+              "y": 733.265625,
+              "width": 518.390625,
+              "height": 194.46875,
+              "top": 733.265625,
+              "right": 786.296875,
+              "bottom": 927.734375,
+              "left": 267.90625
+            },
+            "pointerEvents": "none",
+            "opacity": 1
+          }
+        },
+        {
+          "zone": "kushuri_nito",
+          "won": true,
+          "fade": [
+            {
+              "stage": "0",
+              "opacity": 0.838356,
+              "characters": [
+                "nito",
+                "kushuri"
+              ]
+            },
+            {
+              "stage": "1",
+              "opacity": 0.838356,
+              "characters": [
+                "nito",
+                "kushuri"
+              ]
+            },
+            {
+              "stage": "2",
+              "opacity": 0.838356,
+              "characters": [
+                "nito",
+                "kushuri"
+              ]
+            }
+          ],
+          "final": {
+            "hidden": false,
+            "confirmed": "true",
+            "caption": "くしゅり＆にとゾーン獲得！",
+            "rect": {
+              "x": 267.90625,
+              "y": 733.265625,
+              "width": 518.390625,
+              "height": 194.46875,
+              "top": 733.265625,
+              "right": 786.296875,
+              "bottom": 927.734375,
+              "left": 267.90625
+            },
+            "reels": {
+              "x": 267.90625,
+              "y": 733.265625,
+              "width": 518.390625,
+              "height": 194.46875,
+              "top": 733.265625,
+              "right": 786.296875,
+              "bottom": 927.734375,
+              "left": 267.90625
+            },
+            "pointerEvents": "none",
+            "opacity": 1
+          }
+        },
+        {
+          "zone": "",
+          "won": false,
+          "fade": [
+            {
+              "stage": "0",
+              "opacity": 0.838356,
+              "characters": [
+                "nito",
+                "kushuri"
+              ]
+            },
+            {
+              "stage": "1",
+              "opacity": 0.838356,
+              "characters": [
+                "nito",
+                "kushuri"
+              ]
+            },
+            {
+              "stage": "2",
+              "opacity": 0.838356,
+              "characters": [
+                "nito",
+                "kushuri"
+              ]
+            }
+          ],
+          "final": {
+            "hidden": true,
+            "confirmed": "false",
+            "caption": "",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            },
+            "reels": {
+              "x": 267.90625,
+              "y": 733.265625,
+              "width": 518.390625,
+              "height": 194.46875,
+              "top": 733.265625,
+              "right": 786.296875,
+              "bottom": 927.734375,
+              "left": 267.90625
+            },
+            "pointerEvents": "none",
+            "opacity": 0
+          }
+        }
+      ],
+      "errors": [],
+      "failures": []
+    },
+    {
+      "name": "mobile",
+      "realEvents": [],
+      "previews": [
+        {
+          "zone": "ura_sora",
+          "won": true,
+          "fade": [
+            {
+              "stage": "0",
+              "opacity": 0.838356,
+              "characters": [
+                "sora"
+              ]
+            },
+            {
+              "stage": "1",
+              "opacity": 0.838356,
+              "characters": [
+                "sora"
+              ]
+            },
+            {
+              "stage": "2",
+              "opacity": 0.838356,
+              "characters": [
+                "sora"
+              ]
+            }
+          ],
+          "final": {
+            "hidden": false,
+            "confirmed": "true",
+            "caption": "裏空ゾーン獲得！",
+            "rect": {
+              "x": 92.88655090332031,
+              "y": 344.7597351074219,
+              "width": 201.9502410888672,
+              "height": 75.75567626953125,
+              "top": 344.7597351074219,
+              "right": 294.8367919921875,
+              "bottom": 420.5154113769531,
+              "left": 92.88655090332031
+            },
+            "reels": {
+              "x": 92.89263916015625,
+              "y": 344.7597351074219,
+              "width": 201.95632934570312,
+              "height": 75.76177978515625,
+              "top": 344.7597351074219,
+              "right": 294.8489685058594,
+              "bottom": 420.5215148925781,
+              "left": 92.89263916015625
+            },
+            "pointerEvents": "none",
+            "opacity": 1
+          }
+        },
+        {
+          "zone": "kushuri_nito",
+          "won": true,
+          "fade": [
+            {
+              "stage": "0",
+              "opacity": 0.838356,
+              "characters": [
+                "nito",
+                "kushuri"
+              ]
+            },
+            {
+              "stage": "1",
+              "opacity": 0.838356,
+              "characters": [
+                "nito",
+                "kushuri"
+              ]
+            },
+            {
+              "stage": "2",
+              "opacity": 0.838356,
+              "characters": [
+                "nito",
+                "kushuri"
+              ]
+            }
+          ],
+          "final": {
+            "hidden": false,
+            "confirmed": "true",
+            "caption": "くしゅり＆にとゾーン獲得！",
+            "rect": {
+              "x": 92.88655090332031,
+              "y": 344.7597351074219,
+              "width": 201.9502410888672,
+              "height": 75.75567626953125,
+              "top": 344.7597351074219,
+              "right": 294.8367919921875,
+              "bottom": 420.5154113769531,
+              "left": 92.88655090332031
+            },
+            "reels": {
+              "x": 92.89263916015625,
+              "y": 344.7597351074219,
+              "width": 201.95632934570312,
+              "height": 75.76177978515625,
+              "top": 344.7597351074219,
+              "right": 294.8489685058594,
+              "bottom": 420.5215148925781,
+              "left": 92.89263916015625
+            },
+            "pointerEvents": "none",
+            "opacity": 1
+          }
+        },
+        {
+          "zone": "",
+          "won": false,
+          "fade": [
+            {
+              "stage": "0",
+              "opacity": 0.838356,
+              "characters": [
+                "ouma"
+              ]
+            },
+            {
+              "stage": "1",
+              "opacity": 0.838356,
+              "characters": [
+                "ouma"
+              ]
+            },
+            {
+              "stage": "2",
+              "opacity": 0.838356,
+              "characters": [
+                "ouma"
+              ]
+            }
+          ],
+          "final": {
+            "hidden": true,
+            "confirmed": "false",
+            "caption": "",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            },
+            "reels": {
+              "x": 92.89263916015625,
+              "y": 344.7597351074219,
+              "width": 201.95632934570312,
+              "height": 75.76177978515625,
+              "top": 344.7597351074219,
+              "right": 294.8489685058594,
+              "bottom": 420.5215148925781,
+              "left": 92.89263916015625
+            },
+            "pointerEvents": "none",
+            "opacity": 0
+          }
+        }
+      ],
+      "errors": [],
+      "failures": []
+    }
+  ]
+}

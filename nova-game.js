@@ -5073,9 +5073,9 @@
     if(resolved.artMessage && !resolved.bonusHit && !resolved.aTypeBonusReady){
       showMessage(resolved.artMessage,normalModeLabel());log(resolved.artMessage);
       const ladderGain=Number(resolved.zoneAward)>0&&(NovaLadder.eligible(resolved.flowBefore)||NovaLadder.eligible(resolved.flowAfter));
-      if(!NovaDirectAward.amount(resolved)&&!ladderGain){
-        const e=resolved.researchChallenge,s=resolved.researchSortie;
-        showOverlay(e?(e.finished?(e.won?'上位AT確定！':'通常ATへ'):e.nextAim?'HOLD':e.priorAim?'継続':'残り'+e.left+'G'):s?(s.won?NovaArt.zoneName(s.zone)+'獲得！':'出陣チャレンジ'):resolved.artMessage);
+      if(!resolved.researchSortie&&!NovaDirectAward.amount(resolved)&&!ladderGain){
+        const e=resolved.researchChallenge;
+        showOverlay(e?(e.finished?(e.won?'上位AT確定！':'通常ATへ'):e.nextAim?'HOLD':e.priorAim?'継続':'残り'+e.left+'G'):resolved.artMessage);
       }
       return;
     }
@@ -7237,7 +7237,7 @@
     else if(resolved.artReverse)showOverlay('逆回転！ '+resolved.flowAfter.award+'pt');
     else if(resolved.researchChallenge?.priorAim)showOverlay('ノヴァを狙え');
     else if(resolved.researchChallenge)showOverlay('上位ATチャレンジ / '+(resolved.researchChallenge.nextAim?'HOLD':'残り'+resolved.researchChallenge.left+'G'));
-    else if(resolved.researchSortie)showOverlay('右 → 中 → 左でノヴァを狙え');
+    else if(resolved.researchSortie)$("overlay").classList.remove("show");
     else if(!resolved.oumaFailed&&['urapi','ouma'].includes(normalState.flow?.zone))showOverlay('ノヴァを狙え');
     if(currentSpin.bonusConfirmWaitSpin){
       showBonusConfirmScreen("solid");
@@ -7965,7 +7965,6 @@
     try{
     NovaBellNavi.clear();
     if(resolved.researchChallenge?.finished)showOverlay(resolved.researchChallenge.won?'上位AT確定！':'通常ATへ');
-    if(resolved.researchSortie?.won)showOverlay(NovaArt.zoneName(resolved.researchSortie.zone)+'ゾーン獲得！');
     if(resolved.sortieWon)showOverlay('特化ゾーン確定！ / 出陣チャレンジ');
     if(spinWaitTimer){
       clearTimeout(spinWaitTimer);
