@@ -3,6 +3,8 @@ globalThis.NovaSortie=(()=>{
  const order=Object.freeze([2,1,0]);
  let root,host,drop=null;
  const eligible=spin=>!!spin?.resolved?.researchSortie;
+ // Translate legacy engine/save labels only at the presentation boundary.
+ const label=text=>String(text||'').replace(/ノヴァ出陣(?:ゾーン|チャンス|チャレンジ)?|出陣ゾーン|出陣チャンス/g,'出陣チャレンジ');
  function target(spin,index,strips){
   if(!eligible(spin))return null;
   const presses=spin.auditPressOrder||[],aligned=!!spin.resolved.researchSortie.won&&presses.length===3&&order.every((n,i)=>presses[i]===n);
@@ -56,5 +58,5 @@ globalThis.NovaSortie=(()=>{
   });
  }
  if(typeof window!=='undefined')window.addEventListener('resize',layout);
- return {eligible,target,begin,stop:render,clear,dropLeft,flash};
+ return {eligible,label,target,begin,stop:render,clear,dropLeft,flash};
 })();

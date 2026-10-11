@@ -63,5 +63,5 @@ test('other forced roles and manual/AUTO/fast shared flag consumption remain int
  const {c}=load();c.syncNovaProgress();c.forceResult='BELL';assert.equal(c.takeForcedResult(),'BELL');assert.equal(c.NovaProgress.snapshot().sorties,0);
  c.forceResult='URA_CHALLENGE';c.bonusActive=true;assert.equal(c.takeForcedResult(),'');assert.equal(c.forceResult,'URA_CHALLENGE');
  assert.equal((source.match(/pendingForceResult = takeForcedResult\(\);/g)||[]).length,2);
- assert(source.includes("['SORTIE','ノヴァ出陣チャレンジ（10G・1回予約）']"));
+ assert(source.includes("['SORTIE','出陣チャレンジ（10G・1回予約）']"));
 });

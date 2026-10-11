@@ -1,7 +1,7 @@
 /* Per-spin presentation only. The draw in NovaArt owns color, symbol and result. */
 globalThis.NovaAim=(()=>{
  const {setTimeout,clearTimeout}=globalThis.NovaClock||globalThis;
- let host,root,active=null,czTitle,comebackTitle,atWaitTitle;
+ let host,root,active=null,czTitle,comebackTitle,atWaitTitle,sortieTitle;
  const videos=new Map();
  let winLocked=false,winTimer=null,winVoiceTimer=null,winToken=0,afterWinCallbacks=[],pendingStart=null;
  function init(){
@@ -24,6 +24,8 @@ globalThis.NovaAim=(()=>{
   comebackTitle=document.createElement('img');comebackTitle.className='novaComebackTitle';comebackTitle.hidden=true;comebackTitle.src='assets/ui/comeback-challenge-title.png';comebackTitle.alt='引き戻しチャレンジ';root.append(comebackTitle);
   const atWait=document.createElement('video');atWait.muted=true;atWait.loop=true;atWait.playsInline=true;atWait.preload='auto';atWait.hidden=true;atWait.src='assets/media/nova/at-wait-bg.mp4';root.append(atWait);videos.set('at-wait',atWait);
   atWaitTitle=document.createElement('img');atWaitTitle.className='novaAtWaitTitle';atWaitTitle.hidden=true;atWaitTitle.src='assets/ui/nova-rush-confirmed.png';atWaitTitle.alt='ノヴァラッシュ確定';root.append(atWaitTitle);
+  const sortie=document.createElement('video');sortie.muted=true;sortie.loop=true;sortie.playsInline=true;sortie.preload='metadata';sortie.hidden=true;sortie.src='assets/media/nova/sortie-fire-round-20261011.mp4';root.append(sortie);videos.set('sortie',sortie);
+  sortieTitle=document.createElement('img');sortieTitle.className='novaSortieTitle';sortieTitle.hidden=true;sortieTitle.src='assets/ui/sortie-challenge-title-20261011.png';sortieTitle.alt='出陣チャレンジ';root.append(sortieTitle);
   const win=document.createElement('video');win.muted=true;win.loop=false;win.playsInline=true;win.preload='auto';win.hidden=true;win.src='assets/media/nova/aim/seven-win.mp4?v=20260918-rainbow-144';root.append(win);videos.set('win',win);
   return true;
  }
@@ -41,7 +43,8 @@ globalThis.NovaAim=(()=>{
   if(czTitle)czTitle.hidden=true;
   if(comebackTitle)comebackTitle.hidden=true;
   if(atWaitTitle)atWaitTitle.hidden=true;
-  if(root){root.hidden=true;delete root.dataset.failed;delete root.dataset.zoneEntry;delete root.dataset.bonusWait;delete root.dataset.czIntro;delete root.dataset.comeback;delete root.dataset.atWait;delete host.dataset.aimActive;}
+  if(sortieTitle)sortieTitle.hidden=true;
+  if(root){root.hidden=true;delete root.dataset.failed;delete root.dataset.zoneEntry;delete root.dataset.bonusWait;delete root.dataset.czIntro;delete root.dataset.comeback;delete root.dataset.atWait;delete root.dataset.sortie;delete host.dataset.aimActive;}
  }
  function hasGuide(aim){return !!aim&&aim.guide!==false;}
  function drawGuide(aim,rng=Math.random){return aim.result!=='MISS'||rng()<.5;}
@@ -88,7 +91,19 @@ globalThis.NovaAim=(()=>{
   hide();active=video;root.hidden=false;root.dataset.comeback='true';root.dataset.symbol='comeback';
   host.dataset.aimActive='true';video.hidden=false;comebackTitle.hidden=false;layout();video.play().catch(()=>{});
  }
+ function showSortie(){
+  if(!init())return;
+  const video=videos.get('sortie');
+  if(active===video&&!root.hidden)return;
+  hide();active=video;root.hidden=false;root.dataset.sortie='true';root.dataset.symbol='sortie';
+  host.dataset.aimActive='true';video.hidden=false;sortieTitle.hidden=false;layout();video.play().catch(()=>{});
+ }
  function stop(resolved){
+  if(resolved?.researchSortie){
+   // Winning lamps remain visible after the third stop; the next BET restores the title.
+   if(resolved.researchSortie.won||resolved.researchSortie.finished)hide();else showSortie();
+   return;
+  }
   // Reveal the winning character or result only after the last reel lands.
   if(resolved?.comebackEvent==='success'||resolved?.comebackEvent==='failure'){hide();return;}
   if(resolved?.comebackEvent==='entry'||isComeback(resolved)){showComeback();return;}
@@ -96,6 +111,7 @@ globalThis.NovaAim=(()=>{
   if(!isBonusWait(resolved)&&!isCzIntro(resolved))hide();
  }
  function bet(aim,resolved={}){
+  if(resolved.researchSortie){showSortie();return false;}
   if(isAtWait(resolved)){showAtWait();return false;}
   if(isComeback(resolved)){showComeback();return false;}
   if(isCzIntro(resolved)){showCzIntro();return false;}

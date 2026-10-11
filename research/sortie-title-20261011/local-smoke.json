@@ -1,0 +1,89 @@
+{
+  "status": "pass",
+  "base": "http://127.0.0.1:58198",
+  "muted": true,
+  "results": [
+    {
+      "name": "desktop",
+      "rect": {
+        "x": 267.90625,
+        "y": 593.46875,
+        "width": 518.390625,
+        "height": 134.78125,
+        "top": 593.46875,
+        "right": 786.296875,
+        "bottom": 728.25,
+        "left": 267.90625
+      },
+      "reels": {
+        "x": 267.90625,
+        "y": 733.265625,
+        "width": 518.390625,
+        "height": 194.46875,
+        "top": 733.265625,
+        "right": 786.296875,
+        "bottom": 927.734375,
+        "left": 267.90625
+      },
+      "image": [
+        2128,
+        739
+      ],
+      "src": "http://127.0.0.1:58198/assets/media/nova/sortie-fire-round-20261011.mp4",
+      "muted": true,
+      "loop": true,
+      "inline": true,
+      "time": 0,
+      "status": "出陣チャレンジ / 残り10G / ストック0個",
+      "auto": "AUTO",
+      "lifecycle": {
+        "wonRevealed": true,
+        "endedHidden": true,
+        "endedPaused": true
+      },
+      "errors": [],
+      "failures": []
+    },
+    {
+      "name": "mobile",
+      "rect": {
+        "x": 92.88655090332031,
+        "y": 290.29718017578125,
+        "width": 201.9502410888672,
+        "height": 52.508544921875,
+        "top": 290.29718017578125,
+        "right": 294.8367919921875,
+        "bottom": 342.80572509765625,
+        "left": 92.88655090332031
+      },
+      "reels": {
+        "x": 92.89263916015625,
+        "y": 344.7597351074219,
+        "width": 201.95632934570312,
+        "height": 75.76177978515625,
+        "top": 344.7597351074219,
+        "right": 294.8489685058594,
+        "bottom": 420.5215148925781,
+        "left": 92.89263916015625
+      },
+      "image": [
+        2128,
+        739
+      ],
+      "src": "http://127.0.0.1:58198/assets/media/nova/sortie-fire-round-20261011.mp4",
+      "muted": true,
+      "loop": true,
+      "inline": true,
+      "time": 0,
+      "status": "出陣チャレンジ / 残り10G / ストック0個",
+      "auto": "AUTO",
+      "lifecycle": {
+        "wonRevealed": true,
+        "endedHidden": true,
+        "endedPaused": true
+      },
+      "errors": [],
+      "failures": []
+    }
+  ]
+}

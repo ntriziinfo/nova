@@ -2451,10 +2451,10 @@
 
   function forceResultName(result){
 
-    if(result === "SORTIE")return "ノヴァ出陣チャレンジ（10G・1回予約）";
+    if(result === "SORTIE")return "出陣チャレンジ（10G・1回予約）";
     if(result === "URA_CHALLENGE")return "上位ATチャレンジ（10G・HOLDあり）";
     if(result === "COMEBACK")return "引き戻しゾーン（5G）";
-    if(result === "FREEZE")return "ノヴァ出陣チャンス（旧フリーズ指定）";
+    if(result === "FREEZE")return "出陣チャレンジ（旧フリーズ指定）";
     if(result === "REACH_ME") return "リーチ目";
     return RESULT[result]?.name || "";
   }
@@ -2468,7 +2468,7 @@
       // Use the existing persistent queue and safe entry timing, without forcing a reel role.
       syncNovaProgress();
       NovaProgress.queueSortie();
-      log('強制指定：出陣チャンスを1回予約（ボーナス・特化中は終了後）');
+      log('強制指定：出陣チャレンジを1回予約（ボーナス・特化中は終了後）');
       return '';
     }
     return result;
@@ -2608,7 +2608,7 @@
   function normalModeLabel(){
     if(normalState.bonusPending) return normalState.prepLeft>0?"ボーナス準備中 残り"+normalState.prepLeft+"G":"7を狙え";
     if(normalState.internal?.prelude?.presentation==='reel'&&['normal','cz','strong_cz'].includes(normalState.flow?.phase)&&!(isSpinning&&currentSpin?.resolved?.czPrelude?.announce))return 'CZ前兆';
-    return normalState.flow?.phase==='normal'?NovaNormal.normalLabel(normalState.internal):NovaFlow.label(normalState.flow);
+    return normalState.flow?.phase==='normal'?NovaNormal.normalLabel(normalState.internal):NovaSortie.label(NovaFlow.label(normalState.flow));
   }
 
   function atCheckpointStatus(flow,progress,net){
@@ -5075,7 +5075,7 @@
       const ladderGain=Number(resolved.zoneAward)>0&&(NovaLadder.eligible(resolved.flowBefore)||NovaLadder.eligible(resolved.flowAfter));
       if(!NovaDirectAward.amount(resolved)&&!ladderGain){
         const e=resolved.researchChallenge,s=resolved.researchSortie;
-        showOverlay(e?(e.finished?(e.won?'上位AT確定！':'通常ATへ'):e.nextAim?'HOLD':e.priorAim?'継続':'残り'+e.left+'G'):s?(s.won?NovaArt.zoneName(s.zone)+'獲得！':'ノヴァ出陣'):resolved.artMessage);
+        showOverlay(e?(e.finished?(e.won?'上位AT確定！':'通常ATへ'):e.nextAim?'HOLD':e.priorAim?'継続':'残り'+e.left+'G'):s?(s.won?NovaArt.zoneName(s.zone)+'獲得！':'出陣チャレンジ'):resolved.artMessage);
       }
       return;
     }
@@ -5706,8 +5706,8 @@
   }
 
   function showMessage(main, sub){
-    $("message").textContent = main;
-    $("subMessage").textContent = sub || "";
+    $("message").textContent = NovaSortie.label(main);
+    $("subMessage").textContent = NovaSortie.label(sub);
   }
 
   function normalRoleStatDenominator(){
@@ -6063,7 +6063,7 @@
 
   document.addEventListener("DOMContentLoaded", () => {
     const forceSelect=document.getElementById('forceResult');
-    for(const [value,label] of [['ART','AT突入'],['SORTIE','ノヴァ出陣チャレンジ（10G・1回予約）'],['URA_CHALLENGE','上位ATチャレンジ（10G・HOLDあり）'],['COMEBACK','引き戻しゾーン（5G）'],...Object.keys(NovaNormal.rare).filter(k=>!isNovaResult(k)).map(k=>[k,RESULT[k].name]),['RARE','ATレア役'],...NovaArt.zoneIds.map(k=>['ZONE_'+k,NovaArt.zoneName(k)+'ゾーン'])]){const option=document.createElement('option');option.value=value;option.textContent=label;forceSelect.append(option);}
+    for(const [value,label] of [['ART','AT突入'],['SORTIE','出陣チャレンジ（10G・1回予約）'],['URA_CHALLENGE','上位ATチャレンジ（10G・HOLDあり）'],['COMEBACK','引き戻しゾーン（5G）'],...Object.keys(NovaNormal.rare).filter(k=>!isNovaResult(k)).map(k=>[k,RESULT[k].name]),['RARE','ATレア役'],...NovaArt.zoneIds.map(k=>['ZONE_'+k,NovaArt.zoneName(k)+'ゾーン'])]){const option=document.createElement('option');option.value=value;option.textContent=label;forceSelect.append(option);}
     const normalPanel=document.createElement('details');normalPanel.id='novaNormalConfig';
     normalPanel.innerHTML='<summary>小役CZ抽選・穢れ・状態</summary><output id="novaInternalStatus"></output><label>天井カウンター<input id="novaNormalGames" type="number" min="0" max="'+NovaNormal.ceiling()+'" value="0"></label><label>内部状態<select id="novaLevel"><option value="low">低確</option><option value="high">高確</option></select></label><label>穢れpt<input id="novaImpurity" type="number" min="0" max="100" value="0"></label><button id="novaApplyInternal" type="button">内部状態を適用</button><p>レア小役でCZを抽選します。通常モード・天国・規定GのCZ抽選はありません。スイカ・弱ノヴァで高確も抽選し、高確中は小役CZ当選率を優遇。強ノヴァは強CZ確定です。天井は朝一も共通'+NovaNormal.ceiling()+'G＋前兆、BIG／突破確定CZを各50%。リセット時の穢れ振り分けは従来どおり。穢れ100ptは次のボーナスで消費し、AT＋特化ゾーンを予約。通常スーパーノヴァ目の1/2はプレミアムBIG。</p>';
     const resetTable=document.createElement('div');resetTable.innerHTML='<table><tr><th>設定</th>'+NovaNormal.resetImpurityPoints.map(pt=>'<th>'+pt+'pt</th>').join('')+'</tr>'+NovaNormal.resetImpurityWeights.map((row,i)=>'<tr><td>'+(i+1)+'</td>'+row.map(w=>'<td>'+w+'%</td>').join('')+'</tr>').join('')+'</table>';normalPanel.append(resetTable);
@@ -7966,7 +7966,7 @@
     NovaBellNavi.clear();
     if(resolved.researchChallenge?.finished)showOverlay(resolved.researchChallenge.won?'上位AT確定！':'通常ATへ');
     if(resolved.researchSortie?.won)showOverlay(NovaArt.zoneName(resolved.researchSortie.zone)+'ゾーン獲得！');
-    if(resolved.sortieWon)showOverlay('特化ゾーン確定！ / ノヴァ出陣チャンス');
+    if(resolved.sortieWon)showOverlay('特化ゾーン確定！ / 出陣チャレンジ');
     if(spinWaitTimer){
       clearTimeout(spinWaitTimer);
       spinWaitTimer = null;
@@ -8003,7 +8003,7 @@
     const isNormalSpinResult = currentSpin && currentSpin.normalActiveAtStart;
     const resultParts = [];
     if(resolved.artSetWon)resultParts.push("ネビュラ揃い / "+NovaArt.bonusStockLabel({...session,...NovaArt.advanceBonus(session,true,reward)},normalState.flow));
-    if(resolved.artMessage)resultParts.push(resolved.artMessage);
+    if(resolved.artMessage)resultParts.push(NovaSortie.label(resolved.artMessage));
     const novaPattern = novaPatternFromGrid(currentSpin?.grid);
     if(currentSpin) currentSpin.novaPattern = novaPattern;
     if(novaPattern) resultParts.push(NOVA_PATTERN_NAMES[novaPattern]);
@@ -9177,6 +9177,7 @@
 
   function showOverlay(text){
     if(debugFastSpinActive || speedToBonusActive) return;
+    text=NovaSortie.label(text);
     const o = $("overlay");
     if(normalState.resultCard||isRogiThirdStopHoldActive()){
       if(o) o.classList.remove("show");
@@ -9226,7 +9227,7 @@
     const box = $("logList");
     const div = document.createElement("div");
     div.className = "logItem";
-    div.textContent = text;
+    div.textContent = NovaSortie.label(text);
     // Keep only the current status; do not accumulate a play log.
     box.replaceChildren(div);
   }

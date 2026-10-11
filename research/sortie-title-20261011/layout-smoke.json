@@ -1,0 +1,130 @@
+{
+  "status": "pass",
+  "base": "http://127.0.0.1:62070",
+  "muted": true,
+  "previewOnly": true,
+  "results": [
+    {
+      "name": "desktop",
+      "rect": {
+        "x": 267.90625,
+        "y": 600,
+        "width": 518.390625,
+        "height": 128.265625,
+        "top": 600,
+        "right": 786.296875,
+        "bottom": 728.265625,
+        "left": 267.90625
+      },
+      "title": {
+        "x": 278.265625,
+        "y": 602.5625,
+        "width": 497.640625,
+        "height": 70.53125,
+        "top": 602.5625,
+        "right": 775.90625,
+        "bottom": 673.09375,
+        "left": 278.265625
+      },
+      "guide": {
+        "x": 267.90625,
+        "y": 673.234375,
+        "width": 518.390625,
+        "height": 57.015625,
+        "top": 673.234375,
+        "right": 786.296875,
+        "bottom": 730.25,
+        "left": 267.90625
+      },
+      "reels": {
+        "x": 267.90625,
+        "y": 733.265625,
+        "width": 518.390625,
+        "height": 194.46875,
+        "top": 733.265625,
+        "right": 786.296875,
+        "bottom": 927.734375,
+        "left": 267.90625
+      },
+      "image": [
+        2128,
+        739
+      ],
+      "src": "http://127.0.0.1:62070/assets/media/nova/sortie-fire-round-20261011.mp4",
+      "muted": true,
+      "loop": true,
+      "inline": true,
+      "time": 0,
+      "status": "通常",
+      "auto": "AUTO",
+      "lifecycle": {
+        "wonRevealed": true,
+        "endedHidden": true,
+        "endedPaused": true
+      },
+      "errors": [],
+      "failures": []
+    },
+    {
+      "name": "mobile",
+      "rect": {
+        "x": 92.88655090332031,
+        "y": 292.8416748046875,
+        "width": 201.9502410888672,
+        "height": 49.970123291015625,
+        "top": 292.8416748046875,
+        "right": 294.8367919921875,
+        "bottom": 342.8117980957031,
+        "left": 92.88655090332031
+      },
+      "title": {
+        "x": 96.92239379882812,
+        "y": 293.8399658203125,
+        "width": 193.86639404296875,
+        "height": 27.477783203125,
+        "top": 293.8399658203125,
+        "right": 290.7887878417969,
+        "bottom": 321.3177490234375,
+        "left": 96.92239379882812
+      },
+      "guide": {
+        "x": 92.88655090332031,
+        "y": 321.37255859375,
+        "width": 201.9502410888672,
+        "height": 22.21234130859375,
+        "top": 321.37255859375,
+        "right": 294.8367919921875,
+        "bottom": 343.58489990234375,
+        "left": 92.88655090332031
+      },
+      "reels": {
+        "x": 92.89263916015625,
+        "y": 344.7597351074219,
+        "width": 201.95632934570312,
+        "height": 75.76177978515625,
+        "top": 344.7597351074219,
+        "right": 294.8489685058594,
+        "bottom": 420.5215148925781,
+        "left": 92.89263916015625
+      },
+      "image": [
+        2128,
+        739
+      ],
+      "src": "http://127.0.0.1:62070/assets/media/nova/sortie-fire-round-20261011.mp4",
+      "muted": true,
+      "loop": true,
+      "inline": true,
+      "time": 0,
+      "status": "通常",
+      "auto": "AUTO",
+      "lifecycle": {
+        "wonRevealed": true,
+        "endedHidden": true,
+        "endedPaused": true
+      },
+      "errors": [],
+      "failures": []
+    }
+  ]
+}

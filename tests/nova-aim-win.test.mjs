@@ -21,6 +21,31 @@ test('sortie entry loops the rainbow nebula cue and never requests a seven voice
  t.aim.stop(resolved);assert.equal(video.hidden,true);assert.equal(video.paused,true);
 });
 
+test('sortie title overlays the supplied muted loop across losing games without locking or altering the draw',()=>{
+ const t=setup(),spin={researchSortie:{won:false,finished:false},flowBefore:{phase:'art',researchSortieLeft:10}};
+ const before=JSON.stringify(spin);assert.equal(t.aim.bet(null,spin),false);
+ const root=t.elements[0],video=t.elements.find(e=>e.src==='assets/media/nova/sortie-fire-round-20261011.mp4'),title=t.elements.find(e=>e.className==='novaSortieTitle');
+ assert.equal(root.dataset.sortie,'true');assert.equal(title.alt,'出陣チャレンジ');assert.equal(title.hidden,false);
+ assert.equal(video.loop,true);assert.equal(video.muted,true);assert.equal(video.playsInline,true);assert.equal(video.paused,false);
+ video.currentTime=3;t.aim.stop(spin);t.aim.bet(null,spin);
+ assert.equal(video.currentTime,3);assert.equal(video.paused,false);assert.equal(t.aim.busy,false);assert.equal(t.timers.size,0);
+ assert.equal(JSON.stringify(spin),before);
+ t.aim.stop({...spin,researchSortie:{won:true,finished:false}});
+ assert.equal(root.hidden,true);assert.equal(title.hidden,true);assert.equal(video.paused,true,'show the won character after the third stop');
+ t.aim.bet(null,spin);assert.equal(title.hidden,false);assert.equal(video.paused,false);
+ t.aim.stop({...spin,researchSortie:{won:false,finished:true}});assert.equal(root.hidden,true);
+ t.aim.bet(null,spin);t.aim.reset();assert.equal(video.paused,true);assert.equal(title.hidden,true);assert.equal(root.dataset.sortie,undefined);
+});
+
+test('sortie background never replaces the entry nebula or next character seven cue',()=>{
+ const t=setup();t.aim.bet(null,{researchSortie:{won:false}});
+ t.aim.bet(null,{sortieEntry:true,flowBefore:{phase:'art',entryStage:'seven'},flowAfter:{entryStage:'roulette'}});
+ assert.equal(t.elements[0].dataset.symbol,'nebula');assert.equal(t.elements.find(e=>e.className==='novaSortieTitle').hidden,true);
+ t.aim.bet(null,{researchSortie:{won:true,finished:true}});t.aim.stop({researchSortie:{won:true,finished:true}});
+ t.aim.bet(null,{flowBefore:{phase:'art',entryStage:'seven'},flowAfter:{entryStage:'roulette'}});
+ assert.equal(t.elements[0].dataset.symbol,'seven');assert.equal(t.elements.find(e=>e.src?.endsWith('sortie-fire-round-20261011.mp4')).paused,true);
+});
+
 test('CZ intro loops the supplied background and title through all first-game stops, ending at the next BET',()=>{
  for(const phase of ['cz','strong_cz']){
   const t=setup(),resolved={flowBefore:{phase,remaining:20,totalGames:20}};

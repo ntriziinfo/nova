@@ -10,7 +10,7 @@ globalThis.NovaStockEntry=(()=>{
   return entry.kind===next.kind&&entry.zone===next.zone&&entry.count===next.count&&['prepare','seven','ready'].includes(entry.stage);
  }
  function spin(entry,flow,columns){return {result:entry.kind==='sortie'?'NEBULA':'BIG',lineRow:1,grid:[0,1,2].map(r=>columns.map(c=>c[r])),stopped:[false,false,false],pendingStopColumns:[null,null,null],visualStopping:[false,false,false],auditPressOrder:[],auditStopOrder:[],resolved:{stockEntry:true,sortieEntry:entry.kind==='sortie',reward:0,flowBefore:{...flow,entryStage:'seven',pendingZone:entry.zone},flowAfter:{...flow,entryStage:'roulette',pendingZone:entry.zone}}};}
- function message(entry){return entry?.kind==='sortie'?(entry.stage==='ready'?'ノヴァ出陣チャンス / 次のBETで開始':'特化ゾーン確定 / 次のBETでネビュラを狙え'):entry?.stage==='ready'?NovaArt.zoneName(entry.zone)+'ゾーン / 次のBETで開始':'特化ゾーン準備中 / 次のBETで7を狙え';}
+ function message(entry){return entry?.kind==='sortie'?(entry.stage==='ready'?'出陣チャレンジ / 次のBETで開始':'特化ゾーン確定 / 次のBETでネビュラを狙え'):entry?.stage==='ready'?NovaArt.zoneName(entry.zone)+'ゾーン / 次のBETで開始':'特化ゾーン準備中 / 次のBETで7を狙え';}
  function show(entry){
   if(!panel){panel=document.createElement('div');panel.id='novaStockPreparation';panel.setAttribute('role','status');document.getElementById('machine').append(panel);}
   panel.hidden=!entry||entry.stage==='seven';if(panel.hidden)return;

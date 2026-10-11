@@ -17,3 +17,6 @@ assets/illustrations/result-ouma2.png -filter -diff -merge -text
 assets/illustrations/result-group.png -filter -diff -merge -text
 assets/media/nova/at-wait-bg.mp4 -filter -diff -merge -text
 assets/ui/nova-rush-confirmed.png -filter -diff -merge -text
+# New sortie title and the supplied original video ship without replacing the media archive.
+assets/ui/sortie-challenge-title-20261011.png -filter -diff -merge -text
+assets/media/nova/sortie-fire-round-20261011.mp4 -filter -diff -merge -text

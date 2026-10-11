@@ -3,6 +3,14 @@ const load=()=>{const c=vm.createContext({});for(const file of ['nova-sortie-pre
 const strips=[0,1,2].map(i=>['before',`NOVA_${i}_0`,`NOVA_${i}_1`,`NOVA_${i}_2`,'after']);
 const plain=v=>JSON.parse(JSON.stringify(v));
 const orders=[[0,1,2],[0,2,1],[1,0,2],[1,2,0],[2,0,1],[2,1,0]];
+
+test('sortie naming translates legacy display labels without changing engine state',()=>{
+ const c=load();vm.runInContext('Math.random=()=>{throw Error("label consumed RNG")}',c);
+ for(const name of ['ノヴァ出陣','出陣ゾーン','ノヴァ出陣チャンス','ノヴァ出陣チャレンジ','出陣チャレンジ']){
+  assert.equal(c.NovaSortie.label(name+' / 残り10G'),'出陣チャレンジ / 残り10G');
+ }
+ assert.equal(c.NovaSortie.label('空ゾーン / 100pt'),'空ゾーン / 100pt');
+});
 test('sortie begins immediately without a freeze timer or input hold',()=>{
  const c=load();assert.equal(c.NovaSortie.freezeDelay,undefined);assert.equal(c.NovaSortie.waitFreeze,undefined);
  const source=fs.readFileSync('nova-game.js','utf8');assert(!source.includes('NovaSortie.waitFreeze('));assert(!source.includes('NovaSortie.freezeDelay('));assert(!source.includes('sortieFreezeUntil=Date.now()'));

@@ -1,0 +1,37 @@
+{
+  "date": "2026-10-11",
+  "title": "出陣チャレンジ",
+  "scope": "Presentation only: rename the displayed sortie labels and composite the title over the supplied loop in the existing lamp bay.",
+  "image": {
+    "path": "assets/ui/sortie-challenge-title-20261011.png",
+    "tool": "image_gen.imagegen (built-in)",
+    "mode": "generate",
+    "transparent_background": true,
+    "dimensions": [
+      2128,
+      739
+    ],
+    "prompt": "Use case: stylized-concept. Asset type: transparent title lettering overlay for the narrow lamp display above the reels of a Japanese pachislot game. Generate the exact Japanese text 「出陣チャレンジ」 in one uninterrupted horizontal line. No other text. Polished dramatic pachislot title: thick highly legible beveled silver/chrome faces, layered bright gold and crimson red outlines, dark thin inner shadow for contrast, a restrained magenta outer glow and a few sharp highlights attached to the letters. Forward-slanted powerful typography. Fit all characters completely without clipping, balanced small transparent margins. Very wide composition, approximately 2000 × 520 px, lettering occupies most of the width and height. Truly transparent alpha background, no scenery, no background panel, no checkerboard, no smoke or large flames: this lettering will be composited over a separately supplied fire video in code. Preserve exact spelling 出 陣 チ ャ レ ン ジ, especially small ャ. Only lettering and its closely attached bevels and outlines."
+  },
+  "video": {
+    "source": "C:/Users/nitro/Dropbox/NOVA台用イラスト/Fire_round_01.mp4",
+    "path": "assets/media/nova/sortie-fire-round-20261011.mp4",
+    "sha256": "d4dfa854c5a7014e44c053be2069b29f6ccf7ba23f9843db10a4727183d93772",
+    "copiedWithoutModification": true,
+    "muted": true,
+    "loop": true,
+    "playsInline": true
+  },
+  "behavior": [
+    "Show during each sortie BET; continue the loop across unsuccessful games.",
+    "At a winning third stop, reveal the existing flashing character lamps; resume title at next BET.",
+    "Hide and pause on sortie completion or reset; preserve the NEBULA entry and subsequent character seven-aim presentations.",
+    "Normalize legacy engine/save labels only at the UI boundary. No changes to draw probabilities, RNG consumption, payout or stock."
+  ],
+  "verification": {
+    "unitTestsPassed": 91,
+    "syntaxAndAssetCheck": "passed",
+    "deploymentAssets": "313 verified without download",
+    "browserScript": "research/sortie-title-20261011/browser-smoke.mjs"
+  }
+}

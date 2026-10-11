@@ -10,3 +10,7 @@
 .novaAtWaitTitle{position:absolute;left:2%;top:50%;display:block;width:96%;height:auto;transform:translateY(-47%);pointer-events:none}
 .novaAtWaitTitle[hidden]{display:none!important}
 #machine[data-cz-intro="true"] .novaArtLayer{visibility:hidden}
+.novaSortieTitle{position:absolute;left:2%;top:2%;display:block;width:96%;height:55%;object-fit:fill;pointer-events:none}
+.novaSortieTitle[hidden]{display:none!important}
+.novaAimPresentation[data-sortie="true"]{background:#000}
+.novaAimPresentation[data-sortie="true"] video{object-fit:fill}
