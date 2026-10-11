@@ -54,6 +54,11 @@ const duplicates = declarations.filter((name, i) => declarations.indexOf(name) !
 if (duplicates.length) throw new Error(`Duplicate page functions: ${[...new Set(duplicates)].join(', ')}`);
 
 const page = readFileSync("jag.html", "utf8");
+const audioContext={};
+vm.runInNewContext(readFileSync('nova-audio-manifest.js','utf8'),audioContext);
+for(const [original,asset]of Object.entries(audioContext.NovaAudioManifest)){
+  if(!existsSync(original)||!existsSync(asset.src)||original===asset.src)throw new Error(`Missing/invalid mastered audio: ${original}`);
+}
 const tags = [...page.matchAll(/<script\b[^>]*\bsrc=["']([^"']+)["'][^>]*><\/script>/gi)];
 const entry = tags.filter(match => match[1].split('?')[0] === 'nova-game.js');
 if (entry.length !== 1 || entry[0] !== tags.at(-1) || /\b(?:async|defer|type)\s*(?:=|>)/i.test(entry[0][0])) {

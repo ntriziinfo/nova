@@ -36,3 +36,5 @@ assets/media/nova/upper-at-background-20261012.mp4 -filter -diff -merge -text
 assets/media/nova/upper-at-background-20261012.source.json -filter -diff -merge text
 assets/media/nova/upper-at-bgm.mp3 -filter -diff -merge -text
 assets/media/nova/upper-at-bgm.source.json -filter -diff -merge text
+# Mastered delivery copies; original recordings and the release archive stay intact.
+assets/media/normalized-20261012/** -filter -diff -merge -text

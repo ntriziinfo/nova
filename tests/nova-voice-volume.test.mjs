@@ -28,6 +28,16 @@ function setup(){
 }
 const near=(a,b)=>assert(Math.abs(a-b)<1e-10,`${a} != ${b}`);
 
+test('mastered one-shots use their category slider and ignore historical per-file trims',()=>{
+ const {c}=setup();
+ c.NovaAudioAssets={entry:src=>({category:src})};
+ c.bgmOutputVolume=()=>.13;c.payoutOutputVolume=()=>.17;
+ near(c.soundOutputVolume('voice',.99),.2);near(c.soundOutputVolume('sfx',.99),.45);
+ near(c.soundOutputVolume('bgm',.99),.13);near(c.soundOutputVolume('payout',.99),.17);
+ vm.runInContext(fn('audioSourceOutputScale'),c);
+ near(c.audioSourceOutputScale('assets/media/nova/shutter.wav'),1);
+});
+
 test('every registered character line uses one voice category regardless of caller volume, source gain or SFX slider',()=>{
  const {c}=setup();
  for(const src of c.voiceSources){
@@ -71,19 +81,19 @@ test('voice mute does not suppress effects or change the existing shutter attenu
  c.playOneShotSound('assets/media/nova/bonus_confirm.wav',1);assert.equal(c.oneShotSoundCache.get('assets/media/nova/bonus_confirm.wav').volume,0);
 });
 
-test('all registered voices receive exactly +10 dB before peak protection, reusing one connection; effects bypass it',()=>{
+test('mastered voices use a unity bus without the old extra +10 dB; effects bypass it',()=>{
  const {c,nodes,sources,audioContext}=setup();
  for(const src of c.voiceSources){c.playOneShotSound(src);c.playOneShotSound(src);}
  assert.equal(sources.length,c.voiceSources.length);
  const [gain]=nodes.filter(n=>n.kind==='gain'),[limiter]=nodes.filter(n=>n.kind==='limiter');
- near(20*Math.log10(gain.gain.value),10);
+ near(20*Math.log10(gain.gain.value),0);
  assert.deepEqual(gain.connections,[limiter]);assert.deepEqual(limiter.connections,[audioContext.destination]);
  assert.equal(limiter.threshold.value,-1);assert.equal(limiter.ratio.value,20);assert.equal(limiter.attack.value,0);
  for(const source of sources)assert.deepEqual(source.connections,[gain]);
  assert.equal(audioContext.resumes,1);
  const count=sources.length;c.playOneShotSound('assets/media/nova/shutter.wav');assert.equal(sources.length,count);
  c.settings.voiceVolume=1;c.settings.masterVolume=1;c.applyCharacterVoiceOutputVolumes();
- assert.equal(sources[0].audio.volume,1);near(gain.gain.value,10**.5);
+ assert.equal(sources[0].audio.volume,1);near(gain.gain.value,1);
  audioContext.state='suspended';c.playOneShotSound(c.voiceSources[0]);assert.equal(audioContext.resumes,2);
 });
 

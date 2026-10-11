@@ -50,6 +50,16 @@ node --test tests/*.test.mjs
 ソースを検査するテスト・音声整備ツールでは`readGameSource()`（`scripts/game-source.mjs`）を使う。
 分離したCSS・JSを元の位置に展開する開発用ヘルパーで、ブラウザでは使わない。
 
+## 音量の統一
+
+提供原本・既存の素材は変更せず、`scripts/normalize-audio.mjs`でゲーム配信用コピーを作る。
+FFmpeg / FFprobeが必要。目標はBGM −18 LUFS、ボイス −14 LUFS、効果音 −16 LUFS、払い出し・動画音声 −18 LUFS。
+短い音声は測定時だけ1秒の無音を加え、配信用コピーには無音を追加しない。ピークは−1 dBTP以下。
+`audio-normalization.json`に原本とコピーのハッシュ、カテゴリ、前後の測定値を保存する。
+`nova-audio-manifest.js` / `nova-audio-assets.js`で同じ論理パスから調整済みコピーを読み込むため、演出の音源判定とループは変わらない。
+旧来のファイル別ゲインとボイス＋10 dBは調整済み音源へ重ねない。カテゴリ・マスター音量と保存済み設定は維持する。
+新しい音源を追加したら登録カテゴリを確認して再実行し、測定記録・マニフェスト・生成素材を一緒に配信する。
+
 ## 管理アプリと配信
 
 店舗管理、台選択、プレイセッション、収益記録は独立した[VERTEX](https://github.com/ntriziinfo/vertex)が担当する。

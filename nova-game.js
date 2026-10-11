@@ -246,13 +246,12 @@
   const BAR_BGM_OUTPUT_SCALE = dbToGain(MATCHED_BGM_GAIN_DB);
   const SFX_OUTPUT_SCALE = NORMALIZED_AUDIO_OUTPUT_SCALE;
   const SETTING_VOICE_OUTPUT_SCALE = 1;
-  const PREMIUM_VOICE_OUTPUT_SCALE = 1.15;
+  const PREMIUM_VOICE_OUTPUT_SCALE = 1;
   const CONFIRM_SOUND_OUTPUT_SCALE = NORMALIZED_AUDIO_OUTPUT_SCALE;
-  const LINEUP_CONFIRM_SOUND_OUTPUT_SCALE = 2.0;
+  const LINEUP_CONFIRM_SOUND_OUTPUT_SCALE = 1;
 
-  const PAYOUT_UI_50_TO_33_SCALE = 33 / 50;
-  const PAYOUT_SOUND_OUTPUT_SCALE = PAYOUT_UI_50_TO_33_SCALE;
-  const BELL_PAYOUT_SOUND_OUTPUT_SCALE = PAYOUT_UI_50_TO_33_SCALE;
+  const PAYOUT_SOUND_OUTPUT_SCALE = 1;
+  const BELL_PAYOUT_SOUND_OUTPUT_SCALE = 1;
   const BATTLE_BGM_OUTPUT_SCALE = dbToGain(MATCHED_BGM_GAIN_DB);
   const MOVIE_OUTPUT_SCALE = NORMALIZED_AUDIO_OUTPUT_SCALE;
   const ROGI_MOVIE_OUTPUT_SCALE = NORMALIZED_AUDIO_OUTPUT_SCALE;
@@ -305,6 +304,9 @@
   }
 
   function audioSourceOutputScale(src=""){
+    // Mastered copies already contain the category normalization. Do not stack
+    // the historical per-file trims on top of it.
+    if(globalThis.NovaAudioAssets?.entry(src))return 1;
     const key = String(src || "");
     return AUDIO_SOURCE_OUTPUT_SCALE[key] || AUDIO_SOURCE_OUTPUT_SCALE[normalizedAudioSourceKey(key)] || 1;
   }
@@ -654,6 +656,7 @@
   const voiceSound = $("voiceSound");
   const gekiatsuLayer = $("gekiatsuLayer");
   const gekiatsuVideo = $("gekiatsuVideo");
+  globalThis.NovaAudioAssets?.adopt(gekiatsuVideo);
   const bonusConfirmLayer = $("bonusConfirmLayer");
   const devilZoneConfirmLayer = $("devilZoneConfirmLayer");
   const reversePushGuideLayer = $("reversePushGuideLayer");
@@ -761,7 +764,8 @@
     'assets/media/jag/cz_remaining_3.wav?v=count2','assets/media/jag/cz_remaining_2.wav?v=count2','assets/media/jag/cz_last.wav?v=count2'
   ]);
   const CHARACTER_VOICE_KEYS=new Set(CHARACTER_VOICE_SRCS.map(normalizedAudioSourceKey));
-  const CHARACTER_VOICE_BOOST_DB=10;
+  // Voice loudness is now mastered in the files; the bus must stay at unity.
+  const CHARACTER_VOICE_BOOST_DB=0;
   const characterVoiceConnections=new WeakMap();
   let characterVoiceBus=null;
   for(const src of CHARACTER_VOICE_SRCS){const audio=new Audio(src);audio.preload='auto';oneShotSoundCache.set(src,audio);audio.load();}
@@ -1229,6 +1233,11 @@
   });
 
   function soundOutputVolume(src, volume){
+    const category=globalThis.NovaAudioAssets?.entry(src)?.category;
+    if(category==='voice')return voiceOutputVolume();
+    if(category==='bgm')return bgmOutputVolume();
+    if(category==='sfx')return sfxOutputVolume();
+    if(category==='payout')return payoutOutputVolume();
     return CHARACTER_VOICE_KEYS.has(normalizedAudioSourceKey(src))?voiceOutputVolume():applyAudioSourceOutputScale(volume,src);
   }
 
@@ -1238,6 +1247,7 @@
 
   function applyCharacterVoiceOutputVolumes(){
     for(const [src,audio] of oneShotSoundCache){
+      if(globalThis.NovaAudioAssets?.entry(src)){audio.volume=soundOutputVolume(src,audio.volume);continue;}
       if(CHARACTER_VOICE_KEYS.has(normalizedAudioSourceKey(src)))audio.volume=voiceOutputVolume();
     }
     for(const audio of aimWinAudios)audio.volume=aimWinOutputVolume(audio);

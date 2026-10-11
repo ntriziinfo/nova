@@ -70,3 +70,12 @@ test('decode failure rejects and clears pending state; oversized buffers are not
  decode(()=>{throw new Error('decode failed');});await assert.rejects(a.play());assert(a.paused);
  decode(()=>({duration:100,length:16000000,numberOfChannels:2}));await a.play();assert.equal(api.status().cachedBytes,0);a.pause();
 });
+test('iOS decodes mastered copies while retaining logical IDs for loops, cache and clones',async()=>{
+ const {api,root,fetches}=setup();let fetched;
+ root.NovaAudioAssets={resolve:src=>src.startsWith('voice.wav')?'normalized.wav':src};
+ const fetch=root.fetch;root.fetch=url=>{fetched=url;return fetch(url);};
+ await api.unlock({isTrusted:true});const a=new api.Audio('voice.wav?v=1');a.loop=true;
+ await a.play();assert.equal(fetched,'https://nova.test/normalized.wav');assert.equal(a.getAttribute('src'),'voice.wav?v=1');
+ const b=a.cloneNode(true);await b.play();assert.equal(fetches(),1);assert(b.loop);assert.equal(b.src,a.src);
+ a.pause();b.pause();assert.equal(api.status().active,0);
+});

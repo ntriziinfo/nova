@@ -16,7 +16,7 @@ function setup(){
   speedModeSpinRequest:false,premiumBigConfirmSilence:false,oneShotSoundCache:new Map(),sfxOutputVolume:()=>.5,
   soundOutputVolume:(src,v)=>v,prepareCharacterVoiceAudio(){},
   setTimeout:(f,ms)=>{timers.set(++nextTimer,{f,ms});return nextTimer;},clearTimeout:id=>timers.delete(id),
-  canUsePlayState:()=>true,NovaLadder:{},NovaAim:{},NovaDirectAward:{},NovaResults:{},normalState:{},oumaPresentation:null,
+  canUsePlayState:()=>true,NovaSortie:{},NovaLadder:{},NovaAim:{},NovaDirectAward:{},NovaResults:{},normalState:{},oumaPresentation:null,
   isSpinning:false,bonusEndBgmPlaying:false,bonusConfirmSoundPlaying:false,canPlayCompleteTrial:()=>true,
   stopAllReels:()=>stopped++,autoPlay:true,stopSuperSpeedIfNeeded:()=>false,isRogiThirdStopHoldActive:()=>false,
   session:{active:false},A_TYPE_MODE:true,queueAutoStep:()=>queued++,autoDelayMs:()=>100,

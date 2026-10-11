@@ -1,0 +1,3511 @@
+{
+  "version": 1,
+  "targetsLufs": {
+    "bgm": -18,
+    "voice": -14,
+    "sfx": -16,
+    "payout": -18,
+    "movie": -18
+  },
+  "truePeakCeilingDbtp": -1,
+  "measurement": "ITU loudness via FFmpeg loudnorm, dual mono, 1 second silence padding for short cues; padding is never delivered",
+  "processing": "Constant gain; oversampled peak limiting only where necessary. Original duration and sample rate retained. No training or external audio processing.",
+  "files": [
+    {
+      "src": "assets/media/jag/bar_wo_nerae.mp3",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/jag/bar_wo_nerae.wav",
+      "sourceSha256": "34e6fb1af86cbec162d78ae011b3d0fa22cc653eaba7dd8eb9983a7a89715562",
+      "outputSha256": "57f0a90c9b38bfa36d66c58370b2311a238aab7619b316a601bd61137c1078fd",
+      "rate": 44100,
+      "channels": 1,
+      "duration": 3.367506,
+      "outputDuration": 3.367506,
+      "gainDb": 7.45,
+      "before": {
+        "lufs": -21.45,
+        "peakDbtp": -12.01,
+        "rangeLu": 21.3
+      },
+      "after": {
+        "lufs": -14.01,
+        "peakDbtp": -4.56,
+        "rangeLu": 21.2
+      }
+    },
+    {
+      "src": "assets/media/jag/bell.wav",
+      "category": "payout",
+      "targetLufs": -18,
+      "output": "assets/media/normalized-20261012/jag/bell.wav",
+      "sourceSha256": "39664c2b360c5288c9268b9f4aac301dfa6afd8408790a1683363a7589c2ac97",
+      "outputSha256": "238a554eec20abe29a6d1c637126bad8436fcf41e489c0edc739636fdb707f18",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 3,
+      "outputDuration": 3,
+      "gainDb": -5.84,
+      "before": {
+        "lufs": -12.16,
+        "peakDbtp": -3.84,
+        "rangeLu": 4
+      },
+      "after": {
+        "lufs": -18,
+        "peakDbtp": -9.68,
+        "rangeLu": 4
+      }
+    },
+    {
+      "src": "assets/media/jag/big_1.wav",
+      "category": "bgm",
+      "targetLufs": -18,
+      "output": "assets/media/normalized-20261012/jag/big_1.mp3",
+      "sourceSha256": "9e546603e3bd298b35c1e7ec2ef4d98e62e842bb02cbe8b493b907cdbbe73399",
+      "outputSha256": "6384ca23f13fee95dddf255a675369af3dd0d910a9e9726675f2023a6f6620a4",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 182.384036,
+      "outputDuration": 182.384036,
+      "gainDb": -4.78,
+      "before": {
+        "lufs": -12.98,
+        "peakDbtp": 0.66,
+        "rangeLu": 4.5
+      },
+      "after": {
+        "lufs": -18,
+        "peakDbtp": -4.4,
+        "rangeLu": 4.5
+      }
+    },
+    {
+      "src": "assets/media/jag/big_2.wav",
+      "category": "bgm",
+      "targetLufs": -18,
+      "output": "assets/media/normalized-20261012/jag/big_2.mp3",
+      "sourceSha256": "49012f373096dc258f41b44885bcb60fa04ce5038e9925f0fc983b6c7cfc49e9",
+      "outputSha256": "2aa508b953031271c2db05dff17b76cded9dee4fd797189f9d2c953a938458e2",
+      "rate": 48000,
+      "channels": 2,
+      "duration": 139.291417,
+      "outputDuration": 139.291417,
+      "gainDb": -6.93,
+      "before": {
+        "lufs": -10.83,
+        "peakDbtp": -2.23,
+        "rangeLu": 3.4
+      },
+      "after": {
+        "lufs": -18,
+        "peakDbtp": -8.55,
+        "rangeLu": 3.4
+      }
+    },
+    {
+      "src": "assets/media/jag/big_50g.wav",
+      "category": "bgm",
+      "targetLufs": -18,
+      "output": "assets/media/normalized-20261012/jag/big_50g.mp3",
+      "sourceSha256": "cb5cd10665cee971e6da2380c2912453c4e999f30a495330223cf05c3d33fdd9",
+      "outputSha256": "e3a0e3f5cfd81db60bd420968b9df9603565729a50e27f1547bc89e4e04b8030",
+      "rate": 48000,
+      "channels": 2,
+      "duration": 137.789042,
+      "outputDuration": 137.789042,
+      "gainDb": -8.76,
+      "before": {
+        "lufs": -9,
+        "peakDbtp": -0.05,
+        "rangeLu": 2.8
+      },
+      "after": {
+        "lufs": -18,
+        "peakDbtp": -8.8,
+        "rangeLu": 2.8
+      }
+    },
+    {
+      "src": "assets/media/jag/big_confirm.mp3",
+      "category": "sfx",
+      "targetLufs": -16,
+      "output": "assets/media/normalized-20261012/jag/big_confirm.wav",
+      "sourceSha256": "41aa5cb610d4bcd2a02f8da9558ac84bfa2738c0271783add2b68b7b10c39b25",
+      "outputSha256": "ceda931681c065a25ec1a83865d4b02bb19668608d0a2618c228b4c63dfb066f",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 7.152041,
+      "outputDuration": 7.152041,
+      "gainDb": -10.45,
+      "before": {
+        "lufs": -5.55,
+        "peakDbtp": 0.75,
+        "rangeLu": 4.3
+      },
+      "after": {
+        "lufs": -15.99,
+        "peakDbtp": -9.7,
+        "rangeLu": 4.3
+      }
+    },
+    {
+      "src": "assets/media/jag/big_kakutei.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/jag/big_kakutei.wav",
+      "sourceSha256": "f5b7b3c6a13a4f387e09c04a3d61b39f1ce5d861eb3e1f3167976b5b8be4bdd4",
+      "outputSha256": "285393fde235f7fcd13b6ec4530568f4e14a2fd73fbfdf9a46852d98968f74a5",
+      "rate": 44100,
+      "channels": 1,
+      "duration": 3.390113,
+      "outputDuration": 3.390113,
+      "gainDb": -2.56,
+      "before": {
+        "lufs": -11.44,
+        "peakDbtp": -0.99,
+        "rangeLu": 2.6
+      },
+      "after": {
+        "lufs": -13.99,
+        "peakDbtp": -3.55,
+        "rangeLu": 2.6
+      }
+    },
+    {
+      "src": "assets/media/jag/bonus_end.wav",
+      "category": "bgm",
+      "targetLufs": -18,
+      "output": "assets/media/normalized-20261012/jag/bonus_end.wav",
+      "sourceSha256": "574226d558faa23b684c109643e85e5cb2a89eb37d264f4db5297831bf8f6b48",
+      "outputSha256": "31d724ef24448a558b317a5ce6f0f8cc42411c5b034a9fcc4c5b44af1c45bc06",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 7.743628,
+      "outputDuration": 7.743628,
+      "gainDb": -8.37,
+      "before": {
+        "lufs": -9.63,
+        "peakDbtp": -0.65,
+        "rangeLu": 8.5
+      },
+      "after": {
+        "lufs": -17.99,
+        "peakDbtp": -9.02,
+        "rangeLu": 8.4
+      }
+    },
+    {
+      "src": "assets/media/jag/cherry.wav",
+      "category": "payout",
+      "targetLufs": -18,
+      "output": "assets/media/normalized-20261012/jag/cherry.wav",
+      "sourceSha256": "ab092068a379b5203d738802a76e9ae8b43a2dc75f4c0c8231a3849108cf4a4b",
+      "outputSha256": "cd194fa14faed7e8691dc51da4d57338ab843e0791fe3b5c1442ddb28d4f9d06",
+      "rate": 48000,
+      "channels": 2,
+      "duration": 0.994792,
+      "outputDuration": 0.994792,
+      "gainDb": -3.21,
+      "before": {
+        "lufs": -14.79,
+        "peakDbtp": -1.24,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -17.99,
+        "peakDbtp": -4.45,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/jag/cz_last.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/jag/cz_last.wav",
+      "sourceSha256": "2fe4a0057c62913d6b72f9717be49b39efcb554cb5dcd123dbdf23e7160b8ab0",
+      "outputSha256": "dc94074e528715bf220b96567ffe2438f0ade40e7ee71c2af686a87a5c482125",
+      "rate": 44100,
+      "channels": 1,
+      "duration": 1.625397,
+      "outputDuration": 1.625397,
+      "gainDb": -1.97,
+      "before": {
+        "lufs": -12.03,
+        "peakDbtp": -3.26,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -13.97,
+        "peakDbtp": -5.24,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/jag/cz_patrol_confirm.wav",
+      "category": "sfx",
+      "targetLufs": -16,
+      "output": "assets/media/normalized-20261012/jag/cz_patrol_confirm.wav",
+      "sourceSha256": "6e766eef0978c451c048983a8d39407a7f20b34c73acd88094251d1c553af719",
+      "outputSha256": "2582282ef912440a19a4b768c22909b78929ea25fcba1f6d27a51d09503296ee",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 3.80381,
+      "outputDuration": 3.80381,
+      "gainDb": -12.55,
+      "before": {
+        "lufs": -3.45,
+        "peakDbtp": -1.59,
+        "rangeLu": 11
+      },
+      "after": {
+        "lufs": -16,
+        "peakDbtp": -14.1,
+        "rangeLu": 11.1
+      }
+    },
+    {
+      "src": "assets/media/jag/cz_remaining_2.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/jag/cz_remaining_2.wav",
+      "sourceSha256": "4cbbf4dc116f119ceb007642b79b2e9bd501d186c02c5be0478e88756f6ef3d7",
+      "outputSha256": "2ac8f28e6d222c355874c64652833c793b12f1b016f7b0d4ea684744ccad1617",
+      "rate": 44100,
+      "channels": 1,
+      "duration": 1.532517,
+      "outputDuration": 1.532517,
+      "gainDb": -1.99,
+      "before": {
+        "lufs": -12.01,
+        "peakDbtp": -5.55,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -13.99,
+        "peakDbtp": -7.55,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/jag/cz_remaining_3.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/jag/cz_remaining_3.wav",
+      "sourceSha256": "eeff874c4f7c770d5d722040856f34ebbaa464ee03880e71c37143d421ff2115",
+      "outputSha256": "220fedc8f8a45fd5b8e5955dff172601c4b5ec6cca18e11210715ed32528eef5",
+      "rate": 44100,
+      "channels": 1,
+      "duration": 1.764717,
+      "outputDuration": 1.764717,
+      "gainDb": -2.01,
+      "before": {
+        "lufs": -11.99,
+        "peakDbtp": -3.7,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -14.02,
+        "peakDbtp": -5.71,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/jag/cz_third_failure.wav",
+      "category": "sfx",
+      "targetLufs": -16,
+      "output": "assets/media/normalized-20261012/jag/cz_third_failure.wav",
+      "sourceSha256": "57d3307031a01b1ce6db51bda4062becc6befadb2fa851b79796e771c48e359f",
+      "outputSha256": "c313d81b4e5208660c02b2563ee9c95dd62b5c66f0eaf8948e37eec4a1d2dffa",
+      "rate": 48000,
+      "channels": 2,
+      "duration": 1.706729,
+      "outputDuration": 1.706729,
+      "gainDb": -1.87,
+      "before": {
+        "lufs": -14.13,
+        "peakDbtp": -1.76,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -15.93,
+        "peakDbtp": -3.63,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/jag/cz_third_success.wav",
+      "category": "sfx",
+      "targetLufs": -16,
+      "output": "assets/media/normalized-20261012/jag/cz_third_success.wav",
+      "sourceSha256": "1c995648957e2469d15c4a9b623d3d4c481298cb90b001d828768e3560551e61",
+      "outputSha256": "3b70029c0adf3207785f65f0275653e9d3fc1e9b7c41eee9abab7834b9990a8f",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 2.4,
+      "outputDuration": 2.4,
+      "gainDb": -8.95,
+      "before": {
+        "lufs": -7.05,
+        "peakDbtp": 1.43,
+        "rangeLu": 17.3
+      },
+      "after": {
+        "lufs": -16.02,
+        "peakDbtp": -7.58,
+        "rangeLu": 17.4
+      }
+    },
+    {
+      "src": "assets/media/jag/peka_1.wav",
+      "category": "sfx",
+      "targetLufs": -16,
+      "output": "assets/media/normalized-20261012/jag/peka_1.wav",
+      "sourceSha256": "5873fb74cc52dc840171a3fcbe50a08d1a8942829a4cedcdc8d8a59034744032",
+      "outputSha256": "77f9fb89b2b91c809023af657e15f52faea21161cb61b93c7034f492499cd710",
+      "rate": 48000,
+      "channels": 2,
+      "duration": 0.471542,
+      "outputDuration": 0.471542,
+      "gainDb": -1.84,
+      "before": {
+        "lufs": -14.16,
+        "peakDbtp": 0.01,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -16.06,
+        "peakDbtp": -2,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/jag/peka_atari.wav",
+      "category": "sfx",
+      "targetLufs": -16,
+      "output": "assets/media/normalized-20261012/jag/peka_atari.wav",
+      "sourceSha256": "c241bc758a9a7a3622f073be7992ee88bada38be1955a88ece35be041745185f",
+      "outputSha256": "5d9c67ceae0243ad5c7ab4915608cb5c4e45a9f9533b046d15cf31af3fe6ebf4",
+      "rate": 44100,
+      "channels": 1,
+      "duration": 1.671837,
+      "outputDuration": 1.671837,
+      "gainDb": -1.04,
+      "before": {
+        "lufs": -14.96,
+        "peakDbtp": -0.84,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -15.98,
+        "peakDbtp": -2,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/jag/peka_atsu.wav",
+      "category": "sfx",
+      "targetLufs": -16,
+      "output": "assets/media/normalized-20261012/jag/peka_atsu.wav",
+      "sourceSha256": "1894e3539e900d918b7bff2be22cc0bd97950d49ef52d51570c27f9b8d625f91",
+      "outputSha256": "d0a6a22634a1c6c3f407e42b64cd32f64424e1327fb68af08910f32eb131c938",
+      "rate": 44100,
+      "channels": 1,
+      "duration": 1.671837,
+      "outputDuration": 1.671837,
+      "gainDb": -2.34,
+      "before": {
+        "lufs": -13.66,
+        "peakDbtp": -0.99,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -15.97,
+        "peakDbtp": -3.33,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/jag/peka_kyuin.wav",
+      "category": "sfx",
+      "targetLufs": -16,
+      "output": "assets/media/normalized-20261012/jag/peka_kyuin.wav",
+      "sourceSha256": "cdb5751f088932f1eb1f04f9b97079980b7071323a41bde52020018c9c77990b",
+      "outputSha256": "b8b77c13c21cc91e1e244facc3b8147b81a4c68f482fa75237032cf3d6d88166",
+      "rate": 44100,
+      "channels": 1,
+      "duration": 2.739955,
+      "outputDuration": 2.739955,
+      "gainDb": -8.26,
+      "before": {
+        "lufs": -7.74,
+        "peakDbtp": -0.42,
+        "rangeLu": 1.6
+      },
+      "after": {
+        "lufs": -16,
+        "peakDbtp": -8.7,
+        "rangeLu": 1.6
+      }
+    },
+    {
+      "src": "assets/media/jag/peka_kyuin_triple.wav",
+      "category": "sfx",
+      "targetLufs": -16,
+      "output": "assets/media/normalized-20261012/jag/peka_kyuin_triple.wav",
+      "sourceSha256": "40bcb9cbf6240d2070b6a02d7731954fe21648c920b805920e04936e9ce18592",
+      "outputSha256": "7bbe06c41328a6d139eb59f8e563073a48995e0bde8bf3e92e077eed1ac17227",
+      "rate": 44100,
+      "channels": 1,
+      "duration": 2.647075,
+      "outputDuration": 2.647075,
+      "gainDb": -4.08,
+      "before": {
+        "lufs": -11.92,
+        "peakDbtp": -0.8,
+        "rangeLu": 3.5
+      },
+      "after": {
+        "lufs": -16.01,
+        "peakDbtp": -4.88,
+        "rangeLu": 3.4
+      }
+    },
+    {
+      "src": "assets/media/jag/premium_bb2_bgm.mp3",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/jag/premium_bb2_bgm.wav",
+      "sourceSha256": "3e4409418c16d7b4c0010c8a9d2dc45f82f87c882efe391d1aa4a2d60caab52d",
+      "outputSha256": "dada10eaa9007888537e28071984c0971d7a39fc57160be9eea23a98e06c9856",
+      "rate": 44100,
+      "channels": 1,
+      "duration": 5.471814,
+      "outputDuration": 5.471814,
+      "gainDb": 6.52,
+      "before": {
+        "lufs": -20.52,
+        "peakDbtp": -6.19,
+        "rangeLu": 3.4
+      },
+      "after": {
+        "lufs": -14.14,
+        "peakDbtp": -2,
+        "rangeLu": 3.6
+      }
+    },
+    {
+      "src": "assets/media/jag/premium_big_confirm_movie.mp4",
+      "category": "movie",
+      "targetLufs": -18,
+      "output": "assets/media/normalized-20261012/jag/premium_big_confirm_movie.mp4",
+      "sourceSha256": "63505261d82205d6b5b5343cec6d1335f98b94c32652ad8cb52f76a5d9ac0235",
+      "outputSha256": "b4c57d27cd4f56a0641beda0bfafb6126bf7adc6cc2f90e2e7d1ddff6ac3ad42",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 11.845011,
+      "outputDuration": 11.845011,
+      "gainDb": -7.98,
+      "before": {
+        "lufs": -10.02,
+        "peakDbtp": 0.39,
+        "rangeLu": 13.3
+      },
+      "after": {
+        "lufs": -18.02,
+        "peakDbtp": -7.59,
+        "rangeLu": 13.6
+      }
+    },
+    {
+      "src": "assets/media/jag/premium_big_first.mp3",
+      "category": "bgm",
+      "targetLufs": -18,
+      "output": "assets/media/normalized-20261012/jag/premium_big_first.mp3",
+      "sourceSha256": "d40be91f5f1f8795e2c165ecc937017734ebd6ecfa460348ae085542e92c2e90",
+      "outputSha256": "519abd57a93fa9309d19b5d1b8c3a73a2e63d5d6965101829ff233f1f497227c",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 236.834512,
+      "outputDuration": 236.834512,
+      "gainDb": -8.26,
+      "before": {
+        "lufs": -9.49,
+        "peakDbtp": -0.42,
+        "rangeLu": 1.3
+      },
+      "after": {
+        "lufs": -18,
+        "peakDbtp": -8.84,
+        "rangeLu": 1.4
+      }
+    },
+    {
+      "src": "assets/media/jag/premium_big_second.wav",
+      "category": "bgm",
+      "targetLufs": -18,
+      "output": "assets/media/normalized-20261012/jag/premium_big_second.mp3",
+      "sourceSha256": "3a45eea86b2dfa7a6a0fdaa2664bc9ccb91ee7452970d4f1bcf2c7e808e25dd7",
+      "outputSha256": "b5433f70591793eec7705504897fa09ad94545cc5850b6de38084b1b221282d3",
+      "rate": 48000,
+      "channels": 2,
+      "duration": 233.870958,
+      "outputDuration": 233.870958,
+      "gainDb": -12.16,
+      "before": {
+        "lufs": -5.58,
+        "peakDbtp": 0.22,
+        "rangeLu": 2.2
+      },
+      "after": {
+        "lufs": -18,
+        "peakDbtp": -11.9,
+        "rangeLu": 2.2
+      }
+    },
+    {
+      "src": "assets/media/jag/premium_bonus_end_voice.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/jag/premium_bonus_end_voice.wav",
+      "sourceSha256": "fc578a3d19215e72af4f00b37192e1e3db9f71f156b3b8523e1c601f4ce7b9ef",
+      "outputSha256": "6cfb643e59d19f5877dc9ea3891819bccfe60cadcf87cb8ae2142ec3523748ac",
+      "rate": 48000,
+      "channels": 1,
+      "duration": 2.031333,
+      "outputDuration": 2.031333,
+      "gainDb": -2.5,
+      "before": {
+        "lufs": -11.5,
+        "peakDbtp": -0.97,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -14,
+        "peakDbtp": -3.46,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/jag/premium_first_end_voice.mp3",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/jag/premium_first_end_voice.wav",
+      "sourceSha256": "9129e41eb75dffbbdbc2399274260a669228a010a62408f88958b973cb6b0cc7",
+      "outputSha256": "4c4e085a3cf3bea920e9adf576268432ae102df00e693e98418e7482989c5c07",
+      "rate": 44100,
+      "channels": 1,
+      "duration": 5.471814,
+      "outputDuration": 5.471814,
+      "gainDb": 5.37,
+      "before": {
+        "lufs": -19.37,
+        "peakDbtp": -6.81,
+        "rangeLu": 13.5
+      },
+      "after": {
+        "lufs": -14.01,
+        "peakDbtp": -2,
+        "rangeLu": 13.5
+      }
+    },
+    {
+      "src": "assets/media/jag/premium_piero_symbol.wav",
+      "category": "payout",
+      "targetLufs": -18,
+      "output": "assets/media/normalized-20261012/jag/premium_piero_symbol.wav",
+      "sourceSha256": "e20c596c1eb675444a8d59f9dad4092cbde419b5361dbc14377b552324dbf583",
+      "outputSha256": "59e1751f935bbf9160a7e9c6dab1d456c4a98a27a2540c61510462098a002ff9",
+      "rate": 48000,
+      "channels": 2,
+      "duration": 2.5,
+      "outputDuration": 2.5,
+      "gainDb": -6.95,
+      "before": {
+        "lufs": -11.05,
+        "peakDbtp": -0.99,
+        "rangeLu": 2.6
+      },
+      "after": {
+        "lufs": -18.01,
+        "peakDbtp": -7.93,
+        "rangeLu": 2.7
+      }
+    },
+    {
+      "src": "assets/media/jag/premium_second_end_voice.mp3",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/jag/premium_second_end_voice.wav",
+      "sourceSha256": "49217dd2f5107c2e9cf3745c9ae0ae0e7a0a97b6287870336ee8f28ddef8d493",
+      "outputSha256": "62af8d5b98c1fed4c817599daaa8c803b5c08e53f5ca5064e2835890ec89f905",
+      "rate": 44100,
+      "channels": 1,
+      "duration": 5.820113,
+      "outputDuration": 5.820113,
+      "gainDb": 11.39,
+      "before": {
+        "lufs": -25.19,
+        "peakDbtp": -11.21,
+        "rangeLu": 13.5
+      },
+      "after": {
+        "lufs": -14.03,
+        "peakDbtp": -2,
+        "rangeLu": 13.3
+      }
+    },
+    {
+      "src": "assets/media/jag/reg_bonus.wav",
+      "category": "bgm",
+      "targetLufs": -18,
+      "output": "assets/media/normalized-20261012/jag/reg_bonus.mp3",
+      "sourceSha256": "e566a96df08ed7b94a2083cd9c6e520f7e841d906744b85903b79688ece2808c",
+      "outputSha256": "114563b633bfe8af124eee21142c2d1c249ab786eafd50c3f6bfac84f8eacb1f",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 118.153832,
+      "outputDuration": 118.153832,
+      "gainDb": -7.13,
+      "before": {
+        "lufs": -10.61,
+        "peakDbtp": -0.41,
+        "rangeLu": 2.1
+      },
+      "after": {
+        "lufs": -18,
+        "peakDbtp": -7.32,
+        "rangeLu": 2.1
+      }
+    },
+    {
+      "src": "assets/media/jag/reg_kakutei.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/jag/reg_kakutei.wav",
+      "sourceSha256": "50a780e4ade6f2213ad25e6f46652c845db4431df0de783cc670a7f5fecc42e7",
+      "outputSha256": "ab7aed3e4661a37f32e8d7f0de23975822e9ef820c5cf5188b1d3fa3d750d9aa",
+      "rate": 44100,
+      "channels": 1,
+      "duration": 2.136236,
+      "outputDuration": 2.136236,
+      "gainDb": -1.14,
+      "before": {
+        "lufs": -12.86,
+        "peakDbtp": -1,
+        "rangeLu": 0.1
+      },
+      "after": {
+        "lufs": -14.02,
+        "peakDbtp": -2.14,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/jag/setting_voice_2plus.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/jag/setting_voice_2plus.wav",
+      "sourceSha256": "3ec00409ad2595655729f0e51a7e0c16e81f019c7889563e5e9cbcb6f7f53b75",
+      "outputSha256": "759ee34f4bfddd89d76fa007c7d51bd3a23473b402af4f463b9533c8306b6bb6",
+      "rate": 48000,
+      "channels": 1,
+      "duration": 1.499958,
+      "outputDuration": 1.499958,
+      "gainDb": -1.25,
+      "before": {
+        "lufs": -12.75,
+        "peakDbtp": -0.95,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -14.04,
+        "peakDbtp": -2.2,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/jag/setting_voice_4plus.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/jag/setting_voice_4plus.wav",
+      "sourceSha256": "8d392449dc6e25471c2708d71dfa819b2b506d340c6a37984d88a640738117e4",
+      "outputSha256": "d36670bc953a4c5c5404042c3804fef5010870c22efc5f08cfa36736b5a8d7d8",
+      "rate": 48000,
+      "channels": 1,
+      "duration": 2.374958,
+      "outputDuration": 2.374958,
+      "gainDb": 3.89,
+      "before": {
+        "lufs": -17.35,
+        "peakDbtp": -0.86,
+        "rangeLu": 0.9
+      },
+      "after": {
+        "lufs": -14.1,
+        "peakDbtp": -2,
+        "rangeLu": 1
+      }
+    },
+    {
+      "src": "assets/media/jag/setting_voice_5plus.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/jag/setting_voice_5plus.wav",
+      "sourceSha256": "eab58920a20e7871d7dcf1f30511b6db4ad1b37b0cadc4495bbe929f5697b29d",
+      "outputSha256": "ab95085ca4be4caf87c8e2dbdfe61411a3d4acbe0326ff7caf0da14a8f820194",
+      "rate": 48000,
+      "channels": 1,
+      "duration": 1.624937,
+      "outputDuration": 1.624937,
+      "gainDb": -3.91,
+      "before": {
+        "lufs": -10.09,
+        "peakDbtp": -1,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -14.01,
+        "peakDbtp": -4.91,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/jag/setting_voice_6plus.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/jag/setting_voice_6plus.wav",
+      "sourceSha256": "b878a1e84e65435b9f9a7742691e7cc3f3483646bf55fa3a0de17c1733aa1c0f",
+      "outputSha256": "fbfa3757584133e27e5d19ad374bb2b17f663936a0c30fa1436edcfbeb439b32",
+      "rate": 48000,
+      "channels": 1,
+      "duration": 1.124937,
+      "outputDuration": 1.124937,
+      "gainDb": 6.57,
+      "before": {
+        "lufs": -20.57,
+        "peakDbtp": -9,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -14.02,
+        "peakDbtp": -2.43,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/jag/special_symbol.wav",
+      "category": "payout",
+      "targetLufs": -18,
+      "output": "assets/media/normalized-20261012/jag/special_symbol.wav",
+      "sourceSha256": "3f860598d59cba869a0b727d23844ab91cae12fdbcd4ee683b8076ffd81fc6f6",
+      "outputSha256": "230ad7fb7453ea274b2811db824bbf89ac06ac7c7b1b46a5f821739df4c8d680",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 3,
+      "outputDuration": 3,
+      "gainDb": -6.84,
+      "before": {
+        "lufs": -11.16,
+        "peakDbtp": -2.37,
+        "rangeLu": 4.1
+      },
+      "after": {
+        "lufs": -17.99,
+        "peakDbtp": -9.21,
+        "rangeLu": 4.1
+      }
+    },
+    {
+      "src": "assets/media/jag/start.wav",
+      "category": "sfx",
+      "targetLufs": -16,
+      "output": "assets/media/normalized-20261012/jag/start.wav",
+      "sourceSha256": "e08714f2ccbf28fceece4a56dde779416fca2f8caf5109c0ea5341f44c0de504",
+      "outputSha256": "8f86904b6d7eb073d66cdb56cafe69a5ed5aef5d89cca5f6639d609d7c67becd",
+      "rate": 48000,
+      "channels": 2,
+      "duration": 0.823437,
+      "outputDuration": 0.823437,
+      "gainDb": -3.01,
+      "before": {
+        "lufs": -12.99,
+        "peakDbtp": -1.08,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -15.99,
+        "peakDbtp": -4.09,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/BIG.wav",
+      "category": "bgm",
+      "targetLufs": -18,
+      "output": "assets/media/normalized-20261012/nova/BIG.mp3",
+      "sourceSha256": "e4ad586174a8147cc317bd056a2d34afee00394ceab305518df2e6668ae6f02d",
+      "outputSha256": "9c2afcfb5db65721dca59fe85f70ff98a2ba44732907a0ff1a0c485a9e59b2bc",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 259.859161,
+      "outputDuration": 259.859161,
+      "gainDb": -9.17,
+      "before": {
+        "lufs": -8.59,
+        "peakDbtp": 0.31,
+        "rangeLu": 2.4
+      },
+      "after": {
+        "lufs": -18,
+        "peakDbtp": -8.16,
+        "rangeLu": 2.3
+      }
+    },
+    {
+      "src": "assets/media/nova/NovaREG.wav",
+      "category": "bgm",
+      "targetLufs": -18,
+      "output": "assets/media/normalized-20261012/nova/NovaREG.mp3",
+      "sourceSha256": "94066c63d7ed4b4ce022d6be728bdc7b5de31c3801aa7a8fbcf7cbc30bf1efd2",
+      "outputSha256": "81996b2f2bc667ffe2362023ec7907650217aaaaa445902442db7ae27812fcbb",
+      "rate": 48000,
+      "channels": 2,
+      "duration": 97.520854,
+      "outputDuration": 97.520854,
+      "gainDb": -4.77,
+      "before": {
+        "lufs": -12.97,
+        "peakDbtp": -1.01,
+        "rangeLu": 3.7
+      },
+      "after": {
+        "lufs": -18.01,
+        "peakDbtp": -6.02,
+        "rangeLu": 3.7
+      }
+    },
+    {
+      "src": "assets/media/nova/RUSH.wav",
+      "category": "bgm",
+      "targetLufs": -18,
+      "output": "assets/media/normalized-20261012/nova/RUSH.mp3",
+      "sourceSha256": "62ecad146f80c39a989deff191ffb4d53d5a89db038b16f55ea8ab3ce41282da",
+      "outputSha256": "49ed8577ed78143f4a101776fcd33a4106dc3a466a0cded78877af0a1630db9d",
+      "rate": 48000,
+      "channels": 2,
+      "duration": 138.181854,
+      "outputDuration": 138.181854,
+      "gainDb": -9.66,
+      "before": {
+        "lufs": -8.09,
+        "peakDbtp": 0.19,
+        "rangeLu": 2.6
+      },
+      "after": {
+        "lufs": -18,
+        "peakDbtp": -9.02,
+        "rangeLu": 2.6
+      }
+    },
+    {
+      "src": "assets/media/nova/aim-nebula-giru.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/aim-nebula-giru.wav",
+      "sourceSha256": "66037c4951b574c3e87b5c20e1b3ba6184dc84e91f5fd164e11a2e349ee6eee9",
+      "outputSha256": "ec07ddf49925ee2e557947cfbbd149d64983fad319114e32712a8ad8d72c1e21",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 1.190136,
+      "outputDuration": 1.190136,
+      "gainDb": -2.01,
+      "before": {
+        "lufs": -11.99,
+        "peakDbtp": -4.29,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -13.99,
+        "peakDbtp": -6.29,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/aim-nebula-ouma.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/aim-nebula-ouma.wav",
+      "sourceSha256": "36efa246a7d2540b573f227fa962d6c35cbba9229d225e5af80793eaffed65d3",
+      "outputSha256": "b5ad43d93a7e9abe5454070c64aefd5b4d36f2fc044487e30c1691174475e66b",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 3.343673,
+      "outputDuration": 3.343673,
+      "gainDb": -1.94,
+      "before": {
+        "lufs": -12.06,
+        "peakDbtp": -1.1,
+        "rangeLu": 3.7
+      },
+      "after": {
+        "lufs": -14,
+        "peakDbtp": -3.04,
+        "rangeLu": 3.7
+      }
+    },
+    {
+      "src": "assets/media/nova/aim-nebula-sora.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/aim-nebula-sora.wav",
+      "sourceSha256": "f67407e1d747214bffa0d044b3cabbc7712aa0857750e00b26bcdf47940ca57f",
+      "outputSha256": "5934fa23b181a567afd984fbbcb4e3d7b8867671857e026ece4b2e1ddce7f74b",
+      "rate": 48000,
+      "channels": 2,
+      "duration": 1.194667,
+      "outputDuration": 1.194667,
+      "gainDb": -2,
+      "before": {
+        "lufs": -12,
+        "peakDbtp": -5.61,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -14,
+        "peakDbtp": -7.61,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/aim-nebula-toto.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/aim-nebula-toto.wav",
+      "sourceSha256": "8b942772d8268a837f5f61f73c98ab0b09a28c3f3b5aa1dadd918ec2bde5749f",
+      "outputSha256": "05f8b3301317838aeaa1cdf5609086beb2ed9cd48f255c10fd92d137065cbb54",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 1.486077,
+      "outputDuration": 1.486077,
+      "gainDb": -2.01,
+      "before": {
+        "lufs": -11.99,
+        "peakDbtp": -1.1,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -14.02,
+        "peakDbtp": -3.11,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/aim-nova-ouma.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/aim-nova-ouma.wav",
+      "sourceSha256": "d24b28c560a035257c64346291882243ab3ae74470c73f980bcb26882a26f1c0",
+      "outputSha256": "b6c16713dc4121cb4a816ba57e076f31036af8a25bf5fbbe0b1e252b2b3b2565",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 3.320454,
+      "outputDuration": 3.320454,
+      "gainDb": -2.01,
+      "before": {
+        "lufs": -11.99,
+        "peakDbtp": -3.21,
+        "rangeLu": 5.6
+      },
+      "after": {
+        "lufs": -14,
+        "peakDbtp": -5.22,
+        "rangeLu": 5.6
+      }
+    },
+    {
+      "src": "assets/media/nova/aim-seven-giru.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/aim-seven-giru.wav",
+      "sourceSha256": "7afa395d4ecac7cd13f7f0ffa43ecaea6edbc98312c58a274e7df09d6481f0c8",
+      "outputSha256": "672fa02cd9a6fbd0c1abaa073d59dffd46a75cffb7cf325ead4864a6ff2d53f7",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 1.110952,
+      "outputDuration": 1.110952,
+      "gainDb": -1.99,
+      "before": {
+        "lufs": -12.01,
+        "peakDbtp": -5.41,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -14,
+        "peakDbtp": -7.42,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/aim-seven-ouma.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/aim-seven-ouma.wav",
+      "sourceSha256": "59e21854afcf610d0c0c3600b3535dec1ef95694743686c8a637f1a5579800e7",
+      "outputSha256": "67edbfc6b20f2880214536902b37e9bef9e79d2ba26976b119e522c92ad32441",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 2.856054,
+      "outputDuration": 2.856054,
+      "gainDb": -2,
+      "before": {
+        "lufs": -12,
+        "peakDbtp": -2.46,
+        "rangeLu": 2.9
+      },
+      "after": {
+        "lufs": -14,
+        "peakDbtp": -4.46,
+        "rangeLu": 2.9
+      }
+    },
+    {
+      "src": "assets/media/nova/aim-seven-sora.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/aim-seven-sora.wav",
+      "sourceSha256": "624b119033da905205cb09681280de4e7d92ac0bf42aa08a30d04d3753ba396c",
+      "outputSha256": "99971079aa4e7934b13413c00f97706758769a392d1890d9c24c1e636db72c33",
+      "rate": 48000,
+      "channels": 1,
+      "duration": 1.109333,
+      "outputDuration": 1.109333,
+      "gainDb": -2.01,
+      "before": {
+        "lufs": -11.99,
+        "peakDbtp": -3.3,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -13.99,
+        "peakDbtp": -5.31,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/aim-seven-toto.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/aim-seven-toto.wav",
+      "sourceSha256": "a2c73004b60541cb279d8e11bf264ddcb227c979e3ba059dad0e1266671ecd21",
+      "outputSha256": "18d21e559bd018bbe8cdfd0c85532ce1dc2e1efe5d25e7aa1f5a75a2cada8b9a",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 1.300317,
+      "outputDuration": 1.300317,
+      "gainDb": -1.93,
+      "before": {
+        "lufs": -12.07,
+        "peakDbtp": -1.1,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -14.02,
+        "peakDbtp": -3.03,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/aim/bonus-nebula-win.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/aim/bonus-nebula-win.wav",
+      "sourceSha256": "4f19dfdd6f2e4b02527060a7ff67c720c71176fb0a2db57fc1f70afe03fddd3d",
+      "outputSha256": "3ddd4c10e40a543ef88c898f268355205dedd592d62a645157031d54d2cd3f2f",
+      "rate": 44100,
+      "channels": 1,
+      "duration": 3.157914,
+      "outputDuration": 3.157914,
+      "gainDb": -1.98,
+      "before": {
+        "lufs": -12.02,
+        "peakDbtp": -6.87,
+        "rangeLu": 2.9
+      },
+      "after": {
+        "lufs": -13.97,
+        "peakDbtp": -8.86,
+        "rangeLu": 2.8
+      }
+    },
+    {
+      "src": "assets/media/nova/aim/cue-blue.wav",
+      "category": "sfx",
+      "targetLufs": -16,
+      "output": "assets/media/normalized-20261012/nova/aim/cue-blue.wav",
+      "sourceSha256": "246fee062df87eebc765b7af68f4559b4554aa06eae89cee25b5a0c9f279c0ec",
+      "outputSha256": "a5e477bdad5ac79c69bd1d42f052be1c4031b715193b750e911fd5c17189c840",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 2.24483,
+      "outputDuration": 2.24483,
+      "gainDb": -5.77,
+      "before": {
+        "lufs": -10.23,
+        "peakDbtp": -3.88,
+        "rangeLu": 1.6
+      },
+      "after": {
+        "lufs": -16.01,
+        "peakDbtp": -9.6,
+        "rangeLu": 1.7
+      }
+    },
+    {
+      "src": "assets/media/nova/aim/cue-rainbow.wav",
+      "category": "sfx",
+      "targetLufs": -16,
+      "output": "assets/media/normalized-20261012/nova/aim/cue-rainbow.wav",
+      "sourceSha256": "dce03114c019338efa79c9cf123a0100db8dd288f91a3c6524743648d687a69f",
+      "outputSha256": "b998ec2dd6f7308a32875ee28130cd8d481e0b9ad2af16f2cff091bf4d48fc0e",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 2.669592,
+      "outputDuration": 2.669592,
+      "gainDb": -5.2,
+      "before": {
+        "lufs": -10.8,
+        "peakDbtp": -0.75,
+        "rangeLu": 1.8
+      },
+      "after": {
+        "lufs": -16.01,
+        "peakDbtp": -5.98,
+        "rangeLu": 1.9
+      }
+    },
+    {
+      "src": "assets/media/nova/aim/cue-red.wav",
+      "category": "sfx",
+      "targetLufs": -16,
+      "output": "assets/media/normalized-20261012/nova/aim/cue-red.wav",
+      "sourceSha256": "a465c5feb6a51816e24315560a77be61a07c0bb8f040b64df459d3fd15f6080c",
+      "outputSha256": "0420f6db68d4d0c213761103c999971eecf2ac46419adb19110844afc186b2b9",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 2.455057,
+      "outputDuration": 2.455057,
+      "gainDb": -5.73,
+      "before": {
+        "lufs": -10.27,
+        "peakDbtp": -3.73,
+        "rangeLu": 2.1
+      },
+      "after": {
+        "lufs": -16.02,
+        "peakDbtp": -9.42,
+        "rangeLu": 2.2
+      }
+    },
+    {
+      "src": "assets/media/nova/aim/nebula-win.wav",
+      "category": "sfx",
+      "targetLufs": -16,
+      "output": "assets/media/normalized-20261012/nova/aim/nebula-win.wav",
+      "sourceSha256": "d70bc633eefe1f03cd416b4d106780e6bcdc29ee0affe48e1557fc3bda8c7972",
+      "outputSha256": "f03a7fa1ca49f10fb6bda62ef8be859bb50298b24c97e7ab24f8ee73ef150293",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 9.710136,
+      "outputDuration": 9.710136,
+      "gainDb": -7.59,
+      "before": {
+        "lufs": -8.41,
+        "peakDbtp": -4.58,
+        "rangeLu": 2.9
+      },
+      "after": {
+        "lufs": -16.01,
+        "peakDbtp": -12.22,
+        "rangeLu": 2.9
+      }
+    },
+    {
+      "src": "assets/media/nova/aim/seven-win.wav",
+      "category": "sfx",
+      "targetLufs": -16,
+      "output": "assets/media/normalized-20261012/nova/aim/seven-win.wav",
+      "sourceSha256": "894e775cc18ede145da687b04aab25416aaebe3aa579c4421af7ed4b15522d33",
+      "outputSha256": "4e4cc0bc3bca3394be5aeffa7a39e1ccb4923c87fb1656d990f36b331bec7cbf",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 7.143288,
+      "outputDuration": 7.143288,
+      "gainDb": -6.14,
+      "before": {
+        "lufs": -9.86,
+        "peakDbtp": -3.46,
+        "rangeLu": 7.9
+      },
+      "after": {
+        "lufs": -16,
+        "peakDbtp": -9.62,
+        "rangeLu": 7.8
+      }
+    },
+    {
+      "src": "assets/media/nova/aim/zone-roulette-confirm.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/aim/zone-roulette-confirm.wav",
+      "sourceSha256": "4998c6d530b4e2754c722108d2fff78296733a202ea7700c5862eebbf916379e",
+      "outputSha256": "7d549786cd43eb65ed6650c4709cf5399288f0680c4f0e220468636267781c83",
+      "rate": 44100,
+      "channels": 1,
+      "duration": 4.504671,
+      "outputDuration": 4.504671,
+      "gainDb": -2,
+      "before": {
+        "lufs": -12,
+        "peakDbtp": -7.05,
+        "rangeLu": 5.5
+      },
+      "after": {
+        "lufs": -14,
+        "peakDbtp": -9.03,
+        "rangeLu": 5.5
+      }
+    },
+    {
+      "src": "assets/media/nova/aim_seven_sosuke.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/aim_seven_sosuke.wav",
+      "sourceSha256": "e599f4b2afd605b362c9e7097b8414ffbc63c62ea63e029d5e45cfcad56f3cc9",
+      "outputSha256": "f3e949592b9d84dfb8c18f991add471a9d6175d13429152ff38df0abc42aa866",
+      "rate": 44100,
+      "channels": 1,
+      "duration": 2.786395,
+      "outputDuration": 2.786395,
+      "gainDb": -2.14,
+      "before": {
+        "lufs": -11.86,
+        "peakDbtp": -8.8,
+        "rangeLu": 2.5
+      },
+      "after": {
+        "lufs": -14.13,
+        "peakDbtp": -10.94,
+        "rangeLu": 2.5
+      }
+    },
+    {
+      "src": "assets/media/nova/audiostock_1117081.wav",
+      "category": "bgm",
+      "targetLufs": -18,
+      "output": "assets/media/normalized-20261012/nova/audiostock_1117081.mp3",
+      "sourceSha256": "1289d1949241eaa59a2eae9140c1b7ae9d0b8c00cb19a555ebcbc95604e3d0e5",
+      "outputSha256": "2152ecd41a18a80d450ad76d2b2ce96f51f41b246c0885ce5b079c133d2fc2d1",
+      "rate": 48000,
+      "channels": 2,
+      "duration": 162,
+      "outputDuration": 162,
+      "gainDb": -3.93,
+      "before": {
+        "lufs": -13.81,
+        "peakDbtp": -0.5,
+        "rangeLu": 8.1
+      },
+      "after": {
+        "lufs": -17.99,
+        "peakDbtp": -4.46,
+        "rangeLu": 8
+      }
+    },
+    {
+      "src": "assets/media/nova/audiostock_860274.mp3",
+      "category": "bgm",
+      "targetLufs": -18,
+      "output": "assets/media/normalized-20261012/nova/audiostock_860274.mp3",
+      "sourceSha256": "f217045bdd12f768d17f839e6bb1a11135f088a69549327cc9387c66901c324b",
+      "outputSha256": "f800c4281521afc70ee113708c9e62b34a5dadd095f1e2c682851216e8b82a77",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 354.501995,
+      "outputDuration": 354.501995,
+      "gainDb": -10.44,
+      "before": {
+        "lufs": -7.32,
+        "peakDbtp": 0.27,
+        "rangeLu": 2.8
+      },
+      "after": {
+        "lufs": -18.01,
+        "peakDbtp": -9.68,
+        "rangeLu": 2.8
+      }
+    },
+    {
+      "src": "assets/media/nova/audiostock_862200.wav",
+      "category": "bgm",
+      "targetLufs": -18,
+      "output": "assets/media/normalized-20261012/nova/audiostock_862200.mp3",
+      "sourceSha256": "ef81c6a073a27e9c585c4c1a65882b7108af485bbd4255bc67eec3e3d61ce3a5",
+      "outputSha256": "b1a199a7172fa1c1a032b7f583b8b6b9a48a7d322d20ef6ec697295d127fd147",
+      "rate": 48000,
+      "channels": 2,
+      "duration": 194,
+      "outputDuration": 194,
+      "gainDb": -7.88,
+      "before": {
+        "lufs": -9.88,
+        "peakDbtp": -1.01,
+        "rangeLu": 2
+      },
+      "after": {
+        "lufs": -18,
+        "peakDbtp": -7.82,
+        "rangeLu": 2.1
+      }
+    },
+    {
+      "src": "assets/media/nova/audiostock_932814.mp3",
+      "category": "bgm",
+      "targetLufs": -18,
+      "output": "assets/media/normalized-20261012/nova/audiostock_932814.wav",
+      "sourceSha256": "f9f6514a1b03c2cdc27cb5f3c40f80c751497e8aebed650c3af6b99166524fb1",
+      "outputSha256": "7d43e7d6095a7818479ebc8ac4019f8a115f8b1ad70f97b15c8c4859e7eae63d",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 6,
+      "outputDuration": 6,
+      "gainDb": -13.08,
+      "before": {
+        "lufs": -4.92,
+        "peakDbtp": -0.21,
+        "rangeLu": 8.4
+      },
+      "after": {
+        "lufs": -17.99,
+        "peakDbtp": -13.29,
+        "rangeLu": 8.4
+      }
+    },
+    {
+      "src": "assets/media/nova/audiostock_933855.wav",
+      "category": "bgm",
+      "targetLufs": -18,
+      "output": "assets/media/normalized-20261012/nova/audiostock_933855.mp3",
+      "sourceSha256": "f69cf424d82c8326ead1c27748aa7669f8f7c060371446bc2b049c7d3e5ad920",
+      "outputSha256": "aca301d8e03f130381df8cd326149fc0836c596a228a246830b5d212619e26ae",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 130.597823,
+      "outputDuration": 130.597823,
+      "gainDb": -4.88,
+      "before": {
+        "lufs": -12.86,
+        "peakDbtp": -1.06,
+        "rangeLu": 2
+      },
+      "after": {
+        "lufs": -17.99,
+        "peakDbtp": -6.28,
+        "rangeLu": 1.9
+      }
+    },
+    {
+      "src": "assets/media/nova/bell-navi.wav",
+      "category": "sfx",
+      "targetLufs": -16,
+      "output": "assets/media/normalized-20261012/nova/bell-navi.wav",
+      "sourceSha256": "aee9b35d22ecff0153f8c2480c32b8af3034aa7d5ccaa7ff37f69bdf44696433",
+      "outputSha256": "faa956ef6bfe5d476fdf170ba581d5fac8a38fba1266687d188885948e96310e",
+      "rate": 48000,
+      "channels": 2,
+      "duration": 1.026042,
+      "outputDuration": 1.026042,
+      "gainDb": -9.52,
+      "before": {
+        "lufs": -6.48,
+        "peakDbtp": -1.06,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -15.98,
+        "peakDbtp": -10.57,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/bell_payout.wav",
+      "category": "payout",
+      "targetLufs": -18,
+      "output": "assets/media/normalized-20261012/nova/bell_payout.wav",
+      "sourceSha256": "e502babff33d0e616e4f67f9a93392227d65f4ac28e5d37188cdaef2539e0a76",
+      "outputSha256": "8c606d0d269ebc835f185c996afbdea70b8689ee1cec76b1f93a956ef7f77483",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 1.333515,
+      "outputDuration": 1.333515,
+      "gainDb": -7.45,
+      "before": {
+        "lufs": -10.55,
+        "peakDbtp": -3.54,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -18.02,
+        "peakDbtp": -10.99,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/bonus_art_end.wav",
+      "category": "bgm",
+      "targetLufs": -18,
+      "output": "assets/media/normalized-20261012/nova/bonus_art_end.wav",
+      "sourceSha256": "d3903966bf126f037abc1953f6f7fdb509a6437c576fb19294358d2e3dd7439f",
+      "outputSha256": "c3dfbb715007c14f977a1c36304fe125e1203ca9c0bd22424b08229e1af79666",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 3.600023,
+      "outputDuration": 3.600023,
+      "gainDb": -4.28,
+      "before": {
+        "lufs": -13.72,
+        "peakDbtp": -1.01,
+        "rangeLu": 4.8
+      },
+      "after": {
+        "lufs": -18,
+        "peakDbtp": -5.29,
+        "rangeLu": 4.8
+      }
+    },
+    {
+      "src": "assets/media/nova/bonus_confirm.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/bonus_confirm.wav",
+      "sourceSha256": "b56fe68779fb1c20df6729bfd4db035d92b706f567e1e604c4fa8a076ca8d9bf",
+      "outputSha256": "a3fbc8ad51aec5277c8f7567ef76f58644a1d3b12056ab2c5771510e706aa7d7",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 1.996916,
+      "outputDuration": 1.996916,
+      "gainDb": -2.01,
+      "before": {
+        "lufs": -11.99,
+        "peakDbtp": -6.51,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -14.02,
+        "peakDbtp": -8.51,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/continue-sora.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/continue-sora.wav",
+      "sourceSha256": "bc0ff6b6c86b35aa6c0e2f41fbafb212c9704967021b4f01b6ff38a2a15665d5",
+      "outputSha256": "d446b5235891381835748f0f0f2ce5fb39329c9128bbf1de232c3e20f9843968",
+      "rate": 48000,
+      "channels": 1,
+      "duration": 1.104,
+      "outputDuration": 1.104,
+      "gainDb": -1.99,
+      "before": {
+        "lufs": -12.01,
+        "peakDbtp": -1.34,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -14.01,
+        "peakDbtp": -3.33,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/continue-toto.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/continue-toto.wav",
+      "sourceSha256": "48e64cd958de5d7d327ae5009a0ac3f1814c6a417db113073b0a25f563934a4a",
+      "outputSha256": "09b4d1b80fe1aeff69cb0dff68fa37304ac8d5a5e4df7703dfc671985d1294d3",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 0.882358,
+      "outputDuration": 0.882358,
+      "gainDb": -1.96,
+      "before": {
+        "lufs": -12.04,
+        "peakDbtp": -1.32,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -13.96,
+        "peakDbtp": -3.28,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/cz-entry-voice.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/cz-entry-voice.wav",
+      "sourceSha256": "d98e0328ae676b55e88cf9ef9c084615e6c7b5e5b3d9b2335137186f15909c10",
+      "outputSha256": "677805e06e8586741f11d37c643cb963e246e6e1344090f082eec47a1934fdbf",
+      "rate": 48000,
+      "channels": 1,
+      "duration": 1.749333,
+      "outputDuration": 1.749333,
+      "gainDb": -1.89,
+      "before": {
+        "lufs": -12.11,
+        "peakDbtp": -1.1,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -14.01,
+        "peakDbtp": -2.99,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/cz_stop_12.wav",
+      "category": "sfx",
+      "targetLufs": -16,
+      "output": "assets/media/normalized-20261012/nova/cz_stop_12.wav",
+      "sourceSha256": "1480e2c72e714b1416cb190a1ca176663904c2f8fce6153c496c3e2711f111e6",
+      "outputSha256": "9f5cd70ffee86a7f019cdf546f0436bff1626b2111d10359e5bf4d3d6da65024",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 0.88093,
+      "outputDuration": 0.88093,
+      "gainDb": -3.07,
+      "before": {
+        "lufs": -12.93,
+        "peakDbtp": -0.37,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -16.03,
+        "peakDbtp": -3.44,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/direct-award.wav",
+      "category": "sfx",
+      "targetLufs": -16,
+      "output": "assets/media/normalized-20261012/nova/direct-award.wav",
+      "sourceSha256": "c3044cd902b85856143b378a9df765c8eaf52d6d1340236ae780065276b4561a",
+      "outputSha256": "20dd774fd0991dcc2712bd27b0c2151e9a034f4a7a5bd063cdd2f3bd9842e867",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 2.47898,
+      "outputDuration": 2.47898,
+      "gainDb": -5.99,
+      "before": {
+        "lufs": -10.01,
+        "peakDbtp": -2.76,
+        "rangeLu": 1.8
+      },
+      "after": {
+        "lufs": -16.02,
+        "peakDbtp": -8.91,
+        "rangeLu": 1.7
+      }
+    },
+    {
+      "src": "assets/media/nova/giru-bgm.wav",
+      "category": "bgm",
+      "targetLufs": -18,
+      "output": "assets/media/normalized-20261012/nova/giru-bgm.mp3",
+      "sourceSha256": "e6c9f666d6f553cf598190e61caa40d248c0822bf95510ae4c8bdae8f117651a",
+      "outputSha256": "6ed84a30b920aec24f43fce2137b10867dcbe373b07d8083b693e5dc32a53cc5",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 211.227279,
+      "outputDuration": 211.227279,
+      "gainDb": -9.84,
+      "before": {
+        "lufs": -7.92,
+        "peakDbtp": 0.5,
+        "rangeLu": 2.9
+      },
+      "after": {
+        "lufs": -18,
+        "peakDbtp": -8.74,
+        "rangeLu": 2.9
+      }
+    },
+    {
+      "src": "assets/media/nova/giru-ladder-bet-challenge.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/giru-ladder-bet-challenge.wav",
+      "sourceSha256": "338ee6b36cbab2a01067261047f6b9324621f3feb752f90923c5856e79385fe7",
+      "outputSha256": "7cad8aae46237c86509ee24d261426ec31f6e5cf83d40e8455ce4920053374e7",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 2.150408,
+      "outputDuration": 2.150408,
+      "gainDb": -2,
+      "before": {
+        "lufs": -12,
+        "peakDbtp": -3.75,
+        "rangeLu": 0.1
+      },
+      "after": {
+        "lufs": -14,
+        "peakDbtp": -5.76,
+        "rangeLu": 0.1
+      }
+    },
+    {
+      "src": "assets/media/nova/giru-ladder-bet-good-flow.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/giru-ladder-bet-good-flow.wav",
+      "sourceSha256": "643205f12814428d5aa9c4743a780a657ced93b4e1b78570debc1408c260798c",
+      "outputSha256": "052f37a661781c2ba2e07eaa8433104dd7425adfc13e8bfa415c5d0c103db344",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 1.414875,
+      "outputDuration": 1.414875,
+      "gainDb": -2.04,
+      "before": {
+        "lufs": -11.96,
+        "peakDbtp": -4.44,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -14.03,
+        "peakDbtp": -6.48,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/giru-ladder-bet-moment.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/giru-ladder-bet-moment.wav",
+      "sourceSha256": "37846f5f41790e1f7076a050ab64357b6eafcb5f60905be703b8deef5e57b38b",
+      "outputSha256": "5f22c8ef5b3593baed84ad0c5a00a2a5e7920f082ac468df2adec3df1c0a86c4",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 2.150408,
+      "outputDuration": 2.150408,
+      "gainDb": -1.99,
+      "before": {
+        "lufs": -12.01,
+        "peakDbtp": -1.79,
+        "rangeLu": 0.4
+      },
+      "after": {
+        "lufs": -14,
+        "peakDbtp": -3.78,
+        "rangeLu": 0.5
+      }
+    },
+    {
+      "src": "assets/media/nova/giru-ladder-result-1000.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/giru-ladder-result-1000.wav",
+      "sourceSha256": "7f16ea97f3ca5a79bc00d9ca4ec27c670690794783b1b5f0a1cca578239cf3e0",
+      "outputSha256": "c8bf6522c0c41c5a2d3dab9024b1f4b874c488b619162f27603360af27c1da9e",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 1.197778,
+      "outputDuration": 1.197778,
+      "gainDb": -2.02,
+      "before": {
+        "lufs": -11.98,
+        "peakDbtp": -6.25,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -14,
+        "peakDbtp": -8.28,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/giru-ladder-result-500.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/giru-ladder-result-500.wav",
+      "sourceSha256": "62fc40a5082c219b89e5e0e0975f4a51191d5e5db4b689e4a52e9879751d99c8",
+      "outputSha256": "7a10b075eabe7b469dfb2d623ad99e409b93c2dea9698d9c7f6253849f1a4af3",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 1.685601,
+      "outputDuration": 1.685601,
+      "gainDb": -2,
+      "before": {
+        "lufs": -12,
+        "peakDbtp": -4.31,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -14,
+        "peakDbtp": -6.31,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/giru-ladder-result-under500.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/giru-ladder-result-under500.wav",
+      "sourceSha256": "c7ee8089b203f1b68fd9248ae4e7bddadad703de8722ba8156bbf57dbc3c27ba",
+      "outputSha256": "3e9efd3571e51bccb8651335cceea8f8d938c1e3e1eb960940fe779536218f2b",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 1.437868,
+      "outputDuration": 1.437868,
+      "gainDb": -2,
+      "before": {
+        "lufs": -12,
+        "peakDbtp": -5.96,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -14,
+        "peakDbtp": -7.96,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/initial-duo-bgm.mp3",
+      "category": "bgm",
+      "targetLufs": -18,
+      "output": "assets/media/normalized-20261012/nova/initial-duo-bgm.mp3",
+      "sourceSha256": "e051011c806af0d0df4d2ad82b294172e560ec4e96742ad407bb4830a72f3b8a",
+      "outputSha256": "920271808ca7bcad28f0ce690afed8297afd9f01d684cd1146d61d9026e13efe",
+      "rate": 48000,
+      "channels": 2,
+      "duration": 194,
+      "outputDuration": 194,
+      "gainDb": -7.59,
+      "before": {
+        "lufs": -10.12,
+        "peakDbtp": 0.05,
+        "rangeLu": 2.1
+      },
+      "after": {
+        "lufs": -17.98,
+        "peakDbtp": -7.56,
+        "rangeLu": 2
+      }
+    },
+    {
+      "src": "assets/media/nova/initial-duo-final-stop.mp3",
+      "category": "sfx",
+      "targetLufs": -16,
+      "output": "assets/media/normalized-20261012/nova/initial-duo-final-stop.wav",
+      "sourceSha256": "16bd703411e51fd442d276443b41071e38703f571b512476b5b82dfc62786510",
+      "outputSha256": "0f47f91aaa02c4a405b932d01c5fed8ae0105c0ff99777e4234fe819c1c8b56c",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 5,
+      "outputDuration": 5,
+      "gainDb": -8.17,
+      "before": {
+        "lufs": -8.18,
+        "peakDbtp": 0.71,
+        "rangeLu": 14.1
+      },
+      "after": {
+        "lufs": -15.99,
+        "peakDbtp": -7.46,
+        "rangeLu": 14.2
+      }
+    },
+    {
+      "src": "assets/media/nova/initial-duo-stop.mp3",
+      "category": "sfx",
+      "targetLufs": -16,
+      "output": "assets/media/normalized-20261012/nova/initial-duo-stop.wav",
+      "sourceSha256": "18e33d8c3e8423a19daf79e965f280583d7d64a2f58573f0be51747352e5a3fb",
+      "outputSha256": "09e8c4e09efcbe2d00c8e413b01167847a33e26b442b2f771a5a1a8cb7e7fee0",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 1.874989,
+      "outputDuration": 1.874989,
+      "gainDb": -3.16,
+      "before": {
+        "lufs": -12.84,
+        "peakDbtp": -0.59,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -16.03,
+        "peakDbtp": -3.75,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/ladder-final-award-under1000.wav",
+      "category": "sfx",
+      "targetLufs": -16,
+      "output": "assets/media/normalized-20261012/nova/ladder-final-award-under1000.wav",
+      "sourceSha256": "c549cd5f1e90370220ebffab361a9c5919732539f36d231939f2337e134d30a1",
+      "outputSha256": "5d312d6c44c2a4f9cbe2e23498961f1abceaecc6cfcaed853f6cd8965a1c7e4b",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 3.474444,
+      "outputDuration": 3.474444,
+      "gainDb": -3.2,
+      "before": {
+        "lufs": -12.8,
+        "peakDbtp": -5.34,
+        "rangeLu": 6.1
+      },
+      "after": {
+        "lufs": -16.01,
+        "peakDbtp": -8.69,
+        "rangeLu": 6.1
+      }
+    },
+    {
+      "src": "assets/media/nova/ladder-final-award.wav",
+      "category": "sfx",
+      "targetLufs": -16,
+      "output": "assets/media/normalized-20261012/nova/ladder-final-award.wav",
+      "sourceSha256": "03bc78a4c9f7fd1d0208bb11681f4df7b05e65f6d70ec292711652c5587a94f1",
+      "outputSha256": "58650c446f5c92385f24551764da90925bcad2d1a26d4fe00f56cbe2a63bc450",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 5.066984,
+      "outputDuration": 5.066984,
+      "gainDb": -8.38,
+      "before": {
+        "lufs": -7.62,
+        "peakDbtp": -0.61,
+        "rangeLu": 4.9
+      },
+      "after": {
+        "lufs": -16.03,
+        "peakDbtp": -9.04,
+        "rangeLu": 4.9
+      }
+    },
+    {
+      "src": "assets/media/nova/navi-center-giru.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/navi-center-giru.wav",
+      "sourceSha256": "e3b1400c36b397445a40a181160bc32c13fb3563f6576bb85965076e3e3deffe",
+      "outputSha256": "2b10dc61dc6aafe75641f15aaac01c7a16105111ac08071678ffdf47faad279c",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 0.561859,
+      "outputDuration": 0.561859,
+      "gainDb": -1.99,
+      "before": {
+        "lufs": -12.01,
+        "peakDbtp": -3.71,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -14.01,
+        "peakDbtp": -5.7,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/navi-center-kushuri.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/navi-center-kushuri.wav",
+      "sourceSha256": "2909ea6feb4f34cbff9df9731de966230058a33729afec16a123a6c7a717f8b9",
+      "outputSha256": "3e91fb6da2a2d6fac87599c533c9a4cae4b16da44e416f179c8f10b7cca7d899",
+      "rate": 48000,
+      "channels": 1,
+      "duration": 1.344,
+      "outputDuration": 1.344,
+      "gainDb": -2,
+      "before": {
+        "lufs": -12,
+        "peakDbtp": -1.27,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -14,
+        "peakDbtp": -3.27,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/navi-center-nito.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/navi-center-nito.wav",
+      "sourceSha256": "1b107059eaa0aa1937deee9f9dff58dba449f1d75efc862e97566557bce1ba8b",
+      "outputSha256": "1ed89e406700bc27cce746f01648fd26da5b2eeb22e617ef705d3eeb33812eb5",
+      "rate": 48000,
+      "channels": 1,
+      "duration": 0.810667,
+      "outputDuration": 0.810667,
+      "gainDb": -1.85,
+      "before": {
+        "lufs": -12.15,
+        "peakDbtp": -1.09,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -14,
+        "peakDbtp": -2.94,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/navi-center-ouma.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/navi-center-ouma.wav",
+      "sourceSha256": "e12d933a991c83e3baf7ed513c5ad60c46a305c54502416eb138d73f95260a66",
+      "outputSha256": "9fd2bd86f241b3000dde667f2e0b1b20ad06a06a401f81d0c7bfa72f5a43ec01",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 0.84898,
+      "outputDuration": 0.84898,
+      "gainDb": -1.92,
+      "before": {
+        "lufs": -12.08,
+        "peakDbtp": -1.09,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -14.01,
+        "peakDbtp": -3.01,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/navi-center-sora.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/navi-center-sora.wav",
+      "sourceSha256": "11033098a6abbdf7c1a4073c943203e5e21db40f1c6a4cf4726751e599ec9114",
+      "outputSha256": "d6228cfe1334fb691f2050be7877dbdfc42adbc4929bdbd8a03c4128eef9867e",
+      "rate": 48000,
+      "channels": 1,
+      "duration": 0.810667,
+      "outputDuration": 0.810667,
+      "gainDb": -1.74,
+      "before": {
+        "lufs": -12.26,
+        "peakDbtp": -1.1,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -14.03,
+        "peakDbtp": -2.83,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/navi-center-sosuke.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/navi-center-sosuke.wav",
+      "sourceSha256": "2ddd455ba6b62cde5af4d9db19ed0bebec6b023039dac88722fbf36843523ced",
+      "outputSha256": "0bb0a98a08c8f79b61a0e9d34c5e4cc4e24b6a8ac478fd92b348030794285c7e",
+      "rate": 44100,
+      "channels": 1,
+      "duration": 0.557279,
+      "outputDuration": 0.557279,
+      "gainDb": -1.99,
+      "before": {
+        "lufs": -12.01,
+        "peakDbtp": -8.66,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -14.01,
+        "peakDbtp": -10.66,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/navi-center-toto.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/navi-center-toto.wav",
+      "sourceSha256": "f840b124aff4471934d2230ed979f8fee1ec58df19ee0779076f5fa65f8cc899",
+      "outputSha256": "79753d2426be7647104df3d80ac84357201301449d1bd424b55d3e7dc62d4569",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 0.557279,
+      "outputDuration": 0.557279,
+      "gainDb": -1.88,
+      "before": {
+        "lufs": -12.12,
+        "peakDbtp": -1.1,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -14.02,
+        "peakDbtp": -2.98,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/navi-complete-giru.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/navi-complete-giru.wav",
+      "sourceSha256": "c4e62339650b82a8ad6d3009f623482b9d5f978c08276ff0b511104e817efb50",
+      "outputSha256": "73046b3ba2fa0dd0e6021a3f7ff9844287f4b5c8a8e474c4bd1c767187ab26ef",
+      "rate": 48000,
+      "channels": 2,
+      "duration": 1.536,
+      "outputDuration": 1.536,
+      "gainDb": -1.91,
+      "before": {
+        "lufs": -12.09,
+        "peakDbtp": -1.1,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -14.01,
+        "peakDbtp": -3.01,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/navi-complete-kushuri.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/navi-complete-kushuri.wav",
+      "sourceSha256": "9978b27dfb486aae2a7ab870f47bc5767eaa0c7d27ff0398daaa3ca0a26a325b",
+      "outputSha256": "3afc62d21ff7c7498aa09b95dff7474e2ce086444af0c944f8a8ac284ed79f4d",
+      "rate": 48000,
+      "channels": 1,
+      "duration": 0.906833,
+      "outputDuration": 0.906833,
+      "gainDb": -1.792,
+      "before": {
+        "lufs": -12.07,
+        "peakDbtp": -1.1,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -13.87,
+        "peakDbtp": -2.89,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/navi-complete-nito.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/navi-complete-nito.wav",
+      "sourceSha256": "26a3d991bd7292a3bd96db48b8ef8537c4b9940969b8d1386e08ab5ddcbb52df",
+      "outputSha256": "1a1f156ebd1d4375994c875a54a77ec4d066231118b8e5e236f26239958010c1",
+      "rate": 48000,
+      "channels": 1,
+      "duration": 1.578667,
+      "outputDuration": 1.578667,
+      "gainDb": -1.93,
+      "before": {
+        "lufs": -12.07,
+        "peakDbtp": -1.1,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -14,
+        "peakDbtp": -3.02,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/navi-complete-ouma.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/navi-complete-ouma.wav",
+      "sourceSha256": "f4fc853d3242d8c7f1814b39f713231ea8d33ba2d0d2bb1092187503b349c58d",
+      "outputSha256": "8bdb268ab2b0fad697f773d452b32f6973b5ec350de4cf066f32eab3273630b2",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 1.114558,
+      "outputDuration": 1.114558,
+      "gainDb": -1.87,
+      "before": {
+        "lufs": -12.13,
+        "peakDbtp": -1.1,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -14.02,
+        "peakDbtp": -2.97,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/navi-complete-sora.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/navi-complete-sora.wav",
+      "sourceSha256": "dbef96a679597d1c0747387c92963169a7da782c73a85b955c1133cf92fad65f",
+      "outputSha256": "011cb4c2594207c0fade88b95dffab6bc6edbf1edfaa6bb8a25fc6a066316920",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 0.928798,
+      "outputDuration": 0.928798,
+      "gainDb": -1.88,
+      "before": {
+        "lufs": -12.12,
+        "peakDbtp": -1.1,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -14.02,
+        "peakDbtp": -2.98,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/navi-complete-sosuke.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/navi-complete-sosuke.wav",
+      "sourceSha256": "cf19fc62417ba4d5a445a9b500ada8865c1b21b8460ab85f851fbe51368c03a3",
+      "outputSha256": "685f1d0bc5b9416f9284582694aeb20defc998a4ea2a69a255c901fe892fdd30",
+      "rate": 44100,
+      "channels": 1,
+      "duration": 1.021678,
+      "outputDuration": 1.021678,
+      "gainDb": -2,
+      "before": {
+        "lufs": -12,
+        "peakDbtp": -7.95,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -14,
+        "peakDbtp": -9.93,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/navi-complete-toto.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/navi-complete-toto.wav",
+      "sourceSha256": "c95764179ddda6ba4d7ff194c27549f293216cd55dd45b2b7179e0dc017b652b",
+      "outputSha256": "a684246a7bafc07667a4cb60ae1275d0a6564df4839aba7f09a5ee78b152f901",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 0.417959,
+      "outputDuration": 0.417959,
+      "gainDb": -1.87,
+      "before": {
+        "lufs": -12.13,
+        "peakDbtp": -1.1,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -14.02,
+        "peakDbtp": -2.97,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/navi-left-giru.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/navi-left-giru.wav",
+      "sourceSha256": "7385778606804281c9c1351037312646c4505b92a5354a4b4be9a4a2ad36d23d",
+      "outputSha256": "0e57b67744ae4334dd0d8259948740ada9934d12ff5183d65d2228d142fe9da2",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 0.561859,
+      "outputDuration": 0.561859,
+      "gainDb": -1.98,
+      "before": {
+        "lufs": -12.02,
+        "peakDbtp": -3.3,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -14.02,
+        "peakDbtp": -5.29,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/navi-left-kushuri.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/navi-left-kushuri.wav",
+      "sourceSha256": "7a0ca066bb0e25b4ede89113db035bc3b0d477a1ed4ab883937796ac83ad5953",
+      "outputSha256": "9ab1f511341495d0f0f2f2d346513708a1cc3187aa94efeb162f3f36c1e2d2f4",
+      "rate": 48000,
+      "channels": 1,
+      "duration": 1.088333,
+      "outputDuration": 1.088333,
+      "gainDb": -2,
+      "before": {
+        "lufs": -12,
+        "peakDbtp": -1.23,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -14,
+        "peakDbtp": -3.23,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/navi-left-nito.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/navi-left-nito.wav",
+      "sourceSha256": "2638071163647b4d5388b2ad74be7a632c6e8747d0c57c3b1bfca0ee86364349",
+      "outputSha256": "01b029ea837988b3f63b380f4fb0776248d7738a67221019d21492d78cffd658",
+      "rate": 48000,
+      "channels": 1,
+      "duration": 1.024,
+      "outputDuration": 1.024,
+      "gainDb": -2.01,
+      "before": {
+        "lufs": -11.99,
+        "peakDbtp": -1.1,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -14.02,
+        "peakDbtp": -3.11,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/navi-left-ouma.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/navi-left-ouma.wav",
+      "sourceSha256": "a60f427e48169647d1cd65d5c0c9bcd5be1826ebb6fc21b2a250de37c58dddaf",
+      "outputSha256": "6d77fbbfd106b284a23d716ca9f337318a31b4087df055a7ff6b852d16a50004",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 0.976689,
+      "outputDuration": 0.976689,
+      "gainDb": -2.01,
+      "before": {
+        "lufs": -11.99,
+        "peakDbtp": -2.09,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -13.99,
+        "peakDbtp": -4.11,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/navi-left-sora.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/navi-left-sora.wav",
+      "sourceSha256": "c9c09bc2f293347c6e5265a64aa28585aa51e1927ea8cadee453cf15a6580931",
+      "outputSha256": "6424c9f3e35d4f375943a9c4caf8bbc0368043ae3f4b792b472a188001cbd608",
+      "rate": 48000,
+      "channels": 1,
+      "duration": 0.693333,
+      "outputDuration": 0.693333,
+      "gainDb": -1.99,
+      "before": {
+        "lufs": -12.01,
+        "peakDbtp": -1.1,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -14.01,
+        "peakDbtp": -3.09,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/navi-left-sosuke.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/navi-left-sosuke.wav",
+      "sourceSha256": "476138cb6cb0dca133b6fb514d0ab638f426bb3626c48a4623af09f4959afc6a",
+      "outputSha256": "04297497627dbbb10d3e46046728358f9cad323ff0dfd34bc15705579fbbd62e",
+      "rate": 44100,
+      "channels": 1,
+      "duration": 0.557279,
+      "outputDuration": 0.557279,
+      "gainDb": -2.01,
+      "before": {
+        "lufs": -11.99,
+        "peakDbtp": -7.48,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -14.03,
+        "peakDbtp": -9.5,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/navi-left-toto.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/navi-left-toto.wav",
+      "sourceSha256": "895bbc822c169e6f8359068881a83e7b03311d0b05d6d9355766e67529cb20b4",
+      "outputSha256": "9edcc98451ed059721f6faea25a782b2f2ead8044528322497ae80072081af57",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 0.603719,
+      "outputDuration": 0.603719,
+      "gainDb": -1.89,
+      "before": {
+        "lufs": -12.11,
+        "peakDbtp": -1.1,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -13.98,
+        "peakDbtp": -2.99,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/navi-right-giru.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/navi-right-giru.wav",
+      "sourceSha256": "597bf4c738996bd65c822e4990a70122293594d3bad58b0f746573c0e4429ed1",
+      "outputSha256": "f04f1f5f40f5f56d48b5cff75e775ae98b8516c8e84d6cff438e04daaee717be",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 0.385624,
+      "outputDuration": 0.385624,
+      "gainDb": -1.93,
+      "before": {
+        "lufs": -12.07,
+        "peakDbtp": -1.09,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -14.07,
+        "peakDbtp": -3.02,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/navi-right-kushuri.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/navi-right-kushuri.wav",
+      "sourceSha256": "27dd0478a74a70a1c7f37b1277d037a68e9fe08f0cbf8c082faa81e5723581f1",
+      "outputSha256": "2515be1570778110393c6cd50143e3af63ce8715dd951392a3d1354729120024",
+      "rate": 48000,
+      "channels": 1,
+      "duration": 1.216,
+      "outputDuration": 1.216,
+      "gainDb": -1.95,
+      "before": {
+        "lufs": -12.05,
+        "peakDbtp": -1.1,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -13.97,
+        "peakDbtp": -3.05,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/navi-right-nito.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/navi-right-nito.wav",
+      "sourceSha256": "434dd4291d412fb8b1629065ef8f90591f41c07223599148f358f559b9d2daab",
+      "outputSha256": "afe9b4edfa2bf1ea2823785462d9194e2a3423000a4d27bf34add3dd31c78266",
+      "rate": 48000,
+      "channels": 1,
+      "duration": 0.864167,
+      "outputDuration": 0.864167,
+      "gainDb": -1.91,
+      "before": {
+        "lufs": -12.09,
+        "peakDbtp": -1.09,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -13.99,
+        "peakDbtp": -3,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/navi-right-ouma.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/navi-right-ouma.wav",
+      "sourceSha256": "7def16d4e55475cd8a92daaeda3e6a525e844fb25e1a338b15b4a39ac1e864b7",
+      "outputSha256": "48c776f2d829df36b6bb1d82485d0008889f6597b10db74182ba7e4c44dcd60d",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 0.82576,
+      "outputDuration": 0.82576,
+      "gainDb": -1.87,
+      "before": {
+        "lufs": -12.13,
+        "peakDbtp": -1.1,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -13.95,
+        "peakDbtp": -2.97,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/navi-right-sora.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/navi-right-sora.wav",
+      "sourceSha256": "1b109961d6fd970b92484953506c3645478336f3f32e2845cc473ec0a723199a",
+      "outputSha256": "30bfd1b46e492e955c6df1e09265df50c70900fd8c9bd54619f6e1d1f5bfc4bb",
+      "rate": 48000,
+      "channels": 1,
+      "duration": 0.647333,
+      "outputDuration": 0.647333,
+      "gainDb": -1.97,
+      "before": {
+        "lufs": -12.03,
+        "peakDbtp": -3.31,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -14.03,
+        "peakDbtp": -5.28,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/navi-right-sosuke.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/navi-right-sosuke.wav",
+      "sourceSha256": "73b516191e83a48b5f2c256175025e8422de76a1af34cdd51a212b06d916c88f",
+      "outputSha256": "3e751af6f647ddf09dbbd2815aab534fef51d78c9ad40d85e0234ff586e2e3d1",
+      "rate": 44100,
+      "channels": 1,
+      "duration": 0.464399,
+      "outputDuration": 0.464399,
+      "gainDb": -1.96,
+      "before": {
+        "lufs": -12.04,
+        "peakDbtp": -8.08,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -14.01,
+        "peakDbtp": -10.07,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/navi-right-toto.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/navi-right-toto.wav",
+      "sourceSha256": "dcbdf1fab1454211f4ce3346f9eb3c47d6c46e5846d7df73fb3239af82a000ed",
+      "outputSha256": "b2f5e8ec8156ad82c43c6374043293c234ff3f858f5b813228ec71741958f018",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 0.882358,
+      "outputDuration": 0.882358,
+      "gainDb": -1.99,
+      "before": {
+        "lufs": -12.01,
+        "peakDbtp": -1.2,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -14.01,
+        "peakDbtp": -3.19,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/nova-win-1-ouma.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/nova-win-1-ouma.wav",
+      "sourceSha256": "3a78d23dbd67bb6dbb079d3af0cabb2e30d609067e23040a8740e844e88e1ddf",
+      "outputSha256": "ec0fce19c40517be5a0cd4bb8be7dcab8ddad332e7b22c3819721d256f23389d",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 3.436553,
+      "outputDuration": 3.436553,
+      "gainDb": -1.89,
+      "before": {
+        "lufs": -12.11,
+        "peakDbtp": -1.1,
+        "rangeLu": 3.4
+      },
+      "after": {
+        "lufs": -14.01,
+        "peakDbtp": -2.99,
+        "rangeLu": 3.4
+      }
+    },
+    {
+      "src": "assets/media/nova/nova-win-2-ouma.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/nova-win-2-ouma.wav",
+      "sourceSha256": "78703b531997ece86f68914b5727ba56a56ff46d1b6149b9fb7d109ac2003a1c",
+      "outputSha256": "5a91ad3db3f336946ab41dbcfecee893c189cc9b24322428a6d38f2568c06e4e",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 3.332063,
+      "outputDuration": 3.332063,
+      "gainDb": -1.93,
+      "before": {
+        "lufs": -12.07,
+        "peakDbtp": -1.1,
+        "rangeLu": 5.8
+      },
+      "after": {
+        "lufs": -14,
+        "peakDbtp": -3.03,
+        "rangeLu": 5.8
+      }
+    },
+    {
+      "src": "assets/media/nova/nova-win-3-ouma.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/nova-win-3-ouma.wav",
+      "sourceSha256": "068c3aa478b8c6a99944782fe0429c1910244c7f3f3e0f4610459b0a5900cb09",
+      "outputSha256": "fd692b976271f6d53957533b859a7c890833ac8c6c727686bc249a4b3c5dff37",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 4.342132,
+      "outputDuration": 4.342132,
+      "gainDb": -1.89,
+      "before": {
+        "lufs": -12.11,
+        "peakDbtp": -1.1,
+        "rangeLu": 2
+      },
+      "after": {
+        "lufs": -14,
+        "peakDbtp": -2.99,
+        "rangeLu": 2
+      }
+    },
+    {
+      "src": "assets/media/nova/ouma-fail.wav",
+      "category": "sfx",
+      "targetLufs": -16,
+      "output": "assets/media/normalized-20261012/nova/ouma-fail.wav",
+      "sourceSha256": "25ab90db78d4d7d96ba3d785ed83e27d1ed1c927136a0714e562ae01fbdcafad",
+      "outputSha256": "ef1380df9034e359e287cfd6935cf64d8212089f263f22d7c96e1cbf88fd9582",
+      "rate": 44100,
+      "channels": 1,
+      "duration": 1.497619,
+      "outputDuration": 1.497619,
+      "gainDb": -3.19,
+      "before": {
+        "lufs": -12.81,
+        "peakDbtp": 0.24,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -16.01,
+        "peakDbtp": -2.94,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/ouma-reverse-v2.wav",
+      "category": "sfx",
+      "targetLufs": -16,
+      "output": "assets/media/normalized-20261012/nova/ouma-reverse-v2.wav",
+      "sourceSha256": "c65df8efe3de01046dc3dbc33dea18ba92279920e976064727fc97c213b45ff1",
+      "outputSha256": "99af8666046072d56614860e2f5b4ba15e5eaffb8e888ccd77d5f8938a51ea13",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 6.965986,
+      "outputDuration": 6.965986,
+      "gainDb": -8.07,
+      "before": {
+        "lufs": -7.93,
+        "peakDbtp": -0.61,
+        "rangeLu": 6.8
+      },
+      "after": {
+        "lufs": -16,
+        "peakDbtp": -8.64,
+        "rangeLu": 6.8
+      }
+    },
+    {
+      "src": "assets/media/nova/ouma1.wav",
+      "category": "sfx",
+      "targetLufs": -16,
+      "output": "assets/media/normalized-20261012/nova/ouma1.wav",
+      "sourceSha256": "64b2767fe44414a56f2020d05a3841933e200b5809fe5dddda4fcacb62be626b",
+      "outputSha256": "d8f20fccd49b82c6f9f42d1e6b607cc67808cb08762672f594d35a21ae403d20",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 12.585215,
+      "outputDuration": 12.585215,
+      "gainDb": -5.2,
+      "before": {
+        "lufs": -10.8,
+        "peakDbtp": -1.21,
+        "rangeLu": 10.1
+      },
+      "after": {
+        "lufs": -16,
+        "peakDbtp": -6.37,
+        "rangeLu": 10.1
+      }
+    },
+    {
+      "src": "assets/media/nova/oumafreez.wav",
+      "category": "bgm",
+      "targetLufs": -18,
+      "output": "assets/media/normalized-20261012/nova/oumafreez.mp3",
+      "sourceSha256": "aff05055db0200d43ecc30c5fa37e11a2edfd1b07712f62cbdb01481daffda8c",
+      "outputSha256": "c1132842ab582cf1866d63fd29e31ea1f6691c4c953ff5d50f952a2ec8840edb",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 104.30771,
+      "outputDuration": 104.308005,
+      "gainDb": -7.24,
+      "before": {
+        "lufs": -10.51,
+        "peakDbtp": -0.78,
+        "rangeLu": 2.9
+      },
+      "after": {
+        "lufs": -18,
+        "peakDbtp": -7.49,
+        "rangeLu": 2.9
+      }
+    },
+    {
+      "src": "assets/media/nova/rare-cue-big-chance-kushuri.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/rare-cue-big-chance-kushuri.wav",
+      "sourceSha256": "f80672d48bafbaceef305b5cf9e8ec869c6dc442df9acee5f4d7d932b057a462",
+      "outputSha256": "d5531d7617f63685a2474e9572ea4b0016d044b0db8bd1380175bf3dc6fd155c",
+      "rate": 48000,
+      "channels": 2,
+      "duration": 1.024,
+      "outputDuration": 1.024,
+      "gainDb": -1.97,
+      "before": {
+        "lufs": -12.03,
+        "peakDbtp": -1.09,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -14.03,
+        "peakDbtp": -3.06,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/rare-cue-big-chance-nito.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/rare-cue-big-chance-nito.wav",
+      "sourceSha256": "8a2885b9a5613716f8189a956a3e82868fc97fcef81b29b539051707ff506e4b",
+      "outputSha256": "983605b396c8e42070507672303e6e59ddc64bd36d8925b999dd9f19906ee18b",
+      "rate": 48000,
+      "channels": 1,
+      "duration": 1.792,
+      "outputDuration": 1.792,
+      "gainDb": -1.86,
+      "before": {
+        "lufs": -12.14,
+        "peakDbtp": -1.09,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -14,
+        "peakDbtp": -2.95,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/rare-cue-chance-kushuri.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/rare-cue-chance-kushuri.wav",
+      "sourceSha256": "2ba31634b2c903201a93d1d2d8a9f4a61bfb3ed17179fb07c8174db1d6280edf",
+      "outputSha256": "b0b1d2f461a68b38ff84a2659a245291cdee600e5c160603a16376365a64c26b",
+      "rate": 48000,
+      "channels": 2,
+      "duration": 0.938667,
+      "outputDuration": 0.938667,
+      "gainDb": -1.96,
+      "before": {
+        "lufs": -12.04,
+        "peakDbtp": -1.1,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -14,
+        "peakDbtp": -3.06,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/rare-cue-chance-nito.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/rare-cue-chance-nito.wav",
+      "sourceSha256": "ea04c188a9d48fddb48e6a161b2464c9353618bf1081ad580080d6f9a8d7edd4",
+      "outputSha256": "2496b9c4ee3b70adbf4c0f6ba2df18d5c9ffd92e31c51ab16dbab3120e91cdc6",
+      "rate": 48000,
+      "channels": 1,
+      "duration": 1.301333,
+      "outputDuration": 1.301333,
+      "gainDb": -1.98,
+      "before": {
+        "lufs": -12.02,
+        "peakDbtp": -1.6,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -14.02,
+        "peakDbtp": -3.58,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/rare-cue-hot-kushuri.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/rare-cue-hot-kushuri.wav",
+      "sourceSha256": "4d699660089405ca0c9348110e9a9941edd186f9e36c6a5774f78edad47ccdf8",
+      "outputSha256": "e1d3b071a16bb1f0a76402fdcbf89ac84a850cbc5d9ba7e34d47ca42a8451049",
+      "rate": 48000,
+      "channels": 2,
+      "duration": 2.133333,
+      "outputDuration": 2.133333,
+      "gainDb": -1.99,
+      "before": {
+        "lufs": -12.01,
+        "peakDbtp": -1.1,
+        "rangeLu": 0.4
+      },
+      "after": {
+        "lufs": -14,
+        "peakDbtp": -3.09,
+        "rangeLu": 0.3
+      }
+    },
+    {
+      "src": "assets/media/nova/rare-cue-hot-nito.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/rare-cue-hot-nito.wav",
+      "sourceSha256": "12a0bb4037a2946496cce4bd06136335313674aad593baeca52e19243cffa521",
+      "outputSha256": "32ad8a84aa7fe3911034df2cf121419a7b5aa192a3f2782a985ad24bf11077ab",
+      "rate": 48000,
+      "channels": 1,
+      "duration": 1.614875,
+      "outputDuration": 1.614875,
+      "gainDb": -1.86,
+      "before": {
+        "lufs": -12.14,
+        "peakDbtp": -1.1,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -13.99,
+        "peakDbtp": -2.96,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/rare-navi.mp3",
+      "category": "sfx",
+      "targetLufs": -16,
+      "output": "assets/media/normalized-20261012/nova/rare-navi.wav",
+      "sourceSha256": "f2aab2820bc8e9334c10605a3b2413b751b306614e066aaca56fe8c714b2d8c6",
+      "outputSha256": "624b2e7de202bcb386b3ce36fb7441c0c4ded0e99cde0d029b8f6ecf5c746615",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 2.046145,
+      "outputDuration": 2.046145,
+      "gainDb": -7.15,
+      "before": {
+        "lufs": -8.85,
+        "peakDbtp": 0.6,
+        "rangeLu": 2.1
+      },
+      "after": {
+        "lufs": -15.99,
+        "peakDbtp": -6.56,
+        "rangeLu": 2.1
+      }
+    },
+    {
+      "src": "assets/media/nova/reel-stop.wav",
+      "category": "sfx",
+      "targetLufs": -16,
+      "output": "assets/media/normalized-20261012/nova/reel-stop.wav",
+      "sourceSha256": "38671c2d95a0eb7fd9e6e11f65f3fb57c778dc81ecb0b20c0f1647fd6ac3ed54",
+      "outputSha256": "2cd945a24c45052cff7a44f9c90a37305c36cf6fd70f0ecfc42f85a410633d94",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 2.769229,
+      "outputDuration": 2.769229,
+      "gainDb": 2.47,
+      "before": {
+        "lufs": -17.12,
+        "peakDbtp": -0.01,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -16.09,
+        "peakDbtp": -2,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/replay.wav",
+      "category": "payout",
+      "targetLufs": -18,
+      "output": "assets/media/normalized-20261012/nova/replay.wav",
+      "sourceSha256": "b6ae9cb06a0c6846e8f14f28e01e600e5e9b0a189131a673feedcfc2cb3fc1d6",
+      "outputSha256": "d6a9e9fcba3898f716b3274bd5ff7801457f6719d6eee6bca2baf567504b0927",
+      "rate": 48000,
+      "channels": 2,
+      "duration": 4.982,
+      "outputDuration": 4.982,
+      "gainDb": 5.26,
+      "before": {
+        "lufs": -23.07,
+        "peakDbtp": -5.73,
+        "rangeLu": 23.3
+      },
+      "after": {
+        "lufs": -18.01,
+        "peakDbtp": -2,
+        "rangeLu": 23.2
+      }
+    },
+    {
+      "src": "assets/media/nova/result-eyecatch.wav",
+      "category": "bgm",
+      "targetLufs": -18,
+      "output": "assets/media/normalized-20261012/nova/result-eyecatch.wav",
+      "sourceSha256": "6f82b05c2059389d1fbbe9be4ec8c3bc29b06dd72ce2c21e13e90f09fe7497ff",
+      "outputSha256": "84d363e0d93541f722b62e0d04b0c486e8aa0b0d38687761b86bd09510cb1a1f",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 2.83161,
+      "outputDuration": 2.83161,
+      "gainDb": -12.21,
+      "before": {
+        "lufs": -5.79,
+        "peakDbtp": 0.38,
+        "rangeLu": 1
+      },
+      "after": {
+        "lufs": -18,
+        "peakDbtp": -11.84,
+        "rangeLu": 0.9
+      }
+    },
+    {
+      "src": "assets/media/nova/rush-confirm-bgm.mp3",
+      "category": "bgm",
+      "targetLufs": -18,
+      "output": "assets/media/normalized-20261012/nova/rush-confirm-bgm.wav",
+      "sourceSha256": "634360321df44b5b6c9f08fceaa50813a7eccf5c466ea18f817f599b2e56f745",
+      "outputSha256": "0ef79d55df999f65dbfc39b75aa76133fff57f7c2bcf7384328bf465d07f657f",
+      "rate": 48000,
+      "channels": 2,
+      "duration": 9.75,
+      "outputDuration": 9.75,
+      "gainDb": -14.55,
+      "before": {
+        "lufs": -3.45,
+        "peakDbtp": 0.04,
+        "rangeLu": 5.6
+      },
+      "after": {
+        "lufs": -18,
+        "peakDbtp": -14.51,
+        "rangeLu": 5.5
+      }
+    },
+    {
+      "src": "assets/media/nova/rush-confirm-se.wav",
+      "category": "sfx",
+      "targetLufs": -16,
+      "output": "assets/media/normalized-20261012/nova/rush-confirm-se.wav",
+      "sourceSha256": "15256771ec83c7c433d8466def05b47cbdac063ae4dd91fdb278e17e1578f29b",
+      "outputSha256": "d5e7b467ec67048cdc4debdfd1e674e9df424a901b001ba99f583dc8fbf171c2",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 3.033333,
+      "outputDuration": 3.033333,
+      "gainDb": -10.09,
+      "before": {
+        "lufs": -5.91,
+        "peakDbtp": 0.83,
+        "rangeLu": 3.4
+      },
+      "after": {
+        "lufs": -15.99,
+        "peakDbtp": -9.26,
+        "rangeLu": 3.3
+      }
+    },
+    {
+      "src": "assets/media/nova/shutter-close.wav",
+      "category": "sfx",
+      "targetLufs": -16,
+      "output": "assets/media/normalized-20261012/nova/shutter-close.wav",
+      "sourceSha256": "f4c9a12eaf65cb094dd80b8b45c0d3022a157df7abbd4ef76a7a923f78c4ef80",
+      "outputSha256": "48f470505e169dc0cb896eccb2708c9a312e4c580b5dbfe02eb8807293397d00",
+      "rate": 48000,
+      "channels": 2,
+      "duration": 3.305979,
+      "outputDuration": 3.305979,
+      "gainDb": -4.24,
+      "before": {
+        "lufs": -11.76,
+        "peakDbtp": 0,
+        "rangeLu": 26.5
+      },
+      "after": {
+        "lufs": -15.98,
+        "peakDbtp": -4.24,
+        "rangeLu": 26.5
+      }
+    },
+    {
+      "src": "assets/media/nova/shutter.wav",
+      "category": "sfx",
+      "targetLufs": -16,
+      "output": "assets/media/normalized-20261012/nova/shutter.wav",
+      "sourceSha256": "55f3f828c5e015e00004c0f5c8203d3928d4bc246188694c98a04b82bf3f1717",
+      "outputSha256": "2a6e8024021f5a262d279a0e76f7cc5670c88cb7bca0f3859a5e758f1d81ffc5",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 4.167982,
+      "outputDuration": 4.167982,
+      "gainDb": -10.2,
+      "before": {
+        "lufs": -5.8,
+        "peakDbtp": -1.82,
+        "rangeLu": 3.2
+      },
+      "after": {
+        "lufs": -16,
+        "peakDbtp": -12.02,
+        "rangeLu": 3.2
+      }
+    },
+    {
+      "src": "assets/media/nova/sora-bgm.wav",
+      "category": "bgm",
+      "targetLufs": -18,
+      "output": "assets/media/normalized-20261012/nova/sora-bgm.mp3",
+      "sourceSha256": "6db4876ce4f9a7c059e545162a3b71b3a2faaa8941bfd4ab8b83c803c143c189",
+      "outputSha256": "47ac7775b8c9e9d1c9e3d1d8bbbba81601da21f4daef88ee1159d8290d2c0368",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 102.5,
+      "outputDuration": 102.5,
+      "gainDb": -7.72,
+      "before": {
+        "lufs": -10.03,
+        "peakDbtp": -0.15,
+        "rangeLu": 2.8
+      },
+      "after": {
+        "lufs": -17.99,
+        "peakDbtp": -7.54,
+        "rangeLu": 2.8
+      }
+    },
+    {
+      "src": "assets/media/nova/sortie-award.mp3",
+      "category": "sfx",
+      "targetLufs": -16,
+      "output": "assets/media/normalized-20261012/nova/sortie-award.wav",
+      "sourceSha256": "3c33855379ac0cdd063802660cd8624f6989a4a1c90eb22993a932efe269fec6",
+      "outputSha256": "fd9ae37a5f18da7ef9920e6874152d67277454603fc2033fb5490f46803fc3fe",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 5.205193,
+      "outputDuration": 5.205193,
+      "gainDb": -12.75,
+      "before": {
+        "lufs": -3.25,
+        "peakDbtp": -0.01,
+        "rangeLu": 13.2
+      },
+      "after": {
+        "lufs": -15.99,
+        "peakDbtp": -12.77,
+        "rangeLu": 13.2
+      }
+    },
+    {
+      "src": "assets/media/nova/sortie-bgm.mp3",
+      "category": "bgm",
+      "targetLufs": -18,
+      "output": "assets/media/normalized-20261012/nova/sortie-bgm.mp3",
+      "sourceSha256": "d4f8e150163816bf7766d9abb23cf88cf5677800f9493e6d7b432fda3cea0c28",
+      "outputSha256": "da5b5795fc55b6ac444695860d1d278323e6652cb3c135fa9a5d4ac9d2a38aa2",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 31.413605,
+      "outputDuration": 31.413605,
+      "gainDb": -10.38,
+      "before": {
+        "lufs": -7.37,
+        "peakDbtp": 0.58,
+        "rangeLu": 2
+      },
+      "after": {
+        "lufs": -18,
+        "peakDbtp": -9.9,
+        "rangeLu": 1.9
+      }
+    },
+    {
+      "src": "assets/media/nova/sortie-stop-1.mp3",
+      "category": "sfx",
+      "targetLufs": -16,
+      "output": "assets/media/normalized-20261012/nova/sortie-stop-1.wav",
+      "sourceSha256": "a2137d5b98b83506dd64cfff262e46b457fab405c6b917681436f2449f91bd00",
+      "outputSha256": "bc106a1931e86403075eb0f61ccbebbf36c7766cc1914c2712d9eee240532555",
+      "rate": 48000,
+      "channels": 2,
+      "duration": 1.188146,
+      "outputDuration": 1.188146,
+      "gainDb": -9.14,
+      "before": {
+        "lufs": -6.86,
+        "peakDbtp": -1.07,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -15.98,
+        "peakDbtp": -10.21,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/sortie-stop-2.mp3",
+      "category": "sfx",
+      "targetLufs": -16,
+      "output": "assets/media/normalized-20261012/nova/sortie-stop-2.wav",
+      "sourceSha256": "23e56ce52536be71a5c8e37d8f3582c639792a3d14db1ce3b8d5d2995b1699c5",
+      "outputSha256": "fae996d791509d00afb1acbe74958c3623b3563323dc30a7bcd0bee3a148298c",
+      "rate": 48000,
+      "channels": 2,
+      "duration": 1.455937,
+      "outputDuration": 1.455937,
+      "gainDb": -8.16,
+      "before": {
+        "lufs": -7.84,
+        "peakDbtp": -0.76,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -16.02,
+        "peakDbtp": -8.92,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/sosuke-bgm.wav",
+      "category": "bgm",
+      "targetLufs": -18,
+      "output": "assets/media/normalized-20261012/nova/sosuke-bgm.mp3",
+      "sourceSha256": "c1c50ddf7a514152aff7cb4e9d105678c64fa496fc2df685e1d9a0293a54df09",
+      "outputSha256": "414422a52d802f65a9cc388849156e2fceb6a59cf312526afadc919344f29243",
+      "rate": 48000,
+      "channels": 2,
+      "duration": 217.667958,
+      "outputDuration": 217.667958,
+      "gainDb": -11.58,
+      "before": {
+        "lufs": -6.18,
+        "peakDbtp": 0.64,
+        "rangeLu": 2.3
+      },
+      "after": {
+        "lufs": -18,
+        "peakDbtp": -10.25,
+        "rangeLu": 2.3
+      }
+    },
+    {
+      "src": "assets/media/nova/spin_start.wav",
+      "category": "sfx",
+      "targetLufs": -16,
+      "output": "assets/media/normalized-20261012/nova/spin_start.wav",
+      "sourceSha256": "8537d2317372c7e1ec3f3bb909d63750722a44c50fe1a6ffa67396c3192f6baf",
+      "outputSha256": "0cdc5b6d811a75bab846e8c7d6744447008b01815024f7201d5ecb92bd74facb",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 1,
+      "outputDuration": 1,
+      "gainDb": -0.72,
+      "before": {
+        "lufs": -15.28,
+        "peakDbtp": -1.93,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -15.99,
+        "peakDbtp": -2.69,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/strong_nova.wav",
+      "category": "sfx",
+      "targetLufs": -16,
+      "output": "assets/media/normalized-20261012/nova/strong_nova.wav",
+      "sourceSha256": "050cf2181d08fcb32bdc0b3a0f4d2f00d250ec58455745c8ebdf62897e305406",
+      "outputSha256": "367e11f4bc086d0b7deac9edba24d9309e5f88aa99638547c8d5b4776b4ef927",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 1.118118,
+      "outputDuration": 1.118118,
+      "gainDb": -14.46,
+      "before": {
+        "lufs": -1.54,
+        "peakDbtp": 0.39,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -16.01,
+        "peakDbtp": -14.08,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/super-nova-stop.wav",
+      "category": "sfx",
+      "targetLufs": -16,
+      "output": "assets/media/normalized-20261012/nova/super-nova-stop.wav",
+      "sourceSha256": "831f3086b4dd7daabcae407dbdf3d984837829791fc4d59d277969e6d9f8ec30",
+      "outputSha256": "1d59b27391329308ef1647473d69e730cb8ba4616c6ec2e8239b78557172709e",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 1.726032,
+      "outputDuration": 1.726032,
+      "gainDb": -11.45,
+      "before": {
+        "lufs": -4.55,
+        "peakDbtp": -0.73,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -15.99,
+        "peakDbtp": -12.22,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/toto-bgm.wav",
+      "category": "bgm",
+      "targetLufs": -18,
+      "output": "assets/media/normalized-20261012/nova/toto-bgm.mp3",
+      "sourceSha256": "28983a9a193ceedb160f288fd109f9108f955d94ecf4de44871346d01d269da2",
+      "outputSha256": "86634def8351de7e913947c3c5c1f8dd2ef0ede1a87ba71d52a1746dbd18c0a8",
+      "rate": 48000,
+      "channels": 2,
+      "duration": 75.294125,
+      "outputDuration": 75.294125,
+      "gainDb": -8.38,
+      "before": {
+        "lufs": -9.36,
+        "peakDbtp": -0.11,
+        "rangeLu": 4.3
+      },
+      "after": {
+        "lufs": -18,
+        "peakDbtp": -7.7,
+        "rangeLu": 4.3
+      }
+    },
+    {
+      "src": "assets/media/nova/upper-at-bgm.mp3",
+      "category": "bgm",
+      "targetLufs": -18,
+      "output": "assets/media/normalized-20261012/nova/upper-at-bgm.mp3",
+      "sourceSha256": "ca4351aa9e7f923fe2f1c17b30afcfeee56c215399aa6552e5f3781b01134542",
+      "outputSha256": "e8540ac0e6b7380210735bd050e1100e22c64a3523cc5fd8cf02f367fb73614d",
+      "rate": 48000,
+      "channels": 2,
+      "duration": 134.615479,
+      "outputDuration": 134.615479,
+      "gainDb": -9.3,
+      "before": {
+        "lufs": -8.43,
+        "peakDbtp": 0.5,
+        "rangeLu": 3.4
+      },
+      "after": {
+        "lufs": -17.98,
+        "peakDbtp": -8.62,
+        "rangeLu": 3.4
+      }
+    },
+    {
+      "src": "assets/media/nova/urapi-bgm.wav",
+      "category": "bgm",
+      "targetLufs": -18,
+      "output": "assets/media/normalized-20261012/nova/urapi-bgm.mp3",
+      "sourceSha256": "1c050289c47f44cab43e4e22d8eaa7ec8c9c56ac05e76396fac27e9828a49f23",
+      "outputSha256": "9cca7eb8af1d6fa00919e68a56bebb35f9deb25bbc6c9528ddac088e2c718ad1",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 234.290317,
+      "outputDuration": 234.290317,
+      "gainDb": -8.62,
+      "before": {
+        "lufs": -9.14,
+        "peakDbtp": 0.58,
+        "rangeLu": 6
+      },
+      "after": {
+        "lufs": -18,
+        "peakDbtp": -7.57,
+        "rangeLu": 6
+      }
+    },
+    {
+      "src": "assets/media/nova/uuufa.wav",
+      "category": "sfx",
+      "targetLufs": -16,
+      "output": "assets/media/normalized-20261012/nova/uuufa.wav",
+      "sourceSha256": "a27cf851024250684108d09c1c23c1858735f5e3533b7ee9e8aa1e1f8e46a306",
+      "outputSha256": "03e126eae2bb4a879e7a39597a435a913315111058fb713b56a4bba06e07c718",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 12.585215,
+      "outputDuration": 12.585215,
+      "gainDb": -0.61,
+      "before": {
+        "lufs": -15.39,
+        "peakDbtp": -2.42,
+        "rangeLu": 6.8
+      },
+      "after": {
+        "lufs": -16,
+        "peakDbtp": -3.04,
+        "rangeLu": 6.8
+      }
+    },
+    {
+      "src": "assets/media/nova/weak-nova.wav",
+      "category": "sfx",
+      "targetLufs": -16,
+      "output": "assets/media/normalized-20261012/nova/weak-nova.wav",
+      "sourceSha256": "071bc9361a1b87f9509196a933622b2452dffdc6dc61c68a36d917645b02ec26",
+      "outputSha256": "69588d36b5eb653c0d8b1d97864fc3ba89700f61fc3422af80c5f5d251f7de39",
+      "rate": 48000,
+      "channels": 2,
+      "duration": 2.325333,
+      "outputDuration": 2.325333,
+      "gainDb": 2.03,
+      "before": {
+        "lufs": -17.1,
+        "peakDbtp": 1.48,
+        "rangeLu": 11.2
+      },
+      "after": {
+        "lufs": -16.05,
+        "peakDbtp": -1.9,
+        "rangeLu": 9.3
+      }
+    },
+    {
+      "src": "assets/media/nova/zone-start-giru.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/zone-start-giru.wav",
+      "sourceSha256": "ac6578ea66a0ae2c8e6555c7ac8db3d9088fa3a0afd9d0cc7e44501c86908e11",
+      "outputSha256": "e43a1b7557303798f8ed14a0f45859bf08305f2a2385cd9bbae8d18b80a3f245",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 0.962834,
+      "outputDuration": 0.962834,
+      "gainDb": -1.86,
+      "before": {
+        "lufs": -12.14,
+        "peakDbtp": -1.1,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -13.98,
+        "peakDbtp": -2.96,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/zone-start-ouma.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/zone-start-ouma.wav",
+      "sourceSha256": "79aa9656467d9af33e8cd560af6594b651c9984eacf33bad589623275dc376bd",
+      "outputSha256": "ff555af239b4e1e6c8811bea7d554c3c030e7220f0904644d1ea5841be9c0902",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 2.821224,
+      "outputDuration": 2.821224,
+      "gainDb": -1.93,
+      "before": {
+        "lufs": -12.07,
+        "peakDbtp": -1.1,
+        "rangeLu": 6.8
+      },
+      "after": {
+        "lufs": -13.99,
+        "peakDbtp": -3.03,
+        "rangeLu": 6.8
+      }
+    },
+    {
+      "src": "assets/media/nova/zone-start-sora.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/zone-start-sora.wav",
+      "sourceSha256": "4eec63e687be8c25df988a08699c891c05bae60e86aef2956ba00bca18c300ff",
+      "outputSha256": "6b1e8c84639b7878f3119ed4a8ddd9cd95671aa4f8af58680d2f02eab930f171",
+      "rate": 48000,
+      "channels": 1,
+      "duration": 1.450667,
+      "outputDuration": 1.450667,
+      "gainDb": -1.99,
+      "before": {
+        "lufs": -12.01,
+        "peakDbtp": -1.44,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -14,
+        "peakDbtp": -3.43,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/zone-start-toto.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/zone-start-toto.wav",
+      "sourceSha256": "4c48ae989e6ba1fe6dac9277d3dda5cbc6a74601c0cb44fbbf7e532c8937283d",
+      "outputSha256": "9be2adf19c720d36d3e9d5d8af7938c9b52afdeb646c7fa40dbe67f4682bab34",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 0.882358,
+      "outputDuration": 0.882358,
+      "gainDb": -1.96,
+      "before": {
+        "lufs": -12.04,
+        "peakDbtp": -2.38,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -13.96,
+        "peakDbtp": -4.34,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/zone-start-ura-giru.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/zone-start-ura-giru.wav",
+      "sourceSha256": "93f7186a7a807fafa240973551aeec31750fad7c4d692f5c1eef271666d9af55",
+      "outputSha256": "577d7dfce2dd4843888e560975333d387e8a72e34d2ba479a2af9ccbd97b98ab",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 1.16458,
+      "outputDuration": 1.16458,
+      "gainDb": -1.99,
+      "before": {
+        "lufs": -12.01,
+        "peakDbtp": -1.77,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -13.96,
+        "peakDbtp": -3.76,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/zone-start-ura-ouma.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/zone-start-ura-ouma.wav",
+      "sourceSha256": "da2e5c03348464c0712ce844b4fbe200f8c7827bf9a1f9b2f011c9a7dd76c2bf",
+      "outputSha256": "632db36bb3994e8d4513f31e2cea4767a313f64ddfeba98b3b112c3cecae9caf",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 4.423401,
+      "outputDuration": 4.423401,
+      "gainDb": -1.96,
+      "before": {
+        "lufs": -12.04,
+        "peakDbtp": -1.1,
+        "rangeLu": 8
+      },
+      "after": {
+        "lufs": -13.98,
+        "peakDbtp": -3.06,
+        "rangeLu": 7.9
+      }
+    },
+    {
+      "src": "assets/media/nova/zone-start-ura-sora.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/zone-start-ura-sora.wav",
+      "sourceSha256": "10b29fae315f07f234c18d50f35e0a2ff9d440de27779d047c507d05ef3a4cf9",
+      "outputSha256": "17b41a12539c04484faba7fd587d9c1f045f5f97c82169c3f5572c2adb0634c9",
+      "rate": 48000,
+      "channels": 1,
+      "duration": 2.197333,
+      "outputDuration": 2.197333,
+      "gainDb": -1.95,
+      "before": {
+        "lufs": -12.05,
+        "peakDbtp": -1.1,
+        "rangeLu": 1.4
+      },
+      "after": {
+        "lufs": -14.01,
+        "peakDbtp": -3.05,
+        "rangeLu": 1.5
+      }
+    }
+  ]
+}

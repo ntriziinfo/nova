@@ -32,7 +32,7 @@ globalThis.NovaAudio=(()=>{
   }catch(error){lastError=error.name||'AudioError';notify('nova-audio-blocked');return Promise.resolve(false);}
  }
  async function buffer(src){
-  const key=new URL(src,document.baseURI).href;
+  const key=new URL(globalThis.NovaAudioAssets?.resolve(src)||src,document.baseURI).href;
   if(cache.has(key)){const item=cache.get(key);cache.delete(key);cache.set(key,item);return item.promise;}
   const item={size:0,promise:null};
   item.promise=fetch(key).then(r=>{if(!r.ok)throw new Error('Audio HTTP '+r.status);return r.arrayBuffer();})
@@ -44,7 +44,8 @@ globalThis.NovaAudio=(()=>{
   cache.set(key,item);return item.promise;
  }
  function adopt(audio){
-  if(!enabled||!audio||players.has(audio))return audio;
+  if(!enabled)return globalThis.NovaAudioAssets?.adopt(audio)||audio;
+  if(!audio||players.has(audio))return audio;
   const originalClone=audio.cloneNode.bind(audio),originalSet=audio.setAttribute.bind(audio);
   const originalGet=audio.getAttribute.bind(audio);
   // Web Audio owns loading. Avoid a second native decoder for each voice.
@@ -129,7 +130,7 @@ globalThis.NovaAudio=(()=>{
   return true;
  }
  function disconnect(audio){const state=players.get(audio);if(state?.gain){state.gain.disconnect();state.route=null;}}
- const api={enabled,Audio:enabled?Audio:NativeAudio,adopt,context,unlock,connect,disconnect,
+ const api={enabled,Audio:enabled||globalThis.NovaAudioAssets?Audio:NativeAudio,adopt,context,unlock,connect,disconnect,
   status:()=>({enabled,state:ctx?.state||'not-started',unlocked,active:active.size,cachedBytes:bytes,started,lastError})};
  if(enabled){
   for(const event of ['touchend','click','keydown'])window.addEventListener(event,unlock,{capture:true,passive:true});

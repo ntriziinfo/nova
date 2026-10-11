@@ -32,6 +32,12 @@ python scripts/package-deploy-assets.py --tag nova-assets-YYYYMMDD-N --output ..
 
 `assets/media/nova/audiostock_932814.mp3`（242,415 bytes）は `.gitattributes` で個別にLFS対象から外し、原本を無変換のままGitへ格納する。既存の約1 GBの素材アーカイブは更新せず、Git cloneでこの音源も配信できる。原本と公開ファイルのSHA-256は `docs/cz-bgm-20261001.md` に記録する。その他のLFS素材の検査は従来どおり行う。
 
+### カテゴリ別ノーマライズ音源（2026-10-12）
+
+`assets/media/normalized-20261012/`は原本とは別の配信用コピーで、個別のファイルをGitから配信する。
+既存LFS原本・リリースアーカイブは変更しない。対応表は`nova-audio-manifest.js`、前後の測定値・原本と出力のSHA-256は`audio-normalization.json`。
+素材・対応表・測定記録を一緒にコミットし、`node --test tests/nova-audio-normalization.test.mjs`で検査する。
+
 ## 根拠
 
 [GitHub Releasesの容量・帯域](https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases#storage-and-bandwidth-quotas)：添付1個は2GiB未満、リリース総容量・帯域には上限を設けていない。
