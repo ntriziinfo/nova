@@ -1,0 +1,14 @@
+{
+  "originalFile": "1673525427wpdm_bg_07 (1).mp4",
+  "originalSha256": "c60bfa1f6f4906489ad9dd10318cac704362246807f3478a9c1efec38f85ae74",
+  "asset": "upper-at-background-20261012.mp4",
+  "sha256": "2aa7643502e5cfc35fb2c6f8a006e5d62baba90a9bfb76a3e5f8d6dcd64f8e15",
+  "bytes": 17285736,
+  "video": "H.264 / 960x540 / yuv420p / faststart",
+  "conversion": "ffmpeg -map 0:v:0 -an -vf scale=960:-2 -c:v libx264 -preset medium -crf 22 -pix_fmt yuv420p -movflags +faststart",
+  "audioRemoved": true,
+  "originalUnmodified": true,
+  "loop": true,
+  "trigger": "Upper AT, behind the character lamps and aim overlays; paused outside upper AT or when the page is hidden",
+  "usage": "User-provided copyrighted video for the requested NOVA presentation only. No training use."
+}

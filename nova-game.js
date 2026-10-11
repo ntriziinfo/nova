@@ -5531,6 +5531,7 @@
       document.body.dataset.totoColor=document.body.dataset.artZone==='toto'?(normalState.flow?.color||'white'):'white';
     }
     if(!isSpinning)NovaAim.syncAtWait(debugFastSpinActive||session.active||normalState.bonusPending||normalState.resultCard?null:normalState.flow);
+    NovaUpperAtBackground.sync(debugFastSpinActive||session.active||normalState.bonusPending||normalState.resultCard||isCompleteTrialLocked()?null:normalState.flow);
     $("modeTag").className = "modeTag " + ((active || isNovaRisingMode()) ? "active" : "");
     $("modeTag").textContent = (active ? `${aTypeBonusLabel(session.bonusKind)} BONUS` : normalModeLabel());
 

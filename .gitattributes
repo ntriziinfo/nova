@@ -32,3 +32,5 @@ assets/ui/super-nova-challenge-title-20261012.png -filter -diff -merge -text
 assets/ui/super-nova-challenge-title-20261012.source.json -filter -diff -merge text
 assets/media/nova/super-nova-challenge-tunnel-20261012.mp4 -filter -diff -merge -text
 assets/media/nova/super-nova-challenge-tunnel-20261012.source.json -filter -diff -merge text
+assets/media/nova/upper-at-background-20261012.mp4 -filter -diff -merge -text
+assets/media/nova/upper-at-background-20261012.source.json -filter -diff -merge text

@@ -1,0 +1,6 @@
+/* The character lamps (48) and aim movies (49) remain above this background. */
+#novaUpperAtBackground {
+ position:absolute;z-index:47;display:block;object-fit:cover;pointer-events:none;
+ background:#080212;
+}
+#novaUpperAtBackground[hidden] {display:none!important;}
