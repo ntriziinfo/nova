@@ -34,3 +34,5 @@ assets/media/nova/super-nova-challenge-tunnel-20261012.mp4 -filter -diff -merge 
 assets/media/nova/super-nova-challenge-tunnel-20261012.source.json -filter -diff -merge text
 assets/media/nova/upper-at-background-20261012.mp4 -filter -diff -merge -text
 assets/media/nova/upper-at-background-20261012.source.json -filter -diff -merge text
+assets/media/nova/upper-at-bgm.mp3 -filter -diff -merge -text
+assets/media/nova/upper-at-bgm.source.json -filter -diff -merge text

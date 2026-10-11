@@ -42,6 +42,7 @@
   const INITIAL_DUO_ZONE_BGM_SRC = "assets/media/nova/initial-duo-bgm.mp3";
   const SORTIE_ZONE_BGM_SRC = "assets/media/nova/sortie-bgm.mp3";
   const NOVA_ART_BGM_SRC = "assets/media/nova/RUSH.wav";
+  const NOVA_UPPER_ART_BGM_SRC = "assets/media/nova/upper-at-bgm.mp3";
   const NOVA_BIG_BGM_SRC = "assets/media/nova/BIG.wav";
 
   const CZ_BGM_SRC = "assets/media/nova/audiostock_860274.mp3";
@@ -4754,7 +4755,7 @@
       if(flow.researchChallengeActive || isSpinning&&currentSpin?.resolved?.researchChallenge)return SORTIE_ZONE_BGM_SRC;
       if(flow.initialStage==='zone'&&['kushuri_nito','kushuri','nito'].includes(flow.zone))return INITIAL_DUO_ZONE_BGM_SRC;
       const zoneTracks = {sosuke:SOSUKE_ZONE_BGM_SRC,toto:TOTO_ZONE_BGM_SRC,urapi:URAPI_ZONE_BGM_SRC,sora:SORA_ZONE_BGM_SRC,giru:GIRU_ZONE_BGM_SRC,ouma:OUMA_ZONE_BGM_SRC};
-      return zoneTracks[flow.zone] || NOVA_ART_BGM_SRC;
+      return zoneTracks[flow.zone] || (flow.researchUpper ? NOVA_UPPER_ART_BGM_SRC : NOVA_ART_BGM_SRC);
     }
     if(!session.active && ["cz","strong_cz"].includes(normalState.flow?.phase)){
       const flow=normalState.flow;

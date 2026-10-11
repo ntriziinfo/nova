@@ -1,0 +1,14 @@
+{
+  "originalFile": "audiostock_869038.mp3",
+  "source": "upper-at-bgm.mp3",
+  "originalUnmodified": true,
+  "bytes": 5386560,
+  "sha256": "ca4351aa9e7f923fe2f1c17b30afcfeee56c215399aa6552e5f3781b01134542",
+  "durationSeconds": 134.615479,
+  "sampleRate": 48000,
+  "channels": 2,
+  "category": "bgm",
+  "trigger": "Upper AT fallback BGM; character zones, challenges, bonuses and result audio retain their existing priority. Shared player restores this track on return to upper AT.",
+  "loop": true,
+  "usage": "User-provided copyrighted audio for the requested NOVA BGM only. No training use."
+}
