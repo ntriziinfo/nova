@@ -91,6 +91,24 @@ test('non-lighting stops and non-CZ stops retain their normal clips',()=>{
  }
 });
 
+test('sortie stop clips follow the first and second stop, regardless of reel order or award',()=>{
+ for(const order of [[2,1,0],[0,1,2],[1,2,0]])for(const won of [false,true]){
+  const {ctx,calls}=setup();
+  const resolved={researchSortie:{won,zone:won?'sora':'',finished:false},reward:8};
+  const before=JSON.stringify(resolved);
+  for(let game=0;game<2;game++){
+   ctx.currentSpin={resolved};calls.length=0;
+   for(let stop=1;stop<=2;stop++){
+    ctx.playStopSound(order[stop-1],stop);
+    ctx.playStopSound(order[stop-1],stop);
+   }
+   ctx.playStopSound(order[2],3);
+   assert.deepEqual(calls.map(x=>x.src),['assets/media/nova/sortie-stop-1.mp3','assets/media/nova/sortie-stop-2.mp3','normal.wav']);
+   assert.equal(JSON.stringify(resolved),before);
+  }
+ }
+});
+
 test('CZ intro suppresses every first-game lamp and lighting SE, including early wins, without changing the award',()=>{
  for(const phase of ['cz','strong_cz'])for(const bonusHit of [false,true])for(const withLamp of [false,true]){
   const {ctx,calls,machine,black}=setup();

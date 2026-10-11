@@ -763,7 +763,7 @@
   let characterVoiceBus=null;
   for(const src of CHARACTER_VOICE_SRCS){const audio=new Audio(src);audio.preload='auto';oneShotSoundCache.set(src,audio);audio.load();}
   const rareNaviPreload=new Audio('assets/media/nova/rare-navi.mp3');rareNaviPreload.preload='auto';rareNaviPreload.loop=false;oneShotSoundCache.set('assets/media/nova/rare-navi.mp3',rareNaviPreload);rareNaviPreload.load();
-  for(const src of ['assets/media/nova/initial-duo-stop.mp3','assets/media/nova/initial-duo-final-stop.mp3']){const audio=new Audio(src);audio.preload='auto';audio.loop=false;oneShotSoundCache.set(src,audio);audio.load();}
+  for(const src of ['assets/media/nova/initial-duo-stop.mp3','assets/media/nova/initial-duo-final-stop.mp3','assets/media/nova/sortie-stop-1.mp3','assets/media/nova/sortie-stop-2.mp3']){const audio=new Audio(src);audio.preload='auto';audio.loop=false;oneShotSoundCache.set(src,audio);audio.load();}
   for(const src of ['assets/media/jag/cz_third_success.wav','assets/media/jag/cz_third_failure.wav','assets/media/nova/cz_stop_12.wav']){const audio=new Audio(src);audio.preload='auto';oneShotSoundCache.set(src,audio);audio.load();}
   for(const src of ['assets/media/nova/bell-navi.wav','assets/media/nova/direct-award.wav','assets/media/nova/weak-nova.wav','assets/media/nova/aim/nebula-win.wav','assets/media/nova/aim/seven-win.wav','assets/media/nova/aim/cue-blue.wav','assets/media/nova/aim/cue-red.wav','assets/media/nova/aim/cue-rainbow.wav','assets/media/nova/shutter.wav','assets/media/nova/shutter-close.wav','assets/media/nova/ladder-final-award.wav','assets/media/nova/ladder-final-award-under1000.wav']){const audio=new Audio(src);audio.preload='auto';oneShotSoundCache.set(src,audio);audio.load();}
   const resultEyecatchPreload = new Audio('assets/media/nova/result-eyecatch.wav');
@@ -9138,6 +9138,13 @@
     playOneShotSound(order===3?'assets/media/nova/initial-duo-final-stop.mp3':'assets/media/nova/initial-duo-stop.mp3',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
   }
   function playStopSound(i, stopOrder=null){
+    if(currentSpin?.resolved?.researchSortie&&(stopOrder===1||stopOrder===2)){
+      const bit=1<<(stopOrder-1);
+      if((currentSpin.sortieStopSoundMask||0)&bit)return;
+      currentSpin.sortieStopSoundMask=(currentSpin.sortieStopSoundMask||0)|bit;
+      playOneShotSound(`assets/media/nova/sortie-stop-${stopOrder}.mp3`,sfxOutputVolume(),{allowDuringPremiumConfirm:true});
+      return;
+    }
     if(globalThis.NovaInitialDuo?.eligible(currentSpin?.resolved?.zoneStartFlow||currentSpin?.resolved?.flowBefore))return;
     const prelude=currentSpin?.resolved?.czPrelude||currentSpin?.resolved?.atPrelude;
     if(prelude&&!prelude.announce&&stopOrder>0&&stopOrder<=prelude.after){

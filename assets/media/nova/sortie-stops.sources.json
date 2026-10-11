@@ -1,0 +1,31 @@
+{
+  "sounds": [
+    {
+      "originalFile": "111.mp3",
+      "source": "sortie-stop-1.mp3",
+      "originalUnmodified": true,
+      "bytes": 49920,
+      "sha256": "a2137d5b98b83506dd64cfff262e46b457fab405c6b917681436f2449f91bd00",
+      "durationSeconds": 1.188146,
+      "sampleRate": 48000,
+      "channels": 2,
+      "category": "sfx",
+      "trigger": "Sortie challenge stop 1, in reel stop order",
+      "loop": false
+    },
+    {
+      "originalFile": "2222.mp3",
+      "source": "sortie-stop-2.mp3",
+      "originalUnmodified": true,
+      "bytes": 60480,
+      "sha256": "23e56ce52536be71a5c8e37d8f3582c639792a3d14db1ce3b8d5d2995b1699c5",
+      "durationSeconds": 1.455938,
+      "sampleRate": 48000,
+      "channels": 2,
+      "category": "sfx",
+      "trigger": "Sortie challenge stop 2, in reel stop order",
+      "loop": false
+    }
+  ],
+  "usage": "User-provided copyrighted audio for the requested NOVA effect only. No training use."
+}

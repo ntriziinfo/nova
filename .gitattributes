@@ -23,3 +23,6 @@ assets/media/nova/sortie-fire-round-20261011.mp4 -filter -diff -merge -text
 # The supplied small award sound ships intact, outside the existing LFS archive.
 assets/media/nova/sortie-award.mp3 -filter -diff -merge -text
 assets/media/nova/sortie-award.source.json -filter -diff -merge text
+assets/media/nova/sortie-stop-1.mp3 -filter -diff -merge -text
+assets/media/nova/sortie-stop-2.mp3 -filter -diff -merge -text
+assets/media/nova/sortie-stops.sources.json -filter -diff -merge text
