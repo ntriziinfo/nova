@@ -110,6 +110,7 @@ body[data-art-ura=true][data-art-zone=ouma] .novaArtItem[data-artwork=ouma1] img
 #novaSortieGuide [data-stopped=true]{opacity:.35}
 #novaSortieCharacter{position:absolute;z-index:63;overflow:hidden;opacity:0;pointer-events:none;user-select:none;background:radial-gradient(ellipse,#080310a6,transparent 75%)}
 #novaSortieCharacter[hidden],#novaSortieCharacter img[hidden]{display:none!important}
+#novaSortieCharacter .novaSortiePortraits{position:absolute;inset:0;transform-origin:50% 48%}
 /* Frame the faces across all three reels; keep the supplied image files intact. */
 #novaSortieCharacter img{--face-width:200%;--face-x:50%;--face-y:44%;position:absolute;display:block;left:50%;top:48%;width:var(--face-width);height:auto;max-width:none;max-height:none;transform:translate(calc(0% - var(--face-x)),calc(0% - var(--face-y)));filter:drop-shadow(0 0 8px #fff0dc)}
 #novaSortieCharacter img[data-character=sosuke]{--face-x:49%;--face-y:44%}
@@ -123,6 +124,10 @@ body[data-art-ura=true][data-art-zone=ouma] .novaArtItem[data-artwork=ouma1] img
 #novaSortieCharacter[data-pair=true] img[data-character=kushuri]{--face-x:41%;--face-y:45.5%;left:75%;clip-path:inset(0 38.167% 0 20.167%)}
 #novaSortieCharacter[data-confirmed=true]{opacity:1;background:radial-gradient(ellipse,#604414cc,#08031099 65%,transparent);box-shadow:inset 0 0 18px #ffdd7899}
 #novaSortieCharacter[data-confirmed=true] img{filter:drop-shadow(0 0 12px #ffd05b)}
+/* Pulse the portraits together inside the fixed reel viewport; leave the award text steady. */
+#novaSortieCharacter[data-confirmed=true]:not([hidden]) .novaSortiePortraits{animation:novaSortieWinZoom 180ms ease-in-out infinite}
+@keyframes novaSortieWinZoom{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+@media(prefers-reduced-motion:reduce){#novaSortieCharacter[data-confirmed=true]:not([hidden]) .novaSortiePortraits{animation:none}}
 #novaSortieCharacter strong{position:absolute;bottom:0;left:0;width:100%;padding:2% 0 1%;text-align:center;color:#fff1a3;font-weight:900;text-shadow:0 2px 3px #000,0 0 8px #5a2000;background:linear-gradient(transparent,#160718d9)}
 #novaSortieCharacter strong:empty{display:none}
 #novaStockPreparation{position:absolute;z-index:62;display:flex;align-items:center;justify-content:center;text-align:center;color:#ffe4a0;background:linear-gradient(135deg,#220514ed,#070817ed);border:1px solid #debb61;border-radius:6px;font-weight:900;text-shadow:0 2px 4px #000;pointer-events:none}

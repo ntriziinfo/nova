@@ -32,12 +32,13 @@ globalThis.NovaSortie=(()=>{
   const title=document.createElement('strong');title.textContent='逆押しでノヴァを狙え';root.append(title);
   for(const [i,name]of ['左','中','右'].entries()){const cell=document.createElement('span');cell.dataset.reel=String(i);cell.textContent=`${3-i} ${name}`;root.append(cell);}
   reveal=document.createElement('div');reveal.id='novaSortieCharacter';reveal.hidden=true;reveal.setAttribute('aria-hidden','true');
+  const portraits=document.createElement('div');portraits.className='novaSortiePortraits';
   for(const [id,[file,name]] of Object.entries(characters)){
    const img=document.createElement('img');img.dataset.character=id;img.alt=name;img.draggable=false;img.hidden=true;
    img.src=`assets/illustrations/lamps-${['nito','kushuri'].includes(id)?'20260928':'20260916'}/${file}.png`;
-   reveal.append(img);actors.push(img);
+   portraits.append(img);actors.push(img);
   }
-  caption=document.createElement('strong');reveal.append(caption);host.append(root,reveal);return true;
+  caption=document.createElement('strong');reveal.append(portraits,caption);host.append(root,reveal);return true;
  }
  function layout(){
   if(!root||root.hidden)return;

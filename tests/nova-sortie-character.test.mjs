@@ -23,7 +23,7 @@ function setup(){
  return {api:context.NovaSortie,animations,lamps,draws:()=>draws,view:()=>elements.find(e=>e.id==='novaSortieCharacter')};
 }
 function spin(won,zone='sora',finished=false){return {stopped:[false,false,false],resolved:{researchSortie:Object.freeze({won,zone:won?zone:'',finished}),reward:8,flowAfter:{remaining:'600',queuedZones:won?[zone]:[]}}};}
-const visible=t=>t.view().children.filter(e=>e.tag==='img'&&!e.hidden).map(e=>e.dataset.character);
+const visible=t=>t.view().firstChild.children.filter(e=>e.tag==='img'&&!e.hidden).map(e=>e.dataset.character);
 
 test('BET and the first two stops fade the same awarded character; the third reveals the true award',()=>{
  for(const zone of ['sosuke','toto','urapi','giru','sora','ouma','ura_giru','ura_sora','ura_ouma','kushuri_nito']){
