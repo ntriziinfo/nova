@@ -728,6 +728,9 @@
   const bellZakoTimers = [null, null, null];
   const aimWinAudios=new Set();
   const oneShotSoundCache = new Map();
+  NovaSortie.setSoundPlayer(src=>playOneShotSound(src,sfxOutputVolume(),{allowDuringPremiumConfirm:true}));
+  const sortieAwardPreload=new Audio('assets/media/nova/sortie-award.mp3');sortieAwardPreload.preload='auto';sortieAwardPreload.load();
+  oneShotSoundCache.set('assets/media/nova/sortie-award.mp3',sortieAwardPreload);
   const BELL_NAVI_VOICE_SRCS={sosuke:['assets/media/nova/navi-left-sosuke.wav','assets/media/nova/navi-center-sosuke.wav','assets/media/nova/navi-right-sosuke.wav'],sora:['assets/media/nova/navi-left-sora.wav','assets/media/nova/navi-center-sora.wav','assets/media/nova/navi-right-sora.wav'],giru:['assets/media/nova/navi-left-giru.wav','assets/media/nova/navi-center-giru.wav','assets/media/nova/navi-right-giru.wav'],toto:['assets/media/nova/navi-left-toto.wav','assets/media/nova/navi-center-toto.wav','assets/media/nova/navi-right-toto.wav'],ouma:['assets/media/nova/navi-left-ouma.wav','assets/media/nova/navi-center-ouma.wav','assets/media/nova/navi-right-ouma.wav'],nito:['assets/media/nova/navi-left-nito.wav','assets/media/nova/navi-center-nito.wav','assets/media/nova/navi-right-nito.wav'],kushuri:['assets/media/nova/navi-left-kushuri.wav','assets/media/nova/navi-center-kushuri.wav','assets/media/nova/navi-right-kushuri.wav']};
   const BELL_NAVI_COMPLETE_VOICE_SRCS={sosuke:'assets/media/nova/navi-complete-sosuke.wav',sora:'assets/media/nova/navi-complete-sora.wav',giru:'assets/media/nova/navi-complete-giru.wav',toto:'assets/media/nova/navi-complete-toto.wav',ouma:'assets/media/nova/navi-complete-ouma.wav',nito:'assets/media/nova/navi-complete-nito.wav',kushuri:'assets/media/nova/navi-complete-kushuri.wav'};
   const AIM_VOICE_SRCS={seven:['assets/media/nova/aim_seven_sosuke.wav','assets/media/nova/aim-seven-sora.wav','assets/media/nova/aim-seven-giru.wav','assets/media/nova/aim-seven-toto.wav','assets/media/nova/aim-seven-ouma.wav'],nebula:['assets/media/nova/aim-nebula-giru.wav','assets/media/nova/aim-nebula-toto.wav','assets/media/nova/aim-nebula-ouma.wav','assets/media/nova/aim-nebula-sora.wav']};
@@ -1404,6 +1407,7 @@
   }
 
   function applyAudioOutputVolumes(){
+    NovaSortie.updateVolume(sfxOutputVolume());
     globalThis.NovaRushConfirm?.updateVolumes(bgmOutputVolume(BGM_OUTPUT_SCALE),sfxOutputVolume());
     applyCharacterVoiceOutputVolumes();
     if(oumaIntroAudio)oumaIntroAudio.volume=sfxOutputVolumeForSource(SFX_OUTPUT_SCALE,'assets/media/nova/uuufa.wav');

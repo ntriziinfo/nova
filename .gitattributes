@@ -20,3 +20,6 @@ assets/ui/nova-rush-confirmed.png -filter -diff -merge -text
 # New sortie title and the supplied original video ship without replacing the media archive.
 assets/ui/sortie-challenge-title-20261011.png -filter -diff -merge -text
 assets/media/nova/sortie-fire-round-20261011.mp4 -filter -diff -merge -text
+# The supplied small award sound ships intact, outside the existing LFS archive.
+assets/media/nova/sortie-award.mp3 -filter -diff -merge -text
+assets/media/nova/sortie-award.source.json -filter -diff -merge text

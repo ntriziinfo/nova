@@ -4,7 +4,55 @@ globalThis.NovaSortie=(()=>{
  const characters={sosuke:['sosuke','宗介'],toto:['toto','とと'],urapi:['urapi','うらぴ'],giru:['giru1','ギル'],sora:['sora1','空'],ouma:['ouma1','逢魔'],nito:['nito','にと'],kushuri:['kushuri','くしゅり']};
  const candidates=['sosuke','toto','urapi','giru','sora','ouma','kushuri_nito'];
  const previews=new WeakMap();
- let root,host,drop=null,reveal,caption,actors=[],animation=null,revealSpin=null,revealStage=-1;
+ let root,host,drop=null,reveal,portraits,caption,actors=[],animation=null,revealSpin=null,revealStage=-1;
+ let soundPlayer=null,awardSound=null,awardFrame=0,removeSoundError=null;
+ const awardSoundSrc='assets/media/nova/sortie-award.mp3';
+ // 10 ms RMS envelope of the supplied original; read against the actual audio clock.
+ const awardEnvelope=[
+  255,255,254,255,253,248,253,228,125,78,205,255,254,255,253,248,253,230,129,78,204,251,245,252,255,255,255,255,255,253,248,247,
+  243,240,249,252,248,252,252,254,251,243,246,241,249,248,245,245,239,233,240,244,251,248,241,237,240,242,242,239,241,234,243,244,
+  240,235,240,241,244,243,235,242,245,242,241,238,236,229,227,242,242,241,243,243,243,247,244,232,232,235,226,225,234,231,220,223,
+  227,227,231,236,228,224,218,218,221,212,206,209,223,228,223,216,223,219,211,225,226,220,215,216,219,225,219,212,213,217,210,204,
+  213,221,216,216,214,216,212,210,208,210,216,211,203,202,204,203,202,204,199,195,193,193,195,196,192,193,194,189,175,169,176,178,
+  180,190,196,191,186,182,173,166,166,164,162,169,185,188,185,184,179,169,165,163,162,167,177,180,180,180,178,172,165,166,165,167,
+  172,177,179,178,177,175,170,169,170,172,173,173,175,174,175,174,172,173,176,185,189,185,172,171,180,186,183,174,170,171,174,176,
+  174,173,173,174,178,179,171,171,181,185,184,177,173,168,165,166,173,179,178,175,174,178,179,174,167,166,170,171,173,180,182,178,
+  173,170,167,163,164,168,173,177,181,183,179,168,164,166,168,174,169,168,172,173,174,169,168,177,181,180,175,172,176,181,183,181,
+  176,174,169,167,169,181,186,186,185,187,187,184,186,189,188,184,181,182,183,181,175,171,169,172,173,168,170,175,181,184,184,178,
+  175,172,170,169,166,170,176,182,184,186,182,178,172,173,173,173,175,178,180,178,171,166,165,164,167,172,176,177,179,172,126,51,
+  28,24,23,21,20,22,28,32,36,39,39,32,25,22,18,18,18,18,19,19,20,20,20,18,10,5,4,4,4,4,5,5,
+  5,5,4,4,4,4,4,5,6,7,7,7,5,4,4,3,3,3,3,3,3,4,4,4,3,1,1,1,1,1,1,1,
+  1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,
+  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+  0,0,0,0,0,0,0,0,0
+ ];
+ function awardScale(time){
+  const pos=Math.max(0,Number(time)||0)*100,i=Math.min(awardEnvelope.length-1,Math.floor(pos)),next=Math.min(i+1,awardEnvelope.length-1);
+  return .8+.2*(awardEnvelope[i]+(awardEnvelope[next]-awardEnvelope[i])*(pos-Math.floor(pos)))/255;
+ }
+ function stopAward(){
+  if(awardFrame){globalThis.cancelAnimationFrame?.(awardFrame);awardFrame=0;}
+  removeSoundError?.();removeSoundError=null;
+  const audio=awardSound;awardSound=null;
+  if(audio){audio.loop=false;audio.pause();try{audio.currentTime=0;}catch{}}
+  portraits?.style.setProperty('--sortie-win-scale','1');
+ }
+ function startAward(reduced){
+  try{
+   const playback=soundPlayer?.(awardSoundSrc),audio=playback?.audio;if(!audio)return;
+   awardSound=audio;audio.loop=true;
+   const onError=()=>{if(awardSound===audio)stopAward();};
+   audio.addEventListener('error',onError);removeSoundError=()=>audio.removeEventListener('error',onError);
+   const tick=()=>{
+    if(awardSound!==audio)return;
+    if(!audio.paused&&audio.readyState>=2)portraits.style.setProperty('--sortie-win-scale',String(awardScale(audio.currentTime)));
+    awardFrame=requestAnimationFrame(tick);
+   };
+   if(!reduced)tick();
+   Promise.resolve(playback.promise).catch(onError);
+  }catch{stopAward();}
+ }
  const eligible=spin=>!!spin?.resolved?.researchSortie;
  // Translate legacy engine/save labels only at the presentation boundary.
  const label=text=>String(text||'').replace(/ノヴァ出陣(?:ゾーン|チャンス|チャレンジ)?|出陣ゾーン|出陣チャンス/g,'出陣チャレンジ');
@@ -32,7 +80,7 @@ globalThis.NovaSortie=(()=>{
   const title=document.createElement('strong');title.textContent='逆押しでノヴァを狙え';root.append(title);
   for(const [i,name]of ['左','中','右'].entries()){const cell=document.createElement('span');cell.dataset.reel=String(i);cell.textContent=`${3-i} ${name}`;root.append(cell);}
   reveal=document.createElement('div');reveal.id='novaSortieCharacter';reveal.hidden=true;reveal.setAttribute('aria-hidden','true');
-  const portraits=document.createElement('div');portraits.className='novaSortiePortraits';
+  portraits=document.createElement('div');portraits.className='novaSortiePortraits';
   for(const [id,[file,name]] of Object.entries(characters)){
    const img=document.createElement('img');img.dataset.character=id;img.alt=name;img.draggable=false;img.hidden=true;
    img.src=`assets/illustrations/lamps-${['nito','kushuri'].includes(id)?'20260928':'20260916'}/${file}.png`;
@@ -49,6 +97,7 @@ globalThis.NovaSortie=(()=>{
  }
  function revealCharacter(spin,stage){
   if(revealSpin===spin&&revealStage===stage)return;
+  stopAward();
   animation?.cancel();animation=null;revealSpin=spin;revealStage=stage;
   const event=spin.resolved.researchSortie;
   // The final reveal follows the internal stock award, even if NOVA was not aligned manually.
@@ -61,6 +110,7 @@ globalThis.NovaSortie=(()=>{
   reveal.hidden=false;
   const reduced=globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
   animation=reveal.animate(stage===3?[{opacity:0},{opacity:1}]:[{opacity:0,offset:0},{opacity:.85,offset:.2},{opacity:.85,offset:.5},{opacity:0,offset:1}],{duration:stage===3?(reduced?1:220):520,easing:'ease-in-out'});
+  if(stage===3)startAward(reduced);
  }
  function render(spin){
   if(!eligible(spin)||!init())return;
@@ -74,6 +124,7 @@ globalThis.NovaSortie=(()=>{
   layout();
  }
  function clear(){
+  stopAward();
   if(root)root.hidden=true;
   animation?.cancel();animation=null;revealSpin=null;revealStage=-1;
   if(reveal)reveal.hidden=true;
@@ -95,5 +146,8 @@ globalThis.NovaSortie=(()=>{
   });
  }
  if(typeof window!=='undefined')window.addEventListener('resize',layout);
- return {eligible,label,target,begin,stop:render,clear,dropLeft,flash};
+ return {eligible,label,target,begin,stop:render,clear,dropLeft,flash,awardScale,
+  setSoundPlayer:player=>{soundPlayer=player;},
+  updateVolume:volume=>{if(awardSound)awardSound.volume=Math.max(0,Math.min(1,Number(volume)||0));}
+ };
 })();

@@ -1,0 +1,15 @@
+{
+  "originalFile": "audiostock_1599407.mp3",
+  "source": "sortie-award.mp3",
+  "originalUnmodified": true,
+  "bytes": 211068,
+  "sha256": "3c33855379ac0cdd063802660cd8624f6989a4a1c90eb22993a932efe269fec6",
+  "durationSeconds": 5.205193,
+  "sampleRate": 44100,
+  "channels": 2,
+  "category": "sfx",
+  "trigger": "Won sortie character reveal on the third reel stop",
+  "loop": "Until the next BET or reset",
+  "visualSync": "Local 10 ms RMS envelope, 10th/95th-percentile normalization, three-sample smoothing; scale 0.8–1.0 reads the actual playback currentTime",
+  "usage": "User-provided copyrighted audio for the requested NOVA effect only. No training use."
+}

@@ -3,10 +3,10 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
 
-function setup(){
- const elements=[],animations=[];let draws=0;
+function setup({reduced=false}={}){
+ const elements=[],animations=[],frames=new Map();let draws=0,frameId=0;
  function element(tag){
-  const classes=new Set(),e={tag,children:[],style:{setProperty(){}},dataset:{},offsetWidth:1000,hidden:false,
+  const classes=new Set(),e={tag,children:[],style:{setProperty(k,v){this[k]=v;}},dataset:{},offsetWidth:1000,hidden:false,
    classList:{toggle(k,on){on?classes.add(k):classes.delete(k);},remove(k){classes.delete(k);}},
    append(...children){this.children.push(...children);},setAttribute(k,v){this[k]=v;},
    get firstChild(){return this.children[0];},querySelectorAll(){return this.children.filter(e=>e.dataset.reel!==undefined);},
@@ -17,10 +17,10 @@ function setup(){
  const host=element('host'),reels=[0,1,2].map(i=>{const e=element('reel');e.dataset.reel=String(i);return e;});
  const lamps=['sosuke','toto','urapi','giru1','sora1','ouma1','nito','kushuri'].map(id=>({dataset:{artwork:id}}));
  host.querySelector=()=>({getBoundingClientRect:()=>({left:100,top:600,width:600,height:240})});host.querySelectorAll=()=>reels;
- const context=vm.createContext({crypto:{getRandomValues(a){draws++;a[0]=0;return a;}},document:{getElementById:()=>host,createElement:element,querySelectorAll:s=>s==='.novaArtItem'?lamps:reels},window:{addEventListener(){}},matchMedia:()=>({matches:false})});
+ const context=vm.createContext({crypto:{getRandomValues(a){draws++;a[0]=0;return a;}},document:{getElementById:()=>host,createElement:element,querySelectorAll:s=>s==='.novaArtItem'?lamps:reels},window:{addEventListener(){}},matchMedia:()=>({matches:reduced}),requestAnimationFrame:fn=>{frames.set(++frameId,fn);return frameId;},cancelAnimationFrame:id=>frames.delete(id)});
  vm.runInContext(fs.readFileSync('nova-sortie-presentation.js','utf8'),context);
  vm.runInContext('Math.random=()=>{throw Error("Presentation must not consume game RNG")}',context);
- return {api:context.NovaSortie,animations,lamps,draws:()=>draws,view:()=>elements.find(e=>e.id==='novaSortieCharacter')};
+ return {api:context.NovaSortie,animations,lamps,frames,frame:()=>{const [id,fn]=frames.entries().next().value;frames.delete(id);fn();},draws:()=>draws,view:()=>elements.find(e=>e.id==='novaSortieCharacter')};
 }
 function spin(won,zone='sora',finished=false){return {stopped:[false,false,false],resolved:{researchSortie:Object.freeze({won,zone:won?zone:'',finished}),reward:8,flowAfter:{remaining:'600',queuedZones:won?[zone]:[]}}};}
 const visible=t=>t.view().firstChild.children.filter(e=>e.tag==='img'&&!e.hidden).map(e=>e.dataset.character);
@@ -74,4 +74,38 @@ test('new BET, reset and leaving sortie cancel old fades and clear a final award
 test('missing or unknown award character cannot turn into a false third-stop reveal',()=>{
  const t=setup(),s=spin(true,'unknown');s.stopped=[true,true,true];t.api.begin(s);
  assert.equal(t.view().hidden,true);assert.equal(t.animations.length,0);assert.equal(t.draws(),0);
+});
+
+function sound(){
+ const listeners=new Map();return {currentTime:0,readyState:4,paused:false,loop:false,volume:1,listeners,
+  pause(){this.paused=true;},addEventListener(k,fn){listeners.set(k,fn);},removeEventListener(k){listeners.delete(k);}
+ };
+}
+
+test('winning third stop loops the supplied sound once and scales by its playback position within 80–100%',()=>{
+ const t=setup(),audio=sound(),s=spin(true);let plays=0;
+ t.api.setSoundPlayer(src=>{assert.equal(src,'assets/media/nova/sortie-award.mp3');plays++;return {audio,promise:Promise.resolve()};});
+ t.api.begin(s);for(const i of [2,1]){s.stopped[i]=true;t.api.stop(s);}assert.equal(plays,0);
+ s.stopped[0]=true;t.api.stop(s);t.api.stop(s);assert.equal(plays,1);assert.equal(audio.loop,true);
+ const scales=[];
+ for(let time=0;time<5.21;time+=.01){audio.currentTime=time;t.frame();scales.push(Number(t.view().firstChild.style['--sortie-win-scale']));}
+ assert(Math.min(...scales)>=.8);assert(Math.max(...scales)<=1);assert(Math.min(...scales)<.81);assert(Math.max(...scales)>.99);
+ audio.currentTime=.09;t.frame();const atBeat=t.view().firstChild.style['--sortie-win-scale'];
+ audio.currentTime=4;t.frame();audio.currentTime=.09;t.frame();assert.equal(t.view().firstChild.style['--sortie-win-scale'],atBeat,'seek/loop must use the audio clock');
+ t.api.updateVolume(0);assert.equal(audio.volume,0);assert.equal(t.frames.size,1,'mute does not stop the visual');
+ t.api.begin(spin(false));assert.equal(audio.paused,true);assert.equal(audio.loop,false);assert.equal(audio.currentTime,0);assert.equal(t.frames.size,0);assert.equal(audio.listeners.size,0);
+});
+
+test('failed or superseded playback cannot keep audio or animation alive',async()=>{
+ const t=setup(),old=sound(),next=sound(),s=spin(true);s.stopped=[true,true,true];let reject;
+ t.api.setSoundPlayer(()=>({audio:old,promise:new Promise((_,r)=>{reject=r;})}));t.api.begin(s);t.api.clear();
+ t.api.setSoundPlayer(()=>({audio:next,promise:Promise.resolve()}));t.api.begin(spin(true));s.stopped=[true,true,true];t.api.begin(s);
+ reject(new Error('delayed failure'));await Promise.resolve();assert.equal(next.paused,false);assert.equal(t.frames.size,1);
+ next.listeners.get('error')();assert.equal(next.paused,true);assert.equal(t.frames.size,0);assert.equal(t.view().firstChild.style['--sortie-win-scale'],'1');
+});
+
+test('reduced motion keeps the confirmation audio but omits the zoom frame loop',()=>{
+ const t=setup({reduced:true}),audio=sound(),s=spin(true);s.stopped=[true,true,true];
+ t.api.setSoundPlayer(()=>({audio}));t.api.begin(s);assert.equal(audio.loop,true);assert.equal(t.frames.size,0);
+ t.api.clear();assert.equal(audio.paused,true);
 });
