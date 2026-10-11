@@ -1,5 +1,16 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
 const c=vm.createContext({});vm.runInContext(fs.readFileSync('nova-results.js','utf8'),c);const r=c.NovaResults;
+
+test('sortie result uses this challenge hit count including the final award, without a result draw or modifying stocks',()=>{
+ for(let count=0;count<=10;count++){
+  for(const won of [false,true]){
+   const event=Object.freeze({hits:count,won,finished:true}),card=r.sortie(event);
+   assert.deepEqual({...card},{kind:'sortie',character:'all',color:'gold',count});
+   assert.equal(r.sortie({...event,finished:false}),null);
+  }
+ }
+ for(const event of [undefined,{finished:true,hits:-1},{finished:true,hits:2.5},{finished:true,hits:'3'}])assert.equal(r.sortie(event),null);
+});
 test('parity favors red 60/40 for odd and blue 60/40 for even',()=>{for(let s=1;s<=6;s++){let red=0;for(let i=0;i<1000;i++)if(r.pick('zone','giru',s,()=>i/1000).color==='red')red++;assert.equal(red,s%2?600:400);}});
 test('AT hint percentages are unconditional, setting-gated and exclusive, leaving regular images balanced with one draw',()=>{
  for(let setting=1;setting<=6;setting++){
@@ -43,6 +54,20 @@ function presenter(){
  const flush=()=>new Promise(resolve=>setImmediate(resolve));
  return {c,images,shown,fields,flush};
 }
+
+test('sortie result restores the exact acquired count, with no pt unit or AT setting hint, and resets its next-step text',async()=>{
+ const {c,fields,flush}=presenter();
+ for(const count of [2,5,10]){
+  const saved=JSON.parse(JSON.stringify(r.sortie({finished:true,hits:count}))),before=JSON.stringify(saved);
+  c.show(saved);await flush();
+  assert.equal(fields.output.textContent,`特化ゾーン×${count}獲得`);assert.equal(fields.span.textContent,'出陣チャレンジ');
+  assert.equal(fields['.novaResultNext'].textContent,'次のBETで特化ゾーン準備');assert.equal(fields['.novaResultNext'].hidden,false);
+  assert.equal(c.root.dataset.kind,'sortie');assert.equal(c.root.dataset.loading,undefined);assert.equal(fields['.novaResultTotal'].hidden,true);assert.equal(JSON.stringify(saved),before);
+  c.hide();c.show(saved);assert.equal(fields.output.textContent,`特化ゾーン×${count}獲得`);
+ }
+ c.show({kind:'checkpoint',character:'all',color:'gold',pt:'2400'});assert.equal(fields['.novaResultNext'].textContent,'次のBETでスーパーノヴァチャレンジ');assert.equal(fields.output.textContent,'+2400pt');
+ c.show({kind:'zone',character:'sora',color:'blue',pt:'500'});assert.equal(c.root.dataset.kind,'zone');assert.equal(fields.output.textContent,'500pt');assert.equal(fields['.novaResultNext'].hidden,true);
+});
 test('decoded result images show synchronously and cold/error requests show the current points',async()=>{
  const {c,images,shown,fields,flush}=presenter();
  c.show({character:'sora',color:'blue',pt:'750'});assert.equal(c.num.textContent,'750');assert.equal(fields.output.textContent,'750pt');assert.equal(fields.span.textContent,'空 上乗せ');

@@ -2647,7 +2647,7 @@
   function showCheckpointResultIfReady(replaceResult=false){
     if(!A_TYPE_MODE||debugFastSpinActive||session.active||normalState.bonusPending||isCompleteTrialLocked()||isSpinning)return false;
     if(normalState.flow?.phase==='normal'&&normalState.internal?.prelude)return false;
-    if((normalState.resultCard&&!replaceResult)||normalState.pendingZoneResult||normalState.ladderAwardPresentation||NovaAim.busy||NovaDirectAward.busy)return false;
+    if((normalState.resultCard&&!replaceResult)||normalState.pendingZoneResult||normalState.pendingSortieResult||normalState.ladderAwardPresentation||NovaAim.busy||NovaDirectAward.busy)return false;
     const card=checkpointResultCard(normalState.flow,NovaProgress.snapshot(),normalState.checkpointResultShown,currentProfit());
     if(!card)return false;
     normalState.checkpointResultShown=card.checkpoint;
@@ -5007,6 +5007,15 @@
     stopSpeedToBonus('リザルト表示');
     playLockedBonusConfirmSound('assets/media/nova/result-eyecatch.wav',bgmOutputVolume(BGM_OUTPUT_SCALE));
   }
+  function showSortieResultIfReady(){
+    const card=normalState.pendingSortieResult;
+    if(!card||debugFastSpinActive||isSpinning||NovaSortie.busy)return false;
+    delete normalState.pendingSortieResult;
+    NovaSortie.clear();
+    displayNovaResult(card);
+    persistState();
+    return true;
+  }
   function trackZoneResult(card,before,after){
     const tracked=NovaResults.chain(normalState.zoneResultChain,before,after,card);
     if(tracked.state)normalState.zoneResultChain=tracked.state;else delete normalState.zoneResultChain;
@@ -5049,6 +5058,7 @@
     normalState.sinceBonus = normalizeBonusAfterGames(resolved.ceilingAfter);
     if(A_TYPE_MODE){
       normalState.flow = NovaFlow.normalize(resolved.flowAfter);
+      if(!debugFastSpinActive){const sortieCard=NovaResults.sortie(resolved.researchSortie);if(sortieCard)normalState.pendingSortieResult=sortieCard;}
       const zoneCard=trackZoneResult(resolved.comebackEvent==='entry'?null:NovaResults.transition(resolved.flowBefore,normalState.flow,settings.setting),resolved.zoneStartFlow||resolved.flowBefore,normalState.flow);
       if(zoneCard){
         if(!debugFastSpinActive&&NovaLadder.eligible(resolved.flowBefore)){
@@ -5477,6 +5487,7 @@
   }
 
   function updateDisplay(){
+    showSortieResultIfReady();
     renderRemainingCounters();
     NovaStockEntry.show(!session.active&&!normalState.resultCard&&NovaStockEntry.matches(normalState.stockEntry,normalState.flow,NovaProgress.snapshot())?normalState.stockEntry:null);
     if(!debugFastSpinActive){
@@ -6926,7 +6937,7 @@
 
   function tryStockEntry(){
     const progress=NovaProgress.snapshot();
-    if(session.active||normalState.bonusPending||normalState.pendingZoneResult||progress.pending>0||!NovaStockEntry.eligible(normalState.flow,progress))return false;
+    if(session.active||normalState.bonusPending||normalState.pendingZoneResult||normalState.pendingSortieResult||progress.pending>0||!NovaStockEntry.eligible(normalState.flow,progress))return false;
     if(normalState.ladderAwardPresentation){
       const card=normalState.ladderAwardPresentation.card;delete normalState.ladderAwardPresentation;
       displayNovaResult(card);persistState();updateDisplay();scheduleNextAuto();return true;
@@ -7012,6 +7023,7 @@
     }
     if(isCzIntroVoiceHolding())return;
     // A queued ending (including after a zone result/reload) consumes no BET or RNG.
+    if(showSortieResultIfReady()){updateDisplay();scheduleNextAuto();return;}
     if(showCheckpointResultIfReady(true)){persistState();updateDisplay();scheduleNextAuto();return;}
     if(A_TYPE_MODE&&['SORTIE','FREEZE'].includes(forceResult))takeForcedResult();
     if(tryStockEntry())return;
