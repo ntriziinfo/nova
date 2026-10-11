@@ -23,7 +23,7 @@ globalThis.NovaRemainingCounters=(()=>{
   if(shown.researchSortieLeft){label='出陣チャレンジ';left=shown.researchSortieLeft;}
   else if(shown.zone){label=NovaArt.zoneName(shown)+'ゾーン';left=shown.zoneLeft;hold=!!(shown.zero||resolved?.oumaFreeze);}
   else if(shown.researchChallengeActive||shown.burstLeft||resolved?.researchChallenge?.started){
-   label='上位ATチャレンジ';left=resolved?.researchChallenge?.started?10:shown.burstLeft;hold=!!shown.researchAim;
+   label='スーパーノヴァチャレンジ';left=resolved?.researchChallenge?.started?10:shown.burstLeft;hold=!!shown.researchAim;
   }
   else if(shown.comebackLeft){label='引き戻しチャレンジ';left=shown.comebackLeft;}
   else if(shown.initialStage==='wait'){label='AT準備';left=shown.initialWait;}

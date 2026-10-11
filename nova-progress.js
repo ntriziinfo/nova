@@ -71,7 +71,7 @@ globalThis.NovaProgress=(()=>{
      pendingZone:a.pickAtZone(c.setting||3,false,rng),entryStage:'seven',giruSetting:c.setting||3,rouletteTable:0});
     e.reward='zone';state.rewardZones++;
    }
-   out.message=e.won?'上位ATチャレンジ成功！':e.finished?'チャレンジ終了 / 通常ATへ':e.priorAim?'ノヴァ揃いなら上位AT！':e.nextAim?'HOLD / 次ゲームでノヴァを狙え':'上位ATチャレンジ 残り'+e.left+'G';
+   out.message=e.won?'スーパーノヴァチャレンジ成功！':e.finished?'チャレンジ終了 / 通常ATへ':e.priorAim?'ノヴァ揃いなら上位AT！':e.nextAim?'HOLD / 次ゲームでノヴァを狙え':'スーパーノヴァチャレンジ 残り'+e.left+'G';
   }
   if(out.researchSortie){const e=out.researchSortie;out.message='ノヴァ出陣 '+(e.won?a.zoneName(e.zone)+'ゾーン獲得！':'ストック抽選')+' / 計'+e.hits+'個';}
   if(state.sorties&&out.flow.phase==='normal')out.flow={...a.normalize(value),remaining:'0',zone:'',entryStage:'',comebackLeft:0,comebackConfirmed:false,comebackLamp:'',dryEligible:false};

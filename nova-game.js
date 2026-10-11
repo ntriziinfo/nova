@@ -2463,7 +2463,7 @@
   function forceResultName(result){
 
     if(result === "SORTIE")return "出陣チャレンジ（10G・1回予約）";
-    if(result === "URA_CHALLENGE")return "上位ATチャレンジ（10G・HOLDあり）";
+    if(result === "URA_CHALLENGE")return "スーパーノヴァチャレンジ（10G・HOLDあり）";
     if(result === "COMEBACK")return "引き戻しゾーン（5G）";
     if(result === "FREEZE")return "出陣チャレンジ（旧フリーズ指定）";
     if(result === "REACH_ME") return "リーチ目";
@@ -2631,7 +2631,7 @@
     if(!Number.isFinite(next)||next<=0||!Number.isFinite(profit))return null;
     const left=pending?0:Math.ceil(Math.max(0,next-profit));
     if(left>0)return null;
-    return {text:`上位ATチャレンジまで${left.toLocaleString('ja-JP')}pt`,gold:left===0};
+    return {text:`スーパーノヴァチャレンジまで${left.toLocaleString('ja-JP')}pt`,gold:left===0};
   }
 
   function checkpointResultCard(flow,progress,lastShown,net){
@@ -4750,6 +4750,8 @@
     if(!session.active && normalState.flow?.phase==='art'){
       const flow=presentedArtFlow();
       if(flow.researchSortieLeft>0 || isSpinning&&currentSpin?.resolved?.researchSortie)return SORTIE_ZONE_BGM_SRC;
+      // Both challenges use the supplied track; pending upper entries keep the preceding music until BET.
+      if(flow.researchChallengeActive || isSpinning&&currentSpin?.resolved?.researchChallenge)return SORTIE_ZONE_BGM_SRC;
       if(flow.initialStage==='zone'&&['kushuri_nito','kushuri','nito'].includes(flow.zone))return INITIAL_DUO_ZONE_BGM_SRC;
       const zoneTracks = {sosuke:SOSUKE_ZONE_BGM_SRC,toto:TOTO_ZONE_BGM_SRC,urapi:URAPI_ZONE_BGM_SRC,sora:SORA_ZONE_BGM_SRC,giru:GIRU_ZONE_BGM_SRC,ouma:OUMA_ZONE_BGM_SRC};
       return zoneTracks[flow.zone] || NOVA_ART_BGM_SRC;
@@ -5505,7 +5507,7 @@
     if($('novaInternalStatus'))$('novaInternalStatus').textContent='小役CZ抽選 / '+internal.games+'G（共通天井'+NovaNormal.ceiling(internal)+'G） / '+(internal.level==='high'?'高確（保証'+internal.highLeft+'G）':'低確')+ (normalState.flow?.phase==='art'?' / '+'AT '+(normalState.flow.atHigh?'高確（保証'+normalState.flow.atHighLeft+'G）':'低確'):'')+' / 穢れ'+internal.impurity+'pt / 特化予約 '+(session.active?(session.bonusZones||[]):(normalState.flow?.queuedZones||[])).map(z=>NovaArt.zoneName(z)).join('・');
     const flowStatus=$("novaFlowStatus");
     if(flowStatus){
-      const checkpointStatus=normalState.resultCard?.kind==='checkpoint'?{text:'上位ATチャレンジまで0pt',gold:true}:!session.active&&!normalState.bonusPending&&!normalState.resultCard&&!normalState.pendingZoneResult&&!normalState.ladderAwardPresentation&&!isCompleteTrialLocked()?atCheckpointStatus(normalState.flow,NovaProgress.snapshot(),profit):null;
+      const checkpointStatus=normalState.resultCard?.kind==='checkpoint'?{text:'スーパーノヴァチャレンジまで0pt',gold:true}:!session.active&&!normalState.bonusPending&&!normalState.resultCard&&!normalState.pendingZoneResult&&!normalState.ladderAwardPresentation&&!isCompleteTrialLocked()?atCheckpointStatus(normalState.flow,NovaProgress.snapshot(),profit):null;
       flowStatus.textContent=session.active ? aTypeBonusLabel(session.bonusKind)+" 残り"+aTypeBonusRemainingNet()+"pt / "+NovaArt.bonusStockLabel(session,normalState.flow) : checkpointStatus?.text||normalModeLabel();
       flowStatus.dataset.atCheckpoint=String(!!checkpointStatus?.gold);
       flowStatus.dataset.phase=session.active?"bonus":NovaFlow.normalize(normalState.flow).phase;
@@ -6085,7 +6087,7 @@
 
   document.addEventListener("DOMContentLoaded", () => {
     const forceSelect=document.getElementById('forceResult');
-    for(const [value,label] of [['ART','AT突入'],['SORTIE','出陣チャレンジ（10G・1回予約）'],['URA_CHALLENGE','上位ATチャレンジ（10G・HOLDあり）'],['COMEBACK','引き戻しゾーン（5G）'],...Object.keys(NovaNormal.rare).filter(k=>!isNovaResult(k)).map(k=>[k,RESULT[k].name]),['RARE','ATレア役'],...NovaArt.zoneIds.map(k=>['ZONE_'+k,NovaArt.zoneName(k)+'ゾーン'])]){const option=document.createElement('option');option.value=value;option.textContent=label;forceSelect.append(option);}
+    for(const [value,label] of [['ART','AT突入'],['SORTIE','出陣チャレンジ（10G・1回予約）'],['URA_CHALLENGE','スーパーノヴァチャレンジ（10G・HOLDあり）'],['COMEBACK','引き戻しゾーン（5G）'],...Object.keys(NovaNormal.rare).filter(k=>!isNovaResult(k)).map(k=>[k,RESULT[k].name]),['RARE','ATレア役'],...NovaArt.zoneIds.map(k=>['ZONE_'+k,NovaArt.zoneName(k)+'ゾーン'])]){const option=document.createElement('option');option.value=value;option.textContent=label;forceSelect.append(option);}
     const normalPanel=document.createElement('details');normalPanel.id='novaNormalConfig';
     normalPanel.innerHTML='<summary>小役CZ抽選・穢れ・状態</summary><output id="novaInternalStatus"></output><label>天井カウンター<input id="novaNormalGames" type="number" min="0" max="'+NovaNormal.ceiling()+'" value="0"></label><label>内部状態<select id="novaLevel"><option value="low">低確</option><option value="high">高確</option></select></label><label>穢れpt<input id="novaImpurity" type="number" min="0" max="100" value="0"></label><button id="novaApplyInternal" type="button">内部状態を適用</button><p>レア小役でCZを抽選します。通常モード・天国・規定GのCZ抽選はありません。スイカ・弱ノヴァで高確も抽選し、高確中は小役CZ当選率を優遇。強ノヴァは強CZ確定です。天井は朝一も共通'+NovaNormal.ceiling()+'G＋前兆、BIG／突破確定CZを各50%。リセット時の穢れ振り分けは従来どおり。穢れ100ptは次のボーナスで消費し、AT＋特化ゾーンを予約。通常スーパーノヴァ目の1/2はプレミアムBIG。</p>';
     const resetTable=document.createElement('div');resetTable.innerHTML='<table><tr><th>設定</th>'+NovaNormal.resetImpurityPoints.map(pt=>'<th>'+pt+'pt</th>').join('')+'</tr>'+NovaNormal.resetImpurityWeights.map((row,i)=>'<tr><td>'+(i+1)+'</td>'+row.map(w=>'<td>'+w+'%</td>').join('')+'</tr>').join('')+'</table>';normalPanel.append(resetTable);
@@ -6096,7 +6098,7 @@
     document.getElementById('saveFlowConfig').closest('details').after(normalPanel);
     document.getElementById('novaApplyInternal').onclick=()=>{if(isSpinning||session.active)return;normalState.internal=NovaNormal.normalize({games:$('novaNormalGames').value,level:$('novaLevel').value,highLeft:$('novaLevel').value==='high'?10:0,impurity:$('novaImpurity').value});persistState();updateDisplay();};
     const artPanel=document.createElement('details');artPanel.id='novaArtConfig';
-    artPanel.innerHTML='<summary>AT・特化ゾーン設定</summary><p>初当たりは準備3G→赤7→ルーレット→くしゅり＆にと3G。初期ptは全設定共通の配分と成立役から決まります。ATレベルはありません。通常ATは8pt／15ptベルで純増4.5pt/G、上位ATは15ptベルで純増7pt/G。上位の直乗せ当選時ptは通常の1.5倍。スイカ・弱ノヴァは共通の上乗せ抽選と15%の高確移行、強ノヴァは直乗せのみ20%／特化のみ20%／両方20%です。</p><p>出陣はスイカ・弱ノヴァ・強ノヴァ成立時の低確率抽選。当選で特化ゾーン確定、突入時はネビュラを狙え（追加BETなし）。フリーズ告知はありません。出陣は10G、ストック率10／25／40／60／80%を抽選し、最低2個を獲得。初当たりの5%は上位ATチャレンジ（突破50%）。レア役契機・累計差枚＋2,400ptごとのチャレンジは突破65%。10Gでベル・リプレイ・レア役はHOLD、次Gでノヴァを狙え。レア役は突破確定。差枚契機では残りpt・未消化ストックをリセットし、成否とも特化1個で再開します。到達点はAT終了後も引き継ぎます。</p>';
+    artPanel.innerHTML='<summary>AT・特化ゾーン設定</summary><p>初当たりは準備3G→赤7→ルーレット→くしゅり＆にと3G。初期ptは全設定共通の配分と成立役から決まります。ATレベルはありません。通常ATは8pt／15ptベルで純増4.5pt/G、上位ATは15ptベルで純増7pt/G。上位の直乗せ当選時ptは通常の1.5倍。スイカ・弱ノヴァは共通の上乗せ抽選と15%の高確移行、強ノヴァは直乗せのみ20%／特化のみ20%／両方20%です。</p><p>出陣はスイカ・弱ノヴァ・強ノヴァ成立時の低確率抽選。当選で特化ゾーン確定、突入時はネビュラを狙え（追加BETなし）。フリーズ告知はありません。出陣は10G、ストック率10／25／40／60／80%を抽選し、最低2個を獲得。初当たりの5%はスーパーノヴァチャレンジ（突破50%）。レア役契機・累計差枚＋2,400ptごとのチャレンジは突破65%。10Gでベル・リプレイ・レア役はHOLD、次Gでノヴァを狙え。レア役は突破確定。差枚契機では残りpt・未消化ストックをリセットし、成否とも特化1個で再開します。到達点はAT終了後も引き継ぎます。</p>';
     const commonTable=document.createElement('div');
     commonTable.innerHTML='<p>スイカ・弱ノヴァ成立時の特化当選率（AT低確／高確）。累計差枚に応じて今後の特化抽選が変化します。設定1・2は0〜＋1,500ptで基準の5%、設定3は＋500〜3,000ptで10%、設定4は同区間で75%まで低下。設定1〜4は＋5,000ptから追加倍率（65%／80%／85%／75%）を適用し、出陣抽選にも段階倍率を適用します。設定5は差枚0以下で基準の1.3倍、0〜＋2,000ptで0.27倍まで低下し、＋5,000ptからは基準の3.1倍。設定6の特化当選率は差枚で変化しません。設定5・6の出陣抽選はこの倍率の対象外です。獲得済みpt・ストックは維持します。</p><table><tr><th>設定</th><th>ベース G/50pt</th><th>出陣：差枚0以下<br>弱／強</th><th>特化：差枚0以下</th><th>特化：＋3,000pt</th><th>特化：＋5,000pt</th><th>特化：＋8,500pt</th></tr>'+[1,2,3,4,5,6].map(n=>'<tr><td>'+n+'</td><td>'+(50/(3*(1-NovaNormal.normalRoleProbabilities(n).REPLAY)-Object.entries(NovaNormal.normalRoleProbabilities(n)).reduce((sum,[role,p])=>sum+p*NovaNormal.pay(role==='NAVI_BELL'?'BELL':role),0))).toFixed(2)+'</td><td>'+['WEAK_NOVA','STRONG_NOVA'].map(role=>(100*NovaProgress.sortieChance(n,role,0)).toFixed(3)+'%').join('／')+'</td>'+[0,3000,5000,8500].map(net=>'<td>'+[false,true].map(high=>(100*NovaArt.extraZoneChance(n,'WEAK_NOVA',false,high,net)).toFixed(2)+'%').join('／')+'</td>').join('')+'</tr>').join('')+'</table>';artPanel.append(commonTable);
     const entryTable=document.createElement('div');entryTable.id='novaEntryQuotaTable';
@@ -7260,7 +7262,7 @@
     if(resolved.oumaFreeze)showOverlay(NovaArt.zoneName(normalState.flow)+'フリーズ！ 0G連');
     else if(resolved.artReverse)showOverlay('逆回転！ '+resolved.flowAfter.award+'pt');
     else if(resolved.researchChallenge?.priorAim)showOverlay('ノヴァを狙え');
-    else if(resolved.researchChallenge)showOverlay('上位ATチャレンジ / '+(resolved.researchChallenge.nextAim?'HOLD':'残り'+resolved.researchChallenge.left+'G'));
+    else if(resolved.researchChallenge)showOverlay(resolved.researchChallenge.nextAim?'HOLD':'残り'+resolved.researchChallenge.left+'G');
     else if(resolved.researchSortie)$("overlay").classList.remove("show");
     else if(!resolved.oumaFailed&&['urapi','ouma'].includes(normalState.flow?.zone))showOverlay('ノヴァを狙え');
     if(currentSpin.bonusConfirmWaitSpin){
@@ -8045,7 +8047,7 @@
     if(currentSpin && currentSpin.normalActiveAtStart){
       applyNormalResult(result, resolved, lineRow);
       playArtEndSound(resolved);
-      if((resolved.flowBefore?.phase!==normalState.flow?.phase && (['cz','strong_cz','art'].includes(resolved.flowBefore?.phase)||['cz','strong_cz','art'].includes(normalState.flow?.phase)))||resolved.flowBefore?.zone!==normalState.flow?.zone){
+      if((resolved.flowBefore?.phase!==normalState.flow?.phase && (['cz','strong_cz','art'].includes(resolved.flowBefore?.phase)||['cz','strong_cz','art'].includes(normalState.flow?.phase)))||resolved.flowBefore?.zone!==normalState.flow?.zone||resolved.researchChallenge?.finished){
         pauseNormalBgm();
         playNormalBgm();
       }

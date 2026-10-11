@@ -1,0 +1,14 @@
+{
+  "originalFile": "tunnel_03.mp4",
+  "originalSha256": "1c4abde88d76dda16cf832c8c727f8c306e857346d3e462e3d1c042d2319cc5a",
+  "asset": "super-nova-challenge-tunnel-20261012.mp4",
+  "sha256": "ccecaf19110d25ae9981cb2cfc7b4e763bf08329b25b85702d43edd52d2e253b",
+  "bytes": 14878788,
+  "video": "H.264 / 960x540 / yuv420p / faststart",
+  "conversion": "ffmpeg -map 0:v:0 -an -vf scale=960:-2 -c:v libx264 -preset medium -crf 22 -pix_fmt yuv420p -movflags +faststart",
+  "audioRemoved": true,
+  "originalUnmodified": true,
+  "loop": true,
+  "trigger": "Super NOVA challenge BET through the final stop, including HOLD",
+  "usage": "User-provided copyrighted video for the requested NOVA presentation only. No training use."
+}

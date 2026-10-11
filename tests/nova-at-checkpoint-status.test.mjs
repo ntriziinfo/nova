@@ -12,17 +12,17 @@ test('countdown and gold follow actual cumulative net, never remaining AT payout
  for(const [net,remaining,next,left,gold] of [[2000,399,2400,400,false],[2000,400,2400,400,false],[-1000,3500,2400,3400,false],[2500,500,4800,2300,false],[4300,500,4800,500,false],[2399,10000,2400,1,false],[2400,0,2400,0,true],[2401,0,2400,0,true]]){
   const view=label(at(remaining),{next},net);
   if(!gold){assert.equal(view,null);continue;}
-  assert.equal(view.text,`上位ATチャレンジまで${left.toLocaleString('ja-JP')}pt`);assert.equal(view.gold,true);
+  assert.equal(view.text,`スーパーノヴァチャレンジまで${left.toLocaleString('ja-JP')}pt`);assert.equal(view.gold,true);
  }
  assert.equal(label(at(0),{next:2400},2000),null);
  assert.equal(label(at(500),{},0),null);assert.equal(label(at(500),{next:2400},NaN),null);
 });
 
 test('earned checkpoint stays at zero until the challenge; consumed line is not reused',()=>{
- assert.equal(label(at(0),{next:4800,pending:1},2399).text,'上位ATチャレンジまで0pt');
+ assert.equal(label(at(0),{next:4800,pending:1},2399).text,'スーパーノヴァチャレンジまで0pt');
  assert.equal(label(at(0),{next:4800,pending:1},2399).gold,true);
  const flow={...at(120),burstPending:true,researchChallengeSource:'threshold'};
- assert.equal(label(flow,{next:4800,pending:0},2399).text,'上位ATチャレンジまで0pt');
+ assert.equal(label(flow,{next:4800,pending:0},2399).text,'スーパーノヴァチャレンジまで0pt');
  assert.equal(label(flow,{next:4800,pending:0},2399).gold,true);
  assert.equal(label({...flow,researchChallengeActive:true,burstLeft:10},{next:4800},2399),null);
  assert.equal(label(at(120),{next:4800},2399),null);

@@ -30,8 +30,8 @@ test('sortie, comeback, preparation and upper challenge use their own countdowns
   [{researchSortieLeft:9},'出陣チャレンジ','9',false],
   [{comebackLeft:4},'引き戻しチャレンジ','4',false],
   [{initialStage:'wait',initialWait:2},'AT準備','2',false],
-  [{researchChallengeActive:true,burstLeft:0,researchAim:'nova'},'上位ATチャレンジ','0',true],
-  [{burstLeft:7},'上位ATチャレンジ','7',false]
+  [{researchChallengeActive:true,burstLeft:0,researchAim:'nova'},'スーパーノヴァチャレンジ','0',true],
+  [{burstLeft:7},'スーパーノヴァチャレンジ','7',false]
  ])assert.deepEqual(snapshot({phase:'art',remaining:'200',...extra}).zonecounter,{label,value:left,unit:'G',active:true,hold});
  assert.equal(snapshot({phase:'art',burstPending:true}).zonecounter.value,'—');
  assert.equal(snapshot({phase:'art',burstPending:true,zone:'sora',zoneLeft:2}).zonecounter.value,'2');

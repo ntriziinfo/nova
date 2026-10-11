@@ -28,3 +28,7 @@ assets/media/nova/sortie-stop-2.mp3 -filter -diff -merge -text
 assets/media/nova/sortie-stops.sources.json -filter -diff -merge text
 assets/media/nova/sortie-bgm.mp3 -filter -diff -merge -text
 assets/media/nova/sortie-bgm.source.json -filter -diff -merge text
+assets/ui/super-nova-challenge-title-20261012.png -filter -diff -merge -text
+assets/ui/super-nova-challenge-title-20261012.source.json -filter -diff -merge text
+assets/media/nova/super-nova-challenge-tunnel-20261012.mp4 -filter -diff -merge -text
+assets/media/nova/super-nova-challenge-tunnel-20261012.source.json -filter -diff -merge text

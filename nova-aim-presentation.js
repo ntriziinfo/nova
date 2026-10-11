@@ -1,7 +1,7 @@
 /* Per-spin presentation only. The draw in NovaArt owns color, symbol and result. */
 globalThis.NovaAim=(()=>{
  const {setTimeout,clearTimeout}=globalThis.NovaClock||globalThis;
- let host,root,active=null,czTitle,comebackTitle,atWaitTitle,sortieTitle;
+ let host,root,active=null,czTitle,comebackTitle,atWaitTitle,sortieTitle,superChallengeTitle;
  const videos=new Map();
  let winLocked=false,winTimer=null,winVoiceTimer=null,winToken=0,afterWinCallbacks=[],pendingStart=null;
  function init(){
@@ -26,6 +26,8 @@ globalThis.NovaAim=(()=>{
   atWaitTitle=document.createElement('img');atWaitTitle.className='novaAtWaitTitle';atWaitTitle.hidden=true;atWaitTitle.src='assets/ui/nova-rush-confirmed.png';atWaitTitle.alt='ノヴァラッシュ確定';root.append(atWaitTitle);
   const sortie=document.createElement('video');sortie.muted=true;sortie.loop=true;sortie.playsInline=true;sortie.preload='metadata';sortie.hidden=true;sortie.src='assets/media/nova/sortie-fire-round-20261011.mp4';root.append(sortie);videos.set('sortie',sortie);
   sortieTitle=document.createElement('img');sortieTitle.className='novaSortieTitle';sortieTitle.hidden=true;sortieTitle.src='assets/ui/sortie-challenge-title-20261011.png';sortieTitle.alt='出陣チャレンジ';root.append(sortieTitle);
+  const superChallenge=document.createElement('video');superChallenge.muted=true;superChallenge.loop=true;superChallenge.playsInline=true;superChallenge.preload='metadata';superChallenge.hidden=true;superChallenge.src='assets/media/nova/super-nova-challenge-tunnel-20261012.mp4';root.append(superChallenge);videos.set('super-challenge',superChallenge);
+  superChallengeTitle=document.createElement('img');superChallengeTitle.className='novaSuperChallengeTitle';superChallengeTitle.hidden=true;superChallengeTitle.src='assets/ui/super-nova-challenge-title-20261012.png';superChallengeTitle.alt='スーパーノヴァチャレンジ';root.append(superChallengeTitle);
   const win=document.createElement('video');win.muted=true;win.loop=false;win.playsInline=true;win.preload='auto';win.hidden=true;win.src='assets/media/nova/aim/seven-win.mp4?v=20260918-rainbow-144';root.append(win);videos.set('win',win);
   return true;
  }
@@ -44,7 +46,8 @@ globalThis.NovaAim=(()=>{
   if(comebackTitle)comebackTitle.hidden=true;
   if(atWaitTitle)atWaitTitle.hidden=true;
   if(sortieTitle)sortieTitle.hidden=true;
-  if(root){root.hidden=true;delete root.dataset.failed;delete root.dataset.zoneEntry;delete root.dataset.bonusWait;delete root.dataset.czIntro;delete root.dataset.comeback;delete root.dataset.atWait;delete root.dataset.sortie;delete host.dataset.aimActive;}
+  if(superChallengeTitle)superChallengeTitle.hidden=true;
+  if(root){root.hidden=true;delete root.dataset.failed;delete root.dataset.zoneEntry;delete root.dataset.bonusWait;delete root.dataset.czIntro;delete root.dataset.comeback;delete root.dataset.atWait;delete root.dataset.sortie;delete root.dataset.superChallenge;delete host.dataset.aimActive;}
  }
  function hasGuide(aim){return !!aim&&aim.guide!==false;}
  function drawGuide(aim,rng=Math.random){return aim.result!=='MISS'||rng()<.5;}
@@ -98,7 +101,18 @@ globalThis.NovaAim=(()=>{
   hide();active=video;root.hidden=false;root.dataset.sortie='true';root.dataset.symbol='sortie';
   host.dataset.aimActive='true';video.hidden=false;sortieTitle.hidden=false;layout();video.play().catch(()=>{});
  }
+ function showSuperChallenge(){
+  if(!init())return;
+  const video=videos.get('super-challenge');
+  if(active===video&&!root.hidden)return; // Keep the tunnel continuous through HOLD and subsequent BETs.
+  hide();active=video;root.hidden=false;root.dataset.superChallenge='true';root.dataset.symbol='super-challenge';
+  host.dataset.aimActive='true';video.hidden=false;superChallengeTitle.hidden=false;layout();video.play().catch(()=>{});
+ }
  function stop(resolved){
+  if(resolved?.researchChallenge){
+   if(resolved.researchChallenge.finished)hide();else showSuperChallenge();
+   return;
+  }
   if(resolved?.researchSortie){
    // Winning lamps remain visible after the third stop; the next BET restores the title.
    if(resolved.researchSortie.won||resolved.researchSortie.finished)hide();else showSortie();
@@ -111,6 +125,7 @@ globalThis.NovaAim=(()=>{
   if(!isBonusWait(resolved)&&!isCzIntro(resolved))hide();
  }
  function bet(aim,resolved={}){
+  if(resolved.researchChallenge){showSuperChallenge();return false;}
   if(resolved.researchSortie){showSortie();return false;}
   if(isAtWait(resolved)){showAtWait();return false;}
   if(isComeback(resolved)){showComeback();return false;}

@@ -46,6 +46,33 @@ test('sortie background never replaces the entry nebula or next character seven 
  assert.equal(t.elements[0].dataset.symbol,'seven');assert.equal(t.elements.find(e=>e.src?.endsWith('sortie-fire-round-20261011.mp4')).paused,true);
 });
 
+test('upper challenge retains the tunnel and title through HOLD and reveals neither success nor failure before the last stop',()=>{
+ for(const won of [false,true]){
+  const t=setup(),spin={researchChallenge:{started:true,nextAim:'nova',finished:false},flowBefore:{phase:'art',burstPending:true}};
+  const before=JSON.stringify(spin);assert.equal(t.aim.bet(null,spin),false);
+  const root=t.elements[0],video=t.elements.find(e=>e.src==='assets/media/nova/super-nova-challenge-tunnel-20261012.mp4'),title=t.elements.find(e=>e.className==='novaSuperChallengeTitle');
+  assert.equal(root.dataset.superChallenge,'true');assert.equal(title.alt,'スーパーノヴァチャレンジ');assert.equal(title.hidden,false);
+  assert.equal(video.loop,true);assert.equal(video.muted,true);assert.equal(video.playsInline,true);assert.equal(video.paused,false);
+  video.currentTime=3;t.aim.stop(spin);
+  const final={researchChallenge:{priorAim:'nova',finished:true,won}};t.aim.bet(null,final);
+  assert.equal(video.currentTime,3);assert.equal(video.paused,false);assert.equal(title.hidden,false);
+  assert.equal(t.aim.busy,false);assert.equal(t.timers.size,0);assert.equal(JSON.stringify(spin),before);
+  t.aim.stop(final);assert.equal(root.hidden,true);assert.equal(title.hidden,true);assert.equal(video.paused,true);assert.equal(video.currentTime,0);
+  t.aim.bet(null,spin);t.aim.reset();assert.equal(root.dataset.superChallenge,undefined);assert.equal(video.paused,true);assert.equal(title.hidden,true);
+ }
+});
+
+test('upper challenge restores from a saved spin and releases the lamp bay for normal CZ and seven cues',()=>{
+ const t=setup();t.aim.bet(null,JSON.parse(JSON.stringify({researchChallenge:{left:4,priorAim:'nova'}})));
+ const title=t.elements.find(e=>e.className==='novaSuperChallengeTitle'),video=t.elements.find(e=>e.src?.endsWith('super-nova-challenge-tunnel-20261012.mp4'));
+ assert.equal(title.hidden,false);
+ t.aim.bet(null,{flowBefore:{phase:'cz',remaining:20,totalGames:20}});
+ assert.equal(title.hidden,true);assert.equal(video.paused,true);assert.equal(t.elements[0].dataset.czIntro,'true');
+ assert.equal(t.elements.find(e=>e.className==='novaCzIntroTitle').alt,'NOVA Familia 集結ゾーン');
+ t.aim.bet(null,{flowBefore:{phase:'art',entryStage:'seven'},flowAfter:{entryStage:'roulette'}});
+ assert.equal(t.elements[0].dataset.symbol,'seven');assert.equal(title.hidden,true);
+});
+
 test('CZ intro loops the supplied background and title through all first-game stops, ending at the next BET',()=>{
  for(const phase of ['cz','strong_cz']){
   const t=setup(),resolved={flowBefore:{phase,remaining:20,totalGames:20}};

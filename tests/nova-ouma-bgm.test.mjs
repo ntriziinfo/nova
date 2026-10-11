@@ -41,3 +41,17 @@ test('sortie BGM starts with active games, covers the final spinning game, and r
   c.normalState.flow.zone='toto';assert.equal(c.normalBgmSrc(),'assets/media/nova/toto-bgm.wav');
   c.normalState.flow={phase:'normal'};assert.equal(c.normalBgmSrc(),'normal');
 });
+
+test('upper challenge starts its supplied BGM on BET, continues during HOLD, and exits on either result',()=>{
+ for(const won of [false,true]){
+  const c=context();c.normalState.flow={phase:'art',burstPending:true,researchChallengeActive:false};
+  assert.equal(c.normalBgmSrc(),'at','pending entry is not an active challenge');
+  c.isSpinning=true;c.currentSpin={resolved:{researchChallenge:{started:true}}};
+  c.normalState.flow.researchChallengeActive=true;assert.equal(c.normalBgmSrc(),'assets/media/nova/sortie-bgm.mp3');
+  c.isSpinning=false;c.currentSpin=null;c.normalState.flow.researchAim='nova';
+  assert.equal(c.normalBgmSrc(),'assets/media/nova/sortie-bgm.mp3','HOLD keeps the same track');
+  c.normalState.flow.researchChallengeActive=false;c.isSpinning=true;c.currentSpin={resolved:{researchChallenge:{finished:true,won}}};
+  assert.equal(c.normalBgmSrc(),'assets/media/nova/sortie-bgm.mp3','do not reveal the pre-drawn final result');
+  c.isSpinning=false;c.currentSpin=null;assert.equal(c.normalBgmSrc(),'at');
+ }
+});

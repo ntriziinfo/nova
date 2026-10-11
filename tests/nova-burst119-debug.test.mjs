@@ -17,7 +17,7 @@ function context(){
 }
 
 test('one-shot burst flag survives pending and active BIG, then is consumed once',()=>{
- const c=context();assert.equal(c.normalizeForceResult('URA_CHALLENGE'),'URA_CHALLENGE');assert.match(c.forceResultName('URA_CHALLENGE'),/上位ATチャレンジ/);
+ const c=context();assert.equal(c.normalizeForceResult('URA_CHALLENGE'),'URA_CHALLENGE');assert.match(c.forceResultName('URA_CHALLENGE'),/スーパーノヴァチャレンジ/);
  c.normalState.bonusPending=true;assert.equal(c.takeForcedResult(),'');assert.equal(c.forceResult,'URA_CHALLENGE');
  c.normalState.bonusPending=false;c.bonusActive=true;assert.equal(c.takeForcedResult(),'');assert.equal(c.forceResult,'URA_CHALLENGE');
  c.bonusActive=false;assert.equal(c.takeForcedResult(),'URA_CHALLENGE');assert.equal(c.forceResult,'');assert.equal(c.takeForcedResult(),'');
@@ -50,7 +50,7 @@ test('forced retry escapes recovery or previous challenge without discarding ear
 test('manual and AUTO/simulation spin paths share the retained ura flag',()=>{
  assert.equal((html.match(/pendingForceResult = takeForcedResult\(\);/g)||[]).length,2);
  assert(!html.includes("['BURST','爆発チャレンジ（10G・HOLDあり）']"));assert.equal(context().normalizeForceResult('BURST'),'');
- assert(html.includes("['URA_CHALLENGE','上位ATチャレンジ（10G・HOLDあり）']"));
+ assert(html.includes("['URA_CHALLENGE','スーパーノヴァチャレンジ（10G・HOLDあり）']"));
  const c=context();c.forceResult='URA_CHALLENGE';c.normalState.bonusPending=true;assert.equal(c.takeForcedResult(),'');c.normalState.bonusPending=false;assert.equal(c.takeForcedResult(),'URA_CHALLENGE');
  c.pendingForceResult='URA_CHALLENGE';c.drawNormalResult();assert.equal(c.pendingArtStep.flow.burstType,'ura');
  const held=NovaArt.step(c.pendingArtStep.flow,{setting:6},()=>.99,'WEAK_NOVA');const won=NovaArt.step(held.flow,{setting:6},()=>.99,'MISS');assert.equal(won.flow.researchUpper,true);assert.equal(won.flow.remaining,c.pendingArtStep.flow.remaining);

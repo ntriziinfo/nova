@@ -8,7 +8,7 @@
   "sampleRate": 44100,
   "channels": 2,
   "category": "bgm",
-  "trigger": "Active sortie challenge; shared BGM player returns to the next phase on exit",
+  "trigger": "Active sortie challenge and Super NOVA challenge; shared BGM player returns to the next phase on exit",
   "loop": true,
   "usage": "User-provided copyrighted audio for the requested NOVA BGM only. No training use."
 }

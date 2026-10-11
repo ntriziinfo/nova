@@ -1,0 +1,8 @@
+{
+  "mode": "built-in image_gen / generate",
+  "transparentBackground": true,
+  "prompt": "Create a production-ready Japanese pachislot game title overlay. Text (verbatim, only this text): 「スーパーノヴァチャレンジ」. Render all characters correctly, in ONE horizontal line, as an ultra-wide banner approximately 2000 × 520 pixels (about 3.85:1). Transparent background with real alpha; no black rectangle, no checkerboard, no scene, no characters, no other words. Use bold, highly readable, slightly slanted Japanese katakana display lettering, polished metallic gold and bright silver beveled faces, deep dark bevel shadows, fine gold outlines, a compact vivid magenta/red energy rim and a few small star glints. Match the luxurious Japanese slot-machine title style of a NOVA game. The lettering must fill most of the canvas width and height, with only small safe transparent margins. Keep all glyphs and edge effects inside the canvas. It will be centered on top of a moving tunnel video in a narrow lamp strip, so keep the title compact, legible at small size, and do not include an opaque background or extra outer frame.",
+  "width": 2121,
+  "height": 741,
+  "usage": "Generated for the requested NOVA game title; preserve the alpha channel."
+}
