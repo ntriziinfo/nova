@@ -5689,10 +5689,13 @@
 
     const spinButton = $("spinBtn");
     if(spinButton){
+      const sortieHold=NovaSortie.busy;
+      if(sortieHold||spinButton.dataset.sortieHold==='true')spinButton.disabled=sortieHold;
+      spinButton.dataset.sortieHold=String(sortieHold);
       const canStopNow = spinCanStop && !isPremiumBigConfirmStopLocked();
-      spinButton.textContent = isSpinning ? (canStopNow ? "STOP" : "WAIT") : "BET";
-      spinButton.classList.toggle("waiting", isSpinning && !canStopNow);
-      spinButton.classList.toggle("stopReady", isSpinning && canStopNow);
+      spinButton.textContent = sortieHold ? "WAIT" : isSpinning ? (canStopNow ? "STOP" : "WAIT") : "BET";
+      spinButton.classList.toggle("waiting", sortieHold || isSpinning && !canStopNow);
+      spinButton.classList.toggle("stopReady", !sortieHold && isSpinning && canStopNow);
       if(isCompleteTrialLocked() && !isSpinning){
         spinButton.textContent = "COMPLETE";
         spinButton.disabled = true;
@@ -6979,6 +6982,7 @@
   }
   async function spin(options={}){
     if(!canUsePlayState())return;
+    if(NovaSortie.busy)return;
     if(NovaLadder.busy||NovaAim.busy||NovaDirectAward.busy)return;
     if(NovaResults.editing)return;
     if(normalState.flow?.phase==='art'&&!Number.isFinite(normalState.resultAtStartPaid))normalState.resultAtStartPaid=Number(stats.totalPaid)||0;
@@ -7433,6 +7437,7 @@
     for(let row=0;row<3;row++)currentSpin.auditGrid[row][i]=col[row];
     currentSpin.stopped[i] = true;
     NovaSortie.stop(currentSpin);
+    if(NovaSortie.busy)updateDisplay();
     if(currentSpin.pendingStopColumns)currentSpin.pendingStopColumns[i]=null;
     NovaBellNavi.stop(currentSpin);
     playBellNaviVoice(currentSpin);
@@ -8325,6 +8330,7 @@
 
   function runAutoStep(){
     if(!autoPlay) return;
+    if(globalThis.NovaSortie?.busy){queueAutoStep(NovaSortie.waitMs);return;}
     if(stopSuperSpeedIfNeeded()) return;
     if(bonusEndBgmPlaying || bonusConfirmSoundPlaying){
       queueAutoStep(autoPollDelayMs());
@@ -8367,6 +8373,7 @@
 
   function scheduleNextAuto(){
     if(!autoPlay) return;
+    if(globalThis.NovaSortie?.busy){queueAutoStep(NovaSortie.waitMs);return;}
     if(stopSuperSpeedIfNeeded()) return;
     if(bonusEndBgmPlaying || bonusConfirmSoundPlaying){
       queueAutoStep(autoPollDelayMs());
@@ -8880,6 +8887,7 @@
     audio.play().catch(()=>{aimWinAudios.delete(audio);releaseCharacterVoiceAudio(audio);});
   }
   window.addEventListener('nova-aim-unlocked',()=>{updateDisplay();if(autoPlay)queueAutoStep(50);});
+  window.addEventListener('nova-sortie-unlocked',()=>{updateDisplay();if(autoPlay)queueAutoStep(50);});
   window.addEventListener('nova-rush-confirm-ended',()=>{if(session.active)resumeSessionBgm();else playNormalBgm();});
   function playOneShotSound(src, volume=sfxOutputVolume(), options={}){
     if(debugFastSpinActive || speedToBonusActive) return;

@@ -5,7 +5,24 @@ globalThis.NovaSortie=(()=>{
  const candidates=['sosuke','toto','urapi','giru','sora','ouma','kushuri_nito'];
  const previews=new WeakMap();
  let root,host,drop=null,reveal,portraits,caption,actors=[],animation=null,revealSpin=null,revealStage=-1;
- let soundPlayer=null,awardSound=null,awardFrame=0,removeSoundError=null;
+ let soundPlayer=null,awardSound=null,awardFrame=0,removeSoundListeners=null;
+ let holdUntil=0,holdTimer=null,holdToken=0;
+ const waitMs=()=>Math.max(0,Math.ceil(holdUntil-performance.now()));
+ function clearHold(){
+  ++holdToken;holdUntil=0;
+  if(holdTimer!==null){NovaClock.clearTimeout(holdTimer);holdTimer=null;}
+ }
+ function holdAward(){
+  clearHold();holdUntil=performance.now()+4000;
+  const token=holdToken;
+  const release=()=>{
+   if(token!==holdToken)return;
+   if(waitMs()>0){holdTimer=NovaClock.setTimeout(release,waitMs());return;}
+   holdTimer=null;holdUntil=0;
+   window.dispatchEvent(new Event('nova-sortie-unlocked'));
+  };
+  holdTimer=NovaClock.setTimeout(release,4000);
+ }
  const awardSoundSrc='assets/media/nova/sortie-award.mp3';
  // 10 ms RMS envelope of the supplied original; read against the actual audio clock.
  const awardEnvelope=[
@@ -33,7 +50,7 @@ globalThis.NovaSortie=(()=>{
  }
  function stopAward(){
   if(awardFrame){globalThis.cancelAnimationFrame?.(awardFrame);awardFrame=0;}
-  removeSoundError?.();removeSoundError=null;
+  removeSoundListeners?.();removeSoundListeners=null;
   const audio=awardSound;awardSound=null;
   if(audio){audio.loop=false;audio.pause();try{audio.currentTime=0;}catch{}}
   portraits?.style.setProperty('--sortie-win-scale','1');
@@ -41,16 +58,17 @@ globalThis.NovaSortie=(()=>{
  function startAward(reduced){
   try{
    const playback=soundPlayer?.(awardSoundSrc),audio=playback?.audio;if(!audio)return;
-   awardSound=audio;audio.loop=true;
-   const onError=()=>{if(awardSound===audio)stopAward();};
-   audio.addEventListener('error',onError);removeSoundError=()=>audio.removeEventListener('error',onError);
+   awardSound=audio;audio.loop=false;
+   const onFinish=()=>{if(awardSound===audio)stopAward();};
+   audio.addEventListener('error',onFinish);audio.addEventListener('ended',onFinish);
+   removeSoundListeners=()=>{audio.removeEventListener('error',onFinish);audio.removeEventListener('ended',onFinish);};
    const tick=()=>{
     if(awardSound!==audio)return;
     if(!audio.paused&&audio.readyState>=2)portraits.style.setProperty('--sortie-win-scale',String(awardScale(audio.currentTime)));
     awardFrame=requestAnimationFrame(tick);
    };
    if(!reduced)tick();
-   Promise.resolve(playback.promise).catch(onError);
+   Promise.resolve(playback.promise).catch(onFinish);
   }catch{stopAward();}
  }
  const eligible=spin=>!!spin?.resolved?.researchSortie;
@@ -110,7 +128,7 @@ globalThis.NovaSortie=(()=>{
   reveal.hidden=false;
   const reduced=globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
   animation=reveal.animate(stage===3?[{opacity:0},{opacity:1}]:[{opacity:0,offset:0},{opacity:.85,offset:.2},{opacity:.85,offset:.5},{opacity:0,offset:1}],{duration:stage===3?(reduced?1:220):520,easing:'ease-in-out'});
-  if(stage===3)startAward(reduced);
+  if(stage===3){holdAward();startAward(reduced);}
  }
  function render(spin){
   if(!eligible(spin)||!init())return;
@@ -124,6 +142,7 @@ globalThis.NovaSortie=(()=>{
   layout();
  }
  function clear(){
+  clearHold();
   stopAward();
   if(root)root.hidden=true;
   animation?.cancel();animation=null;revealSpin=null;revealStage=-1;
@@ -147,6 +166,7 @@ globalThis.NovaSortie=(()=>{
  }
  if(typeof window!=='undefined')window.addEventListener('resize',layout);
  return {eligible,label,target,begin,stop:render,clear,dropLeft,flash,awardScale,
+  get busy(){return waitMs()>0;},get waitMs(){return waitMs();},
   setSoundPlayer:player=>{soundPlayer=player;},
   updateVolume:volume=>{if(awardSound)awardSound.volume=Math.max(0,Math.min(1,Number(volume)||0));}
  };

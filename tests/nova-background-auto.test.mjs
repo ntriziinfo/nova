@@ -24,3 +24,18 @@ test('audio and COMPLETE locks still apply during the Ouma presentation',()=>{
  const {context:c,calls}=setup();c.bonusConfirmSoundPlaying=true;c.runAutoStep();assert.deepEqual(calls,['queue']);
  c.bonusConfirmSoundPlaying=false;c.locked=true;c.runAutoStep();assert.deepEqual(calls,['queue','stop']);
 });
+
+test('AUTO and super AUTO wait the full sortie award hold before any spin or phase handling',()=>{
+ for(const name of ['runAutoStep','scheduleNextAuto']){
+  const delays=[],c=vm.createContext({autoPlay:true,superSpeedActive:true,NovaSortie:{busy:true,waitMs:3999},queueAutoStep:ms=>delays.push(ms)});
+  vm.runInContext(html.match(new RegExp('  function '+name+'\\([^]*?\\n  }'))[0],c);
+  c[name]();assert.deepEqual(delays,[3999]);
+  c.autoPlay=false;c[name]();assert.deepEqual(delays,[3999],'stopping AUTO must not restart it');
+ }
+});
+
+test('manual BET during sortie award hold returns before charging or drawing a game',async()=>{
+ const c=vm.createContext({canUsePlayState:()=>true,NovaSortie:{busy:true}});
+ vm.runInContext(html.match(/  async function spin\([^]*?\n  }/)[0],c);
+ await c.spin();
+});

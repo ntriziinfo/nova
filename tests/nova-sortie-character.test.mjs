@@ -4,7 +4,9 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 
 function setup({reduced=false}={}){
- const elements=[],animations=[],frames=new Map();let draws=0,frameId=0;
+ const elements=[],animations=[],frames=new Map(),timers=new Map(),events=[];let draws=0,frameId=0,now=0,timerId=0;
+ const clock={setTimeout(fn,ms){timers.set(++timerId,{fn,at:now+ms});return timerId;},clearTimeout(id){timers.delete(id);}};
+ function advance(ms){now+=ms;for(const [id,t] of [...timers])if(t.at<=now){timers.delete(id);t.fn();}}
  function element(tag){
   const classes=new Set(),e={tag,children:[],style:{setProperty(k,v){this[k]=v;}},dataset:{},offsetWidth:1000,hidden:false,
    classList:{toggle(k,on){on?classes.add(k):classes.delete(k);},remove(k){classes.delete(k);}},
@@ -17,10 +19,10 @@ function setup({reduced=false}={}){
  const host=element('host'),reels=[0,1,2].map(i=>{const e=element('reel');e.dataset.reel=String(i);return e;});
  const lamps=['sosuke','toto','urapi','giru1','sora1','ouma1','nito','kushuri'].map(id=>({dataset:{artwork:id}}));
  host.querySelector=()=>({getBoundingClientRect:()=>({left:100,top:600,width:600,height:240})});host.querySelectorAll=()=>reels;
- const context=vm.createContext({crypto:{getRandomValues(a){draws++;a[0]=0;return a;}},document:{getElementById:()=>host,createElement:element,querySelectorAll:s=>s==='.novaArtItem'?lamps:reels},window:{addEventListener(){}},matchMedia:()=>({matches:reduced}),requestAnimationFrame:fn=>{frames.set(++frameId,fn);return frameId;},cancelAnimationFrame:id=>frames.delete(id)});
+ const context=vm.createContext({NovaClock:clock,performance:{now:()=>now},Event:class{constructor(type){this.type=type;}},crypto:{getRandomValues(a){draws++;a[0]=0;return a;}},document:{getElementById:()=>host,createElement:element,querySelectorAll:s=>s==='.novaArtItem'?lamps:reels},window:{addEventListener(){},dispatchEvent:e=>events.push(e.type)},matchMedia:()=>({matches:reduced}),requestAnimationFrame:fn=>{frames.set(++frameId,fn);return frameId;},cancelAnimationFrame:id=>frames.delete(id)});
  vm.runInContext(fs.readFileSync('nova-sortie-presentation.js','utf8'),context);
  vm.runInContext('Math.random=()=>{throw Error("Presentation must not consume game RNG")}',context);
- return {api:context.NovaSortie,animations,lamps,frames,frame:()=>{const [id,fn]=frames.entries().next().value;frames.delete(id);fn();},draws:()=>draws,view:()=>elements.find(e=>e.id==='novaSortieCharacter')};
+ return {api:context.NovaSortie,animations,lamps,frames,timers,events,advance,jump:ms=>{now+=ms;},frame:()=>{const [id,fn]=frames.entries().next().value;frames.delete(id);fn();},draws:()=>draws,view:()=>elements.find(e=>e.id==='novaSortieCharacter')};
 }
 function spin(won,zone='sora',finished=false){return {stopped:[false,false,false],resolved:{researchSortie:Object.freeze({won,zone:won?zone:'',finished}),reward:8,flowAfter:{remaining:'600',queuedZones:won?[zone]:[]}}};}
 const visible=t=>t.view().firstChild.children.filter(e=>e.tag==='img'&&!e.hidden).map(e=>e.dataset.character);
@@ -82,18 +84,19 @@ function sound(){
  };
 }
 
-test('winning third stop loops the supplied sound once and scales by its playback position within 80–100%',()=>{
+test('winning third stop plays the supplied sound once and scales by its playback position within 80–100%',()=>{
  const t=setup(),audio=sound(),s=spin(true);let plays=0;
  t.api.setSoundPlayer(src=>{assert.equal(src,'assets/media/nova/sortie-award.mp3');plays++;return {audio,promise:Promise.resolve()};});
  t.api.begin(s);for(const i of [2,1]){s.stopped[i]=true;t.api.stop(s);}assert.equal(plays,0);
- s.stopped[0]=true;t.api.stop(s);t.api.stop(s);assert.equal(plays,1);assert.equal(audio.loop,true);
+ s.stopped[0]=true;t.api.stop(s);t.api.stop(s);assert.equal(plays,1);assert.equal(audio.loop,false);
  const scales=[];
  for(let time=0;time<5.21;time+=.01){audio.currentTime=time;t.frame();scales.push(Number(t.view().firstChild.style['--sortie-win-scale']));}
  assert(Math.min(...scales)>=.8);assert(Math.max(...scales)<=1);assert(Math.min(...scales)<.81);assert(Math.max(...scales)>.99);
  audio.currentTime=.09;t.frame();const atBeat=t.view().firstChild.style['--sortie-win-scale'];
- audio.currentTime=4;t.frame();audio.currentTime=.09;t.frame();assert.equal(t.view().firstChild.style['--sortie-win-scale'],atBeat,'seek/loop must use the audio clock');
+ audio.currentTime=4;t.frame();audio.currentTime=.09;t.frame();assert.equal(t.view().firstChild.style['--sortie-win-scale'],atBeat,'seek must use the audio clock');
  t.api.updateVolume(0);assert.equal(audio.volume,0);assert.equal(t.frames.size,1,'mute does not stop the visual');
- t.api.begin(spin(false));assert.equal(audio.paused,true);assert.equal(audio.loop,false);assert.equal(audio.currentTime,0);assert.equal(t.frames.size,0);assert.equal(audio.listeners.size,0);
+ audio.listeners.get('ended')();assert.equal(audio.paused,true);assert.equal(audio.loop,false);assert.equal(audio.currentTime,0);assert.equal(t.frames.size,0);assert.equal(audio.listeners.size,0);
+ t.api.stop(s);assert.equal(plays,1,'finished sound must not restart on render');assert.equal(t.api.busy,true,'audio completion does not release the hold');
 });
 
 test('failed or superseded playback cannot keep audio or animation alive',async()=>{
@@ -106,6 +109,36 @@ test('failed or superseded playback cannot keep audio or animation alive',async(
 
 test('reduced motion keeps the confirmation audio but omits the zoom frame loop',()=>{
  const t=setup({reduced:true}),audio=sound(),s=spin(true);s.stopped=[true,true,true];
- t.api.setSoundPlayer(()=>({audio}));t.api.begin(s);assert.equal(audio.loop,true);assert.equal(t.frames.size,0);
+ t.api.setSoundPlayer(()=>({audio}));t.api.begin(s);assert.equal(audio.loop,false);assert.equal(t.frames.size,0);assert.equal(t.api.waitMs,4000);
  t.api.clear();assert.equal(audio.paused,true);
+});
+
+test('only awarded third stops hold the next BET for exactly four seconds, including the final sortie game',()=>{
+ for(const finished of [false,true]){
+  const t=setup(),s=spin(true,'sora',finished);t.api.begin(s);assert.equal(t.api.busy,false);
+  for(const i of [2,1]){s.stopped[i]=true;t.api.stop(s);assert.equal(t.api.busy,false);}
+  s.stopped[0]=true;t.api.stop(s);assert.equal(t.api.waitMs,4000);
+  t.advance(2000);t.api.stop(s);assert.equal(t.api.waitMs,2000,'render must not restart hold');
+  t.advance(1999);assert.equal(t.api.busy,true);assert.equal(t.api.waitMs,1);assert.deepEqual(t.events,[]);
+  t.advance(1);assert.equal(t.api.busy,false);assert.deepEqual(t.events,['nova-sortie-unlocked']);
+  t.advance(4000);assert.equal(t.events.length,1);
+  const miss=spin(false);miss.stopped=[true,true,true];t.api.begin(miss);assert.equal(t.api.busy,false);
+ }
+});
+
+test('playback failure and missing animation frames do not release or prolong the four-second hold',async()=>{
+ const t=setup(),audio=sound(),s=spin(true);s.stopped=[true,true,true];
+ t.api.setSoundPlayer(()=>({audio,promise:Promise.reject(new Error('autoplay blocked'))}));t.api.begin(s);
+ await new Promise(resolve=>setImmediate(resolve));assert.equal(t.frames.size,0);assert.equal(t.api.busy,true);
+ t.jump(3999);assert.equal(t.api.waitMs,1);
+ t.jump(1);assert.equal(t.api.busy,false,'deadline is independent of RAF and delayed background timer delivery');
+ t.advance(0);assert.deepEqual(t.events,['nova-sortie-unlocked']);
+});
+
+test('reset cancels the hold and stale callbacks cannot unlock a later award',()=>{
+ const t=setup(),s=spin(true);s.stopped=[true,true,true];t.api.begin(s);
+ const stale=[...t.timers.values()][0].fn;t.advance(1000);t.api.clear();assert.equal(t.api.busy,false);assert.equal(t.timers.size,0);
+ t.api.begin(s);stale();assert.equal(t.api.waitMs,4000);assert.deepEqual(t.events,[]);
+ t.advance(4000);assert.deepEqual(t.events,['nova-sortie-unlocked']);
+ t.api.begin(s);t.api.clear();t.advance(5000);assert.equal(t.events.length,1);
 });
