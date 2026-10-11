@@ -1,8 +1,22 @@
 /* Display-only upper AT lamp background. Never advances the game or draws RNG. */
 globalThis.NovaUpperAtBackground=(()=>{
  let host,video,wanted=false,starting=false;
+ const foreground='.novaAimPresentation,.novaLadderPresentation,.novaResultsLayer,#novaStockPreparation,#zoneRoulette,#novaInitialDuo,#novaDirectAward,#novaSortieGuide';
  function eligible(flow){
-  return !!(flow?.phase==='art'&&flow.researchUpper&&!flow.researchChallengeActive&&!flow.burstPending&&!flow.comebackLeft);
+  return !!(flow?.phase==='art'&&flow.researchUpper&&!flow.zone&&!flow.initialStage&&!flow.entryStage&&!flow.atPrelude&&!flow.researchSortieLeft&&!flow.researchChallengeActive&&!flow.burstPending&&!flow.burstLeft&&!flow.comebackLeft&&!flow.comebackConfirmed);
+ }
+ function blocked(){
+  return host.dataset.atPreludeActive==='true'||Array.from(host.querySelectorAll(foreground)).some(el=>!el.hidden);
+ }
+ function init(){
+  if(host)return true;
+  host=document.getElementById('machine');if(!host)return false;
+  // Cue/result visibility can change between display updates. Watch only those
+  // presentation roots; do not poll, observe animation styles, or watch this video.
+  new MutationObserver(records=>{
+   if(records.some(r=>r.target===host||r.target.matches(foreground)))refresh();
+  }).observe(host,{subtree:true,attributes:true,attributeFilter:['hidden','data-at-prelude-active']});
+  return true;
  }
  function layout(){
   if(!video||video.hidden)return;
@@ -14,26 +28,28 @@ globalThis.NovaUpperAtBackground=(()=>{
   Object.assign(video.style,{left:(r.left-base.left)/scale+'px',top:top+'px',width:r.width/scale+'px',height:Math.max(40,bottom-top)+'px'});
  }
  function play(){
-  if(!video||!wanted||document.hidden||!video.paused||starting)return;
+  if(!video||!wanted||video.hidden||blocked()||document.hidden||!video.paused||starting)return;
   starting=true;
   try{
    Promise.resolve(video.play()).catch(()=>{}).finally(()=>{
     starting=false;
-    if(!wanted||document.hidden)video.pause();
+    if(!wanted||video.hidden||blocked()||document.hidden)video.pause();
    });
   }catch{starting=false;}
  }
- function sync(flow){
-  wanted=eligible(flow);
-  if(!wanted){if(video){video.hidden=true;video.pause();}return;}
+ function refresh(){
+  if(!wanted||blocked()){if(video){video.hidden=true;video.pause();}return;}
   if(!video){
-   host=document.getElementById('machine');if(!host)return;
    video=document.createElement('video');video.id='novaUpperAtBackground';
    video.muted=true;video.defaultMuted=true;video.loop=true;video.playsInline=true;video.preload='metadata';
    video.setAttribute('aria-hidden','true');video.setAttribute('playsinline','');
    video.src='assets/media/nova/upper-at-background-20261012.mp4';host.append(video);
   }
   video.hidden=false;layout();play();
+ }
+ function sync(flow){
+  wanted=eligible(flow);
+  if(init())refresh();
  }
  if(typeof document!=='undefined'){
   window.addEventListener('resize',layout);

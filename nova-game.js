@@ -5486,6 +5486,12 @@
       czPrelude:normalState.internal?.prelude?.presentation==='reel'&&!spin?.resolved?.czPrelude?.announce});
   }
 
+  function syncUpperAtBackground(){
+    const resolved=isSpinning?currentSpin?.resolved:null;
+    const specialSpin=resolved&&!NovaUpperAtBackground.eligible(resolved.flowAfter);
+    NovaUpperAtBackground.sync(specialSpin||debugFastSpinActive||session.active||normalState.bonusPending||normalState.resultCard||normalState.pendingZoneResult||normalState.pendingSortieResult||normalState.ladderAwardPresentation||normalState.stockEntry||isCompleteTrialLocked()?null:presentedArtFlow());
+  }
+
   function updateDisplay(){
     showSortieResultIfReady();
     renderRemainingCounters();
@@ -5531,7 +5537,7 @@
       document.body.dataset.totoColor=document.body.dataset.artZone==='toto'?(normalState.flow?.color||'white'):'white';
     }
     if(!isSpinning)NovaAim.syncAtWait(debugFastSpinActive||session.active||normalState.bonusPending||normalState.resultCard?null:normalState.flow);
-    NovaUpperAtBackground.sync(debugFastSpinActive||session.active||normalState.bonusPending||normalState.resultCard||isCompleteTrialLocked()?null:normalState.flow);
+    syncUpperAtBackground();
     $("modeTag").className = "modeTag " + ((active || isNovaRisingMode()) ? "active" : "");
     $("modeTag").textContent = (active ? `${aTypeBonusLabel(session.bonusKind)} BONUS` : normalModeLabel());
 
@@ -7271,6 +7277,7 @@
     playGiruLadderBetVoice(currentSpin);
     NovaSortie.begin(currentSpin);
     renderRemainingCounters();
+    syncUpperAtBackground();
     if(resolved.zoneStartFlow)updateDisplay();
     if(resolved.oumaFreeze)showOverlay(NovaArt.zoneName(normalState.flow)+'フリーズ！ 0G連');
     else if(resolved.artReverse)showOverlay('逆回転！ '+resolved.flowAfter.award+'pt');

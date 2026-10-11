@@ -9,6 +9,6 @@
   "audioRemoved": true,
   "originalUnmodified": true,
   "loop": true,
-  "trigger": "Upper AT, behind the character lamps and aim overlays; paused outside upper AT or when the page is hidden",
+  "trigger": "Ordinary upper AT only, behind the character lamps. Hidden and paused during zones, preparation, preludes, aims, awards, challenges and results; playback resumes after those presentations. Paused when the page is hidden.",
   "usage": "User-provided copyrighted video for the requested NOVA presentation only. No training use."
 }
