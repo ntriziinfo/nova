@@ -6528,3 +6528,19 @@ body{
   50%{opacity:.4;filter:brightness(.8);}
 }
 .superSpeedBtn:focus-visible{outline:3px solid white;outline-offset:5px;}
+.superSpeedMenu{
+  position:fixed;z-index:10002;box-sizing:border-box;width:230px;max-width:calc(100vw - 16px);
+  max-height:calc(100dvh - 24px);overflow-y:auto;padding:10px;display:grid;gap:7px;
+  border:1px solid #f7d079;border-radius:14px;background:linear-gradient(145deg,#302718,#12100e);
+  box-shadow:0 8px 30px #000b,0 0 16px #ffbb4033;color:#ffe3a0;font:14px/1.4 sans-serif;
+}
+.superSpeedMenu[hidden],.superSpeedMenu button[hidden]{display:none;}
+.superSpeedMenu>strong{padding:2px 4px 5px;font-size:13px;letter-spacing:.06em;}
+.superSpeedMenu button{
+  box-sizing:border-box;width:100%;min-height:44px;padding:10px 12px;border:1px solid #79613a;
+  border-radius:8px;background:#201c16;color:#fff3ce;font:inherit;font-weight:700;text-align:left;cursor:pointer;
+}
+.superSpeedMenu button:hover:not(:disabled),.superSpeedMenu button[aria-pressed="true"]{background:#594321;border-color:#ffd476;}
+.superSpeedMenu button:disabled{opacity:.4;cursor:not-allowed;}
+.superSpeedMenu button:focus-visible{outline:2px solid #fff;outline-offset:1px;}
+.superSpeedMenu .superSpeedMenuStop{text-align:center;color:#ffc9bb;border-color:#895746;}

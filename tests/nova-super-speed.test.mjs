@@ -8,7 +8,7 @@ function setup(){
  const timers=new Map();let id=0;
  const button={classList:{toggle(name,value){button[name]=value;}},setAttribute(name,value){button[name]=value;}};
  const debugButton={setAttribute(){}},debugStatus={};
- const c=vm.createContext({superFullAuto:false,superSpeedActive:false,superSpeedPending:false,superSpeedAllowed:false,superSpeedDebugAllowed:false,superSpeedPermissionTimer:null,superSpeedNextBetAt:0,performance:{now:()=>1000},
+ const c=vm.createContext({superSpeedMode:'nonstop',superSpeedMenu:null,superFullAuto:false,superSpeedActive:false,superSpeedPending:false,superSpeedAllowed:false,superSpeedDebugAllowed:false,superSpeedPermissionTimer:null,superSpeedNextBetAt:0,performance:{now:()=>1000},
   SLOT_DEBUG_ENABLED:true,VERTEX_CONTROLLER_ENABLED:false,SLOT_PLAY_SESSION:false,
   normalState:{flow:{phase:'normal'}},session:{active:false},autoPlay:false,autoTimer:null,isSpinning:false,
   debugFastSpinActive:false,bonusEndBgmPlaying:false,bonusConfirmSoundPlaying:false,
@@ -215,4 +215,58 @@ test('AUTO retries a rejected stop sequence without duplicating in-flight stops'
  assert.equal(timers.size,1,'release the takeover latch so a missed stop can be retried');
  [...timers.values()][0].fn();c.requestAutoStopCurrentSpin();assert.equal(stops,2);
  c.currentSpin.resolved.oumaFreeze=true;[...timers.values()].at(-1).fn();c.requestAutoStopCurrentSpin();assert.equal(stops,2);
+});
+
+test('selected targets stop before another BET, without changing the settled game or consuming RNG',()=>{
+ for(const [mode,normal,session] of [
+  ['cz',{flow:{phase:'cz'}},{}],['cz',{flow:{phase:'strong_cz'}},{}],
+  ['bonus',{flow:{phase:'normal'},bonusPending:true},{}],
+  ['at',{flow:{phase:'normal'}},{active:true,bonusArtSets:1}],
+  ['at',{flow:{phase:'normal'},bonusPending:true,premiumBonus:true},{}],
+  ['at',{flow:{phase:'art',remaining:300}},{}],
+  ['cz',{flow:{phase:'art',remaining:300}},{}],['bonus',{flow:{phase:'art',remaining:300}},{}]
+ ]){
+  const {c}=setup();let spins=0,queued=0;
+  Object.assign(c,{stopAutoWatchdog(){},NovaClock:{setBackgroundEnabled(){}},spin(){spins++;},queueAutoStep(){queued++;}});
+  for(const name of ['stopAutoPlay','runAutoStep','scheduleNextAuto'])vm.runInContext(fn(name),c);
+  c.setSuperSpeedDebugPermission(true);c.startSuperSpeed(mode);
+  c.normalState=normal;c.session=session;
+  const before=JSON.stringify([normal,session]);
+  vm.runInContext('Math.random=()=>{throw Error("target stopping consumed RNG");}',c);
+  c.autoTimer=c.setTimeout(()=>{},100);c.scheduleNextAuto();c.runAutoStep();
+  assert.equal(c.autoPlay,false,mode);assert.equal(c.superFullAuto,false);assert.equal(c.superSpeedActive,false);
+  assert.equal(c.autoTimer,null);assert.equal(spins,0);assert.equal(queued,0);
+  assert.equal(JSON.stringify([c.normalState,c.session]),before);
+  c.normalState={flow:{phase:'normal'}};c.stopSuperSpeedIfNeeded();assert.equal(c.superSpeedActive,false);
+ }
+});
+
+test('targets ignore prelude, earlier milestones and stale bonus fields, and wait for current stops',()=>{
+ for(const mode of ['cz','bonus','at']){
+  const {c}=setup();c.setSuperSpeedDebugPermission(true);c.startSuperSpeed(mode);
+  c.session={active:false,bonusArtSets:2};
+  c.normalState={flow:{phase:'normal'},internal:{czPrelude:{left:3,win:true}}};
+  assert.equal(c.stopSuperSpeedIfNeeded(),false);assert.equal(c.superSpeedActive,true);
+  if(mode!=='cz'){
+   c.normalState.flow.phase='cz';assert.equal(c.stopSuperSpeedIfNeeded(),false);assert.equal(c.superSpeedActive,true);
+  }
+  if(mode==='at'){
+   c.session={active:true,bonusArtSets:0};assert.equal(c.stopSuperSpeedIfNeeded(),false);assert.equal(c.superSpeedActive,true);
+  }
+  c.isSpinning=true;c.normalState={flow:{phase:'art'}};
+  assert.equal(c.stopSuperSpeedIfNeeded(),false);assert.equal(c.autoPlay,true,'finish the reels before stopping');
+  c.isSpinning=false;assert.equal(c.stopSuperSpeedIfNeeded(),true);assert.equal(c.autoPlay,false);
+ }
+});
+
+test('mode selection can change while running, but cannot start at an already reached target',()=>{
+ const {c}=setup();c.setSuperSpeedDebugPermission(true);c.startSuperSpeed('cz');
+ c.isSpinning=true;c.startSuperSpeed('bonus');assert.equal(c.superSpeedMode,'bonus');assert.equal(c.superSpeedPending,true);
+ c.isSpinning=false;c.normalState.flow.phase='cz';c.stopSuperSpeedIfNeeded();assert.equal(c.autoPlay,true);
+ c.startSuperSpeed('nonstop');c.normalState.flow.phase='art';c.stopSuperSpeedIfNeeded();
+ assert.equal(c.autoPlay,true);assert.equal(c.superSpeedActive,false);
+ c.normalState.flow.phase='normal';c.stopSuperSpeedIfNeeded();assert.equal(c.superSpeedActive,true);
+ c.stopAutoPlay();c.normalState.flow.phase='cz';c.startSuperSpeed('cz');assert.equal(c.autoPlay,false);
+ c.normalState.bonusPending=true;c.startSuperSpeed('bonus');assert.equal(c.autoPlay,false);
+ c.startSuperSpeed('unknown');assert.equal(c.autoPlay,false);
 });

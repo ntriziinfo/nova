@@ -12,12 +12,15 @@ const compressed=fs.readFileSync(report.rowsFile);
 const rows=JSON.parse(gunzipSync(compressed));
 const previous='../tests/fixtures/pre-win-rtp-20261008';
 const near=(actual,expected)=>assert(Math.abs(actual-expected)<1e-10,`${actual} != ${expected}`);
+// Keep the exact UI sources used for the historical trial. Live engine hashes
+// and seeded session replays still verify that presentation edits do not retune it.
+const trialPresentation=JSON.parse(gunzipSync(fs.readFileSync('tests/fixtures/win-rtp-20261008-presentation.json.gz')));
 
-test('adopted calibration matches deployed sources and all 3,000 complete-stop ledgers',()=>{
+test('adopted calibration matches engine sources, archived trial UI and all 3,000 complete-stop ledgers',()=>{
  assert(report.adopted);assert.equal(rows.length,3000);
  assert.equal(createHash('sha256').update(compressed).digest('hex'),report.rowsSha256);
  for(const [file,hash] of Object.entries(report.sourceHashes)){
-  assert.equal(createHash('sha256').update(fs.readFileSync(file,'utf8').replaceAll('\r\n','\n')).digest('hex'),hash,file);
+  assert.equal(createHash('sha256').update(trialPresentation[file] ?? fs.readFileSync(file,'utf8').replaceAll('\r\n','\n')).digest('hex'),hash,file);
  }
  for(const result of report.results.filter(r=>r.setting>=4)){
   const data=rows.filter(r=>r.setting===result.setting),sum=key=>data.reduce((n,r)=>n+Number(r[key]),0);

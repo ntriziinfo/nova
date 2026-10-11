@@ -53,7 +53,12 @@
       button.disabled = locked(target);
       button.textContent = id.startsWith('stop') ? label : target?.textContent || label;
       if (id === 'quickAutoBtn' || id === 'superSpeedBtn') button.setAttribute('aria-pressed', String(!!target?.classList.contains('on')));
-      if(id==='superSpeedBtn'){button.title=target?.title || '';button.setAttribute('aria-label','超ハイスピードモード');}
+      if(id==='superSpeedBtn'){
+        button.title=target?.title || '';button.setAttribute('aria-label','超ハイスピードモード');
+        for(const name of ['aria-expanded','aria-controls','aria-haspopup']){
+          const value=target?.getAttribute(name);if(value!==null&&value!==undefined)button.setAttribute(name,value);
+        }
+      }
     }
   };
   const observer = new MutationObserver(sync);
