@@ -61,6 +61,10 @@ for(const [original,asset]of Object.entries(audioContext.NovaAudioManifest)){
 }
 const tags = [...page.matchAll(/<script\b[^>]*\bsrc=["']([^"']+)["'][^>]*><\/script>/gi)];
 const entry = tags.filter(match => match[1].split('?')[0] === 'nova-game.js');
+const voiceCatalog = tags.filter(match => match[1].split('?')[0] === 'nova-voice-catalog.js');
+if (voiceCatalog.length !== 1 || tags.indexOf(voiceCatalog[0]) >= tags.indexOf(entry[0]) || /\b(?:async|defer|type)\s*(?:=|>)/i.test(voiceCatalog[0][0])) {
+  throw new Error('Voice catalog must load once, synchronously before nova-game.js');
+}
 if (entry.length !== 1 || entry[0] !== tags.at(-1) || /\b(?:async|defer|type)\s*(?:=|>)/i.test(entry[0][0])) {
   throw new Error('nova-game.js must load exactly once, synchronously after the game dependencies');
 }

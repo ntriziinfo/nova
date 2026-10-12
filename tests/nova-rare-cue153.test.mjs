@@ -1,3 +1,4 @@
+import {loadVoiceCatalog} from './helpers/voice-catalog.mjs';
 import {readGameSource} from '../scripts/game-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -9,6 +10,7 @@ const html=readGameSource();
 function setup(){
  const sounds=[];
  const c=vm.createContext({debugFastSpinActive:false,speedToBonusActive:false,voiceOutputVolume:()=>.42,playOneShotSound:(...args)=>sounds.push(args),normalizedAudioSourceKey:src=>src.split('?')[0]});
+ loadVoiceCatalog(c);
  vm.runInContext(html.slice(html.indexOf('  const BELL_NAVI_VOICE_SRCS='),html.indexOf('  for(const src of CHARACTER_VOICE_SRCS)')),c);
  for(const name of ['isComebackChanceSpin','rareCueGrade','playRareCueVoice'])vm.runInContext(html.match(new RegExp('  function '+name+'\\([^]*?\\n  }'))[0],c);
  return {c,sounds};

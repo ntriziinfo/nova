@@ -1,3 +1,4 @@
+import {loadVoiceCatalog} from './helpers/voice-catalog.mjs';
 import {readGameSource} from '../scripts/game-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -410,6 +411,7 @@ test('zone entry and colored seven cues play one character voice on BET with the
  const t=setup(),sounds=[];
  const context=vm.createContext({NovaAim:t.aim,debugFastSpinActive:false,speedToBonusActive:false,voiceOutputVolume:()=>.6,sfxOutputVolume:()=>.4,playOneShotSound:(src,volume)=>sounds.push({src,volume})});
  const html=readGameSource();
+ loadVoiceCatalog(context);
  vm.runInContext(html.match(/  const AIM_VOICE_SRCS=[^\n]+/)[0]+'\n'+html.match(/  function playRandomAimVoice\([^]*?\n  }/)[0],context);
  vm.runInContext(html.match(/  const SEVEN_ZONE_VOICE_SRCS=[^\n]+/)[0]+'\n'+html.match(/  function playSevenAimVoice\([^]*?\n  }/)[0],context);
  vm.runInContext(html.match(/  function playAimBetPresentation\([^]*?\n  }/)[0],context);

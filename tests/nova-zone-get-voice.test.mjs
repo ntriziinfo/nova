@@ -1,3 +1,4 @@
+import {loadVoiceCatalog} from './helpers/voice-catalog.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -18,6 +19,7 @@ function setup(){
   sfxOutputVolume:()=>.4,voiceOutputVolume:()=>.7,soundOutputVolume:(s,v)=>v,prepareCharacterVoiceAudio(){},updateAutoUi(){},
   setTimeout:f=>{timers.push(f);return timers.length;},clearTimeout(){},watchPlaybackProgress:(a,f)=>{watches.push(f);return ()=>{};}
  });
+ loadVoiceCatalog(c);
  vm.runInContext(source.match(/  const MODE_EVENT_VOICE_SRCS=[^\n]+/)[0],c);
  for(const name of ['clearBonusConfirmSoundLock','playLockedBonusConfirmSound','playZoneInternalConfirmedSound','playCzConfirmedSound'])vm.runInContext(fn(name),c);
  vm.runInContext('Math.random=()=>{throw Error("Audio must not consume game RNG");}',c);

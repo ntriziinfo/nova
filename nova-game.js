@@ -485,7 +485,6 @@
     CHERRY_DOUBLE:3,
     CHERRY_TRIPLE:3
   });
-  const NORMAL_BELL_PAYOUT = NORMAL_ROLE_PAYOUTS.BELL;
 
   const HIGH_MODE_GAMES = 10;
 
@@ -736,63 +735,37 @@
   const aimWinAudios=new Set();
   const oneShotSoundCache = new Map();
   NovaSortie.setSoundPlayer(src=>playOneShotSound(src,sfxOutputVolume(),{allowDuringPremiumConfirm:true}));
-  const sortieAwardPreload=new Audio('assets/media/nova/sortie-award.mp3');sortieAwardPreload.preload='auto';sortieAwardPreload.load();
-  oneShotSoundCache.set('assets/media/nova/sortie-award.mp3',sortieAwardPreload);
-  const BELL_NAVI_VOICE_SRCS={sosuke:['assets/media/nova/navi-left-sosuke.wav','assets/media/nova/navi-center-sosuke.wav','assets/media/nova/navi-right-sosuke.wav'],sora:['assets/media/nova/navi-left-sora.wav','assets/media/nova/navi-center-sora.wav','assets/media/nova/navi-right-sora.wav'],giru:['assets/media/nova/navi-left-giru.wav','assets/media/nova/navi-center-giru.wav','assets/media/nova/navi-right-giru.wav'],toto:['assets/media/nova/navi-left-toto.wav','assets/media/nova/navi-center-toto.wav','assets/media/nova/navi-right-toto.wav'],ouma:['assets/media/nova/navi-left-ouma.wav','assets/media/nova/navi-center-ouma.wav','assets/media/nova/navi-right-ouma.wav'],nito:['assets/media/nova/navi-left-nito.wav','assets/media/nova/navi-center-nito.wav','assets/media/nova/navi-right-nito.wav'],kushuri:['assets/media/nova/navi-left-kushuri.wav','assets/media/nova/navi-center-kushuri.wav','assets/media/nova/navi-right-kushuri.wav']};
-  const BELL_NAVI_COMPLETE_VOICE_SRCS={sosuke:'assets/media/nova/navi-complete-sosuke.wav',sora:'assets/media/nova/navi-complete-sora.wav',giru:'assets/media/nova/navi-complete-giru.wav',toto:'assets/media/nova/navi-complete-toto.wav',ouma:'assets/media/nova/navi-complete-ouma.wav',nito:'assets/media/nova/navi-complete-nito.wav',kushuri:'assets/media/nova/navi-complete-kushuri.wav'};
-  const AIM_VOICE_SRCS={seven:['assets/media/nova/aim_seven_sosuke.wav','assets/media/nova/aim-seven-sora.wav','assets/media/nova/aim-seven-giru.wav','assets/media/nova/aim-seven-toto.wav','assets/media/nova/aim-seven-ouma.wav'],nebula:['assets/media/nova/aim-nebula-giru.wav','assets/media/nova/aim-nebula-toto.wav','assets/media/nova/aim-nebula-ouma.wav','assets/media/nova/aim-nebula-sora.wav']};
-  const SEVEN_ZONE_VOICE_SRCS={sosuke:AIM_VOICE_SRCS.seven[0],sora:AIM_VOICE_SRCS.seven[1],giru:AIM_VOICE_SRCS.seven[2],toto:AIM_VOICE_SRCS.seven[3],ouma:AIM_VOICE_SRCS.seven[4]};
-  const NEBULA_ZONE_VOICE_SRCS={giru:AIM_VOICE_SRCS.nebula[0],toto:AIM_VOICE_SRCS.nebula[1],ouma:AIM_VOICE_SRCS.nebula[2],sora:AIM_VOICE_SRCS.nebula[3]};
-  const ZONE_START_VOICE_SRCS={sora:'assets/media/nova/zone-start-sora.wav',ura_sora:'assets/media/nova/zone-start-ura-sora.wav',giru:'assets/media/nova/zone-start-giru.wav',ura_giru:'assets/media/nova/zone-start-ura-giru.wav',toto:'assets/media/nova/zone-start-toto.wav',ouma:'assets/media/nova/zone-start-ouma.wav',ura_ouma:'assets/media/nova/zone-start-ura-ouma.wav'};
-  const ZONE_CONTINUE_VOICE_SRCS={sora:'assets/media/nova/continue-sora.wav',toto:'assets/media/nova/continue-toto.wav'};
-  const MODE_EVENT_VOICE_SRCS={upperChallenge:'assets/media/nova/sosuke-upper-challenge-entry.wav',comeback:'assets/media/nova/sosuke-comeback-entry.wav',upperAt:'assets/media/nova/sosuke-upper-at-entry.wav',bonusStock:'assets/media/nova/sosuke-bonus-stock.wav',zoneGet:'assets/media/nova/sosuke-zone-get.wav'};
-  const OUMA_NOVA_VOICE_SRCS={aim:'assets/media/nova/aim-nova-ouma.wav',wins:['assets/media/nova/nova-win-1-ouma.wav','assets/media/nova/nova-win-2-ouma.wav','assets/media/nova/nova-win-3-ouma.wav']};
-  const GIRU_LADDER_VOICE_SRCS={bet:['assets/media/nova/giru-ladder-bet-moment.wav','assets/media/nova/giru-ladder-bet-challenge.wav','assets/media/nova/giru-ladder-bet-good-flow.wav'],result:['assets/media/nova/giru-ladder-result-under500.wav','assets/media/nova/giru-ladder-result-500.wav','assets/media/nova/giru-ladder-result-1000.wav']};
-  const SOSUKE_LADDER_VOICE_SRCS=['assets/media/nova/sosuke-ladder-pass-injustice.wav','assets/media/nova/sosuke-ladder-pass-hot.wav','assets/media/nova/sosuke-ladder-bet-love.wav','assets/media/nova/sosuke-ladder-bet-spirit.wav','assets/media/nova/sosuke-ladder-bet-shimatte.wav'];
-  const RARE_CUE_VOICE_SRCS={
-    kushuri:{chance:'assets/media/nova/rare-cue-chance-kushuri.wav',bigChance:'assets/media/nova/rare-cue-big-chance-kushuri.wav',hot:'assets/media/nova/rare-cue-hot-kushuri.wav'},
-    nito:{chance:'assets/media/nova/rare-cue-chance-nito.wav',bigChance:'assets/media/nova/rare-cue-big-chance-nito.wav',hot:'assets/media/nova/rare-cue-hot-nito.wav'}
-  };
-  // Register new character lines here (or in the banks above). Game copies are
-  // loudness-normalized offline; preserve supplied originals separately.
-  const CHARACTER_VOICE_SRCS=Object.freeze([
-    ...Object.values(BELL_NAVI_VOICE_SRCS).flat(),...Object.values(BELL_NAVI_COMPLETE_VOICE_SRCS),
-    ...Object.values(AIM_VOICE_SRCS).flat(),...Object.values(ZONE_START_VOICE_SRCS),
-    ...Object.values(ZONE_CONTINUE_VOICE_SRCS),'assets/media/nova/bonus_confirm.wav',
-    ...Object.values(MODE_EVENT_VOICE_SRCS),
-    'assets/media/nova/cz-entry-voice.wav',
-    OUMA_NOVA_VOICE_SRCS.aim,...OUMA_NOVA_VOICE_SRCS.wins,
-    ...Object.values(GIRU_LADDER_VOICE_SRCS).flat(),
-    ...SOSUKE_LADDER_VOICE_SRCS,
-    ...Object.values(RARE_CUE_VOICE_SRCS).flatMap(bank=>Object.values(bank)),
-    'assets/media/nova/aim/bonus-nebula-win.wav','assets/media/nova/aim/zone-roulette-confirm.wav?v=20260919-roulette-voice',
-    'assets/media/jag/cz_remaining_3.wav?v=count2','assets/media/jag/cz_remaining_2.wav?v=count2','assets/media/jag/cz_last.wav?v=count2'
-  ]);
+  preloadOneShotSound('assets/media/nova/sortie-award.mp3');
+  const BELL_NAVI_VOICE_SRCS=NovaVoiceCatalog.BELL_NAVI_VOICE_SRCS;
+  const BELL_NAVI_COMPLETE_VOICE_SRCS=NovaVoiceCatalog.BELL_NAVI_COMPLETE_VOICE_SRCS;
+  const AIM_VOICE_SRCS=NovaVoiceCatalog.AIM_VOICE_SRCS;
+  const SEVEN_ZONE_VOICE_SRCS=NovaVoiceCatalog.SEVEN_ZONE_VOICE_SRCS;
+  const NEBULA_ZONE_VOICE_SRCS=NovaVoiceCatalog.NEBULA_ZONE_VOICE_SRCS;
+  const ZONE_START_VOICE_SRCS=NovaVoiceCatalog.ZONE_START_VOICE_SRCS;
+  const ZONE_CONTINUE_VOICE_SRCS=NovaVoiceCatalog.ZONE_CONTINUE_VOICE_SRCS;
+  const MODE_EVENT_VOICE_SRCS=NovaVoiceCatalog.MODE_EVENT_VOICE_SRCS;
+  const OUMA_NOVA_VOICE_SRCS=NovaVoiceCatalog.OUMA_NOVA_VOICE_SRCS;
+  const GIRU_LADDER_VOICE_SRCS=NovaVoiceCatalog.GIRU_LADDER_VOICE_SRCS;
+  const SOSUKE_LADDER_VOICE_SRCS=NovaVoiceCatalog.SOSUKE_LADDER_VOICE_SRCS;
+  const RARE_CUE_VOICE_SRCS=NovaVoiceCatalog.RARE_CUE_VOICE_SRCS;
+  const CHARACTER_VOICE_SRCS=NovaVoiceCatalog.CHARACTER_VOICE_SRCS;
   const CHARACTER_VOICE_KEYS=new Set(CHARACTER_VOICE_SRCS.map(normalizedAudioSourceKey));
   // Voice loudness is now mastered in the files; the bus must stay at unity.
   const CHARACTER_VOICE_BOOST_DB=0;
   const characterVoiceConnections=new WeakMap();
   let characterVoiceBus=null;
-  for(const src of CHARACTER_VOICE_SRCS){const audio=new Audio(src);audio.preload='auto';oneShotSoundCache.set(src,audio);audio.load();}
-  const rareNaviPreload=new Audio('assets/media/nova/rare-navi.mp3');rareNaviPreload.preload='auto';rareNaviPreload.loop=false;oneShotSoundCache.set('assets/media/nova/rare-navi.mp3',rareNaviPreload);rareNaviPreload.load();
-  for(const src of ['assets/media/nova/initial-duo-stop.mp3','assets/media/nova/initial-duo-final-stop.mp3','assets/media/nova/sortie-stop-1.mp3','assets/media/nova/sortie-stop-2.mp3']){const audio=new Audio(src);audio.preload='auto';audio.loop=false;oneShotSoundCache.set(src,audio);audio.load();}
-  for(const src of ['assets/media/jag/cz_third_success.wav','assets/media/jag/cz_third_failure.wav','assets/media/nova/cz_stop_12.wav']){const audio=new Audio(src);audio.preload='auto';oneShotSoundCache.set(src,audio);audio.load();}
-  for(const src of ['assets/media/nova/bell-navi.wav','assets/media/nova/direct-award.wav','assets/media/nova/weak-nova.wav','assets/media/nova/aim/nebula-win.wav','assets/media/nova/aim/seven-win.wav','assets/media/nova/aim/cue-blue.wav','assets/media/nova/aim/cue-red.wav','assets/media/nova/aim/cue-rainbow.wav','assets/media/nova/shutter.wav','assets/media/nova/shutter-close.wav','assets/media/nova/ladder-final-award.wav','assets/media/nova/ladder-final-award-under1000.wav']){const audio=new Audio(src);audio.preload='auto';oneShotSoundCache.set(src,audio);audio.load();}
-  const resultEyecatchPreload = new Audio('assets/media/nova/result-eyecatch.wav');
+  for(const src of CHARACTER_VOICE_SRCS)preloadOneShotSound(src);
+  preloadOneShotSound('assets/media/nova/rare-navi.mp3');
+  for(const src of ['assets/media/nova/initial-duo-stop.mp3','assets/media/nova/initial-duo-final-stop.mp3','assets/media/nova/sortie-stop-1.mp3','assets/media/nova/sortie-stop-2.mp3'])preloadOneShotSound(src);
+  for(const src of ['assets/media/jag/cz_third_success.wav','assets/media/jag/cz_third_failure.wav','assets/media/nova/cz_stop_12.wav'])preloadOneShotSound(src);
+  for(const src of ['assets/media/nova/bell-navi.wav','assets/media/nova/direct-award.wav','assets/media/nova/weak-nova.wav','assets/media/nova/aim/nebula-win.wav','assets/media/nova/aim/seven-win.wav','assets/media/nova/aim/cue-blue.wav','assets/media/nova/aim/cue-red.wav','assets/media/nova/aim/cue-rainbow.wav','assets/media/nova/shutter.wav','assets/media/nova/shutter-close.wav','assets/media/nova/ladder-final-award.wav','assets/media/nova/ladder-final-award-under1000.wav'])preloadOneShotSound(src);
   const initialDuoBgmPreload = new Audio(INITIAL_DUO_ZONE_BGM_SRC);
   initialDuoBgmPreload.preload='auto';initialDuoBgmPreload.load();
   const sortieBgmPreload = new Audio(SORTIE_ZONE_BGM_SRC);
   sortieBgmPreload.preload='auto';sortieBgmPreload.load();
-  resultEyecatchPreload.preload='auto';resultEyecatchPreload.load();
-  oneShotSoundCache.set('assets/media/nova/result-eyecatch.wav',resultEyecatchPreload);
-  const oumaFailPreload = new Audio('assets/media/nova/ouma-fail.wav');
-  oumaFailPreload.preload='auto';
-  oneShotSoundCache.set('assets/media/nova/ouma-fail.wav',oumaFailPreload);
-  oumaFailPreload.load();
-  const superNovaStopPreload=new Audio('assets/media/nova/super-nova-stop.wav');
-  superNovaStopPreload.preload='auto';
-  oneShotSoundCache.set('assets/media/nova/super-nova-stop.wav',superNovaStopPreload);
-  superNovaStopPreload.load();
+  preloadOneShotSound('assets/media/nova/result-eyecatch.wav');
+  preloadOneShotSound('assets/media/nova/ouma-fail.wav');
+  preloadOneShotSound('assets/media/nova/super-nova-stop.wav');
   let gekiatsuActive = false;
   let gekiatsuHideTimer = null;
   let premiumBigConfirmMovieHold = false;
@@ -9020,6 +8993,15 @@
   window.addEventListener('nova-aim-unlocked',()=>{updateDisplay();if(autoPlay)queueAutoStep(50);});
   window.addEventListener('nova-sortie-unlocked',()=>{updateDisplay();if(autoPlay)queueAutoStep(50);});
   window.addEventListener('nova-rush-confirm-ended',()=>{if(session.active)resumeSessionBgm();else playNormalBgm();});
+  // Cached effects and voices share setup; BGM players have their own lifecycle.
+  function preloadOneShotSound(src){
+    const audio=new Audio(src);
+    audio.preload='auto';audio.loop=false;
+    oneShotSoundCache.set(src,audio);
+    audio.load();
+    return audio;
+  }
+
   function playOneShotSound(src, volume=sfxOutputVolume(), options={}){
     if(debugFastSpinActive || speedToBonusActive) return;
     if(premiumBigConfirmSilence && !options.allowDuringPremiumConfirm) return;

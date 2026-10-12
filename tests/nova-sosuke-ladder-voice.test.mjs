@@ -1,9 +1,11 @@
+import {loadVoiceCatalog} from './helpers/voice-catalog.mjs';
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
 const source=fs.readFileSync('nova-game.js','utf8'),fn=source.match(/  function playSosukeLadderBetVoice\([^]*?\n  }/)[0];
 function setup(){
  const played=[],c=vm.createContext({debugFastSpinActive:false,speedToBonusActive:false,voiceOutputVolume:()=>.6,
   playOneShotSound:(src,volume)=>played.push({src,volume}),crypto:{getRandomValues:a=>{c.presentationDraws++;a[0]=0;return a;}},presentationDraws:0});
  for(const f of ['nova-tuning.js','nova-art.js','nova-spin-resume.js'])vm.runInContext(fs.readFileSync(f,'utf8'),c);
+ loadVoiceCatalog(c);
  vm.runInContext(source.match(/  const SOSUKE_LADDER_VOICE_SRCS=[^\n]+/)[0]+fn,c);
  vm.runInContext('Math.random=()=>{throw Error("Voice must not draw game RNG");}',c);
  return {c,played,voices:Array.from(vm.runInContext('SOSUKE_LADDER_VOICE_SRCS',c))};
@@ -62,5 +64,5 @@ test('all supplied lines share voice normalization and original recording proven
  vm.runInContext(fs.readFileSync('nova-audio-manifest.js','utf8'),c);
  const provenance=JSON.parse(fs.readFileSync('assets/media/nova/sosuke-ladder-voices.sources.json','utf8'));
  for(const src of voices){assert.equal(c.NovaAudioManifest[src].category,'voice');assert(fs.existsSync(c.NovaAudioManifest[src].src));assert(provenance.sources.some(s=>s.copy===src));}
- assert(source.includes('...SOSUKE_LADDER_VOICE_SRCS,'));assert(source.includes('playSosukeLadderBetVoice(currentSpin);'));
+ assert(voices.every(src=>c.NovaVoiceCatalog.CHARACTER_VOICE_SRCS.includes(src)));assert(source.includes('playSosukeLadderBetVoice(currentSpin);'));
 });

@@ -1,0 +1,22 @@
+{
+  "baseline": "d15fe00498dcf353888e5a893cd4aae2958bbedd",
+  "unchangedGameFunctions": 546,
+  "voiceBanks": 13,
+  "voiceSources": 79,
+  "voiceRoutingAndOrderIdentical": true,
+  "preloadOrderAndCacheIdentical": true,
+  "oneShotPlayers": 103,
+  "audioManifestAndNormalizationUnchanged": true,
+  "engineHashes": {
+    "nova-art.js": "242cb99bee8b74150d8008a51cb86e729d2bdc7c178bf138ec9ab8740758a5e1",
+    "nova-normal.js": "c9e4dd150fcf606e4548fb344b6731af85697a15306e3315d81e2c7af902e622",
+    "nova-flow.js": "a01ae6c12fcf577c4cd5d7e3d099afad55aaad95930088763bc61ef06238fd19",
+    "nova-tuning.js": "26ab2f821eebb4744fe20de717bc58c50a0869277395b92e41b5e9ee963f9f54",
+    "nova-decrement.js": "611e1af8431893dbb89e657f7638d7aae96f0bdb61aa0daa8d12dc58415f95b6",
+    "nova-progress.js": "92aee0a68d58ea240401e33310348d364033753f258a6bb334fc49161f9643e3",
+    "nova-balance.js": "d11fa06e50a80af9df47499487722f9bf479b342ab5a33496f876f63b5d5ee42",
+    "nova-complete.js": "afee692d2328871c922f6229030b58958a763a10ebe8ae5194ca0a4ac56f62d2",
+    "scripts/zone-v2-model.mjs": "24c65422dccf22fc0d3adf185417a6124386b2900777cfca3f78331a9618422c",
+    "scripts/zone-v2-rng.mjs": "0e5424d7a743850591b4029b730d93267c986633a0be83942a69a19b18c8fcce"
+  }
+}

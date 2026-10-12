@@ -1,0 +1,194 @@
+{
+  "status": "pass",
+  "muted": true,
+  "reports": [
+    {
+      "scenario": {
+        "name": "pass-injustice",
+        "roll": 0.075,
+        "pass": true
+      },
+      "events": [
+        {
+          "src": "assets/media/nova/sosuke-ladder-pass-injustice.wav",
+          "actual": "assets/media/normalized-20261012/nova/sosuke-ladder-pass-injustice.wav",
+          "loop": false,
+          "volume": 0.35,
+          "at": 4364.600000023842,
+          "started": true,
+          "duration": 4.693333
+        }
+      ],
+      "after": {
+        "index": 1,
+        "award": "100",
+        "fee": 3
+      }
+    },
+    {
+      "scenario": {
+        "name": "pass-hot",
+        "roll": 0.225,
+        "pass": true
+      },
+      "events": [
+        {
+          "src": "assets/media/nova/sosuke-ladder-pass-hot.wav",
+          "actual": "assets/media/normalized-20261012/nova/sosuke-ladder-pass-hot.wav",
+          "loop": false,
+          "volume": 0.35,
+          "at": 4610.299999952316,
+          "started": true,
+          "duration": 2.645333
+        }
+      ],
+      "after": {
+        "index": 1,
+        "award": "100",
+        "fee": 3
+      }
+    },
+    {
+      "scenario": {
+        "name": "bet-love",
+        "roll": 0.4,
+        "pass": true
+      },
+      "events": [
+        {
+          "src": "assets/media/nova/sosuke-ladder-bet-love.wav",
+          "actual": "assets/media/normalized-20261012/nova/sosuke-ladder-bet-love.wav",
+          "loop": false,
+          "volume": 0.35,
+          "at": 4970.200000047684,
+          "started": true,
+          "duration": 3.925333
+        }
+      ],
+      "after": {
+        "index": 1,
+        "award": "100",
+        "fee": 3
+      }
+    },
+    {
+      "scenario": {
+        "name": "bet-spirit",
+        "roll": 0.65,
+        "pass": true
+      },
+      "events": [
+        {
+          "src": "assets/media/nova/sosuke-ladder-bet-spirit.wav",
+          "actual": "assets/media/normalized-20261012/nova/sosuke-ladder-bet-spirit.wav",
+          "loop": false,
+          "volume": 0.35,
+          "at": 3469.800000011921,
+          "started": true,
+          "duration": 2.346667
+        }
+      ],
+      "after": {
+        "index": 1,
+        "award": "100",
+        "fee": 3
+      }
+    },
+    {
+      "scenario": {
+        "name": "bet-shimatte",
+        "roll": 0.9,
+        "pass": true
+      },
+      "events": [
+        {
+          "src": "assets/media/nova/sosuke-ladder-bet-shimatte.wav",
+          "actual": "assets/media/normalized-20261012/nova/sosuke-ladder-bet-shimatte.wav",
+          "loop": false,
+          "volume": 0.35,
+          "at": 5203.5,
+          "started": true,
+          "duration": 2.944
+        }
+      ],
+      "after": {
+        "index": 1,
+        "award": "100",
+        "fee": 3
+      }
+    },
+    {
+      "scenario": {
+        "name": "pass-hot",
+        "roll": 0.225,
+        "pass": true,
+        "samePt": true
+      },
+      "events": [
+        {
+          "src": "assets/media/nova/sosuke-ladder-pass-hot.wav",
+          "actual": "assets/media/normalized-20261012/nova/sosuke-ladder-pass-hot.wav",
+          "loop": false,
+          "volume": 0.35,
+          "at": 3688.2999999523163,
+          "started": true,
+          "duration": 2.645333
+        }
+      ],
+      "after": {
+        "index": 1,
+        "award": "50",
+        "fee": 3
+      }
+    },
+    {
+      "scenario": {
+        "name": "bet-love",
+        "roll": 0.1,
+        "pass": false,
+        "mobile": true
+      },
+      "events": [
+        {
+          "src": "assets/media/nova/sosuke-ladder-bet-love.wav",
+          "actual": "assets/media/normalized-20261012/nova/sosuke-ladder-bet-love.wav",
+          "loop": false,
+          "volume": 0.35,
+          "at": 5874.199999988079,
+          "started": true,
+          "duration": 3.925333
+        }
+      ],
+      "after": {
+        "index": 0,
+        "award": "50",
+        "fee": 3
+      }
+    },
+    {
+      "scenario": {
+        "name": "pass-injustice",
+        "roll": 0.075,
+        "pass": true,
+        "auto": true
+      },
+      "events": [
+        {
+          "src": "assets/media/nova/sosuke-ladder-pass-injustice.wav",
+          "actual": "assets/media/normalized-20261012/nova/sosuke-ladder-pass-injustice.wav",
+          "loop": false,
+          "volume": 0.35,
+          "at": 3173.399999976158,
+          "started": true,
+          "duration": 4.693333
+        }
+      ],
+      "after": {
+        "index": 1,
+        "award": "100",
+        "fee": 3
+      }
+    }
+  ],
+  "errors": []
+}

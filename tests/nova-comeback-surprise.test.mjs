@@ -1,3 +1,4 @@
+import {loadVoiceCatalog} from './helpers/voice-catalog.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -12,7 +13,8 @@ function setup(){
  const c=vm.createContext({debugFastSpinActive:false,speedToBonusActive:false,
   voiceOutputVolume:()=>1,sfxOutputVolume:()=>1,STOP_SOUND_SRC:'ordinary-stop',
   isLadderShutterSpin:()=>false,playOneShotSound:src=>sounds.push(src),playWinSound:()=>sounds.push('chance')});
- vm.runInContext(source.match(/  const RARE_CUE_VOICE_SRCS=\{[^]*?\n  };/)[0],c);
+ loadVoiceCatalog(c);
+ vm.runInContext(source.match(/  const RARE_CUE_VOICE_SRCS=[^\n]+/)[0],c);
  for(const name of ['isComebackChanceSpin','rareCueGrade','playRareCueVoice','playRareNaviSound','playWeakNovaSound','playStrongNovaSound','playChanceSound','playStopSound']){
   vm.runInContext(source.match(new RegExp('  function '+name+'\\([^]*?\\n  }'))[0],c);
  }

@@ -1,3 +1,4 @@
+import {loadVoiceCatalog} from './helpers/voice-catalog.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -20,6 +21,7 @@ function setup(){
   settings:{setting:1},session:{bonusArtSets:0},isATypeBonusComplete:()=>false,normalizedAudioSourceKey:src=>src
  });
  for(const file of ['nova-tuning.js','nova-art.js','nova-spin-resume.js'])vm.runInContext(fs.readFileSync(file,'utf8'),c);
+ loadVoiceCatalog(c);
  vm.runInContext(source.match(/  const MODE_EVENT_VOICE_SRCS=[^\n]+/)[0],c);
  for(const name of ['playModeEntryBetVoice','playUpperAtEntryVoice','playAimSevenWinSound','resolveATypeBonusOutcome'])vm.runInContext(fn(name),c);
  const voices=vm.runInContext('MODE_EVENT_VOICE_SRCS',c);
