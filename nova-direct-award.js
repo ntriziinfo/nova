@@ -3,7 +3,11 @@ globalThis.NovaDirectAward=(()=>{
  const values=Object.freeze([10,20,30,50,100,300]);
  const source=pt=>'assets/design/nova-direct-pt-v1/direct-plus-'+pt+'pt.png';
  const atlas='assets/design/nova-award-glyphs-v1/glyphs.png';
- let root,img,fallback,glyphs,shownAt=0,resultTimer=null,imageRequest=0;
+ let root,img,fallback,glyphs,shownAt=0,resultTimer=null,imageRequest=0,atlasReady=false;
+ function syncGlyphs(){
+  if(!root||root.hidden||values.includes(Number(root.dataset.pt)))return;
+  glyphs.hidden=!atlasReady;fallback.hidden=atlasReady;
+ }
  function directAmount(resolved){
   const n=Number(resolved?.atOutcome?.direct);
   return resolved?.flowBefore?.phase==='art'&&Number.isSafeInteger(n)&&n>0?n:0;
@@ -23,8 +27,12 @@ globalThis.NovaDirectAward=(()=>{
   glyphs=document.createElement('div');glyphs.className='awardGlyphs';glyphs.setAttribute('aria-hidden','true');glyphs.hidden=true;
   root.append(img,glyphs,fallback);host.append(root);
   for(const pt of values){const preload=new Image();preload.src=source(pt);}
-  const preload=new Image();preload.src=atlas;
-  preload.onerror=()=>{if(root&&!glyphs.hidden){glyphs.hidden=true;fallback.hidden=false;}};
+  const preload=new Image();
+  const ready=()=>{atlasReady=preload.complete&&preload.naturalWidth>0;syncGlyphs();};
+  const failed=()=>{atlasReady=false;syncGlyphs();};
+  preload.onload=()=>{if(typeof preload.decode==='function')preload.decode().then(ready).catch(failed);else ready();};
+  preload.onerror=failed;
+  preload.src=atlas;
   return true;
  }
  function show(resolved){
@@ -35,7 +43,7 @@ globalThis.NovaDirectAward=(()=>{
   const request=++imageRequest;
   // A reused img can keep painting its old bitmap while the next src decodes.
   // The fallback always contains this spin's real amount, never the previous award.
-  fallback.textContent=label;fallback.hidden=!values.includes(pt);img.hidden=true;glyphs.hidden=values.includes(pt);
+  fallback.textContent=label;fallback.hidden=false;img.hidden=true;glyphs.hidden=true;
   if(values.includes(pt)){
    const src=source(pt);
    const current=()=>request===imageRequest&&img.getAttribute('src')===src;
@@ -51,7 +59,7 @@ globalThis.NovaDirectAward=(()=>{
    }));
   }
   shownAt=performance.now();
-  root.hidden=false;root.classList.remove('show');void root.offsetWidth;root.classList.add('show');
+  root.hidden=false;syncGlyphs();root.classList.remove('show');void root.offsetWidth;root.classList.add('show');
   return true;
  }
  function clear(){

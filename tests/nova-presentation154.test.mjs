@@ -35,19 +35,19 @@ test('upgraded targets cannot dim lamps, and presentation scheduling consumes no
 });
 
 function awardHarness(){
- const created=[],decodes=[];
+ const created=[],decodes=[];let init;
  class Element{
   constructor(tag){this.tag=tag;this.dataset={};this.style={};this.children=[];this.attrs={};this.hidden=false;this.classList={add(){},remove(){}};created.push(this);}
   append(...items){this.children.push(...items);}replaceChildren(...items){this.children=items;}
   setAttribute(k,v){this.attrs[k]=v;}getAttribute(k){return this.attrs[k]??null;}
   set src(v){this.attrs.src=v;this.complete=false;}get src(){return this.attrs.src;}
-  decode(){return new Promise(resolve=>decodes.push(resolve));}
+  decode(){return new Promise((resolve,reject)=>{resolve.reject=reject;decodes.push(resolve);});}
   load(){this.complete=true;this.naturalWidth=2000;this.onload?.();}
  }
  const host=new Element('host');
- const context=vm.createContext({document:{querySelector:()=>host,createElement:t=>new Element(t),addEventListener(){}},Image:class extends Element{constructor(){super('img');}},performance:{now:()=>100},NovaClock:{clearTimeout(){},setTimeout(){}}});
+ const context=vm.createContext({document:{querySelector:()=>host,createElement:t=>new Element(t),addEventListener:(event,fn)=>{init=fn;}},Image:class extends Element{constructor(){super('img');}},performance:{now:()=>100},NovaClock:{clearTimeout(){},setTimeout(){}}});
  vm.runInContext(fs.readFileSync('nova-direct-award.js','utf8'),context);
- return {award:context.NovaDirectAward,decodes,root:()=>host.children[0],img:()=>host.children[0].children[0],fallback:()=>host.children[0].children[2]};
+ return {award:context.NovaDirectAward,decodes,init:()=>init(),atlas:()=>created.find(e=>e.src?.endsWith('/glyphs.png')),root:()=>host.children[0],img:()=>host.children[0].children[0],glyphs:()=>host.children[0].children[1],fallback:()=>host.children[0].children[2]};
 }
 const direct=pt=>({atOutcome:{direct:pt},flowBefore:{phase:'art'}});
 test('50 to 20 never displays the previous bitmap while loading; error fallback shows only the current actual gain',async()=>{
@@ -62,4 +62,35 @@ test('stale award decodes cannot reveal an old award after a switch, glyph amoun
  h.img().load();const twenty=h.decodes.shift();h.award.show(direct(250));twenty();await Promise.resolve();assert(h.img().hidden);assert.equal(h.root().dataset.pt,'250');
  h.award.show(direct(100));h.img().load();const hundred=h.decodes.shift();h.award.clear();hundred();await Promise.resolve();assert(h.root().hidden);assert(h.img().hidden);
  assert.equal(h.award.show(direct(0)),false);
+});
+
+test('atlas loading or failure before/after an award keeps the current amount readable',()=>{
+ for(const failBefore of [true,false]){
+  const h=awardHarness();h.init();
+  if(failBefore)h.atlas().onerror();
+  h.award.show(direct(150));
+  assert(!h.fallback().hidden);assert(h.glyphs().hidden);assert.equal(h.fallback().textContent,'＋150pt');
+  if(!failBefore)h.atlas().onerror();
+  h.award.show(direct(250));assert(!h.fallback().hidden);assert(h.glyphs().hidden);assert.equal(h.fallback().textContent,'＋250pt');
+ }
+});
+
+test('atlas decode reveals the latest glyph amount, but cannot cover a fixed image or revive a cleared award',async()=>{
+ for(const next of [250,20,null]){
+  const h=awardHarness();h.award.show(direct(150));h.atlas().load();const ready=h.decodes.shift();
+  assert(!h.fallback().hidden);assert(h.glyphs().hidden);
+  if(next)h.award.show(direct(next));else h.award.clear();
+  ready();await Promise.resolve();
+  assert.equal(h.glyphs().hidden,next!==250);
+  if(next===250)assert(h.fallback().hidden);
+  if(next===20){assert(!h.fallback().hidden);assert.equal(h.fallback().textContent,'＋20pt');}
+  if(next===null)assert(h.root().hidden);
+ }
+ const h=awardHarness();h.init();h.atlas().load();h.decodes.shift()();await Promise.resolve();
+ h.award.show(direct(150));assert(!h.glyphs().hidden);assert(h.fallback().hidden);
+});
+
+test('atlas decode rejection retains the text fallback',async()=>{
+ const h=awardHarness();h.award.show(direct(150));h.atlas().load();h.decodes.shift().reject(Error('decode failed'));
+ await Promise.resolve();await Promise.resolve();assert(h.glyphs().hidden);assert(!h.fallback().hidden);
 });

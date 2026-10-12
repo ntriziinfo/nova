@@ -5495,7 +5495,27 @@
     }finally{if(A_TYPE_MODE){syncNovaProgress();NovaDecrement.observe(currentProfit());}}
   }
 
+  // Presentation only: reflect existing audio gates without changing input locks.
+  function syncAudioWaitUi(){
+    const complete=isCompleteTrialLocked();
+    const waiting=!complete && !!(bonusEndBgmPlaying || bonusConfirmSoundPlaying || comebackIntroVoiceHold || !isSpinning && isCzIntroVoiceHolding());
+    const badge=$("novaAudioWait"),button=$("spinBtn");
+    if(badge)badge.hidden=!waiting;
+    if(!button)return;
+    const wasWaiting=button.dataset.audioWait==='true';
+    button.dataset.audioWait=String(waiting);
+    if(!waiting&&!wasWaiting)return;
+    const canStopNow=isSpinning&&spinCanStop&&!isPremiumBigConfirmStopLocked();
+    const wait=waiting||NovaSortie.busy||isSpinning&&!canStopNow;
+    button.textContent=complete&&!isSpinning?"COMPLETE":wait?"WAIT":canStopNow?"STOP":"BET";
+    button.classList.toggle("waiting",wait);
+    button.classList.toggle("stopReady",!wait&&canStopNow);
+    if(waiting)button.setAttribute('aria-label','WAIT 音声再生中');
+    else button.removeAttribute('aria-label');
+  }
+
   function syncCabinetControlState(){
+    syncAudioWaitUi();
     const canStopNow = !!(isSpinning && spinCanStop && !isPremiumBigConfirmStopLocked());
     stopBtns.forEach((btn, i)=>{
       if(!btn) return;
@@ -7798,9 +7818,11 @@
     return new Promise(resolve=>{
       const {audio,promise}=playback,hold={audio,timer:null};
       comebackIntroVoiceHold=hold;
+      syncAudioWaitUi();
       hold.finish=proceed=>{
         if(comebackIntroVoiceHold!==hold)return;
         comebackIntroVoiceHold=null;clearTimeout(hold.timer);
+        syncAudioWaitUi();
         audio.removeEventListener('ended',ended);audio.removeEventListener('error',failed);
         audio.removeEventListener('playing',progress);audio.removeEventListener('timeupdate',progress);
         if(!audio.ended)audio.pause();
@@ -7844,12 +7866,14 @@
     hold.audio.removeEventListener('playing',hold.progress);
     hold.audio.removeEventListener('timeupdate',hold.progress);
     if(stopAudio)hold.audio.pause();
+    syncAudioWaitUi();
   }
 
   function holdCzIntroVoice(playback){
     if(!playback)return;
     const {audio,promise}=playback,hold={audio,timer:null};
     czIntroVoiceHold=hold;
+    syncAudioWaitUi();
     hold.finish=()=>{if(czIntroVoiceHold===hold)clearCzIntroVoiceHold();};
     hold.fail=()=>{if(czIntroVoiceHold===hold)clearCzIntroVoiceHold(true);};
     let lastTime=-1;
@@ -8382,6 +8406,7 @@
   }
 
   function updateAutoUi(){
+    syncAudioWaitUi();
     const startBtn = $("autoStartBtn");
     const stopBtn = $("autoStopBtn");
     const status = $("autoStatus");

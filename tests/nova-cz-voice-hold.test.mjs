@@ -14,7 +14,7 @@ function setup(){
  }
  const c=vm.createContext({Audio,czIntroVoiceHold:null,superSpeedActive:false,debugFastSpinActive:false,speedToBonusActive:false,
   speedModeSpinRequest:false,premiumBigConfirmSilence:false,oneShotSoundCache:new Map(),sfxOutputVolume:()=>.5,
-  soundOutputVolume:(src,v)=>v,prepareCharacterVoiceAudio(){},
+  soundOutputVolume:(src,v)=>v,prepareCharacterVoiceAudio(){},syncAudioWaitUi(){},
   setTimeout:(f,ms)=>{timers.set(++nextTimer,{f,ms});return nextTimer;},clearTimeout:id=>timers.delete(id),
   canUsePlayState:()=>true,NovaSortie:{},NovaLadder:{},NovaAim:{},NovaDirectAward:{},NovaResults:{},normalState:{},oumaPresentation:null,
   isSpinning:false,bonusEndBgmPlaying:false,bonusConfirmSoundPlaying:false,canPlayCompleteTrial:()=>true,

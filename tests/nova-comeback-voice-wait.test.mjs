@@ -6,7 +6,7 @@ const source=fs.readFileSync('nova-game.js','utf8');
 const fn=name=>source.match(new RegExp('  function '+name+'\\([^]*?\\n  }'))[0];
 function setup(){
  const timers=new Map();let id=0;
- const c=vm.createContext({comebackIntroVoiceHold:null,setTimeout:(f,ms)=>{timers.set(++id,{f,ms});return id;},clearTimeout:i=>timers.delete(i)});
+ const c=vm.createContext({comebackIntroVoiceHold:null,syncAudioWaitUi(){},setTimeout:(f,ms)=>{timers.set(++id,{f,ms});return id;},clearTimeout:i=>timers.delete(i)});
  for(const name of ['waitForComebackIntroVoice','clearComebackIntroVoiceHold'])vm.runInContext(fn(name),c);
  class Audio extends EventTarget{
   currentTime=0;ended=false;pauses=0;
