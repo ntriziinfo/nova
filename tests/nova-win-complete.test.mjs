@@ -27,14 +27,10 @@ test('net tier affects only future weak-role zones, including upper AT; strong N
    const b=NovaArt.resolveAtRole({...state},'STRONG_NOVA',setting,xoshiro128(seed),5000);
    assert.deepEqual(a,b);
   }
-  // Approved net tiers: 1–4 suppress at +5,000pt, 5 boosts there, 6 stays flat.
   for(const high of [false,true])for(const role of ['WEAK_SUICA','WEAK_NOVA']){
    const ordinary=NovaArt.extraZoneChance(setting,role,upper,high,4999);
-   const highNet=NovaArt.extraZoneChance(setting,role,upper,high,5000);
-   const recovered=NovaArt.extraZoneChance(setting,role,upper,high,-20000);assert.equal(NovaArt.extraZoneChance(setting,role,upper,high,0),recovered);assert(ordinary<=recovered);
-   if(setting===6)assert.equal(highNet,ordinary);
-   else if(setting===5)assert(highNet>ordinary);
-   else assert(highNet<ordinary);
+   assert.equal(NovaArt.extraZoneChance(setting,role,upper,high,5000),ordinary);
+   assert.equal(NovaArt.extraZoneChance(setting,role,upper,high,-20000),ordinary);
   }
  }
 });

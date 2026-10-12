@@ -32,7 +32,7 @@ test('common rare roles share all normal/AT lotteries; strong NOVA has exact fou
    const left=a.resolveAtRole({...state},'WEAK_SUICA',setting,xoshiro128(seed));
    assert.deepEqual(left,a.resolveAtRole({...state},'WEAK_NOVA',setting,xoshiro128(seed)));
    const upper=a.resolveAtRole({...state,researchUpper:true},'WEAK_SUICA',setting,xoshiro128(seed));
-   near(upper.direct,left.direct*1.5);assert.equal(upper.zone,left.zone);
+   near(upper.direct,left.direct*1.5);near(a.extraZoneChance(setting,'WEAK_SUICA',true,high),8*a.extraZoneChance(setting,'WEAK_SUICA',false,high));
   }
  }
  for(const [roll,direct,zone]of [[0,true,false],[.19999,true,false],[.2,false,true],[.39999,false,true],[.4,true,true],[.59999,true,true],[.6,false,false],[.99999,false,false]]){

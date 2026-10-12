@@ -68,7 +68,7 @@ globalThis.NovaProgress=(()=>{
    }
    if(['threshold','initial'].includes(e.source)&&e.finished){
     Object.assign(out.flow,{researchUpper:e.won,burstWon:e.won,dryEligible:false,comebackLeft:0,comebackLamp:'',comebackConfirmed:false,
-     pendingZone:a.pickAtZone(c.setting||3,false,rng),entryStage:'seven',giruSetting:c.setting||3,rouletteTable:0});
+     pendingZone:a.pickAtZone(c.setting||3,false,rng,false,e.won),entryStage:'seven',giruSetting:c.setting||3,rouletteTable:0});
     e.reward='zone';state.rewardZones++;
    }
    out.message=e.won?'スーパーノヴァチャレンジ成功！':e.finished?'チャレンジ終了 / 通常ATへ':e.priorAim?'ノヴァ揃いなら上位AT！':e.nextAim?'HOLD / 次ゲームでノヴァを狙え':'スーパーノヴァチャレンジ 残り'+e.left+'G';

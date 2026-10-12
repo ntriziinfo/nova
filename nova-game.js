@@ -352,7 +352,7 @@
     rogiMovieVolume:DEFAULT_ROGI_MOVIE_VOLUME,
     audioMuted:false,
     audioBalanceVersion:AUDIO_BALANCE_VERSION,
-    completeLimitPt:10000
+    completeLimitPt:0
   };
 
   let stats = {
@@ -573,7 +573,7 @@
   const SPEED_MODE_MAX_SPINS_PER_SECOND = 10;
   const SPEED_MODE_MULTIPLIER = 3;
   const COMPLETE_TRIAL_ENABLED = true;
-  const DEFAULT_COMPLETE_LIMIT_PT = 10000;
+  const DEFAULT_COMPLETE_LIMIT_PT = 0;
   const SLUMP_MAX_HISTORY_POINTS = 20000;
   const SLUMP_MAX_DRAW_POINTS = 1400;
   let autoPlay = false;
@@ -2399,7 +2399,7 @@
 
   function targetRtpText(settingNo = settings.setting){
     if(A_TYPE_MODE && !NovaBalance.usesStandardSettings(settings))return "未試算（独自設定）";
-    if(A_TYPE_MODE)return "未試算（MY上限撤廃後）";
+    if(A_TYPE_MODE)return `${(NovaBalance.profile(settingNo).measuredRtp*100).toFixed(2)}%（1万G試算）`;
   }
 
   function refreshRtpViews(){
@@ -3062,8 +3062,8 @@
       stopSpeedToBonus("COMPLETE到達のためSPEED停止");
       stopDebugFastSpin("COMPLETE到達");
       syncCompletePresentation(true);
-      showMessage("コンプリートしました。", `+${limit}pt到達 / 管理リセットまたは設定変更まで遊技できません`);
-      log(`[COMPLETE] +${limit}pt到達：${formatSigned(profit)}pt / 設定${completeTrialState.lockedSetting}`);
+      showMessage("コンプリートしました。", `MY${NovaComplete.defaultMyLimitPt.toLocaleString()}pt到達 / 管理リセットまたは設定変更まで遊技できません`);
+      log(`[COMPLETE] MY${NovaComplete.defaultMyLimitPt.toLocaleString()}pt到達：${formatSigned(profit)}pt / 設定${completeTrialState.lockedSetting}`);
       persistState();
       updateDisplay();
     }
@@ -3078,7 +3078,7 @@
     stopAutoPlay("COMPLETE中のためAUTO停止");
     stopSpeedToBonus("COMPLETE中のためSPEED停止");
     stopDebugFastSpin("COMPLETE中");
-    showMessage("コンプリートしました。", `+${completeLimitPt()}pt到達 / 管理リセットまたは設定変更まで遊技できません`);
+    showMessage("コンプリートしました。", `MY${NovaComplete.defaultMyLimitPt.toLocaleString()}pt到達 / 管理リセットまたは設定変更まで遊技できません`);
     showOverlay("コンプリートしました。");
     return false;
   }
@@ -3658,7 +3658,10 @@
         settings.initialSevenVersion=148;
       }
       if(settings.rescueVersion!==107){settings.novaNormal={...settings.novaNormal,czFailureGain:1,bonusFailureGain:2,atDryGain:2,ceilingGain:10,regChainGain:2};settings.rescueVersion=107;}
-      settings.completeLimitPt = Math.max(1, Math.round(Number(settings.completeLimitPt) || DEFAULT_COMPLETE_LIMIT_PT));
+      if(settings.smartslotBalanceVersion!==20261013){
+        settings.novaArt={...NovaArt.defaults};settings.novaNormal={...NovaNormal.defaults};settings.novaFlow={...NovaFlow.defaults};settings.smartslotBalanceVersion=20261013;
+      }
+      settings.completeLimitPt = DEFAULT_COMPLETE_LIMIT_PT;
       settings.title = normalizeMachineTitle(settings.title);
       if(!SETTING[settings.setting]) settings.setting = 1;
       if(data?.stats) stats = {...stats, ...data.stats};
@@ -4048,7 +4051,7 @@
     setValue("rogiMovieVolume", nextSettings.rogiMovieVolume);
     if(nextSettings.audioMuted !== undefined) settings.audioMuted = !!nextSettings.audioMuted;
     if(nextSettings.completeLimitPt !== undefined){
-      settings.completeLimitPt = Math.max(1, Math.round(Number(nextSettings.completeLimitPt) || DEFAULT_COMPLETE_LIMIT_PT));
+      settings.completeLimitPt = DEFAULT_COMPLETE_LIMIT_PT;
     }
     readSettings();
     const saved=persistState();
@@ -5077,7 +5080,7 @@
     normalState.sinceBonus = normalizeBonusAfterGames(resolved.ceilingAfter);
     if(A_TYPE_MODE){
       normalState.flow = NovaFlow.normalize(resolved.flowAfter);
-      if(!debugFastSpinActive){const sortieCard=NovaResults.sortie(resolved.researchSortie);if(sortieCard)normalState.pendingSortieResult=sortieCard;}
+      if(!debugFastSpinActive){const sortieCard=NovaResults.sortie(resolved.researchSortie,normalState.flow);if(sortieCard)normalState.pendingSortieResult=sortieCard;}
       const zoneCard=trackZoneResult(resolved.comebackEvent==='entry'?null:NovaResults.transition(resolved.flowBefore,normalState.flow,settings.setting),resolved.zoneStartFlow||resolved.flowBefore,normalState.flow);
       if(zoneCard){
         if(!debugFastSpinActive&&NovaLadder.eligible(resolved.flowBefore)){

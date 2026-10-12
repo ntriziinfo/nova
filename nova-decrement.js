@@ -2,8 +2,8 @@
 globalThis.NovaDecrement=(()=>{
  const disabled=Object.freeze({enabled:false});
  const profiles=Object.freeze({
-  5:Object.freeze({enabled:true,initialLowChance:.53,lowMean:150000,highMean:183333.33333333334,lowCz:0.25,highCz:2.4,lowAt:.25,highAt:.25,netEnter:6000,netExit:4500,netCz:2.4,netAt:.25}),
-  6:Object.freeze({enabled:true,lowMean:60000,highMean:90000,lowCz:.25,highCz:1.95,lowAt:.25,highAt:.25,netEnter:6500,netExit:5000,netCz:1.5,netAt:.25})
+  5:Object.freeze({enabled:false,initialLowChance:.53,lowMean:150000,highMean:183333.33333333334,lowCz:0.25,highCz:2.4,lowAt:.25,highAt:.25,netEnter:6000,netExit:4500,netCz:2.4,netAt:.25}),
+  6:Object.freeze({enabled:false,lowMean:60000,highMean:90000,lowCz:.25,highCz:1.95,lowAt:.25,highAt:.25,netEnter:6500,netExit:5000,netCz:1.5,netAt:.25})
  });
  const settingNo=s=>Math.max(1,Math.min(6,Math.round(Number(s)||3)));
  const rules=s=>profiles[settingNo(s)]||disabled;
@@ -61,6 +61,6 @@ globalThis.NovaDecrement=(()=>{
   const {version,setting,enabled,rng,low,netLow,...meter}=state;
   return {...meter,lowByPhase:{...meter.lowByPhase},endingLow:low,endingNetLow:netLow};
  }
- return Object.freeze({version:170,rules,bind,reset,observe,beforeBet,cz:s=>factor('Cz',s),at:s=>factor('At',s),
+ return Object.freeze({version:170,rules,bind,reset,observe,beforeBet,cz:s=>factor('Cz',s),at:s=>[1,1,1,1,0.25,0.25][settingNo(s)-1],
   snapshot:()=>state?JSON.parse(JSON.stringify(state)):null,metrics});
 })();

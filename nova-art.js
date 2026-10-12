@@ -374,25 +374,25 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
   const total=row.reduce((a,b)=>a+b,0),weak=row.slice(0,3).reduce((a,b)=>a+b,0)/total;
   return [weak*100,(1-weak)*(1-superZoneChance)*100,(1-weak)*superZoneChance*100];
  }
- function atZoneWeights(setting,boost=false,preparation=false){return zoneGroupWeights(setting,boost,preparation).flatMap(p=>[p/3,p/3,p/3]);}
- function pickAtZone(setting,boost=false,rng=Math.random,preparation=false){
-  const row=atZoneWeights(setting,boost,preparation);let roll=rng()*100;const i=row.findIndex(w=>(roll-=w)<0);return zoneIds[i<0?8:i];
+ function atZoneWeights(setting,boost=false,preparation=false,upper=false){return (upper?[0,70,30]:zoneGroupWeights(setting,boost,preparation)).flatMap(p=>[p/3,p/3,p/3]);}
+ function pickAtZone(setting,boost=false,rng=Math.random,preparation=false,upper=false){
+  const row=atZoneWeights(setting,boost,preparation,upper);let roll=rng()*100;const i=row.findIndex(w=>(roll-=w)<0);return zoneIds[i<0?8:i];
  }
  // Retired quota/payout guards stay disabled. v170 changes only future draw rates.
  const netLimits=Object.freeze([0,0,0,0,0,0]);
  const lossRewardControl=Object.freeze({enabled:false,threshold:-2000,multiplier:1});
  const netRewardControl=Object.freeze({enabled:false,startRatio:0,floor:1});
  function netRewardFactor(){return 1;}
- const weakAtZoneScales=Object.freeze([1.0491974999999998,1.03,0.7353,0.8400000000000001,1.2054600000000002,1.15]);
- const positiveNetZoneRules=Object.freeze([{"start":0,"end":1500,"floor":0.05,"boost":1,"sortie":true},{"start":0,"end":1500,"floor":0.05,"boost":1,"sortie":true},{"start":500,"end":3000,"floor":0.1,"boost":1,"sortie":true},{"start":500,"end":3000,"floor":0.75,"boost":1,"sortie":true},{"start":0,"end":2000,"floor":0.27,"boost":1.3,"sortie":false},{"start":3000,"end":6500,"floor":1,"boost":1,"sortie":false}].map(Object.freeze));
+ const weakAtZoneScales=Object.freeze([0.15,0.15,0.15,0.18,0.3,0.3]);
+ const positiveNetZoneRules=Object.freeze([{"start":0,"end":1500,"floor":1,"boost":1,"sortie":false},{"start":0,"end":1500,"floor":1,"boost":1,"sortie":false},{"start":500,"end":3000,"floor":1,"boost":1,"sortie":false},{"start":500,"end":3000,"floor":1,"boost":1,"sortie":false},{"start":0,"end":2000,"floor":1,"boost":1,"sortie":false},{"start":3000,"end":6500,"floor":1,"boost":1,"sortie":false}].map(Object.freeze));
  function positiveNetZoneFactor(setting,netPt=0){const r=positiveNetZoneRules[validSetting(setting)-1],progress=Math.max(0,Math.min(1,(Number(netPt)-r.start)/(r.end-r.start)));return r.boost+(r.floor-r.boost)*progress;}
- const weakAtNetZoneScales=Object.freeze([0.65,0.8,0.85,0.75,11.481481481481481,1]);
+ const weakAtNetZoneScales=Object.freeze([1,1,1,1,1,1]);
  function extraZoneChance(setting,role,upper=false,high=false,netPt=0){
   if(!['WEAK_SUICA','WEAK_NOVA'].includes(role))return 0;
   // Approved 50k RTP targets: change future weak-role zone draws only.
   // At +5,000pt, settings 1-5 reduce these draws; earned quota/stock stay intact.
   const i=validSetting(setting)-1;
-  return (high?.25:.15)*weakAtZoneScales[i]*(netPt>=5000?weakAtNetZoneScales[i]:1)*positiveNetZoneFactor(setting,netPt);
+  return (upper?8:1)*(high?.25:.15)*weakAtZoneScales[i]*(netPt>=5000?weakAtNetZoneScales[i]:1)*positiveNetZoneFactor(setting,netPt);
  }
  function resolveAtRole(s,role,setting,rng=Math.random,netPt=0){
   const rules=commonAtRulesFor(setting),wasHigh=!!s.atHigh,held=wasHigh&&s.atHighLeft>0;
@@ -402,12 +402,12 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
   if(shared){
    if(!wasHigh&&rng()<.15){s.atHigh=true;s.atHighLeft=10;out.promoted=true;}
    if(rng()<Math.min(1,shared.hit*rules.direct))out.direct=drawAmount(shared);
-   if(rng()<Math.min(1,extraZoneChance(setting,role,false,wasHigh,netPt)))out.zone=pickAtZone(setting,false,rng);
+   if(rng()<Math.min(1,extraZoneChance(setting,role,!!s.researchUpper,wasHigh,netPt)))out.zone=pickAtZone(setting,false,rng,false,!!s.researchUpper);
   }
   if(role==='STRONG_NOVA'){
    const r=rng();
    if(r<.2||r>=.4&&r<.6)out.direct=drawAmount({"up":0.5,"hit":0.5,"values":[20,30,50,100,300],"weights":[0.6,0.3,0.098,0.0018,0.0002]});
-   if(r>=.2&&r<.6)out.zone=pickAtZone(setting,wasHigh,rng);
+   if(r>=.2&&r<.6)out.zone=pickAtZone(setting,wasHigh,rng,false,!!s.researchUpper);
   }
   if(s.researchUpper)out.direct=out.direct*1.5;
   if(wasHigh&&!held&&(role==='REPLAY'||role==='MISS')&&rng()<(role==='REPLAY'?.05:.08)){s.atHigh=false;s.atHighLeft=0;}

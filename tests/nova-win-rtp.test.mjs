@@ -19,7 +19,7 @@ const trialPresentation=JSON.parse(gunzipSync(fs.readFileSync('tests/fixtures/wi
 function trialSource(file){
  // MY cap removal is authorized; these two files retain their original trial source.
  if(['nova-complete.js','scripts/zone-v2-model.mjs'].includes(file))return fs.readFileSync('tests/fixtures/pre-win-rtp-20261008/'+file,'utf8').replaceAll('\r\n','\n');
- let source=trialPresentation[file] ?? fs.readFileSync(file,'utf8').replaceAll('\r\n','\n');
+ let source=trialPresentation[file] ?? fs.readFileSync(fs.existsSync('tests/fixtures/pre-smartslot-20261013/'+file)?'tests/fixtures/pre-smartslot-20261013/'+file:file,'utf8').replaceAll('\r\n','\n');
  // The approved 2026-10-12 rename changes only these four display literals.
  // Reverse those exact literals for the historical hash; all engine code must
  // still match the original calibration, including every probability and draw.
@@ -61,7 +61,7 @@ test('production replays approved sessions including early stops and unspent quo
   const data=rows.filter(r=>r.setting===setting),samples=new Map();
   for(const row of [data[0],data.at(-1),data.find(r=>r.reason==='net'),data.find(r=>r.reason==='my')])if(row)samples.set(row.seed,row);
   for(const [seed,expected] of samples){
-   loadModel();const actual=simulate(setting,50000,seed,report.options);
+   loadModel('../tests/fixtures/pre-smartslot-20261013');const actual=simulate(setting,50000,seed,report.options);
    for(const [a,b] of [['games','games'],['totalBet','bet'],['totalPaid','paid'],['net','net'],['peak','peak'],['maxMy','maxMy'],['counts','counts'],['unspentAtQuota','unspentAtQuota'],['unspentZoneStocks','unspentZoneStocks'],['completeReason','reason']]){
     assert.deepEqual(actual[a],expected[b],`setting ${setting}, ${seed}, ${a}`);
    }
@@ -71,7 +71,7 @@ test('production replays approved sessions including early stops and unspent quo
 });
 
 test('setting 5 sampling is proportional to the approved initial regime and not selected by outcome',()=>{
- loadModel();const sampling=report.seedSelection[0];assert.equal(sampling.setting,5);
+ loadModel('../tests/fixtures/pre-smartslot-20261013');const sampling=report.seedSelection[0];assert.equal(sampling.setting,5);
  const p=NovaDecrement.rules(5);assert.equal(p.initialLowChance,.53);assert.equal(sampling.lowChance,p.initialLowChance);
  const data=rows.filter(r=>r.setting===5);
  const low=data.filter(r=>NovaDecrement.reset(5,xoshiro128State(r.seed+'|decrement-interval')).initialLow).length;
@@ -89,7 +89,7 @@ test('setting 5 sampling is proportional to the approved initial regime and not 
 
 test('new reset probability retains RNG consumption and saved intervals',()=>{
  vm.runInThisContext(fs.readFileSync('tests/fixtures/pre-win-rtp-20261008/nova-decrement.js','utf8'));
- const before=NovaDecrement;loadModel();const after=NovaDecrement;let changed=0;
+ const before=NovaDecrement;loadModel('../tests/fixtures/pre-smartslot-20261013');const after=NovaDecrement;let changed=0;
  for(let i=0;i<200;i++)for(let setting=1;setting<=6;setting++){
   const seed=xoshiro128State('initial-selection-audit|'+setting+'|'+i);
   const a=structuredClone(before.reset(setting,seed)),b=structuredClone(after.reset(setting,seed));
@@ -107,14 +107,14 @@ test('settings 1–3 replay identically to the prior production model',()=>{
  for(let setting=1;setting<=3;setting++){
   const seed='win-rtp-unchanged|'+setting;
   loadModel(previous);const before=simulate(setting,50000,seed,report.options);
-  loadModel();assert.deepEqual(simulate(setting,50000,seed,report.options),before);
+  loadModel('../tests/fixtures/pre-smartslot-20261013');assert.deepEqual(simulate(setting,50000,seed,report.options),before);
  }
 });
 
 test('base, net AT, initial points and shared roles are unchanged; all adjusted probabilities stay valid',()=>{
  const capture=s=>({roles:[NovaNormal.normalRoleProbabilities(s),NovaNormal.roleProbabilities(s),NovaArt.roleProbabilities(s),NovaArt.roleProbabilities(s,true)],initial:NovaArt.freshInitialRules,boost:NovaArt.initialBoostRules,bonus:NovaArt.bonusRules,comeback:NovaArt.comebackRules,burst:NovaArt.burstRules});
  for(let setting=1;setting<=6;setting++){
-  loadModel(previous);const before=capture(setting);loadModel();assert.deepEqual(capture(setting),before);
+  loadModel(previous);const before=capture(setting);loadModel('../tests/fixtures/pre-smartslot-20261013');assert.deepEqual(capture(setting),before);
   const mean=r=>Object.entries(r).reduce((n,[role,p])=>n+p*(role==='NAVI_BELL'?8:NovaArt.cashPayout(role)),0);
   near(50/(3-mean(before.roles[0])),30);near(mean(before.roles[2])-3,4.5);near(mean(before.roles[3])-3,7);
   const state=NovaDecrement.reset(setting,[1,2,3,4]);

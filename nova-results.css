@@ -23,6 +23,15 @@
 .novaResultEnsemble[hidden],.novaResultNext[hidden]{display:none!important}
 .novaResultEnsemble{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));width:100%;height:100%}
 .novaResultEnsemble img{display:block;width:100%;height:100%;object-fit:contain;max-width:none}
+.novaResultStocks[hidden]{display:none!important}
+.novaResultStocks{display:grid;grid-template-columns:repeat(var(--columns,3),minmax(0,1fr));grid-template-rows:repeat(var(--rows,1),minmax(0,1fr));gap:3%;width:100%;height:100%}
+.novaResultStock{position:relative;margin:0;min-width:0;min-height:0}
+.novaResultStockImages{display:flex;justify-content:center;width:100%;height:87%}
+.novaResultStockImages img{display:block;min-width:0;width:100%;height:100%;object-fit:contain;max-width:none}
+.novaResultStockImages img:nth-last-child(2),.novaResultStockImages img:nth-child(2){width:50%}
+.novaResultStock figcaption{position:absolute;bottom:0;left:0;width:100%;color:#fff1bb;text-align:center;white-space:nowrap;font-size:var(--label-font);font-weight:bold;text-shadow:0 1px 3px #000}
+.novaResultStock output{position:absolute;right:2%;bottom:15%;padding:0 .15em;color:#ffdf75;background:#170f08cc;border:1px solid #e8bd69;border-radius:.2em;font-size:var(--count-font);line-height:1.1;font-weight:900;text-shadow:0 2px 2px #000}
+.novaResultStock[data-ura=true] output{color:#fff1ff;border-color:#f3a8ff;background:#400e48dd}
 .novaResultsLayer[data-all=true] .novaResultFallback strong{left:0;width:100%;top:3%}
 .novaResultsLayer[data-all=true] .novaResultFallback span{left:0;width:100%;top:15%;color:#fff0bd;font-weight:bold}
 .novaResultNext{position:absolute;left:0;width:100%;bottom:2%;font-size:clamp(9px,1.1vw,15px);color:#fff0bd}

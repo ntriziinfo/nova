@@ -1,13 +1,7 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
 const ctx=vm.createContext({});for(const f of ['nova-tuning.js','nova-art.js','nova-balance.js'])vm.runInContext(fs.readFileSync(f,'utf8'),ctx);const a=ctx.NovaArt,b=ctx.NovaBalance;
-test('RTP metadata identifies the approved 50,000G win/RTP calibration',()=>{
- const report=JSON.parse(fs.readFileSync('docs/win-rtp-20261008.json'));
- for(let i=0;i<6;i++){
-  const p=b.profile(i+1),r=report.results[i];assert.equal(p.target,i>=3?[1.005,1.025,1.08][i-3]:null);assert.equal(p.measuredRtp,r.rtp);
-  assert.equal(p.winTarget,report.targets.win[i]);assert.equal(p.completeTarget,null);
-  assert.equal(p.targetGamesPerTrial,50000);assert.equal(p.gamesPerTrial,50000);assert.equal(p.trials,r.n);
-  assert.equal(p.verifiedModel,i>=3?'win-rtp-20261008-50000g':'win-base30-20261007-50000g');assert.equal(p.previousVerifiedModel,i>=3?'win-base30-20261007-50000g':'replay-dual-cap-20261007-10000g');
- }
+test('RTP metadata identifies the adopted 10,000G MY19k calibration',()=>{
+ for(let i=0;i<6;i++){const p=b.profile(i+1);assert.equal(p.targetGamesPerTrial,10000);assert.equal(p.gamesPerTrial,10000);assert.equal(p.trials,[1500,1500,3000,1500,3000,5000][i]);assert.equal(p.measuredRtp,[.9437,.9610,.9701,1.0095,1.0638,1.1409][i]);assert.equal(p.verifiedModel,'smartslot-20261013-10000g');}
 });
 
 test('common AT evidence keeps session and episode denominators separate',()=>{

@@ -40,5 +40,5 @@ globalThis.NovaTuning=(()=>{
  }
  // Base probabilities are fixed. Optional net tiers affect only checkpoint challenges,
  // and are disabled by default. There is no session win/loss assignment.
- return create(defaults);
+ return create(defaults,{"1":{"groups":[70,29.1,0.9]},"2":{"groups":[70,29.1,0.9]},"3":{"groups":[70,29.1,0.9]},"4":{"groups":[70,29.1,0.9]},"5":{"groups":[70,29.1,0.9]},"6":{"groups":[70,29.1,0.9]}});
 })();

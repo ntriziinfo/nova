@@ -1,0 +1,597 @@
+[
+  {
+    "variant": "s6_114",
+    "setting": 6,
+    "limit": 10000,
+    "old": false,
+    "seed": "my19-s6114verify|s6|10",
+    "games": 10000,
+    "bet": 30000,
+    "paid": 34791,
+    "net": 4791,
+    "peak": 7580,
+    "maxMy": 9003,
+    "win": 1,
+    "reach": 0,
+    "final": 0,
+    "complete": 0,
+    "counts": {
+      "normal": 5509,
+      "cz": 644,
+      "prep": 78,
+      "align": 26,
+      "bonus": 499,
+      "at": 2929,
+      "zone": 315,
+      "zero": 23,
+      "BIG": 26,
+      "REG": 0,
+      "czEntries": 39,
+      "strongEntries": 1,
+      "czWins": 25,
+      "artEntries": 15,
+      "zoneEntries": 53,
+      "gameCzEntries": 0,
+      "ceilingCzEntries": 0,
+      "rareCzEntries": 40,
+      "backgroundCzEntries": 0,
+      "highNormalG": 580,
+      "favoredNormalG": 0
+    },
+    "normal": {
+      "bet": 16527,
+      "paid": 7307,
+      "games": 5509
+    },
+    "actualAtZone": {
+      "normal": {
+        "games": 1436,
+        "wins": 3
+      },
+      "upper": {
+        "games": 1220,
+        "wins": 19
+      }
+    },
+    "upper": {
+      "spins": 43,
+      "upperGames": 1220,
+      "bySource": {
+        "initial": {
+          "started": 2,
+          "won": 1,
+          "failed": 1
+        },
+        "threshold": {
+          "started": 3,
+          "won": 2,
+          "failed": 1
+        },
+        "rare": {
+          "started": 1,
+          "won": 1,
+          "failed": 0
+        }
+      }
+    },
+    "atBins": {
+      "0-499": 2,
+      "500-999": 7,
+      "1000-1999": 4,
+      "2000-2999": 0,
+      "3000-4999": 0,
+      "5000-9999": 2,
+      "10000+": 0
+    }
+  },
+  {
+    "variant": "s6_114",
+    "setting": 6,
+    "limit": 10000,
+    "old": false,
+    "seed": "my19-s6114verify|s6|4999",
+    "games": 10000,
+    "bet": 30000,
+    "paid": 35733,
+    "net": 5733,
+    "peak": 6582,
+    "maxMy": 8855,
+    "win": 1,
+    "reach": 0,
+    "final": 0,
+    "complete": 0,
+    "counts": {
+      "normal": 4998,
+      "cz": 668,
+      "prep": 113,
+      "align": 33,
+      "bonus": 554,
+      "at": 3350,
+      "zone": 284,
+      "zero": 17,
+      "BIG": 33,
+      "REG": 0,
+      "czEntries": 40,
+      "strongEntries": 2,
+      "czWins": 33,
+      "artEntries": 18,
+      "zoneEntries": 63,
+      "gameCzEntries": 0,
+      "ceilingCzEntries": 1,
+      "rareCzEntries": 41,
+      "backgroundCzEntries": 0,
+      "highNormalG": 663,
+      "favoredNormalG": 0
+    },
+    "normal": {
+      "bet": 14994,
+      "paid": 6656,
+      "games": 4998
+    },
+    "actualAtZone": {
+      "normal": {
+        "games": 2400,
+        "wins": 7
+      },
+      "upper": {
+        "games": 650,
+        "wins": 10
+      }
+    },
+    "upper": {
+      "spins": 38,
+      "upperGames": 650,
+      "bySource": {
+        "initial": {
+          "started": 3,
+          "won": 1,
+          "failed": 2
+        },
+        "threshold": {
+          "started": 2,
+          "won": 1,
+          "failed": 1
+        },
+        "rare": {
+          "started": 0,
+          "won": 0,
+          "failed": 0
+        }
+      }
+    },
+    "atBins": {
+      "0-499": 1,
+      "500-999": 9,
+      "1000-1999": 3,
+      "2000-2999": 2,
+      "3000-4999": 1,
+      "5000-9999": 1,
+      "10000+": 0
+    }
+  },
+  {
+    "variant": "s6_114",
+    "setting": 6,
+    "limit": 10000,
+    "old": false,
+    "seed": "my19-s6114verify|s6|112",
+    "games": 9358,
+    "bet": 28074,
+    "paid": 46362,
+    "net": 18288,
+    "peak": 18288,
+    "maxMy": 19003,
+    "win": 1,
+    "reach": 1,
+    "final": 1,
+    "complete": 1,
+    "counts": {
+      "normal": 3245,
+      "cz": 526,
+      "prep": 75,
+      "align": 20,
+      "bonus": 350,
+      "at": 4602,
+      "zone": 540,
+      "zero": 36,
+      "BIG": 20,
+      "REG": 0,
+      "czEntries": 30,
+      "strongEntries": 1,
+      "czWins": 20,
+      "artEntries": 13,
+      "zoneEntries": 94,
+      "gameCzEntries": 0,
+      "ceilingCzEntries": 0,
+      "rareCzEntries": 31,
+      "backgroundCzEntries": 0,
+      "highNormalG": 256,
+      "favoredNormalG": 0
+    },
+    "normal": {
+      "bet": 9735,
+      "paid": 4381,
+      "games": 3245
+    },
+    "actualAtZone": {
+      "normal": {
+        "games": 1610,
+        "wins": 3
+      },
+      "upper": {
+        "games": 2658,
+        "wins": 62
+      }
+    },
+    "upper": {
+      "spins": 56,
+      "upperGames": 2658,
+      "bySource": {
+        "initial": {
+          "started": 1,
+          "won": 1,
+          "failed": 0
+        },
+        "threshold": {
+          "started": 7,
+          "won": 7,
+          "failed": 0
+        },
+        "rare": {
+          "started": 0,
+          "won": 0,
+          "failed": 0
+        }
+      }
+    },
+    "atBins": {
+      "0-499": 0,
+      "500-999": 9,
+      "1000-1999": 1,
+      "2000-2999": 1,
+      "3000-4999": 0,
+      "5000-9999": 0,
+      "10000+": 1
+    }
+  },
+  {
+    "variant": "s56_selected",
+    "setting": 5,
+    "limit": 10000,
+    "old": false,
+    "seed": "my19-s56verify|s5|50",
+    "games": 10000,
+    "bet": 30000,
+    "paid": 24757,
+    "net": -5243,
+    "peak": 21,
+    "maxMy": 1859,
+    "win": 0,
+    "reach": 0,
+    "final": 0,
+    "complete": 0,
+    "counts": {
+      "normal": 6711,
+      "cz": 721,
+      "prep": 109,
+      "align": 29,
+      "bonus": 570,
+      "at": 1764,
+      "zone": 96,
+      "zero": 3,
+      "BIG": 29,
+      "REG": 0,
+      "czEntries": 43,
+      "strongEntries": 1,
+      "czWins": 28,
+      "artEntries": 14,
+      "zoneEntries": 26,
+      "gameCzEntries": 0,
+      "ceilingCzEntries": 1,
+      "rareCzEntries": 43,
+      "backgroundCzEntries": 0,
+      "highNormalG": 680,
+      "favoredNormalG": 0
+    },
+    "normal": {
+      "bet": 20133,
+      "paid": 8575,
+      "games": 6711
+    },
+    "actualAtZone": {
+      "normal": {
+        "games": 1492,
+        "wins": 4
+      },
+      "upper": {
+        "games": 71,
+        "wins": 0
+      }
+    },
+    "upper": {
+      "spins": 34,
+      "upperGames": 71,
+      "bySource": {
+        "initial": {
+          "started": 2,
+          "won": 1,
+          "failed": 1
+        },
+        "threshold": {
+          "started": 0,
+          "won": 0,
+          "failed": 0
+        },
+        "rare": {
+          "started": 1,
+          "won": 0,
+          "failed": 1
+        }
+      }
+    },
+    "atBins": {
+      "0-499": 2,
+      "500-999": 9,
+      "1000-1999": 2,
+      "2000-2999": 0,
+      "3000-4999": 1,
+      "5000-9999": 0,
+      "10000+": 0
+    }
+  },
+  {
+    "variant": "s56_selected",
+    "setting": 5,
+    "limit": 10000,
+    "old": false,
+    "seed": "my19-s56verify|s5|2989",
+    "games": 10000,
+    "bet": 30000,
+    "paid": 25973,
+    "net": -4027,
+    "peak": 733,
+    "maxMy": 1348,
+    "win": 0,
+    "reach": 0,
+    "final": 0,
+    "complete": 0,
+    "counts": {
+      "normal": 6495,
+      "cz": 714,
+      "prep": 96,
+      "align": 30,
+      "bonus": 581,
+      "at": 1965,
+      "zone": 119,
+      "zero": 1,
+      "BIG": 30,
+      "REG": 0,
+      "czEntries": 44,
+      "strongEntries": 2,
+      "czWins": 29,
+      "artEntries": 17,
+      "zoneEntries": 31,
+      "gameCzEntries": 0,
+      "ceilingCzEntries": 0,
+      "rareCzEntries": 46,
+      "backgroundCzEntries": 0,
+      "highNormalG": 678,
+      "favoredNormalG": 0
+    },
+    "normal": {
+      "bet": 19485,
+      "paid": 8601,
+      "games": 6495
+    },
+    "actualAtZone": {
+      "normal": {
+        "games": 1770,
+        "wins": 1
+      },
+      "upper": {
+        "games": 0,
+        "wins": 0
+      }
+    },
+    "upper": {
+      "spins": 0,
+      "upperGames": 0,
+      "bySource": {
+        "initial": {
+          "started": 0,
+          "won": 0,
+          "failed": 0
+        },
+        "threshold": {
+          "started": 0,
+          "won": 0,
+          "failed": 0
+        },
+        "rare": {
+          "started": 0,
+          "won": 0,
+          "failed": 0
+        }
+      }
+    },
+    "atBins": {
+      "0-499": 2,
+      "500-999": 11,
+      "1000-1999": 4,
+      "2000-2999": 0,
+      "3000-4999": 0,
+      "5000-9999": 0,
+      "10000+": 0
+    }
+  },
+  {
+    "variant": "s56_selected",
+    "setting": 5,
+    "limit": 10000,
+    "old": false,
+    "seed": "my19-s56verify|s5|791",
+    "games": 5268,
+    "bet": 15804,
+    "paid": 34011,
+    "net": 18207,
+    "peak": 18207,
+    "maxMy": 19004,
+    "win": 1,
+    "reach": 1,
+    "final": 1,
+    "complete": 1,
+    "counts": {
+      "normal": 932,
+      "cz": 148,
+      "prep": 17,
+      "align": 5,
+      "bonus": 82,
+      "at": 3611,
+      "zone": 473,
+      "zero": 49,
+      "BIG": 5,
+      "REG": 0,
+      "czEntries": 8,
+      "strongEntries": 1,
+      "czWins": 5,
+      "artEntries": 4,
+      "zoneEntries": 80,
+      "gameCzEntries": 0,
+      "ceilingCzEntries": 1,
+      "rareCzEntries": 8,
+      "backgroundCzEntries": 0,
+      "highNormalG": 183,
+      "favoredNormalG": 0
+    },
+    "normal": {
+      "bet": 2796,
+      "paid": 1263,
+      "games": 932
+    },
+    "actualAtZone": {
+      "normal": {
+        "games": 919,
+        "wins": 4
+      },
+      "upper": {
+        "games": 2466,
+        "wins": 55
+      }
+    },
+    "upper": {
+      "spins": 40,
+      "upperGames": 2466,
+      "bySource": {
+        "initial": {
+          "started": 0,
+          "won": 0,
+          "failed": 0
+        },
+        "threshold": {
+          "started": 7,
+          "won": 7,
+          "failed": 0
+        },
+        "rare": {
+          "started": 0,
+          "won": 0,
+          "failed": 0
+        }
+      }
+    },
+    "atBins": {
+      "0-499": 0,
+      "500-999": 3,
+      "1000-1999": 0,
+      "2000-2999": 0,
+      "3000-4999": 0,
+      "5000-9999": 0,
+      "10000+": 0
+    }
+  },
+  {
+    "variant": "s56_selected",
+    "setting": 5,
+    "limit": 10000,
+    "old": false,
+    "seed": "my19-s56verify|s5|51",
+    "games": 10000,
+    "bet": 30000,
+    "paid": 40702,
+    "net": 10702,
+    "peak": 13689,
+    "maxMy": 15875,
+    "win": 1,
+    "reach": 1,
+    "final": 1,
+    "complete": 0,
+    "counts": {
+      "normal": 4851,
+      "cz": 586,
+      "prep": 70,
+      "align": 22,
+      "bonus": 404,
+      "at": 3679,
+      "zone": 388,
+      "zero": 22,
+      "BIG": 22,
+      "REG": 0,
+      "czEntries": 36,
+      "strongEntries": 2,
+      "czWins": 22,
+      "artEntries": 12,
+      "zoneEntries": 73,
+      "gameCzEntries": 0,
+      "ceilingCzEntries": 1,
+      "rareCzEntries": 37,
+      "backgroundCzEntries": 0,
+      "highNormalG": 544,
+      "favoredNormalG": 0
+    },
+    "normal": {
+      "bet": 14553,
+      "paid": 6527,
+      "games": 4851
+    },
+    "actualAtZone": {
+      "normal": {
+        "games": 1315,
+        "wins": 1
+      },
+      "upper": {
+        "games": 2056,
+        "wins": 39
+      }
+    },
+    "upper": {
+      "spins": 61,
+      "upperGames": 2056,
+      "bySource": {
+        "initial": {
+          "started": 1,
+          "won": 0,
+          "failed": 1
+        },
+        "threshold": {
+          "started": 5,
+          "won": 3,
+          "failed": 2
+        },
+        "rare": {
+          "started": 2,
+          "won": 2,
+          "failed": 0
+        }
+      }
+    },
+    "atBins": {
+      "0-499": 0,
+      "500-999": 7,
+      "1000-1999": 1,
+      "2000-2999": 1,
+      "3000-4999": 0,
+      "5000-9999": 1,
+      "10000+": 1
+    }
+  }
+]

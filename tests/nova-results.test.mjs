@@ -11,6 +11,23 @@ test('sortie result uses this challenge hit count including the final award, wit
  }
  for(const event of [undefined,{finished:true,hits:-1},{finished:true,hits:2.5},{finished:true,hits:'3'}])assert.equal(r.sortie(event),null);
 });
+
+test('sortie groups only newly earned stocks, preserves duplicates and distinguishes reverse zones across reload',()=>{
+ const flow=Object.freeze({queuedZones:Object.freeze(['ouma','giru','sora','sora','ura_sora','kushuri_nito','giru'])});
+ const event=Object.freeze({finished:true,hits:5,won:true,zone:'giru'}),before=JSON.stringify(flow);
+ const card=JSON.parse(JSON.stringify(r.sortie(event,flow)));
+ assert.deepEqual(card.awards,[
+  {zone:'sora',character:'sora',ura:false,count:2},
+  {zone:'ura_sora',character:'sora',ura:true,count:1},
+  {zone:'kushuri_nito',character:'kushuri_nito',ura:false,count:1},
+  {zone:'giru',character:'giru',ura:false,count:1}
+ ]);
+ assert.equal(card.awards.reduce((n,a)=>n+a.count,0),5);assert.equal(JSON.stringify(flow),before);
+ assert.deepEqual(JSON.parse(JSON.stringify(r.sortie(event,JSON.parse(before)))),card);
+ assert.equal(r.sortie({...event,finished:false},flow),null);
+ assert.deepEqual(JSON.parse(JSON.stringify(r.sortie({finished:true,hits:0},flow))).awards,[]);
+ assert.equal(r.sortie(event,{queuedZones:['sora']}).awards,undefined,'old/incomplete data must not invent a character');
+});
 test('parity favors red 60/40 for odd and blue 60/40 for even',()=>{for(let s=1;s<=6;s++){let red=0;for(let i=0;i<1000;i++)if(r.pick('zone','giru',s,()=>i/1000).color==='red')red++;assert.equal(red,s%2?600:400);}});
 test('AT hint percentages are unconditional, setting-gated and exclusive, leaving regular images balanced with one draw',()=>{
  for(let setting=1;setting<=6;setting++){

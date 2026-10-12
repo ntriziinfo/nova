@@ -2,7 +2,7 @@ import fs from 'node:fs';import path from 'node:path';import vm from 'node:vm';i
 export const ROOT=path.dirname(fileURLToPath(import.meta.url));
 export function loadModel(variant='..',cache=true,tuningOverrides){
  const completeFile=path.join(ROOT,variant,'nova-complete.js');
- vm.runInThisContext(fs.readFileSync(fs.existsSync(completeFile)?completeFile:path.join(ROOT,'../nova-complete.js'),'utf8'),{filename:'nova-complete.js'});
+ vm.runInThisContext(fs.readFileSync(fs.existsSync(completeFile)?completeFile:path.join(ROOT,variant==='..'?'../nova-complete.js':'../tests/fixtures/pre-smartslot-20261013/nova-complete.js'),'utf8'),{filename:'nova-complete.js'});
  globalThis.NovaDecrement=undefined;globalThis.NovaProgress=undefined;
  const files=['nova-art.js','nova-balance.js','nova-flow.js','nova-normal.js'];
  if(fs.existsSync(path.join(ROOT,variant,'nova-tuning.js'))){if(fs.existsSync(path.join(ROOT,variant,'nova-decrement.js')))files.unshift('nova-decrement.js');files.unshift('nova-tuning.js');files.push('nova-progress.js');}
@@ -24,7 +24,7 @@ export function simulate(setting,games,seed,options={}){
  // Frozen historical fixtures retain their original total-G lottery for replay tests.
  const roleSortieRates=options.roleSortieRates||(globalThis.NovaProgress?.sortieChance?Object.fromEntries(['WEAK_SUICA','WEAK_NOVA','STRONG_NOVA'].map(role=>[role,NovaProgress.sortieChance(setting,role)])):null);
  const a=NovaArt,n=NovaNormal,replayRefund=!!a.replayRefund&&options.replayRefund!==false;
- const completeNetLimit=options.completeLimitPt??(replayRefund?10000:19000);
+ const completeNetLimit=options.completeLimitPt??(NovaComplete.defaultNetLimitPt??(replayRefund?10000:19000));
  const completeMyLimit=options.completeMyLimitPt??(NovaComplete.defaultMyLimitPt??(replayRefund?15000:0)),completion={};
  const refund=role=>replayRefund?a.replayRefund(role):0,cash=role=>n.pay(role)+refund(role);
  const c={...a.defaults,setting,...options.art,replayRefund},rng=(options.rng==='xoshiro128'?xoshiro128:options.rng==='mulberry'?mulberry:lcg)(seed);

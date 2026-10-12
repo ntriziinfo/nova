@@ -27,9 +27,21 @@ globalThis.NovaResults=(()=>{
   if(before?.zone&&!after?.zone)return {kind:'zone',...pick('zone',before.zone,setting,rng),pt:String(after?.award??before.award??0)};
   return null;
  }
- function sortie(event){
+ function sortie(event,flow){
   if(!event?.finished||!Number.isInteger(event.hits)||event.hits<0)return null;
-  return {kind:'sortie',character:'all',color:'gold',count:event.hits};
+  const card={kind:'sortie',character:'all',color:'gold',count:event.hits};
+  if(!Array.isArray(flow?.queuedZones))return card;
+  // This challenge appends its awards to the queue; older stock is not part of its result.
+  const earned=event.hits>0?flow?.queuedZones?.slice(-event.hits):[];
+  if(!earned||earned.length!==event.hits)return card;
+  const awards=new Map();
+  for(const raw of earned){
+   const zone=String(raw).replace(/^normal_/,''),character=zone.replace(/^ura_/,'');
+   if(!chars.includes(character)&&character!=='kushuri_nito')return card;
+   if(!awards.has(zone))awards.set(zone,{zone,character,ura:zone.startsWith('ura_'),count:0});
+   awards.get(zone).count++;
+  }
+  return {...card,awards:[...awards.values()]};
  }
  function chain(previous,before,after,card){
   const points=value=>/^\d+$/.test(String(value??''))?BigInt(value):0n;
@@ -67,10 +79,25 @@ globalThis.NovaResults=(()=>{
   return entry;
  }
  function awardText(value){return value.kind==='sortie'?'特化ゾーン×'+value.count+'獲得':(value.character==='all'&&Number(value.pt)>=0?'+':'')+value.pt+'pt';}
+ function renderSortieAwards(roster,awards){
+  roster.replaceChildren();
+  for(const award of awards){
+   if(!characterImages[award.character]||!Number.isInteger(award.count)||award.count<1)continue;
+   const item=document.createElement('figure'),pictures=document.createElement('div'),caption=document.createElement('figcaption'),count=document.createElement('output');
+   item.className='novaResultStock';pictures.className='novaResultStockImages';
+   const characters=award.character==='kushuri_nito'?['nito','kushuri']:[award.character];
+   for(const character of characters){const img=document.createElement('img');img.src='assets/illustrations/'+characterImages[character];img.alt=names[character];img.draggable=false;pictures.append(img);}
+   caption.textContent=(award.ura?'裏':'')+names[award.character];count.textContent='×'+award.count;
+   item.dataset.ura=String(!!award.ura);item.setAttribute('aria-label',caption.textContent+' ×'+award.count);
+   item.append(pictures,caption,count);roster.append(item);
+  }
+ }
  function apply(){if(!active||!root)return;const p=layout();card.style.cssText=`left:${p.x}%;top:${p.y}%;width:${p.w}%;height:${p.h}%;`;
   const cw=card.clientWidth,duo=active.character==='kushuri_nito',all=active.character==='all',group=active.character==='group';
   // The supplied group canvas includes empty space on its right; retain the original canvas.
   art.style.cssText=`left:${(all?4:duo?-5:1)+p.imageX}%;top:${(all?23:3)+p.imageY}%;width:${(all?92:duo?57:group?82:46)*p.scale/100}%;height:${(all?56:94)*p.scale/100}%;`;
+  const roster=art.querySelector('.novaResultStocks');
+  if(active.kind==='sortie'&&roster){const n=roster.childElementCount,cols=n<=3?Math.max(1,n):Math.ceil(n/2);roster.style.cssText=`--columns:${cols};--rows:${n>3?2:1};--count-font:${Math.max(14,Math.min(36,cw/cols*.27))}px;--label-font:${Math.max(9,Math.min(18,cw/cols*.10))}px;`;}
   const chained=active.totalPt!=null,mainHeight=p.numberH*(chained?.65:1);
   const textWidth=active.kind==='sortie'?awardText(active).length:(String(active.pt).length+2)*.72;
   const font=Math.min(cw*p.font/100,cw*p.numberW/100/textWidth,chained?card.clientHeight*mainHeight/100*.95:Infinity);
@@ -81,7 +108,7 @@ globalThis.NovaResults=(()=>{
  }
  function init(){if(root)return;const machine=document.getElementById('machine');if(!machine)return;
   root=document.createElement('div');root.className='novaResultsLayer';root.hidden=true;
-  root.innerHTML='<div class="novaResultCard"><div class="novaResultArt"><img draggable="false" alt=""><output class="novaResultNumber"></output><img class="novaResultPartner" src="assets/illustrations/lamps-20260928/kushuri.png" alt="くしゅり" draggable="false" hidden><div class="novaResultEnsemble" hidden></div></div><div class="novaResultFallback" role="status"><strong>RESULT</strong><span></span><output></output><small class="novaResultTotal" hidden></small><small class="novaResultNext" hidden>次のBETでスーパーノヴァチャレンジ</small></div></div>';
+  root.innerHTML='<div class="novaResultCard"><div class="novaResultArt"><img draggable="false" alt=""><output class="novaResultNumber"></output><img class="novaResultPartner" src="assets/illustrations/lamps-20260928/kushuri.png" alt="くしゅり" draggable="false" hidden><div class="novaResultEnsemble" hidden></div><div class="novaResultStocks" hidden></div></div><div class="novaResultFallback" role="status"><strong>RESULT</strong><span></span><output></output><small class="novaResultTotal" hidden></small><small class="novaResultNext" hidden>次のBETでスーパーノヴァチャレンジ</small></div></div>';
   machine.append(root);card=root.firstElementChild;art=card.firstElementChild;num=art.querySelector('output');fallback=card.querySelector('.novaResultFallback');
   // Both background colors share the same unmodified character image.
   for(const character of chars)for(const color of ['red','blue'])loadImage(character,color);
@@ -97,7 +124,7 @@ globalThis.NovaResults=(()=>{
   const fill=()=>panel.querySelectorAll('input').forEach(el=>el.value=layout()[el.dataset.field]);
   button.onclick=()=>{if(!active){preview=true;show({kind:'preview',character:'sosuke',color:'red',pt:'1234'});}select.value=key();fill();panel.show();};
   select.insertAdjacentHTML('beforeend','<option value="sortie-gold">出陣チャレンジ・獲得数</option>');
-  select.onchange=()=>{preview=true;const [character,color]=select.value.split('-');show(character==='sortie'?sortie({finished:true,hits:5}):{kind:'preview',character,color,pt:'1234'});fill();};
+  select.onchange=()=>{preview=true;const [character,color]=select.value.split('-');show(character==='sortie'?sortie({finished:true,hits:5},{queuedZones:['sora','sora','ura_sora','giru','kushuri_nito']}):{kind:'preview',character,color,pt:'1234'});fill();};
   panel.oninput=e=>{const k=e.target.dataset.field;if(!k)return;let v=Number(e.target.value);if(!Number.isFinite(v))return;v=Math.max(['x','y','imageX','imageY','numberX','numberY'].includes(k)?-100:1,Math.min(200,v));positions[key()]={...layout(),[k]:v};try{localStorage.setItem('nova_result_layout_v2',JSON.stringify(positions));}catch{}apply();};
   panel.querySelector('#novaResultReset').onclick=()=>{delete positions[key()];localStorage.setItem('nova_result_layout_v2',JSON.stringify(positions));apply();fill();};
   panel.querySelector('#novaResultClose').onclick=()=>{panel.close();if(preview){preview=false;hide();}};
@@ -112,7 +139,8 @@ globalThis.NovaResults=(()=>{
   root.dataset.color=all?'gold':['red','purple','gold','rainbow'].includes(value.color)?value.color:'blue';
   root.dataset.all=String(all);
   root.dataset.duo=String(value.character==='kushuri_nito');
-  const ensemble=art.querySelector('.novaResultEnsemble');if(ensemble)ensemble.hidden=!all;
+  const ensemble=art.querySelector('.novaResultEnsemble');if(ensemble)ensemble.hidden=!all||isSortie;
+  const roster=art.querySelector('.novaResultStocks');if(roster){roster.hidden=!isSortie||!value.awards?.length;if(isSortie&&value.awards?.length)renderSortieAwards(roster,value.awards);}
   const partner=art.querySelector('.novaResultPartner');if(partner)partner.hidden=value.character!=='kushuri_nito';
   const atLabel='AT総獲得';
   const label=isSortie?'出陣チャレンジ':all?'有利区間終了 / 累計差枚':settingHints.some(h=>h.character===value.character)?atLabel:`${names[value.character]} ${value.color==='initial'?'AT初期pt':value.kind==='at'?atLabel:value.totalPt!=null?'ゾーン / 今回':'上乗せ'}`;
@@ -123,7 +151,7 @@ globalThis.NovaResults=(()=>{
   if(all){
    apply();
    // Decode the originals before revealing the ensemble, including on a cold reload.
-   const originals=Array.from(ensemble?.querySelectorAll?.('img')||[]);
+   const originals=Array.from((isSortie?roster:ensemble)?.querySelectorAll?.('img')||[]);
    Promise.allSettled(originals.map(img=>img.decode())).then(()=>{if(request===imageRequest&&active===value)delete root.dataset.loading;});
    return;
   }

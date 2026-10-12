@@ -35,14 +35,10 @@ test('historical explicit dual caps still reproduce archived trials',()=>{
  }
 });
 
-test('MY is informational and no longer stops the current game, including recovery above 15k',()=>{
- const state={};for(const p of [0,8000,-8000,6999])observe(state,p);
- assert(!state.locked);assert.equal(state.maxMy,14999);assert.equal(state.lowestNet,-8000);
- observe(state,7000);assert(!state.locked);observe(state,9999);assert(!state.locked);assert.equal(state.maxMy,17999);
- observe(state,10000);assert(state.locked);assert.equal(state.reason,'net');
- const deep={};for(const net of [0,-20000,-5000,9999]){observe(deep,net);assert(!deep.locked);}
- const disabled={};for(const net of [0,-20000,30000]){observe(disabled,net,0);assert(!disabled.locked);}
- const reset={};observe(reset,7000);assert(!reset.locked);assert.equal(reset.lowestNet,0);
+test('MY19k stops at recovery boundary, while +10k alone remains playable',()=>{
+ const state={};observe(state,-5000);observe(state,10000);assert(!state.locked);observe(state,13999);assert(!state.locked);observe(state,14000);assert(state.locked);assert.equal(state.reason,'my');
+ for(const old of [{reason:'net',locked:true,maxMy:10000,lowestNet:0},{reason:'my',locked:true,maxMy:15000,lowestNet:-5000}]){c.NovaComplete.restore(old,10000);assert(!old.locked);}
+ const saved={reason:'my',locked:true,maxMy:19000,lowestNet:-5000,lockedSetting:6};c.NovaComplete.restore(saved,14000);assert(saved.locked);assert.equal(saved.lockedSetting,6);
 });
 
 test('MY uses constant-size state and remembers charged-BET lows across serialization',()=>{

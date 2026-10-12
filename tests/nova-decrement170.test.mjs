@@ -7,8 +7,8 @@ import {loadModel,simulate} from '../scripts/zone-v2-model.mjs';
 import {xoshiro128,xoshiro128State} from '../scripts/zone-v2-rng.mjs';
 const json=x=>JSON.parse(JSON.stringify(x));
 
-test('only settings 5 and 6 use the selected time and net regimes',()=>{
- loadModel();const d=NovaDecrement;
+test('historical: only settings 5 and 6 use the selected time and net regimes',()=>{
+ loadModel('../tests/fixtures/pre-smartslot-20261013');const d=NovaDecrement;
  for(let s=1;s<=6;s++){
   const seed='decrement-initial-'+s,p=d.rules(s),rng=xoshiro128(seed);
   d.reset(s,xoshiro128State(seed));
@@ -22,7 +22,7 @@ test('only settings 5 and 6 use the selected time and net regimes',()=>{
 });
 
 test('each BET advances the independent RNG once after the initial game; reload is continuous',()=>{
- loadModel();const d=NovaDecrement,seed='decrement-clock',rng=xoshiro128(seed),p=d.rules(6);
+ loadModel('../tests/fixtures/pre-smartslot-20261013');const d=NovaDecrement,seed='decrement-clock',rng=xoshiro128(seed),p=d.rules(6);
  d.reset(6,xoshiro128State(seed));let low=rng()<p.lowMean/(p.lowMean+p.highMean);
  for(let game=0;game<30000;game++){
   if(game>0&&rng()<1/(low?p.lowMean:p.highMean))low=!low;
@@ -38,7 +38,7 @@ test('each BET advances the independent RNG once after the initial game; reload 
 });
 
 test('net hysteresis uses the weaker factor without stacking and cannot mutate earned resources',()=>{
- loadModel();const d=NovaDecrement;
+ loadModel('../tests/fixtures/pre-smartslot-20261013');const d=NovaDecrement;
  for(const s of [5,6]){
   d.reset(s);const saved=d.snapshot();saved.low=false;d.bind(saved,s);
   const p=d.rules(s),flow={...NovaArt.enter({setting:s},()=>.5),remaining:'1850',queuedZones:['sora','giru'],sets:'3',stock:'2'},before=json(flow);
