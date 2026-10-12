@@ -1,3 +1,15 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:f48c3629e55426604d794216b0f761e3f3d09fd37c1753e719bccd715309c4f7
-size 637
+{
+  "usage": "AT特化前兆BETの背景と一回再生SE。提供素材は学習に使用しない。原本保持。",
+  "files": [
+    {
+      "source": "C:/Users/nitro/Dropbox/NOVA台用イラスト/line_eff_01.mp4",
+      "output": "assets/media/nova/at-prelude-background-20261013.mp4",
+      "sha256": "1a8c552ab322d6680416eb6f4e6ae808486f349a674ef15cb16849265fd7e850"
+    },
+    {
+      "source": "C:/Users/nitro/Dropbox/NOVA台用イラスト/audiostock_1248945.mp3",
+      "output": "assets/media/nova/at-prelude-start-20261013.mp3",
+      "sha256": "4881c959d1862552828846020d10c99ac915ca586c35ed2128bc21c6e3c9a348"
+    }
+  ]
+}

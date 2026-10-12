@@ -61,3 +61,4 @@ assets/media/nova/checkpoint-confirmed-background-20261013.source.json -filter -
 
 assets/media/nova/at-prelude-background-20261013.mp4 -filter -diff -merge -text
 assets/media/nova/at-prelude-start-20261013.mp3 -filter -diff -merge -text
+assets/media/nova/at-prelude-20261013.sources.json -filter -diff -merge text
