@@ -3255,6 +3255,29 @@
       }
     },
     {
+      "src": "assets/media/nova/sosuke-zone-get.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/sosuke-zone-get.wav",
+      "sourceSha256": "cefb0bc8526c57908c575e44057f0f67a7de0968be1479ff6b502ba1a1655b14",
+      "outputSha256": "24496fae872e7200087b08bfe829a6299c0c580ab5de42041c5e7d6154af807a",
+      "rate": 48000,
+      "channels": 1,
+      "duration": 2.389333,
+      "outputDuration": 2.389333,
+      "gainDb": 10.45,
+      "before": {
+        "lufs": -24.45,
+        "peakDbtp": -14.75,
+        "rangeLu": 1.1
+      },
+      "after": {
+        "lufs": -13.98,
+        "peakDbtp": -4.3,
+        "rangeLu": 1.1
+      }
+    },
+    {
       "src": "assets/media/nova/spin_start.wav",
       "category": "sfx",
       "targetLufs": -16,

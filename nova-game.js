@@ -745,7 +745,7 @@
   const NEBULA_ZONE_VOICE_SRCS={giru:AIM_VOICE_SRCS.nebula[0],toto:AIM_VOICE_SRCS.nebula[1],ouma:AIM_VOICE_SRCS.nebula[2],sora:AIM_VOICE_SRCS.nebula[3]};
   const ZONE_START_VOICE_SRCS={sora:'assets/media/nova/zone-start-sora.wav',ura_sora:'assets/media/nova/zone-start-ura-sora.wav',giru:'assets/media/nova/zone-start-giru.wav',ura_giru:'assets/media/nova/zone-start-ura-giru.wav',toto:'assets/media/nova/zone-start-toto.wav',ouma:'assets/media/nova/zone-start-ouma.wav',ura_ouma:'assets/media/nova/zone-start-ura-ouma.wav'};
   const ZONE_CONTINUE_VOICE_SRCS={sora:'assets/media/nova/continue-sora.wav',toto:'assets/media/nova/continue-toto.wav'};
-  const MODE_EVENT_VOICE_SRCS={upperChallenge:'assets/media/nova/sosuke-upper-challenge-entry.wav',comeback:'assets/media/nova/sosuke-comeback-entry.wav',upperAt:'assets/media/nova/sosuke-upper-at-entry.wav',bonusStock:'assets/media/nova/sosuke-bonus-stock.wav'};
+  const MODE_EVENT_VOICE_SRCS={upperChallenge:'assets/media/nova/sosuke-upper-challenge-entry.wav',comeback:'assets/media/nova/sosuke-comeback-entry.wav',upperAt:'assets/media/nova/sosuke-upper-at-entry.wav',bonusStock:'assets/media/nova/sosuke-bonus-stock.wav',zoneGet:'assets/media/nova/sosuke-zone-get.wav'};
   const OUMA_NOVA_VOICE_SRCS={aim:'assets/media/nova/aim-nova-ouma.wav',wins:['assets/media/nova/nova-win-1-ouma.wav','assets/media/nova/nova-win-2-ouma.wav','assets/media/nova/nova-win-3-ouma.wav']};
   const GIRU_LADDER_VOICE_SRCS={bet:['assets/media/nova/giru-ladder-bet-moment.wav','assets/media/nova/giru-ladder-bet-challenge.wav','assets/media/nova/giru-ladder-bet-good-flow.wav'],result:['assets/media/nova/giru-ladder-result-under500.wav','assets/media/nova/giru-ladder-result-500.wav','assets/media/nova/giru-ladder-result-1000.wav']};
   const RARE_CUE_VOICE_SRCS={
@@ -7883,7 +7883,8 @@
     if(debugFastSpinActive||speedToBonusActive||!resolved||resolved.zonePatrolPlayed)return;
     if(resolved.flowBefore?.phase!=='art'||resolved.flowBefore?.entryStage||resolved.flowAfter?.entryStage!=='seven')return;
     resolved.zonePatrolPlayed=true;
-    playLockedBonusConfirmSound('assets/media/jag/cz_patrol_confirm.wav?v=19',sfxOutputVolume());
+    const afterPatrol=resolved.flowBefore.initialStage?null:()=>playLockedBonusConfirmSound(MODE_EVENT_VOICE_SRCS.zoneGet,voiceOutputVolume());
+    playLockedBonusConfirmSound('assets/media/jag/cz_patrol_confirm.wav?v=19',sfxOutputVolume(),afterPatrol);
   }
 
   function playCzConfirmedSound(resolved){
@@ -9111,7 +9112,7 @@
     }
   }
 
-  function playLockedBonusConfirmSound(src, volume=sfxOutputVolume(CONFIRM_SOUND_OUTPUT_SCALE)){
+  function playLockedBonusConfirmSound(src, volume=sfxOutputVolume(CONFIRM_SOUND_OUTPUT_SCALE), onEnded=null){
     if(debugFastSpinActive || speedToBonusActive) return;
     if(!src) return;
     if(src === SEVEN_CONFIRM_SOUND_SRC && isPremiumBigConfirmSoundContext(currentSpin)){
@@ -9131,9 +9132,11 @@
       bonusConfirmSoundPlaying = true;
       bonusConfirmSoundAudio = audio;
       updateAutoUi();
-      const finish = ()=>{
-        if(!bonusConfirmSoundPlaying || bonusConfirmSoundAudio !== audio) return;
+      const ended = ()=>finish(true);
+      const finish = (completed=false)=>{
+        if(!bonusConfirmSoundPlaying || bonusConfirmSoundAudio !== audio || audio.onended !== ended) return;
         clearBonusConfirmSoundLock();
+        if(completed)onEnded?.();
       };
       audio.pause();
       if(audio.getAttribute("src") !== src){
@@ -9143,8 +9146,9 @@
       audio.currentTime = 0;
       audio.volume = soundOutputVolume(src, volume);
       prepareCharacterVoiceAudio(audio,src);
-      audio.onended = finish;
-      audio.onerror = finish;
+      audio.loop = false;
+      audio.onended = ended;
+      audio.onerror = ()=>finish();
       audio.playbackRate=superSpeedActive?6:1;
       audio.novaCancelPlaybackWatch = watchPlaybackProgress(audio,finish);
 

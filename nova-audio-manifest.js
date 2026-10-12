@@ -564,6 +564,10 @@ globalThis.NovaAudioManifest=Object.freeze({
     "src": "assets/media/normalized-20261012/nova/sosuke-upper-challenge-entry.wav",
     "category": "voice"
   },
+  "assets/media/nova/sosuke-zone-get.wav": {
+    "src": "assets/media/normalized-20261012/nova/sosuke-zone-get.wav",
+    "category": "voice"
+  },
   "assets/media/nova/spin_start.wav": {
     "src": "assets/media/normalized-20261012/nova/spin_start.wav",
     "category": "sfx"

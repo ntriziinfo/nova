@@ -19,6 +19,11 @@
       "copy": "assets/media/nova/sosuke-upper-challenge-entry.wav",
       "sourceName": "スーパーノヴァチャレンジ.wav",
       "sha256": "f67e3c5821048eedd4f32e894a92b2128871310b61fb0fdcc291362760e4153c"
+    },
+    {
+      "copy": "assets/media/nova/sosuke-zone-get.wav",
+      "sourceName": "特化ゾーンGET.wav",
+      "sha256": "cefb0bc8526c57908c575e44057f0f67a7de0968be1479ff6b502ba1a1655b14"
     }
   ],
   "category": "voice",

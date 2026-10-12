@@ -1,0 +1,149 @@
+{
+  "status": "pass",
+  "muted": true,
+  "reports": [
+    {
+      "mode": "manual",
+      "events": [
+        {
+          "type": "patrol",
+          "at": 3652.399999976158,
+          "src": "assets/media/jag/cz_patrol_confirm.wav?v=19",
+          "actual": "assets/media/normalized-20261012/jag/cz_patrol_confirm.wav",
+          "loop": false,
+          "volume": 0.35,
+          "started": true
+        },
+        {
+          "type": "voice",
+          "at": 14697.600000023842,
+          "src": "assets/media/nova/sosuke-zone-get.wav",
+          "actual": "assets/media/normalized-20261012/nova/sosuke-zone-get.wav",
+          "loop": false,
+          "volume": 0.35,
+          "patrolEnded": true,
+          "started": true
+        },
+        {
+          "type": "patrolEnded",
+          "at": 14698.300000011921
+        },
+        {
+          "type": "voiceEnded",
+          "at": 17116.5
+        }
+      ],
+      "snapshot": {
+        "fee": 3,
+        "entryStage": ""
+      }
+    },
+    {
+      "mode": "auto",
+      "events": [
+        {
+          "type": "patrol",
+          "at": 3474.699999988079,
+          "src": "assets/media/jag/cz_patrol_confirm.wav?v=19",
+          "actual": "assets/media/normalized-20261012/jag/cz_patrol_confirm.wav",
+          "loop": false,
+          "volume": 0.35,
+          "started": true
+        },
+        {
+          "type": "voice",
+          "at": 12657,
+          "src": "assets/media/nova/sosuke-zone-get.wav",
+          "actual": "assets/media/normalized-20261012/nova/sosuke-zone-get.wav",
+          "loop": false,
+          "volume": 0.35,
+          "patrolEnded": true,
+          "started": true
+        },
+        {
+          "type": "patrolEnded",
+          "at": 12657.400000035763
+        },
+        {
+          "type": "voiceEnded",
+          "at": 15096.699999988079
+        }
+      ],
+      "snapshot": {
+        "fee": 6,
+        "entryStage": "seven"
+      }
+    },
+    {
+      "mode": "mobile",
+      "events": [
+        {
+          "type": "patrol",
+          "at": 3253.699999988079,
+          "src": "assets/media/jag/cz_patrol_confirm.wav?v=19",
+          "actual": "assets/media/normalized-20261012/jag/cz_patrol_confirm.wav",
+          "loop": false,
+          "volume": 0.35,
+          "started": true
+        },
+        {
+          "type": "voice",
+          "at": 13032.800000011921,
+          "src": "assets/media/nova/sosuke-zone-get.wav",
+          "actual": "assets/media/normalized-20261012/nova/sosuke-zone-get.wav",
+          "loop": false,
+          "volume": 0.35,
+          "patrolEnded": true,
+          "started": true
+        },
+        {
+          "type": "patrolEnded",
+          "at": 13033.800000011921
+        },
+        {
+          "type": "voiceEnded",
+          "at": 15471.900000035763
+        }
+      ],
+      "snapshot": {
+        "fee": 3,
+        "entryStage": ""
+      }
+    },
+    {
+      "mode": "error",
+      "events": [
+        {
+          "type": "patrol",
+          "at": 3246.5,
+          "src": "assets/media/jag/cz_patrol_confirm.wav?v=19",
+          "actual": "assets/media/normalized-20261012/jag/cz_patrol_confirm.wav",
+          "loop": false,
+          "volume": 0.35
+        }
+      ],
+      "snapshot": {
+        "fee": 3,
+        "entryStage": ""
+      }
+    },
+    {
+      "mode": "reset",
+      "events": [
+        {
+          "type": "patrol",
+          "at": 4483.300000011921,
+          "src": "assets/media/jag/cz_patrol_confirm.wav?v=19",
+          "actual": "assets/media/normalized-20261012/jag/cz_patrol_confirm.wav",
+          "loop": false,
+          "volume": 0.35,
+          "started": true
+        }
+      ],
+      "snapshot": {
+        "fee": 0
+      }
+    }
+  ],
+  "errors": []
+}
