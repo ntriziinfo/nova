@@ -556,6 +556,26 @@ globalThis.NovaAudioManifest=Object.freeze({
     "src": "assets/media/normalized-20261012/nova/sosuke-comeback-entry.wav",
     "category": "voice"
   },
+  "assets/media/nova/sosuke-ladder-bet-love.wav": {
+    "src": "assets/media/normalized-20261012/nova/sosuke-ladder-bet-love.wav",
+    "category": "voice"
+  },
+  "assets/media/nova/sosuke-ladder-bet-shimatte.wav": {
+    "src": "assets/media/normalized-20261012/nova/sosuke-ladder-bet-shimatte.wav",
+    "category": "voice"
+  },
+  "assets/media/nova/sosuke-ladder-bet-spirit.wav": {
+    "src": "assets/media/normalized-20261012/nova/sosuke-ladder-bet-spirit.wav",
+    "category": "voice"
+  },
+  "assets/media/nova/sosuke-ladder-pass-hot.wav": {
+    "src": "assets/media/normalized-20261012/nova/sosuke-ladder-pass-hot.wav",
+    "category": "voice"
+  },
+  "assets/media/nova/sosuke-ladder-pass-injustice.wav": {
+    "src": "assets/media/normalized-20261012/nova/sosuke-ladder-pass-injustice.wav",
+    "category": "voice"
+  },
   "assets/media/nova/sosuke-upper-at-entry.wav": {
     "src": "assets/media/normalized-20261012/nova/sosuke-upper-at-entry.wav",
     "category": "voice"

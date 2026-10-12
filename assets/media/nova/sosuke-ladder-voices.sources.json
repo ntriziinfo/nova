@@ -1,0 +1,31 @@
+{
+  "sources": [
+    {
+      "copy": "assets/media/nova/sosuke-ladder-pass-injustice.wav",
+      "sourceName": "この世すべての不利益は.wav",
+      "sha256": "a24b2d31af674acb01129b566a613e1b281c138f76fa4d4c032bf66a67748d29"
+    },
+    {
+      "copy": "assets/media/nova/sosuke-ladder-pass-hot.wav",
+      "sourceName": "あつ.wav",
+      "sha256": "1ef6af96759a74fa52d42f6610af394270733b2747c0808d4c4d300509a33ea0"
+    },
+    {
+      "copy": "assets/media/nova/sosuke-ladder-bet-love.wav",
+      "sourceName": "愛を知ると.wav",
+      "sha256": "f242f9f7c90bb06197e3f351de82a839e84576da4fc3e7cee8ca97430563cd71"
+    },
+    {
+      "copy": "assets/media/nova/sosuke-ladder-bet-spirit.wav",
+      "sourceName": "気合で.wav",
+      "sha256": "33d6c177659fedf4d24138fee997941183b77526b69da60f79e5bd1277ee79dc"
+    },
+    {
+      "copy": "assets/media/nova/sosuke-ladder-bet-shimatte.wav",
+      "sourceName": "しまって.wav",
+      "sha256": "fdf686d6d946292f80547276aa19fdbdc347c185b1b484b547b25eb63be2d1ad"
+    }
+  ],
+  "category": "voice",
+  "originalsUnmodified": true
+}

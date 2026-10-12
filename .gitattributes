@@ -42,4 +42,6 @@ assets/media/normalized-20261012/** -filter -diff -merge -text
 assets/media/nova/sosuke-*-entry.wav -filter -diff -merge -text
 assets/media/nova/sosuke-bonus-stock.wav -filter -diff -merge -text
 assets/media/nova/sosuke-zone-get.wav -filter -diff -merge -text
+assets/media/nova/sosuke-ladder-*.wav -filter -diff -merge -text
+assets/media/nova/sosuke-ladder-voices.sources.json -filter -diff -merge text
 assets/media/nova/sosuke-event-voices.sources.json -filter -diff -merge text

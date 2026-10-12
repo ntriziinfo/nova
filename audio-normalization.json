@@ -3209,6 +3209,121 @@
       }
     },
     {
+      "src": "assets/media/nova/sosuke-ladder-bet-love.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/sosuke-ladder-bet-love.wav",
+      "sourceSha256": "f242f9f7c90bb06197e3f351de82a839e84576da4fc3e7cee8ca97430563cd71",
+      "outputSha256": "1dfa9b110fa0b74802c356e51ee359cb6b1c6dcbbfb1d8faa4a398a6693b7070",
+      "rate": 48000,
+      "channels": 1,
+      "duration": 3.925333,
+      "outputDuration": 3.925333,
+      "gainDb": 14.89,
+      "before": {
+        "lufs": -28.63,
+        "peakDbtp": -13.69,
+        "rangeLu": 8.1
+      },
+      "after": {
+        "lufs": -14.07,
+        "peakDbtp": -1.99,
+        "rangeLu": 7.7
+      }
+    },
+    {
+      "src": "assets/media/nova/sosuke-ladder-bet-shimatte.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/sosuke-ladder-bet-shimatte.wav",
+      "sourceSha256": "fdf686d6d946292f80547276aa19fdbdc347c185b1b484b547b25eb63be2d1ad",
+      "outputSha256": "26c20d7df97bfdf6b2d38a7d62120e7140d8c23451c023cf0eb18b6be3668eb6",
+      "rate": 48000,
+      "channels": 1,
+      "duration": 2.944,
+      "outputDuration": 2.944,
+      "gainDb": 7.06,
+      "before": {
+        "lufs": -21.06,
+        "peakDbtp": -11.57,
+        "rangeLu": 1.4
+      },
+      "after": {
+        "lufs": -14,
+        "peakDbtp": -4.51,
+        "rangeLu": 1.4
+      }
+    },
+    {
+      "src": "assets/media/nova/sosuke-ladder-bet-spirit.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/sosuke-ladder-bet-spirit.wav",
+      "sourceSha256": "33d6c177659fedf4d24138fee997941183b77526b69da60f79e5bd1277ee79dc",
+      "outputSha256": "b1dbc0e748bd0be2549b6aced0842208f1cb6c7bcde8cbd83741b893e9ffea14",
+      "rate": 48000,
+      "channels": 1,
+      "duration": 2.346667,
+      "outputDuration": 2.346667,
+      "gainDb": 7.72,
+      "before": {
+        "lufs": -21.72,
+        "peakDbtp": -10.32,
+        "rangeLu": 1.3
+      },
+      "after": {
+        "lufs": -14,
+        "peakDbtp": -2.6,
+        "rangeLu": 1.3
+      }
+    },
+    {
+      "src": "assets/media/nova/sosuke-ladder-pass-hot.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/sosuke-ladder-pass-hot.wav",
+      "sourceSha256": "1ef6af96759a74fa52d42f6610af394270733b2747c0808d4c4d300509a33ea0",
+      "outputSha256": "8b4fc8d8d723e1b805b7c98b943455590a78fbdebadebe118ce3e211873a27e2",
+      "rate": 48000,
+      "channels": 1,
+      "duration": 2.645333,
+      "outputDuration": 2.645333,
+      "gainDb": 7.32,
+      "before": {
+        "lufs": -21.32,
+        "peakDbtp": -10.86,
+        "rangeLu": 2.1
+      },
+      "after": {
+        "lufs": -14,
+        "peakDbtp": -3.54,
+        "rangeLu": 2
+      }
+    },
+    {
+      "src": "assets/media/nova/sosuke-ladder-pass-injustice.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/sosuke-ladder-pass-injustice.wav",
+      "sourceSha256": "a24b2d31af674acb01129b566a613e1b281c138f76fa4d4c032bf66a67748d29",
+      "outputSha256": "fc692044908ddbbbbfe40bd64de0c897d7244dd359a92ec4d7fce8158cf6c75b",
+      "rate": 48000,
+      "channels": 1,
+      "duration": 4.693333,
+      "outputDuration": 4.693333,
+      "gainDb": 16.57,
+      "before": {
+        "lufs": -30.57,
+        "peakDbtp": -17.47,
+        "rangeLu": 7
+      },
+      "after": {
+        "lufs": -14.09,
+        "peakDbtp": -2,
+        "rangeLu": 6.9
+      }
+    },
+    {
       "src": "assets/media/nova/sosuke-upper-at-entry.wav",
       "category": "voice",
       "targetLufs": -14,

@@ -748,6 +748,7 @@
   const MODE_EVENT_VOICE_SRCS={upperChallenge:'assets/media/nova/sosuke-upper-challenge-entry.wav',comeback:'assets/media/nova/sosuke-comeback-entry.wav',upperAt:'assets/media/nova/sosuke-upper-at-entry.wav',bonusStock:'assets/media/nova/sosuke-bonus-stock.wav',zoneGet:'assets/media/nova/sosuke-zone-get.wav'};
   const OUMA_NOVA_VOICE_SRCS={aim:'assets/media/nova/aim-nova-ouma.wav',wins:['assets/media/nova/nova-win-1-ouma.wav','assets/media/nova/nova-win-2-ouma.wav','assets/media/nova/nova-win-3-ouma.wav']};
   const GIRU_LADDER_VOICE_SRCS={bet:['assets/media/nova/giru-ladder-bet-moment.wav','assets/media/nova/giru-ladder-bet-challenge.wav','assets/media/nova/giru-ladder-bet-good-flow.wav'],result:['assets/media/nova/giru-ladder-result-under500.wav','assets/media/nova/giru-ladder-result-500.wav','assets/media/nova/giru-ladder-result-1000.wav']};
+  const SOSUKE_LADDER_VOICE_SRCS=['assets/media/nova/sosuke-ladder-pass-injustice.wav','assets/media/nova/sosuke-ladder-pass-hot.wav','assets/media/nova/sosuke-ladder-bet-love.wav','assets/media/nova/sosuke-ladder-bet-spirit.wav','assets/media/nova/sosuke-ladder-bet-shimatte.wav'];
   const RARE_CUE_VOICE_SRCS={
     kushuri:{chance:'assets/media/nova/rare-cue-chance-kushuri.wav',bigChance:'assets/media/nova/rare-cue-big-chance-kushuri.wav',hot:'assets/media/nova/rare-cue-hot-kushuri.wav'},
     nito:{chance:'assets/media/nova/rare-cue-chance-nito.wav',bigChance:'assets/media/nova/rare-cue-big-chance-nito.wav',hot:'assets/media/nova/rare-cue-hot-nito.wav'}
@@ -762,6 +763,7 @@
     'assets/media/nova/cz-entry-voice.wav',
     OUMA_NOVA_VOICE_SRCS.aim,...OUMA_NOVA_VOICE_SRCS.wins,
     ...Object.values(GIRU_LADDER_VOICE_SRCS).flat(),
+    ...SOSUKE_LADDER_VOICE_SRCS,
     ...Object.values(RARE_CUE_VOICE_SRCS).flatMap(bank=>Object.values(bank)),
     'assets/media/nova/aim/bonus-nebula-win.wav','assets/media/nova/aim/zone-roulette-confirm.wav?v=20260919-roulette-voice',
     'assets/media/jag/cz_remaining_3.wav?v=count2','assets/media/jag/cz_remaining_2.wav?v=count2','assets/media/jag/cz_last.wav?v=count2'
@@ -7296,6 +7298,7 @@
     playRareCueVoice(currentSpin);
     const comebackIntroPlayback=playModeEntryBetVoice(resolved);
     playGiruLadderBetVoice(currentSpin);
+    playSosukeLadderBetVoice(currentSpin);
     NovaSortie.begin(currentSpin);
     renderRemainingCounters();
     syncUpperAtBackground();
@@ -7844,6 +7847,18 @@
     const voices=OUMA_NOVA_VOICE_SRCS.wins;
     const src=voices[Math.min(voices.length-1,Math.max(0,Math.floor(rng()*voices.length)))];
     playOneShotSound(src,voiceOutputVolume(),{allowDuringPremiumConfirm:true});
+  }
+
+  function playSosukeLadderBetVoice(spin,rng=()=>globalThis.crypto.getRandomValues(new Uint32Array(1))[0]/4294967296){
+    if(debugFastSpinActive||speedToBonusActive||!spin||spin.ladderResultPresentation)return;
+    const resolved=spin.resolved,flow=resolved?.flowBefore;
+    if(!resolved||resolved.sosukeLadderVoicePlayed||resolved.aTypeBonusGame||flow?.phase!=='art'||flow.zone!=='sosuke'||flow.entryStage||flow.initialStage||!flow.ladderRevealed)return;
+    // A repeated point amount can still be a successful stage; use the settled
+    // ladder index. Voice selection must not consume the game lottery's RNG.
+    const passed=Number(resolved.flowAfter?.ladderIndex)>Number(flow.ladderIndex),roll=rng();
+    const index=passed&&roll<.3?(roll<.15?0:1):2+Math.min(2,Math.floor((passed?(roll-.3)/.7:roll)*3));
+    resolved.sosukeLadderVoicePlayed=true;
+    playOneShotSound(SOSUKE_LADDER_VOICE_SRCS[index],voiceOutputVolume(),{allowDuringPremiumConfirm:true});
   }
 
   function playGiruLadderBetVoice(spin,rng=Math.random){
