@@ -7339,6 +7339,12 @@
     globalThis.NovaCheckpointHint?.begin(currentSpin,settings.setting);
     renderRemainingCounters();
     syncUpperAtBackground();
+    const checkpointCue=atCheckpointStatus(normalState.flow,NovaProgress.snapshot(),currentProfit());
+    const checkpointCueNext=NovaProgress.snapshot().next;
+    if(checkpointCue?.gold&&normalState.checkpointSoundNext!==checkpointCueNext){
+      normalState.checkpointSoundNext=checkpointCueNext;
+      playOneShotSound('assets/media/nova/at-prelude-start-20261013.mp3',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
+    }
     if(resolved.zoneStartFlow)updateDisplay();
     if(resolved.oumaFreeze)showOverlay(NovaArt.zoneName(normalState.flow)+'フリーズ！ 0G連');
     else if(resolved.artReverse)showOverlay('逆回転！ '+resolved.flowAfter.award+'pt');
@@ -8012,10 +8018,6 @@
     const prelude=resolved?.czPrelude||resolved?.atPrelude;
     if(stopOrder===0){renderCzPrelude([]);if(resolved)resolved.blackoutReels=[];syncCzPreludeGlow(resolved);}
     if(!prelude)return;
-    if(stopOrder===0&&resolved?.atPrelude?.started&&!resolved.atPreludeStartSoundPlayed){
-      resolved.atPreludeStartSoundPlayed=true;
-      playOneShotSound('assets/media/nova/at-prelude-start-20261013.mp3',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
-    }
     if(prelude.announce){
       renderCzPrelude([]);
       if(stopOrder===0&&!resolved.czAnnounced){
