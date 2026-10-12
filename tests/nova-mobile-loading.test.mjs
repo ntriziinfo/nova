@@ -12,7 +12,7 @@ function environment(compact){
   matchMedia:()=>({matches:compact}),
   Math:Object.assign(Object.create(Math),{random(){throw new Error('Loading must not consume game RNG');}}),
   document:{hidden:false,getElementById:()=>host,addEventListener(name,fn){listeners[name]=fn;},createElement(tag){
-   const element={tag,currentTime:0,style:{},dataset:{},append(){},setAttribute(){},load(){},pause(){this.paused=true;},play(){this.paused=false;return Promise.resolve();}};
+   const element={tag,currentTime:0,style:{},dataset:{},append(){},setAttribute(){},load(){this.loads=(this.loads||0)+1;},pause(){this.paused=true;},play(){this.paused=false;return Promise.resolve();}};
    elements.push(element);return element;
   }},
   window:{addEventListener(){},dispatchEvent(){}},Event:class{},setTimeout,clearTimeout
@@ -50,6 +50,7 @@ test('mobile defers hidden aim media while first-use scenes retain their video, 
  listeners.DOMContentLoaded();
  assert(elements.filter(e=>e.tag==='video').length>10);
  assert(elements.filter(e=>e.tag==='video').every(e=>e.preload==='none'&&e.hidden));
+  assert(elements.filter(e=>e.tag==='video').every(e=>!e.loads),'explicit load can override the mobile preload hint');
  assert(elements.filter(e=>e.tag==='img').every(e=>e.loading==='lazy'&&e.hidden));
  const scenes=[
   [{flowBefore:{phase:'cz',remaining:20,totalGames:20}},'cz-intro-bg.mp4','novaCzIntroTitle'],
