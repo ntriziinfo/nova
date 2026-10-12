@@ -8,7 +8,7 @@ globalThis.NovaInitialDuo=(()=>{
   if(root)return true;host=document.querySelector('.reelArea');if(!host)return false;
   // The VP9 alpha export removes black without covering the reel or lamp layers.
   video=document.createElement('video');video.id='novaInitialParticles';video.hidden=true;
-  video.muted=true;video.defaultMuted=true;video.loop=true;video.playsInline=true;video.preload='auto';
+  video.muted=true;video.defaultMuted=true;video.loop=true;video.playsInline=true;video.preload=globalThis.NovaMedia?.videoPreload||'auto';
   video.setAttribute('aria-hidden','true');video.src='assets/media/nova/star-particle-01-alpha.webm';
   root=document.createElement('div');root.id='novaInitialDuo';root.hidden=true;
   root.setAttribute('aria-label','くしゅり＆にと 初期pt獲得ゾーン');

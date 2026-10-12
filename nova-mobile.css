@@ -1,4 +1,5 @@
 /* Keep cabinet artwork/reel coordinates intact; fit the complete stage on phones. */
+.novaResponsiveImage { display:contents; }
 .novaMobileViewport { display:contents; }
 .novaMobileControls { display:none; }
 .novaMobileAudioEnable {
@@ -8,6 +9,9 @@
 }
 .novaMobileAudioEnable[hidden] { display:none; }
 @media (max-width:1024px) {
+  .playControls .autoArea .autoInlineBtn { background-image:url('assets/mobile-20261013/btn_auto_gold_transparent.webp')!important; }
+  .playControls .autoArea .superSpeedBtn,
+  .novaMobileControls button[data-target=superSpeedBtn] { background-image:url('assets/mobile-20261013/super-speed-gold-20261006.webp')!important; }
   :root {
     --jag-cabinet-width:960px;
     --jag-cabinet-height:1610px;

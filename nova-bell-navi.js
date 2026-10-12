@@ -34,8 +34,10 @@ globalThis.NovaBellNavi=(()=>{
    root.append(item);return item;
   });
   host.append(root);
-  const bellPreload=new Image();bellPreload.src=asset;
-  for(const color of ['green','purple','red'])for(const mark of ['!','!!']){const preload=new Image();preload.src=rareAsset({color,mark});}
+  if(!globalThis.NovaMedia?.compact){
+   const bellPreload=new Image();bellPreload.src=asset;
+   for(const color of ['green','purple','red'])for(const mark of ['!','!!']){const preload=new Image();preload.src=rareAsset({color,mark});}
+  }
   if(typeof ResizeObserver!=='undefined'){
    const observer=new ResizeObserver(layout);observer.observe(host);
    const reels=host.querySelector('.reels');if(reels)observer.observe(reels);

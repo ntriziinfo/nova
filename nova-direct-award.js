@@ -26,7 +26,7 @@ globalThis.NovaDirectAward=(()=>{
   fallback=document.createElement('span');fallback.className='awardFallback';fallback.hidden=true;
   glyphs=document.createElement('div');glyphs.className='awardGlyphs';glyphs.setAttribute('aria-hidden','true');glyphs.hidden=true;
   root.append(img,glyphs,fallback);host.append(root);
-  for(const pt of values){const preload=new Image();preload.src=source(pt);}
+  if(!globalThis.NovaMedia?.compact)for(const pt of values){const preload=new Image();preload.src=source(pt);}
   const preload=new Image();
   const ready=()=>{atlasReady=preload.complete&&preload.naturalWidth>0;syncGlyphs();};
   const failed=()=>{atlasReady=false;syncGlyphs();};
@@ -77,6 +77,6 @@ globalThis.NovaDirectAward=(()=>{
   resultTimer=NovaClock.setTimeout(()=>{resultTimer=null;callback();},Math.ceil(remaining));
   return true;
  }
- if(typeof document!=='undefined')document.addEventListener('DOMContentLoaded',init);
+ if(typeof document!=='undefined'&&!globalThis.NovaMedia?.compact)document.addEventListener('DOMContentLoaded',init);
  return {values,amount,directAmount,show,clear,deferResult,get busy(){return resultTimer!==null;}};
 })();

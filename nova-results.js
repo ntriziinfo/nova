@@ -108,14 +108,14 @@ globalThis.NovaResults=(()=>{
  }
  function init(){if(root)return;const machine=document.getElementById('machine');if(!machine)return;
   root=document.createElement('div');root.className='novaResultsLayer';root.hidden=true;
-  root.innerHTML='<div class="novaResultCard"><div class="novaResultArt"><img draggable="false" alt=""><output class="novaResultNumber"></output><img class="novaResultPartner" src="assets/illustrations/lamps-20260928/kushuri.png" alt="くしゅり" draggable="false" hidden><div class="novaResultEnsemble" hidden></div><div class="novaResultStocks" hidden></div></div><div class="novaResultFallback" role="status"><strong>RESULT</strong><span></span><output></output><small class="novaResultTotal" hidden></small><small class="novaResultNext" hidden>次のBETでスーパーノヴァチャレンジ</small></div></div>';
+  root.innerHTML='<div class="novaResultCard"><div class="novaResultArt"><img draggable="false" alt=""><output class="novaResultNumber"></output><img loading="lazy" class="novaResultPartner" src="assets/illustrations/lamps-20260928/kushuri.png" alt="くしゅり" draggable="false" hidden><div class="novaResultEnsemble" hidden></div><div class="novaResultStocks" hidden></div></div><div class="novaResultFallback" role="status"><strong>RESULT</strong><span></span><output></output><small class="novaResultTotal" hidden></small><small class="novaResultNext" hidden>次のBETでスーパーノヴァチャレンジ</small></div></div>';
   machine.append(root);card=root.firstElementChild;art=card.firstElementChild;num=art.querySelector('output');fallback=card.querySelector('.novaResultFallback');
   // Both background colors share the same unmodified character image.
-  for(const character of chars)for(const color of ['red','blue'])loadImage(character,color);
-  for(const character of initialChars)loadImage(character,'initial');
-  for(const hint of settingHints)loadImage(hint.character,hint.color);
+  if(!globalThis.NovaMedia?.compact)for(const character of chars)for(const color of ['red','blue'])loadImage(character,color);
+  if(!globalThis.NovaMedia?.compact)for(const character of initialChars)loadImage(character,'initial');
+  if(!globalThis.NovaMedia?.compact)for(const hint of settingHints)loadImage(hint.character,hint.color);
   const ensemble=art.querySelector('.novaResultEnsemble');
-  for(const character of ['kushuri','nito',...chars]){const img=document.createElement('img');img.src='assets/illustrations/'+characterImages[character];img.alt=names[character];img.draggable=false;ensemble.append(img);}
+  for(const character of ['kushuri','nito',...chars]){const img=document.createElement('img');img.loading=globalThis.NovaMedia?.compact?'lazy':'eager';img.src='assets/illustrations/'+characterImages[character];img.alt=names[character];img.draggable=false;ensemble.append(img);}
   const button=document.createElement('button');button.id='novaResultAdjust';button.textContent='リザルト調整';document.body.append(button);
   panel=document.createElement('dialog');panel.className='novaResultSettings';panel.innerHTML='<h3>リザルト配置</h3><label>確認画像 <select id="novaResultSelect"></select></label><div class="novaResultFields"></div><button type="button" id="novaResultReset">この画像を初期位置へ</button> <button type="button" id="novaResultClose">閉じる</button><p>変更はこのブラウザに画像別で自動保存します。画像は縦横比を維持します。</p>';document.body.append(panel);
   select=panel.querySelector('select');select.innerHTML=chars.flatMap(id=>['red','blue'].map(c=>`<option value="${id}-${c}">${names[id]}・${c==='red'?'赤':'青'}</option>`)).join('')+initialChars.map(id=>`<option value="${id}-initial">${names[id]}・初期pt</option>`).join('')+settingHints.map(h=>`<option value="${h.character}-${h.color}">${names[h.character]}・設定${h.minSetting}${h.minSetting===6?'確定':'以上'}</option>`).join('')+'<option value="all-gold">全キャラ・有利区間終了</option>';
@@ -152,7 +152,7 @@ globalThis.NovaResults=(()=>{
    apply();
    // Decode the originals before revealing the ensemble, including on a cold reload.
    const originals=Array.from((isSortie?roster:ensemble)?.querySelectorAll?.('img')||[]);
-   Promise.allSettled(originals.map(img=>img.decode())).then(()=>{if(request===imageRequest&&active===value)delete root.dataset.loading;});
+   Promise.allSettled(originals.map(img=>{img.loading='eager';return img.decode();})).then(()=>{if(request===imageRequest&&active===value)delete root.dataset.loading;});
    return;
   }
   const entry=loadImage(value.character,value.color);

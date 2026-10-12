@@ -1,0 +1,93 @@
+{
+  "encoding": "mobile WebP quality 92; lossless alpha; source files preserved",
+  "entries": [
+    {
+      "source": "assets/design/nova-cabinet-v1/cabinet-game.png",
+      "target": "assets/mobile-20261013/cabinet-game.webp",
+      "width": 1024,
+      "sourceSha256": "c1b5bad71d50a57b49e59032f2bd550be10dce4f5aacf5617367f4d5189c86ff",
+      "originalBytes": 2042308,
+      "bytes": 295644
+    },
+    {
+      "source": "assets/symbols/gang-v3/miss.png",
+      "target": "assets/mobile-20261013/miss.webp",
+      "width": 512,
+      "sourceSha256": "4d954a0caaa8ffa137a0dbed7babea79f803e8f92168b9139cf44030c73f37c7",
+      "originalBytes": 1691531,
+      "bytes": 30676
+    },
+    {
+      "source": "assets/symbols/gang-v3/replay.png",
+      "target": "assets/mobile-20261013/replay.webp",
+      "width": 512,
+      "sourceSha256": "4f913253a67a4d4efb9ad9b4d0fb80c794f753c34da0d3d09cf240f0180ba642",
+      "originalBytes": 1954943,
+      "bytes": 60668
+    },
+    {
+      "source": "assets/symbols/gang-v3/bell.png",
+      "target": "assets/mobile-20261013/bell.webp",
+      "width": 512,
+      "sourceSha256": "defdc307726daf17f8adc88e4577bd7bb8c40a6bf100560daf6f3332181e31f2",
+      "originalBytes": 1598646,
+      "bytes": 56366
+    },
+    {
+      "source": "assets/symbols/gang-v3/suika.png",
+      "target": "assets/mobile-20261013/suika.webp",
+      "width": 512,
+      "sourceSha256": "1773e5f3608978541956c76e5d53ec304236e38058861548e8263022803fa270",
+      "originalBytes": 1915955,
+      "bytes": 63302
+    },
+    {
+      "source": "assets/symbols/gang-v3/bar.png",
+      "target": "assets/mobile-20261013/bar.webp",
+      "width": 512,
+      "sourceSha256": "a81fab1f1ae0bf0378f42e91fdb92e8c3c8c246558865608b7a6060d52980951",
+      "originalBytes": 2252893,
+      "bytes": 44040
+    },
+    {
+      "source": "assets/ui/icon_slump_graph_blue.png",
+      "target": "assets/mobile-20261013/icon_slump_graph_blue.webp",
+      "width": 192,
+      "sourceSha256": "39ad3fe94375b3a475af57fb9ca6f4efb7472df4c8fbec8514b945380eea270b",
+      "originalBytes": 1743084,
+      "bytes": 15828
+    },
+    {
+      "source": "assets/ui/icon_odds_percent_blue.png",
+      "target": "assets/mobile-20261013/icon_odds_percent_blue.webp",
+      "width": 192,
+      "sourceSha256": "cd3749e6010b54435bb68ba10d1ea0dec15c192a4b65a3009ac93bd4b240a4fb",
+      "originalBytes": 2464565,
+      "bytes": 18572
+    },
+    {
+      "source": "assets/ui/icon_sound_red.png",
+      "target": "assets/mobile-20261013/icon_sound_red.webp",
+      "width": 192,
+      "sourceSha256": "cd702cd11a8564b3b808834b1ce9e7403a7ff185a18697a046ccc77e20992061",
+      "originalBytes": 1788978,
+      "bytes": 17450
+    },
+    {
+      "source": "assets/ui/super-speed-gold-20261006.png",
+      "target": "assets/mobile-20261013/super-speed-gold-20261006.webp",
+      "width": 192,
+      "sourceSha256": "b90375cac63b9edc09452e94fa3000b6e5773748afb5af54d39a3f9410536fdd",
+      "originalBytes": 2217662,
+      "bytes": 18602
+    },
+    {
+      "source": "assets/buttons/btn_auto_gold_transparent.png",
+      "target": "assets/mobile-20261013/btn_auto_gold_transparent.webp",
+      "width": 192,
+      "sourceSha256": "4155f9039db18d610853f72e52fe6f51c72f1262e6dc791a7031cd54776449b2",
+      "originalBytes": 2075452,
+      "bytes": 17852
+    }
+  ]
+}

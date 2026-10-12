@@ -4,7 +4,7 @@ globalThis.NovaRushConfirm=(()=>{
  const clock=globalThis.NovaClock||globalThis;
  const sources={bgm:'assets/media/nova/rush-confirm-bgm.mp3',se:'assets/media/nova/rush-confirm-se.wav'};
  const preload={};
- for(const [key,src]of Object.entries(sources)){const audio=new Audio(src);audio.preload='auto';audio.loop=false;audio.load();preload[key]=audio;}
+ for(const [key,src]of Object.entries(sources)){const audio=new Audio(src);audio.preload=globalThis.NovaMedia?.compact?'none':'auto';audio.loop=false;if(!globalThis.NovaMedia?.compact)audio.load();preload[key]=audio;}
  let playing=null,timer=null,token=0,volumes={bgm:0,se:0};
  function updateVolumes(bgm,se){
   volumes={bgm:Math.max(0,Math.min(1,Number(bgm)||0)),se:Math.max(0,Math.min(1,Number(se)||0))};

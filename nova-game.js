@@ -142,16 +142,16 @@
   const SUICA_SYMBOL = "🍋";
   const NEBULA_SYMBOL = 'NEBULA';
   const NEBULA_IMAGE_SRC = 'assets/symbols/nebula-original.png';
-  const SUICA_IMAGE_SRC = "assets/symbols/gang-v3/suika.png";
-  const CHERRY_IMAGE_SRC = "assets/symbols/gang-v3/replay.png";
-  const BELL_IMAGE_SRC = "assets/symbols/gang-v3/bell.png";
+  const SUICA_IMAGE_SRC = (globalThis.NovaMedia?.imageSource("assets/symbols/gang-v3/suika.png")||"assets/symbols/gang-v3/suika.png");
+  const CHERRY_IMAGE_SRC = (globalThis.NovaMedia?.imageSource("assets/symbols/gang-v3/replay.png")||"assets/symbols/gang-v3/replay.png");
+  const BELL_IMAGE_SRC = (globalThis.NovaMedia?.imageSource("assets/symbols/gang-v3/bell.png")||"assets/symbols/gang-v3/bell.png");
   const SEVEN_IMAGE_SRC = "assets/symbols/seven-nebula-original.png";
-  const MISS_IMAGE_SRC = "assets/symbols/gang-v3/miss.png";
-  const GRAPE_IMAGE_SRC = "assets/symbols/gang-v3/bell.png";
-  const BAR_IMAGE_SRC = "assets/symbols/gang-v3/bar.png";
+  const MISS_IMAGE_SRC = (globalThis.NovaMedia?.imageSource("assets/symbols/gang-v3/miss.png")||"assets/symbols/gang-v3/miss.png");
+  const GRAPE_IMAGE_SRC = (globalThis.NovaMedia?.imageSource("assets/symbols/gang-v3/bell.png")||"assets/symbols/gang-v3/bell.png");
+  const BAR_IMAGE_SRC = (globalThis.NovaMedia?.imageSource("assets/symbols/gang-v3/bar.png")||"assets/symbols/gang-v3/bar.png");
   const PIERROT_IMAGE_SRC = "assets/cabinet/edit_parts/piero.png";
-  const USER_FACE_SRC = "assets/symbols/gang-v3/miss.png";
-  const REPLAY_IMAGE_SRC = "assets/symbols/gang-v3/replay.png";
+  const USER_FACE_SRC = (globalThis.NovaMedia?.imageSource("assets/symbols/gang-v3/miss.png")||"assets/symbols/gang-v3/miss.png");
+  const REPLAY_IMAGE_SRC = (globalThis.NovaMedia?.imageSource("assets/symbols/gang-v3/replay.png")||"assets/symbols/gang-v3/replay.png");
   const SYMBOL_IMAGE_SRCS = Object.freeze([
     SUICA_IMAGE_SRC,
     NEBULA_IMAGE_SRC,
@@ -169,6 +169,7 @@
 
   function preloadSymbolImages(){
     SYMBOL_IMAGE_SRCS.forEach(src=>{
+      if(globalThis.NovaMedia?.compact&&src===NEBULA_IMAGE_SRC)return;
       if(!src || symbolImagePreloads.has(src)) return;
       const img = new Image();
       img.loading = "eager";
@@ -656,6 +657,7 @@
   const barBgm = $("barBgm");
   const battleBgm = $("battleBgm");
   const voiceSound = $("voiceSound");
+  if(globalThis.NovaMedia?.compact)for(const audio of [bgm,koatariSound,bigSound,payoutSound,barBgm,battleBgm,voiceSound])if(audio)audio.preload='none';
   const gekiatsuLayer = $("gekiatsuLayer");
   const gekiatsuVideo = $("gekiatsuVideo");
   globalThis.NovaAudioAssets?.adopt(gekiatsuVideo);
@@ -765,9 +767,9 @@
   for(const src of ['assets/media/jag/cz_third_success.wav','assets/media/jag/cz_third_failure.wav','assets/media/nova/cz_stop_12.wav'])preloadOneShotSound(src);
   for(const src of ['assets/media/nova/bell-navi.wav','assets/media/nova/direct-award.wav','assets/media/nova/weak-nova.wav','assets/media/nova/aim/nebula-win.wav','assets/media/nova/aim/seven-win.wav','assets/media/nova/aim/cue-blue.wav','assets/media/nova/aim/cue-red.wav','assets/media/nova/aim/cue-rainbow.wav','assets/media/nova/shutter.wav','assets/media/nova/shutter-close.wav','assets/media/nova/ladder-final-award.wav','assets/media/nova/ladder-final-award-under1000.wav'])preloadOneShotSound(src);
   const initialDuoBgmPreload = new Audio(INITIAL_DUO_ZONE_BGM_SRC);
-  initialDuoBgmPreload.preload='auto';initialDuoBgmPreload.load();
+  initialDuoBgmPreload.preload=globalThis.NovaMedia?.compact?'none':'auto';if(!globalThis.NovaMedia?.compact)initialDuoBgmPreload.load();
   const sortieBgmPreload = new Audio(SORTIE_ZONE_BGM_SRC);
-  sortieBgmPreload.preload='auto';sortieBgmPreload.load();
+  sortieBgmPreload.preload=globalThis.NovaMedia?.compact?'none':'auto';if(!globalThis.NovaMedia?.compact)sortieBgmPreload.load();
   preloadOneShotSound('assets/media/nova/result-eyecatch.wav');
   preloadOneShotSound('assets/media/nova/ouma-fail.wav');
   preloadOneShotSound('assets/media/nova/super-nova-stop.wav');
@@ -9117,9 +9119,9 @@
   // Cached effects and voices share setup; BGM players have their own lifecycle.
   function preloadOneShotSound(src){
     const audio=new Audio(src);
-    audio.preload='auto';audio.loop=false;
+    audio.preload=globalThis.NovaMedia?.compact?'none':'auto';audio.loop=false;
     oneShotSoundCache.set(src,audio);
-    audio.load();
+    if(!globalThis.NovaMedia?.compact)audio.load();
     return audio;
   }
 

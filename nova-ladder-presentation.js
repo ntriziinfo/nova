@@ -13,7 +13,7 @@ globalThis.NovaLadder=(()=>{
   root=document.createElement('div');root.className='novaLadderPresentation';root.hidden=true;
   root.innerHTML='<div class="novaLadderTable"></div><img class="novaLadderAmount" alt=""><output class="novaLadderAmount novaLadderNumber" hidden></output><img class="novaLadderCharacter" alt=""><div class="novaLadderDoor"><div class="novaLadderShutterFace"><img class="novaLadderIntegrated" alt=""><output class="novaLadderShutterNumber" hidden></output></div></div>';
   host.append(root);amount=root.querySelector('img.novaLadderAmount');amountText=root.querySelector('output.novaLadderAmount');upper=root.querySelector('.novaLadderDoor');
-  for(const n of values){const img=new Image();img.src=`assets/ladder/${n}.png`;images.set(String(n),img);const shutter=new Image();shutter.src=`assets/ladder/shutter-${n}.png`;images.set(`shutter-${n}`,shutter);}
+  if(!globalThis.NovaMedia?.compact)for(const n of values){const img=new Image();img.src=`assets/ladder/${n}.png`;images.set(String(n),img);const shutter=new Image();shutter.src=`assets/ladder/shutter-${n}.png`;images.set(`shutter-${n}`,shutter);}
   return true;
  }
  // Follow the lamp bay above the reels, including cabinet scaling and layout edits.
@@ -64,6 +64,8 @@ globalThis.NovaLadder=(()=>{
   if(next===key){layout();return;}
   const promote=!!key&&Number(flow.ladderIndex)>Number(root.dataset.index||0);
   key=next;layout();root.hidden=false;host.dataset.ladderActive='true';
+  // Warm only the next shutter while this ladder is actually being shown.
+  if(globalThis.NovaMedia?.compact){const target=flow.ladder[Math.min(flow.ladder.length-1,(flow.ladderIndex||0)+1)],id=`shutter-${target}`;if(values.includes(Number(target))&&!images.has(id)){const img=new Image();img.src=`assets/ladder/${id}.png`;images.set(id,img);}}
   root.dataset.index=flow.ladderIndex||0;
   const table=root.querySelector('.novaLadderTable');table.replaceChildren();
   flow.ladder.forEach((pt,i)=>{const item=document.createElement('div');item.className='novaLadderTableItem';item.dataset.current=String(i===(flow.ladderIndex||0));if(values.includes(Number(pt))){const img=new Image();img.src=`assets/ladder/${pt}.png`;img.alt=`${i+1}段階 ${pt}pt`;item.append(img);}else{item.classList.add('novaLadderTableNumber');item.textContent=pt+'pt';}table.append(item);});
