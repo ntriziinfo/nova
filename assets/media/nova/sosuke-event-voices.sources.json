@@ -1,0 +1,26 @@
+{
+  "sources": [
+    {
+      "copy": "assets/media/nova/sosuke-upper-at-entry.wav",
+      "sourceName": "スーパーノヴァラッシュ突入.wav",
+      "sha256": "7fecc5ea7dc39ddad590fe350d8f571f8cd2fee8f3c37da6f4527af6f44b0421"
+    },
+    {
+      "copy": "assets/media/nova/sosuke-comeback-entry.wav",
+      "sourceName": "引き戻しチャレンジ.wav",
+      "sha256": "33bb29172638a76d70f8f8e333fc53a20016f0fa25f8064e7bfd1c38c235f591"
+    },
+    {
+      "copy": "assets/media/nova/sosuke-bonus-stock.wav",
+      "sourceName": "上乗せ.wav",
+      "sha256": "0ea91c0f34930c3042d595614ddb4b6a65c4bcc7d3f1def18ee8a4247c7f506c"
+    },
+    {
+      "copy": "assets/media/nova/sosuke-upper-challenge-entry.wav",
+      "sourceName": "スーパーノヴァチャレンジ.wav",
+      "sha256": "f67e3c5821048eedd4f32e894a92b2128871310b61fb0fdcc291362760e4153c"
+    }
+  ],
+  "category": "voice",
+  "originalsUnmodified": true
+}

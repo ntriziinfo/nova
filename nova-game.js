@@ -744,6 +744,7 @@
   const NEBULA_ZONE_VOICE_SRCS={giru:AIM_VOICE_SRCS.nebula[0],toto:AIM_VOICE_SRCS.nebula[1],ouma:AIM_VOICE_SRCS.nebula[2],sora:AIM_VOICE_SRCS.nebula[3]};
   const ZONE_START_VOICE_SRCS={sora:'assets/media/nova/zone-start-sora.wav',ura_sora:'assets/media/nova/zone-start-ura-sora.wav',giru:'assets/media/nova/zone-start-giru.wav',ura_giru:'assets/media/nova/zone-start-ura-giru.wav',toto:'assets/media/nova/zone-start-toto.wav',ouma:'assets/media/nova/zone-start-ouma.wav',ura_ouma:'assets/media/nova/zone-start-ura-ouma.wav'};
   const ZONE_CONTINUE_VOICE_SRCS={sora:'assets/media/nova/continue-sora.wav',toto:'assets/media/nova/continue-toto.wav'};
+  const MODE_EVENT_VOICE_SRCS={upperChallenge:'assets/media/nova/sosuke-upper-challenge-entry.wav',comeback:'assets/media/nova/sosuke-comeback-entry.wav',upperAt:'assets/media/nova/sosuke-upper-at-entry.wav',bonusStock:'assets/media/nova/sosuke-bonus-stock.wav'};
   const OUMA_NOVA_VOICE_SRCS={aim:'assets/media/nova/aim-nova-ouma.wav',wins:['assets/media/nova/nova-win-1-ouma.wav','assets/media/nova/nova-win-2-ouma.wav','assets/media/nova/nova-win-3-ouma.wav']};
   const GIRU_LADDER_VOICE_SRCS={bet:['assets/media/nova/giru-ladder-bet-moment.wav','assets/media/nova/giru-ladder-bet-challenge.wav','assets/media/nova/giru-ladder-bet-good-flow.wav'],result:['assets/media/nova/giru-ladder-result-under500.wav','assets/media/nova/giru-ladder-result-500.wav','assets/media/nova/giru-ladder-result-1000.wav']};
   const RARE_CUE_VOICE_SRCS={
@@ -756,6 +757,7 @@
     ...Object.values(BELL_NAVI_VOICE_SRCS).flat(),...Object.values(BELL_NAVI_COMPLETE_VOICE_SRCS),
     ...Object.values(AIM_VOICE_SRCS).flat(),...Object.values(ZONE_START_VOICE_SRCS),
     ...Object.values(ZONE_CONTINUE_VOICE_SRCS),'assets/media/nova/bonus_confirm.wav',
+    ...Object.values(MODE_EVENT_VOICE_SRCS),
     'assets/media/nova/cz-entry-voice.wav',
     OUMA_NOVA_VOICE_SRCS.aim,...OUMA_NOVA_VOICE_SRCS.wins,
     ...Object.values(GIRU_LADDER_VOICE_SRCS).flat(),
@@ -7288,6 +7290,7 @@
     playCzIntroBetVoice(resolved);
     playRareNaviSound(currentSpin);
     playRareCueVoice(currentSpin);
+    playModeEntryBetVoice(resolved);
     playGiruLadderBetVoice(currentSpin);
     NovaSortie.begin(currentSpin);
     renderRemainingCounters();
@@ -7702,6 +7705,21 @@
     holdCzIntroVoice(playOneShotSound('assets/media/nova/cz-entry-voice.wav',voiceOutputVolume(),{allowDuringPremiumConfirm:true}));
   }
 
+  function playModeEntryBetVoice(resolved){
+    if(debugFastSpinActive||speedToBonusActive||!resolved||resolved.modeEntryVoicePlayed)return;
+    const comeback=resolved.flowBefore?.phase==='art'&&resolved.flowBefore.comebackLeft===NovaArt.comebackRules.games&&['continue','success','failure'].includes(resolved.comebackEvent);
+    const src=resolved.researchChallenge?.started?MODE_EVENT_VOICE_SRCS.upperChallenge:comeback?MODE_EVENT_VOICE_SRCS.comeback:'';
+    if(!src)return;
+    resolved.modeEntryVoicePlayed=true;
+    playOneShotSound(src,voiceOutputVolume(),{allowDuringPremiumConfirm:true});
+  }
+
+  function playUpperAtEntryVoice(resolved){
+    if(debugFastSpinActive||speedToBonusActive||!resolved?.researchChallenge?.finished||!resolved.researchChallenge.won||resolved.upperAtEntryVoicePlayed)return;
+    resolved.upperAtEntryVoicePlayed=true;
+    playOneShotSound(MODE_EVENT_VOICE_SRCS.upperAt,voiceOutputVolume(),{allowDuringPremiumConfirm:true});
+  }
+
   function isCzIntroVoiceHolding(){
     return !!czIntroVoiceHold&&!superSpeedActive;
   }
@@ -8025,6 +8043,7 @@
     try{
     NovaBellNavi.clear();
     if(resolved.researchChallenge?.finished)showOverlay(resolved.researchChallenge.won?'上位AT確定！':'通常ATへ');
+    playUpperAtEntryVoice(resolved);
     if(resolved.sortieWon)showOverlay('特化ゾーン確定！ / 出陣チャレンジ');
     if(spinWaitTimer){
       clearTimeout(spinWaitTimer);
@@ -8918,7 +8937,7 @@
       return;
     }
     const name=symbol==='nebula'?(resolved.aTypeBonusGame?'bonus-nebula':'nebula'):'seven';
-    const src='assets/media/nova/aim/'+name+'-win.wav';
+    const src=symbol==='nebula'&&resolved.aTypeBonusGame&&resolved.artSetWon?MODE_EVENT_VOICE_SRCS.bonusStock:'assets/media/nova/aim/'+name+'-win.wav';
     const audio=oneShotSoundCache.get(src).cloneNode(true);
     audio.aimSoundSrc=src;audio.loop=false;audio.volume=aimWinOutputVolume(audio);aimWinAudios.add(audio);
     prepareCharacterVoiceAudio(audio,src);

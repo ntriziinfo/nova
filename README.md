@@ -54,6 +54,8 @@ node --test tests/*.test.mjs
 
 獲得カウンター・ATリザルトは初当たりからの払い出しから実BETを引いた手取りを表示する。[集計基準と検証記録](docs/result-net-20261012.md)を参照。
 
+宗介の上位チャレンジ・引き戻し・上位AT突入・BIG追加ストックの音声は、[再生条件と音量の記録](docs/sosuke-event-voices-20261012.md)を参照。
+
 ## 音量の統一
 
 提供原本・既存の素材は変更せず、`scripts/normalize-audio.mjs`でゲーム配信用コピーを作る。

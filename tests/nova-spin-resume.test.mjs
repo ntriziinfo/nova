@@ -124,6 +124,7 @@ test('UI resume does not BET or redraw and lands already-pressed reels in the or
 
 function settlementHarness(){
  const h=harness(),c=h.c;c.load();
+ c.playUpperAtEntryVoice=noop;
  for(const name of ['showOverlay','showCzLamp','playArtEndSound','pauseNormalBgm','playNormalBgm','stopAutoPlay','startRogiThirdStopHold','stopGekiatsuEffect','updatePremiumBigReelMovie','hideDevilRushEntryEffect','clearReelVideos','scheduleNextSpeedToBonus','scheduleNextAuto','hideBattleIntro','ensureBarBgmContinuing'])c[name]=noop;
  c.lineName=()=>'';c.shouldHoldRogiThirdStopEffect=()=>false;c.isAtFirstHitForAuto=()=>false;c.novaPatternFromGrid=()=>null;c.NOVA_PATTERN_NAMES={};c.scheduleOumaZeroChain=()=>false;c.isGoraiZoneActive=()=>false;c.isATypeBonusComplete=()=>false;
  c.applyNormalResult=(_result,resolved)=>{c.stats.totalPaid+=resolved.reward;c.stats.normalSpins++;c.normalState.flow=json(resolved.flowAfter);c.persistState();};

@@ -1,0 +1,152 @@
+{
+  "status": "pass",
+  "muted": true,
+  "reports": [
+    {
+      "mobile": false,
+      "scenario": "upper",
+      "events": [
+        {
+          "src": "assets/media/nova/sosuke-upper-challenge-entry.wav",
+          "actual": "assets/media/normalized-20261012/nova/sosuke-upper-challenge-entry.wav",
+          "stage": "challenge 1 BET",
+          "loop": false,
+          "volume": 0.35,
+          "started": true,
+          "duration": 7.381333
+        },
+        {
+          "src": "assets/media/nova/sosuke-upper-at-entry.wav",
+          "actual": "assets/media/normalized-20261012/nova/sosuke-upper-at-entry.wav",
+          "stage": "challenge 2 stop0",
+          "loop": false,
+          "volume": 0.35,
+          "started": true,
+          "duration": 4.821333
+        }
+      ]
+    },
+    {
+      "mobile": false,
+      "scenario": "comeback",
+      "events": [
+        {
+          "src": "assets/media/nova/sosuke-comeback-entry.wav",
+          "actual": "assets/media/normalized-20261012/nova/sosuke-comeback-entry.wav",
+          "stage": "comeback 1 BET",
+          "loop": false,
+          "volume": 0.35,
+          "started": true,
+          "duration": 4.522667
+        }
+      ]
+    },
+    {
+      "mobile": false,
+      "scenario": "bonus",
+      "events": [
+        {
+          "src": "assets/media/nova/rush-confirm-bgm.mp3",
+          "actual": "assets/media/normalized-20261012/nova/rush-confirm-bgm.wav",
+          "stage": "nebula 1 stop0",
+          "loop": false,
+          "volume": 0.35,
+          "started": true,
+          "duration": 9.75
+        },
+        {
+          "src": "assets/media/nova/sosuke-bonus-stock.wav",
+          "actual": "assets/media/normalized-20261012/nova/sosuke-bonus-stock.wav",
+          "stage": "nebula 2 stop0",
+          "loop": false,
+          "volume": 0.35,
+          "started": true,
+          "duration": 2.389333
+        },
+        {
+          "src": "assets/media/nova/sosuke-bonus-stock.wav",
+          "actual": "assets/media/normalized-20261012/nova/sosuke-bonus-stock.wav",
+          "stage": "nebula 3 stop0",
+          "loop": false,
+          "volume": 0.35,
+          "started": true,
+          "duration": 2.389333
+        }
+      ]
+    },
+    {
+      "mobile": true,
+      "scenario": "upper",
+      "events": [
+        {
+          "src": "assets/media/nova/sosuke-upper-challenge-entry.wav",
+          "actual": "assets/media/normalized-20261012/nova/sosuke-upper-challenge-entry.wav",
+          "stage": "challenge 1 BET",
+          "loop": false,
+          "volume": 0.35,
+          "started": true,
+          "duration": 7.381333
+        },
+        {
+          "src": "assets/media/nova/sosuke-upper-at-entry.wav",
+          "actual": "assets/media/normalized-20261012/nova/sosuke-upper-at-entry.wav",
+          "stage": "challenge 2 stop0",
+          "loop": false,
+          "volume": 0.35,
+          "started": true,
+          "duration": 4.821333
+        }
+      ]
+    },
+    {
+      "mobile": true,
+      "scenario": "comeback",
+      "events": [
+        {
+          "src": "assets/media/nova/sosuke-comeback-entry.wav",
+          "actual": "assets/media/normalized-20261012/nova/sosuke-comeback-entry.wav",
+          "stage": "comeback 1 BET",
+          "loop": false,
+          "volume": 0.35,
+          "started": true,
+          "duration": 4.522667
+        }
+      ]
+    },
+    {
+      "mobile": true,
+      "scenario": "bonus",
+      "events": [
+        {
+          "src": "assets/media/nova/rush-confirm-bgm.mp3",
+          "actual": "assets/media/normalized-20261012/nova/rush-confirm-bgm.wav",
+          "stage": "nebula 1 stop0",
+          "loop": false,
+          "volume": 0.35,
+          "started": true,
+          "duration": 9.75
+        },
+        {
+          "src": "assets/media/nova/sosuke-bonus-stock.wav",
+          "actual": "assets/media/normalized-20261012/nova/sosuke-bonus-stock.wav",
+          "stage": "nebula 2 stop0",
+          "loop": false,
+          "volume": 0.35,
+          "started": true,
+          "duration": 2.389333
+        },
+        {
+          "src": "assets/media/nova/sosuke-bonus-stock.wav",
+          "actual": "assets/media/normalized-20261012/nova/sosuke-bonus-stock.wav",
+          "stage": "nebula 3 stop0",
+          "loop": false,
+          "volume": 0.35,
+          "started": true,
+          "duration": 2.389333
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "failures": []
+}

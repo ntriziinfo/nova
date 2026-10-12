@@ -3163,6 +3163,98 @@
       }
     },
     {
+      "src": "assets/media/nova/sosuke-bonus-stock.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/sosuke-bonus-stock.wav",
+      "sourceSha256": "0ea91c0f34930c3042d595614ddb4b6a65c4bcc7d3f1def18ee8a4247c7f506c",
+      "outputSha256": "d8cc10d452ef61ba5d410763009cbcc9950843f5b7a69b162df80baf58ab9d13",
+      "rate": 48000,
+      "channels": 1,
+      "duration": 2.389333,
+      "outputDuration": 2.389333,
+      "gainDb": 9.44,
+      "before": {
+        "lufs": -23.44,
+        "peakDbtp": -13.67,
+        "rangeLu": 1.5
+      },
+      "after": {
+        "lufs": -14.01,
+        "peakDbtp": -4.23,
+        "rangeLu": 1.5
+      }
+    },
+    {
+      "src": "assets/media/nova/sosuke-comeback-entry.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/sosuke-comeback-entry.wav",
+      "sourceSha256": "33bb29172638a76d70f8f8e333fc53a20016f0fa25f8064e7bfd1c38c235f591",
+      "outputSha256": "6a1bd3284706627077cae244ee42e1245d0feafd6f1cf51cbdd431a07acbc0d8",
+      "rate": 48000,
+      "channels": 1,
+      "duration": 4.522667,
+      "outputDuration": 4.522667,
+      "gainDb": 10.55,
+      "before": {
+        "lufs": -24.55,
+        "peakDbtp": -13.56,
+        "rangeLu": 3
+      },
+      "after": {
+        "lufs": -14.01,
+        "peakDbtp": -3.01,
+        "rangeLu": 3
+      }
+    },
+    {
+      "src": "assets/media/nova/sosuke-upper-at-entry.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/sosuke-upper-at-entry.wav",
+      "sourceSha256": "7fecc5ea7dc39ddad590fe350d8f571f8cd2fee8f3c37da6f4527af6f44b0421",
+      "outputSha256": "6f7ae95573179800a7058abd3d14e2ba0c843a23aa2629770e9294c3ce28fa26",
+      "rate": 48000,
+      "channels": 1,
+      "duration": 4.821333,
+      "outputDuration": 4.821333,
+      "gainDb": 9.42,
+      "before": {
+        "lufs": -23.42,
+        "peakDbtp": -13.23,
+        "rangeLu": 7.1
+      },
+      "after": {
+        "lufs": -13.98,
+        "peakDbtp": -3.81,
+        "rangeLu": 7
+      }
+    },
+    {
+      "src": "assets/media/nova/sosuke-upper-challenge-entry.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/sosuke-upper-challenge-entry.wav",
+      "sourceSha256": "f67e3c5821048eedd4f32e894a92b2128871310b61fb0fdcc291362760e4153c",
+      "outputSha256": "9b098f4458533891bca8b0de26789885e610d538f66e29bc752edabae666e446",
+      "rate": 48000,
+      "channels": 1,
+      "duration": 7.381333,
+      "outputDuration": 7.381333,
+      "gainDb": 7.7,
+      "before": {
+        "lufs": -21.7,
+        "peakDbtp": -14.02,
+        "rangeLu": 7
+      },
+      "after": {
+        "lufs": -14,
+        "peakDbtp": -6.32,
+        "rangeLu": 7
+      }
+    },
+    {
       "src": "assets/media/nova/spin_start.wav",
       "category": "sfx",
       "targetLufs": -16,

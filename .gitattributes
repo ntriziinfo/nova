@@ -38,3 +38,7 @@ assets/media/nova/upper-at-bgm.mp3 -filter -diff -merge -text
 assets/media/nova/upper-at-bgm.source.json -filter -diff -merge text
 # Mastered delivery copies; original recordings and the release archive stay intact.
 assets/media/normalized-20261012/** -filter -diff -merge -text
+# Supplied Sosuke event voices; do not rebuild the existing LFS archive.
+assets/media/nova/sosuke-*-entry.wav -filter -diff -merge -text
+assets/media/nova/sosuke-bonus-stock.wav -filter -diff -merge -text
+assets/media/nova/sosuke-event-voices.sources.json -filter -diff -merge text
