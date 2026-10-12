@@ -1,0 +1,35 @@
+{
+  "status": "pass",
+  "muted": true,
+  "reports": [
+    {
+      "profile": "before",
+      "paid": 199,
+      "fee": 1054,
+      "result": "99",
+      "resultReload": true,
+      "midSpinReload": true,
+      "normalReset": true
+    },
+    {
+      "profile": "desktop",
+      "paid": 199,
+      "fee": 1054,
+      "result": "45",
+      "resultReload": true,
+      "midSpinReload": true,
+      "normalReset": true
+    },
+    {
+      "profile": "mobile",
+      "paid": 199,
+      "fee": 1054,
+      "result": "45",
+      "resultReload": true,
+      "midSpinReload": true,
+      "normalReset": true
+    }
+  ],
+  "errors": [],
+  "failures": []
+}

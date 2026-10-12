@@ -50,6 +50,10 @@ node --test tests/*.test.mjs
 ソースを検査するテスト・音声整備ツールでは`readGameSource()`（`scripts/game-source.mjs`）を使う。
 分離したCSS・JSを元の位置に展開する開発用ヘルパーで、ブラウザでは使わない。
 
+## 獲得ptの表示
+
+獲得カウンター・ATリザルトは初当たりからの払い出しから実BETを引いた手取りを表示する。[集計基準と検証記録](docs/result-net-20261012.md)を参照。
+
 ## 音量の統一
 
 提供原本・既存の素材は変更せず、`scripts/normalize-audio.mjs`でゲーム配信用コピーを作る。

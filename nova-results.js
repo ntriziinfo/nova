@@ -114,7 +114,8 @@ globalThis.NovaResults=(()=>{
   root.dataset.duo=String(value.character==='kushuri_nito');
   const ensemble=art.querySelector('.novaResultEnsemble');if(ensemble)ensemble.hidden=!all;
   const partner=art.querySelector('.novaResultPartner');if(partner)partner.hidden=value.character!=='kushuri_nito';
-  const label=isSortie?'出陣チャレンジ':all?'有利区間終了 / 累計差枚':settingHints.some(h=>h.character===value.character)?'AT総獲得':`${names[value.character]} ${value.color==='initial'?'AT初期pt':value.kind==='at'?'AT総獲得':value.totalPt!=null?'ゾーン / 今回':'上乗せ'}`;
+  const atLabel=value.accounting==='net'?'AT総獲得（手取り）':'AT総獲得';
+  const label=isSortie?'出陣チャレンジ':all?'有利区間終了 / 累計差枚':settingHints.some(h=>h.character===value.character)?atLabel:`${names[value.character]} ${value.color==='initial'?'AT初期pt':value.kind==='at'?atLabel:value.totalPt!=null?'ゾーン / 今回':'上乗せ'}`;
   const next=fallback.querySelector('.novaResultNext');if(next){next.hidden=!all;next.textContent=isSortie?'次のBETで特化ゾーン準備':'次のBETでスーパーノヴァチャレンジ';}
   const total=fallback.querySelector('.novaResultTotal');if(total){total.hidden=value.totalPt==null;total.textContent=value.totalPt==null?'':'連続特化 合計 '+value.totalPt+'pt';}
   num.textContent=String(isSortie?value.count:value.pt);num.setAttribute('aria-label',awardText(value));

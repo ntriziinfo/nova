@@ -2961,6 +2961,9 @@
 
   function chargeSpinCost(){
     clearCzReelBlackout();
+    if(session.active)jagChainBonusHandoff=false;
+    // Capture both ledgers before BET, also when FAST does not render every game.
+    jagChainCount=chainCountStep(jagChainCount,!!(session.active||jagChainBonusHandoff||normalState.bonusPending||normalState.flow?.phase==='art'),Number(stats.totalPaid)||0,Number(stats.totalFee)||0).state;
     if(!session.active && normalState.flow?.phase==='art' && normalState.flow.zero)return;
     // Only a pre-update save can still own a free-BET entitlement.
     if(A_TYPE_MODE && normalState.replayFree){normalState.replayFree=false;return;}
@@ -4482,7 +4485,6 @@
       normalState.flow = NovaFlow.afterBonus(normalState.flow,{...settings.novaArt,setting:settings.setting},wonArtSets);
       normalState.internal=NovaNormal.bonusEnd(normalState.internal,endedBonusKind,normalState.flow,settings.novaNormal);
       resetNormalCountersAfterArt(beforeBonusResume,normalState.flow);
-      if(normalState.flow.phase==='art'&&!Number.isFinite(normalState.resultAtStartPaid))normalState.resultAtStartPaid=Number(stats.totalPaid)||0;
       if(normalState.flow.phase==='art' && wonZones.length){
         normalState.flow.queuedZones.push(...wonZones);
         if(!normalState.flow.zone&&!normalState.flow.initialStage){const z=normalState.flow.queuedZones.shift();normalState.flow=NovaArt.startZone(normalState.flow,z,{...settings.novaArt,setting:settings.setting,allowUra:true});}
@@ -5078,8 +5080,9 @@
       }
       if(completedLadderPresentation){delete normalState.ladderAwardPresentation;displayNovaResult(completedLadderPresentation.card);}
       if(resolved.flowBefore?.phase==='art'&&normalState.flow.phase==='normal'&&!resolved.bonusHit&&!resolved.aTypeBonusReady){
-        const base=Number.isFinite(normalState.resultAtStartPaid)?normalState.resultAtStartPaid:(Number(stats.totalPaid)||0)-normalReward;
-        displayNovaResult({kind:'at',...NovaResults.pick('at','',settings.setting),pt:String(Math.max(0,(Number(stats.totalPaid)||0)-base))});
+        const acquired=chainCountStep(jagChainCount,true,Number(stats.totalPaid)||0,Number(stats.totalFee)||0).count;
+        displayNovaResult({kind:'at',...NovaResults.pick('at','',settings.setting),pt:String(acquired),accounting:'net'});
+        jagChainCount=null;
         delete normalState.resultAtStartPaid;
       }
       resetNormalCountersAfterArt(resolved.flowBefore,normalState.flow);
@@ -5487,8 +5490,9 @@
 
   function chainCountStep(previous,continuing,paid,fee){
     if(!continuing)return {state:null,count:0};
-    const state=previous && paid>=previous.paid && fee>=previous.fee ? previous : {paid,fee,payoutVersion:1};
-    return {state,count:Math.max(0,Math.floor(paid-state.paid))};
+    const state=previous && Number.isFinite(previous.paid) && Number.isFinite(previous.fee) && paid>=previous.paid && fee>=previous.fee ? previous : {paid,fee,payoutVersion:1};
+    // Saved v1 baselines already include both ledgers; no history or estimate is needed.
+    return {state,count:Math.max(0,Math.floor((paid-state.paid)-(fee-state.fee)))};
   }
 
   function renderRemainingCounters(){
@@ -5637,12 +5641,12 @@
     if(active)jagChainBonusHandoff=false;
     const chain=chainCountStep(jagChainCount,!!(active || jagChainBonusHandoff || normalState.bonusPending || normalState.flow?.phase==='art'),Number(stats.totalPaid)||0,Number(stats.totalFee)||0);
     jagChainCount=chain.state;
-    const displayCount=chain.count;
+    const displayCount=normalState.resultCard?.kind==='at'?Number(normalState.resultCard.pt)||0:chain.count;
     setText("jagCreditMeter", formatCreditDifference(displayCredit));
     const countText=String(displayCount).padStart(3,'0');
     setText("jagCountMeter",countText);
     $("jagCountMeter").style.setProperty('font-size',`min(60cqh, ${63/Math.max(3,countText.length)}cqw)`,'important');
-    $("jagCountMeter").setAttribute('aria-label',`初当たりからの総獲得 ${displayCount}pt`);
+    $("jagCountMeter").setAttribute('aria-label',`初当たりからの手取り獲得 ${displayCount}pt`);
     setText("jagGamePayoutMeter", formatMeterDigits(jagLastGamePayout, 3, 999));
     const atCountText = stats.totalSessions || 0;
     const stEmblem = $("wdStEmblem");
@@ -7020,7 +7024,6 @@
     if(NovaSortie.busy)return;
     if(NovaLadder.busy||NovaAim.busy||NovaDirectAward.busy)return;
     if(NovaResults.editing)return;
-    if(normalState.flow?.phase==='art'&&!Number.isFinite(normalState.resultAtStartPaid))normalState.resultAtStartPaid=Number(stats.totalPaid)||0;
     if(!oumaPresentation&&!isSpinning&&!debugFastSpinActive&&['ouma','urapi'].includes(normalState.flow?.zone)&&normalState.flow.oumaPending){scheduleOumaZeroChain();return;}
     if(oumaPresentation){if(oumaPresentation.stage==='bet')resolveOumaChallenge();return;}
     if(debugFastSpinActive) return;

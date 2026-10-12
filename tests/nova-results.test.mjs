@@ -132,6 +132,16 @@ test('chain result renders current and total independently, and hides the total 
  assert.equal(fields.output.textContent,'500pt');assert.equal(fields.span.textContent,'空 ゾーン / 今回');assert.equal(fields['.novaResultTotal'].textContent,'連続特化 合計 800pt');assert.equal(fields['.novaResultTotal'].hidden,false);
  c.show({kind:'at',character:'sora',color:'red',pt:'1400'});assert.equal(fields['.novaResultTotal'].hidden,true);assert.equal(fields.output.textContent,'1400pt');
 });
+
+test('new net results label the accounting while saved older gross results keep their original label',()=>{
+ const {c,fields}=presenter();
+ for(const character of ['sora','boss','group']){
+  const card={kind:'at',character,color:'blue',pt:'150',accounting:'net'};
+  c.show(card);assert.match(fields.span.textContent,/AT総獲得（手取り）/);assert.equal(fields.output.textContent,'150pt');
+  c.hide();c.show(JSON.parse(JSON.stringify(card)));assert.equal(fields.output.textContent,'150pt');
+  c.show({...card,accounting:undefined});assert(!fields.span.textContent.includes('手取り'));
+ }
+});
 test('image switches hide previous art immediately and ignore stale image loads',async()=>{
  const {c,images,shown,flush}=presenter();
  c.show({character:'ouma',color:'blue',pt:'100'});images[0].onload();await flush();assert.equal(shown.length,1);
