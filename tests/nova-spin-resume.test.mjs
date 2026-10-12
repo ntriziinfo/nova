@@ -258,3 +258,9 @@ test('saved legacy net-completion is released below MY19k',()=>{
  const h=harness();h.c.load();h.c.completeTrialState={locked:true,reason:'net',completeProfit:10000};h.c.persistState();
  const again=harness(JSON.parse(h.storage.get('state')));assert(again.c.load());assert(!again.c.completeTrialState.locked);assert.equal(again.c.completeTrialState.reason,undefined);
 });
+
+test('reference audio mix migrates once to all50 without changing saved play or mute',()=>{
+ const h=harness();h.c.load();Object.assign(h.c.settings,{masterVolume:.25,bgmVolume:.34,sfxVolume:.5,voiceVolume:.64,payoutVolume:.5,audioMuted:true});h.c.stats.totalPaid=321;delete h.c.settings.audioCalibrationVersion;h.c.persistState();
+ const again=harness(JSON.parse(h.storage.get('state')));again.c.load();for(const key of ['masterVolume','bgmVolume','sfxVolume','voiceVolume','payoutVolume'])assert.equal(again.c.settings[key],.5);assert.equal(again.c.settings.audioMuted,true);assert.equal(again.c.stats.totalPaid,321);assert.equal(again.c.settings.audioCalibrationVersion,1);
+ again.c.settings.voiceVolume=.7;again.c.persistState();const third=harness(JSON.parse(again.storage.get('state')));third.c.load();assert.equal(third.c.settings.voiceVolume,.7);
+});

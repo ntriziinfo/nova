@@ -34,7 +34,7 @@ test('mastered one-shots use their category slider and ignore historical per-fil
  const {c}=setup();
  c.NovaAudioAssets={entry:src=>({category:src})};
  c.bgmOutputVolume=()=>.13;c.payoutOutputVolume=()=>.17;
- near(c.soundOutputVolume('voice',.99),.2);near(c.soundOutputVolume('sfx',.99),.45);
+ near(c.soundOutputVolume('voice',.99),.128);near(c.soundOutputVolume('sfx',.99),.225);
  near(c.soundOutputVolume('bgm',.99),.13);near(c.soundOutputVolume('payout',.99),.17);
  vm.runInContext(fn('audioSourceOutputScale'),c);
  near(c.audioSourceOutputScale('assets/media/nova/shutter.wav'),1);
@@ -46,18 +46,18 @@ test('mastered reverse-reel SE retains its requested +5 dB trim and follows SFX,
  const trim=html.split('\n').find(line=>line.includes("['"+src+"']:"));
  assert(trim,'Reverse SE needs an explicit, adjustable trim');
  vm.runInContext(fn('dbToGain')+'\nconst AUDIO_SOURCE_OUTPUT_SCALE=Object.freeze({'+trim+'});\n'+fn('audioSourceOutputScale')+fn('sfxOutputVolumeForSource'),c);
- near(c.sfxOutputVolumeForSource(1,src),.45*10**(5/20));
- near(c.sfxOutputVolumeForSource(1,src+'?v=new'),.45*10**(5/20));
- for(const other of ['assets/media/nova/shutter.wav','assets/media/nova/uuufa.wav','assets/media/nova/ouma-fail.wav'])near(c.sfxOutputVolumeForSource(1,other),.45);
- c.settings.masterVolume=.7;c.settings.sfxVolume=.5;near(c.sfxOutputVolumeForSource(1,src),.35*10**(5/20));
+ near(c.sfxOutputVolumeForSource(1,src),.225*10**(5/20));
+ near(c.sfxOutputVolumeForSource(1,src+'?v=new'),.225*10**(5/20));
+ for(const other of ['assets/media/nova/shutter.wav','assets/media/nova/uuufa.wav','assets/media/nova/ouma-fail.wav'])near(c.sfxOutputVolumeForSource(1,other),.225);
+ c.settings.masterVolume=.7;c.settings.sfxVolume=.5;near(c.sfxOutputVolumeForSource(1,src),.175*10**(5/20));
  c.settings.sfxVolume=0;assert.equal(c.sfxOutputVolumeForSource(1,src),0);
- c.settings.masterVolume=1;c.settings.sfxVolume=1;assert.equal(c.sfxOutputVolumeForSource(1,src),1);
+ c.settings.masterVolume=1;c.settings.sfxVolume=1;near(c.sfxOutputVolumeForSource(1,src),.5*10**(5/20));
  c.settings.audioMuted=true;assert.equal(c.sfxOutputVolumeForSource(1,src),0);
  c.oumaReverseAudio={volume:1,currentTime:2.5};c.oumaIntroAudio={volume:1,currentTime:.5};
  vm.runInContext(fn('applyOumaAudioOutputVolumes'),c);
  c.applyOumaAudioOutputVolumes();assert.equal(c.oumaReverseAudio.volume,0);assert.equal(c.oumaIntroAudio.volume,0);
  c.settings.audioMuted=false;c.settings.masterVolume=.4;c.settings.sfxVolume=.25;c.applyOumaAudioOutputVolumes();
- near(c.oumaReverseAudio.volume,.1*10**(5/20));near(c.oumaIntroAudio.volume,.1);
+ near(c.oumaReverseAudio.volume,.05*10**(5/20));near(c.oumaIntroAudio.volume,.05);
  assert.equal(c.oumaReverseAudio.currentTime,2.5);assert.equal(c.oumaIntroAudio.currentTime,.5);
 });
 
@@ -65,11 +65,11 @@ test('every registered character line uses one voice category regardless of call
  const {c}=setup();
  for(const src of c.voiceSources){
   assert(fs.existsSync(src.split('?')[0]),src);
-  c.playOneShotSound(src,.99);const audio=c.oneShotSoundCache.get(src);near(audio.volume,.2);
-  c.settings.sfxVolume=0;c.playOneShotSound(src,0);near(audio.volume,.2);
+  c.playOneShotSound(src,.99);const audio=c.oneShotSoundCache.get(src);near(audio.volume,.128);
+  c.settings.sfxVolume=0;c.playOneShotSound(src,0);near(audio.volume,.128);
  }
  for(const src of ['assets/media/nova/aim/zone-roulette-confirm.wav?v=future','assets/media/jag/cz_last.wav?v=future']){
-  c.playOneShotSound(src,0);near(c.oneShotSoundCache.get(src).volume,.2);
+  c.playOneShotSound(src,0);near(c.oneShotSoundCache.get(src).volume,.128);
  }
 });
 
@@ -86,11 +86,11 @@ test('BGM and mute updates use the cached result sound, including before it has 
 test('a playing voice immediately follows common voice/master/mute controls without restarting',()=>{
  const {c}=setup(),src='assets/media/nova/navi-left-giru.wav';c.playOneShotSound(src);
  const audio=c.oneShotSoundCache.get(src);audio.currentTime=.3;
- c.settings.voiceVolume=.8;c.applyCharacterVoiceOutputVolumes();near(audio.volume,.4);
- c.settings.masterVolume=.25;c.applyCharacterVoiceOutputVolumes();near(audio.volume,.2);
+ c.settings.voiceVolume=.8;c.applyCharacterVoiceOutputVolumes();near(audio.volume,.256);
+ c.settings.masterVolume=.25;c.applyCharacterVoiceOutputVolumes();near(audio.volume,.128);
  c.settings.audioMuted=true;c.applyCharacterVoiceOutputVolumes();assert.equal(audio.volume,0);
  c.settings.audioMuted=false;c.settings.voiceVolume=0;c.applyCharacterVoiceOutputVolumes();assert.equal(audio.volume,0);
- c.settings.voiceVolume=.6;c.applyCharacterVoiceOutputVolumes();near(audio.volume,.15);
+ c.settings.voiceVolume=.6;c.applyCharacterVoiceOutputVolumes();near(audio.volume,.096);
  assert.equal(audio.plays,1);assert.equal(audio.currentTime,.3);
 });
 
@@ -98,19 +98,19 @@ test('NOVA RUSH confirmation voice follows the voice slider throughout its exist
  const {c,Audio,tick}=setup();
  for(const name of ['bonus-nebula','nebula','seven'])c.oneShotSoundCache.set('assets/media/nova/aim/'+name+'-win.wav',new Audio('assets/media/nova/aim/'+name+'-win.wav'));
  c.playAimSevenWinSound('nebula',{aTypeBonusGame:true});c.playAimSevenWinSound('nebula');c.playAimSevenWinSound('seven');
- const [voice,nebula,seven]=[...c.aimWinAudios];near(voice.volume,.2);
+ const [voice,nebula,seven]=[...c.aimWinAudios];near(voice.volume,.128);
  assert(nebula.volume>.2&&seven.volume>.2);
- c.fadeAimWinSoundsOnBet();tick(1500);near(voice.volume,.1);
- c.settings.voiceVolume=.8;c.applyCharacterVoiceOutputVolumes();near(voice.volume,.2);
- c.settings.sfxVolume=0;c.applyCharacterVoiceOutputVolumes();near(voice.volume,.2);assert.equal(nebula.volume,0);assert.equal(seven.volume,0);
+ c.fadeAimWinSoundsOnBet();tick(1500);near(voice.volume,.064);
+ c.settings.voiceVolume=.8;c.applyCharacterVoiceOutputVolumes();near(voice.volume,.128);
+ c.settings.sfxVolume=0;c.applyCharacterVoiceOutputVolumes();near(voice.volume,.128);assert.equal(nebula.volume,0);assert.equal(seven.volume,0);
  c.settings.audioMuted=true;c.applyCharacterVoiceOutputVolumes();assert.equal(voice.volume,0);
- c.settings.audioMuted=false;tick(2250);near(voice.volume,.1);
+ c.settings.audioMuted=false;tick(2250);near(voice.volume,.064);
  tick(3000);assert.equal(voice.volume,0);assert.equal(voice.paused,true);assert.equal(c.aimWinAudios.size,0);assert.equal(voice.plays,1);
 });
 
 test('voice mute does not suppress effects or change the existing shutter attenuation',()=>{
  const {c}=setup();c.settings.voiceVolume=0;
- const src='assets/media/nova/shutter.wav';c.playOneShotSound(src,c.sfxOutputVolume());near(c.oneShotSoundCache.get(src).volume,.45*10**(-11/20));
+ const src='assets/media/nova/shutter.wav';c.playOneShotSound(src,c.sfxOutputVolume());near(c.oneShotSoundCache.get(src).volume,.225*10**(-11/20));
  c.playOneShotSound('assets/media/nova/bonus_confirm.wav',1);assert.equal(c.oneShotSoundCache.get('assets/media/nova/bonus_confirm.wav').volume,0);
 });
 
@@ -126,7 +126,7 @@ test('mastered voices use a unity bus without the old extra +10 dB; effects bypa
  assert.equal(audioContext.resumes,1);
  const count=sources.length;c.playOneShotSound('assets/media/nova/shutter.wav');assert.equal(sources.length,count);
  c.settings.voiceVolume=1;c.settings.masterVolume=1;c.applyCharacterVoiceOutputVolumes();
- assert.equal(sources[0].audio.volume,1);near(gain.gain.value,1);
+ assert.equal(sources[0].audio.volume,.64);near(gain.gain.value,1);
  audioContext.state='suspended';c.playOneShotSound(c.voiceSources[0]);assert.equal(audioContext.resumes,2);
 });
 
