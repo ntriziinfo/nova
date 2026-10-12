@@ -5529,8 +5529,9 @@
     const resolved=isSpinning?currentSpin?.resolved:null;
     const checkpoint=atCheckpointStatus(normalState.flow,NovaProgress.snapshot(),currentProfit());
     globalThis.NovaCheckpointHint?.sync(!!checkpoint?.gold);
-    const specialSpin=resolved&&!NovaUpperAtBackground.eligible(resolved.flowAfter,!!checkpoint?.gold);
-    NovaUpperAtBackground.sync(specialSpin||debugFastSpinActive||session.active||normalState.bonusPending||normalState.resultCard||normalState.pendingZoneResult||normalState.pendingSortieResult||normalState.ladderAwardPresentation||normalState.stockEntry||isCompleteTrialLocked()?null:presentedArtFlow(),!!checkpoint?.gold);
+    const atPrelude=!!(resolved?.atPrelude||normalState.flow?.atPrelude)&&!session.active&&!normalState.bonusPending&&!debugFastSpinActive;
+    const specialSpin=resolved&&!atPrelude&&!NovaUpperAtBackground.eligible(resolved.flowAfter,!!checkpoint?.gold);
+    NovaUpperAtBackground.sync(specialSpin||debugFastSpinActive||session.active||normalState.bonusPending||normalState.resultCard||normalState.pendingZoneResult||normalState.pendingSortieResult||normalState.ladderAwardPresentation||normalState.stockEntry||isCompleteTrialLocked()?null:presentedArtFlow(),!!checkpoint?.gold,atPrelude);
   }
 
   function updateDisplay(){
@@ -8011,6 +8012,10 @@
     const prelude=resolved?.czPrelude||resolved?.atPrelude;
     if(stopOrder===0){renderCzPrelude([]);if(resolved)resolved.blackoutReels=[];syncCzPreludeGlow(resolved);}
     if(!prelude)return;
+    if(stopOrder===0&&resolved?.atPrelude?.started&&!resolved.atPreludeStartSoundPlayed){
+      resolved.atPreludeStartSoundPlayed=true;
+      playOneShotSound('assets/media/nova/at-prelude-start-20261013.mp3',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
+    }
     if(prelude.announce){
       renderCzPrelude([]);
       if(stopOrder===0&&!resolved.czAnnounced){

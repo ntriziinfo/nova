@@ -1,12 +1,12 @@
 /* Display-only upper AT lamp background. Never advances the game or draws RNG. */
 globalThis.NovaUpperAtBackground=(()=>{
- let host,video,wanted=false,starting=false,checkpoint=false;
+ let host,video,wanted=false,starting=false,checkpoint=false,prelude=false;
  const foreground='.novaAimPresentation,.novaLadderPresentation,.novaResultsLayer,#novaStockPreparation,#zoneRoulette,#novaInitialDuo,#novaDirectAward,#novaSortieGuide';
  function eligible(flow,confirmed=false){
   return !!(flow?.phase==='art'&&(flow.researchUpper||confirmed)&&!flow.zone&&!flow.initialStage&&!flow.entryStage&&!flow.atPrelude&&!flow.researchSortieLeft&&!flow.researchChallengeActive&&!flow.burstPending&&!flow.burstLeft&&!flow.comebackLeft&&!flow.comebackConfirmed);
  }
  function blocked(){
-  return host.dataset.atPreludeActive==='true'||Array.from(host.querySelectorAll(foreground)).some(el=>!el.hidden);
+  return (!prelude&&host.dataset.atPreludeActive==='true')||Array.from(host.querySelectorAll(foreground)).some(el=>!el.hidden);
  }
  function init(){
   if(host)return true;
@@ -45,12 +45,12 @@ globalThis.NovaUpperAtBackground=(()=>{
    video.setAttribute('aria-hidden','true');video.setAttribute('playsinline','');
    host.append(video);
   }
-  const src=checkpoint?'assets/media/nova/checkpoint-confirmed-background-20261013.mp4':'assets/media/nova/upper-at-background-20261012.mp4';
+  const src=prelude?'assets/media/nova/at-prelude-background-20261013.mp4':checkpoint?'assets/media/nova/checkpoint-confirmed-background-20261013.mp4':'assets/media/nova/upper-at-background-20261012.mp4';
   if(video.getAttribute('src')!==src){video.pause();video.src=src;video.load?.();}
   video.hidden=false;layout();play();
  }
- function sync(flow,confirmed=false){
-  checkpoint=!!confirmed;wanted=eligible(flow,checkpoint);
+ function sync(flow,confirmed=false,atPrelude=false){
+  checkpoint=!!confirmed;prelude=!!atPrelude;wanted=prelude||eligible(flow,checkpoint);
   if(init())refresh();
  }
  if(typeof document!=='undefined'){
