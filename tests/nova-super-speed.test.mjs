@@ -14,11 +14,12 @@ function setup(){
   debugFastSpinActive:false,bonusEndBgmPlaying:false,bonusConfirmSoundPlaying:false,
   canUsePlayState:()=>true,isCompleteTrialLocked:()=>false,$:id=>({superSpeedBtn:button,debugSuperSpeedBtn:debugButton,debugSuperSpeedStatus:debugStatus}[id]),
   setTimeout(fn,ms){timers.set(++id,{fn,ms});return id;},clearTimeout(id){timers.delete(id);},
-  stopSpeedToBonus(){},stopAutoPlay(reason){c.autoPlay=false;c.superFullAuto=false;c.superSpeedActive=false;c.superSpeedPending=false;c.reason=reason;},
+  stopSpeedToBonus(){},stopAutoPlay(reason){c.autoPlay=false;c.superFullAuto=false;c.setSuperSpeedActive(false);c.superSpeedPending=false;c.reason=reason;},
+  applyAudioOutputVolumes(){c.audioRefreshes=(c.audioRefreshes||0)+1;},
   startAutoPlay(){c.autoPlay=true;},updateAutoUi(){c.updateSuperSpeedUi();},log(){},queueAutoStep(){},AUTO_SPEED_MULTIPLIER:2,MIN_SPIN_WAIT_MS:500,
   settings:{autoDelay:.5}});
  vm.runInContext(fs.readFileSync('nova-super-speed.js','utf8'),c);
- for(const name of ['canDebugSuperSpeed','hasSuperSpeedPermission','setSuperSpeedDebugPermission','superSpeedUnavailableReason','updateSuperSpeedUi','applySuperSpeedPermission','stopSuperSpeedIfNeeded','startSuperSpeed','autoScaledDelayMs','autoDelayMs','autoStopDelayMs','autoPollDelayMs'])vm.runInContext(fn(name),c);
+ for(const name of ['canDebugSuperSpeed','hasSuperSpeedPermission','setSuperSpeedDebugPermission','superSpeedUnavailableReason','updateSuperSpeedUi','applySuperSpeedPermission','setSuperSpeedActive','stopSuperSpeedIfNeeded','startSuperSpeed','autoScaledDelayMs','autoDelayMs','autoStopDelayMs','autoPollDelayMs'])vm.runInContext(fn(name),c);
  return {c,button,debugButton,debugStatus,timers};
 }
 
@@ -164,6 +165,16 @@ test('full AUTO repeats AT cycles, waits for comeback and result audio, and neve
 test('ordinary AUTO never enables sixfold speed by itself after AT',()=>{
  const {c}=setup();c.autoPlay=true;c.setSuperSpeedDebugPermission(true);
  for(const phase of ['art','normal']){c.normalState.flow={phase};c.stopSuperSpeedIfNeeded();assert.equal(c.superFullAuto,false);assert.equal(c.superSpeedActive,false);assert.equal(c.superSpeedPending,false);}
+});
+
+test('playing audio refreshes once per speed transition, including AT handoff and return',()=>{
+ const {c}=setup();c.setSuperSpeedDebugPermission(true);c.isSpinning=true;c.startSuperSpeed();
+ assert.equal(c.audioRefreshes||0,0,'pending mode keeps current volume');
+ c.isSpinning=false;c.stopSuperSpeedIfNeeded();assert.equal(c.audioRefreshes,1);
+ c.stopSuperSpeedIfNeeded();assert.equal(c.audioRefreshes,1,'polling must not reset fades');
+ c.normalState.flow.phase='art';c.stopSuperSpeedIfNeeded();assert.equal(c.audioRefreshes,2);
+ c.normalState.flow.phase='normal';c.stopSuperSpeedIfNeeded();assert.equal(c.audioRefreshes,3);
+ c.setSuperSpeedDebugPermission(false);assert.equal(c.audioRefreshes,4);
 });
 
 test('user STOP, super button, permission loss and COMPLETE cancel the pending return during AT',()=>{

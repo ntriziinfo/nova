@@ -324,7 +324,7 @@
     if(!Number.isFinite(raw) || raw <= 0) return 0;
     const masterRaw = typeof settings !== "undefined" ? Number(settings.masterVolume) : DEFAULT_MASTER_VOLUME;
     const master = Number.isFinite(masterRaw) ? clamp(masterRaw, 0, 1) : DEFAULT_MASTER_VOLUME;
-    return Math.max(0, Math.min(1, raw * scale * master * 0.5));
+    return Math.max(0, Math.min(1, raw * scale * master * 0.5 * (superSpeedActive ? 0.5 : 1)));
   }
 
   let settings = {
@@ -5636,7 +5636,7 @@
     };
     const formatCreditDifference = value=>{
       const raw = Math.round(Number(value) || 0);
-      return `${raw < 0 ? "-" : ""}${formatMeterDigits(raw, 4, 9999)}`;
+      return `${raw < 0 ? "-" : ""}${formatMeterDigits(raw, 5, 99999)}`;
     };
     setText("jagTotalGameDataMeter", formatMeterDigits(stats.totalSpins, 5, 99999));
     const afterBonusMeter = $("jagAfterBonusDataMeter");
@@ -5670,7 +5670,9 @@
     const chain=chainCountStep(jagChainCount,!!(active || jagChainBonusHandoff || normalState.bonusPending || normalState.flow?.phase==='art'),Number(stats.totalPaid)||0,Number(stats.totalFee)||0);
     jagChainCount=chain.state;
     const displayCount=normalState.resultCard?.kind==='at'?Number(normalState.resultCard.pt)||0:chain.count;
-    setText("jagCreditMeter", formatCreditDifference(displayCredit));
+    const creditText = formatCreditDifference(displayCredit);
+    setText("jagCreditMeter", creditText);
+    $("jagCreditMeter").style.setProperty('font-size',`min(60cqh, ${90/creditText.length}cqw)`,'important');
     const countText=String(displayCount).padStart(3,'0');
     setText("jagCountMeter",countText);
     $("jagCountMeter").style.setProperty('font-size',`min(60cqh, ${63/Math.max(3,countText.length)}cqw)`,'important');
@@ -8490,7 +8492,7 @@
     if(!autoPlay && !autoTimer && !superFullAuto) return;
     autoPlay = false;
     superFullAuto = false;
-    superSpeedActive = false;
+    setSuperSpeedActive(false);
     superSpeedPending = false;
     if(autoTimer){
       clearTimeout(autoTimer);
@@ -8744,7 +8746,7 @@
     if(confirmed){
       // Keep the existing AUTO loop; only subsequent presentation delays return to normal.
       if(superSpeedActive || superSpeedPending){
-        superSpeedActive=false;
+        setSuperSpeedActive(false);
         superSpeedPending=false;
         superSpeedNextBetAt=0;
         updateAutoUi();
@@ -8760,11 +8762,18 @@
     }
     if(superSpeedPending && !isSpinning && !bonusEndBgmPlaying && !bonusConfirmSoundPlaying){
       superSpeedPending=false;
-      superSpeedActive=true;
+      setSuperSpeedActive(true);
       superSpeedNextBetAt=0;
       updateAutoUi();
     }
     return false;
+  }
+
+  function setSuperSpeedActive(active){
+    if(superSpeedActive === active) return;
+    superSpeedActive = active;
+    // Refresh playing audio too, without changing the user's saved master slider.
+    applyAudioOutputVolumes();
   }
 
   function startSuperSpeed(mode){
@@ -8777,10 +8786,10 @@
     stopSpeedToBonus('超ハイスピード開始');
     superFullAuto=true;
     superSpeedPending=isSpinning;
-    superSpeedActive=!isSpinning;
+    setSuperSpeedActive(!isSpinning);
     if(autoPlay){updateAutoUi();queueAutoStep(0);}
     else startAutoPlay();
-    if(!autoPlay){superFullAuto=false;superSpeedActive=false;superSpeedPending=false;}
+    if(!autoPlay){superFullAuto=false;setSuperSpeedActive(false);superSpeedPending=false;}
     updateSuperSpeedUi();
   }
 

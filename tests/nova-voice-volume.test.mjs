@@ -21,7 +21,7 @@ function setup(){
   play(){this.paused=false;this.plays++;return Promise.resolve();}
   cloneNode(){return new Audio(this.src);}
  }
- const c=vm.createContext({Audio,getAudio:()=>audioContext,debugFastSpinActive:false,speedToBonusActive:false,premiumBigConfirmSilence:false,settings:{voiceVolume:.4,sfxVolume:.9,masterVolume:.5,audioMuted:false},SFX_OUTPUT_SCALE:1,DEFAULT_MASTER_VOLUME:.7,clamp:(x,a,b)=>Math.max(a,Math.min(b,x)),oneShotSoundCache:new Map(),aimWinAudios:new Set(),performance:{now:()=>now},setInterval(f){frames.push(f);return frames.length;},clearInterval(){},audioSourceOutputScale:src=>src.endsWith('shutter.wav')?10**(-11/20):3});
+ const c=vm.createContext({superSpeedActive:false,Audio,getAudio:()=>audioContext,debugFastSpinActive:false,speedToBonusActive:false,premiumBigConfirmSilence:false,settings:{voiceVolume:.4,sfxVolume:.9,masterVolume:.5,audioMuted:false},SFX_OUTPUT_SCALE:1,DEFAULT_MASTER_VOLUME:.7,clamp:(x,a,b)=>Math.max(a,Math.min(b,x)),oneShotSoundCache:new Map(),aimWinAudios:new Set(),performance:{now:()=>now},setInterval(f){frames.push(f);return frames.length;},clearInterval(){},audioSourceOutputScale:src=>src.endsWith('shutter.wav')?10**(-11/20):3});
  for(const name of ['normalizedAudioSourceKey','audioOutputVolume','voiceOutputVolume','sfxOutputVolume','applyAudioSourceOutputScale'])vm.runInContext(fn(name),c);
  loadVoiceCatalog(c);
  vm.runInContext(voices+';globalThis.voiceSources=CHARACTER_VOICE_SRCS;',c);
