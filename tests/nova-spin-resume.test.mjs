@@ -177,12 +177,10 @@ test('replay entitlement and zero-game cost exemptions survive pending saves',()
  }
 });
 
-test('displayed RTP uses the adopted 50k common-base win estimates and BIG fields use the engine target',()=>{
+test('displayed RTP is unmeasured after MY cap removal; BIG fields still use the engine target',()=>{
  const {c}=harness();vm.runInContext(fn('targetRtpText'),c);
- const estimates=JSON.parse(fs.readFileSync('docs/win-rtp-20261008.json')).results.map(s=>(100*s.rtp).toFixed(2));
  for(let setting=1;setting<=6;setting++){
-  assert(c.targetRtpText(setting).startsWith(estimates[setting-1]+'%'));
-  assert(c.targetRtpText(setting).includes('5万G×'+(setting>=4?1000:500)+'回'));
+  assert.equal(c.targetRtpText(setting),'未試算（MY上限撤廃後）');
  }
  assert.equal(c.NovaArt.bonusTarget(),50);
  for(const field of ['midMulInput','bigMulInput','bigAddInput'])assert(fn('applySettings').includes('$("'+field+'").value = NovaArt.bonusTarget()'));
@@ -234,7 +232,7 @@ test('custom lottery and complete limits suppress standard RTP; presentation pre
   for(let n=1;n<=6;n++)assert.equal(c.targetRtpText(n),'未試算（独自設定）');
  }
  c.settings={...standard,audioMuted:true,voiceVolume:.1,autoDelay:2,title:'表示変更'};
- assert(c.targetRtpText(6).startsWith((100*c.NovaBalance.profile(6).measuredRtp).toFixed(2)+'%'));
+ assert.equal(c.targetRtpText(6),'未試算（MY上限撤廃後）');
  c.settings={...standard,novaFlow:{...standard.novaFlow,czChance:String(c.NovaFlow.defaults.czChance)}};
  assert(c.NovaBalance.usesStandardSettings(c.settings));
 });
@@ -247,7 +245,16 @@ test('pre-update pending replay finishes with one legacy free BET; new saves ret
  const modern=JSON.parse(base.storage.get('state'));modern.runtimeState.pendingSpin.resolved.reward=3;
  const cash=harness(modern);cash.c.load();assert.equal(cash.c.currentSpin.resolved.reward,3);assert.notEqual(cash.c.currentSpin.resolved.replayAccounting,'legacy');
 });
-test('MY low-water mark and completion reason persist with detailed history empty',()=>{
- const h=harness();h.c.load();h.c.completeTrialState={lowestNet:-8000,locked:true,reason:'my',completeProfit:7000,completeMy:15000,maxMy:15000};h.c.stats.slumpHistory=[];h.c.persistState();
- const again=harness(JSON.parse(h.storage.get('state')));assert(again.c.load());assert.equal(again.c.completeTrialState.lowestNet,-8000);assert.equal(again.c.completeTrialState.reason,'my');assert.equal(again.c.completeTrialState.locked,true);
+test('legacy MY-only lock is released on restore without resetting stats, quota or stocks',()=>{
+ for(const net of [7000,-5000,10000]){
+  const h=harness();h.c.load();h.c.completeTrialState={lowestNet:-20000,locked:true,lockedSetting:1,reason:'my',completeProfit:net,completeMy:15000,maxMy:15000};h.c.stats={...h.c.stats,totalFee:20000,totalPaid:20000+net,slumpHistory:[]};h.c.normalState.flow=h.c.NovaArt.normalize({phase:'art',remaining:'850',stock:'2',queuedZones:['sora'],payoutVersion:1});h.c.persistState();
+  const again=harness(JSON.parse(h.storage.get('state')));assert(again.c.load());assert.deepEqual(again.errors,[]);
+  assert.equal(again.c.completeTrialState.lowestNet,-20000);assert.equal(again.c.completeTrialState.locked,net>=10000);assert.equal(again.c.completeTrialState.reason,net>=10000?'net':undefined);
+  assert.equal(again.c.stats.totalPaid-h.c.stats.totalFee,net);assert.equal(again.c.normalState.flow.remaining,'850');assert.equal(again.c.normalState.flow.stock,'2');assert.deepEqual(json(again.c.normalState.flow.queuedZones),['sora']);
+  again.c.persistState();const third=harness(JSON.parse(again.storage.get('state')));third.c.load();assert.equal(third.c.completeTrialState.locked,net>=10000);
+ }
+});
+test('saved net-completion remains locked after migration',()=>{
+ const h=harness();h.c.load();h.c.completeTrialState={locked:true,reason:'net',completeProfit:10000};h.c.persistState();
+ const again=harness(JSON.parse(h.storage.get('state')));assert(again.c.load());assert(again.c.completeTrialState.locked);assert.equal(again.c.completeTrialState.reason,'net');
 });

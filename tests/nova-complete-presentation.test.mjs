@@ -24,12 +24,12 @@ function setup(){
  vm.runInContext('Math.random=()=>{throw Error("Completion presentation must not consume RNG")}',c);
  return {c,played,stopped,elements,root:()=>root,setProfit:v=>profit=v,setScale:v=>scale=v};
 }
-test('net and MY completion announce once on arrival, keep original caps, and display both Japanese lines',()=>{
+test('only net completion announces once and displays both Japanese lines, regardless of prior MY',()=>{
  for(const my of [false,true]){
   const h=setup(),c=h.c;if(my)c.completeTrialState.lowestNet=-8000;
-  h.setProfit(my?6999:9999);assert(!c.updateCompleteTrialState());assert.equal(h.played.length,0);
-  h.setProfit(my?7000:10000);assert(c.updateCompleteTrialState());c.updateCompleteTrialState();c.updateDisplay();
-  assert.equal(c.completeTrialState.reason,my?'my':'net');assert.deepEqual(h.stopped,['auto','speed','fast']);
+  h.setProfit(my?7000:9999);assert(!c.updateCompleteTrialState());assert.equal(h.played.length,0);assert(!c.NovaCompletePresentation.active);
+  h.setProfit(10000);assert(c.updateCompleteTrialState());c.updateCompleteTrialState();c.updateDisplay();
+  assert.equal(c.completeTrialState.reason,'net');assert.deepEqual(h.stopped,['auto','speed','fast']);
   assert.deepEqual(h.played,['assets/media/nova/sosuke-complete.wav']);assert(!h.root().hidden);
   assert.match(h.root().innerHTML,/コンプリート機能が発動しました/);assert.match(h.root().innerHTML,/本日の遊技は終了となります/);
  }

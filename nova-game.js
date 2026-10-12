@@ -2399,7 +2399,7 @@
 
   function targetRtpText(settingNo = settings.setting){
     if(A_TYPE_MODE && !NovaBalance.usesStandardSettings(settings))return "未試算（独自設定）";
-    if(A_TYPE_MODE){const profile=NovaBalance.profile(settingNo);return profile.verifiedModel?((profile.measuredRtp??profile.target)*100).toFixed(2)+`%（${profile.verificationLabel||"推定"}・${(profile.gamesPerTrial||30000)/10000}万G×${profile.trials}回・停止込み）`:"未集計（変更前"+((profile.measuredRtp??profile.target)*100).toFixed(1)+"%）";}
+    if(A_TYPE_MODE)return "未試算（MY上限撤廃後）";
   }
 
   function refreshRtpViews(){
@@ -3054,7 +3054,7 @@
     const profit = completeTrialProfit();
 
     const limit = completeLimitPt(), wasLocked=!!completeTrialState.locked;
-    NovaComplete.observe(completeTrialState,profit,limit,15000);
+    NovaComplete.observe(completeTrialState,profit,limit);
     if(isCompleteLockEnabled() && !wasLocked && completeTrialState.locked){
       completeTrialState.lockedSetting = Number(settings.setting) || 1;
       completeTrialState.completeProfit = profit;
@@ -3062,8 +3062,8 @@
       stopSpeedToBonus("COMPLETE到達のためSPEED停止");
       stopDebugFastSpin("COMPLETE到達");
       syncCompletePresentation(true);
-      showMessage("コンプリートしました。", `${completeTrialState.reason==='my'?'MY15,000pt':'+'+limit+'pt'}到達 / 管理リセットまたは設定変更まで遊技できません`);
-      log(`[COMPLETE] ${completeTrialState.reason==='my'?'MY15,000pt':'+'+limit+'pt'}到達：${formatSigned(profit)}pt / 設定${completeTrialState.lockedSetting}`);
+      showMessage("コンプリートしました。", `+${limit}pt到達 / 管理リセットまたは設定変更まで遊技できません`);
+      log(`[COMPLETE] +${limit}pt到達：${formatSigned(profit)}pt / 設定${completeTrialState.lockedSetting}`);
       persistState();
       updateDisplay();
     }
@@ -3078,7 +3078,7 @@
     stopAutoPlay("COMPLETE中のためAUTO停止");
     stopSpeedToBonus("COMPLETE中のためSPEED停止");
     stopDebugFastSpin("COMPLETE中");
-    showMessage("コンプリートしました。", `${completeTrialState.reason==='my'?'MY15,000pt':'+'+completeLimitPt()+'pt'}到達 / 管理リセットまたは設定変更まで遊技できません`);
+    showMessage("コンプリートしました。", `+${completeLimitPt()}pt到達 / 管理リセットまたは設定変更まで遊技できません`);
     showOverlay("コンプリートしました。");
     return false;
   }
@@ -3728,6 +3728,7 @@
         }
       }
       completeTrialState.lowestNet=Math.min(0,Number(completeTrialState.lowestNet)||0,Number(stats.slumpLow)||0);
+      if(isCompleteLockEnabled())NovaComplete.restore(completeTrialState,(Number(stats.totalPaid)||0)-(Number(stats.totalFee)||0),settings.completeLimitPt);
       const runtime = data?.runtimeState || {};
       if(runtime.session && typeof runtime.session === "object"){
         session = {
@@ -3928,7 +3929,7 @@
         movieVolume: settings.movieVolume,
         rogiMovieVolume: settings.rogiMovieVolume,
         audioMuted: settings.audioMuted,
-        completeMyLimitPt:15000,
+        completeMyLimitPt:NovaComplete.defaultMyLimitPt,
         completeLimitPt: completeLimitPt()
       },
       stats:{...adminStats, profit},

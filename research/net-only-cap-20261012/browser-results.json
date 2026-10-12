@@ -1,0 +1,73 @@
+{
+  "status": "pass",
+  "muted": true,
+  "reports": [
+    {
+      "mobile": false,
+      "myCrossed": {
+        "spinning": false,
+        "auto": false,
+        "fee": 303,
+        "paid": 7306,
+        "spins": 1,
+        "complete": {
+          "lowestNet": -8000,
+          "maxMy": 15003
+        },
+        "order": []
+      },
+      "netStopped": {
+        "spinning": false,
+        "auto": false,
+        "fee": 303,
+        "paid": 10306,
+        "spins": 4,
+        "complete": {
+          "lowestNet": 0,
+          "maxMy": 10003,
+          "locked": true,
+          "reason": "net",
+          "completeProfit": 10003,
+          "completeMy": 10003,
+          "lockedSetting": 1
+        },
+        "order": []
+      },
+      "voiceCount": 1
+    },
+    {
+      "mobile": true,
+      "myCrossed": {
+        "spinning": false,
+        "auto": false,
+        "fee": 303,
+        "paid": 7306,
+        "spins": 1,
+        "complete": {
+          "lowestNet": -8000,
+          "maxMy": 15003
+        },
+        "order": []
+      },
+      "netStopped": {
+        "spinning": false,
+        "auto": false,
+        "fee": 303,
+        "paid": 10306,
+        "spins": 4,
+        "complete": {
+          "lowestNet": 0,
+          "maxMy": 10003,
+          "locked": true,
+          "reason": "net",
+          "completeProfit": 10003,
+          "completeMy": 10003,
+          "lockedSetting": 1
+        },
+        "order": []
+      },
+      "voiceCount": 1
+    }
+  ],
+  "errors": []
+}

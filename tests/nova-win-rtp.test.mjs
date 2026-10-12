@@ -17,6 +17,8 @@ const near=(actual,expected)=>assert(Math.abs(actual-expected)<1e-10,`${actual} 
 const trialPresentation=JSON.parse(gunzipSync(fs.readFileSync('tests/fixtures/win-rtp-20261008-presentation.json.gz')));
 
 function trialSource(file){
+ // MY cap removal is authorized; these two files retain their original trial source.
+ if(['nova-complete.js','scripts/zone-v2-model.mjs'].includes(file))return fs.readFileSync('tests/fixtures/pre-win-rtp-20261008/'+file,'utf8').replaceAll('\r\n','\n');
  let source=trialPresentation[file] ?? fs.readFileSync(file,'utf8').replaceAll('\r\n','\n');
  // The approved 2026-10-12 rename changes only these four display literals.
  // Reverse those exact literals for the historical hash; all engine code must

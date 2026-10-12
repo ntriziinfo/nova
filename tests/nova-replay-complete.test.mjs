@@ -26,19 +26,22 @@ test('every AT BET costs three: replay has zero net and preserves the net quota'
  }
 });
 
-test('both caps stop on the first reached condition, including a MY stop below zero',()=>{
+test('historical explicit dual caps still reproduce archived trials',()=>{
  for(const [path,reason,net] of [[[0,9999,10000],'net',10000],[[0,-8000,6999,7000],'my',7000],[[0,-20000,-5001,-5000],'my',-5000]]){
-  const state={};for(const p of path.slice(0,-1)){observe(state,p);assert(!state.locked);}
-  observe(state,path.at(-1));assert.equal(state.reason,reason);assert.equal(state.completeProfit,net);
-  const saved=JSON.parse(JSON.stringify(state));observe(saved,-30000);
+  const state={};for(const p of path.slice(0,-1)){observe(state,p,10000,15000);assert(!state.locked);}
+  observe(state,path.at(-1),10000,15000);assert.equal(state.reason,reason);assert.equal(state.completeProfit,net);
+  const saved=JSON.parse(JSON.stringify(state));observe(saved,-30000,10000,15000);
   assert.equal(saved.reason,reason);assert.equal(saved.completeProfit,net);assert.equal(saved.locked,true);
  }
 });
 
-test('MY uses an earlier trough, not peak minus a later trough; reset starts again at zero',()=>{
+test('MY is informational and no longer stops the current game, including recovery above 15k',()=>{
  const state={};for(const p of [0,8000,-8000,6999])observe(state,p);
  assert(!state.locked);assert.equal(state.maxMy,14999);assert.equal(state.lowestNet,-8000);
- observe(state,7000);assert(state.locked);
+ observe(state,7000);assert(!state.locked);observe(state,9999);assert(!state.locked);assert.equal(state.maxMy,17999);
+ observe(state,10000);assert(state.locked);assert.equal(state.reason,'net');
+ const deep={};for(const net of [0,-20000,-5000,9999]){observe(deep,net);assert(!deep.locked);}
+ const disabled={};for(const net of [0,-20000,30000]){observe(disabled,net,0);assert(!disabled.locked);}
  const reset={};observe(reset,7000);assert(!reset.locked);assert.equal(reset.lowestNet,0);
 });
 
@@ -48,7 +51,7 @@ test('MY uses constant-size state and remembers charged-BET lows across serializ
  observe(state,14491,20000,15000);assert.equal(state.reason,'my');
 });
 
-test('MY arrival cancels every automatic player and gates the next manual BET',()=>{
+test('MY arrival keeps play available; net arrival cancels every automatic player and gates BET',()=>{
  const calls=[],ctx=vm.createContext({NovaComplete:c.NovaComplete,COMPLETE_TRIAL_ENABLED:true,settings:{setting:6},completeTrialState:{lowestNet:-8000},
   completeTrialProfit:()=>7000,completeLimitPt:()=>10000,isCompleteLockEnabled:()=>true,
   stopAutoPlay:()=>calls.push('auto'),stopSpeedToBonus:()=>calls.push('speed'),stopDebugFastSpin:()=>calls.push('fast'),
@@ -56,6 +59,8 @@ test('MY arrival cancels every automatic player and gates the next manual BET',(
   bonusConfirmSoundPlaying:false,bonusEndBgmPlaying:false});
  const src=fs.readFileSync('nova-game.js','utf8');
  for(const name of ['isCompleteTrialLocked','updateCompleteTrialState','canPlayCompleteTrial'])vm.runInContext(src.match(new RegExp('  function '+name+'\\([^]*?\\n  }'))[0],ctx);
+ assert.equal(ctx.updateCompleteTrialState(),false);assert.deepEqual(calls,[]);assert.equal(ctx.canPlayCompleteTrial(),true);
+ ctx.completeTrialProfit=()=>10000;
  assert.equal(ctx.updateCompleteTrialState(),true);assert.deepEqual(calls,['auto','speed','fast']);
- assert.equal(ctx.completeTrialState.reason,'my');assert.equal(ctx.canPlayCompleteTrial(),false);
+ assert.equal(ctx.completeTrialState.reason,'net');assert.equal(ctx.canPlayCompleteTrial(),false);
 });
