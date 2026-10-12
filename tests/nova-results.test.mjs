@@ -133,11 +133,11 @@ test('chain result renders current and total independently, and hides the total 
  c.show({kind:'at',character:'sora',color:'red',pt:'1400'});assert.equal(fields['.novaResultTotal'].hidden,true);assert.equal(fields.output.textContent,'1400pt');
 });
 
-test('new net results label the accounting while saved older gross results keep their original label',()=>{
+test('net and saved older results use the same concise label without changing points',()=>{
  const {c,fields}=presenter();
  for(const character of ['sora','boss','group']){
   const card={kind:'at',character,color:'blue',pt:'150',accounting:'net'};
-  c.show(card);assert.match(fields.span.textContent,/AT総獲得（手取り）/);assert.equal(fields.output.textContent,'150pt');
+  c.show(card);assert.match(fields.span.textContent,/AT総獲得$/);assert.equal(fields.output.textContent,'150pt');
   c.hide();c.show(JSON.parse(JSON.stringify(card)));assert.equal(fields.output.textContent,'150pt');
   c.show({...card,accounting:undefined});assert(!fields.span.textContent.includes('手取り'));
  }
