@@ -581,6 +581,7 @@
   let autoTimer = null;
   let autoWatchdogTimer = null;
   let czIntroVoiceHold = null;
+  let comebackIntroVoiceHold = null;
   let superSpeedActive = false;
   let superFullAuto = false; // Keep the user's selection while AT runs at ordinary AUTO speed.
   let superSpeedMode = 'nonstop';
@@ -5812,6 +5813,7 @@
     if(!confirm("統計と現在の状態を初期化しますか？")) return;
     clearCzIntroVoiceHold(true);
     NovaAim.reset();
+    clearComebackIntroVoiceHold();
     globalThis.NovaRushConfirm?.reset();
     NovaInitialDuo.clear();
     NovaBellNavi.clear();
@@ -5882,6 +5884,7 @@
   function resetRuntimeForMorning(reason="朝一リセット"){
     clearCzIntroVoiceHold(true);
     NovaAim.reset();
+    clearComebackIntroVoiceHold();
     globalThis.NovaRushConfirm?.reset();
     NovaInitialDuo.clear();
     NovaBellNavi.clear();
@@ -7110,7 +7113,7 @@
     const battleRoundAtSpinStart = battleActiveAtSpinStart ? battleRoundNumber() : 0;
     const speedModeSpinAtStart = speedToBonusActive && speedModeSpinRequest && normalActiveAtSpinStart;
     const spinWaitMs = spinWaitMsForMode(speedModeSpinAtStart);
-    const superSpeedStartedAt = superSpeedActive ? performance.now() : null;
+    let superSpeedStartedAt = superSpeedActive ? performance.now() : null;
     if(superSpeedActive)superSpeedNextBetAt=superSpeedStartedAt+autoStopDelayMs(2)+autoScaledDelayMs(RESULT_WAIT_MS)+autoDelayMs();
 
     fadeAimWinSoundsOnBet();
@@ -7127,7 +7130,7 @@
     stopBtns.forEach(b=>b.disabled=true);
 
     if(spinWaitTimer) clearTimeout(spinWaitTimer);
-    spinWaitTimer = setTimeout(function unlockSpin(){
+    const unlockSpin=()=>{
       spinCanStop = true;
       if(isSpinning){
         const stopLocked = isPremiumBigConfirmStopLocked();
@@ -7142,7 +7145,8 @@
               ? "フリーズ告知中..."
               : "停止できます";
       }
-    }, spinWaitMs);
+    };
+    spinWaitTimer=setTimeout(unlockSpin,spinWaitMs);
 
     pendingForceResult = takeForcedResult();
     const premiumForced = forcePremiumEffect;
@@ -7290,7 +7294,7 @@
     playCzIntroBetVoice(resolved);
     playRareNaviSound(currentSpin);
     playRareCueVoice(currentSpin);
-    playModeEntryBetVoice(resolved);
+    const comebackIntroPlayback=playModeEntryBetVoice(resolved);
     playGiruLadderBetVoice(currentSpin);
     NovaSortie.begin(currentSpin);
     renderRemainingCounters();
@@ -7350,6 +7354,23 @@
         ? `${battleRemainText()} / ${waitText}`
         : waitText;
     if(!speedModeSpinAtStart && !premiumBigConfirmSilence) playNormalBgm();
+    if(comebackIntroPlayback){
+      // BET and the outcome are already recorded. Keep these same reels/prize
+      // while loading and playing the announcement, then start motion once.
+      const waitingSpin=currentSpin;
+      clearTimeout(spinWaitTimer);spinWaitTimer=null;spinCanStop=false;
+      $('spinBtn').disabled=true;$('spinBtn').textContent='WAIT';
+      $('resultText').textContent='引き戻しチャレンジ 音声再生中...';
+      syncCabinetControlState();persistState();
+      if(!await waitForComebackIntroVoice(comebackIntroPlayback)||currentSpin!==waitingSpin||!isSpinning)return;
+      $('spinBtn').disabled=false;
+      $('resultText').textContent=waitText;
+      if(superSpeedStartedAt!==null){
+        superSpeedStartedAt=performance.now();currentSpin.superSpeedStartedAt=superSpeedStartedAt;
+        superSpeedNextBetAt=superSpeedStartedAt+autoStopDelayMs(2)+autoScaledDelayMs(RESULT_WAIT_MS)+autoDelayMs();
+      }
+      spinWaitTimer=setTimeout(unlockSpin,spinWaitMs);
+    }
     if(options?.oumaFailed){
       playOneShotSound('assets/media/nova/ouma-fail.wav');
       const machine=document.getElementById('machine');machine.dataset.oumaFailDim='true';
@@ -7711,7 +7732,43 @@
     const src=resolved.researchChallenge?.started?MODE_EVENT_VOICE_SRCS.upperChallenge:comeback?MODE_EVENT_VOICE_SRCS.comeback:'';
     if(!src)return;
     resolved.modeEntryVoicePlayed=true;
-    playOneShotSound(src,voiceOutputVolume(),{allowDuringPremiumConfirm:true});
+    const playback=playOneShotSound(src,voiceOutputVolume(),{allowDuringPremiumConfirm:true});
+    return comeback?playback:null;
+  }
+
+  function clearComebackIntroVoiceHold(){
+    comebackIntroVoiceHold?.finish(false);
+  }
+
+  function waitForComebackIntroVoice(playback){
+    clearComebackIntroVoiceHold();
+    return new Promise(resolve=>{
+      const {audio,promise}=playback,hold={audio,timer:null};
+      comebackIntroVoiceHold=hold;
+      hold.finish=proceed=>{
+        if(comebackIntroVoiceHold!==hold)return;
+        comebackIntroVoiceHold=null;clearTimeout(hold.timer);
+        audio.removeEventListener('ended',ended);audio.removeEventListener('error',failed);
+        audio.removeEventListener('playing',progress);audio.removeEventListener('timeupdate',progress);
+        if(!audio.ended)audio.pause();
+        resolve(proceed);
+      };
+      const ended=()=>hold.finish(true),failed=()=>hold.finish(true);
+      let lastTime=-1;
+      const progress=()=>{
+        if(comebackIntroVoiceHold!==hold)return;
+        if(audio.ended)return; // The final timeupdate may precede the ended event.
+        if(audio.currentTime===lastTime)return;
+        lastTime=audio.currentTime;clearTimeout(hold.timer);
+        // Loading/buffering counts as waiting. Release only a stalled/erroring
+        // player, so missing audio cannot leave an already-paid spin stranded.
+        hold.timer=setTimeout(failed,10000);
+      };
+      audio.addEventListener('ended',ended);audio.addEventListener('error',failed);
+      audio.addEventListener('playing',progress);audio.addEventListener('timeupdate',progress);
+      if(audio.ended)ended();else progress();
+      promise?.then(progress,failed);
+    });
   }
 
   function playUpperAtEntryVoice(resolved){
