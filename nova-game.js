@@ -304,10 +304,10 @@
   }
 
   function audioSourceOutputScale(src=""){
-    // Mastered copies already contain the category normalization. Do not stack
-    // the historical per-file trims on top of it.
-    if(globalThis.NovaAudioAssets?.entry(src))return 1;
     const key = String(src || "");
+    // Mastered copies bypass historical trims, except the requested +5 dB
+    // emphasis for the reverse-reel SE shared by Urapi and Ouma.
+    if(globalThis.NovaAudioAssets?.entry(src)&&normalizedAudioSourceKey(key)!=='assets/media/nova/ouma-reverse-v2.wav')return 1;
     return AUDIO_SOURCE_OUTPUT_SCALE[key] || AUDIO_SOURCE_OUTPUT_SCALE[normalizedAudioSourceKey(key)] || 1;
   }
 
@@ -1403,12 +1403,16 @@
       : movieOutputVolumeForSource(MOVIE_OUTPUT_SCALE, src);
   }
 
+  function applyOumaAudioOutputVolumes(){
+    if(oumaIntroAudio)oumaIntroAudio.volume=sfxOutputVolumeForSource(SFX_OUTPUT_SCALE,'assets/media/nova/uuufa.wav');
+    if(oumaReverseAudio)oumaReverseAudio.volume=sfxOutputVolumeForSource(SFX_OUTPUT_SCALE,"assets/media/nova/ouma-reverse-v2.wav");
+  }
+
   function applyAudioOutputVolumes(){
     NovaSortie.updateVolume(sfxOutputVolume());
     globalThis.NovaRushConfirm?.updateVolumes(bgmOutputVolume(BGM_OUTPUT_SCALE),sfxOutputVolume());
     applyCharacterVoiceOutputVolumes();
-    if(oumaIntroAudio)oumaIntroAudio.volume=sfxOutputVolumeForSource(SFX_OUTPUT_SCALE,'assets/media/nova/uuufa.wav');
-    if(oumaReverseAudio)oumaReverseAudio.volume=sfxOutputVolumeForSource(SFX_OUTPUT_SCALE,"assets/media/nova/ouma-reverse-v2.wav");
+    applyOumaAudioOutputVolumes();
     applyBgmOutputVolumes();
     if(koatariSound) koatariSound.volume = sfxOutputVolumeForSource(SFX_OUTPUT_SCALE, KOATARI_SOUND_SRC);
     if(bigSound) bigSound.volume = sfxOutputVolumeForSource(SFX_OUTPUT_SCALE, BIG_SOUND_SRC);
@@ -1427,7 +1431,8 @@
   }
 
   function applyBgmOutputVolumes(){
-    resultEyecatchPreload.volume = bgmOutputVolumeForSource(BGM_OUTPUT_SCALE,'assets/media/nova/result-eyecatch.wav');
+    const resultEyecatchAudio=oneShotSoundCache.get('assets/media/nova/result-eyecatch.wav');
+    if(resultEyecatchAudio)resultEyecatchAudio.volume = bgmOutputVolumeForSource(BGM_OUTPUT_SCALE,'assets/media/nova/result-eyecatch.wav');
     if(bgm) bgm.volume = bgmOutputVolumeForSource(BGM_OUTPUT_SCALE, bgm.getAttribute("src") || normalBgmSrc());
     if(barBgm) barBgm.volume = bgmOutputVolumeForSource(BAR_BGM_OUTPUT_SCALE, activeBarBgmSrc());
     if(battleBgm) battleBgm.volume = bgmOutputVolumeForSource(BATTLE_BGM_OUTPUT_SCALE, BATTLE_BGM_SRC);
@@ -4202,6 +4207,7 @@
       gekiatsuVideo.volume = movieOutputVolumeForSource(MOVIE_OUTPUT_SCALE, GEKIATSU_VIDEO_SRC);
     }
     applyCharacterVoiceOutputVolumes();
+    applyOumaAudioOutputVolumes();
     updateAudioMuteButton();
     renderSettingTable();
   }

@@ -1,0 +1,58 @@
+{
+  "status": "pass",
+  "muted": true,
+  "reports": [
+    {
+      "zone": "urapi",
+      "events": [
+        {
+          "src": "assets/media/nova/ouma-reverse-v2.wav",
+          "actual": "assets/media/normalized-20261012/nova/ouma-reverse-v2.wav",
+          "at": 10337.300000011921,
+          "volume": 0.6223977935136229,
+          "started": true,
+          "duration": 6.965986,
+          "ended": true
+        }
+      ],
+      "fee": 0,
+      "spinning": false,
+      "liveVolumeControls": "passed"
+    },
+    {
+      "zone": "ouma",
+      "events": [
+        {
+          "src": "assets/media/nova/ouma-reverse-v2.wav",
+          "actual": "assets/media/normalized-20261012/nova/ouma-reverse-v2.wav",
+          "at": 8189.5,
+          "volume": 0.6223977935136229,
+          "started": true,
+          "duration": 6.965986,
+          "ended": true
+        }
+      ],
+      "fee": 0,
+      "spinning": false,
+      "liveVolumeControls": "passed"
+    },
+    {
+      "zone": "ura_ouma",
+      "events": [
+        {
+          "src": "assets/media/nova/ouma-reverse-v2.wav",
+          "actual": "assets/media/normalized-20261012/nova/ouma-reverse-v2.wav",
+          "at": 8278.799999952316,
+          "volume": 0.6223977935136229,
+          "started": true,
+          "duration": 6.965986,
+          "ended": true
+        }
+      ],
+      "fee": 0,
+      "spinning": false,
+      "liveVolumeControls": "passed"
+    }
+  ],
+  "errors": []
+}

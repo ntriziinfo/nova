@@ -40,6 +40,27 @@ test('mastered one-shots use their category slider and ignore historical per-fil
  near(c.audioSourceOutputScale('assets/media/nova/shutter.wav'),1);
 });
 
+test('mastered reverse-reel SE retains its requested +5 dB trim and follows SFX, master and mute controls',()=>{
+ const {c}=setup(),src='assets/media/nova/ouma-reverse-v2.wav';
+ c.NovaAudioAssets={entry:()=>({category:'sfx'})};
+ const trim=html.split('\n').find(line=>line.includes("['"+src+"']:"));
+ assert(trim,'Reverse SE needs an explicit, adjustable trim');
+ vm.runInContext(fn('dbToGain')+'\nconst AUDIO_SOURCE_OUTPUT_SCALE=Object.freeze({'+trim+'});\n'+fn('audioSourceOutputScale')+fn('sfxOutputVolumeForSource'),c);
+ near(c.sfxOutputVolumeForSource(1,src),.45*10**(5/20));
+ near(c.sfxOutputVolumeForSource(1,src+'?v=new'),.45*10**(5/20));
+ for(const other of ['assets/media/nova/shutter.wav','assets/media/nova/uuufa.wav','assets/media/nova/ouma-fail.wav'])near(c.sfxOutputVolumeForSource(1,other),.45);
+ c.settings.masterVolume=.7;c.settings.sfxVolume=.5;near(c.sfxOutputVolumeForSource(1,src),.35*10**(5/20));
+ c.settings.sfxVolume=0;assert.equal(c.sfxOutputVolumeForSource(1,src),0);
+ c.settings.masterVolume=1;c.settings.sfxVolume=1;assert.equal(c.sfxOutputVolumeForSource(1,src),1);
+ c.settings.audioMuted=true;assert.equal(c.sfxOutputVolumeForSource(1,src),0);
+ c.oumaReverseAudio={volume:1,currentTime:2.5};c.oumaIntroAudio={volume:1,currentTime:.5};
+ vm.runInContext(fn('applyOumaAudioOutputVolumes'),c);
+ c.applyOumaAudioOutputVolumes();assert.equal(c.oumaReverseAudio.volume,0);assert.equal(c.oumaIntroAudio.volume,0);
+ c.settings.audioMuted=false;c.settings.masterVolume=.4;c.settings.sfxVolume=.25;c.applyOumaAudioOutputVolumes();
+ near(c.oumaReverseAudio.volume,.1*10**(5/20));near(c.oumaIntroAudio.volume,.1);
+ assert.equal(c.oumaReverseAudio.currentTime,2.5);assert.equal(c.oumaIntroAudio.currentTime,.5);
+});
+
 test('every registered character line uses one voice category regardless of caller volume, source gain or SFX slider',()=>{
  const {c}=setup();
  for(const src of c.voiceSources){
@@ -50,6 +71,16 @@ test('every registered character line uses one voice category regardless of call
  for(const src of ['assets/media/nova/aim/zone-roulette-confirm.wav?v=future','assets/media/jag/cz_last.wav?v=future']){
   c.playOneShotSound(src,0);near(c.oneShotSoundCache.get(src).volume,.2);
  }
+});
+
+test('BGM and mute updates use the cached result sound, including before it has loaded',()=>{
+ const {c,Audio}=setup();
+ Object.assign(c,{bgm:null,barBgm:null,battleBgm:null,BGM_OUTPUT_SCALE:1,bgmOutputVolumeForSource:()=>.13});
+ vm.runInContext(fn('applyBgmOutputVolumes'),c);
+ c.applyBgmOutputVolumes();
+ const src='assets/media/nova/result-eyecatch.wav',audio=new Audio(src);audio.currentTime=1.5;
+ c.oneShotSoundCache.set(src,audio);c.applyBgmOutputVolumes();near(audio.volume,.13);assert.equal(audio.currentTime,1.5);
+ c.bgmOutputVolumeForSource=()=>0;c.applyBgmOutputVolumes();assert.equal(audio.volume,0);assert.equal(audio.plays,0);
 });
 
 test('a playing voice immediately follows common voice/master/mute controls without restarting',()=>{
