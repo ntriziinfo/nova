@@ -3061,7 +3061,7 @@
       stopAutoPlay("COMPLETE到達のためAUTO停止");
       stopSpeedToBonus("COMPLETE到達のためSPEED停止");
       stopDebugFastSpin("COMPLETE到達");
-      showOverlay("コンプリートしました。");
+      syncCompletePresentation(true);
       showMessage("コンプリートしました。", `${completeTrialState.reason==='my'?'MY15,000pt':'+'+limit+'pt'}到達 / 管理リセットまたは設定変更まで遊技できません`);
       log(`[COMPLETE] ${completeTrialState.reason==='my'?'MY15,000pt':'+'+limit+'pt'}到達：${formatSigned(profit)}pt / 設定${completeTrialState.lockedSetting}`);
       persistState();
@@ -3081,6 +3081,22 @@
     showMessage("コンプリートしました。", `${completeTrialState.reason==='my'?'MY15,000pt':'+'+completeLimitPt()+'pt'}到達 / 管理リセットまたは設定変更まで遊技できません`);
     showOverlay("コンプリートしました。");
     return false;
+  }
+
+  function syncCompletePresentation(announce=false){
+    const locked=isCompleteTrialLocked(),wasVisible=NovaCompletePresentation.active;
+    NovaCompletePresentation.sync(locked);
+    if(!locked||(!announce&&wasVisible))return;
+    pauseNormalBgm();stopBarBgm();stopBattleBgm(false);
+    if(!announce)return; // Restored COMPLETE screens stay visible without repeating the voice.
+    bonusConfirmSoundAudio?.pause();clearBonusConfirmSoundLock();
+    clearCzIntroVoiceHold(true);clearComebackIntroVoiceHold();
+    globalThis.NovaRushConfirm?.reset();
+    for(const sound of oneShotSoundCache.values())sound.pause();
+    for(const sound of aimWinAudios)sound.pause();
+    oumaIntroAudio?.pause();oumaReverseAudio?.pause();
+    const playback=playOneShotSound(MODE_EVENT_VOICE_SRCS.complete,voiceOutputVolume(),{allowDuringPremiumConfirm:true});
+    NovaCompletePresentation.setAudio(playback?.audio);
   }
 
   function normalizeSlumpHistory(){
@@ -4788,6 +4804,7 @@
   }
 
   function playNormalBgm(){
+    if(globalThis.NovaCompletePresentation?.active)return;
     if(globalThis.NovaRushConfirm?.active)return;
     const initialDuoZone=NovaInitialDuo.eligible(presentedArtFlow());
     if(normalState.resultCard || normalState.pendingZoneResult || normalState.ladderAwardPresentation || (NovaDirectAward.busy&&!initialDuoZone)){pauseNormalBgm();return;}
@@ -4815,6 +4832,7 @@
   }
 
   function playBarAudioSource(src, mode, logLabel){
+    if(globalThis.NovaCompletePresentation?.active)return;
     if(globalThis.NovaRushConfirm?.active)return;
     if(debugFastSpinActive) return;
     if(!barBgm) return;
@@ -4873,6 +4891,7 @@
   }
 
   function playBattleBgm(){
+    if(globalThis.NovaCompletePresentation?.active)return;
     if(debugFastSpinActive) return;
     if(!battleBgm) return;
     if(!BATTLE_BGM_SRC) return;
@@ -5494,6 +5513,7 @@
   }
 
   function updateDisplay(){
+    syncCompletePresentation();
     showSortieResultIfReady();
     renderRemainingCounters();
     NovaStockEntry.show(!session.active&&!normalState.resultCard&&NovaStockEntry.matches(normalState.stockEntry,normalState.flow,NovaProgress.snapshot())?normalState.stockEntry:null);
@@ -9026,6 +9046,7 @@
   }
 
   function playOneShotSound(src, volume=sfxOutputVolume(), options={}){
+    if(globalThis.NovaCompletePresentation?.active&&src!==MODE_EVENT_VOICE_SRCS.complete)return;
     if(debugFastSpinActive || speedToBonusActive) return;
     if(premiumBigConfirmSilence && !options.allowDuringPremiumConfirm) return;
     if(!src) return;
@@ -9133,6 +9154,7 @@
   }
 
   function playLockedBonusConfirmSound(src, volume=sfxOutputVolume(CONFIRM_SOUND_OUTPUT_SCALE), onEnded=null){
+    if(globalThis.NovaCompletePresentation?.active&&src!==MODE_EVENT_VOICE_SRCS.complete)return;
     if(debugFastSpinActive || speedToBonusActive) return;
     if(!src) return;
     if(src === SEVEN_CONFIRM_SOUND_SRC && isPremiumBigConfirmSoundContext(currentSpin)){
@@ -9345,6 +9367,7 @@
   function playLoseSound(){ if(debugFastSpinActive || speedToBonusActive) return; beep(190,.13,"sawtooth",.055); }
 
   function showOverlay(text){
+    if(globalThis.NovaCompletePresentation?.active)return;
     if(debugFastSpinActive || speedToBonusActive) return;
     text=NovaSortie.label(text);
     const o = $("overlay");

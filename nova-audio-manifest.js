@@ -576,6 +576,10 @@ globalThis.NovaAudioManifest=Object.freeze({
     "src": "assets/media/normalized-20261012/nova/sosuke-comeback-entry.wav",
     "category": "voice"
   },
+  "assets/media/nova/sosuke-complete.wav": {
+    "src": "assets/media/normalized-20261012/nova/sosuke-complete.wav",
+    "category": "voice"
+  },
   "assets/media/nova/sosuke-ladder-bet-love.wav": {
     "src": "assets/media/normalized-20261012/nova/sosuke-ladder-bet-love.wav",
     "category": "voice"

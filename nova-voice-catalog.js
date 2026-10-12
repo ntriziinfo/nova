@@ -85,7 +85,8 @@ globalThis.NovaVoiceCatalog=(()=>{
     "upperAt": "assets/media/nova/sosuke-upper-at-entry.wav",
     "bonusStock": "assets/media/nova/sosuke-bonus-stock.wav",
     "zoneGet": "assets/media/nova/sosuke-zone-get.wav",
-    "sortie": "assets/media/nova/sosuke-sortie-entry.wav"
+    "sortie": "assets/media/nova/sosuke-sortie-entry.wav",
+    "complete": "assets/media/nova/sosuke-complete.wav"
   };
   const SORTIE_AWARD_VOICE_SRCS={
     sosuke:'assets/media/nova/sortie-award-sosuke.wav',

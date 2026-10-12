@@ -1,0 +1,582 @@
+{
+  "status": "pass",
+  "muted": true,
+  "reports": [
+    {
+      "spec": {
+        "name": "desktop-net",
+        "reload": true
+      },
+      "state": {
+        "spinning": false,
+        "auto": false,
+        "fee": 303,
+        "paid": 10306,
+        "spins": 1,
+        "complete": {
+          "lowestNet": 0,
+          "maxMy": 10003,
+          "locked": true,
+          "reason": "net",
+          "completeProfit": 10003,
+          "completeMy": 10003,
+          "lockedSetting": 1
+        },
+        "order": []
+      },
+      "events": [
+        {
+          "src": "assets/media/nova/sosuke-complete.wav",
+          "actual": "assets/media/normalized-20261012/nova/sosuke-complete.wav",
+          "at": 9720.699999988079,
+          "loop": false,
+          "volume": 0.35,
+          "rate": 1,
+          "started": true,
+          "duration": 5.888,
+          "ended": 18024.599999964237
+        }
+      ],
+      "geometry": {
+        "box": {
+          "x": 156.265625,
+          "y": 566,
+          "width": 585.0625,
+          "height": 365.734375,
+          "top": 566,
+          "right": 741.328125,
+          "bottom": 931.734375,
+          "left": 156.265625
+        },
+        "items": [
+          {
+            "selector": "reels",
+            "box": {
+              "x": 187.90625,
+              "y": 733.265625,
+              "width": 518.390625,
+              "height": 194.46875,
+              "top": 733.265625,
+              "right": 706.296875,
+              "bottom": 927.734375,
+              "left": 187.90625
+            }
+          },
+          {
+            "selector": "novaFlowStatus",
+            "box": {
+              "x": 181.1875,
+              "y": 570,
+              "width": 537.59375,
+              "height": 19,
+              "top": 570,
+              "right": 718.78125,
+              "bottom": 589,
+              "left": 181.1875
+            }
+          },
+          {
+            "selector": "novaArtItem selected",
+            "box": {
+              "x": 351,
+              "y": 582.828125,
+              "width": 131.515625,
+              "height": 131.515625,
+              "top": 582.828125,
+              "right": 482.515625,
+              "bottom": 714.34375,
+              "left": 351
+            }
+          },
+          {
+            "selector": "novaArtItem",
+            "box": {
+              "x": 417.421875,
+              "y": 601.34375,
+              "width": 142.078125,
+              "height": 142.078125,
+              "top": 601.34375,
+              "right": 559.5,
+              "bottom": 743.421875,
+              "left": 417.421875
+            }
+          },
+          {
+            "selector": "novaArtItem",
+            "box": {
+              "x": 565.671875,
+              "y": 582.03125,
+              "width": 102.71875,
+              "height": 130.953125,
+              "top": 582.03125,
+              "right": 668.390625,
+              "bottom": 712.984375,
+              "left": 565.671875
+            }
+          },
+          {
+            "selector": "novaArtItem",
+            "box": {
+              "x": 524.140625,
+              "y": 623.4375,
+              "width": 79.671875,
+              "height": 109.34375,
+              "top": 623.4375,
+              "right": 603.8125,
+              "bottom": 732.78125,
+              "left": 524.140625
+            }
+          },
+          {
+            "selector": "novaArtItem",
+            "box": {
+              "x": 203.90625,
+              "y": 578.046875,
+              "width": 151.671875,
+              "height": 151.671875,
+              "top": 578.046875,
+              "right": 355.578125,
+              "bottom": 729.71875,
+              "left": 203.90625
+            }
+          },
+          {
+            "selector": "novaArtItem",
+            "box": {
+              "x": 281.09375,
+              "y": 609.984375,
+              "width": 132.46875,
+              "height": 132.46875,
+              "top": 609.984375,
+              "right": 413.5625,
+              "bottom": 742.453125,
+              "left": 281.09375
+            }
+          },
+          {
+            "selector": "novaArtItem",
+            "box": {
+              "x": 617.328125,
+              "y": 620.546875,
+              "width": 120,
+              "height": 120,
+              "top": 620.546875,
+              "right": 737.328125,
+              "bottom": 740.546875,
+              "left": 617.328125
+            }
+          },
+          {
+            "selector": "novaArtItem",
+            "box": {
+              "x": 160.265625,
+              "y": 612.375,
+              "width": 118.078125,
+              "height": 118.078125,
+              "top": 612.375,
+              "right": 278.34375,
+              "bottom": 730.453125,
+              "left": 160.265625
+            }
+          }
+        ],
+        "text": "COMPLETE\n\nコンプリート機能が発動しました\n\n本日の遊技は終了となります",
+        "button": {
+          "x": 123.6015625,
+          "y": 1011.703125,
+          "width": 147.828125,
+          "height": 247.9375,
+          "top": 1011.703125,
+          "right": 271.4296875,
+          "bottom": 1259.640625,
+          "left": 123.6015625
+        },
+        "image": "url(\"http://127.0.0.1:58678/assets/ui/complete-background-20261012.png\")"
+      }
+    },
+    {
+      "spec": {
+        "name": "mobile-my",
+        "my": true,
+        "mobile": true,
+        "auto": true
+      },
+      "state": {
+        "spinning": false,
+        "auto": false,
+        "fee": 303,
+        "paid": 7306,
+        "spins": 1,
+        "complete": {
+          "lowestNet": -8000,
+          "maxMy": 15003,
+          "locked": true,
+          "reason": "my",
+          "completeProfit": 7003,
+          "completeMy": 15003,
+          "lockedSetting": 1
+        },
+        "order": []
+      },
+      "events": [
+        {
+          "src": "assets/media/nova/sosuke-complete.wav",
+          "actual": "assets/media/normalized-20261012/nova/sosuke-complete.wav",
+          "at": 7950.699999988079,
+          "loop": false,
+          "volume": 0.35,
+          "rate": 1,
+          "started": true,
+          "duration": 5.888,
+          "ended": 22158.5
+        }
+      ],
+      "geometry": {
+        "box": {
+          "x": 80.55989074707031,
+          "y": 279.5958251953125,
+          "width": 227.9245147705078,
+          "height": 142.47793579101562,
+          "top": 279.5958251953125,
+          "right": 308.4844055175781,
+          "bottom": 422.0737609863281,
+          "left": 80.55989074707031
+        },
+        "items": [
+          {
+            "selector": "reels",
+            "box": {
+              "x": 92.89263916015625,
+              "y": 344.7597351074219,
+              "width": 201.95632934570312,
+              "height": 75.76177978515625,
+              "top": 344.7597351074219,
+              "right": 294.8489685058594,
+              "bottom": 420.5215148925781,
+              "left": 92.89263916015625
+            }
+          },
+          {
+            "selector": "novaFlowStatus",
+            "box": {
+              "x": 90.2751235961914,
+              "y": 281.1541748046875,
+              "width": 209.43756103515625,
+              "height": 7.402069091796875,
+              "top": 281.1541748046875,
+              "right": 299.71268463134766,
+              "bottom": 288.5562438964844,
+              "left": 90.2751235961914
+            }
+          },
+          {
+            "selector": "novaArtItem selected",
+            "box": {
+              "x": 156.43124389648438,
+              "y": 286.15179443359375,
+              "width": 51.236297607421875,
+              "height": 51.23626708984375,
+              "top": 286.15179443359375,
+              "right": 207.66754150390625,
+              "bottom": 337.3880615234375,
+              "left": 156.43124389648438
+            }
+          },
+          {
+            "selector": "novaArtItem",
+            "box": {
+              "x": 182.30810546875,
+              "y": 293.36517333984375,
+              "width": 55.35125732421875,
+              "height": 55.35125732421875,
+              "top": 293.36517333984375,
+              "right": 237.65936279296875,
+              "bottom": 348.7164306640625,
+              "left": 182.30810546875
+            }
+          },
+          {
+            "selector": "novaArtItem",
+            "box": {
+              "x": 240.06382751464844,
+              "y": 285.8413391113281,
+              "width": 40.01750183105469,
+              "height": 51.01715087890625,
+              "top": 285.8413391113281,
+              "right": 280.0813293457031,
+              "bottom": 336.8584899902344,
+              "left": 240.06382751464844
+            }
+          },
+          {
+            "selector": "novaArtItem",
+            "box": {
+              "x": 223.88394165039062,
+              "y": 301.9725341796875,
+              "width": 31.038833618164062,
+              "height": 42.598480224609375,
+              "top": 301.9725341796875,
+              "right": 254.9227752685547,
+              "bottom": 344.5710144042969,
+              "left": 223.88394165039062
+            }
+          },
+          {
+            "selector": "novaArtItem",
+            "box": {
+              "x": 99.1259765625,
+              "y": 284.2890930175781,
+              "width": 59.088836669921875,
+              "height": 59.088836669921875,
+              "top": 284.2890930175781,
+              "right": 158.21481323242188,
+              "bottom": 343.3779296875,
+              "left": 99.1259765625
+            }
+          },
+          {
+            "selector": "novaArtItem",
+            "box": {
+              "x": 129.19692993164062,
+              "y": 296.73138427734375,
+              "width": 51.60762023925781,
+              "height": 51.607635498046875,
+              "top": 296.73138427734375,
+              "right": 180.80455017089844,
+              "bottom": 348.3390197753906,
+              "left": 129.19692993164062
+            }
+          },
+          {
+            "selector": "novaArtItem",
+            "box": {
+              "x": 260.188232421875,
+              "y": 300.84637451171875,
+              "width": 46.75,
+              "height": 46.75,
+              "top": 300.84637451171875,
+              "right": 306.938232421875,
+              "bottom": 347.59637451171875,
+              "left": 260.188232421875
+            }
+          },
+          {
+            "selector": "novaArtItem",
+            "box": {
+              "x": 82.12431335449219,
+              "y": 297.6627502441406,
+              "width": 46.00126647949219,
+              "height": 46.00128173828125,
+              "top": 297.6627502441406,
+              "right": 128.12557983398438,
+              "bottom": 343.6640319824219,
+              "left": 82.12431335449219
+            }
+          }
+        ],
+        "text": "COMPLETE\n\nコンプリート機能が発動しました\n\n本日の遊技は終了となります",
+        "button": {
+          "x": 67.84060668945312,
+          "y": 453.23431396484375,
+          "width": 57.59136962890625,
+          "height": 96.59234619140625,
+          "top": 453.23431396484375,
+          "right": 125.43197631835938,
+          "bottom": 549.82666015625,
+          "left": 67.84060668945312
+        },
+        "image": "url(\"http://127.0.0.1:58678/assets/ui/complete-background-20261012.png\")"
+      }
+    },
+    {
+      "spec": {
+        "name": "audio-unavailable",
+        "error": true
+      },
+      "state": {
+        "spinning": false,
+        "auto": false,
+        "fee": 303,
+        "paid": 10306,
+        "spins": 1,
+        "complete": {
+          "lowestNet": 0,
+          "maxMy": 10003,
+          "locked": true,
+          "reason": "net",
+          "completeProfit": 10003,
+          "completeMy": 10003,
+          "lockedSetting": 1
+        },
+        "order": []
+      },
+      "events": [
+        {
+          "src": "assets/media/nova/sosuke-complete.wav",
+          "actual": "assets/media/normalized-20261012/nova/sosuke-complete.wav",
+          "at": 8496.5,
+          "loop": false,
+          "volume": 0.35,
+          "rate": 1
+        }
+      ],
+      "geometry": {
+        "box": {
+          "x": 156.265625,
+          "y": 566,
+          "width": 585.0625,
+          "height": 365.734375,
+          "top": 566,
+          "right": 741.328125,
+          "bottom": 931.734375,
+          "left": 156.265625
+        },
+        "items": [
+          {
+            "selector": "reels",
+            "box": {
+              "x": 187.90625,
+              "y": 733.265625,
+              "width": 518.390625,
+              "height": 194.46875,
+              "top": 733.265625,
+              "right": 706.296875,
+              "bottom": 927.734375,
+              "left": 187.90625
+            }
+          },
+          {
+            "selector": "novaFlowStatus",
+            "box": {
+              "x": 181.1875,
+              "y": 570,
+              "width": 537.59375,
+              "height": 19,
+              "top": 570,
+              "right": 718.78125,
+              "bottom": 589,
+              "left": 181.1875
+            }
+          },
+          {
+            "selector": "novaArtItem selected",
+            "box": {
+              "x": 351,
+              "y": 582.828125,
+              "width": 131.515625,
+              "height": 131.515625,
+              "top": 582.828125,
+              "right": 482.515625,
+              "bottom": 714.34375,
+              "left": 351
+            }
+          },
+          {
+            "selector": "novaArtItem",
+            "box": {
+              "x": 417.421875,
+              "y": 601.34375,
+              "width": 142.078125,
+              "height": 142.078125,
+              "top": 601.34375,
+              "right": 559.5,
+              "bottom": 743.421875,
+              "left": 417.421875
+            }
+          },
+          {
+            "selector": "novaArtItem",
+            "box": {
+              "x": 565.671875,
+              "y": 582.03125,
+              "width": 102.71875,
+              "height": 130.953125,
+              "top": 582.03125,
+              "right": 668.390625,
+              "bottom": 712.984375,
+              "left": 565.671875
+            }
+          },
+          {
+            "selector": "novaArtItem",
+            "box": {
+              "x": 524.140625,
+              "y": 623.4375,
+              "width": 79.671875,
+              "height": 109.34375,
+              "top": 623.4375,
+              "right": 603.8125,
+              "bottom": 732.78125,
+              "left": 524.140625
+            }
+          },
+          {
+            "selector": "novaArtItem",
+            "box": {
+              "x": 203.90625,
+              "y": 578.046875,
+              "width": 151.671875,
+              "height": 151.671875,
+              "top": 578.046875,
+              "right": 355.578125,
+              "bottom": 729.71875,
+              "left": 203.90625
+            }
+          },
+          {
+            "selector": "novaArtItem",
+            "box": {
+              "x": 281.09375,
+              "y": 609.984375,
+              "width": 132.46875,
+              "height": 132.46875,
+              "top": 609.984375,
+              "right": 413.5625,
+              "bottom": 742.453125,
+              "left": 281.09375
+            }
+          },
+          {
+            "selector": "novaArtItem",
+            "box": {
+              "x": 617.328125,
+              "y": 620.546875,
+              "width": 120,
+              "height": 120,
+              "top": 620.546875,
+              "right": 737.328125,
+              "bottom": 740.546875,
+              "left": 617.328125
+            }
+          },
+          {
+            "selector": "novaArtItem",
+            "box": {
+              "x": 160.265625,
+              "y": 612.375,
+              "width": 118.078125,
+              "height": 118.078125,
+              "top": 612.375,
+              "right": 278.34375,
+              "bottom": 730.453125,
+              "left": 160.265625
+            }
+          }
+        ],
+        "text": "COMPLETE\n\nコンプリート機能が発動しました\n\n本日の遊技は終了となります",
+        "button": {
+          "x": 123.6015625,
+          "y": 1011.703125,
+          "width": 147.828125,
+          "height": 247.9375,
+          "top": 1011.703125,
+          "right": 271.4296875,
+          "bottom": 1259.640625,
+          "left": 123.6015625
+        },
+        "image": "url(\"http://127.0.0.1:58678/assets/ui/complete-background-20261012.png\")"
+      }
+    }
+  ],
+  "errors": []
+}

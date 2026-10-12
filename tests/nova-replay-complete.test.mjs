@@ -52,7 +52,7 @@ test('MY arrival cancels every automatic player and gates the next manual BET',(
  const calls=[],ctx=vm.createContext({NovaComplete:c.NovaComplete,COMPLETE_TRIAL_ENABLED:true,settings:{setting:6},completeTrialState:{lowestNet:-8000},
   completeTrialProfit:()=>7000,completeLimitPt:()=>10000,isCompleteLockEnabled:()=>true,
   stopAutoPlay:()=>calls.push('auto'),stopSpeedToBonus:()=>calls.push('speed'),stopDebugFastSpin:()=>calls.push('fast'),
-  showOverlay(){},showMessage(){},log(){},persistState(){},updateDisplay(){},formatSigned:String,
+  showOverlay(){},showMessage(){},log(){},persistState(){},updateDisplay(){},syncCompletePresentation(){},formatSigned:String,
   bonusConfirmSoundPlaying:false,bonusEndBgmPlaying:false});
  const src=fs.readFileSync('nova-game.js','utf8');
  for(const name of ['isCompleteTrialLocked','updateCompleteTrialState','canPlayCompleteTrial'])vm.runInContext(src.match(new RegExp('  function '+name+'\\([^]*?\\n  }'))[0],ctx);

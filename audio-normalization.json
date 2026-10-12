@@ -3324,6 +3324,29 @@
       }
     },
     {
+      "src": "assets/media/nova/sosuke-complete.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/sosuke-complete.wav",
+      "sourceSha256": "4fb64c503962d88ede843a3c5cecadec53380950eb01b5e7446a3875e7551496",
+      "outputSha256": "60abac96c9e680c01e758be7e6aa3ca0db52f0b86c5f692b4028d815a4d4aa3e",
+      "rate": 48000,
+      "channels": 1,
+      "duration": 5.888,
+      "outputDuration": 5.888,
+      "gainDb": 14.25,
+      "before": {
+        "lufs": -28.01,
+        "peakDbtp": -13.37,
+        "rangeLu": 2.6
+      },
+      "after": {
+        "lufs": -14.05,
+        "peakDbtp": -2,
+        "rangeLu": 2.4
+      }
+    },
+    {
       "src": "assets/media/nova/sosuke-ladder-bet-love.wav",
       "category": "voice",
       "targetLufs": -14,

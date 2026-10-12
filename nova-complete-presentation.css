@@ -1,0 +1,6 @@
+#novaCompleteScreen{position:absolute;z-index:9999;display:flex;align-items:center;justify-content:center;box-sizing:border-box;overflow:hidden;isolation:isolate;background:#130308 url("assets/ui/complete-background-20261012.png") center/100% 100% no-repeat;border:1px solid #e6b758;border-radius:7px;box-shadow:0 0 18px #000c;color:#fff3d5;text-align:center;pointer-events:auto;user-select:none}
+#novaCompleteScreen[hidden]{display:none!important}
+#novaCompleteScreen .novaCompleteCopy{width:90%;padding:5% 0;line-height:1.8;text-shadow:0 2px 3px #000,0 0 12px #000}
+#novaCompleteScreen strong{display:block;margin:0 0 .45em;color:#ffe7a1;font:900 2.15em/1.2 Georgia,"Times New Roman",serif;letter-spacing:.045em;text-shadow:0 2px 0 #6d3808,0 0 18px #d3893659}
+#novaCompleteScreen p{margin:.3em 0;font-weight:800;white-space:nowrap;letter-spacing:0}
+#novaCompleteScreen p:last-child{font-size:.92em;color:#f2e5d6}

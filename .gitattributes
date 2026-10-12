@@ -48,3 +48,7 @@ assets/media/nova/sosuke-event-voices.sources.json -filter -diff -merge text
 # Supplied sortie acquisition lines; preserve originals separately from masters.
 assets/media/nova/sortie-award-*.wav -filter -diff -merge -text
 assets/media/nova/sortie-award-voices.sources.json -filter -diff -merge text
+assets/media/nova/sosuke-complete.wav -filter -diff -merge -text
+assets/media/nova/sosuke-complete.source.json -filter -diff -merge text
+assets/ui/complete-background-20261012.png -filter -diff -merge -text
+assets/ui/complete-background-20261012.source.json -filter -diff -merge text

@@ -1,0 +1,6 @@
+{
+  "tool": "built-in image_gen",
+  "prompt": "Use case: stylized-concept. Create a premium Japanese pachislot game COMPLETE end-screen background for the NOVA game, as an opaque rectangular bitmap. Landscape aspect ratio 4:3, 1536 x 1152 if available. Rich midnight black and deep burgundy center, luminous metallic gold beveled frame, restrained red-magenta highlights and fine golden star particles around the outer edges. Elegant celebratory final achievement atmosphere, matching ornate red/gold Japanese slot-machine effects. Keep the central 65% dark, calm, open and unpatterned enough to place two large lines of Japanese text in HTML; the background must not reduce text readability. Corners and edges may have jewel-like light flares and faceted metallic detail, but no characters, no faces, no machines, no numbers, no letters, no logos, no typography, no watermark. Full bleed background, no transparency, crisp polished game art.",
+  "generatedPath": "C:/Users/nitro/.codex/generated_images/01a079be-370e-7f21-8a46-92f3f08ccaaf/exec-02428d7e-0139-4c02-afb5-59c785fba19a.png",
+  "copy": "assets/ui/complete-background-20261012.png"
+}
