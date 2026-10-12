@@ -3324,6 +3324,29 @@
       }
     },
     {
+      "src": "assets/media/nova/sosuke-sortie-entry.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/sosuke-sortie-entry.wav",
+      "sourceSha256": "02889053de17186bbe1c9706351d3e77ffe3eccae4b98445ffd1c3eb67848e76",
+      "outputSha256": "c2578fcb102c885871a90bd48530a06065042617f0d80e640d317d7c147fef90",
+      "rate": 48000,
+      "channels": 1,
+      "duration": 4.778667,
+      "outputDuration": 4.778667,
+      "gainDb": 10.26,
+      "before": {
+        "lufs": -24.26,
+        "peakDbtp": -12.93,
+        "rangeLu": 2.3
+      },
+      "after": {
+        "lufs": -14.01,
+        "peakDbtp": -2.67,
+        "rangeLu": 2.3
+      }
+    },
+    {
       "src": "assets/media/nova/sosuke-upper-at-entry.wav",
       "category": "voice",
       "targetLufs": -14,

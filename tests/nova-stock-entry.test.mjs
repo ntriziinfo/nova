@@ -1,4 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
+import {loadVoiceCatalog} from './helpers/voice-catalog.mjs';
 const plain=v=>JSON.parse(JSON.stringify(v));
 function harness(){
  let now=0;
@@ -8,6 +9,8 @@ function harness(){
   NovaProgress:{snapshot:()=>({pending:0,sorties:0}),ready:flow=>flow.phase==='art'&&!flow.queuedZones?.length},NovaSortie:{clear:noop,flash:noop},NovaBellNavi:{clear:noop},NovaDirectAward:{clear:noop},NovaAim:{hide:noop,bet:noop,stop:noop},NovaLadder:{hide:noop},NovaResults:{hide:noop},NovaArt:{zoneName:z=>z},NovaReelMotion:{start:noop,stop:async()=>true},
   getReelWindowFromStrip:(i,symbol)=>['BELL',symbol,'REPLAY'],currentReelTopIndex:()=>0,cellHtml:noop,showZoneRoulette:noop,pauseNormalBgm:noop,persistState:noop,updateDisplay:noop,scheduleNextAuto:noop,syncCabinetControlState:noop,stopReel:noop,
   playRandomAimVoice:symbol=>{c.voiceSymbol=symbol;},playSevenAimVoice:resolved=>{c.voiceZone=resolved.flowBefore.pendingZone;},playOneShotSound:noop,voiceOutputVolume:()=>1,ZONE_START_VOICE_SRCS:{},setTimeout:f=>{f();return 1;},clearTimeout:noop,spinWaitMsForMode:()=>500,displayNovaResult:card=>{c.normalState.resultCard=card;}});
+ c.MODE_EVENT_VOICE_SRCS=loadVoiceCatalog(c).MODE_EVENT_VOICE_SRCS;
+ c.lockedVoices=[];c.playLockedBonusConfirmSound=(src,volume)=>c.lockedVoices.push({src,volume});
  for(const file of ['nova-stock-entry.js','nova-spin-resume.js'])vm.runInContext(fs.readFileSync(file,'utf8'),c);
  c.NovaStockEntry.show=noop;c.NovaStockEntry.hide=noop;
  const source=fs.readFileSync('nova-game.js','utf8');vm.runInContext(source.slice(source.indexOf('  function tryStockEntry(){'),source.indexOf('  async function spin(options={}')),c);
@@ -20,6 +23,7 @@ test('each queued stock has a free preparation and seven stop before engine cons
  assert.equal(c.voiceZone,'ura_giru');
  await c.stopStockEntryReel(2);await c.stopStockEntryReel(1);await c.stopStockEntryReel(0);
  assert.equal(c.normalState.stockEntry.stage,'ready');assert.equal(c.isSpinning,false);assert.equal(c.currentSpin,null);assert.equal(JSON.stringify(c.normalState.flow),flowBefore);
+ assert.equal(c.lockedVoices.length,0,'Ordinary character zone entry does not announce a sortie');
  assert.equal(c.tryStockEntry(),false);assert.equal(c.normalState.stockEntry,undefined);
  // Only the actual engine spin removes its awarded queue item.
  c.normalState.flow.queuedZones.shift();assert.equal(c.tryStockEntry(),true);assert.equal(c.normalState.stockEntry.zone,'kushuri_nito');assert.equal(c.normalState.stockEntry.stage,'prepare');
@@ -38,8 +42,11 @@ test('sortie has a guaranteed free nebula entrance, retains its award through re
  assert(c.tryStockEntry());assert.equal(c.currentSpin.result,'NEBULA');assert.equal(c.voiceSymbol,'nebula');assert.equal(c.voiceZone,undefined);
  assert.equal(c.currentSpin.resolved.reward,0);assert.deepEqual(plain(c.currentSpin.grid[1]),['NEBULA','NEBULA','NEBULA']);
  await c.stopStockEntryReel(2);
+ assert.equal(c.lockedVoices.length,0);
  c.currentSpin=c.NovaSpinResume.restore(c.NovaSpinResume.capture(c.currentSpin),c.RESULT);
- assert.equal(c.currentSpin.resolved.sortieEntry,true);await c.stopStockEntryReel(1);await c.stopStockEntryReel(0);
+ assert.equal(c.currentSpin.resolved.sortieEntry,true);await c.stopStockEntryReel(1);assert.equal(c.lockedVoices.length,0);await c.stopStockEntryReel(0);
+ assert.deepEqual(c.lockedVoices,[{src:c.MODE_EVENT_VOICE_SRCS.sortie,volume:1}]);
+ c.finishStockEntry();assert.equal(c.lockedVoices.length,1,'Repeated third-stop callback must not replay the title');
  assert.equal(c.normalState.stockEntry.stage,'ready');assert.equal(JSON.stringify(c.normalState.flow),before);assert.equal(c.NovaProgress.snapshot().sorties,1);
  assert.equal(c.tryStockEntry(),false);assert.equal(c.normalState.stockEntry,undefined);
  c.NovaProgress.snapshot=()=>({pending:0,sorties:0});assert.equal(c.tryStockEntry(),false);

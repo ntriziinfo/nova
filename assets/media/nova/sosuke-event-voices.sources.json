@@ -24,6 +24,11 @@
       "copy": "assets/media/nova/sosuke-zone-get.wav",
       "sourceName": "特化ゾーンGET.wav",
       "sha256": "cefb0bc8526c57908c575e44057f0f67a7de0968be1479ff6b502ba1a1655b14"
+    },
+    {
+      "copy": "assets/media/nova/sosuke-sortie-entry.wav",
+      "sourceName": "出陣チャレンジ.wav",
+      "sha256": "02889053de17186bbe1c9706351d3e77ffe3eccae4b98445ffd1c3eb67848e76"
     }
   ],
   "category": "voice",

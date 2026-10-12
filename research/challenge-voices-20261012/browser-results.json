@@ -1,0 +1,479 @@
+{
+  "status": "pass",
+  "muted": true,
+  "reports": [
+    {
+      "mode": "manual",
+      "events": [
+        {
+          "type": "voice",
+          "at": 6404.199999988079,
+          "src": "assets/media/nova/sosuke-sortie-entry.wav",
+          "actual": "assets/media/normalized-20261012/nova/sosuke-sortie-entry.wav",
+          "loop": false,
+          "volume": 0.35,
+          "started": true,
+          "duration": 4.778667
+        },
+        {
+          "type": "voiceEnded",
+          "at": 18661.5
+        }
+      ],
+      "bets": [
+        {
+          "at": 18698.19999998808,
+          "fee": 3
+        }
+      ],
+      "state": {
+        "spinning": true,
+        "canStop": false,
+        "locked": false,
+        "fee": 3,
+        "spins": 1,
+        "sorties": 0,
+        "flow": {
+          "initialRolePlan": [],
+          "initialRuleVersion": 0,
+          "initialBoostActive": false,
+          "initialMultiplier": 1,
+          "modelSetting": 3,
+          "researchSortieLeft": 10,
+          "researchSortieHits": 0,
+          "researchSortieRate": 0.4,
+          "researchUpper": false,
+          "researchThresholdUsed": false,
+          "researchThresholdPending": false,
+          "researchChallengeActive": false,
+          "researchChallengeSource": "",
+          "researchAim": "",
+          "initialVersion": 131,
+          "initialStage": "",
+          "initialWait": 0,
+          "initialPlan": [],
+          "initialIndex": 0,
+          "atPrelude": null,
+          "entryQuota": "200",
+          "setQuota": "200",
+          "comebackLeft": 0,
+          "comebackLamp": "",
+          "comebackConfirmed": false,
+          "burstVersion": 2,
+          "burstType": "ura",
+          "burstUsed": true,
+          "burstPending": false,
+          "burstLeft": 0,
+          "burstWon": false,
+          "dryEligible": false,
+          "rouletteTable": 0,
+          "sevenHits": 0,
+          "zoneVersion": 2,
+          "ladder": [],
+          "ladderIndex": 0,
+          "ladderRevealed": false,
+          "atHigh": false,
+          "atHighLeft": 0,
+          "entryStage": "",
+          "pendingZone": "",
+          "payoutVersion": 1,
+          "queuedZones": [],
+          "phase": "art",
+          "remaining": "500",
+          "zone": "",
+          "ura": false,
+          "zoneLeft": 0,
+          "award": "0",
+          "initialAward": "0",
+          "stock": "0",
+          "zoneSets": "0",
+          "zoneZones": "0",
+          "sets": "0",
+          "oumaPending": false,
+          "zero": false,
+          "color": "white",
+          "awardTier": 4,
+          "giruVersion": 0,
+          "giruBase": 0,
+          "giruContinues": 0,
+          "giruSetting": 1
+        }
+      }
+    },
+    {
+      "mode": "auto",
+      "events": [
+        {
+          "type": "voice",
+          "at": 4672.199999988079,
+          "src": "assets/media/nova/sosuke-sortie-entry.wav",
+          "actual": "assets/media/normalized-20261012/nova/sosuke-sortie-entry.wav",
+          "loop": false,
+          "volume": 0.35,
+          "started": true,
+          "duration": 4.778667
+        },
+        {
+          "type": "voiceEnded",
+          "at": 16821.19999998808
+        }
+      ],
+      "bets": [
+        {
+          "at": 16875.19999998808,
+          "fee": 3
+        }
+      ],
+      "state": {
+        "spinning": false,
+        "canStop": false,
+        "locked": false,
+        "fee": 3,
+        "spins": 1,
+        "sorties": 0,
+        "flow": {
+          "initialRolePlan": [],
+          "initialRuleVersion": 0,
+          "initialBoostActive": false,
+          "initialMultiplier": 1,
+          "modelSetting": 3,
+          "researchSortieLeft": 9,
+          "researchSortieHits": 0,
+          "researchSortieRate": 0.4,
+          "researchUpper": false,
+          "researchThresholdUsed": false,
+          "researchThresholdPending": false,
+          "researchChallengeActive": false,
+          "researchChallengeSource": "",
+          "researchAim": "",
+          "initialVersion": 131,
+          "initialStage": "",
+          "initialWait": 0,
+          "initialPlan": [],
+          "initialIndex": 0,
+          "atPrelude": null,
+          "entryQuota": "150",
+          "setQuota": "200",
+          "comebackLeft": 0,
+          "comebackLamp": "",
+          "comebackConfirmed": false,
+          "burstVersion": 2,
+          "burstType": "ura",
+          "burstUsed": true,
+          "burstPending": false,
+          "burstLeft": 0,
+          "burstWon": false,
+          "dryEligible": false,
+          "rouletteTable": 0,
+          "sevenHits": 0,
+          "zoneVersion": 2,
+          "ladder": [],
+          "ladderIndex": 0,
+          "ladderRevealed": false,
+          "atHigh": false,
+          "atHighLeft": 0,
+          "entryStage": "",
+          "pendingZone": "",
+          "payoutVersion": 1,
+          "queuedZones": [],
+          "phase": "art",
+          "remaining": "500",
+          "zone": "",
+          "ura": false,
+          "zoneLeft": 0,
+          "award": "0",
+          "initialAward": "0",
+          "stock": "0",
+          "zoneSets": "0",
+          "zoneZones": "0",
+          "sets": "0",
+          "oumaPending": false,
+          "zero": false,
+          "color": "white",
+          "awardTier": 4,
+          "giruVersion": 0,
+          "giruBase": 0,
+          "giruContinues": 0,
+          "giruSetting": 1
+        }
+      }
+    },
+    {
+      "mode": "mobile",
+      "events": [
+        {
+          "type": "voice",
+          "at": 8687.599999964237,
+          "src": "assets/media/nova/sosuke-sortie-entry.wav",
+          "actual": "assets/media/normalized-20261012/nova/sosuke-sortie-entry.wav",
+          "loop": false,
+          "volume": 0.35,
+          "started": true,
+          "duration": 4.778667
+        },
+        {
+          "type": "voiceEnded",
+          "at": 19636.69999998808
+        }
+      ],
+      "bets": [
+        {
+          "at": 19667.099999964237,
+          "fee": 3
+        }
+      ],
+      "state": {
+        "spinning": true,
+        "canStop": false,
+        "locked": false,
+        "fee": 3,
+        "spins": 1,
+        "sorties": 0,
+        "flow": {
+          "initialRolePlan": [],
+          "initialRuleVersion": 0,
+          "initialBoostActive": false,
+          "initialMultiplier": 1,
+          "modelSetting": 3,
+          "researchSortieLeft": 10,
+          "researchSortieHits": 0,
+          "researchSortieRate": 0.1,
+          "researchUpper": false,
+          "researchThresholdUsed": false,
+          "researchThresholdPending": false,
+          "researchChallengeActive": false,
+          "researchChallengeSource": "",
+          "researchAim": "",
+          "initialVersion": 131,
+          "initialStage": "",
+          "initialWait": 0,
+          "initialPlan": [],
+          "initialIndex": 0,
+          "atPrelude": null,
+          "entryQuota": "150",
+          "setQuota": "200",
+          "comebackLeft": 0,
+          "comebackLamp": "",
+          "comebackConfirmed": false,
+          "burstVersion": 2,
+          "burstType": "ura",
+          "burstUsed": true,
+          "burstPending": false,
+          "burstLeft": 0,
+          "burstWon": false,
+          "dryEligible": false,
+          "rouletteTable": 0,
+          "sevenHits": 0,
+          "zoneVersion": 2,
+          "ladder": [],
+          "ladderIndex": 0,
+          "ladderRevealed": false,
+          "atHigh": false,
+          "atHighLeft": 0,
+          "entryStage": "",
+          "pendingZone": "",
+          "payoutVersion": 1,
+          "queuedZones": [],
+          "phase": "art",
+          "remaining": "500",
+          "zone": "",
+          "ura": false,
+          "zoneLeft": 0,
+          "award": "0",
+          "initialAward": "0",
+          "stock": "0",
+          "zoneSets": "0",
+          "zoneZones": "0",
+          "sets": "0",
+          "oumaPending": false,
+          "zero": false,
+          "color": "white",
+          "awardTier": 4,
+          "giruVersion": 0,
+          "giruBase": 0,
+          "giruContinues": 0,
+          "giruSetting": 1
+        }
+      }
+    },
+    {
+      "mode": "error",
+      "events": [
+        {
+          "type": "voice",
+          "at": 4801.099999964237,
+          "src": "assets/media/nova/sosuke-sortie-entry.wav",
+          "actual": "assets/media/normalized-20261012/nova/sosuke-sortie-entry.wav",
+          "loop": false,
+          "volume": 0.35
+        }
+      ],
+      "bets": [
+        {
+          "at": 5723,
+          "fee": 3
+        }
+      ],
+      "state": {
+        "spinning": true,
+        "canStop": false,
+        "locked": false,
+        "fee": 3,
+        "spins": 1,
+        "sorties": 0,
+        "flow": {
+          "initialRolePlan": [],
+          "initialRuleVersion": 0,
+          "initialBoostActive": false,
+          "initialMultiplier": 1,
+          "modelSetting": 3,
+          "researchSortieLeft": 10,
+          "researchSortieHits": 0,
+          "researchSortieRate": 0.6,
+          "researchUpper": false,
+          "researchThresholdUsed": false,
+          "researchThresholdPending": false,
+          "researchChallengeActive": false,
+          "researchChallengeSource": "",
+          "researchAim": "",
+          "initialVersion": 131,
+          "initialStage": "",
+          "initialWait": 0,
+          "initialPlan": [],
+          "initialIndex": 0,
+          "atPrelude": null,
+          "entryQuota": "150",
+          "setQuota": "200",
+          "comebackLeft": 0,
+          "comebackLamp": "",
+          "comebackConfirmed": false,
+          "burstVersion": 2,
+          "burstType": "ura",
+          "burstUsed": true,
+          "burstPending": false,
+          "burstLeft": 0,
+          "burstWon": false,
+          "dryEligible": false,
+          "rouletteTable": 0,
+          "sevenHits": 0,
+          "zoneVersion": 2,
+          "ladder": [],
+          "ladderIndex": 0,
+          "ladderRevealed": false,
+          "atHigh": false,
+          "atHighLeft": 0,
+          "entryStage": "",
+          "pendingZone": "",
+          "payoutVersion": 1,
+          "queuedZones": [],
+          "phase": "art",
+          "remaining": "500",
+          "zone": "",
+          "ura": false,
+          "zoneLeft": 0,
+          "award": "0",
+          "initialAward": "0",
+          "stock": "0",
+          "zoneSets": "0",
+          "zoneZones": "0",
+          "sets": "0",
+          "oumaPending": false,
+          "zero": false,
+          "color": "white",
+          "awardTier": 4,
+          "giruVersion": 0,
+          "giruBase": 0,
+          "giruContinues": 0,
+          "giruSetting": 1
+        }
+      }
+    },
+    {
+      "mode": "reset",
+      "events": [
+        {
+          "type": "voice",
+          "at": 8231.5,
+          "src": "assets/media/nova/sosuke-sortie-entry.wav",
+          "actual": "assets/media/normalized-20261012/nova/sosuke-sortie-entry.wav",
+          "loop": false,
+          "volume": 0.35,
+          "started": true,
+          "duration": 4.778667
+        }
+      ],
+      "bets": [],
+      "state": {
+        "spinning": false,
+        "canStop": false,
+        "locked": false,
+        "fee": 0,
+        "spins": 0,
+        "sorties": 0
+      }
+    },
+    {
+      "mode": "countdown",
+      "events": [
+        {
+          "type": "countdown",
+          "at": 3738.5,
+          "src": "assets/media/jag/cz_remaining_3.wav?v=count2",
+          "actual": "assets/media/normalized-20261012/jag/cz_remaining_3.wav",
+          "loop": false,
+          "volume": 0.35,
+          "started": true,
+          "duration": 1.764717
+        },
+        {
+          "type": "countdown",
+          "at": 8390.600000023842,
+          "src": "assets/media/jag/cz_remaining_2.wav?v=count2",
+          "actual": "assets/media/normalized-20261012/jag/cz_remaining_2.wav",
+          "loop": false,
+          "volume": 0.35,
+          "started": true,
+          "duration": 1.532517
+        },
+        {
+          "type": "countdown",
+          "at": 10513.800000011921,
+          "src": "assets/media/jag/cz_last.wav?v=count2",
+          "actual": "assets/media/normalized-20261012/jag/cz_last.wav",
+          "loop": false,
+          "volume": 0.35,
+          "started": true,
+          "duration": 1.625397
+        }
+      ],
+      "bets": [
+        {
+          "at": 3736.600000023842,
+          "fee": 3
+        },
+        {
+          "at": 8390.199999988079,
+          "fee": 6
+        },
+        {
+          "at": 10513.100000023842,
+          "fee": 9
+        }
+      ],
+      "state": {
+        "spinning": false,
+        "canStop": false,
+        "locked": true,
+        "fee": 9,
+        "spins": 3,
+        "sorties": 0,
+        "flow": {
+          "phase": "normal",
+          "remaining": 0,
+          "success": false
+        }
+      }
+    }
+  ],
+  "errors": []
+}

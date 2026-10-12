@@ -1286,8 +1286,9 @@
   function playCzCountdownOnLever(resolved){
     if(resolved?.bonusPendingAtStart)return;
     const flow=resolved?.flowBefore;
-    if(!['cz','strong_cz'].includes(flow?.phase))return;
-    const src={3:'assets/media/jag/cz_remaining_3.wav?v=count2',2:'assets/media/jag/cz_remaining_2.wav?v=count2',1:'assets/media/jag/cz_last.wav?v=count2'}[flow.remaining];
+    const remaining=['cz','strong_cz'].includes(flow?.phase)?flow.remaining
+      :flow?.phase==='art'&&['continue','success','failure'].includes(resolved.comebackEvent)?flow.comebackLeft:0;
+    const src={3:'assets/media/jag/cz_remaining_3.wav?v=count2',2:'assets/media/jag/cz_remaining_2.wav?v=count2',1:'assets/media/jag/cz_last.wav?v=count2'}[remaining];
     if(src)playOneShotSound(src,voiceOutputVolume());
   }
 
@@ -6982,6 +6983,8 @@
     normalState.stockEntry={...NovaStockEntry.prepare(normalState.flow,NovaProgress.snapshot()),stage:'ready',notBefore:Date.now()+500};
     NovaAim.stop(spin.resolved);NovaSortie.flash(normalState.stockEntry.zone);
     $('resultText').textContent=NovaStockEntry.message(normalState.stockEntry);
+    // Announce the free entry reveal once; retain its stock until the next real BET.
+    if(spin.resolved.sortieEntry)playLockedBonusConfirmSound(MODE_EVENT_VOICE_SRCS.sortie,voiceOutputVolume());
     persistState();updateDisplay();syncCabinetControlState();scheduleNextAuto();
   }
   async function stopStockEntryReel(i,options={}){

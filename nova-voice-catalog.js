@@ -84,7 +84,8 @@ globalThis.NovaVoiceCatalog=(()=>{
     "comeback": "assets/media/nova/sosuke-comeback-entry.wav",
     "upperAt": "assets/media/nova/sosuke-upper-at-entry.wav",
     "bonusStock": "assets/media/nova/sosuke-bonus-stock.wav",
-    "zoneGet": "assets/media/nova/sosuke-zone-get.wav"
+    "zoneGet": "assets/media/nova/sosuke-zone-get.wav",
+    "sortie": "assets/media/nova/sosuke-sortie-entry.wav"
   };
   const OUMA_NOVA_VOICE_SRCS={
     "aim": "assets/media/nova/aim-nova-ouma.wav",

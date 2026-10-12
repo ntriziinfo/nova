@@ -576,6 +576,10 @@ globalThis.NovaAudioManifest=Object.freeze({
     "src": "assets/media/normalized-20261012/nova/sosuke-ladder-pass-injustice.wav",
     "category": "voice"
   },
+  "assets/media/nova/sosuke-sortie-entry.wav": {
+    "src": "assets/media/normalized-20261012/nova/sosuke-sortie-entry.wav",
+    "category": "voice"
+  },
   "assets/media/nova/sosuke-upper-at-entry.wav": {
     "src": "assets/media/normalized-20261012/nova/sosuke-upper-at-entry.wav",
     "category": "voice"

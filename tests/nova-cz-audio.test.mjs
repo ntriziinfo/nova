@@ -14,6 +14,28 @@ test('normal, ART, bonus pending, and missing flow do not play countdown',()=>{
  played.length=0;for(const phase of ['normal','art'])ctx.playCzCountdownOnLever({flowBefore:{phase,remaining:1}});
  ctx.playCzCountdownOnLever({flowBefore:{phase:'cz',remaining:1},bonusPendingAtStart:true});ctx.playCzCountdownOnLever({});assert.equal(played.length,0);
 });
+test('comeback counts the game being played, including successful and failed final games',()=>{
+ vm.runInContext('Math.random=()=>{throw Error("Countdown must not draw game RNG");}',ctx);
+ for(const comebackEvent of ['continue','success','failure']){
+  played.length=0;
+  for(let comebackLeft=5;comebackLeft>=1;comebackLeft--){
+   const resolved={flowBefore:{phase:'art',remaining:'900',comebackLeft},comebackEvent},before=JSON.stringify(resolved);
+   ctx.playCzCountdownOnLever(resolved);assert.equal(JSON.stringify(resolved),before);
+  }
+  assert.deepEqual(played.map(p=>p.src),['assets/media/jag/cz_remaining_3.wav?v=count2','assets/media/jag/cz_remaining_2.wav?v=count2','assets/media/jag/cz_last.wav?v=count2']);
+  assert(played.every(p=>p.volume===.5));
+ }
+});
+test('comeback entry, stale counters and pending bonus do not announce another countdown',()=>{
+ played.length=0;
+ for(const resolved of [
+  {flowBefore:{phase:'art',comebackLeft:3},comebackEvent:'entry'},
+  {flowBefore:{phase:'art',comebackLeft:2}},
+  {flowBefore:{phase:'normal',comebackLeft:1},comebackEvent:'success'},
+  {flowBefore:{phase:'art',comebackLeft:1},comebackEvent:'success',bonusPendingAtStart:true}
+ ])ctx.playCzCountdownOnLever(resolved);
+ assert.equal(played.length,0);
+});
 test('CZ voice assets match normalization output and preserve supplied originals',()=>{
  const manifest=JSON.parse(fs.readFileSync('docs/character-voice-normalization.json','utf8'));
  const pairs=[['3.wav','cz_remaining_3.wav'],['2.wav','cz_remaining_2.wav'],['ラスト.wav','cz_last.wav']];
