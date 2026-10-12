@@ -49,3 +49,15 @@ test('each rare BET plays one random Nito/Kushuri line and fast simulation stays
  const count=sounds.length;c.playRareCueVoice({result:'BELL'});c.debugFastSpinActive=true;c.playRareCueVoice({result:'WEAK_SUICA'});c.debugFastSpinActive=false;c.speedToBonusActive=true;c.playRareCueVoice({result:'WEAK_SUICA'});assert.equal(sounds.length,count);
  assert(/playAimBetPresentation\(resolved\);\s*playCzIntroBetVoice\(resolved\);\s*playRareNaviSound\(currentSpin\);\s*playRareCueVoice\(currentSpin\);/.test(html),'BET presentation plays the CZ intro before rare-role cues');
 });
+
+test('AT winning rare cues upgrade only 20%, preserve prizes and consume one original character draw',()=>{
+ const {c,sounds}=setup();
+ for(const zone of [false,true])for(const roll of [0,.199999,.2,.999999]){
+  const resolved={flowBefore:{phase:'art'},atOutcome:zone?{zone:'sora',direct:50}:{direct:50},flowAfter:{phase:'art',pendingZone:zone?'sora':''}},before=JSON.stringify(resolved),spin={result:'WEAK_NOVA',resolved};let draws=0,visual=0;
+  c.playRareCueVoice(spin,()=>{draws++;return .5;},()=>{visual++;return roll;});c.playRareCueVoice(spin,()=>{throw Error('duplicate character draw');},()=>{throw Error('duplicate cue draw');});
+  assert.equal(spin.rareCueVoice.grade,roll<.2?(zone?'hot':'bigChance'):'chance');assert.equal(draws,1);assert.equal(visual,1);assert.equal(JSON.stringify(resolved),before);assert(sounds.at(-1)[0].includes(roll<.2?(zone?'hot':'big-chance'):'chance'));
+ }
+ for(const resolved of [{flowBefore:{phase:'art'},atOutcome:{direct:0}},{flowBefore:{phase:'normal'},czChance:1}]){
+  const spin={result:'WEAK_NOVA',resolved};c.playRareCueVoice(spin,()=>.5,()=>{throw Error('non-AT-award must not draw cue rarity');});assert.equal(spin.rareCueVoice.grade,resolved.flowBefore.phase==='art'?'chance':'bigChance');
+ }
+});

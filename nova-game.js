@@ -7675,14 +7675,17 @@
     return 'chance';
   }
 
-  function playRareCueVoice(spin,rng=Math.random){
+  function playRareCueVoice(spin,rng=Math.random,cueRng=()=>crypto.getRandomValues(new Uint32Array(1))[0]/4294967296){
     if(debugFastSpinActive||speedToBonusActive||!spin||spin.rareCueVoicePlayed)return;
-    const grade=rareCueGrade(spin);if(!grade)return;
+    let grade=rareCueGrade(spin);if(!grade)return;
     const characters=Object.keys(RARE_CUE_VOICE_SRCS);
     const character=characters[Math.min(characters.length-1,Math.max(0,Math.floor(rng()*characters.length)))];
     spin.rareCueVoicePlayed=true;spin.rareCueVoice={character,grade};
     // Keep the character draw so hiding a cue cannot shift later game lotteries.
     if(spin.resolved?.researchSortie||isComebackChanceSpin(spin.resolved))return;
+    // Cue rarity is visual-only: retain the existing single game-RNG character draw.
+    if(spin.resolved?.flowBefore?.phase==='art'&&['bigChance','hot'].includes(grade)&&cueRng()>=.2)grade='chance';
+    spin.rareCueVoice.grade=grade;
     playOneShotSound(RARE_CUE_VOICE_SRCS[character][grade],voiceOutputVolume(),{allowDuringPremiumConfirm:true});
   }
 
