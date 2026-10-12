@@ -1,0 +1,1118 @@
+{
+  "status": "pass",
+  "muted": true,
+  "reports": [
+    {
+      "spec": {
+        "zone": "sosuke"
+      },
+      "events": [
+        {
+          "type": "voice",
+          "src": "assets/media/nova/sortie-award-sosuke.wav",
+          "actual": "assets/media/normalized-20261012/nova/sortie-award-sosuke.wav",
+          "at": 9313.800000011921,
+          "loop": false,
+          "volume": 0.35,
+          "started": true,
+          "duration": 1.664
+        },
+        {
+          "type": "voiceEnded",
+          "at": 13111.399999976158
+        }
+      ],
+      "bets": [
+        {
+          "at": 7486.699999988079,
+          "fee": 3
+        },
+        {
+          "at": 13325.899999976158,
+          "fee": 6
+        }
+      ],
+      "state": {
+        "spinning": true,
+        "locked": false,
+        "fee": 6,
+        "spins": 2,
+        "hold": false,
+        "stopped": [
+          false,
+          false,
+          false
+        ],
+        "flow": {
+          "initialRolePlan": [],
+          "initialRuleVersion": 0,
+          "initialBoostActive": false,
+          "initialMultiplier": 1,
+          "modelSetting": 3,
+          "researchSortieLeft": 4,
+          "researchSortieHits": 3,
+          "researchSortieRate": 1,
+          "researchUpper": false,
+          "researchThresholdUsed": false,
+          "researchThresholdPending": false,
+          "researchChallengeActive": false,
+          "researchChallengeSource": "",
+          "researchAim": "",
+          "initialVersion": 131,
+          "initialStage": "",
+          "initialWait": 0,
+          "initialPlan": [],
+          "initialIndex": 0,
+          "atPrelude": null,
+          "entryQuota": "150",
+          "setQuota": "200",
+          "comebackLeft": 0,
+          "comebackLamp": "",
+          "comebackConfirmed": false,
+          "burstVersion": 2,
+          "burstType": "ura",
+          "burstUsed": true,
+          "burstPending": false,
+          "burstLeft": 0,
+          "burstWon": false,
+          "dryEligible": true,
+          "rouletteTable": 0,
+          "sevenHits": 0,
+          "zoneVersion": 2,
+          "ladder": [],
+          "ladderIndex": 0,
+          "ladderRevealed": false,
+          "atHigh": false,
+          "atHighLeft": 0,
+          "entryStage": "",
+          "pendingZone": "",
+          "payoutVersion": 1,
+          "queuedZones": [
+            "sosuke"
+          ],
+          "phase": "art",
+          "remaining": "500",
+          "zone": "",
+          "ura": false,
+          "zoneLeft": 0,
+          "award": "0",
+          "initialAward": "0",
+          "stock": "0",
+          "zoneSets": "0",
+          "zoneZones": "0",
+          "sets": "0",
+          "oumaPending": false,
+          "zero": false,
+          "color": "white",
+          "awardTier": 4,
+          "giruVersion": 0,
+          "giruBase": 0,
+          "giruContinues": 0,
+          "giruSetting": 1
+        }
+      }
+    },
+    {
+      "spec": {
+        "zone": "sora",
+        "auto": true
+      },
+      "events": [
+        {
+          "type": "voice",
+          "src": "assets/media/nova/sortie-award-sora.wav",
+          "actual": "assets/media/normalized-20261012/nova/sortie-award-sora.wav",
+          "at": 8986.900000035763,
+          "loop": false,
+          "volume": 0.35,
+          "started": true,
+          "duration": 1.994667
+        },
+        {
+          "type": "voiceEnded",
+          "at": 16645.80000001192
+        }
+      ],
+      "bets": [
+        {
+          "at": 7850,
+          "fee": 3
+        },
+        {
+          "at": 16921.19999998808,
+          "fee": 6
+        }
+      ],
+      "state": {
+        "spinning": true,
+        "locked": false,
+        "fee": 6,
+        "spins": 2,
+        "hold": false,
+        "stopped": [
+          false,
+          false,
+          false
+        ],
+        "flow": {
+          "initialRolePlan": [],
+          "initialRuleVersion": 0,
+          "initialBoostActive": false,
+          "initialMultiplier": 1,
+          "modelSetting": 3,
+          "researchSortieLeft": 4,
+          "researchSortieHits": 3,
+          "researchSortieRate": 1,
+          "researchUpper": false,
+          "researchThresholdUsed": false,
+          "researchThresholdPending": false,
+          "researchChallengeActive": false,
+          "researchChallengeSource": "",
+          "researchAim": "",
+          "initialVersion": 131,
+          "initialStage": "",
+          "initialWait": 0,
+          "initialPlan": [],
+          "initialIndex": 0,
+          "atPrelude": null,
+          "entryQuota": "200",
+          "setQuota": "200",
+          "comebackLeft": 0,
+          "comebackLamp": "",
+          "comebackConfirmed": false,
+          "burstVersion": 2,
+          "burstType": "ura",
+          "burstUsed": true,
+          "burstPending": false,
+          "burstLeft": 0,
+          "burstWon": false,
+          "dryEligible": true,
+          "rouletteTable": 0,
+          "sevenHits": 0,
+          "zoneVersion": 2,
+          "ladder": [],
+          "ladderIndex": 0,
+          "ladderRevealed": false,
+          "atHigh": false,
+          "atHighLeft": 0,
+          "entryStage": "",
+          "pendingZone": "",
+          "payoutVersion": 1,
+          "queuedZones": [
+            "sora"
+          ],
+          "phase": "art",
+          "remaining": "500",
+          "zone": "",
+          "ura": false,
+          "zoneLeft": 0,
+          "award": "0",
+          "initialAward": "0",
+          "stock": "0",
+          "zoneSets": "0",
+          "zoneZones": "0",
+          "sets": "0",
+          "oumaPending": false,
+          "zero": false,
+          "color": "white",
+          "awardTier": 4,
+          "giruVersion": 0,
+          "giruBase": 0,
+          "giruContinues": 0,
+          "giruSetting": 1
+        }
+      }
+    },
+    {
+      "spec": {
+        "zone": "ura_sora"
+      },
+      "events": [
+        {
+          "type": "voice",
+          "src": "assets/media/nova/sortie-award-sora.wav",
+          "actual": "assets/media/normalized-20261012/nova/sortie-award-sora.wav",
+          "at": 10113.099999964237,
+          "loop": false,
+          "volume": 0.35,
+          "started": true,
+          "duration": 1.994667
+        },
+        {
+          "type": "voiceEnded",
+          "at": 14037.5
+        }
+      ],
+      "bets": [
+        {
+          "at": 7652.699999988079,
+          "fee": 3
+        },
+        {
+          "at": 14138.799999952316,
+          "fee": 6
+        }
+      ],
+      "state": {
+        "spinning": true,
+        "locked": false,
+        "fee": 6,
+        "spins": 2,
+        "hold": false,
+        "stopped": [
+          false,
+          false,
+          false
+        ],
+        "flow": {
+          "initialRolePlan": [],
+          "initialRuleVersion": 0,
+          "initialBoostActive": false,
+          "initialMultiplier": 1,
+          "modelSetting": 3,
+          "researchSortieLeft": 4,
+          "researchSortieHits": 3,
+          "researchSortieRate": 1,
+          "researchUpper": false,
+          "researchThresholdUsed": false,
+          "researchThresholdPending": false,
+          "researchChallengeActive": false,
+          "researchChallengeSource": "",
+          "researchAim": "",
+          "initialVersion": 131,
+          "initialStage": "",
+          "initialWait": 0,
+          "initialPlan": [],
+          "initialIndex": 0,
+          "atPrelude": null,
+          "entryQuota": "200",
+          "setQuota": "200",
+          "comebackLeft": 0,
+          "comebackLamp": "",
+          "comebackConfirmed": false,
+          "burstVersion": 2,
+          "burstType": "ura",
+          "burstUsed": true,
+          "burstPending": false,
+          "burstLeft": 0,
+          "burstWon": false,
+          "dryEligible": true,
+          "rouletteTable": 0,
+          "sevenHits": 0,
+          "zoneVersion": 2,
+          "ladder": [],
+          "ladderIndex": 0,
+          "ladderRevealed": false,
+          "atHigh": false,
+          "atHighLeft": 0,
+          "entryStage": "",
+          "pendingZone": "",
+          "payoutVersion": 1,
+          "queuedZones": [
+            "ura_sora"
+          ],
+          "phase": "art",
+          "remaining": "500",
+          "zone": "",
+          "ura": false,
+          "zoneLeft": 0,
+          "award": "0",
+          "initialAward": "0",
+          "stock": "0",
+          "zoneSets": "0",
+          "zoneZones": "0",
+          "sets": "0",
+          "oumaPending": false,
+          "zero": false,
+          "color": "white",
+          "awardTier": 4,
+          "giruVersion": 0,
+          "giruBase": 0,
+          "giruContinues": 0,
+          "giruSetting": 1
+        }
+      }
+    },
+    {
+      "spec": {
+        "zone": "giru"
+      },
+      "events": [
+        {
+          "type": "voice",
+          "src": "assets/media/nova/sortie-award-giru.wav",
+          "actual": "assets/media/normalized-20261012/nova/sortie-award-giru.wav",
+          "at": 9322.5,
+          "loop": false,
+          "volume": 0.35,
+          "started": true,
+          "duration": 1.685601
+        },
+        {
+          "type": "voiceEnded",
+          "at": 15182
+        }
+      ],
+      "bets": [
+        {
+          "at": 7563,
+          "fee": 3
+        },
+        {
+          "at": 15204,
+          "fee": 6
+        }
+      ],
+      "state": {
+        "spinning": true,
+        "locked": false,
+        "fee": 6,
+        "spins": 2,
+        "hold": false,
+        "stopped": [
+          false,
+          false,
+          false
+        ],
+        "flow": {
+          "initialRolePlan": [],
+          "initialRuleVersion": 0,
+          "initialBoostActive": false,
+          "initialMultiplier": 1,
+          "modelSetting": 3,
+          "researchSortieLeft": 4,
+          "researchSortieHits": 3,
+          "researchSortieRate": 1,
+          "researchUpper": false,
+          "researchThresholdUsed": false,
+          "researchThresholdPending": false,
+          "researchChallengeActive": false,
+          "researchChallengeSource": "",
+          "researchAim": "",
+          "initialVersion": 131,
+          "initialStage": "",
+          "initialWait": 0,
+          "initialPlan": [],
+          "initialIndex": 0,
+          "atPrelude": null,
+          "entryQuota": "150",
+          "setQuota": "200",
+          "comebackLeft": 0,
+          "comebackLamp": "",
+          "comebackConfirmed": false,
+          "burstVersion": 2,
+          "burstType": "ura",
+          "burstUsed": true,
+          "burstPending": false,
+          "burstLeft": 0,
+          "burstWon": false,
+          "dryEligible": true,
+          "rouletteTable": 0,
+          "sevenHits": 0,
+          "zoneVersion": 2,
+          "ladder": [],
+          "ladderIndex": 0,
+          "ladderRevealed": false,
+          "atHigh": false,
+          "atHighLeft": 0,
+          "entryStage": "",
+          "pendingZone": "",
+          "payoutVersion": 1,
+          "queuedZones": [
+            "giru"
+          ],
+          "phase": "art",
+          "remaining": "500",
+          "zone": "",
+          "ura": false,
+          "zoneLeft": 0,
+          "award": "0",
+          "initialAward": "0",
+          "stock": "0",
+          "zoneSets": "0",
+          "zoneZones": "0",
+          "sets": "0",
+          "oumaPending": false,
+          "zero": false,
+          "color": "white",
+          "awardTier": 4,
+          "giruVersion": 0,
+          "giruBase": 0,
+          "giruContinues": 0,
+          "giruSetting": 1
+        }
+      }
+    },
+    {
+      "spec": {
+        "zone": "ura_giru",
+        "auto": true
+      },
+      "events": [
+        {
+          "type": "voice",
+          "src": "assets/media/nova/sortie-award-giru.wav",
+          "actual": "assets/media/normalized-20261012/nova/sortie-award-giru.wav",
+          "at": 8195.300000011921,
+          "loop": false,
+          "volume": 0.35,
+          "started": true,
+          "duration": 1.685601
+        },
+        {
+          "type": "voiceEnded",
+          "at": 13498.599999964237
+        }
+      ],
+      "bets": [
+        {
+          "at": 7369.599999964237,
+          "fee": 3
+        },
+        {
+          "at": 13770,
+          "fee": 6
+        }
+      ],
+      "state": {
+        "spinning": true,
+        "locked": false,
+        "fee": 6,
+        "spins": 2,
+        "hold": false,
+        "stopped": [
+          false,
+          false,
+          false
+        ],
+        "flow": {
+          "initialRolePlan": [],
+          "initialRuleVersion": 0,
+          "initialBoostActive": false,
+          "initialMultiplier": 1,
+          "modelSetting": 3,
+          "researchSortieLeft": 4,
+          "researchSortieHits": 3,
+          "researchSortieRate": 1,
+          "researchUpper": false,
+          "researchThresholdUsed": false,
+          "researchThresholdPending": false,
+          "researchChallengeActive": false,
+          "researchChallengeSource": "",
+          "researchAim": "",
+          "initialVersion": 131,
+          "initialStage": "",
+          "initialWait": 0,
+          "initialPlan": [],
+          "initialIndex": 0,
+          "atPrelude": null,
+          "entryQuota": "250",
+          "setQuota": "200",
+          "comebackLeft": 0,
+          "comebackLamp": "",
+          "comebackConfirmed": false,
+          "burstVersion": 2,
+          "burstType": "ura",
+          "burstUsed": true,
+          "burstPending": false,
+          "burstLeft": 0,
+          "burstWon": false,
+          "dryEligible": true,
+          "rouletteTable": 0,
+          "sevenHits": 0,
+          "zoneVersion": 2,
+          "ladder": [],
+          "ladderIndex": 0,
+          "ladderRevealed": false,
+          "atHigh": false,
+          "atHighLeft": 0,
+          "entryStage": "",
+          "pendingZone": "",
+          "payoutVersion": 1,
+          "queuedZones": [
+            "ura_giru"
+          ],
+          "phase": "art",
+          "remaining": "500",
+          "zone": "",
+          "ura": false,
+          "zoneLeft": 0,
+          "award": "0",
+          "initialAward": "0",
+          "stock": "0",
+          "zoneSets": "0",
+          "zoneZones": "0",
+          "sets": "0",
+          "oumaPending": false,
+          "zero": false,
+          "color": "white",
+          "awardTier": 4,
+          "giruVersion": 0,
+          "giruBase": 0,
+          "giruContinues": 0,
+          "giruSetting": 1
+        }
+      }
+    },
+    {
+      "spec": {
+        "zone": "ouma"
+      },
+      "events": [
+        {
+          "type": "voice",
+          "src": "assets/media/nova/sortie-award-ouma.wav",
+          "actual": "assets/media/normalized-20261012/nova/sortie-award-ouma.wav",
+          "at": 8353.300000011921,
+          "loop": false,
+          "volume": 0.35,
+          "started": true,
+          "duration": 3.610703
+        },
+        {
+          "type": "voiceEnded",
+          "at": 16315
+        }
+      ],
+      "bets": [
+        {
+          "at": 6787.800000011921,
+          "fee": 3
+        },
+        {
+          "at": 16358.199999988079,
+          "fee": 6
+        }
+      ],
+      "state": {
+        "spinning": true,
+        "locked": false,
+        "fee": 6,
+        "spins": 2,
+        "hold": false,
+        "stopped": [
+          false,
+          false,
+          false
+        ],
+        "flow": {
+          "initialRolePlan": [],
+          "initialRuleVersion": 0,
+          "initialBoostActive": false,
+          "initialMultiplier": 1,
+          "modelSetting": 3,
+          "researchSortieLeft": 4,
+          "researchSortieHits": 3,
+          "researchSortieRate": 1,
+          "researchUpper": false,
+          "researchThresholdUsed": false,
+          "researchThresholdPending": false,
+          "researchChallengeActive": false,
+          "researchChallengeSource": "",
+          "researchAim": "",
+          "initialVersion": 131,
+          "initialStage": "",
+          "initialWait": 0,
+          "initialPlan": [],
+          "initialIndex": 0,
+          "atPrelude": null,
+          "entryQuota": "200",
+          "setQuota": "200",
+          "comebackLeft": 0,
+          "comebackLamp": "",
+          "comebackConfirmed": false,
+          "burstVersion": 2,
+          "burstType": "ura",
+          "burstUsed": true,
+          "burstPending": false,
+          "burstLeft": 0,
+          "burstWon": false,
+          "dryEligible": true,
+          "rouletteTable": 0,
+          "sevenHits": 0,
+          "zoneVersion": 2,
+          "ladder": [],
+          "ladderIndex": 0,
+          "ladderRevealed": false,
+          "atHigh": false,
+          "atHighLeft": 0,
+          "entryStage": "",
+          "pendingZone": "",
+          "payoutVersion": 1,
+          "queuedZones": [
+            "ouma"
+          ],
+          "phase": "art",
+          "remaining": "500",
+          "zone": "",
+          "ura": false,
+          "zoneLeft": 0,
+          "award": "0",
+          "initialAward": "0",
+          "stock": "0",
+          "zoneSets": "0",
+          "zoneZones": "0",
+          "sets": "0",
+          "oumaPending": false,
+          "zero": false,
+          "color": "white",
+          "awardTier": 4,
+          "giruVersion": 0,
+          "giruBase": 0,
+          "giruContinues": 0,
+          "giruSetting": 1
+        }
+      }
+    },
+    {
+      "spec": {
+        "zone": "ura_ouma",
+        "last": true,
+        "slow": true
+      },
+      "events": [
+        {
+          "type": "voice",
+          "src": "assets/media/nova/sortie-award-ouma.wav",
+          "actual": "assets/media/normalized-20261012/nova/sortie-award-ouma.wav",
+          "at": 9623.199999988079,
+          "loop": false,
+          "volume": 0.35,
+          "started": true,
+          "duration": 3.610703
+        },
+        {
+          "type": "voiceEnded",
+          "at": 18879.899999976158
+        },
+        {
+          "type": "result",
+          "src": "assets/media/nova/result-eyecatch.wav",
+          "actual": "assets/media/normalized-20261012/nova/result-eyecatch.wav",
+          "at": 18911,
+          "loop": false,
+          "volume": 0.35
+        }
+      ],
+      "bets": [
+        {
+          "at": 7388,
+          "fee": 3
+        }
+      ],
+      "state": {
+        "spinning": false,
+        "locked": true,
+        "fee": 3,
+        "spins": 1,
+        "hold": false,
+        "card": {
+          "kind": "sortie",
+          "character": "all",
+          "color": "gold",
+          "count": 3
+        },
+        "flow": {
+          "initialRolePlan": [],
+          "initialRuleVersion": 0,
+          "initialBoostActive": false,
+          "initialMultiplier": 1,
+          "modelSetting": 3,
+          "researchSortieLeft": 0,
+          "researchSortieHits": 3,
+          "researchSortieRate": 1,
+          "researchUpper": false,
+          "researchThresholdUsed": false,
+          "researchThresholdPending": false,
+          "researchChallengeActive": false,
+          "researchChallengeSource": "",
+          "researchAim": "",
+          "initialVersion": 131,
+          "initialStage": "",
+          "initialWait": 0,
+          "initialPlan": [],
+          "initialIndex": 0,
+          "atPrelude": null,
+          "entryQuota": "150",
+          "setQuota": "200",
+          "comebackLeft": 0,
+          "comebackLamp": "",
+          "comebackConfirmed": false,
+          "burstVersion": 2,
+          "burstType": "ura",
+          "burstUsed": true,
+          "burstPending": false,
+          "burstLeft": 0,
+          "burstWon": false,
+          "dryEligible": true,
+          "rouletteTable": 0,
+          "sevenHits": 0,
+          "zoneVersion": 2,
+          "ladder": [],
+          "ladderIndex": 0,
+          "ladderRevealed": false,
+          "atHigh": false,
+          "atHighLeft": 0,
+          "entryStage": "",
+          "pendingZone": "",
+          "payoutVersion": 1,
+          "queuedZones": [
+            "ura_ouma"
+          ],
+          "phase": "art",
+          "remaining": "500",
+          "zone": "",
+          "ura": false,
+          "zoneLeft": 0,
+          "award": "0",
+          "initialAward": "0",
+          "stock": "0",
+          "zoneSets": "0",
+          "zoneZones": "0",
+          "sets": "0",
+          "oumaPending": false,
+          "zero": false,
+          "color": "white",
+          "awardTier": 4,
+          "giruVersion": 0,
+          "giruBase": 0,
+          "giruContinues": 0,
+          "giruSetting": 1
+        }
+      }
+    },
+    {
+      "spec": {
+        "zone": "toto",
+        "mobile": true
+      },
+      "events": [
+        {
+          "type": "voice",
+          "src": "assets/media/nova/sortie-award-toto.wav",
+          "actual": "assets/media/normalized-20261012/nova/sortie-award-toto.wav",
+          "at": 9181.700000047684,
+          "loop": false,
+          "volume": 0.35,
+          "started": true,
+          "duration": 3.622313
+        },
+        {
+          "type": "voiceEnded",
+          "at": 14834.5
+        }
+      ],
+      "bets": [
+        {
+          "at": 7052.300000011921,
+          "fee": 3
+        },
+        {
+          "at": 14855.400000035763,
+          "fee": 6
+        }
+      ],
+      "state": {
+        "spinning": true,
+        "locked": false,
+        "fee": 6,
+        "spins": 2,
+        "hold": false,
+        "stopped": [
+          false,
+          false,
+          false
+        ],
+        "flow": {
+          "initialRolePlan": [],
+          "initialRuleVersion": 0,
+          "initialBoostActive": false,
+          "initialMultiplier": 1,
+          "modelSetting": 3,
+          "researchSortieLeft": 4,
+          "researchSortieHits": 3,
+          "researchSortieRate": 1,
+          "researchUpper": false,
+          "researchThresholdUsed": false,
+          "researchThresholdPending": false,
+          "researchChallengeActive": false,
+          "researchChallengeSource": "",
+          "researchAim": "",
+          "initialVersion": 131,
+          "initialStage": "",
+          "initialWait": 0,
+          "initialPlan": [],
+          "initialIndex": 0,
+          "atPrelude": null,
+          "entryQuota": "200",
+          "setQuota": "200",
+          "comebackLeft": 0,
+          "comebackLamp": "",
+          "comebackConfirmed": false,
+          "burstVersion": 2,
+          "burstType": "ura",
+          "burstUsed": true,
+          "burstPending": false,
+          "burstLeft": 0,
+          "burstWon": false,
+          "dryEligible": true,
+          "rouletteTable": 0,
+          "sevenHits": 0,
+          "zoneVersion": 2,
+          "ladder": [],
+          "ladderIndex": 0,
+          "ladderRevealed": false,
+          "atHigh": false,
+          "atHighLeft": 0,
+          "entryStage": "",
+          "pendingZone": "",
+          "payoutVersion": 1,
+          "queuedZones": [
+            "toto"
+          ],
+          "phase": "art",
+          "remaining": "500",
+          "zone": "",
+          "ura": false,
+          "zoneLeft": 0,
+          "award": "0",
+          "initialAward": "0",
+          "stock": "0",
+          "zoneSets": "0",
+          "zoneZones": "0",
+          "sets": "0",
+          "oumaPending": false,
+          "zero": false,
+          "color": "white",
+          "awardTier": 4,
+          "giruVersion": 0,
+          "giruBase": 0,
+          "giruContinues": 0,
+          "giruSetting": 1
+        }
+      }
+    },
+    {
+      "spec": {
+        "zone": "sora",
+        "error": true
+      },
+      "events": [
+        {
+          "type": "voice",
+          "src": "assets/media/nova/sortie-award-sora.wav",
+          "actual": "assets/media/normalized-20261012/nova/sortie-award-sora.wav",
+          "at": 8254.800000011921,
+          "loop": false,
+          "volume": 0.35
+        }
+      ],
+      "bets": [
+        {
+          "at": 6738,
+          "fee": 3
+        },
+        {
+          "at": 12271.899999976158,
+          "fee": 6
+        }
+      ],
+      "state": {
+        "spinning": true,
+        "locked": false,
+        "fee": 6,
+        "spins": 2,
+        "hold": false,
+        "stopped": [
+          false,
+          false,
+          false
+        ],
+        "flow": {
+          "initialRolePlan": [],
+          "initialRuleVersion": 0,
+          "initialBoostActive": false,
+          "initialMultiplier": 1,
+          "modelSetting": 3,
+          "researchSortieLeft": 4,
+          "researchSortieHits": 3,
+          "researchSortieRate": 1,
+          "researchUpper": false,
+          "researchThresholdUsed": false,
+          "researchThresholdPending": false,
+          "researchChallengeActive": false,
+          "researchChallengeSource": "",
+          "researchAim": "",
+          "initialVersion": 131,
+          "initialStage": "",
+          "initialWait": 0,
+          "initialPlan": [],
+          "initialIndex": 0,
+          "atPrelude": null,
+          "entryQuota": "150",
+          "setQuota": "200",
+          "comebackLeft": 0,
+          "comebackLamp": "",
+          "comebackConfirmed": false,
+          "burstVersion": 2,
+          "burstType": "ura",
+          "burstUsed": true,
+          "burstPending": false,
+          "burstLeft": 0,
+          "burstWon": false,
+          "dryEligible": true,
+          "rouletteTable": 0,
+          "sevenHits": 0,
+          "zoneVersion": 2,
+          "ladder": [],
+          "ladderIndex": 0,
+          "ladderRevealed": false,
+          "atHigh": false,
+          "atHighLeft": 0,
+          "entryStage": "",
+          "pendingZone": "",
+          "payoutVersion": 1,
+          "queuedZones": [
+            "sora"
+          ],
+          "phase": "art",
+          "remaining": "500",
+          "zone": "",
+          "ura": false,
+          "zoneLeft": 0,
+          "award": "0",
+          "initialAward": "0",
+          "stock": "0",
+          "zoneSets": "0",
+          "zoneZones": "0",
+          "sets": "0",
+          "oumaPending": false,
+          "zero": false,
+          "color": "white",
+          "awardTier": 4,
+          "giruVersion": 0,
+          "giruBase": 0,
+          "giruContinues": 0,
+          "giruSetting": 1
+        }
+      }
+    },
+    {
+      "spec": {
+        "zone": "toto",
+        "reset": true
+      },
+      "events": [
+        {
+          "type": "voice",
+          "src": "assets/media/nova/sortie-award-toto.wav",
+          "actual": "assets/media/normalized-20261012/nova/sortie-award-toto.wav",
+          "at": 9141.200000047684,
+          "loop": false,
+          "volume": 0.35,
+          "started": true,
+          "duration": 3.622313
+        }
+      ],
+      "bets": [
+        {
+          "at": 6832.300000011921,
+          "fee": 3
+        }
+      ],
+      "state": {
+        "spinning": false,
+        "locked": false,
+        "fee": 0,
+        "spins": 0,
+        "hold": false
+      }
+    },
+    {
+      "spec": {
+        "zone": "sora",
+        "loss": true
+      },
+      "events": [],
+      "bets": [
+        {
+          "at": 6256.800000011921,
+          "fee": 3
+        }
+      ],
+      "state": {
+        "spinning": false,
+        "locked": false,
+        "fee": 3,
+        "spins": 1,
+        "hold": false,
+        "flow": {
+          "initialRolePlan": [],
+          "initialRuleVersion": 0,
+          "initialBoostActive": false,
+          "initialMultiplier": 1,
+          "modelSetting": 3,
+          "researchSortieLeft": 4,
+          "researchSortieHits": 2,
+          "researchSortieRate": 1,
+          "researchUpper": false,
+          "researchThresholdUsed": false,
+          "researchThresholdPending": false,
+          "researchChallengeActive": false,
+          "researchChallengeSource": "",
+          "researchAim": "",
+          "initialVersion": 131,
+          "initialStage": "",
+          "initialWait": 0,
+          "initialPlan": [],
+          "initialIndex": 0,
+          "atPrelude": null,
+          "entryQuota": "150",
+          "setQuota": "200",
+          "comebackLeft": 0,
+          "comebackLamp": "",
+          "comebackConfirmed": false,
+          "burstVersion": 2,
+          "burstType": "ura",
+          "burstUsed": true,
+          "burstPending": false,
+          "burstLeft": 0,
+          "burstWon": false,
+          "dryEligible": true,
+          "rouletteTable": 0,
+          "sevenHits": 0,
+          "zoneVersion": 2,
+          "ladder": [],
+          "ladderIndex": 0,
+          "ladderRevealed": false,
+          "atHigh": false,
+          "atHighLeft": 0,
+          "entryStage": "",
+          "pendingZone": "",
+          "payoutVersion": 1,
+          "queuedZones": [],
+          "phase": "art",
+          "remaining": "500",
+          "zone": "",
+          "ura": false,
+          "zoneLeft": 0,
+          "award": "0",
+          "initialAward": "0",
+          "stock": "0",
+          "zoneSets": "0",
+          "zoneZones": "0",
+          "sets": "0",
+          "oumaPending": false,
+          "zero": false,
+          "color": "white",
+          "awardTier": 4,
+          "giruVersion": 0,
+          "giruBase": 0,
+          "giruContinues": 0,
+          "giruSetting": 1
+        }
+      }
+    }
+  ],
+  "errors": []
+}

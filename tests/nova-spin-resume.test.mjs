@@ -2,13 +2,14 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
+import {loadVoiceCatalog} from './helpers/voice-catalog.mjs';
 
 const source=fs.readFileSync('nova-game.js','utf8');
 const fn=name=>source.match(new RegExp('  function '+name+'\\([^]*?\\n  }'))[0];
 const json=value=>JSON.parse(JSON.stringify(value));
 const noop=()=>{};
 function harness(saved=null){
- const storage=new Map(saved?[['state',JSON.stringify(saved)]]:[]),errors=[],timers=[],elements=new Map();
+ const storage=new Map(saved?[['state',JSON.stringify(saved)]]:[]),errors=[],timers=[],elements=new Map(),voices=[];
  const $=id=>{if(!elements.has(id))elements.set(id,{dataset:{},classList:{toggle:noop},disabled:false,textContent:''});return elements.get(id);};
  const c=vm.createContext({console:{warn:(...args)=>errors.push(args)},settings:{setting:1,title:'NOVA',audioBalanceVersion:12,masterVolume:.7},stats:{roleStatVersion:1,totalSpins:0,normalSpins:0,highSpins:0,totalFee:0,totalPaid:0,slumpHistory:[]},normalState:{},session:{active:false},completeTrialState:{},
   safeStorageGet:key=>storage.has(key)?storage.get(key):null,safeStorageSet:(key,value)=>{storage.set(key,value);return true;},
@@ -18,6 +19,7 @@ function harness(saved=null){
   SETTING:{1:{},2:{},3:{},4:{},5:{},6:{}},RESULT:Object.fromEntries(['BELL','REPLAY','NEBULA','MISS','BIG','STRONG_NOVA'].map(k=>[k,{name:k,label:k,cls:k}])),
   clamp:(v,a,b)=>Math.max(a,Math.min(b,v)),normalizeMachineTitle:v=>v,normalizeBonusAfterGames:v=>Number(v)||0,normalizeNovaRisingRemain:v=>Number(v)||0,normalizeForceResult:v=>v,isCompleteLockEnabled:()=>true,pickATypeBonusBgm:()=>({src:'bonus.wav'}),
   currentSpin:null,isSpinning:false,spinCanStop:false,spinWaitTimer:null,autoPlay:false,speedToBonusActive:false,
+  debugFastSpinActive:false,voiceOutputVolume:()=>1,playLockedBonusConfirmSound:src=>voices.push(src),
   jagChainCount:null,jagLastGamePayout:0,jagLastBonusPayout:0,jagChanceHold:false,forceResult:'',forcePremiumEffect:false,pendingForceResult:'',pendingBonusStartOptions:null,devilZoneConfirmIntroPending:false,pendingDevilRushEntryEffect:'',speedFrameOffHold:false,barBgmActive:false,barBgmMode:'',battleBgmActive:false,rogiBgmMuted:false,
   syncNovaProgress:noop,auditCapture:noop,$,document:{getElementById:$},reels:[0,1,2].map(i=>$('reel'+i)),stopBtns:[0,1,2].map(i=>$('stop'+i)),
   setTimeout:f=>{timers.push(f);return timers.length;},clearTimeout:noop,REEL_STRIPS:[[],[],[]],currentReelTopIndex:()=>0,cellHtml:noop,
@@ -27,8 +29,9 @@ function harness(saved=null){
  for(const file of ['nova-complete.js','nova-tuning.js','nova-art.js','nova-normal.js','nova-flow.js','nova-balance.js','nova-spin-resume.js','nova-history.js'])vm.runInContext(fs.readFileSync(file,'utf8'),c,{filename:file});
  // Navigation renderer is tested separately with DOM stubs; restore must not draw an order.
  c.NovaBellNavi={restore:spin=>{c.shownOrder=json(spin.bellNaviOrder);},clear:noop};
- for(const name of ['reduceSlumpPoints','canUsePlayState','load','runtimeStateForStorage','compactStatsForResume','updateStorageStatus','persistState','restorePendingSpin'])vm.runInContext(fn(name),c);
- return {c,storage,errors,timers,$};
+ c.SORTIE_AWARD_VOICE_SRCS=loadVoiceCatalog(c).SORTIE_AWARD_VOICE_SRCS;
+ for(const name of ['reduceSlumpPoints','canUsePlayState','load','runtimeStateForStorage','compactStatsForResume','updateStorageStatus','persistState','playSortieAwardVoice','restorePendingSpin'])vm.runInContext(fn(name),c);
+ return {c,storage,errors,timers,$,voices};
 }
 function spin(c,overrides={}){
  return {result:'BELL',spec:c.RESULT.BELL,lineRow:1,grid:[['7','R','B'],['B','B','B'],['R','7','R']],resolved:{reward:15,flowBefore:{phase:'normal'},flowAfter:{phase:'normal'}},stopped:[false,false,false],normalActiveAtStart:true,bellNaviOrder:[2,0,1],...overrides};
@@ -149,6 +152,15 @@ test('BIG unpaid award and zero-game failure settle once without another cost',(
  c.restorePendingSpin();assert.equal(c.session.paid,45);assert.equal(c.session.bonusArtSets,1);assert.equal(c.stats.totalFee,9);assert.equal(JSON.parse(h.storage.get('state')).runtimeState.pendingSpin,null);
  c.currentSpin=c.NovaSpinResume.restore(c.NovaSpinResume.capture(spin(c,{stopped:[true,true,true],resolved:{reward:0,oumaFailed:true}})),c.RESULT);
  c.restorePendingSpin();assert.equal(c.stats.totalPaid,15);assert.equal(c.stats.totalFee,9);assert.equal(c.currentSpin,null);
+});
+
+test('a resumed third-stop sortie announces its saved character without redrawing or charging another BET',()=>{
+ const h=settlementHarness(),c=h.c;c.stats.totalFee=3;c.stats.totalSpins=1;
+ c.currentSpin=c.NovaSpinResume.restore(c.NovaSpinResume.capture(spin(c,{stopped:[true,true,true],resolved:{reward:8,researchSortie:{won:true,zone:'ura_sora'},flowBefore:{phase:'art'},flowAfter:{phase:'art',queuedZones:['ura_sora']}}})),c.RESULT);
+ vm.runInContext('Math.random=()=>{throw Error("resume must not redraw")}',c);
+ assert(c.restorePendingSpin());assert.deepEqual(h.voices,['assets/media/nova/sortie-award-sora.wav']);
+ assert.equal(c.stats.totalFee,3);assert.equal(c.stats.totalPaid,8);assert.equal(c.currentSpin,null);
+ assert(!c.restorePendingSpin());assert.equal(h.voices.length,1);
 });
 
 test('a mid-settlement save cannot overwrite the last recoverable result',()=>{

@@ -1,0 +1,31 @@
+{
+  "sources": [
+    {
+      "copy": "assets/media/nova/sortie-award-sosuke.wav",
+      "sourceName": "かませ！.wav",
+      "sha256": "9b7976bbe20ffcdeae9a44bb7ec851ed41a0f7f49225b45156a3c497b6ff149e"
+    },
+    {
+      "copy": "assets/media/nova/sortie-award-sora.wav",
+      "sourceName": "運命なんて捻じ曲げちゃえ_空.wav",
+      "sha256": "fdf6f9110e76e224d4537c783209073aebf87a5b6b1df0e295754a15f8490f5b"
+    },
+    {
+      "copy": "assets/media/nova/sortie-award-giru.wav",
+      "sourceName": "今日はツイてんな_ギル.wav",
+      "sha256": "b2ed0eb8118c1dd5b07a4df4a3984d0d82c5a1e5c1726663bb679c3ce535ffdf"
+    },
+    {
+      "copy": "assets/media/nova/sortie-award-ouma.wav",
+      "sourceName": "逢魔_示唆10.wav",
+      "sha256": "a0fe4992e7cf76184abf4c2814b2a7f28d7453ab5e8e78347a1a350d5c18acf5"
+    },
+    {
+      "copy": "assets/media/nova/sortie-award-toto.wav",
+      "sourceName": "設定示唆2_toto.wav",
+      "sha256": "0b7ed90915d29dad3dd93373df4aaf32e199f6214bc9105a62671c9f2f7b3e96"
+    }
+  ],
+  "category": "voice",
+  "originalsUnmodified": true
+}

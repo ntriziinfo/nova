@@ -45,3 +45,6 @@ assets/media/nova/sosuke-zone-get.wav -filter -diff -merge -text
 assets/media/nova/sosuke-ladder-*.wav -filter -diff -merge -text
 assets/media/nova/sosuke-ladder-voices.sources.json -filter -diff -merge text
 assets/media/nova/sosuke-event-voices.sources.json -filter -diff -merge text
+# Supplied sortie acquisition lines; preserve originals separately from masters.
+assets/media/nova/sortie-award-*.wav -filter -diff -merge -text
+assets/media/nova/sortie-award-voices.sources.json -filter -diff -merge text

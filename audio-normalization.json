@@ -3048,6 +3048,121 @@
       }
     },
     {
+      "src": "assets/media/nova/sortie-award-giru.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/sortie-award-giru.wav",
+      "sourceSha256": "b2ed0eb8118c1dd5b07a4df4a3984d0d82c5a1e5c1726663bb679c3ce535ffdf",
+      "outputSha256": "93a93868d55ec415a0eaa013d142054cddbc11827b38e52e27520a7467c0c849",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 1.685601,
+      "outputDuration": 1.685601,
+      "gainDb": -5.7,
+      "before": {
+        "lufs": -8.3,
+        "peakDbtp": 0.32,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -14,
+        "peakDbtp": -5.37,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/sortie-award-ouma.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/sortie-award-ouma.wav",
+      "sourceSha256": "a0fe4992e7cf76184abf4c2814b2a7f28d7453ab5e8e78347a1a350d5c18acf5",
+      "outputSha256": "7cc121750dc83692da64474b3ca608d81519153ffc38812462f91210ae7ea19e",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 3.610703,
+      "outputDuration": 3.610703,
+      "gainDb": -2.56,
+      "before": {
+        "lufs": -11.44,
+        "peakDbtp": 0.07,
+        "rangeLu": 2.2
+      },
+      "after": {
+        "lufs": -13.99,
+        "peakDbtp": -2.49,
+        "rangeLu": 2.2
+      }
+    },
+    {
+      "src": "assets/media/nova/sortie-award-sora.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/sortie-award-sora.wav",
+      "sourceSha256": "fdf6f9110e76e224d4537c783209073aebf87a5b6b1df0e295754a15f8490f5b",
+      "outputSha256": "57e1d01f62917021a91c407594fa157b40d66cb6e5d2100ac69b674cee2fc190",
+      "rate": 48000,
+      "channels": 1,
+      "duration": 1.994667,
+      "outputDuration": 1.994667,
+      "gainDb": 0.03,
+      "before": {
+        "lufs": -14.03,
+        "peakDbtp": -3.59,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -13.99,
+        "peakDbtp": -3.56,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/sortie-award-sosuke.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/sortie-award-sosuke.wav",
+      "sourceSha256": "9b7976bbe20ffcdeae9a44bb7ec851ed41a0f7f49225b45156a3c497b6ff149e",
+      "outputSha256": "2102fa8fe1eb6f0d16ad11309ef1c6ca48c2a8e60722ca9d83c4669cab9ecec0",
+      "rate": 48000,
+      "channels": 1,
+      "duration": 1.664,
+      "outputDuration": 1.664,
+      "gainDb": 7.02,
+      "before": {
+        "lufs": -21.02,
+        "peakDbtp": -11.29,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -14.01,
+        "peakDbtp": -4.27,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/sortie-award-toto.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-20261012/nova/sortie-award-toto.wav",
+      "sourceSha256": "0b7ed90915d29dad3dd93373df4aaf32e199f6214bc9105a62671c9f2f7b3e96",
+      "outputSha256": "2e4a0a6b3106fa676195263ebb41ee0e8967b116c1cc084690ed4c798ee8d194",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 3.622313,
+      "outputDuration": 3.622313,
+      "gainDb": 13.52,
+      "before": {
+        "lufs": -27.2,
+        "peakDbtp": -11.76,
+        "rangeLu": 3.9
+      },
+      "after": {
+        "lufs": -14.04,
+        "peakDbtp": -2,
+        "rangeLu": 4.3
+      }
+    },
+    {
       "src": "assets/media/nova/sortie-award.mp3",
       "category": "sfx",
       "targetLufs": -16,

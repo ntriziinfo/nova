@@ -87,6 +87,13 @@ globalThis.NovaVoiceCatalog=(()=>{
     "zoneGet": "assets/media/nova/sosuke-zone-get.wav",
     "sortie": "assets/media/nova/sosuke-sortie-entry.wav"
   };
+  const SORTIE_AWARD_VOICE_SRCS={
+    sosuke:'assets/media/nova/sortie-award-sosuke.wav',
+    sora:'assets/media/nova/sortie-award-sora.wav',
+    giru:'assets/media/nova/sortie-award-giru.wav',
+    ouma:'assets/media/nova/sortie-award-ouma.wav',
+    toto:'assets/media/nova/sortie-award-toto.wav'
+  };
   const OUMA_NOVA_VOICE_SRCS={
     "aim": "assets/media/nova/aim-nova-ouma.wav",
     "wins": [
@@ -139,7 +146,8 @@ globalThis.NovaVoiceCatalog=(()=>{
     ...SOSUKE_LADDER_VOICE_SRCS,
     ...Object.values(RARE_CUE_VOICE_SRCS).flatMap(bank=>Object.values(bank)),
     'assets/media/nova/aim/bonus-nebula-win.wav','assets/media/nova/aim/zone-roulette-confirm.wav?v=20260919-roulette-voice',
-    'assets/media/jag/cz_remaining_3.wav?v=count2','assets/media/jag/cz_remaining_2.wav?v=count2','assets/media/jag/cz_last.wav?v=count2'
+    'assets/media/jag/cz_remaining_3.wav?v=count2','assets/media/jag/cz_remaining_2.wav?v=count2','assets/media/jag/cz_last.wav?v=count2',
+    ...Object.values(SORTIE_AWARD_VOICE_SRCS)
   ]);
   return Object.freeze({
     BELL_NAVI_VOICE_SRCS,
@@ -150,6 +158,7 @@ globalThis.NovaVoiceCatalog=(()=>{
     ZONE_START_VOICE_SRCS,
     ZONE_CONTINUE_VOICE_SRCS,
     MODE_EVENT_VOICE_SRCS,
+    SORTIE_AWARD_VOICE_SRCS,
     OUMA_NOVA_VOICE_SRCS,
     GIRU_LADDER_VOICE_SRCS,
     SOSUKE_LADDER_VOICE_SRCS,

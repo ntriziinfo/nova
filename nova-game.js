@@ -744,6 +744,7 @@
   const ZONE_START_VOICE_SRCS=NovaVoiceCatalog.ZONE_START_VOICE_SRCS;
   const ZONE_CONTINUE_VOICE_SRCS=NovaVoiceCatalog.ZONE_CONTINUE_VOICE_SRCS;
   const MODE_EVENT_VOICE_SRCS=NovaVoiceCatalog.MODE_EVENT_VOICE_SRCS;
+  const SORTIE_AWARD_VOICE_SRCS=NovaVoiceCatalog.SORTIE_AWARD_VOICE_SRCS;
   const OUMA_NOVA_VOICE_SRCS=NovaVoiceCatalog.OUMA_NOVA_VOICE_SRCS;
   const GIRU_LADDER_VOICE_SRCS=NovaVoiceCatalog.GIRU_LADDER_VOICE_SRCS;
   const SOSUKE_LADDER_VOICE_SRCS=NovaVoiceCatalog.SOSUKE_LADDER_VOICE_SRCS;
@@ -5007,7 +5008,7 @@
   }
   function showSortieResultIfReady(){
     const card=normalState.pendingSortieResult;
-    if(!card||debugFastSpinActive||isSpinning||NovaSortie.busy)return false;
+    if(!card||debugFastSpinActive||isSpinning||NovaSortie.busy||bonusConfirmSoundPlaying)return false;
     delete normalState.pendingSortieResult;
     NovaSortie.clear();
     displayNovaResult(card);
@@ -6905,6 +6906,7 @@
     isSpinning=true;spinCanStop=true;
     NovaBellNavi.restore(spin);
     NovaSortie.begin(spin);
+    playSortieAwardVoice(spin);
     NovaAim.bet(spin.resolved.aim,spin.resolved);
     NovaInitialDuo.begin(spin.resolved);
     NovaInitialDuo.stop(spin.stopped.filter(Boolean).length);
@@ -7485,6 +7487,7 @@
     for(let row=0;row<3;row++)currentSpin.auditGrid[row][i]=col[row];
     currentSpin.stopped[i] = true;
     NovaSortie.stop(currentSpin);
+    playSortieAwardVoice(currentSpin);
     if(NovaSortie.busy)updateDisplay();
     if(currentSpin.pendingStopColumns)currentSpin.pendingStopColumns[i]=null;
     NovaBellNavi.stop(currentSpin);
@@ -7819,6 +7822,17 @@
     const flow=resolved?.flowBefore;
     if(flow?.phase!=='art'||flow.entryStage||String(flow.zone||'').replace(/^ura_/,'')!=='ouma')return;
     playOneShotSound(OUMA_NOVA_VOICE_SRCS.aim,voiceOutputVolume(),{allowDuringPremiumConfirm:true});
+  }
+
+  function playSortieAwardVoice(spin){
+    if(debugFastSpinActive||speedToBonusActive||!spin||spin.sortieAwardVoicePlayed||spin.stopped?.length!==3||!spin.stopped.every(Boolean))return;
+    const event=spin.resolved?.researchSortie;
+    if(!event?.won)return;
+    // Follow the awarded character, including wrong-order wins; never the teaser.
+    const src=SORTIE_AWARD_VOICE_SRCS[String(event.zone||'').replace(/^(ura_|normal_)/,'')];
+    if(!src)return;
+    spin.sortieAwardVoicePlayed=true;
+    playLockedBonusConfirmSound(src,voiceOutputVolume(),()=>{updateDisplay();scheduleNextAuto();});
   }
 
   function playOumaNovaWinVoice(spin,rng=Math.random){
