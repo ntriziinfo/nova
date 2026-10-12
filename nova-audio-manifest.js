@@ -224,6 +224,10 @@ globalThis.NovaAudioManifest=Object.freeze({
     "src": "assets/media/normalized-voices-20261013/nova/aim_seven_sosuke.wav",
     "category": "voice"
   },
+  "assets/media/nova/at-prelude-start-20261013.mp3": {
+    "src": "assets/media/normalized-20261012/nova/at-prelude-start-20261013.wav",
+    "category": "sfx"
+  },
   "assets/media/nova/audiostock_1117081.wav": {
     "src": "assets/media/normalized-20261012/nova/audiostock_1117081.mp3",
     "category": "bgm"
