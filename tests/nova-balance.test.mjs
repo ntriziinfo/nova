@@ -1,7 +1,7 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
 const ctx=vm.createContext({});for(const f of ['nova-tuning.js','nova-art.js','nova-balance.js'])vm.runInContext(fs.readFileSync(f,'utf8'),ctx);const a=ctx.NovaArt,b=ctx.NovaBalance;
 test('RTP metadata identifies the adopted 10,000G MY19k calibration',()=>{
- for(let i=0;i<6;i++){const p=b.profile(i+1);assert.equal(p.targetGamesPerTrial,10000);assert.equal(p.gamesPerTrial,10000);assert.equal(p.trials,[1500,1500,3000,1500,3000,5000][i]);assert.equal(p.measuredRtp,[.9437,.9610,.9701,1.0095,1.0638,1.1409][i]);assert.equal(p.verifiedModel,'smartslot-20261013-10000g');}
+ for(let i=0;i<6;i++){const r=JSON.parse(fs.readFileSync('docs/checkpoint-quiet-20261013.json')).summaries[i],p=b.profile(i+1);assert.equal(p.targetGamesPerTrial,10000);assert.equal(p.gamesPerTrial,10000);assert.equal(p.trials,300);assert.equal(p.measuredRtp,r.after.rtp/100);assert.equal(p.verifiedModel,'checkpoint-quiet-20261013-10000g');}
 });
 
 test('common AT evidence keeps session and episode denominators separate',()=>{

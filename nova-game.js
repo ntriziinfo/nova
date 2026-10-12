@@ -2403,7 +2403,7 @@
 
   function targetRtpText(settingNo = settings.setting){
     if(A_TYPE_MODE && !NovaBalance.usesStandardSettings(settings))return "未試算（独自設定）";
-    if(A_TYPE_MODE)return `${(NovaBalance.profile(settingNo).measuredRtp*100).toFixed(2)}%（1万G試算）`;
+    if(A_TYPE_MODE)return `${(NovaBalance.profile(settingNo).measuredRtp*100).toFixed(2)}%（1万G予備試算）`;
   }
 
   function refreshRtpViews(){
@@ -2617,6 +2617,8 @@
   }
 
   function normalModeLabel(){
+    const checkpoint=atCheckpointStatus(normalState.flow,NovaProgress.snapshot(),currentProfit());
+    if(checkpoint?.gold)return checkpoint.text;
     if(normalState.bonusPending) return normalState.prepLeft>0?"ボーナス準備中 残り"+normalState.prepLeft+"G":"7を狙え";
     if(normalState.internal?.prelude?.presentation==='reel'&&['normal','cz','strong_cz'].includes(normalState.flow?.phase)&&!(isSpinning&&currentSpin?.resolved?.czPrelude?.announce))return 'CZ前兆';
     return normalState.flow?.phase==='normal'?NovaNormal.normalLabel(normalState.internal):NovaSortie.label(NovaFlow.label(normalState.flow));
@@ -2630,8 +2632,8 @@
     const next=Number(progress?.next),profit=Number(net);
     if(!Number.isFinite(next)||next<=0||!Number.isFinite(profit))return null;
     const left=pending?0:Math.ceil(Math.max(0,next-profit));
-    if(left>0)return null;
-    return {text:`スーパーノヴァチャレンジまで${left.toLocaleString('ja-JP')}pt`,gold:left===0};
+    if(left>0&&!NovaArt.checkpointGuaranteed(flow,profit,next))return null;
+    return {text:`スーパーノヴァチャレンジまで${left.toLocaleString('ja-JP')}pt`,gold:true,left};
   }
 
   function checkpointResultCard(flow,progress,lastShown,net){
@@ -3412,7 +3414,7 @@
   function drawIndependentATypeOutcome(){
     const flow=NovaFlow.normalize(normalState.flow);
     if(flow.phase==='art'){
-      pendingArtStep=NovaArt.step(flow,{...settings.novaArt,setting:settings.setting,netPt:currentProfit()},Math.random,pendingForceResult);
+      pendingArtStep=NovaArt.step(flow,{...settings.novaArt,setting:settings.setting,netPt:currentProfit(),checkpointQuiet:NovaArt.checkpointQuietRules.enabled,checkpointNext:NovaProgress.snapshot().next},Math.random,pendingForceResult);
       return {result:pendingArtStep.result,internalBonus:pendingArtStep.internalBonus};
     }
     const token=NovaNormal.spin(normalState.internal,flow,Number(settings.setting)||1,{normal:settings.novaNormal,art:settings.novaArt,cz:settings.novaFlow,scale:NovaBalance.profile(settings.setting).scale},Math.random,pendingForceResult);
@@ -3447,7 +3449,7 @@
       }
       if(!normalState.bonusPending && (pendingForceResult==='ART'||pendingForceResult.startsWith('ZONE_'))){
         const base=normalState.flow?.phase==='art'?normalState.flow:pendingForceResult==='ART'?null:NovaArt.enter({...settings.novaArt,setting:settings.setting});
-        pendingArtStep=pendingForceResult==='ART'?{result:'MISS',flow:NovaArt.enterInitial({...settings.novaArt,setting:settings.setting}),message:'AT準備開始'}:NovaArt.step(base,{...settings.novaArt,setting:settings.setting,netPt:currentProfit()},Math.random,pendingForceResult);
+        pendingArtStep=pendingForceResult==='ART'?{result:'MISS',flow:NovaArt.enterInitial({...settings.novaArt,setting:settings.setting}),message:'AT準備開始'}:NovaArt.step(base,{...settings.novaArt,setting:settings.setting,netPt:currentProfit(),checkpointQuiet:NovaArt.checkpointQuietRules.enabled,checkpointNext:NovaProgress.snapshot().next},Math.random,pendingForceResult);
         return pendingArtStep.result;
       }
       if(!normalState.bonusPending && normalState.flow?.phase==='art' && !['MID','BAR3'].includes(pendingForceResult)){
@@ -5519,14 +5521,16 @@
 
   function renderRemainingCounters(){
     const spin=isSpinning?currentSpin:null;
-    NovaRemainingCounters.render(normalState.flow,{spin,bonus:session.active,bonusPending:normalState.bonusPending,
+    NovaRemainingCounters.render(normalState.flow,{spin,checkpointStatus:atCheckpointStatus(normalState.flow,NovaProgress.snapshot(),currentProfit()),bonus:session.active,bonusPending:normalState.bonusPending,
       czPrelude:normalState.internal?.prelude?.presentation==='reel'&&!spin?.resolved?.czPrelude?.announce});
   }
 
   function syncUpperAtBackground(){
     const resolved=isSpinning?currentSpin?.resolved:null;
-    const specialSpin=resolved&&!NovaUpperAtBackground.eligible(resolved.flowAfter);
-    NovaUpperAtBackground.sync(specialSpin||debugFastSpinActive||session.active||normalState.bonusPending||normalState.resultCard||normalState.pendingZoneResult||normalState.pendingSortieResult||normalState.ladderAwardPresentation||normalState.stockEntry||isCompleteTrialLocked()?null:presentedArtFlow());
+    const checkpoint=atCheckpointStatus(normalState.flow,NovaProgress.snapshot(),currentProfit());
+    globalThis.NovaCheckpointHint?.sync(!!checkpoint?.gold);
+    const specialSpin=resolved&&!NovaUpperAtBackground.eligible(resolved.flowAfter,!!checkpoint?.gold);
+    NovaUpperAtBackground.sync(specialSpin||debugFastSpinActive||session.active||normalState.bonusPending||normalState.resultCard||normalState.pendingZoneResult||normalState.pendingSortieResult||normalState.ladderAwardPresentation||normalState.stockEntry||isCompleteTrialLocked()?null:presentedArtFlow(),!!checkpoint?.gold);
   }
 
   function updateDisplay(){
@@ -6943,6 +6947,7 @@
     isSpinning=true;spinCanStop=true;
     NovaBellNavi.restore(spin);
     NovaSortie.begin(spin);
+    globalThis.NovaCheckpointHint?.begin(spin,settings.setting);
     playSortieAwardVoice(spin);
     NovaAim.bet(spin.resolved.aim,spin.resolved);
     NovaInitialDuo.begin(spin.resolved);
@@ -7330,6 +7335,7 @@
     playGiruLadderBetVoice(currentSpin);
     playSosukeLadderBetVoice(currentSpin);
     NovaSortie.begin(currentSpin);
+    globalThis.NovaCheckpointHint?.begin(currentSpin,settings.setting);
     renderRemainingCounters();
     syncUpperAtBackground();
     if(resolved.zoneStartFlow)updateDisplay();
@@ -7411,7 +7417,6 @@
       oumaFailDimTimer=setTimeout(()=>{machine.dataset.oumaFailDim='';oumaFailDimTimer=null;},900);
     }else if(!resolved.oumaFreeze)playSpinSound(resolved);
     if(!debugFastSpinActive&&!speedModeSpinAtStart)NovaInitialDuo.begin(resolved);else NovaInitialDuo.clear();
-    playZoneInternalConfirmedSound(resolved);
     ensureBattleBgmContinuing();
     ensureBarBgmContinuing();
 
@@ -7539,6 +7544,7 @@
     NovaBellNavi.stop(currentSpin);
     playBellNaviVoice(currentSpin);
     if(currentSpin.stopped.every(Boolean)){
+      playZoneInternalConfirmedSound(currentSpin.resolved);
       playOumaNovaWinVoice(currentSpin);
       if(!debugFastSpinActive&&!speedToBonusActive&&NovaDirectAward.show(currentSpin.resolved)){
         $("overlay").classList.remove("show");
@@ -7670,6 +7676,7 @@
 
   function rareCueGrade(spin){
     const role=spin?.result;
+    if(spin?.resolved?.atOutcome?.checkpointQuiet)return '';
     if(!['WEAK_SUICA','STRONG_SUICA','CHANCE_A','CHANCE_B','WEAK_NOVA','STRONG_NOVA','SUPER_NOVA'].includes(role))return '';
     const resolved=spin.resolved,before=resolved?.flowBefore;
     if(before?.zone||before?.initialStage||before?.entryStage||resolved?.aTypeBonusGame)return '';
@@ -8158,6 +8165,7 @@
   function finishSpin(result, resolved, lineRow=1){
     if(resolved?.stockEntry){finishStockEntry();return;}
     if(!isSpinning || (currentSpin && currentSpin.finishing)) return;
+    if(typeof playZoneInternalConfirmedSound==='function'&&currentSpin?.stopped?.every(Boolean))playZoneInternalConfirmedSound(resolved);
     try{
     NovaBellNavi.clear();
     if(resolved.researchChallenge?.finished)showOverlay(resolved.researchChallenge.won?'上位AT確定！':'通常ATへ');

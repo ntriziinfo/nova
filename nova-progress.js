@@ -18,7 +18,7 @@ globalThis.NovaProgress=(()=>{
   const weak=sortieWeakRates[Math.max(1,Math.min(6,Math.floor(Number(setting)||3)))];
   const rule=a.positiveNetZoneRules[Math.max(1,Math.min(6,Math.floor(Number(setting)||3)))-1],factor=rule.sortie?a.positiveNetZoneFactor(setting,netPt):1;return (role==='STRONG_NOVA'?weak*10:['WEAK_SUICA','WEAK_NOVA'].includes(role)?weak:0)*factor;
  }
- function sortieEligible(result,resolved={}){return !!sortieChance(1,result)&&!resolved.flowBefore?.zero&&!resolved.oumaFailed&&!resolved.researchSortie&&!resolved.researchChallenge&&!resolved.stockEntry;}
+ function sortieEligible(result,resolved={}){return !resolved.atOutcome?.checkpointQuiet&&!!sortieChance(1,result)&&!resolved.flowBefore?.zero&&!resolved.oumaFailed&&!resolved.researchSortie&&!resolved.researchChallenge&&!resolved.stockEntry;}
  function queueSortie(){state.sorties++;}
  function drawSortie(setting,result,resolved={},rng=Math.random,netPt=latestNet){
   if(!sortieEligible(result,resolved))return false;

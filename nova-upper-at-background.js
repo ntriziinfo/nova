@@ -1,9 +1,9 @@
 /* Display-only upper AT lamp background. Never advances the game or draws RNG. */
 globalThis.NovaUpperAtBackground=(()=>{
- let host,video,wanted=false,starting=false;
+ let host,video,wanted=false,starting=false,checkpoint=false;
  const foreground='.novaAimPresentation,.novaLadderPresentation,.novaResultsLayer,#novaStockPreparation,#zoneRoulette,#novaInitialDuo,#novaDirectAward,#novaSortieGuide';
- function eligible(flow){
-  return !!(flow?.phase==='art'&&flow.researchUpper&&!flow.zone&&!flow.initialStage&&!flow.entryStage&&!flow.atPrelude&&!flow.researchSortieLeft&&!flow.researchChallengeActive&&!flow.burstPending&&!flow.burstLeft&&!flow.comebackLeft&&!flow.comebackConfirmed);
+ function eligible(flow,confirmed=false){
+  return !!(flow?.phase==='art'&&(flow.researchUpper||confirmed)&&!flow.zone&&!flow.initialStage&&!flow.entryStage&&!flow.atPrelude&&!flow.researchSortieLeft&&!flow.researchChallengeActive&&!flow.burstPending&&!flow.burstLeft&&!flow.comebackLeft&&!flow.comebackConfirmed);
  }
  function blocked(){
   return host.dataset.atPreludeActive==='true'||Array.from(host.querySelectorAll(foreground)).some(el=>!el.hidden);
@@ -43,12 +43,14 @@ globalThis.NovaUpperAtBackground=(()=>{
    video=document.createElement('video');video.id='novaUpperAtBackground';
    video.muted=true;video.defaultMuted=true;video.loop=true;video.playsInline=true;video.preload='metadata';
    video.setAttribute('aria-hidden','true');video.setAttribute('playsinline','');
-   video.src='assets/media/nova/upper-at-background-20261012.mp4';host.append(video);
+   host.append(video);
   }
+  const src=checkpoint?'assets/media/nova/checkpoint-confirmed-background-20261013.mp4':'assets/media/nova/upper-at-background-20261012.mp4';
+  if(video.getAttribute('src')!==src){video.pause();video.src=src;video.load?.();}
   video.hidden=false;layout();play();
  }
- function sync(flow){
-  wanted=eligible(flow);
+ function sync(flow,confirmed=false){
+  checkpoint=!!confirmed;wanted=eligible(flow,checkpoint);
   if(init())refresh();
  }
  if(typeof document!=='undefined'){

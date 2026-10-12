@@ -1,0 +1,7 @@
+{
+  "source": "C:/Users/nitro/Dropbox/NOVA台用イラスト/1616906966wpdm_bg_01.mp4",
+  "sourceSha256": "65577f2ca73d53ee2db9acc6174c0390646745645f6288caddfef626163a7182",
+  "output": "assets/media/nova/checkpoint-confirmed-background-20261013.mp4",
+  "outputSha256": "2648ebd1ac866554353c038a9f5281a2c20ddbde882268748324cd15e48850a2",
+  "processing": "Local H264 compression; audio omitted for muted looping background. Original unchanged. No training."
+}

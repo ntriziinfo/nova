@@ -12,6 +12,7 @@ globalThis.NovaRemainingCounters=(()=>{
   const resolved=options.spin?.resolved;
   const shown=resolved?.zoneStartFlow||flow||{};
   if(flow?.phase==='art')result.atcounter={...result.atcounter,value:points(flow.remaining),active:true};
+  if(options.checkpointStatus?.gold&&result.atcounter.active)result.atcounter={label:'スーパーノヴァチャレンジまで',value:points(options.checkpointStatus.left||0),unit:'pt',active:true,hold:false};
   if(options.bonus)return result; // An interrupted AT keeps its banked points visible.
   if(['cz','strong_cz'].includes(flow?.phase)&&!options.czPrelude&&!options.bonusPending){
    result.czcounter={...result.czcounter,label:flow.phase==='strong_cz'?'強CZ残り':'CZ残り',value:games(flow.remaining),active:true};
@@ -41,6 +42,7 @@ globalThis.NovaRemainingCounters=(()=>{
  function render(flow,options){
   node ||= document.getElementById('nova-remainingcounter');if(!node)return;
   const value=current(flow,options);
+  node.dataset.checkpoint=String(!!options?.checkpointStatus?.gold);
   for(const prop of ['label','value','unit']){const target=node.querySelector('[data-counter-'+prop+']');if(target.textContent!==value[prop])target.textContent=value[prop];}
   for(const prop of ['mode','active','hold'])if(node.dataset[prop]!==String(value[prop]))node.dataset[prop]=String(value[prop]);
   const label=value.label+' '+value.value+value.unit+(value.hold?' HOLD':'');

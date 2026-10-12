@@ -93,8 +93,8 @@ export function simulate(setting,games,seed,options={}){
    if(!flow.zero){const charged=bet(flow.zone?'zone':'at');if(options.atBetRefund!==false&&a.restoreBetCost)flow=a.restoreBetCost(flow,charged);}else counts.zero++;
    if(!flow.zero)atLevelMetrics[flow.atLevel||0].games++;
    const eligible=!flow.researchSortieLeft&&!flow.zone&&!flow.entryStage&&!flow.queuedZones?.length&&Number(flow.stock||0)===0&&Number(flow.remaining)>0;
-   const s=a.step(flow,{...c,netPt:options.netGuard===false?0:paid-fee},rng);
-   if(!flow.zero&&!s.researchSortie&&!s.researchChallenge)roleSortie(s.result,flow.zone?'zone':'at');
+   const s=a.step(flow,{...c,checkpointQuiet:options.checkpointQuiet??a.checkpointQuietRules?.enabled??false,checkpointNext:globalThis.NovaProgress?.snapshot().next,netPt:options.netGuard===false?0:paid-fee},rng);
+   if(!s.atOutcome?.checkpointQuiet&&!flow.zero&&!s.researchSortie&&!s.researchChallenge)roleSortie(s.result,flow.zone?'zone':'at');
    if(eligible){atMetrics.eligible++;if(flow.atHigh)atMetrics.high++;if(s.flow.entryStage==='seven')atMetrics.zoneWins++;}
    if(s.researchChallenge){const e=s.researchChallenge,r=upper.bySource[e.source];upper.spins++;if(e.started)r.started++;if(e.won)r.won++;if(e.finished&&!e.won)r.failed++;}
    if(eligible&&flow.researchUpper&&!s.researchChallenge)upper.upperGames++;

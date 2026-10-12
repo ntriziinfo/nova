@@ -1,0 +1,282 @@
+[
+  {
+    "setting": 1,
+    "seed": "checkpoint-quiet-20261013|s1|0",
+    "before": {
+      "bet": 30000,
+      "paid": 19742,
+      "net": -10258,
+      "complete": false,
+      "win": false,
+      "peak": 0
+    },
+    "after": {
+      "bet": 30000,
+      "paid": 19742,
+      "net": -10258,
+      "complete": false,
+      "win": false,
+      "peak": 0
+    }
+  },
+  {
+    "setting": 1,
+    "seed": "checkpoint-quiet-20261013|s1|99",
+    "before": {
+      "bet": 30000,
+      "paid": 23772,
+      "net": -6228,
+      "complete": false,
+      "win": false,
+      "peak": 0
+    },
+    "after": {
+      "bet": 30000,
+      "paid": 23772,
+      "net": -6228,
+      "complete": false,
+      "win": false,
+      "peak": 0
+    }
+  },
+  {
+    "setting": 2,
+    "seed": "checkpoint-quiet-20261013|s2|0",
+    "before": {
+      "bet": 30000,
+      "paid": 26267,
+      "net": -3733,
+      "complete": false,
+      "win": false,
+      "peak": 498
+    },
+    "after": {
+      "bet": 30000,
+      "paid": 26267,
+      "net": -3733,
+      "complete": false,
+      "win": false,
+      "peak": 498
+    }
+  },
+  {
+    "setting": 2,
+    "seed": "checkpoint-quiet-20261013|s2|99",
+    "before": {
+      "bet": 30000,
+      "paid": 31926,
+      "net": 1926,
+      "complete": false,
+      "win": true,
+      "peak": 3369
+    },
+    "after": {
+      "bet": 30000,
+      "paid": 32908,
+      "net": 2908,
+      "complete": false,
+      "win": true,
+      "peak": 3848
+    }
+  },
+  {
+    "setting": 3,
+    "seed": "checkpoint-quiet-20261013|s3|0",
+    "before": {
+      "bet": 30000,
+      "paid": 28137,
+      "net": -1863,
+      "complete": false,
+      "win": false,
+      "peak": 353
+    },
+    "after": {
+      "bet": 30000,
+      "paid": 28137,
+      "net": -1863,
+      "complete": false,
+      "win": false,
+      "peak": 353
+    }
+  },
+  {
+    "setting": 3,
+    "seed": "checkpoint-quiet-20261013|s3|99",
+    "before": {
+      "bet": 30000,
+      "paid": 32388,
+      "net": 2388,
+      "complete": false,
+      "win": true,
+      "peak": 3006
+    },
+    "after": {
+      "bet": 30000,
+      "paid": 32910,
+      "net": 2910,
+      "complete": false,
+      "win": true,
+      "peak": 3567
+    }
+  },
+  {
+    "setting": 4,
+    "seed": "checkpoint-quiet-20261013|s4|0",
+    "before": {
+      "bet": 30000,
+      "paid": 27524,
+      "net": -2476,
+      "complete": false,
+      "win": false,
+      "peak": 1903
+    },
+    "after": {
+      "bet": 30000,
+      "paid": 27524,
+      "net": -2476,
+      "complete": false,
+      "win": false,
+      "peak": 1903
+    }
+  },
+  {
+    "setting": 4,
+    "seed": "checkpoint-quiet-20261013|s4|99",
+    "before": {
+      "bet": 30000,
+      "paid": 31864,
+      "net": 1864,
+      "complete": false,
+      "win": true,
+      "peak": 2325
+    },
+    "after": {
+      "bet": 30000,
+      "paid": 31888,
+      "net": 1888,
+      "complete": false,
+      "win": true,
+      "peak": 2325
+    }
+  },
+  {
+    "setting": 5,
+    "seed": "checkpoint-quiet-20261013|s5|0",
+    "before": {
+      "bet": 30000,
+      "paid": 42756,
+      "net": 12756,
+      "complete": false,
+      "win": true,
+      "peak": 12756
+    },
+    "after": {
+      "bet": 30000,
+      "paid": 31596,
+      "net": 1596,
+      "complete": false,
+      "win": true,
+      "peak": 3185
+    }
+  },
+  {
+    "setting": 5,
+    "seed": "checkpoint-quiet-20261013|s5|99",
+    "before": {
+      "bet": 30000,
+      "paid": 32754,
+      "net": 2754,
+      "complete": false,
+      "win": true,
+      "peak": 3531
+    },
+    "after": {
+      "bet": 30000,
+      "paid": 34777,
+      "net": 4777,
+      "complete": false,
+      "win": true,
+      "peak": 7140
+    }
+  },
+  {
+    "setting": 5,
+    "seed": "checkpoint-quiet-20261013|s5|159",
+    "before": {
+      "bet": 30000,
+      "paid": 40768,
+      "net": 10768,
+      "complete": false,
+      "win": true,
+      "peak": 11241
+    },
+    "after": {
+      "bet": 23679,
+      "paid": 41578,
+      "net": 17899,
+      "complete": true,
+      "win": true,
+      "peak": 17899
+    }
+  },
+  {
+    "setting": 6,
+    "seed": "checkpoint-quiet-20261013|s6|0",
+    "before": {
+      "bet": 30000,
+      "paid": 30624,
+      "net": 624,
+      "complete": false,
+      "win": true,
+      "peak": 945
+    },
+    "after": {
+      "bet": 30000,
+      "paid": 30624,
+      "net": 624,
+      "complete": false,
+      "win": true,
+      "peak": 945
+    }
+  },
+  {
+    "setting": 6,
+    "seed": "checkpoint-quiet-20261013|s6|99",
+    "before": {
+      "bet": 30000,
+      "paid": 35154,
+      "net": 5154,
+      "complete": false,
+      "win": true,
+      "peak": 7156
+    },
+    "after": {
+      "bet": 30000,
+      "paid": 34234,
+      "net": 4234,
+      "complete": false,
+      "win": true,
+      "peak": 6047
+    }
+  },
+  {
+    "setting": 6,
+    "seed": "checkpoint-quiet-20261013|s6|82",
+    "before": {
+      "bet": 24759,
+      "paid": 43694,
+      "net": 18935,
+      "complete": true,
+      "win": true,
+      "peak": 18935
+    },
+    "after": {
+      "bet": 26763,
+      "paid": 45708,
+      "net": 18945,
+      "complete": true,
+      "win": true,
+      "peak": 18945
+    }
+  }
+]

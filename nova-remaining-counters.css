@@ -19,3 +19,5 @@
 .novaRemainingCounter[data-hold=true] .novaCounterHold {display:inline;}
 body.layoutEditOpen .novaRemainingCounter {outline:2px dashed #4de7ff;outline-offset:3px;}
 .novaCounterMetrics {margin:9px 0 0;color:#c6c9d5;font:11px/1.6 system-ui;}
+
+.novaRemainingCounter[data-checkpoint=true] [data-counter-label]{font-size:6.4cqw;line-height:1.1}

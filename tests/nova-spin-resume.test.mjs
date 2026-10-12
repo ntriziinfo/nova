@@ -180,7 +180,7 @@ test('replay entitlement and zero-game cost exemptions survive pending saves',()
 test('displayed RTP is unmeasured after MY cap removal; BIG fields still use the engine target',()=>{
  const {c}=harness();vm.runInContext(fn('targetRtpText'),c);
  for(let setting=1;setting<=6;setting++){
-  assert.equal(c.targetRtpText(setting),`${(c.NovaBalance.profile(setting).measuredRtp*100).toFixed(2)}%（1万G試算）`);
+  assert.equal(c.targetRtpText(setting),`${(c.NovaBalance.profile(setting).measuredRtp*100).toFixed(2)}%（1万G予備試算）`);
  }
  assert.equal(c.NovaArt.bonusTarget(),50);
  for(const field of ['midMulInput','bigMulInput','bigAddInput'])assert(fn('applySettings').includes('$("'+field+'").value = NovaArt.bonusTarget()'));
@@ -232,7 +232,7 @@ test('custom lottery and complete limits suppress standard RTP; presentation pre
   for(let n=1;n<=6;n++)assert.equal(c.targetRtpText(n),'未試算（独自設定）');
  }
  c.settings={...standard,audioMuted:true,voiceVolume:.1,autoDelay:2,title:'表示変更'};
- assert.equal(c.targetRtpText(6),'114.09%（1万G試算）');
+ assert.equal(c.targetRtpText(6),`${(c.NovaBalance.profile(6).measuredRtp*100).toFixed(2)}%（1万G予備試算）`);
  c.settings={...standard,novaFlow:{...standard.novaFlow,czChance:String(c.NovaFlow.defaults.czChance)}};
  assert(c.NovaBalance.usesStandardSettings(c.settings));
 });

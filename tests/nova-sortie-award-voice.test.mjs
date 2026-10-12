@@ -64,6 +64,6 @@ test('early voice end still respects four-second hold; failures and stale end ev
 
 test('third-stop and resume paths share routing; manual and AUTO both retain the audio gate',()=>{
  assert.match(fn('stopSingleReel'),/NovaSortie\.stop\(currentSpin\);\s*playSortieAwardVoice\(currentSpin\)/);
- assert.match(fn('restorePendingSpin'),/NovaSortie\.begin\(spin\);\s*playSortieAwardVoice\(spin\)/);
+ assert.match(fn('restorePendingSpin'),/NovaSortie\.begin\(spin\);[\s\S]*?playSortieAwardVoice\(spin\)/);
  for(const name of ['spin','runAutoStep','scheduleNextAuto'])assert.match(fn(name),/bonusConfirmSoundPlaying/);
 });

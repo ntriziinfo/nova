@@ -394,6 +394,12 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
   const i=validSetting(setting)-1;
   return (upper?8:1)*(high?.25:.15)*weakAtZoneScales[i]*(netPt>=5000?weakAtNetZoneScales[i]:1)*positiveNetZoneFactor(setting,netPt);
  }
+ const checkpointQuietRules=Object.freeze({enabled:true}); // Approved 2026-10-13; fixed earned net quota reaches the checkpoint.
+ function checkpointGuaranteed(s,net,next){
+  if(s?.phase!=='art'||s.zone||s.entryStage||s.initialStage||s.atPrelude||s.researchSortieLeft||s.comebackLeft||s.comebackConfirmed||s.researchChallengeActive||s.burstPending||s.burstLeft||s.queuedZones?.length||Number(s.stock||0)>0||Number(s.sets||0)>0)return false;
+  if(!Number.isFinite(Number(net))||!Number.isFinite(Number(next))||Number(next)<=0)return false;
+  return Number(net)+Number(s.remaining||0)>=Number(next);
+ }
  function resolveAtRole(s,role,setting,rng=Math.random,netPt=0){
   const rules=commonAtRulesFor(setting),wasHigh=!!s.atHigh,held=wasHigh&&s.atHighLeft>0;
   const out={wasHigh,direct:0,zone:'',promoted:false,rewardFactor:1};if(held)s.atHighLeft--;
@@ -506,10 +512,11 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
   }else{
    // Remaining AT points are consumed by actual payout after role selection.
    const rare=forced==='RARE'||!!rareRoles[forced];if(rare)result=rareRoles[forced]?forced:drawAtRare(options.setting,rng);
-   atOutcome=resolveAtRole(s,result,options.setting,rng,options.netPt);
-   if(!s.researchUpper&&!s.researchThresholdPending&&s.burstVersion===burstRules.version&&!s.burstUsed&&burstRules.roles[result]&&rng()<burstChance(result,options.setting)){s.burstUsed=true;s.burstPending=true;s.burstType='ura';s.researchChallengeSource='rare';}
+   const checkpointQuiet=!!options.checkpointQuiet&&checkpointGuaranteed(s,options.netPt,options.checkpointNext);
+   atOutcome=checkpointQuiet?{wasHigh:!!s.atHigh,direct:0,zone:'',promoted:false,rewardFactor:1,checkpointQuiet:true}:resolveAtRole(s,result,options.setting,rng,options.netPt);
+   if(!checkpointQuiet&&!s.researchUpper&&!s.researchThresholdPending&&s.burstVersion===burstRules.version&&!s.burstUsed&&burstRules.roles[result]&&rng()<burstChance(result,options.setting)){s.burstUsed=true;s.burstPending=true;s.burstType='ura';s.researchChallengeSource='rare';}
    if(atOutcome.direct){s.dryEligible=false;s.remaining=(integer(s.remaining)+BigInt(atOutcome.direct)).toString();message='直乗せ＋'+atOutcome.direct+'pt';}
-   atPrelude=advanceAtPrelude(s,result,atOutcome,rng);
+   atPrelude=checkpointQuiet?null:advanceAtPrelude(s,result,atOutcome,rng);
    if(atPrelude?.confirmed){s.giruSetting=validSetting(options.setting);message='特化ゾーン確定！ 赤7を狙え';}
    const paid=s.entryStage||s.burstPending?0n:BigInt(cashPayout(result,options));s.remaining=(integer(s.remaining)>paid?integer(s.remaining)-paid:0n).toString();
    if(!s.zone&&!s.entryStage&&!s.burstPending&&!s.atPrelude&&!internalBonus&&integer(s.remaining)===0n){message='引き戻しゾーン突入 / 残り5G';return {atPrelude,atOutcome,result,flow:beginComeback(s),comebackEvent:'entry',message};}
@@ -523,5 +530,5 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
   s.researchSortieRate=[.1,.25,.4,.6,.8][i<0?4:i];s.researchSortieLeft=10;s.researchSortieHits=0;
   s.comebackLeft=0;s.comebackConfirmed=false;s.comebackLamp='';s.zero=false;s.dryEligible=false;return s;
  }
- return {cashPayout,replayRefund,scriptedInitialRoles,freshInitialRules,positiveNetZoneRules,positiveNetZoneFactor,restoreBetCost,extraZoneChance,commonAtRulesFor,entryWeights:researchEntryWeights,beginResearchSortie,atPreludeRules,initialRareAwards,initialZoneIds,rouletteZones,sevenGuaranteed,initialBoostRules,entryQuotaRules,initialZoneAllowed,initialZoneWeights,pickInitialZone,drawEntryQuota,enterInitial,challengeName,burstReward,comebackRules,comebackChance,comebackRoleProbabilities,drawComebackRole,beginComeback,prepareComeback,stepComeback,burstRules,burstChance,commonAtRules,bonusRules,bonusTier,drawBonusTier,bonusLabel,bonusPayout,bonusAim,aimColors,aimColorsFor,sevenAimRules,drawSevenAim,ladderWeightsFor,ladderGuaranteed,drawLadderRole,lossRewardControl,zoneTailControl,zoneAwardFactor,netRewardControl,netLimits,netRewardFactor,superZoneChance,zoneGroups,zoneGroupWeights,upgradeGuaranteedZone,bonusSpecialRates,zoneRules,ladderTables,ladderTableFor,ladderValues,sevenValues,sevenWeights,atZoneWeights,tuning,atMix,drawAtRare,atRoleRules,pickAtZone,resolveAtRole,rareRoles,rareTotal,rareMean,rareFactor,drawRare,roleProbabilities,bonusRoleProbabilities,preparationProbabilities,drawPreparationRole,zoneRoleWeights,zoneRoleMultiplier,paidBellChance,drawPreparation,zoneEntryScale,points,bonusTarget,payout,settleZone,prepareBet,oumaFreezeRate,baseZone,zoneName,zoneIds,names,defaults,direct,zoneWeights,pickZone,bonusSpecial,settingBias,biasFor,bonusSpecialFor,advanceBonus,bonusStockLabel,bonusStockRules,bonusStockFactor,bonusStockEligible,drawPaidRole,drawBonus,config,normalize,enter,startZone,afterBonus,step,label};
+ return {checkpointQuietRules,checkpointGuaranteed,cashPayout,replayRefund,scriptedInitialRoles,freshInitialRules,positiveNetZoneRules,positiveNetZoneFactor,restoreBetCost,extraZoneChance,commonAtRulesFor,entryWeights:researchEntryWeights,beginResearchSortie,atPreludeRules,initialRareAwards,initialZoneIds,rouletteZones,sevenGuaranteed,initialBoostRules,entryQuotaRules,initialZoneAllowed,initialZoneWeights,pickInitialZone,drawEntryQuota,enterInitial,challengeName,burstReward,comebackRules,comebackChance,comebackRoleProbabilities,drawComebackRole,beginComeback,prepareComeback,stepComeback,burstRules,burstChance,commonAtRules,bonusRules,bonusTier,drawBonusTier,bonusLabel,bonusPayout,bonusAim,aimColors,aimColorsFor,sevenAimRules,drawSevenAim,ladderWeightsFor,ladderGuaranteed,drawLadderRole,lossRewardControl,zoneTailControl,zoneAwardFactor,netRewardControl,netLimits,netRewardFactor,superZoneChance,zoneGroups,zoneGroupWeights,upgradeGuaranteedZone,bonusSpecialRates,zoneRules,ladderTables,ladderTableFor,ladderValues,sevenValues,sevenWeights,atZoneWeights,tuning,atMix,drawAtRare,atRoleRules,pickAtZone,resolveAtRole,rareRoles,rareTotal,rareMean,rareFactor,drawRare,roleProbabilities,bonusRoleProbabilities,preparationProbabilities,drawPreparationRole,zoneRoleWeights,zoneRoleMultiplier,paidBellChance,drawPreparation,zoneEntryScale,points,bonusTarget,payout,settleZone,prepareBet,oumaFreezeRate,baseZone,zoneName,zoneIds,names,defaults,direct,zoneWeights,pickZone,bonusSpecial,settingBias,biasFor,bonusSpecialFor,advanceBonus,bonusStockLabel,bonusStockRules,bonusStockFactor,bonusStockEligible,drawPaidRole,drawBonus,config,normalize,enter,startZone,afterBonus,step,label};
 })();

@@ -56,3 +56,5 @@ assets/media/nova/sortie-award-duo.wav -filter -diff -merge -text
 assets/media/nova/sortie-nebula-cue.mp3 -filter -diff -merge -text
 assets/media/nova/sortie-cues.sources.json -filter -diff -merge text
 assets/media/normalized-voices-20261013/** -filter -diff -merge -text
+assets/media/nova/checkpoint-confirmed-background-20261013.mp4 -filter -diff -merge -text
+assets/media/nova/checkpoint-confirmed-background-20261013.source.json -filter -diff -merge text

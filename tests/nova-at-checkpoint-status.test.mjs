@@ -4,12 +4,13 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 const source=fs.readFileSync('nova-game.js','utf8');
 const context=vm.createContext({});
+for(const file of ['nova-tuning.js','nova-art.js'])vm.runInContext(fs.readFileSync(file,'utf8'),context);
 for(const name of ['atCheckpointStatus','checkpointResultCard'])vm.runInContext(source.match(new RegExp('  function '+name+'\\([^]*?\\n  }'))[0],context);
 const label=context.atCheckpointStatus,card=context.checkpointResultCard;
 const at=remaining=>({phase:'art',remaining:String(remaining)});
 
-test('countdown and gold follow actual cumulative net, never remaining AT payout',()=>{
- for(const [net,remaining,next,left,gold] of [[2000,399,2400,400,false],[2000,400,2400,400,false],[-1000,3500,2400,3400,false],[2500,500,4800,2300,false],[4300,500,4800,500,false],[2399,10000,2400,1,false],[2400,0,2400,0,true],[2401,0,2400,0,true]]){
+test('countdown hides discarded quota once net plus guaranteed hand-take reaches the next line',()=>{
+ for(const [net,remaining,next,left,gold] of [[2000,399,2400,400,false],[2000,400,2400,400,true],[-1000,3500,2400,3400,true],[2500,500,4800,2300,false],[4300,500,4800,500,true],[2399,10000,2400,1,true],[2400,0,2400,0,true],[2401,0,2400,0,true]]){
   const view=label(at(remaining),{next},net);
   if(!gold){assert.equal(view,null);continue;}
   assert.equal(view.text,`スーパーノヴァチャレンジまで${left.toLocaleString('ja-JP')}pt`);assert.equal(view.gold,true);
@@ -26,7 +27,7 @@ test('earned checkpoint stays at zero until the challenge; consumed line is not 
  assert.equal(label(flow,{next:4800,pending:0},2399).gold,true);
  assert.equal(label({...flow,researchChallengeActive:true,burstLeft:10},{next:4800},2399),null);
  assert.equal(label(at(120),{next:4800},2399),null);
- assert.equal(label(at(10000),{next:4800},2399),null);
+ assert.equal(label(at(10000),{next:4800},2399).left,2401);
 });
 
 test('all-character ending is once per earned line across queueing, reload, and next checkpoint',()=>{
