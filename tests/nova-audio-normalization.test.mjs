@@ -21,3 +21,10 @@ test('all audio assets are mapped, originals are unchanged, and delivered files 
  }
  assert.equal(Object.keys(c.NovaAudioManifest).length,report.files.length);
 });
+
+test('every registered voice uses speech-level v2 mastering at -14 LUFS, without clipping or duration edits',()=>{
+ const catalog={};vm.runInNewContext(fs.readFileSync('nova-voice-catalog.js','utf8'),catalog);
+ const voices=report.files.filter(f=>f.category==='voice');assert.equal(voices.length,97);assert.equal(report.version,2);
+ for(const src of catalog.NovaVoiceCatalog.CHARACTER_VOICE_SRCS){const row=voices.find(f=>f.src===src.split('?')[0]);assert(row,src);assert.equal(row.measurementVersion,2);assert.match(row.output,/normalized-voices-20261013/);assert(row.fileLoudness.peakDbtp<=-1,src);assert(Math.abs(row.after.lufs+14)<=.15,src);}
+ const values=voices.map(f=>f.after.lufs);assert(Math.max(...values)-Math.min(...values)<=.3);
+});

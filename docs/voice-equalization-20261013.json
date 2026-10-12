@@ -1,0 +1,900 @@
+{
+  "date": "2026-10-13",
+  "voices": 97,
+  "measurement": "FFmpeg loudnorm, dual mono, speech-level measurement with -40dB silence removal and measurement-only 1-second padding. Original pauses, sample counts, rates and channels preserved in delivery.",
+  "targetSpeechLufs": -14,
+  "truePeakCeilingDbtp": -1,
+  "before": {
+    "min": -15.66,
+    "max": -12.67,
+    "spread": 2.99
+  },
+  "after": {
+    "min": -14.14,
+    "max": -13.87,
+    "spread": 0.27
+  },
+  "missing": [],
+  "checks": [
+    "All 97 output files independently remeasured",
+    "Original source hashes unchanged",
+    "All registered voices mapped",
+    "22 audio/catalog/volume/iOS tests passed",
+    "Muted browser decoded all 97 masters with original duration/channels"
+  ],
+  "rows": [
+    {
+      "src": "assets/media/jag/bar_wo_nerae.mp3",
+      "output": "assets/media/normalized-voices-20261013/jag/bar_wo_nerae.wav",
+      "lufs": -14.31,
+      "peak": -4.86,
+      "activeLufs": -13.98,
+      "duration": 3.367506,
+      "channels": 1
+    },
+    {
+      "src": "assets/media/jag/big_kakutei.wav",
+      "output": "assets/media/normalized-voices-20261013/jag/big_kakutei.wav",
+      "lufs": -14.19,
+      "peak": -3.75,
+      "activeLufs": -14.1,
+      "duration": 3.390113,
+      "channels": 1
+    },
+    {
+      "src": "assets/media/jag/cz_last.wav",
+      "output": "assets/media/normalized-voices-20261013/jag/cz_last.wav",
+      "lufs": -12.24,
+      "peak": -3.52,
+      "activeLufs": -13.96,
+      "duration": 1.625397,
+      "channels": 1
+    },
+    {
+      "src": "assets/media/jag/cz_remaining_2.wav",
+      "output": "assets/media/normalized-voices-20261013/jag/cz_remaining_2.wav",
+      "lufs": -12.53,
+      "peak": -6.12,
+      "activeLufs": -14.04,
+      "duration": 1.532517,
+      "channels": 1
+    },
+    {
+      "src": "assets/media/jag/cz_remaining_3.wav",
+      "output": "assets/media/normalized-voices-20261013/jag/cz_remaining_3.wav",
+      "lufs": -13.82,
+      "peak": -5.51,
+      "activeLufs": -14.04,
+      "duration": 1.764717,
+      "channels": 1
+    },
+    {
+      "src": "assets/media/jag/premium_bb2_bgm.mp3",
+      "output": "assets/media/normalized-voices-20261013/jag/premium_bb2_bgm.wav",
+      "lufs": -14.34,
+      "peak": -2,
+      "activeLufs": -13.96,
+      "duration": 5.471814,
+      "channels": 1
+    },
+    {
+      "src": "assets/media/jag/premium_bonus_end_voice.wav",
+      "output": "assets/media/normalized-voices-20261013/jag/premium_bonus_end_voice.wav",
+      "lufs": -15.37,
+      "peak": -4.82,
+      "activeLufs": -14.02,
+      "duration": 2.031333,
+      "channels": 1
+    },
+    {
+      "src": "assets/media/jag/premium_first_end_voice.mp3",
+      "output": "assets/media/normalized-voices-20261013/jag/premium_first_end_voice.wav",
+      "lufs": -14.45,
+      "peak": -2,
+      "activeLufs": -14,
+      "duration": 5.471814,
+      "channels": 1
+    },
+    {
+      "src": "assets/media/jag/premium_second_end_voice.mp3",
+      "output": "assets/media/normalized-voices-20261013/jag/premium_second_end_voice.wav",
+      "lufs": -15.15,
+      "peak": -2,
+      "activeLufs": -14.04,
+      "duration": 5.820113,
+      "channels": 1
+    },
+    {
+      "src": "assets/media/jag/reg_kakutei.wav",
+      "output": "assets/media/normalized-voices-20261013/jag/reg_kakutei.wav",
+      "lufs": -14.34,
+      "peak": -2.45,
+      "activeLufs": -14.04,
+      "duration": 2.136236,
+      "channels": 1
+    },
+    {
+      "src": "assets/media/jag/setting_voice_2plus.wav",
+      "output": "assets/media/normalized-voices-20261013/jag/setting_voice_2plus.wav",
+      "lufs": -13.46,
+      "peak": -2,
+      "activeLufs": -14.02,
+      "duration": 1.499958,
+      "channels": 1
+    },
+    {
+      "src": "assets/media/jag/setting_voice_4plus.wav",
+      "output": "assets/media/normalized-voices-20261013/jag/setting_voice_4plus.wav",
+      "lufs": -15.1,
+      "peak": -2,
+      "activeLufs": -14.05,
+      "duration": 2.374958,
+      "channels": 1
+    },
+    {
+      "src": "assets/media/jag/setting_voice_5plus.wav",
+      "output": "assets/media/normalized-voices-20261013/jag/setting_voice_5plus.wav",
+      "lufs": -14.49,
+      "peak": -5.38,
+      "activeLufs": -14.01,
+      "duration": 1.624937,
+      "channels": 1
+    },
+    {
+      "src": "assets/media/jag/setting_voice_6plus.wav",
+      "output": "assets/media/normalized-voices-20261013/jag/setting_voice_6plus.wav",
+      "lufs": -14.44,
+      "peak": -2.85,
+      "activeLufs": -13.96,
+      "duration": 1.124937,
+      "channels": 1
+    },
+    {
+      "src": "assets/media/nova/aim-nebula-giru.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/aim-nebula-giru.wav",
+      "lufs": -14.14,
+      "peak": -6.44,
+      "activeLufs": -14.07,
+      "duration": 1.190136,
+      "channels": 2
+    },
+    {
+      "src": "assets/media/nova/aim-nebula-ouma.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/aim-nebula-ouma.wav",
+      "lufs": -14.21,
+      "peak": -3.25,
+      "activeLufs": -13.99,
+      "duration": 3.343673,
+      "channels": 2
+    },
+    {
+      "src": "assets/media/nova/aim-nebula-sora.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/aim-nebula-sora.wav",
+      "lufs": -13.9,
+      "peak": -7.5,
+      "activeLufs": -14,
+      "duration": 1.194667,
+      "channels": 2
+    },
+    {
+      "src": "assets/media/nova/aim-nebula-toto.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/aim-nebula-toto.wav",
+      "lufs": -14.02,
+      "peak": -3.13,
+      "activeLufs": -13.99,
+      "duration": 1.486077,
+      "channels": 2
+    },
+    {
+      "src": "assets/media/nova/aim-nova-ouma.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/aim-nova-ouma.wav",
+      "lufs": -14.32,
+      "peak": -5.53,
+      "activeLufs": -13.98,
+      "duration": 3.320454,
+      "channels": 2
+    },
+    {
+      "src": "assets/media/nova/aim-seven-giru.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/aim-seven-giru.wav",
+      "lufs": -13.42,
+      "peak": -6.85,
+      "activeLufs": -14.08,
+      "duration": 1.110952,
+      "channels": 2
+    },
+    {
+      "src": "assets/media/nova/aim-seven-ouma.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/aim-seven-ouma.wav",
+      "lufs": -13.94,
+      "peak": -4.41,
+      "activeLufs": -14,
+      "duration": 2.856054,
+      "channels": 2
+    },
+    {
+      "src": "assets/media/nova/aim-seven-sora.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/aim-seven-sora.wav",
+      "lufs": -14.22,
+      "peak": -5.52,
+      "activeLufs": -14,
+      "duration": 1.109333,
+      "channels": 1
+    },
+    {
+      "src": "assets/media/nova/aim-seven-toto.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/aim-seven-toto.wav",
+      "lufs": -13.57,
+      "peak": -2.6,
+      "activeLufs": -14.01,
+      "duration": 1.300317,
+      "channels": 2
+    },
+    {
+      "src": "assets/media/nova/aim/bonus-nebula-win.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/aim/bonus-nebula-win.wav",
+      "lufs": -14.07,
+      "peak": -8.95,
+      "activeLufs": -13.94,
+      "duration": 3.157914,
+      "channels": 1
+    },
+    {
+      "src": "assets/media/nova/aim/zone-roulette-confirm.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/aim/zone-roulette-confirm.wav",
+      "lufs": -14.15,
+      "peak": -9.18,
+      "activeLufs": -14.06,
+      "duration": 4.504671,
+      "channels": 1
+    },
+    {
+      "src": "assets/media/nova/aim_seven_sosuke.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/aim_seven_sosuke.wav",
+      "lufs": -14.56,
+      "peak": -11.5,
+      "activeLufs": -14,
+      "duration": 2.786395,
+      "channels": 1
+    },
+    {
+      "src": "assets/media/nova/bonus_confirm.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/bonus_confirm.wav",
+      "lufs": -13.56,
+      "peak": -8.05,
+      "activeLufs": -14,
+      "duration": 1.996916,
+      "channels": 2
+    },
+    {
+      "src": "assets/media/nova/continue-sora.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/continue-sora.wav",
+      "lufs": -14.21,
+      "peak": -3.53,
+      "activeLufs": -13.97,
+      "duration": 1.104,
+      "channels": 1
+    },
+    {
+      "src": "assets/media/nova/continue-toto.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/continue-toto.wav",
+      "lufs": -13.64,
+      "peak": -2.97,
+      "activeLufs": -14.01,
+      "duration": 0.882358,
+      "channels": 2
+    },
+    {
+      "src": "assets/media/nova/cz-entry-voice.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/cz-entry-voice.wav",
+      "lufs": -13.81,
+      "peak": -2.79,
+      "activeLufs": -13.98,
+      "duration": 1.749333,
+      "channels": 1
+    },
+    {
+      "src": "assets/media/nova/giru-ladder-bet-challenge.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/giru-ladder-bet-challenge.wav",
+      "lufs": -14.2,
+      "peak": -5.95,
+      "activeLufs": -14,
+      "duration": 2.150408,
+      "channels": 2
+    },
+    {
+      "src": "assets/media/nova/giru-ladder-bet-good-flow.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/giru-ladder-bet-good-flow.wav",
+      "lufs": -13.95,
+      "peak": -6.43,
+      "activeLufs": -14.01,
+      "duration": 1.414875,
+      "channels": 2
+    },
+    {
+      "src": "assets/media/nova/giru-ladder-bet-moment.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/giru-ladder-bet-moment.wav",
+      "lufs": -14.03,
+      "peak": -3.8,
+      "activeLufs": -14,
+      "duration": 2.150408,
+      "channels": 2
+    },
+    {
+      "src": "assets/media/nova/giru-ladder-result-1000.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/giru-ladder-result-1000.wav",
+      "lufs": -14.28,
+      "peak": -8.56,
+      "activeLufs": -14,
+      "duration": 1.197778,
+      "channels": 2
+    },
+    {
+      "src": "assets/media/nova/giru-ladder-result-500.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/giru-ladder-result-500.wav",
+      "lufs": -13.44,
+      "peak": -5.78,
+      "activeLufs": -14.03,
+      "duration": 1.685601,
+      "channels": 2
+    },
+    {
+      "src": "assets/media/nova/giru-ladder-result-under500.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/giru-ladder-result-under500.wav",
+      "lufs": -13.6,
+      "peak": -7.55,
+      "activeLufs": -14.06,
+      "duration": 1.437868,
+      "channels": 2
+    },
+    {
+      "src": "assets/media/nova/navi-center-giru.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/navi-center-giru.wav",
+      "lufs": -13.53,
+      "peak": -5.25,
+      "activeLufs": -14.06,
+      "duration": 0.561859,
+      "channels": 2
+    },
+    {
+      "src": "assets/media/nova/navi-center-kushuri.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/navi-center-kushuri.wav",
+      "lufs": -13.35,
+      "peak": -2.62,
+      "activeLufs": -14.05,
+      "duration": 1.344,
+      "channels": 1
+    },
+    {
+      "src": "assets/media/nova/navi-center-nito.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/navi-center-nito.wav",
+      "lufs": -13.07,
+      "peak": -2,
+      "activeLufs": -14.04,
+      "duration": 0.810667,
+      "channels": 1
+    },
+    {
+      "src": "assets/media/nova/navi-center-ouma.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/navi-center-ouma.wav",
+      "lufs": -14.27,
+      "peak": -3.25,
+      "activeLufs": -14.09,
+      "duration": 0.84898,
+      "channels": 2
+    },
+    {
+      "src": "assets/media/nova/navi-center-sora.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/navi-center-sora.wav",
+      "lufs": -13.26,
+      "peak": -2.07,
+      "activeLufs": -13.95,
+      "duration": 0.810667,
+      "channels": 1
+    },
+    {
+      "src": "assets/media/nova/navi-center-sosuke.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/navi-center-sosuke.wav",
+      "lufs": -14.44,
+      "peak": -11.14,
+      "activeLufs": -14.06,
+      "duration": 0.557279,
+      "channels": 1
+    },
+    {
+      "src": "assets/media/nova/navi-center-toto.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/navi-center-toto.wav",
+      "lufs": -13.59,
+      "peak": -2.57,
+      "activeLufs": -14.03,
+      "duration": 0.557279,
+      "channels": 2
+    },
+    {
+      "src": "assets/media/nova/navi-complete-giru.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/navi-complete-giru.wav",
+      "lufs": -13.39,
+      "peak": -2.39,
+      "activeLufs": -14.03,
+      "duration": 1.536,
+      "channels": 2
+    },
+    {
+      "src": "assets/media/nova/navi-complete-kushuri.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/navi-complete-kushuri.wav",
+      "lufs": -14.15,
+      "peak": -2.64,
+      "activeLufs": -14.08,
+      "duration": 0.906833,
+      "channels": 1
+    },
+    {
+      "src": "assets/media/nova/navi-complete-nito.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/navi-complete-nito.wav",
+      "lufs": -14.17,
+      "peak": -3.2,
+      "activeLufs": -14.05,
+      "duration": 1.578667,
+      "channels": 1
+    },
+    {
+      "src": "assets/media/nova/navi-complete-ouma.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/navi-complete-ouma.wav",
+      "lufs": -14.42,
+      "peak": -3.38,
+      "activeLufs": -14.12,
+      "duration": 1.114558,
+      "channels": 2
+    },
+    {
+      "src": "assets/media/nova/navi-complete-sora.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/navi-complete-sora.wav",
+      "lufs": -13.06,
+      "peak": -2.05,
+      "activeLufs": -14.05,
+      "duration": 0.928798,
+      "channels": 2
+    },
+    {
+      "src": "assets/media/nova/navi-complete-sosuke.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/navi-complete-sosuke.wav",
+      "lufs": -13.81,
+      "peak": -9.74,
+      "activeLufs": -14.02,
+      "duration": 1.021678,
+      "channels": 1
+    },
+    {
+      "src": "assets/media/nova/navi-complete-toto.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/navi-complete-toto.wav",
+      "lufs": -14.17,
+      "peak": -3.12,
+      "activeLufs": -13.98,
+      "duration": 0.417959,
+      "channels": 2
+    },
+    {
+      "src": "assets/media/nova/navi-left-giru.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/navi-left-giru.wav",
+      "lufs": -13.52,
+      "peak": -4.8,
+      "activeLufs": -14.01,
+      "duration": 0.561859,
+      "channels": 2
+    },
+    {
+      "src": "assets/media/nova/navi-left-kushuri.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/navi-left-kushuri.wav",
+      "lufs": -13.2,
+      "peak": -2.44,
+      "activeLufs": -13.99,
+      "duration": 1.088333,
+      "channels": 1
+    },
+    {
+      "src": "assets/media/nova/navi-left-nito.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/navi-left-nito.wav",
+      "lufs": -13.46,
+      "peak": -2.55,
+      "activeLufs": -13.98,
+      "duration": 1.024,
+      "channels": 1
+    },
+    {
+      "src": "assets/media/nova/navi-left-ouma.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/navi-left-ouma.wav",
+      "lufs": -13.29,
+      "peak": -3.41,
+      "activeLufs": -14.08,
+      "duration": 0.976689,
+      "channels": 2
+    },
+    {
+      "src": "assets/media/nova/navi-left-sora.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/navi-left-sora.wav",
+      "lufs": -14.21,
+      "peak": -3.28,
+      "activeLufs": -14.02,
+      "duration": 0.693333,
+      "channels": 1
+    },
+    {
+      "src": "assets/media/nova/navi-left-sosuke.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/navi-left-sosuke.wav",
+      "lufs": -14.13,
+      "peak": -9.64,
+      "activeLufs": -14.09,
+      "duration": 0.557279,
+      "channels": 1
+    },
+    {
+      "src": "assets/media/nova/navi-left-toto.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/navi-left-toto.wav",
+      "lufs": -14.11,
+      "peak": -3.1,
+      "activeLufs": -14.01,
+      "duration": 0.603719,
+      "channels": 2
+    },
+    {
+      "src": "assets/media/nova/navi-right-giru.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/navi-right-giru.wav",
+      "lufs": -13.57,
+      "peak": -2.54,
+      "activeLufs": -14.04,
+      "duration": 0.385624,
+      "channels": 2
+    },
+    {
+      "src": "assets/media/nova/navi-right-kushuri.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/navi-right-kushuri.wav",
+      "lufs": -14.5,
+      "peak": -3.56,
+      "activeLufs": -13.99,
+      "duration": 1.216,
+      "channels": 1
+    },
+    {
+      "src": "assets/media/nova/navi-right-nito.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/navi-right-nito.wav",
+      "lufs": -13.99,
+      "peak": -2.99,
+      "activeLufs": -14.01,
+      "duration": 0.864167,
+      "channels": 1
+    },
+    {
+      "src": "assets/media/nova/navi-right-ouma.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/navi-right-ouma.wav",
+      "lufs": -14.53,
+      "peak": -3.51,
+      "activeLufs": -13.99,
+      "duration": 0.82576,
+      "channels": 2
+    },
+    {
+      "src": "assets/media/nova/navi-right-sora.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/navi-right-sora.wav",
+      "lufs": -13.23,
+      "peak": -4.5,
+      "activeLufs": -14.01,
+      "duration": 0.647333,
+      "channels": 1
+    },
+    {
+      "src": "assets/media/nova/navi-right-sosuke.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/navi-right-sosuke.wav",
+      "lufs": -13.23,
+      "peak": -9.29,
+      "activeLufs": -14.03,
+      "duration": 0.464399,
+      "channels": 1
+    },
+    {
+      "src": "assets/media/nova/navi-right-toto.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/navi-right-toto.wav",
+      "lufs": -13.09,
+      "peak": -2.26,
+      "activeLufs": -13.98,
+      "duration": 0.882358,
+      "channels": 2
+    },
+    {
+      "src": "assets/media/nova/nova-win-1-ouma.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/nova-win-1-ouma.wav",
+      "lufs": -14.25,
+      "peak": -3.23,
+      "activeLufs": -13.99,
+      "duration": 3.436553,
+      "channels": 2
+    },
+    {
+      "src": "assets/media/nova/nova-win-2-ouma.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/nova-win-2-ouma.wav",
+      "lufs": -13.87,
+      "peak": -2.89,
+      "activeLufs": -13.99,
+      "duration": 3.332063,
+      "channels": 2
+    },
+    {
+      "src": "assets/media/nova/nova-win-3-ouma.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/nova-win-3-ouma.wav",
+      "lufs": -13.5,
+      "peak": -2.49,
+      "activeLufs": -13.97,
+      "duration": 4.342132,
+      "channels": 2
+    },
+    {
+      "src": "assets/media/nova/rare-cue-big-chance-kushuri.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/rare-cue-big-chance-kushuri.wav",
+      "lufs": -13.48,
+      "peak": -2.53,
+      "activeLufs": -14.06,
+      "duration": 1.024,
+      "channels": 2
+    },
+    {
+      "src": "assets/media/nova/rare-cue-big-chance-nito.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/rare-cue-big-chance-nito.wav",
+      "lufs": -14.1,
+      "peak": -3.03,
+      "activeLufs": -14.01,
+      "duration": 1.792,
+      "channels": 1
+    },
+    {
+      "src": "assets/media/nova/rare-cue-chance-kushuri.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/rare-cue-chance-kushuri.wav",
+      "lufs": -13.89,
+      "peak": -2.93,
+      "activeLufs": -14.05,
+      "duration": 0.938667,
+      "channels": 2
+    },
+    {
+      "src": "assets/media/nova/rare-cue-chance-nito.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/rare-cue-chance-nito.wav",
+      "lufs": -13.72,
+      "peak": -3.27,
+      "activeLufs": -14,
+      "duration": 1.301333,
+      "channels": 1
+    },
+    {
+      "src": "assets/media/nova/rare-cue-hot-kushuri.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/rare-cue-hot-kushuri.wav",
+      "lufs": -14.61,
+      "peak": -3.73,
+      "activeLufs": -14.02,
+      "duration": 2.133333,
+      "channels": 2
+    },
+    {
+      "src": "assets/media/nova/rare-cue-hot-nito.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/rare-cue-hot-nito.wav",
+      "lufs": -14.59,
+      "peak": -3.56,
+      "activeLufs": -14.03,
+      "duration": 1.614875,
+      "channels": 1
+    },
+    {
+      "src": "assets/media/nova/sortie-award-giru.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/sortie-award-giru.wav",
+      "lufs": -14.02,
+      "peak": -5.38,
+      "activeLufs": -14.03,
+      "duration": 1.685601,
+      "channels": 2
+    },
+    {
+      "src": "assets/media/nova/sortie-award-ouma.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/sortie-award-ouma.wav",
+      "lufs": -13.94,
+      "peak": -2.41,
+      "activeLufs": -14,
+      "duration": 3.610703,
+      "channels": 2
+    },
+    {
+      "src": "assets/media/nova/sortie-award-sora.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/sortie-award-sora.wav",
+      "lufs": -14.09,
+      "peak": -3.66,
+      "activeLufs": -14,
+      "duration": 1.994667,
+      "channels": 1
+    },
+    {
+      "src": "assets/media/nova/sortie-award-sosuke.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/sortie-award-sosuke.wav",
+      "lufs": -13.79,
+      "peak": -4.05,
+      "activeLufs": -13.97,
+      "duration": 1.664,
+      "channels": 1
+    },
+    {
+      "src": "assets/media/nova/sortie-award-toto.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/sortie-award-toto.wav",
+      "lufs": -13.71,
+      "peak": -2,
+      "activeLufs": -14.02,
+      "duration": 3.622313,
+      "channels": 2
+    },
+    {
+      "src": "assets/media/nova/sosuke-bonus-stock.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/sosuke-bonus-stock.wav",
+      "lufs": -14.42,
+      "peak": -4.64,
+      "activeLufs": -14,
+      "duration": 2.389333,
+      "channels": 1
+    },
+    {
+      "src": "assets/media/nova/sosuke-comeback-entry.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/sosuke-comeback-entry.wav",
+      "lufs": -14.23,
+      "peak": -3.24,
+      "activeLufs": -14.13,
+      "duration": 4.522667,
+      "channels": 1
+    },
+    {
+      "src": "assets/media/nova/sosuke-complete.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/sosuke-complete.wav",
+      "lufs": -14.2,
+      "peak": -2,
+      "activeLufs": -14.04,
+      "duration": 5.888,
+      "channels": 1
+    },
+    {
+      "src": "assets/media/nova/sosuke-ladder-bet-love.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/sosuke-ladder-bet-love.wav",
+      "lufs": -15.32,
+      "peak": -2,
+      "activeLufs": -14.12,
+      "duration": 3.925333,
+      "channels": 1
+    },
+    {
+      "src": "assets/media/nova/sosuke-ladder-bet-shimatte.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/sosuke-ladder-bet-shimatte.wav",
+      "lufs": -14.09,
+      "peak": -4.59,
+      "activeLufs": -14.02,
+      "duration": 2.944,
+      "channels": 1
+    },
+    {
+      "src": "assets/media/nova/sosuke-ladder-bet-spirit.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/sosuke-ladder-bet-spirit.wav",
+      "lufs": -14.29,
+      "peak": -2.89,
+      "activeLufs": -13.87,
+      "duration": 2.346667,
+      "channels": 1
+    },
+    {
+      "src": "assets/media/nova/sosuke-ladder-pass-hot.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/sosuke-ladder-pass-hot.wav",
+      "lufs": -14.17,
+      "peak": -3.7,
+      "activeLufs": -14.01,
+      "duration": 2.645333,
+      "channels": 1
+    },
+    {
+      "src": "assets/media/nova/sosuke-ladder-pass-injustice.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/sosuke-ladder-pass-injustice.wav",
+      "lufs": -14.82,
+      "peak": -2,
+      "activeLufs": -13.98,
+      "duration": 4.693333,
+      "channels": 1
+    },
+    {
+      "src": "assets/media/nova/sosuke-sortie-entry.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/sosuke-sortie-entry.wav",
+      "lufs": -14.19,
+      "peak": -2.85,
+      "activeLufs": -14.14,
+      "duration": 4.778667,
+      "channels": 1
+    },
+    {
+      "src": "assets/media/nova/sosuke-upper-at-entry.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/sosuke-upper-at-entry.wav",
+      "lufs": -14.2,
+      "peak": -4.02,
+      "activeLufs": -14,
+      "duration": 4.821333,
+      "channels": 1
+    },
+    {
+      "src": "assets/media/nova/sosuke-upper-challenge-entry.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/sosuke-upper-challenge-entry.wav",
+      "lufs": -14.24,
+      "peak": -6.57,
+      "activeLufs": -13.99,
+      "duration": 7.381333,
+      "channels": 1
+    },
+    {
+      "src": "assets/media/nova/sosuke-zone-get.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/sosuke-zone-get.wav",
+      "lufs": -14.12,
+      "peak": -4.43,
+      "activeLufs": -14.01,
+      "duration": 2.389333,
+      "channels": 1
+    },
+    {
+      "src": "assets/media/nova/zone-start-giru.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/zone-start-giru.wav",
+      "lufs": -14.04,
+      "peak": -3.03,
+      "activeLufs": -14.01,
+      "duration": 0.962834,
+      "channels": 2
+    },
+    {
+      "src": "assets/media/nova/zone-start-ouma.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/zone-start-ouma.wav",
+      "lufs": -15.22,
+      "peak": -4.25,
+      "activeLufs": -13.99,
+      "duration": 2.821224,
+      "channels": 2
+    },
+    {
+      "src": "assets/media/nova/zone-start-sora.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/zone-start-sora.wav",
+      "lufs": -14.23,
+      "peak": -3.67,
+      "activeLufs": -14,
+      "duration": 1.450667,
+      "channels": 1
+    },
+    {
+      "src": "assets/media/nova/zone-start-toto.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/zone-start-toto.wav",
+      "lufs": -14.44,
+      "peak": -4.82,
+      "activeLufs": -14,
+      "duration": 0.882358,
+      "channels": 2
+    },
+    {
+      "src": "assets/media/nova/zone-start-ura-giru.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/zone-start-ura-giru.wav",
+      "lufs": -12.91,
+      "peak": -2.68,
+      "activeLufs": -14.04,
+      "duration": 1.16458,
+      "channels": 2
+    },
+    {
+      "src": "assets/media/nova/zone-start-ura-ouma.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/zone-start-ura-ouma.wav",
+      "lufs": -14.74,
+      "peak": -3.8,
+      "activeLufs": -14.01,
+      "duration": 4.423401,
+      "channels": 2
+    },
+    {
+      "src": "assets/media/nova/zone-start-ura-sora.wav",
+      "output": "assets/media/normalized-voices-20261013/nova/zone-start-ura-sora.wav",
+      "lufs": -14.85,
+      "peak": -3.89,
+      "activeLufs": -13.99,
+      "duration": 2.197333,
+      "channels": 1
+    }
+  ]
+}

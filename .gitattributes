@@ -55,3 +55,4 @@ assets/ui/complete-background-20261012.source.json -filter -diff -merge text
 assets/media/nova/sortie-award-duo.wav -filter -diff -merge -text
 assets/media/nova/sortie-nebula-cue.mp3 -filter -diff -merge -text
 assets/media/nova/sortie-cues.sources.json -filter -diff -merge text
+assets/media/normalized-voices-20261013/** -filter -diff -merge -text
