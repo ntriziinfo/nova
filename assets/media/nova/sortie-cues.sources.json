@@ -1,3 +1,13 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:efb1eb0b20fcbda6d3fa05e5962dc5f2bfbe78df3be753bbda48e9a0252d0165
-size 422
+{
+  "processing": "Local normalization only; original user files untouched. No training.",
+  "files": [
+    {
+      "source": "C:/Users/nitro/Dropbox/NOVA台用イラスト/1012.wav",
+      "destination": "assets/media/nova/sortie-award-duo.wav"
+    },
+    {
+      "source": "C:/Users/nitro/Dropbox/NOVA台用イラスト/audiostock_1153496.mp3",
+      "destination": "assets/media/nova/sortie-nebula-cue.mp3"
+    }
+  ]
+}
