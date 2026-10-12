@@ -142,3 +142,7 @@ test('reset cancels the hold and stale callbacks cannot unlock a later award',()
  t.advance(4000);assert.deepEqual(t.events,['nova-sortie-unlocked']);
  t.api.begin(s);t.api.clear();t.advance(5000);assert.equal(t.events.length,1);
 });
+
+test('duo confirmed third stop uses supplied 1012 effect instead of ordinary award effect',()=>{
+ const t=setup(),audio=sound(),s=spin(true,'kushuri_nito');s.stopped=[true,true,true];const played=[];t.api.setSoundPlayer(src=>{played.push(src);return {audio,promise:Promise.resolve()};});t.api.begin(s);assert.deepEqual(played,['assets/media/nova/sortie-award-duo.wav']);assert.equal(audio.loop,false);t.api.stop(s);assert.equal(played.length,1);t.api.clear();
+});

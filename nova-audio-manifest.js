@@ -528,6 +528,10 @@ globalThis.NovaAudioManifest=Object.freeze({
     "src": "assets/media/normalized-20261012/nova/sora-bgm.mp3",
     "category": "bgm"
   },
+  "assets/media/nova/sortie-award-duo.wav": {
+    "src": "assets/media/normalized-20261012/nova/sortie-award-duo.wav",
+    "category": "sfx"
+  },
   "assets/media/nova/sortie-award-giru.wav": {
     "src": "assets/media/normalized-20261012/nova/sortie-award-giru.wav",
     "category": "voice"
@@ -555,6 +559,10 @@ globalThis.NovaAudioManifest=Object.freeze({
   "assets/media/nova/sortie-bgm.mp3": {
     "src": "assets/media/normalized-20261012/nova/sortie-bgm.mp3",
     "category": "bgm"
+  },
+  "assets/media/nova/sortie-nebula-cue.mp3": {
+    "src": "assets/media/normalized-20261012/nova/sortie-nebula-cue.wav",
+    "category": "sfx"
   },
   "assets/media/nova/sortie-stop-1.mp3": {
     "src": "assets/media/normalized-20261012/nova/sortie-stop-1.wav",

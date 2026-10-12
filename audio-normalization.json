@@ -3048,6 +3048,29 @@
       }
     },
     {
+      "src": "assets/media/nova/sortie-award-duo.wav",
+      "category": "sfx",
+      "targetLufs": -16,
+      "output": "assets/media/normalized-20261012/nova/sortie-award-duo.wav",
+      "sourceSha256": "b2fb4273841f2c3996de92e68b8be317088dc6aaf514955494b776ddcb23110d",
+      "outputSha256": "80b0c2036b6064ed36dd8161b25805b87b2896c2b606d783117d7899c0f52fc2",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 2.205986,
+      "outputDuration": 2.205986,
+      "gainDb": 3.97,
+      "before": {
+        "lufs": -19.97,
+        "peakDbtp": -4.68,
+        "rangeLu": 1.3
+      },
+      "after": {
+        "lufs": -16.03,
+        "peakDbtp": -2,
+        "rangeLu": 1.3
+      }
+    },
+    {
       "src": "assets/media/nova/sortie-award-giru.wav",
       "category": "voice",
       "targetLufs": -14,
@@ -3206,6 +3229,29 @@
         "lufs": -18,
         "peakDbtp": -9.9,
         "rangeLu": 1.9
+      }
+    },
+    {
+      "src": "assets/media/nova/sortie-nebula-cue.mp3",
+      "category": "sfx",
+      "targetLufs": -16,
+      "output": "assets/media/normalized-20261012/nova/sortie-nebula-cue.wav",
+      "sourceSha256": "a5925a149fdcb7c964b797a0c2fa61e05ae70482c0de7cea088427b42b8a04b3",
+      "outputSha256": "b3327203b1b9a7ef9df7b16ff39500810777e63289039f5059d46d947be6c4fa",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 6.424989,
+      "outputDuration": 6.424989,
+      "gainDb": -12.57,
+      "before": {
+        "lufs": -3.43,
+        "peakDbtp": 1.36,
+        "rangeLu": 8.3
+      },
+      "after": {
+        "lufs": -16,
+        "peakDbtp": -11.22,
+        "rangeLu": 8.3
       }
     },
     {

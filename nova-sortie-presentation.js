@@ -55,9 +55,9 @@ globalThis.NovaSortie=(()=>{
   if(audio){audio.loop=false;audio.pause();try{audio.currentTime=0;}catch{}}
   portraits?.style.setProperty('--sortie-win-scale','1');
  }
- function startAward(reduced){
+ function startAward(reduced,zone){
   try{
-   const playback=soundPlayer?.(awardSoundSrc),audio=playback?.audio;if(!audio)return;
+   const playback=soundPlayer?.(baseZone(zone)==='kushuri_nito'?'assets/media/nova/sortie-award-duo.wav':awardSoundSrc),audio=playback?.audio;if(!audio)return;
    awardSound=audio;audio.loop=false;
    const onFinish=()=>{if(awardSound===audio)stopAward();};
    audio.addEventListener('error',onFinish);audio.addEventListener('ended',onFinish);
@@ -128,7 +128,7 @@ globalThis.NovaSortie=(()=>{
   reveal.hidden=false;
   const reduced=globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
   animation=reveal.animate(stage===3?[{opacity:0},{opacity:1}]:[{opacity:0,offset:0},{opacity:.85,offset:.2},{opacity:.85,offset:.5},{opacity:0,offset:1}],{duration:stage===3?(reduced?1:220):520,easing:'ease-in-out'});
-  if(stage===3){holdAward();startAward(reduced);}
+  if(stage===3){holdAward();startAward(reduced,spin.resolved?.researchSortie?.zone);}
  }
  function render(spin){
   if(!eligible(spin)||!init())return;

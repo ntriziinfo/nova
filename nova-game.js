@@ -736,6 +736,8 @@
   const oneShotSoundCache = new Map();
   NovaSortie.setSoundPlayer(src=>playOneShotSound(src,sfxOutputVolume(),{allowDuringPremiumConfirm:true}));
   preloadOneShotSound('assets/media/nova/sortie-award.mp3');
+  preloadOneShotSound('assets/media/nova/sortie-award-duo.wav');
+  preloadOneShotSound('assets/media/nova/sortie-nebula-cue.mp3');
   const BELL_NAVI_VOICE_SRCS=NovaVoiceCatalog.BELL_NAVI_VOICE_SRCS;
   const BELL_NAVI_COMPLETE_VOICE_SRCS=NovaVoiceCatalog.BELL_NAVI_COMPLETE_VOICE_SRCS;
   const AIM_VOICE_SRCS=NovaVoiceCatalog.AIM_VOICE_SRCS;
@@ -3023,6 +3025,9 @@
     if(!A_TYPE_MODE)return;
     // Draw once at BET after the real role. Saved spins never draw again on resume.
     resolved.sortieWon=NovaProgress.drawSortie(settings.setting,result,resolved,Math.random,currentProfit());
+    if(!(typeof debugFastSpinActive!=='undefined'&&debugFastSpinActive)&&globalThis.NovaStockEntry?.drawFake&&NovaProgress.sortieEligible(result,resolved)){
+      resolved.sortieFakeWon=NovaStockEntry.drawFake(NovaProgress.sortieChance(settings.setting,result,currentProfit()),resolved.sortieWon);
+    }
   }
 
   function currentProfit(){
@@ -5080,6 +5085,7 @@
     normalState.sinceBonus = normalizeBonusAfterGames(resolved.ceilingAfter);
     if(A_TYPE_MODE){
       normalState.flow = NovaFlow.normalize(resolved.flowAfter);
+      if(resolved.sortieFakeWon&&!debugFastSpinActive)normalState.pendingFakeSortie=(Number(normalState.pendingFakeSortie)||0)+1;
       if(!debugFastSpinActive){const sortieCard=NovaResults.sortie(resolved.researchSortie,normalState.flow);if(sortieCard)normalState.pendingSortieResult=sortieCard;}
       const zoneCard=trackZoneResult(resolved.comebackEvent==='entry'?null:NovaResults.transition(resolved.flowBefore,normalState.flow,settings.setting),resolved.zoneStartFlow||resolved.flowBefore,normalState.flow);
       if(zoneCard){
@@ -5520,7 +5526,7 @@
     syncCompletePresentation();
     showSortieResultIfReady();
     renderRemainingCounters();
-    NovaStockEntry.show(!session.active&&!normalState.resultCard&&NovaStockEntry.matches(normalState.stockEntry,normalState.flow,NovaProgress.snapshot())?normalState.stockEntry:null);
+    NovaStockEntry.show(!session.active&&!normalState.resultCard&&NovaStockEntry.matches(normalState.stockEntry,normalState.flow,NovaProgress.snapshot(),normalState.pendingFakeSortie)?normalState.stockEntry:null);
     if(!debugFastSpinActive){
       const pending=normalState.ladderAwardPresentation;
       NovaLadder.sync(normalState.resultCard||session.active?null:pending?.flow||normalState.flow,isSpinning);
@@ -6972,13 +6978,13 @@
 
   function tryStockEntry(){
     const progress=NovaProgress.snapshot();
-    if(session.active||normalState.bonusPending||normalState.pendingZoneResult||normalState.pendingSortieResult||progress.pending>0||!NovaStockEntry.eligible(normalState.flow,progress))return false;
+    if(session.active||normalState.bonusPending||normalState.pendingZoneResult||normalState.pendingSortieResult||progress.pending>0||!NovaStockEntry.eligible(normalState.flow,progress,normalState.pendingFakeSortie))return false;
     if(normalState.ladderAwardPresentation){
       const card=normalState.ladderAwardPresentation.card;delete normalState.ladderAwardPresentation;
       displayNovaResult(card);persistState();updateDisplay();scheduleNextAuto();return true;
     }
     let entry=normalState.stockEntry;
-    if(!NovaStockEntry.matches(entry,normalState.flow,progress))entry=null;
+    if(!NovaStockEntry.matches(entry,normalState.flow,progress,normalState.pendingFakeSortie))entry=null;
     if(entry&&Date.now()<Number(entry.notBefore||0)){scheduleNextAuto();return true;}
     if(entry?.stage==='ready'){
       NovaStockEntry.hide();delete normalState.stockEntry;
@@ -6989,21 +6995,25 @@
     NovaSortie.clear();NovaBellNavi.clear();NovaDirectAward.clear();NovaAim.hide();NovaLadder.hide();showZoneRoulette(null);
     normalState.resultCard=null;NovaResults.hide();pauseNormalBgm();
     if(!entry){
-      normalState.stockEntry=NovaStockEntry.prepare(normalState.flow,progress);
+      normalState.stockEntry=NovaStockEntry.prepare(normalState.flow,progress,normalState.pendingFakeSortie);
+      normalState.stockEntry.color=NovaStockEntry.cueColor?.(normalState.stockEntry.kind==='sortieFake')||'rainbow';
       normalState.stockEntry.notBefore=Date.now()+700;
       $('resultText').textContent=NovaStockEntry.message(normalState.stockEntry);
       persistState();updateDisplay();scheduleNextAuto();return true;
     }
     entry.stage='seven';
-    currentSpin=NovaStockEntry.spin(entry,normalState.flow,[0,1,2].map(i=>getReelWindowFromStrip(i,entry.kind==='sortie'?NEBULA_SYMBOL:'7',1)));
+    currentSpin=NovaStockEntry.spin(entry,normalState.flow,[0,1,2].map(i=>getReelWindowFromStrip(i,['sortie','sortieFake'].includes(entry.kind)?NEBULA_SYMBOL:'7',entry.kind==='sortieFake'&&i===0?0:1)));
     currentSpin.spec=RESULT[currentSpin.result];
     isSpinning=true;spinCanStop=false;
     reels.forEach((reel,i)=>{reel.classList.add('spinning');NovaReelMotion.start(i,reel,REEL_STRIPS[i],currentReelTopIndex(i),false,cellHtml);});
     NovaAim.bet(null,currentSpin.resolved);
     // A separate visual draw must not advance the game lottery.
     const visualRng=()=>crypto.getRandomValues(new Uint32Array(1))[0]/4294967296;
-    if(entry.kind==='sortie')playRandomAimVoice('nebula',visualRng);else playSevenAimVoice(currentSpin.resolved,visualRng);
-    $('resultText').textContent=entry.kind==='sortie'?'ネビュラを狙え / 特化ゾーン確定':'7を狙え / 特化ストックの突入演出';
+    if(['sortie','sortieFake'].includes(entry.kind)){
+      playRandomAimVoice('nebula',visualRng);
+      playOneShotSound('assets/media/nova/sortie-nebula-cue.mp3',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
+    }else playSevenAimVoice(currentSpin.resolved,visualRng);
+    $('resultText').textContent=['sortie','sortieFake'].includes(entry.kind)?'ネビュラを狙え / 逆押し':'7を狙え / 特化ストックの突入演出';
     const spin=currentSpin;
     spinWaitTimer=setTimeout(()=>{spinWaitTimer=null;if(currentSpin!==spin)return;spinCanStop=true;syncCabinetControlState();},spinWaitMsForMode(false));
     persistState();updateDisplay();syncCabinetControlState();scheduleNextAuto();return true;
@@ -7012,6 +7022,11 @@
     const spin=currentSpin;if(!spin?.resolved?.stockEntry)return;
     if(spinWaitTimer){clearTimeout(spinWaitTimer);spinWaitTimer=null;}
     spin.finishing=true;isSpinning=false;spinCanStop=false;currentSpin=null;
+    if(spin.resolved.sortieFake){
+      normalState.pendingFakeSortie=Math.max(0,(Number(normalState.pendingFakeSortie)||0)-1);delete normalState.stockEntry;
+      NovaAim.stop(spin.resolved);$('resultText').textContent='ネビュラ揃わず';
+      persistState();updateDisplay();syncCabinetControlState();scheduleNextAuto();return;
+    }
     normalState.stockEntry={...NovaStockEntry.prepare(normalState.flow,NovaProgress.snapshot()),stage:'ready',notBefore:Date.now()+500};
     NovaAim.stop(spin.resolved);NovaSortie.flash(normalState.stockEntry.zone);
     $('resultText').textContent=NovaStockEntry.message(normalState.stockEntry);

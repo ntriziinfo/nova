@@ -52,3 +52,5 @@ assets/media/nova/sosuke-complete.wav -filter -diff -merge -text
 assets/media/nova/sosuke-complete.source.json -filter -diff -merge text
 assets/ui/complete-background-20261012.png -filter -diff -merge -text
 assets/ui/complete-background-20261012.source.json -filter -diff -merge text
+assets/media/nova/sortie-award-duo.wav -filter -diff -merge -text
+assets/media/nova/sortie-nebula-cue.mp3 -filter -diff -merge -text

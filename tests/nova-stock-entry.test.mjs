@@ -5,7 +5,7 @@ function harness(){
  let now=0;
  const noop=()=>{},elements=new Map(),$=id=>{if(!elements.has(id))elements.set(id,{textContent:'',classList:{add:noop}});return elements.get(id);};
  const flow={phase:'art',remaining:'900',queuedZones:['ura_giru','kushuri_nito'],researchSortieLeft:0};
- const c=vm.createContext({Date:{now:()=>now+=1000},normalState:{flow},session:{active:false},currentSpin:null,isSpinning:false,spinCanStop:false,spinWaitTimer:null,NEBULA_SYMBOL:'NEBULA',RESULT:{BIG:{cls:'big'},NEBULA:{cls:'purple'}},$: $,stopBtns:[{},{},{}],reels:[0,1,2].map(i=>$('reel'+i)),REEL_STRIPS:[[],[],[]],
+ const c=vm.createContext({crypto:{getRandomValues:a=>(a[0]=0x80000000,a)},sfxOutputVolume:()=>1,Date:{now:()=>now+=1000},normalState:{flow},session:{active:false},currentSpin:null,isSpinning:false,spinCanStop:false,spinWaitTimer:null,NEBULA_SYMBOL:'NEBULA',RESULT:{MISS:{cls:'miss'},BIG:{cls:'big'},NEBULA:{cls:'purple'}},$: $,stopBtns:[{},{},{}],reels:[0,1,2].map(i=>$('reel'+i)),REEL_STRIPS:[[],[],[]],
   NovaProgress:{snapshot:()=>({pending:0,sorties:0}),ready:flow=>flow.phase==='art'&&!flow.queuedZones?.length},NovaSortie:{clear:noop,flash:noop},NovaBellNavi:{clear:noop},NovaDirectAward:{clear:noop},NovaAim:{hide:noop,bet:noop,stop:noop},NovaLadder:{hide:noop},NovaResults:{hide:noop},NovaArt:{zoneName:z=>z},NovaReelMotion:{start:noop,stop:async()=>true},
   getReelWindowFromStrip:(i,symbol)=>['BELL',symbol,'REPLAY'],currentReelTopIndex:()=>0,cellHtml:noop,showZoneRoulette:noop,pauseNormalBgm:noop,persistState:noop,updateDisplay:noop,scheduleNextAuto:noop,syncCabinetControlState:noop,stopReel:noop,
   playRandomAimVoice:symbol=>{c.voiceSymbol=symbol;},playSevenAimVoice:resolved=>{c.voiceZone=resolved.flowBefore.pendingZone;},playOneShotSound:noop,voiceOutputVolume:()=>1,ZONE_START_VOICE_SRCS:{},setTimeout:f=>{f();return 1;},clearTimeout:noop,spinWaitMsForMode:()=>500,displayNovaResult:card=>{c.normalState.resultCard=card;}});
@@ -38,7 +38,7 @@ test('partial seven stops survive saving without charging a game or consuming th
 test('sortie has a guaranteed free nebula entrance, retains its award through reload, then hands off once',async()=>{
  const c=harness();c.normalState.flow.queuedZones=[];c.NovaProgress.snapshot=()=>({pending:0,sorties:1});
  const before=JSON.stringify(c.normalState.flow);
- assert(c.tryStockEntry());assert.equal(c.normalState.stockEntry.kind,'sortie');assert.match(c.$('resultText').textContent,/特化ゾーン確定.*ネビュラ/);
+ assert(c.tryStockEntry());assert.equal(c.normalState.stockEntry.kind,'sortie');assert.match(c.$('resultText').textContent,/出陣チャンス.*ネビュラ/);
  assert(c.tryStockEntry());assert.equal(c.currentSpin.result,'NEBULA');assert.equal(c.voiceSymbol,'nebula');assert.equal(c.voiceZone,undefined);
  assert.equal(c.currentSpin.resolved.reward,0);assert.deepEqual(plain(c.currentSpin.grid[1]),['NEBULA','NEBULA','NEBULA']);
  await c.stopStockEntryReel(2);
@@ -82,4 +82,16 @@ test('the first queued zone game exposes its pre-draw display state without cons
   if(zone==='kushuri_nito'){assert.equal(view.initialIndex,0);assert.equal(out.flow.initialIndex,1);assert.equal(view.zoneLeft,3);assert.equal(view.award,'0');}
   if(['sosuke','giru','ura_giru'].includes(zone)){assert.equal(view.ladderRevealed,false);assert.equal(out.flow.ladderRevealed,true);}
  }
+});
+
+test('fake reverse cue consumes only its presentation ticket, preserves paid flow and saved stop progress',async()=>{
+ const c=harness();c.normalState.flow={phase:'normal',remaining:'900',queuedZones:[]};c.normalState.pendingFakeSortie=2;const before=JSON.stringify(c.normalState.flow);
+ assert(c.tryStockEntry());assert.equal(c.normalState.stockEntry.kind,'sortieFake');assert(c.tryStockEntry());assert.equal(c.currentSpin.result,'MISS');assert.equal(c.currentSpin.resolved.reward,0);assert.equal(c.currentSpin.resolved.sortieCueColor,'red');
+ await c.stopStockEntryReel(2);c.currentSpin=c.NovaSpinResume.restore(c.NovaSpinResume.capture(c.currentSpin),c.RESULT);await c.stopStockEntryReel(1);await c.stopStockEntryReel(0);
+ assert.equal(c.normalState.pendingFakeSortie,1);assert.equal(c.normalState.stockEntry,undefined);assert.equal(c.lockedVoices.length,0);assert.equal(JSON.stringify(c.normalState.flow),before);assert.equal(c.NovaProgress.snapshot().sorties,0);
+});
+test('fake probability is twice the real hit probability, and color draws never call game RNG',()=>{
+ const c=harness(),a=c.NovaStockEntry;
+ for(const p of [.00212,.00397,.0212,.0397]){const rate=2*p/(1-p);assert(a.drawFake(p,false,()=>rate-1e-10));assert(!a.drawFake(p,false,()=>rate));assert(Math.abs((1-p)*rate-2*p)<1e-12);assert(!a.drawFake(p,true,()=>{throw Error('winner must not draw fake');}));}
+ for(const [r,color] of [[0,'blue'],[.5,'red'],[.99,'rainbow']])assert.equal(a.cueColor(false,()=>r),color);for(let i=0;i<100;i++)assert.notEqual(a.cueColor(true,()=>i/100),'rainbow');
 });
