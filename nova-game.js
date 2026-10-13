@@ -3067,7 +3067,7 @@
     const profit = completeTrialProfit();
 
     const limit = completeLimitPt(), wasLocked=!!completeTrialState.locked;
-    NovaComplete.observe(completeTrialState,profit,limit);
+    NovaComplete.observe(completeTrialState,profit,limit,NovaComplete.myLimit(settings));
     if(isCompleteLockEnabled() && !wasLocked && completeTrialState.locked){
       completeTrialState.lockedSetting = Number(settings.setting) || 1;
       completeTrialState.completeProfit = profit;
@@ -3075,8 +3075,8 @@
       stopSpeedToBonus("COMPLETE到達のためSPEED停止");
       stopDebugFastSpin("COMPLETE到達");
       syncCompletePresentation(true);
-      showMessage("コンプリートしました。", `MY${NovaComplete.defaultMyLimitPt.toLocaleString()}pt到達 / 管理リセットまたは設定変更まで遊技できません`);
-      log(`[COMPLETE] MY${NovaComplete.defaultMyLimitPt.toLocaleString()}pt到達：${formatSigned(profit)}pt / 設定${completeTrialState.lockedSetting}`);
+      showMessage("コンプリートしました。", `MY${NovaComplete.myLimit(settings).toLocaleString()}pt到達 / 管理リセットまたは設定変更まで遊技できません`);
+      log(`[COMPLETE] MY${NovaComplete.myLimit(settings).toLocaleString()}pt到達：${formatSigned(profit)}pt / 設定${completeTrialState.lockedSetting}`);
       persistState();
       updateDisplay();
     }
@@ -3091,7 +3091,7 @@
     stopAutoPlay("COMPLETE中のためAUTO停止");
     stopSpeedToBonus("COMPLETE中のためSPEED停止");
     stopDebugFastSpin("COMPLETE中");
-    showMessage("コンプリートしました。", `MY${NovaComplete.defaultMyLimitPt.toLocaleString()}pt到達 / 管理リセットまたは設定変更まで遊技できません`);
+    showMessage("コンプリートしました。", `MY${NovaComplete.myLimit(settings).toLocaleString()}pt到達 / 管理リセットまたは設定変更まで遊技できません`);
     showOverlay("コンプリートしました。");
     return false;
   }
@@ -3680,6 +3680,7 @@
         settings.novaArt={...NovaArt.defaults};settings.novaNormal={...NovaNormal.defaults};settings.novaFlow={...NovaFlow.defaults};settings.smartslotBalanceVersion=20261013;
       }
       settings.completeLimitPt = DEFAULT_COMPLETE_LIMIT_PT;
+      settings.completeMyLimitPt = NovaComplete.myLimit(settings);
       settings.title = normalizeMachineTitle(settings.title);
       if(!SETTING[settings.setting]) settings.setting = 1;
       if(data?.stats) stats = {...stats, ...data.stats};
@@ -3749,7 +3750,7 @@
         }
       }
       completeTrialState.lowestNet=Math.min(0,Number(completeTrialState.lowestNet)||0,Number(stats.slumpLow)||0);
-      if(isCompleteLockEnabled())NovaComplete.restore(completeTrialState,(Number(stats.totalPaid)||0)-(Number(stats.totalFee)||0),settings.completeLimitPt);
+      if(isCompleteLockEnabled())NovaComplete.restore(completeTrialState,(Number(stats.totalPaid)||0)-(Number(stats.totalFee)||0),settings.completeLimitPt,NovaComplete.myLimit(settings));
       const runtime = data?.runtimeState || {};
       if(runtime.session && typeof runtime.session === "object"){
         session = {
@@ -3950,7 +3951,7 @@
         movieVolume: settings.movieVolume,
         rogiMovieVolume: settings.rogiMovieVolume,
         audioMuted: settings.audioMuted,
-        completeMyLimitPt:NovaComplete.defaultMyLimitPt,
+        completeMyLimitPt:NovaComplete.myLimit(settings),
         completeLimitPt: completeLimitPt()
       },
       stats:{...adminStats, profit},
@@ -4070,6 +4071,10 @@
     if(nextSettings.audioMuted !== undefined) settings.audioMuted = !!nextSettings.audioMuted;
     if(nextSettings.completeLimitPt !== undefined){
       settings.completeLimitPt = DEFAULT_COMPLETE_LIMIT_PT;
+    }
+    if(nextSettings.completeMyLimitPt !== undefined){
+      settings.completeMyLimitPt = NovaComplete.myLimit(nextSettings);
+      updateCompleteTrialState("admin-limit");
     }
     readSettings();
     const saved=persistState();
