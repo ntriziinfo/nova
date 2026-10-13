@@ -1,9 +1,0 @@
-/* Fixed cabinet coordinates. The controller scales/crops this read-only frame. */
-html,body{margin:0!important;padding:0!important;width:960px!important;height:1610px!important;min-width:960px!important;min-height:0!important;overflow:hidden!important;background:#080610!important;zoom:1!important;transform:none!important}
-body::before,body::after{display:none!important}
-#mirrorStage{position:relative;width:var(--mirror-width,960px);height:var(--mirror-height,1610px);pointer-events:none;user-select:none}
-#mirrorStage>#machine{display:flow-root!important;position:relative!important;left:0!important;top:0!important;margin:0!important;width:var(--mirror-width,960px)!important;min-height:var(--mirror-height,1610px)!important;transform:none!important;zoom:1!important}
-#audioDock,#lcd,#resultText,.debug,.debugPanel,.layoutEditPanel,.vertexConnectionBadge{display:none!important}
-.cell img.nebulaSymImg{display:block;width:100%;height:auto}
-.cell img[src*="/gang-v3/"]{width:100%;height:100%;object-fit:contain}
-button{pointer-events:none!important}

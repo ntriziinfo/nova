@@ -4125,7 +4125,6 @@
         if(!canUsePlayState())return;
         nextPollDelay = 2000;
         applySuperSpeedPermission(data.controls?.superSpeedAllowed === true);
-        window.NovaMonitorPublisher?.lease(data.controls?.monitorRequestedUntil);
         const commands = Array.isArray(data.commands) ? data.commands : [];
         for(const row of commands){
           const command = row.command || row;
@@ -10004,12 +10003,9 @@
   window.addEventListener('pagehide',()=>{if(!playAccess.owned())playAccess.close();});
   playAccess.start(()=>{
     bootGame();
-    window.NovaMonitorPublisher?.start({server:ADMIN_SERVER,machineId,sessionId:PLAY_SESSION_ID,
-      enabled:['store-nebula','store-debug'].includes(bootParams.get('storeId')),canPublish:canUsePlayState});
     // Register after setup's final save, so pagehide commits before releasing ownership.
     window.addEventListener('pagehide',()=>{
       playAccess.close();
-      window.NovaMonitorPublisher?.close();
       stopAutoPlay();stopSpeedToBonus();stopDebugFastSpin();
       if(adminPushTimer)clearTimeout(adminPushTimer);
       if(adminCommandPollTimer)clearTimeout(adminCommandPollTimer);
