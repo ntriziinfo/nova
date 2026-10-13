@@ -844,8 +844,8 @@
   const LAYOUT_DEFAULT_STORAGE_KEY = "nova_layout_default_locked_20260907";
   const LAYOUT_EDITOR_ENABLED = SLOT_DEBUG_ENABLED;
   const PAGE_STAGE_WIDTH = 1360;
-  const PAGE_ZOOM_MIN = 0.75;
-  const PAGE_ZOOM_MAX = 1.30;
+  const PAGE_ZOOM_MIN = 0.05;
+  const PAGE_ZOOM_MAX = 2.00;
   const PAGE_ZOOM_STEP = 0.05;
   const PAGE_PAN_MIN = -260;
   const PAGE_PAN_MAX = 260;
@@ -991,6 +991,7 @@
     document.body.style.minWidth = "100%";
     requestPageScrollBoundsUpdate();
     if(pageZoomView) pageZoomView.textContent = `${Math.round(pageZoom * 100)}%`;
+    if($('pageZoomRange'))$('pageZoomRange').value=String(Math.round(pageZoom*100));
     if(pageZoomOutBtn) pageZoomOutBtn.disabled = pageZoom <= PAGE_ZOOM_MIN + 0.001;
     if(pageZoomInBtn) pageZoomInBtn.disabled = pageZoom >= PAGE_ZOOM_MAX - 0.001;
     if(saveValue) safeStorageSet(PAGE_ZOOM_STORAGE_KEY, String(pageZoom));
@@ -1615,7 +1616,7 @@
         : audioDock && audioDock.classList.contains("counterOpen")
           ? $("roleCounterPanel")
           : null;
-    const viewW = window.innerWidth || root.clientWidth || PAGE_STAGE_WIDTH;
+    const viewW = root.clientWidth || window.innerWidth || PAGE_STAGE_WIDTH;
     let left = viewW / 2;
     let top = 16;
     let maxHeight = 620;
@@ -1663,6 +1664,7 @@
       return;
     }
     const isSlump = type === "slump";
+    if(isSlump)setDataGraphView(false);
     audioDock.classList.add(infoPanelClassForType(type));
     const btn = infoPanelButtonForType(type);
     if(btn) btn.setAttribute("aria-expanded", "true");
@@ -2934,7 +2936,10 @@
   }
 
   function recordAtFirstEntry(before,after){
-    if(before?.phase!=='art' && after?.phase==='art')stats.atFirstCount=(Number(stats.atFirstCount)||0)+1;
+    if(before?.phase!=='art' && after?.phase==='art'){
+      stats.atFirstCount=(Number(stats.atFirstCount)||0)+1;
+      NovaDataCounter.hit(stats,'AT');
+    }
   }
 
   function resetNormalCountersAfterArt(before,after){
@@ -2989,6 +2994,7 @@
     }
     if(includeBonus && (result === "BIG" || result === "BAR3")){
       stats.bigCount++;
+      NovaDataCounter.hit(stats,'BIG');
       if(result === "BAR3"){
         stats.premiumBigCount = (Number(stats.premiumBigCount) || 0) + 1;
       }
@@ -3028,11 +3034,13 @@
     if(A_TYPE_MODE&&!session.active&&normalState.flow?.phase==='art'){
       normalState.flow=NovaArt.prepareBet(normalState.flow,{...settings.novaArt,setting:settings.setting});
     }
+    if(!session.active)NovaDataCounter.zone(stats,normalState.flow);
     if(!session.active && normalState.flow?.zero)return false;
     if(A_TYPE_MODE){
       NovaDecrement.beforeBet(aTypeBonusActiveAtSpinStart?'bonus':normalState.bonusPending?'prep':normalState.flow?.zone?'zone':normalState.flow?.phase==='art'?'at':normalState.flow?.phase==='normal'?'normal':'cz');
     }
     if(A_TYPE_MODE && aTypeBonusActiveAtSpinStart) return false;
+    NovaDataCounter.spin(stats,normalState.flow);
     stats.totalSpins = (Number(stats.totalSpins) || 0) + 1;
     return true;
   }
@@ -3255,7 +3263,7 @@
   }
 
   function renderSlumpGraph(){
-    if(!slumpGraph) return;
+    if(!slumpGraph || document.querySelector('.slumpPublic')?.hidden) return;
     const ctx = slumpGraph.getContext("2d");
     if(!ctx) return;
 
@@ -3277,9 +3285,7 @@
     const pad = {left:44, right:14, top:16, bottom:28};
     const plotW = Math.max(1, cssWidth - pad.left - pad.right);
     const plotH = Math.max(1, cssHeight - pad.top - pad.bottom);
-    const allPoints = Array.isArray(stats.slumpHistory) && stats.slumpHistory.length
-      ? stats.slumpHistory
-      : [{spin:0, profit:0}];
+    const allPoints = NovaDataCounter.graph(stats,machineDisplayBase,playSessionStartStats);
     const windowInfo = getSlumpWindow(allPoints);
     updateSlumpControls(windowInfo, allPoints);
     const points = windowInfo.points.length ? windowInfo.points : allPoints;
@@ -3389,8 +3395,9 @@
     ctx.fillText("差pt", cssWidth - pad.right, cssHeight - 7);
 
     setSlumpValue(slumpCurrentView, current);
-    setSlumpValue(slumpHighView, Number(stats.slumpHigh) || 0);
-    setSlumpValue(slumpLowView, Number(stats.slumpLow) || 0);
+    const allBounds=getProfitBounds(allPoints);
+    setSlumpValue(slumpHighView, allBounds.maxProfit);
+    setSlumpValue(slumpLowView, allBounds.minProfit);
   }
 
   function weightedPick(items){
@@ -3934,6 +3941,7 @@
     const totalPaid = Math.max(0, Number(source && source.totalPaid) || 0);
     return {
       ...NovaRoleCounter.snapshot(source),
+      ...NovaDataCounter.snapshot(source),
       totalFee,
       totalPaid,
       profit:totalPaid - totalFee,
@@ -5169,6 +5177,7 @@
 
     countRoleStat(result, !!(resolved.bonusReady || resolved.regReady));
     NovaRoleCounter.record(stats,result,resolved);
+    NovaDataCounter.zone(stats,resolved.zoneStartFlow||resolved.flowBefore);
     if(normalReward > 0){
       stats.totalPaid = (Number(stats.totalPaid) || 0) + normalReward;
       playPayoutSound(result, normalReward);
@@ -5194,6 +5203,7 @@
         delete normalState.resultAtStartPaid;
       }
       resetNormalCountersAfterArt(resolved.flowBefore,normalState.flow);
+      NovaDataCounter.zone(stats,normalState.flow);
       normalState.risingRemain = 0;
       normalState.mode = normalState.flow.phase;
       if(!resolved.bonusPendingAtStart && (resolved.bonusHit || resolved.aTypeBonusReady)){
@@ -5806,6 +5816,7 @@
     setText("wdCounterCherry", stats.cherryCount || 0);
     setText("wdCounterReplay", stats.replayCount || 0);
     updateRoleCounter(machineDisplay);
+    NovaDataCounter.render($('novaDataCounter'),NovaDataCounter.display(stats,machineDisplayBase,playSessionStartStats),machineDisplay);
     const setMirrorCell = (valueId, label, value)=>{
       const valueEl = $(valueId);
       if(!valueEl) return;
@@ -5884,6 +5895,14 @@
   function normalRoleStatDenominator(){
 
     return (Number(stats.normalSpins) || 0) + (Number(stats.highSpins) || 0);
+  }
+
+  function setDataGraphView(open){
+    const graph=document.querySelector('.slumpPublic'),history=$('novaHitHistory'),button=$('novaDataGraphToggle');
+    if(graph)graph.hidden=!open;
+    if(history)history.hidden=!!open;
+    if(button){button.setAttribute('aria-expanded',String(!!open));button.querySelector('span').textContent=open?'履歴':'グラフ';}
+    if(open)requestAnimationFrame(renderSlumpGraph);
   }
 
   function updateRoleCounter(machineDisplay=machineDisplayStats()){
@@ -9605,7 +9624,9 @@
     const slumpPublicCard = document.querySelector(".slumpPublic");
     if(slumpPanelBody && slumpPublicCard){
       slumpPanelBody.appendChild(slumpPublicCard);
+      slumpPublicCard.hidden=true;
     }
+    $('novaDataGraphToggle')?.addEventListener('click',()=>setDataGraphView(!!slumpPublicCard?.hidden));
     const drawer = $("debugDrawer");
     if(drawer){
       [...document.querySelectorAll(".side > .card:not(.oddsPublic):not(.slumpPublic)")].forEach(card => drawer.appendChild(card));
@@ -9713,6 +9734,9 @@
         changePageZoom(-PAGE_ZOOM_STEP);
       });
     }
+    $('pageZoomRange')?.addEventListener('input',event=>{
+      syncZoomAnchorToSlotTop();pageZoom=Number(event.target.value)/100;applyPageZoom(true);
+    });
     if(pageZoomInBtn){
       pageZoomInBtn.addEventListener("click", e=>{
         e.stopPropagation();
@@ -10041,6 +10065,7 @@
 
   function bootGame(){
     if(!load()){showPlayBlocked('restore');return;}
+    NovaDataCounter.adopt(stats,normalState.flow);
     if(!normalState.internal) normalState.internal=NovaNormal.reset(Math.random,settings.setting);
     persistState();
     initializePlaySessionBaseline();

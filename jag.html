@@ -33,6 +33,7 @@
 <link rel="preload" as="image" href="assets/controls/start_lever_ball.png">
 <link rel="preload" as="image" href="assets/controls/stop_button_red_cut.png">
 <link rel="stylesheet" href="nova-game.css?v=20261013-speed-audio-credit">
+<link rel="stylesheet" href="nova-data-counter.css?v=20261014-compact-data">
 <link rel="stylesheet" href="nova-cabinet.css?v=20261013-audio-wait">
 <link rel="stylesheet" href="nova-remaining-counters.css?v=20261013-checkpoint-cue">
 <script src="nova-remaining-counters.js?v=20261013-checkpoint-cue"></script>
@@ -190,6 +191,7 @@
         </button>
         <div class="pageZoomControls" aria-label="画面倍率">
           <button class="pageZoomBtn" id="pageZoomOutBtn" type="button" title="縮小" aria-label="画面を縮小">−</button>
+          <input id="pageZoomRange" type="range" min="5" max="200" step="5" value="100" aria-label="筐体サイズ（5〜200%）" title="筐体サイズ 5〜200%" style="width:80px;min-width:0" />
           <button class="pageZoomBtn zoomReset" id="pageZoomResetBtn" type="button" title="100%に戻す" aria-label="画面倍率を100%に戻す"><span id="pageZoomView">100%</span></button>
           <button class="pageZoomBtn" id="pageZoomInBtn" type="button" title="拡大" aria-label="画面を拡大">＋</button>
         </div>
@@ -270,10 +272,26 @@
         </div>
         <div class="infoPanel" id="slumpPanel">
           <div class="infoPanelHead">
-            <div class="infoPanelTitle">スランプグラフ</div>
+            <div class="infoPanelTitle">遊技データ</div>
             <button class="infoCloseBtn" id="slumpCloseBtn" type="button" aria-label="スランプグラフを閉じる" title="閉じる">×</button>
           </div>
-          <div id="slumpPanelBody"></div>
+          <div id="slumpPanelBody">
+            <section id="novaDataCounter" aria-label="台のデータカウンター">
+              <div class="novaDataHead">
+                <button type="button" class="novaDataGraphButton" id="novaDataGraphToggle" aria-expanded="false"><span>グラフ</span><svg viewBox="0 0 32 25" aria-hidden="true"><path d="M1 1v23h30M3 19l6-7 6 3 7-10 7 5" fill="none" stroke="currentColor" stroke-width="2"/></svg></button>
+                <div class="novaDataNumber"><span>現在回転数</span><b data-counter="current">0</b></div>
+                <div class="novaDataNumber"><span>総ゲーム数</span><b data-counter="total">0</b></div>
+                <div class="novaDataHits"><div><span>BIG</span><b data-counter="big">0</b></div><div><span>AT</span><b data-counter="at">0</b></div></div>
+              </div>
+              <div class="novaGameSplit"><span>通常 <b data-counter="normal">0</b> G</span><span>AT中 <b data-counter="art">0</b> G</span></div>
+              <div id="novaHitHistory">
+                <div class="novaHitLegend"><span class="big">■ BIG</span><span class="art">■ AT・特化</span><span>1目盛り100G</span></div>
+                <div class="novaHitChart"><div class="novaHitScale"><span>1000</span><span>500</span><span>0</span></div><div class="novaHitBars" aria-label="当たり履歴"></div></div>
+                <p class="novaCounterNote" data-counter="detail">直近20件 / 列を押すとG数・ゾーン名を表示</p>
+                <details class="novaCounterNote"><summary>集計について</summary>現在回転数は直前のBIG・AT・特化開始から。1,000G超は＋表示。AT回数は初当たりのみ。<br>通常G数はCZ・準備を含み、AT中G数は特化を含みます。BIG消化中・0G連はG数に含めません。区分別G数・履歴は更新後から記録します。</details>
+              </div>
+            </section>
+          </div>
         </div>
         <div class="infoPanel" id="oddsPanel">
           <div class="infoPanelHead">
@@ -803,7 +821,8 @@
 <script src="nova-play-access.js?v=20261001-save-recovery"></script>
 <script src="nova-history.js?v=20261001-history-performance"></script>
 <script src="nova-role-counter.js?v=20261014-role-counter"></script>
-<script src="nova-game.js?v=20261014-role-counter"></script>
+<script src="nova-data-counter.js?v=20261014-compact-data"></script>
+<script src="nova-game.js?v=20261014-compact-data"></script>
 <button type="button" id="novaSymbolPreviewOpen">ノヴァ目を確認</button>
 <dialog id="novaSymbolPreview"><h2>ノヴァ目</h2><label>出目<select id="novaPatternSelect"><option value="WEAK_NOVA">弱ノヴァ目：左3連</option><option value="STRONG_MIDDLE">強ノヴァ目：左・中3連</option><option value="STRONG_RIGHT">強ノヴァ目：左・右3連</option><option value="SUPER_NOVA" selected>スーパーノヴァ目：全リール3連</option></select></label><p id="novaPatternDescription"></p><div id="novaSymbolPreviewGrid"></div><p>出目の確認用です。通常時のスーパーはBIG・フリーズ各50%。ボーナス中は対象外。弱・強と自然出現率は未設定。</p><button type="button" id="novaSymbolPreviewClose">閉じる</button></dialog>
 </body>
