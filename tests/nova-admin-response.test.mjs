@@ -16,7 +16,7 @@ function setup(){
     setTimeout(fn, ms){ timers.set(++id, {fn, ms}); return id; }, clearTimeout(id){timers.delete(id);},
     fetch(url){const pending=deferred();calls.push({url,...pending});return pending.promise;},
     handleAdminCommand(command){handled.push(command);}, safeStorageSet(key,value){saved.push(value);},
-    applySuperSpeedPermission(value){c.permission=value;}, setAdminConnectionState(value){c.connection=value;}
+    applySuperSpeedPermission(value){c.permission=value;},applyStoreCompleteSettings(){}, setAdminConnectionState(value){c.connection=value;}
   });
   vm.runInContext(fn('pollAdminCommands') + fn('wakeAdminCommands'), c);
   const respond = (index, commands=[], ok=true) => calls[index].resolve({ok,json:async()=>({commands,controls:{superSpeedAllowed:true}})});

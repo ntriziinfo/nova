@@ -578,7 +578,6 @@
   const SPEED_MODE_MAX_SPINS_PER_SECOND = 10;
   const SPEED_MODE_MULTIPLIER = 3;
   const COMPLETE_TRIAL_ENABLED = true;
-  const DEFAULT_COMPLETE_LIMIT_PT = 0;
   const SLUMP_MAX_HISTORY_POINTS = 20000;
   const SLUMP_MAX_DRAW_POINTS = 1400;
   let autoPlay = false;
@@ -802,6 +801,7 @@
   }
 
   const VERTEX_CONTROLLER_ENABLED = adminParams.get("controller") === "vertex";
+  settings=NovaComplete.configure(settings,VERTEX_CONTROLLER_ENABLED);
   const VERTEX_STORE_ID = String(adminParams.get("storeId") || "").trim();
   const ADMIN_SERVER = (VERTEX_CONTROLLER_ENABLED ? adminParams.get("server") || "" : "").replace(/\/$/, "");
   let machineId = adminParams.get("machine") || bootMachineId;
@@ -3085,8 +3085,8 @@
       stopSpeedToBonus("COMPLETE到達のためSPEED停止");
       stopDebugFastSpin("COMPLETE到達");
       syncCompletePresentation(true);
-      showMessage("コンプリートしました。", `MY${NovaComplete.myLimit(settings).toLocaleString()}pt到達 / 管理リセットまたは設定変更まで遊技できません`);
-      log(`[COMPLETE] MY${NovaComplete.myLimit(settings).toLocaleString()}pt到達：${formatSigned(profit)}pt / 設定${completeTrialState.lockedSetting}`);
+      showMessage("コンプリートしました。", `${NovaComplete.label(settings,completeTrialState.reason)}到達 / 管理リセットまたは設定変更まで遊技できません`);
+      log(`[COMPLETE] ${NovaComplete.label(settings,completeTrialState.reason)}到達：${formatSigned(profit)}pt / 設定${completeTrialState.lockedSetting}`);
       persistState();
       updateDisplay();
     }
@@ -3101,7 +3101,7 @@
     stopAutoPlay("COMPLETE中のためAUTO停止");
     stopSpeedToBonus("COMPLETE中のためSPEED停止");
     stopDebugFastSpin("COMPLETE中");
-    showMessage("コンプリートしました。", `MY${NovaComplete.myLimit(settings).toLocaleString()}pt到達 / 管理リセットまたは設定変更まで遊技できません`);
+    showMessage("コンプリートしました。", `${NovaComplete.label(settings,completeTrialState.reason)}到達 / 管理リセットまたは設定変更まで遊技できません`);
     showOverlay("コンプリートしました。");
     return false;
   }
@@ -3689,8 +3689,7 @@
       if(settings.smartslotBalanceVersion!==20261013){
         settings.novaArt={...NovaArt.defaults};settings.novaNormal={...NovaNormal.defaults};settings.novaFlow={...NovaFlow.defaults};settings.smartslotBalanceVersion=20261013;
       }
-      settings.completeLimitPt = DEFAULT_COMPLETE_LIMIT_PT;
-      settings.completeMyLimitPt = NovaComplete.myLimit(settings);
+      settings=NovaComplete.configure(settings,VERTEX_CONTROLLER_ENABLED);
       settings.title = normalizeMachineTitle(settings.title);
       if(!SETTING[settings.setting]) settings.setting = 1;
       if(data?.stats) stats = {...stats, ...data.stats};
@@ -3964,6 +3963,7 @@
         movieVolume: settings.movieVolume,
         rogiMovieVolume: settings.rogiMovieVolume,
         audioMuted: settings.audioMuted,
+        completeBasis:settings.completeBasis||'my',
         completeMyLimitPt:NovaComplete.myLimit(settings),
         completeLimitPt: completeLimitPt()
       },
@@ -4082,11 +4082,10 @@
     setValue("movieVolume", nextSettings.movieVolume);
     setValue("rogiMovieVolume", nextSettings.rogiMovieVolume);
     if(nextSettings.audioMuted !== undefined) settings.audioMuted = !!nextSettings.audioMuted;
-    if(nextSettings.completeLimitPt !== undefined){
-      settings.completeLimitPt = DEFAULT_COMPLETE_LIMIT_PT;
-    }
-    if(nextSettings.completeMyLimitPt !== undefined){
-      settings.completeMyLimitPt = NovaComplete.myLimit(nextSettings);
+    if(nextSettings.completeLimitPt !== undefined || nextSettings.completeMyLimitPt !== undefined){
+      const limits=Object.fromEntries(['completeBasis','completeLimitPt','completeMyLimitPt'].filter(key=>nextSettings[key]!==undefined).map(key=>[key,nextSettings[key]]));
+      settings=NovaComplete.configure({...settings,...limits},VERTEX_CONTROLLER_ENABLED);
+      if(completeTrialState.reason==='my'&&!NovaComplete.myLimit(settings))NovaComplete.restore(completeTrialState,completeTrialProfit(),completeLimitPt(),0);
       updateCompleteTrialState("admin-limit");
     }
     readSettings();
@@ -4152,6 +4151,7 @@
           adminCommandLastId = Math.max(adminCommandLastId, commandId);
           safeStorageSet(ADMIN_COMMAND_LAST_ID_KEY, String(adminCommandLastId));
         }
+        applyStoreCompleteSettings(data.controls);
         if(commands.length >= 25) nextPollDelay = 0;
       }else {setAdminConnectionState("offline");applySuperSpeedPermission(false);}
     }catch(e){ setAdminConnectionState("offline");applySuperSpeedPermission(false); }
@@ -4166,6 +4166,12 @@
     if(adminCommandPollInFlight){ adminCommandPollRequested = true; return; }
     if(adminCommandPollTimer) clearTimeout(adminCommandPollTimer);
     adminCommandPollTimer = setTimeout(pollAdminCommands, 0);
+  }
+
+  function applyStoreCompleteSettings(controls){
+    if(controls?.completeBasis!=='net'||!Number.isInteger(controls.completeLimitPt)||controls.completeLimitPt<1)return;
+    if(settings.completeBasis==='net'&&settings.completeLimitPt===controls.completeLimitPt&&settings.completeMyLimitPt===0)return;
+    applyAdminSettings({completeBasis:'net',completeLimitPt:controls.completeLimitPt,completeMyLimitPt:0});
   }
 
   // The host only wakes the authenticated server poll; it cannot supply commands.
