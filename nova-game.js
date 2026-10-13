@@ -807,6 +807,8 @@
   let adminPushDueAt = 0;
 
   let adminCommandPollTimer = null;
+  let adminCommandPollInFlight = false;
+  let adminCommandPollRequested = false;
   const ADMIN_COMMAND_LAST_ID_KEY = "nova_admin_command_last_id_" + machineId;
   let adminCommandLastId = Number(safeStorageGet(ADMIN_COMMAND_LAST_ID_KEY) || 0) || 0;
   const ADMIN_STATE_PUSH_INTERVAL_MS = 60000;
@@ -4082,7 +4084,6 @@
       applyAdminSettings(command.settings || {});
     }else if(command.type === "reset"){
       morningResetGame(false, "管理リセット");
-      setTimeout(()=>location.reload(), 250);
     }else if(command.type === "forceEnd"){
       log("旧方式の強制終了指示を無視");
     }else if(command.type === "forceResult"){
@@ -4109,6 +4110,12 @@
 
   async function pollAdminCommands(){
     if(!canUsePlayState() || !window.fetch || !ADMIN_SERVER || !machineId) return;
+    if(adminCommandPollInFlight){ adminCommandPollRequested = true; return; }
+    if(adminCommandPollTimer) clearTimeout(adminCommandPollTimer);
+    adminCommandPollTimer = null;
+    adminCommandPollInFlight = true;
+    adminCommandPollRequested = false;
+    let nextPollDelay = 5000;
     try{
       const res = await fetch(`${ADMIN_SERVER}/api/machines/${encodeURIComponent(machineId)}/commands/poll?since=${encodeURIComponent(adminCommandLastId)}`, {cache:"no-store",signal:AbortSignal.timeout(10000)});
       if(!canUsePlayState())return;
@@ -4116,18 +4123,41 @@
         setAdminConnectionState("online");
         const data = await res.json();
         if(!canUsePlayState())return;
+        nextPollDelay = 2000;
         applySuperSpeedPermission(data.controls?.superSpeedAllowed === true);
         const commands = Array.isArray(data.commands) ? data.commands : [];
         for(const row of commands){
           const command = row.command || row;
+          const commandId = Number(row.id || command.id || row.createdAtMs || 0) || 0;
+          if(commandId && commandId <= adminCommandLastId) continue;
           handleAdminCommand(command);
-          adminCommandLastId = Math.max(adminCommandLastId, Number(row.id || command.id || row.createdAtMs || 0) || 0);
+          adminCommandLastId = Math.max(adminCommandLastId, commandId);
+          safeStorageSet(ADMIN_COMMAND_LAST_ID_KEY, String(adminCommandLastId));
         }
-        safeStorageSet(ADMIN_COMMAND_LAST_ID_KEY, String(adminCommandLastId));
+        if(commands.length >= 25) nextPollDelay = 0;
       }else {setAdminConnectionState("offline");applySuperSpeedPermission(false);}
     }catch(e){ setAdminConnectionState("offline");applySuperSpeedPermission(false); }
-    adminCommandPollTimer = setTimeout(pollAdminCommands, 5000);
+    finally{
+      adminCommandPollInFlight = false;
+      if(canUsePlayState()) adminCommandPollTimer = setTimeout(pollAdminCommands, adminCommandPollRequested ? 100 : nextPollDelay);
+    }
   }
+
+  function wakeAdminCommands(){
+    if(!ADMIN_SERVER || !canUsePlayState()) return;
+    if(adminCommandPollInFlight){ adminCommandPollRequested = true; return; }
+    if(adminCommandPollTimer) clearTimeout(adminCommandPollTimer);
+    adminCommandPollTimer = setTimeout(pollAdminCommands, 0);
+  }
+
+  // The host only wakes the authenticated server poll; it cannot supply commands.
+  window.addEventListener("message", event=>{
+    if(!VERTEX_CONTROLLER_ENABLED || !ADMIN_SERVER || event.source !== window.parent) return;
+    if(event.origin !== new URL(ADMIN_SERVER, location.href).origin) return;
+    if(event.data?.type !== "vertex-commands-available" || String(event.data.machineId) !== String(machineId)) return;
+    wakeAdminCommands();
+  });
+  window.addEventListener("focus", wakeAdminCommands);
 
   function connectAdminCommands(){
     if(adminCommandPollTimer) clearTimeout(adminCommandPollTimer);
@@ -5940,6 +5970,7 @@
     NovaSortie.clear();
     NovaStockEntry.hide();
     NovaDirectAward.clear();
+    NovaResults.hide();
     stopDebugFastSpin(`${reason}のため高速停止`);
     stopSpeedToBonus(`${reason}のためSPEED停止`);
     stopAutoPlay(`${reason}のためAUTO停止`);
