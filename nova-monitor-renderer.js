@@ -2,7 +2,7 @@
 (()=>{
   'use strict';
   const source=new URLSearchParams(location.search).get('parent');
-  const allowed=/^https:\/\/(?:nebula-control(?:-[a-z0-9-]+)?\.vercel\.app)$/.test(source||'')||/^http:\/\/127\.0\.0\.1:\d+$/.test(source||'');
+  const allowed=/^https:\/\/(?:(?:nebula-control|vertex-debug)(?:-[a-z0-9-]+)?\.vercel\.app)$/.test(source||'')||/^http:\/\/127\.0\.0\.1:\d+$/.test(source||'');
   if(!allowed)return;
   const stage=document.getElementById('mirrorStage');
   const tags=new Set(['div','section','span','p','b','strong','small','em','i','br','img','picture','video','button','h2','h3','output']);

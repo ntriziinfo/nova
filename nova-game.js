@@ -10005,7 +10005,7 @@
   playAccess.start(()=>{
     bootGame();
     window.NovaMonitorPublisher?.start({server:ADMIN_SERVER,machineId,sessionId:PLAY_SESSION_ID,
-      enabled:bootParams.get('storeId')==='store-nebula',canPublish:canUsePlayState});
+      enabled:['store-nebula','store-debug'].includes(bootParams.get('storeId')),canPublish:canUsePlayState});
     // Register after setup's final save, so pagehide commits before releasing ownership.
     window.addEventListener('pagehide',()=>{
       playAccess.close();
