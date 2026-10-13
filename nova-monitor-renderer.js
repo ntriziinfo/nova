@@ -8,6 +8,8 @@
   const tags=new Set(['div','section','span','p','b','strong','small','em','i','br','img','picture','video','button','h2','h3','output']);
   const privateId=/(?:debug|setting|password|token|session|layoutEdit|audioDock|soundPanel|odds|resultText|subMessage|lcd)/i;
   let elements=new Map(),oldVars=[],bodyAttrs=[],root;
+  function release(el){if(el.localName==='video'){el.pause();el.removeAttribute('src');el.load();}}
+  function clear(){for(const el of elements.values())release(el);stage.replaceChildren();elements.clear();root=null;}
   function asset(raw){try{const u=new URL(raw,location.href);return u.origin===location.origin&&u.pathname.startsWith('/assets/')&&/\.(png|webp|jpg|jpeg|gif|svg|mp4|webm)$/i.test(u.pathname)?(u.search='',u.hash='',u.href):'';}catch{return '';}}
   function style(raw){return /url\s*\(|[@<>\\]|expression|javascript|behavior|-moz-binding/i.test(raw)?raw.replace(/url\(([^)]*)\)/gi,(_,u)=>{const safe=asset(u.trim().replace(/^['"]|['"]$/g,''));return safe?`url("${safe}")`:'none';}).replace(/[@<>\\]/g,''):raw;}
   function attrs(el,values){
@@ -51,15 +53,17 @@
     oldVars=[];for(const [key,value]of Object.entries(frame.vars||{}))if(/^--[a-z0-9-]{1,70}$/i.test(key)&&typeof value==='string'&&!/[@<>\\]|expression|javascript|behavior/i.test(value)){document.documentElement.style.setProperty(key,style(value));oldVars.push(key);}
     for(const key of bodyAttrs)document.body.removeAttribute(key);
     attrs(document.body,frame.body);bodyAttrs=Array.from(document.body.attributes,a=>a.name);
-    if(root!==cabinet){stage.replaceChildren(cabinet);root=cabinet;}elements=next;
+    if(root!==cabinet){stage.replaceChildren(cabinet);root=cabinet;}
+    for(const [key,el]of elements)if(next.get(key)!==el)release(el);
+    elements=next;
     document.documentElement.style.setProperty('--mirror-width',`${Number(frame.width)||960}px`);
     document.documentElement.style.setProperty('--mirror-height',`${Number(frame.height)||1610}px`);
   }
   window.addEventListener('message',e=>{
     if(e.source!==parent||e.origin!==source)return;
     try{if(e.data?.type==='nova-monitor-frame')render(e.data.screen);
-      else if(e.data?.type==='nova-monitor-clear'){stage.querySelectorAll('video').forEach(v=>v.pause());stage.replaceChildren();elements.clear();root=null;}}
-    catch{stage.replaceChildren();elements.clear();root=null;}
+      else if(e.data?.type==='nova-monitor-clear')clear();}
+    catch{clear();}
   });
   document.addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagation();},true);
   document.addEventListener('keydown',e=>e.preventDefault(),true);
