@@ -10,7 +10,7 @@ globalThis.NovaUiAccess=(()=>{
     '#vertexConnectionBadge','#debugToggleBtn','#debugDrawer','#secretPanel',
     '.side > .card:not(.oddsPublic):not(.slumpPublic)',
     '#novaSymbolPreviewOpen','#novaSymbolPreview',
-    '#layoutEditToggleBtn','#layoutEditorPanel','.pagePanControl',
+    '#layoutEditToggleBtn','#layoutEditorPanel',
     '#bellNaviAdjustBtn','#novaArtToggle','#novaArtPanel',
     '#novaResultAdjust','.novaResultSettings'
   ].join(',');

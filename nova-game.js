@@ -9694,7 +9694,8 @@
         applyPageZoom(true);
       });
     }
-    if(LAYOUT_EDITOR_ENABLED && pagePanRange){
+    // Cabinet panning is a player display preference, like page zoom.
+    if(pagePanRange){
       pagePanRange.addEventListener("input", e=>{
         e.stopPropagation();
         pagePanX = Number(pagePanRange.value) || 0;
@@ -9706,7 +9707,7 @@
         applyPagePan(true);
       });
     }
-    if(LAYOUT_EDITOR_ENABLED && pagePanResetBtn){
+    if(pagePanResetBtn){
       pagePanResetBtn.addEventListener("click", e=>{
         e.stopPropagation();
         pagePanX = PAGE_PAN_DEFAULT;

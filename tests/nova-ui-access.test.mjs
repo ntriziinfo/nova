@@ -47,3 +47,16 @@ test('store controls reject pointer, keyboard and synthetic changes; play/audio 
     }
   }
 });
+
+test('store players can pan the cabinet without unlocking game or artwork editors',()=>{
+  const {events,policy}=load('?controller=vertex&machine=nova-03');
+  for(const [ancestor,allowed] of [['.pagePanControl',true],['#layoutEditorPanel',false],['#debugDrawer',false],['#novaArtPanel',false]]){
+    const target={closest:selector=>selector.split(',').includes(ancestor)?{}:null};
+    assert.equal(policy.canUse(target),allowed,ancestor);
+    for(const handler of Object.values(events)){
+      let cancelled=false;
+      handler({target,preventDefault(){cancelled=true;},stopImmediatePropagation(){}});
+      assert.equal(cancelled,!allowed,ancestor);
+    }
+  }
+});
