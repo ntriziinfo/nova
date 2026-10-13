@@ -7,7 +7,7 @@ import {createHash} from 'node:crypto';
 
 const html=readGameSource();
 test('final lamp slot switches all eight CZ lamps to fast rainbow; clearing CZ restores normal modes',()=>{
- const c=vm.createContext({});
+ const c=vm.createContext({canEdit:false});
  vm.runInContext(fs.readFileSync('nova-flow.js','utf8'),c);
  const order=c.NovaFlow.lampCharacters;
  assert.equal(order.length,8);assert.equal(order.at(-1),'ouma1');

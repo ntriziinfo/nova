@@ -14,7 +14,7 @@ function setup(){
   showMessage(){},showOverlay(){},log(){},persistState(){},formatSigned:String,
   pauseNormalBgm(){},stopBarBgm(){},stopBattleBgm(){},bonusConfirmSoundAudio:null,clearBonusConfirmSoundLock(){},
   clearCzIntroVoiceHold(){},clearComebackIntroVoiceHold(){},aimWinAudios:new Set(),oumaIntroAudio:null,oumaReverseAudio:null,
-  debugFastSpinActive:false,speedToBonusActive:false,premiumBigConfirmSilence:false,oneShotSoundCache:new Map(),voiceOutputVolume:()=>.7,sfxOutputVolume:()=>.5,soundOutputVolume:(src,v)=>v,prepareCharacterVoiceAudio(){},
+  debugFastSpinActive:false,speedToBonusActive:false,superSpeedActive:false,premiumBigConfirmSilence:false,oneShotSoundCache:new Map(),voiceOutputVolume:()=>.7,sfxOutputVolume:()=>.5,soundOutputVolume:(src,v)=>v,prepareCharacterVoiceAudio(){},
   Audio:class {constructor(src){this.src=src;this.currentTime=0;elements.push(this);}getAttribute(){return this.src;}pause(){this.paused=true;}play(){this.paused=false;played.push(this.src);return Promise.resolve();}},
   updateDisplay:()=>c.syncCompletePresentation()
  });

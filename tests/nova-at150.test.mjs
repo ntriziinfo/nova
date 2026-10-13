@@ -5,5 +5,5 @@ test('current zone continuation ordering has no retired 2000pt reward damping',(
  assert.deepEqual([a.defaults.ladderSosuke,a.defaults.ladderGiru,a.defaults.ladderUraGiru],[.4,.5,2/3]);
  assert.deepEqual([a.defaults.totoHit,a.defaults.soraHit,a.defaults.soraUraHit],[.35,.35,.35]);
  assert.deepEqual([a.defaults.totoReset,a.defaults.soraReset,a.defaults.soraUraReset],[.02,.15,.30]);
- assert.equal(a.zoneAwardFactor('2000'),1);assert.match(h,/DEFAULT_COMPLETE_LIMIT_PT = 0/);
+ assert.equal(a.zoneAwardFactor('2000'),1); // Completion limits are covered by nova-complete tests.
 });

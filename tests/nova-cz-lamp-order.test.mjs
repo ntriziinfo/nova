@@ -21,6 +21,7 @@ test('lighting order survives stage changes, success rewrites and JSON reload wi
  assert.deepEqual(plain(f.lampOrder({})),plain(f.lampCharacters));
 });
 test('renderer uses the shuffled prefix, keeps positions, and reserves rainbow for confirmation',()=>{
+ c.canEdit=false;
  const order=['ouma1','sora1','giru1','urapi','toto','sosuke','nito','kushuri'];
  c.items=new Map(f.lampCharacters.map(id=>[id,{dataset:{},style:{left:id}}]));c.machine={dataset:{czLamp:'1',czOrder:order.join(',')},classList:{contains:()=>false}};
  c.chance={classList:{contains:()=>false}};c.layer={dataset:{}};c.lampMode={value:'auto'};

@@ -6,6 +6,8 @@
   const bootParams = new URLSearchParams(location.search);
   const bootMachineId = bootParams.get("machine") || "standalone";
   const bootPlaySessionId = String(bootParams.get("playSessionId") || "");
+  // Display-only machine totals. Never restore another player's counters into the game engine.
+  const machineDisplayBase = readMachineDisplayBase();
   const MACHINE_STORAGE_KEY = "nova_slot_state_v1_" + bootMachineId;
   const STORAGE_KEY = bootPlaySessionId ? `${MACHINE_STORAGE_KEY}_session_${bootPlaySessionId}` : MACHINE_STORAGE_KEY;
   const STORAGE_RESUME_KEY = STORAGE_KEY + "_resume";
@@ -813,7 +815,7 @@
   let adminCommandPollRequested = false;
   const ADMIN_COMMAND_LAST_ID_KEY = "nova_admin_command_last_id_" + machineId;
   let adminCommandLastId = Number(safeStorageGet(ADMIN_COMMAND_LAST_ID_KEY) || 0) || 0;
-  const ADMIN_STATE_PUSH_INTERVAL_MS = 60000;
+  const ADMIN_STATE_PUSH_INTERVAL_MS = 5000;
   const SLOT_DEBUG_ENABLED = globalThis.NovaUiAccess?.canEdit === true;
   const CREDIT_BASELINE_PROFIT = Number(adminParams.get("creditBaseline") || 0) || 0;
   const PLAY_SESSION_ID = bootPlaySessionId;
@@ -3708,7 +3710,9 @@
         stats.cherryCount = 0;
         stats.roleStatVersion = ROLE_STAT_COUNTER_VERSION;
       }
-      if(A_TYPE_MODE){
+      // Normal/high role counters exclude some phases (including BIG). They are
+      // only a fallback for old saves without a total, never a replacement for it.
+      if(A_TYPE_MODE && !Number.isFinite(Number(data?.stats?.totalSpins))){
         stats.totalSpins = (Number(stats.normalSpins) || 0) + (Number(stats.highSpins) || 0);
       }
       if(data?.normalState){
@@ -3904,6 +3908,27 @@
     }
   }
 
+  function readMachineDisplayBase(){
+    if(!bootPlaySessionId)return null;
+    try{
+      const value=JSON.parse(bootParams.get("machineDisplay") || "null");
+      return value && typeof value === "object" && !Array.isArray(value) ? value : null;
+    }catch(e){return null;}
+  }
+
+  function machineDisplayStats(){
+    const number=value=>Number.isFinite(Number(value)) ? Math.max(0,Number(value)) : 0;
+    const output={};
+    const start=machineDisplayBase ? playSessionStartStats : null;
+    for(const key of ['totalSpins','bigCount','atFirstCount']){
+      output[key]=number(machineDisplayBase?.[key])+Math.max(0,number(stats[key])-number(start?.[key]));
+    }
+    output.atFirstCountPartial=!!(machineDisplayBase?.atFirstCountPartial || stats.atFirstCountPartial);
+    const newBonus=number(stats.bigCount)>number(start?.bigCount);
+    output.sinceBonus=number(normalState.sinceBonus)+(newBonus ? 0 : number(machineDisplayBase?.sinceBonus));
+    return output;
+  }
+
   function sessionBaselineStats(source=stats){
     const totalFee = Math.max(0, Number(source && source.totalFee) || 0);
     const totalPaid = Math.max(0, Number(source && source.totalPaid) || 0);
@@ -3947,6 +3972,7 @@
       machineId,
       playSessionId:PLAY_SESSION_ID,
       playSessionStartStats:playSessionStartStats ? {...playSessionStartStats} : null,
+      machineDisplayStats:machineDisplayStats(),
       name: settings.title || machineId,
       settings:{
         title: settings.title,
@@ -5677,9 +5703,10 @@
     if($("payoutScaleViewLegacy")) $("payoutScaleViewLegacy").textContent = payoutScaleText;
     if($("adminPayoutScaleView")) $("adminPayoutScaleView").textContent = payoutScaleText;
 
-    if($("totalSpinsView")) $("totalSpinsView").textContent = stats.totalSpins || 0;
+    const machineDisplay = machineDisplayStats();
+    if($("totalSpinsView")) $("totalSpinsView").textContent = machineDisplay.totalSpins || 0;
     if($("totalSessionsView")) $("totalSessionsView").textContent = stats.totalSessions || 0;
-    if($("bigCountView")) $("bigCountView").textContent = stats.bigCount || 0;
+    if($("bigCountView")) $("bigCountView").textContent = machineDisplay.bigCount || 0;
     if($("midCountView")) $("midCountView").textContent = (stats.upperBigCount) || 0;
     const normalRoleDenominator = normalRoleStatDenominator();
     if($("grapeCountView")) $("grapeCountView").textContent = countOddsText(stats.grapeCount, normalRoleDenominator);
@@ -5695,8 +5722,8 @@
       $("totalProfitView").textContent = formatSigned(profit);
       $("totalProfitView").style.color = profit > 0 ? "var(--green)" : profit < 0 ? "var(--red)" : "var(--gold)";
     }
-    if($("wdBigOdds")) $("wdBigOdds").textContent = stats.bigCount > 0 && stats.totalSpins > 0
-      ? `1/${(stats.totalSpins / stats.bigCount).toFixed(1)}`
+    if($("wdBigOdds")) $("wdBigOdds").textContent = machineDisplay.bigCount > 0 && machineDisplay.totalSpins > 0
+      ? `1/${(machineDisplay.totalSpins / machineDisplay.bigCount).toFixed(1)}`
       : "-";
     if($("wdRegOdds")) $("wdRegOdds").textContent = (stats.upperBigCount) > 0 && stats.totalSpins > 0
       ? `1/${(stats.totalSpins / (stats.upperBigCount)).toFixed(1)}`
@@ -5714,15 +5741,15 @@
       const raw = Math.round(Number(value) || 0);
       return `${raw < 0 ? "-" : ""}${formatMeterDigits(raw, 5, 99999)}`;
     };
-    setText("jagTotalGameDataMeter", formatMeterDigits(stats.totalSpins, 5, 99999));
+    setText("jagTotalGameDataMeter", formatMeterDigits(machineDisplay.totalSpins, 5, 99999));
     const afterBonusMeter = $("jagAfterBonusDataMeter");
     const holdAfterBonusGames = !!(A_TYPE_MODE && isATypeBonusActive());
-    const afterBonusGames = holdAfterBonusGames ? normalizeBonusAfterGames(session.bonusStartGames) : normalizeBonusAfterGames(normalState.sinceBonus);
+    const afterBonusGames = holdAfterBonusGames ? normalizeBonusAfterGames(session.bonusStartGames) : normalizeBonusAfterGames(machineDisplay.sinceBonus);
     setText("jagAfterBonusDataMeter", formatMeterDigits(afterBonusGames, 4, 9999));
     if(afterBonusMeter) afterBonusMeter.classList.toggle("is-bonus-held", holdAfterBonusGames);
-    setText("jagAtDataMeter", stats.atFirstCountPartial ? "---" : formatMeterDigits(stats.atFirstCount, 3, 999));
+    setText("jagAtDataMeter", machineDisplay.atFirstCountPartial ? "---" : formatMeterDigits(machineDisplay.atFirstCount, 3, 999));
     // bigCount already includes upper BIG; upperBigCount is its breakdown.
-    setText("jagBigDataMeter", formatMeterDigits(stats.bigCount, 3, 999));
+    setText("jagBigDataMeter", formatMeterDigits(machineDisplay.bigCount, 3, 999));
     const stLampOn = !!($("stLamp") && $("stLamp").classList.contains("on"));
     const jagChanceLit = !!(active || normalState.bonusPending || jagChanceHold || stLampOn || bonusConfirmBgmHold);
     if(reelArea) reelArea.classList.toggle("jagChanceLit", jagChanceLit);
@@ -8783,7 +8810,6 @@
     if(!hasSuperSpeedPermission()) return canDebugSuperSpeed() ? "デバッグで超ハイスピード使用許可をONにしてください" : "管理画面で使用許可をONにしてください";
     if(!canUsePlayState()) return "台の起動確認中です";
     if(isCompleteTrialLocked()) return "COMPLETE到達のため使用できません";
-    if(NovaSuperSpeed.atConfirmed(normalState.flow,session,normalState)) return "AT確定後は使用できません";
     if(debugFastSpinActive) return "デバッグ試走中です";
     if(bonusEndBgmPlaying || bonusConfirmSoundPlaying) return "告知の終了後に開始できます";
     return "";
@@ -8874,8 +8900,9 @@
     superSpeedMode=mode;
     stopSpeedToBonus('超ハイスピード開始');
     superFullAuto=true;
-    superSpeedPending=isSpinning;
-    setSuperSpeedActive(!isSpinning);
+    const confirmed=NovaSuperSpeed.atConfirmed(normalState.flow,session,normalState);
+    superSpeedPending=!confirmed && isSpinning;
+    setSuperSpeedActive(!confirmed && !isSpinning);
     if(autoPlay){updateAutoUi();queueAutoStep(0);}
     else startAutoPlay();
     if(!autoPlay){superFullAuto=false;setSuperSpeedActive(false);superSpeedPending=false;}
@@ -9199,6 +9226,12 @@
         audio.preload = "auto";
         oneShotSoundCache.set(src, audio);
       }
+      // At 6x speed the next stop can arrive before this clip has finished.
+      // Preserve the playing clip instead of repeatedly cutting it back to zero.
+      if(superSpeedActive && !audio.paused && !audio.ended){
+        audio.volume = soundOutputVolume(src, volume);
+        return {audio,promise:Promise.resolve()};
+      }
       audio.pause();
       if(audio.getAttribute("src") !== src){
         audio.setAttribute("src", src);
@@ -9405,6 +9438,7 @@
     if(!payoutSound) return;
     try{
       const src = payoutSoundSrcFor(result, reward, spin);
+      if(superSpeedActive && payoutSound.getAttribute("src") === src && !payoutSound.paused && !payoutSound.ended)return;
       payoutSound.pause();
       if(payoutSound.getAttribute("src") !== src){
         payoutSound.setAttribute("src", src);

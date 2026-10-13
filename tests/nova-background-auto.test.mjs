@@ -6,7 +6,7 @@ import vm from 'node:vm';
 const html=readGameSource();
 function setup(stage='bet'){
  const calls=[];const context=vm.createContext({stopSuperSpeedIfNeeded:()=>false,autoPlay:true,bonusEndBgmPlaying:false,bonusConfirmSoundPlaying:false,
-  NovaComplete:{myLimit:()=>19000},settings:{},completeTrialState:{},oumaPresentation:{stage},isSpinning:false,locked:false,isCompleteTrialLocked:()=>context.locked,
+  NovaComplete:{myLimit:()=>19000,label:()=>'+10000pt'},settings:{},completeTrialState:{},oumaPresentation:{stage},isSpinning:false,locked:false,isCompleteTrialLocked:()=>context.locked,
   resolveOumaChallenge(){calls.push('challenge');context.oumaPresentation.stage='lift';},
   queueAutoStep:()=>calls.push('queue'),autoPollDelayMs:()=>75,
   stopAutoPlay:()=>calls.push('stop'),stopSpeedToBonus(){},stopDebugFastSpin(){},showMessage(){},showOverlay(){},completeLimitPt:()=>10000});

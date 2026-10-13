@@ -31,3 +31,26 @@ test('session baselines include AT counts so changing players does not double co
   const result=c.sessionBaselineStats({atFirstCount:7,atFirstCountPartial:true,bigCount:11,totalSpins:3456});
   assert.equal(result.atFirstCount,7);assert.equal(result.atFirstCountPartial,true);assert.equal(result.bigCount,11);
 });
+
+test('cabinet totals survive player changes and reloads without changing gameplay counters',()=>{
+  const c=vm.createContext({machineDisplayBase:{totalSpins:1500,bigCount:8,atFirstCount:4,sinceBonus:50},
+    stats:{totalSpins:0,bigCount:0,atFirstCount:0,totalFee:0,totalPaid:0},playSessionStartStats:{totalSpins:0,bigCount:0,atFirstCount:0},normalState:{sinceBonus:0}});
+  vm.runInContext(fn('machineDisplayStats')+';Math.random=()=>{throw Error("display must not draw")}',c);
+  assert.equal(c.machineDisplayStats().totalSpins,1500);
+  Object.assign(c.stats,{totalSpins:100,bigCount:0,atFirstCount:0,totalFee:300,totalPaid:200});c.normalState.sinceBonus=100;
+  const before=JSON.stringify(c.stats);
+  assert.equal(c.machineDisplayStats().totalSpins,1600);assert.equal(c.machineDisplayStats().sinceBonus,150);
+  assert.equal(c.machineDisplayStats().totalSpins,1600,'rendering/reloading does not count baseline twice');
+  assert.equal(JSON.stringify(c.stats),before);
+  c.stats.bigCount=1;c.stats.atFirstCount=1;c.normalState.sinceBonus=3;
+  assert.equal(c.machineDisplayStats().bigCount,9);assert.equal(c.machineDisplayStats().atFirstCount,5);assert.equal(c.machineDisplayStats().sinceBonus,3);
+  c.machineDisplayBase=null;
+  assert.equal(c.machineDisplayStats().totalSpins,100,'standalone keeps existing display');
+});
+
+test('machine display query rejects malformed values and is ignored for standalone play',()=>{
+  const c=vm.createContext({bootPlaySessionId:'player',bootParams:new URLSearchParams('machineDisplay=broken')});
+  vm.runInContext(fn('readMachineDisplayBase'),c);assert.equal(c.readMachineDisplayBase(),null);
+  c.bootParams.set('machineDisplay',JSON.stringify({totalSpins:125}));assert.equal(c.readMachineDisplayBase().totalSpins,125);
+  c.bootPlaySessionId='';assert.equal(c.readMachineDisplayBase(),null);
+});

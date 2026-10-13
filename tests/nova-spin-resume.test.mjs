@@ -13,7 +13,7 @@ function harness(saved=null){
  const $=id=>{if(!elements.has(id))elements.set(id,{dataset:{},classList:{toggle:noop},disabled:false,textContent:''});return elements.get(id);};
  const c=vm.createContext({console:{warn:(...args)=>errors.push(args)},settings:{setting:1,title:'NOVA',audioBalanceVersion:12,masterVolume:.7},stats:{roleStatVersion:1,totalSpins:0,normalSpins:0,highSpins:0,totalFee:0,totalPaid:0,slumpHistory:[]},normalState:{},session:{active:false},completeTrialState:{},
   safeStorageGet:key=>storage.has(key)?storage.get(key):null,safeStorageSet:(key,value)=>{storage.set(key,value);return true;},
-  storageRestoreBlocked:false,playAccess:{owned:()=>true},
+  storageRestoreBlocked:false,playAccess:{owned:()=>true},VERTEX_CONTROLLER_ENABLED:false,
   PREFERENCES_STORAGE_KEY:'preferences',STORAGE_KEY:'state',STORAGE_RESUME_KEY:'resume',
   A_TYPE_MODE:true,AUDIO_BALANCE_VERSION:12,ROLE_STAT_COUNTER_VERSION:1,DEFAULT_COMPLETE_LIMIT_PT:0,DEFAULT_MASTER_VOLUME:.7,DEFAULT_BGM_VOLUME:.2,DEFAULT_SFX_VOLUME:.3,DEFAULT_PAYOUT_VOLUME:.3,
   SETTING:{1:{},2:{},3:{},4:{},5:{},6:{}},RESULT:Object.fromEntries(['BELL','REPLAY','NEBULA','MISS','BIG','STRONG_NOVA'].map(k=>[k,{name:k,label:k,cls:k}])),
@@ -38,6 +38,14 @@ function spin(c,overrides={}){
 }
 
 function copyStorage(from,to){for(const [key,value] of from.storage)to.storage.set(key,value);}
+
+test('reload preserves total games including BIG, without rebuilding it from the smaller role counters',()=>{
+ const h=harness();h.c.load();Object.assign(h.c.stats,{totalSpins:1234,normalSpins:700,highSpins:100,totalFee:3702,totalPaid:4000});
+ h.c.persistState();const again=harness(JSON.parse(h.storage.get('state')));again.c.load();
+ assert.deepEqual(again.errors,[]);assert.equal(again.c.stats.totalSpins,1234);
+ assert.equal(again.c.stats.totalFee,3702);assert.equal(again.c.stats.totalPaid,4000);
+ assert.equal(again.c.stats.normalSpins,700);assert.equal(again.c.stats.highSpins,100);
+});
 
 test('corrupt preferences or either game copy still restore points, stock and an unpaid spin',()=>{
  const base=harness();base.c.load();base.c.stats.totalPaid=3456;

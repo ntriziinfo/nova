@@ -50,7 +50,7 @@ test('AT confirmation keeps full-AUTO selected and the super button can cancel i
  c.session={active:true,bonusArtSets:1};assert.equal(c.stopSuperSpeedIfNeeded(),false);assert.equal(c.autoPlay,true);
  assert.equal(c.superSpeedActive,false);assert.equal(c.superFullAuto,true);assert.equal(button.on,true);assert.equal(button['aria-pressed'],'true');assert.equal(button.disabled,false);
  c.startSuperSpeed();assert.equal(c.autoPlay,false);assert.equal(c.superFullAuto,false);assert.equal(c.superSpeedActive,false);
- c.session={active:false};c.normalState.flow.phase='art';c.startSuperSpeed();assert.equal(c.autoPlay,false);
+ c.session={active:false};c.normalState.flow.phase='art';c.startSuperSpeed();assert.equal(c.autoPlay,true);assert.equal(c.superFullAuto,true);assert.equal(c.superSpeedActive,false);
 });
 
 test('manual and AUTO spins accept super speed immediately but keep current spin timing',()=>{
@@ -79,12 +79,13 @@ test('pending speed cancels on user STOP, debug OFF, server OFF or an AT win in 
  }
 });
 
-test('pending speed waits through result audio and disabled state explains AT restriction',()=>{
+test('pending speed waits through result audio and AT permits a normal-AUTO reservation',()=>{
  const {c,button,debugStatus}=setup();c.isSpinning=true;c.setSuperSpeedDebugPermission(true);c.startSuperSpeed();
  c.isSpinning=false;c.bonusConfirmSoundPlaying=true;c.stopSuperSpeedIfNeeded();assert.equal(c.superSpeedPending,true);
  c.bonusConfirmSoundPlaying=false;c.stopSuperSpeedIfNeeded();assert.equal(c.superSpeedActive,true);
  c.stopAutoPlay();c.normalState.flow.phase='art';c.updateSuperSpeedUi();
- assert.equal(button.disabled,true);assert.match(debugStatus.textContent,/AT確定後は使用できません/);
+ assert.equal(button.disabled,false);c.startSuperSpeed('nonstop');assert.equal(c.autoPlay,true);assert.equal(c.superSpeedActive,false);assert.equal(c.superSpeedPending,false);
+ c.normalState.flow.phase='normal';c.stopSuperSpeedIfNeeded();assert.equal(c.superSpeedActive,true);
 });
 test('permission is required, reversible, and expires if server is unreachable',()=>{
  const {c,button,timers}=setup();c.startSuperSpeed();assert.equal(c.autoPlay,false);
