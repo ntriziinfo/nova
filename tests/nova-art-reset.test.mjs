@@ -30,6 +30,6 @@ test('bonus at ART boundary resets only when it returns to normal, not when a se
 test('live transition resets displayed and internal counters without changing lifetime statistics',()=>{
  const source=readGameSource();
  const helper=source.match(/  function resetNormalCountersAfterArt\([^]*?\n  }/)[0];
- vm.runInContext('var settings={novaNormal:{}};var normalState={sinceBonus:295,internal:{games:245,impurity:78,mode:"通常B"}};var stats={totalSpins:1500};'+helper+';resetNormalCountersAfterArt({phase:"art"},{phase:"normal"});',ctx);
+ vm.runInContext('var settings={novaNormal:{}};var normalState={sinceBonus:295,internal:{games:245,impurity:78,mode:"通常B"}};var stats={totalSpins:1500};'+source.match(/  function recordAtFirstEntry\([^]*?\n  }/)[0]+helper+';resetNormalCountersAfterArt({phase:"art"},{phase:"normal"});',ctx);
  assert.equal(ctx.normalState.sinceBonus,0);assert.equal(ctx.normalState.internal.games,0);assert.equal(ctx.stats.totalSpins,1500);
 });

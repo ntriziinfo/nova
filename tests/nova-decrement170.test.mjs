@@ -67,7 +67,7 @@ test('actual browser hooks clock bonus and AUTO BETs but not 0G, and observe set
  const c=vm.createContext({A_TYPE_MODE:true,session:{active:false},normalState:{flow:{phase:'art',zero:true}},stats:{totalSpins:0},
   NovaDecrement,NovaFlow:{normalize:x=>x},NovaArt:{prepareBet:x=>x},NovaProgress:{beforeBet:x=>x,drawSortie:()=>{}},
   settings:{novaArt:{},setting:6},syncNovaProgress:()=>{},currentProfit:()=>0,auditCapture:()=>{}});
- vm.runInContext(count,c);
+ vm.runInContext(html.match(/  function recordAtFirstEntry\([^]*?\n  }/)[0]+count,c);
  assert.equal(c.countTotalSpinIfNeeded(false),false);assert.equal(NovaDecrement.metrics().games,0);
  c.normalState.flow={phase:'normal'};c.countTotalSpinIfNeeded(false);assert.equal(NovaDecrement.metrics().games,1);
  c.session.active=true;c.countTotalSpinIfNeeded(true);assert.equal(NovaDecrement.metrics().games,2);assert.equal(c.stats.totalSpins,1);

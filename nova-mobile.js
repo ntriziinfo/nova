@@ -1,6 +1,6 @@
 (() => {
   'use strict';
-  const query = matchMedia('(max-width:1024px)');
+  const query = matchMedia('(max-width:1024px) and (pointer:coarse) and (hover:none)');
   const wrap = document.querySelector('.wrap');
   if (!wrap) return;
   const viewport = document.createElement('div');

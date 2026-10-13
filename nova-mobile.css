@@ -8,7 +8,7 @@
   background:#382a14;color:white;font:700 15px system-ui;touch-action:manipulation;
 }
 .novaMobileAudioEnable[hidden] { display:none; }
-@media (max-width:1024px) {
+@media (max-width:1024px) and (pointer:coarse) and (hover:none) {
   .playControls .autoArea .autoInlineBtn { background-image:url('assets/mobile-20261013/btn_auto_gold_transparent.webp')!important; }
   .playControls .autoArea .superSpeedBtn,
   .novaMobileControls button[data-target=superSpeedBtn] { background-image:url('assets/mobile-20261013/super-speed-gold-20261006.webp')!important; }
@@ -111,7 +111,7 @@
   #novaSymbolPreviewOpen, #bellNaviAdjustBtn, #novaResultAdjust { display:none!important; }
   .debugToggleBtn { bottom:86px!important; }
 }
-@media (max-width:1024px) and (max-height:600px) and (orientation:landscape) {
+@media (max-width:1024px) and (pointer:coarse) and (hover:none) and (max-height:600px) and (orientation:landscape) {
   /* A short landscape screen focuses on the lamps/reels; the touch bar stays available. */
   .novaMobileViewport { height:calc(550px * var(--nova-mobile-scale)); overflow:hidden; }
   .novaMobileViewport > .wrap { transform:scale(var(--nova-mobile-scale)) translateY(-480px)!important; }

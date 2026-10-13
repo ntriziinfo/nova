@@ -360,6 +360,8 @@
 
   let stats = {
     totalSessions:0,
+    atFirstCount:0,
+    atFirstCountPartial:false,
     totalFee:0,
     totalPaid:0,
     totalSpins:0,
@@ -2927,7 +2929,12 @@
     return Math.max(0, currentNormalCeilingGames() - normalizeBonusAfterGames(normalState.sinceBonus));
   }
 
+  function recordAtFirstEntry(before,after){
+    if(before?.phase!=='art' && after?.phase==='art')stats.atFirstCount=(Number(stats.atFirstCount)||0)+1;
+  }
+
   function resetNormalCountersAfterArt(before,after){
+    recordAtFirstEntry(before,after);
     if(before?.phase!=='art'||after?.phase!=='normal')return;
     normalState.internal=NovaNormal.afterArt(normalState.internal,before,after,{...settings.novaNormal,setting:settings.setting});
     normalState.sinceBonus=0;
@@ -3012,6 +3019,7 @@
       NovaDecrement.observe(currentProfit());
       const previous=NovaFlow.normalize(normalState.flow);
       normalState.flow=NovaProgress.beforeBet(previous,{...settings.novaArt,setting:settings.setting},currentProfit(),session.active||normalState.bonusPending||previous.phase==='normal'&&!!normalState.internal?.prelude);
+      recordAtFirstEntry(previous,normalState.flow);
     }
     if(A_TYPE_MODE&&!session.active&&normalState.flow?.phase==='art'){
       normalState.flow=NovaArt.prepareBet(normalState.flow,{...settings.novaArt,setting:settings.setting});
@@ -3684,6 +3692,7 @@
       settings.title = normalizeMachineTitle(settings.title);
       if(!SETTING[settings.setting]) settings.setting = 1;
       if(data?.stats) stats = {...stats, ...data.stats};
+      if(data?.stats && data.stats.atFirstCount == null && Number(data.stats.totalSpins)>0)stats.atFirstCountPartial=true;
       stats.premiumBigCount = Math.max(0, Number(stats.premiumBigCount) || 0);
       if((Number(stats.roleStatVersion) || 0) < ROLE_STAT_COUNTER_VERSION){
         stats.normalSpins = 0;
@@ -3903,6 +3912,8 @@
       profit:totalPaid - totalFee,
       totalSpins:Math.max(0, Number(source && source.totalSpins) || 0),
       bigCount:Math.max(0, Number(source && source.bigCount) || 0),
+      atFirstCount:Math.max(0, Number(source && source.atFirstCount) || 0),
+      atFirstCountPartial:!!source?.atFirstCountPartial,
       midCount:Math.max(0, Number(source && source.midCount) || 0),
       grapeCount:Math.max(0, Number(source && source.grapeCount) || 0)
     };
@@ -5936,7 +5947,7 @@
     jagChainCount = null;
     jagChainBonusHandoff = false;
     NovaResults.hide();
-    stats = {totalSessions:0,totalFee:0,totalPaid:0,totalSpins:0,normalSpins:0,highSpins:0,roleStatVersion:ROLE_STAT_COUNTER_VERSION,bigCount:0,midCount:0,upperBigCount:0,premiumBigCount:0,grapeCount:0,smallCount:0,bellCount:0,diagonalBellCount:0,replayCount:0,suikaCount:0,cherryCount:0,slumpHigh:0,slumpLow:0,slumpHistory:[{spin:0, profit:0}]};
+    stats = {totalSessions:0,atFirstCount:0,atFirstCountPartial:false,totalFee:0,totalPaid:0,totalSpins:0,normalSpins:0,highSpins:0,roleStatVersion:ROLE_STAT_COUNTER_VERSION,bigCount:0,midCount:0,upperBigCount:0,premiumBigCount:0,grapeCount:0,smallCount:0,bellCount:0,diagonalBellCount:0,replayCount:0,suikaCount:0,cherryCount:0,slumpHigh:0,slumpLow:0,slumpHistory:[{spin:0, profit:0}]};
     slumpView = {xZoom:1,yZoom:1,seekStart:0,followEnd:true};
     bonusConfirmBgmHold = false;
     normalState = {internal:NovaNormal.reset(Math.random,settings.setting),mode:"normal",highRemain:0,risingRemain:0,risingBonusOrigin:false,sinceBonus:0,bonusPending:false,bonusKind:"",bonusSource:"",premiumBonus:false,oneGameRenBonus:false,bonusWaitGames:0,bonusHitGamesSince:0,reachMePending:false,reachMeBonusKind:"",reachMeBonusSource:"",reachMeHitGamesSince:0,pendingSettingVoiceSrc:"",pendingPremiumVoiceSrc:"",morningCeilingActive:false};
@@ -6009,7 +6020,7 @@
     currentSpin = null;
     jagChainCount = null;
     jagChainBonusHandoff = false;
-    stats = {totalSessions:0,totalFee:0,totalPaid:0,totalSpins:0,normalSpins:0,highSpins:0,roleStatVersion:ROLE_STAT_COUNTER_VERSION,bigCount:0,midCount:0,upperBigCount:0,premiumBigCount:0,grapeCount:0,smallCount:0,bellCount:0,diagonalBellCount:0,replayCount:0,suikaCount:0,cherryCount:0,slumpHigh:0,slumpLow:0,slumpHistory:[{spin:0, profit:0}]};
+    stats = {totalSessions:0,atFirstCount:0,atFirstCountPartial:false,totalFee:0,totalPaid:0,totalSpins:0,normalSpins:0,highSpins:0,roleStatVersion:ROLE_STAT_COUNTER_VERSION,bigCount:0,midCount:0,upperBigCount:0,premiumBigCount:0,grapeCount:0,smallCount:0,bellCount:0,diagonalBellCount:0,replayCount:0,suikaCount:0,cherryCount:0,slumpHigh:0,slumpLow:0,slumpHistory:[{spin:0, profit:0}]};
     slumpView = {xZoom:1,yZoom:1,seekStart:0,followEnd:true};
     bonusConfirmBgmHold = false;
     normalState = {internal:NovaNormal.reset(Math.random,settings.setting),mode:"normal",highRemain:0,risingRemain:0,risingBonusOrigin:false,sinceBonus:0,bonusPending:false,bonusKind:"",bonusSource:"",premiumBonus:false,oneGameRenBonus:false,bonusWaitGames:0,bonusHitGamesSince:0,reachMePending:false,reachMeBonusKind:"",reachMeBonusSource:"",reachMeHitGamesSince:0,pendingSettingVoiceSrc:"",pendingPremiumVoiceSrc:"",morningCeilingActive:!A_TYPE_MODE};
@@ -7084,7 +7095,6 @@
     const visualRng=()=>crypto.getRandomValues(new Uint32Array(1))[0]/4294967296;
     if(['sortie','sortieFake'].includes(entry.kind)){
       playRandomAimVoice('nebula',visualRng);
-      playOneShotSound('assets/media/nova/sortie-nebula-cue.mp3',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
     }else playSevenAimVoice(currentSpin.resolved,visualRng);
     $('resultText').textContent=['sortie','sortieFake'].includes(entry.kind)?'ネビュラを狙え / 逆押し':'7を狙え / 特化ストックの突入演出';
     const spin=currentSpin;
@@ -7104,7 +7114,10 @@
     NovaAim.stop(spin.resolved);NovaSortie.flash(normalState.stockEntry.zone);
     $('resultText').textContent=NovaStockEntry.message(normalState.stockEntry);
     // Announce the free entry reveal once; retain its stock until the next real BET.
-    if(spin.resolved.sortieEntry)playLockedBonusConfirmSound(MODE_EVENT_VOICE_SRCS.sortie,voiceOutputVolume());
+    if(spin.resolved.sortieEntry){
+      playOneShotSound('assets/media/nova/sortie-nebula-cue.mp3',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
+      playLockedBonusConfirmSound(MODE_EVENT_VOICE_SRCS.sortie,voiceOutputVolume());
+    }
     persistState();updateDisplay();syncCabinetControlState();scheduleNextAuto();
   }
   async function stopStockEntryReel(i,options={}){
