@@ -1666,6 +1666,7 @@
     const isSlump = type === "slump";
     if(isSlump)setDataGraphView(false);
     audioDock.classList.add(infoPanelClassForType(type));
+    if(isSlump)updateDataCounter();
     const btn = infoPanelButtonForType(type);
     if(btn) btn.setAttribute("aria-expanded", "true");
     syncInfoPanelPosition();
@@ -5816,7 +5817,7 @@
     setText("wdCounterCherry", stats.cherryCount || 0);
     setText("wdCounterReplay", stats.replayCount || 0);
     updateRoleCounter(machineDisplay);
-    NovaDataCounter.render($('novaDataCounter'),NovaDataCounter.display(stats,machineDisplayBase,playSessionStartStats),machineDisplay);
+    updateDataCounter(machineDisplay);
     const setMirrorCell = (valueId, label, value)=>{
       const valueEl = $(valueId);
       if(!valueEl) return;
@@ -5895,6 +5896,11 @@
   function normalRoleStatDenominator(){
 
     return (Number(stats.normalSpins) || 0) + (Number(stats.highSpins) || 0);
+  }
+
+  function updateDataCounter(machineDisplay){
+    if(!audioDock?.classList.contains('slumpOpen'))return;
+    NovaDataCounter.render($('novaDataCounter'),NovaDataCounter.display(stats,machineDisplayBase,playSessionStartStats),machineDisplay||machineDisplayStats());
   }
 
   function setDataGraphView(open){
