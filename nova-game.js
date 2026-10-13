@@ -814,7 +814,7 @@
   const ADMIN_COMMAND_LAST_ID_KEY = "nova_admin_command_last_id_" + machineId;
   let adminCommandLastId = Number(safeStorageGet(ADMIN_COMMAND_LAST_ID_KEY) || 0) || 0;
   const ADMIN_STATE_PUSH_INTERVAL_MS = 60000;
-  const SLOT_DEBUG_ENABLED = true;
+  const SLOT_DEBUG_ENABLED = globalThis.NovaUiAccess?.canEdit === true;
   const CREDIT_BASELINE_PROFIT = Number(adminParams.get("creditBaseline") || 0) || 0;
   const PLAY_SESSION_ID = bootPlaySessionId;
   const SLOT_PLAY_SESSION = adminParams.has("creditBaseline") || !!PLAY_SESSION_ID;
@@ -840,7 +840,7 @@
   const PAGE_PAN_STORAGE_KEY = "nova_unified_page_pan_x_v3";
   const LAYOUT_EDIT_STORAGE_KEY = "nova_layout_editor_locked_20260907";
   const LAYOUT_DEFAULT_STORAGE_KEY = "nova_layout_default_locked_20260907";
-  const LAYOUT_EDITOR_ENABLED = true;
+  const LAYOUT_EDITOR_ENABLED = SLOT_DEBUG_ENABLED;
   const PAGE_STAGE_WIDTH = 1360;
   const PAGE_ZOOM_MIN = 0.75;
   const PAGE_ZOOM_MAX = 1.30;
@@ -1103,7 +1103,7 @@
     syncLayoutEditInputs();
     NovaBellNavi.layout();
     NovaRemainingCounters.measure();
-    if(saveValue) safeStorageSet(LAYOUT_EDIT_STORAGE_KEY, JSON.stringify(layoutEditState));
+    if(saveValue && LAYOUT_EDITOR_ENABLED) safeStorageSet(LAYOUT_EDIT_STORAGE_KEY, JSON.stringify(layoutEditState));
   }
 
   function loadLayoutEdit(){
@@ -1126,6 +1126,7 @@
   }
 
   function saveLayoutAsDefault(){
+    if(!LAYOUT_EDITOR_ENABLED)return;
     layoutEditState = normalizeLayoutState(layoutEditState);
     layoutDefaultState = JSON.parse(JSON.stringify(layoutEditState));
     safeStorageSet(LAYOUT_DEFAULT_STORAGE_KEY, JSON.stringify(layoutDefaultState));
@@ -1140,6 +1141,7 @@
   }
 
   function resetLayoutEdit(){
+    if(!LAYOUT_EDITOR_ENABLED)return;
     layoutEditState = cloneLayoutDefaults();
     applyLayoutEdit(true);
   }
@@ -6220,6 +6222,7 @@
   }
 
   document.addEventListener("DOMContentLoaded", () => {
+    if(SLOT_DEBUG_ENABLED){
     const forceSelect=document.getElementById('forceResult');
     for(const [value,label] of [['ART','AT突入'],['SORTIE','出陣チャレンジ（10G・1回予約）'],['URA_CHALLENGE','スーパーノヴァチャレンジ（10G・HOLDあり）'],['COMEBACK','引き戻しゾーン（5G）'],...Object.keys(NovaNormal.rare).filter(k=>!isNovaResult(k)).map(k=>[k,RESULT[k].name]),['RARE','ATレア役'],...NovaArt.zoneIds.map(k=>['ZONE_'+k,NovaArt.zoneName(k)+'ゾーン'])]){const option=document.createElement('option');option.value=value;option.textContent=label;forceSelect.append(option);}
     const normalPanel=document.createElement('details');normalPanel.id='novaNormalConfig';
@@ -6246,6 +6249,7 @@
     const artSave=document.createElement('button');artSave.type='button';artSave.textContent='AT設定を保存';artSave.onclick=()=>{const value={payoutVersion:1};artPanel.querySelectorAll('input').forEach(x=>value[x.dataset.artConfig]=x.valueAsNumber);settings.novaArt=NovaArt.config(value);refreshRtpViews();artSave.textContent=persistState()?'AT設定を保存しました':'保存に失敗しました';};artPanel.append(artSave);
     const atStateButton=document.createElement('button');atStateButton.type='button';atStateButton.textContent='AT低確／高確を切替（高確保証10G）';atStateButton.onclick=()=>{if(isSpinning||session.active||normalState.flow?.phase!=='art')return;normalState.flow.atHigh=!normalState.flow.atHigh;normalState.flow.atHighLeft=normalState.flow.atHigh?10:0;persistState();updateDisplay();};artPanel.append(atStateButton);
     document.getElementById('saveFlowConfig').closest('details').after(artPanel);
+    }
     const status=document.createElement("div");status.id="novaFlowStatus";
     document.querySelector(".reelArea").append(status);
     for(const key of ['czDenom','strongDenom','strongChance'])document.querySelector('[data-flow-config="'+key+'"]')?.closest('label')?.remove();
@@ -6255,6 +6259,7 @@
       if(input)input.value=key.endsWith("Chance")?cfg[key]*100:cfg[key];
     }
     document.getElementById("saveFlowConfig").onclick=()=>{
+      if(!SLOT_DEBUG_ENABLED)return;
       const value={};
       document.querySelectorAll('[data-flow-config]').forEach(input=>{
         const key=input.dataset.flowConfig;value[key]=input.valueAsNumber/(key.endsWith("Chance")?100:1);
@@ -6263,6 +6268,7 @@
       document.getElementById("flowConfigStatus").textContent=saved?"CZ設定を保存しました（次回突入から適用）":"保存に失敗しました（変更はこの画面内でのみ有効）";
     };
     updateDisplay();
+    if(!SLOT_DEBUG_ENABLED)return;
     const preview = document.getElementById("novaSymbolPreview");
     const patternSelect = document.getElementById("novaPatternSelect");
     const renderNovaPreview = () => {
@@ -9567,7 +9573,7 @@
     }
     ["titleInput","settingSelect","feeInput","stSpinsInput","oddsMultiplierInput","smallMulInput","midMulInput","crownMulInput","cherryMulInput","bigMulInput","bigAddInput","autoDelayInput","masterVolume","bgmVolume","sfxVolume","voiceVolume","payoutVolume"].forEach(id=>{
       const el = $(id);
-      if(el) el.addEventListener("input", ()=>{
+      if(el && globalThis.NovaUiAccess?.canUse(el)) el.addEventListener("input", ()=>{
         const volumeField = AUDIO_VOLUME_FIELDS.find(item=>item.rangeId === id);
         if(volumeField) syncVolumeNumberInput(volumeField.rangeId, volumeField.numberId);
         readSettings();
@@ -9588,7 +9594,7 @@
 
     const onClick = (id, handler)=>{
       const el = $(id);
-      if(el) el.addEventListener("click", handler);
+      if(el && globalThis.NovaUiAccess?.canUse(el)) el.addEventListener("click", handler);
     };
 
     const bindUtilityPress = (el, handler)=>{
@@ -9681,7 +9687,7 @@
         applyPageZoom(true);
       });
     }
-    if(pagePanRange){
+    if(LAYOUT_EDITOR_ENABLED && pagePanRange){
       pagePanRange.addEventListener("input", e=>{
         e.stopPropagation();
         pagePanX = Number(pagePanRange.value) || 0;
@@ -9693,13 +9699,14 @@
         applyPagePan(true);
       });
     }
-    if(pagePanResetBtn){
+    if(LAYOUT_EDITOR_ENABLED && pagePanResetBtn){
       pagePanResetBtn.addEventListener("click", e=>{
         e.stopPropagation();
         pagePanX = PAGE_PAN_DEFAULT;
         applyPagePan(true);
       });
     }
+    if(LAYOUT_EDITOR_ENABLED){
     const bellNaviAdjustBtn=document.createElement('button');
     bellNaviAdjustBtn.id='bellNaviAdjustBtn';bellNaviAdjustBtn.type='button';bellNaviAdjustBtn.textContent='ナビ調整';
     bellNaviAdjustBtn.addEventListener('click',()=>{setLayoutEditorOpen(!layoutEditOpen);if(layoutEditOpen)layoutEditorPanel.scrollTop=0;});
@@ -9749,6 +9756,7 @@
         applyLayoutEdit(true);
       });
     });
+    }
     if(audioDock){
       audioDock.addEventListener("click", e=>e.stopPropagation());
     }
@@ -9774,7 +9782,7 @@
     onClick("tenKSimBtn", runTenKSimulation);
     onClick("fiftyKSimBtn", ()=>runCountSimulation(50000));
     onClick("resetBtn", resetGame);
-    if($("settingSelect")){
+    if(SLOT_DEBUG_ENABLED && $("settingSelect")){
       $("settingSelect").addEventListener("change", ()=>{
         readSettings();
         persistState();
@@ -9806,8 +9814,8 @@
         if(autoPlay) stopAutoPlay("オート停止");
         else startAutoPlay();
     });
-    if($("debugFastStartBtn")) $("debugFastStartBtn").addEventListener("click", startDebugFastSpin);
-    if($("debugFastStopBtn")) $("debugFastStopBtn").addEventListener("click", ()=>stopDebugFastSpin());
+    onClick("debugFastStartBtn", startDebugFastSpin);
+    onClick("debugFastStopBtn", ()=>stopDebugFastSpin());
     onClick("debugSuperSpeedBtn", ()=>setSuperSpeedDebugPermission(!superSpeedDebugAllowed));
     if(slumpSeekRange){
       slumpSeekRange.addEventListener("input", ()=>{

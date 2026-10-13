@@ -2,6 +2,7 @@
  * brightness for lamp effects; no cropping, redraw, generation or encoding. */
 (() => {
   'use strict';
+  const canEdit=globalThis.NovaUiAccess?.canEdit === true;
   const originals = ['ouma1','sora1','sosuke','toto','urapi','giru1','kushuri','nito'];
   const names = {ouma1:'逢魔',sora1:'空',sosuke:'宗介',toto:'とと',urapi:'うらぴ',giru1:'ギル',kushuri:'くしゅり',nito:'にと'};
   const sources = {kushuri:'assets/illustrations/lamps-20260928/kushuri.png',nito:'assets/illustrations/lamps-20260928/nito.png'};
@@ -84,7 +85,7 @@
     }
     const czRainbow=machine.dataset.czRainbow==='true'||stage>=order.length;
     const automatic=czRainbow?'cz-rainbow':stage?'cz':machine.classList.contains('active')?'rainbow':chance?.classList.contains('on')?'blink':'dim';
-    layer.dataset.lamp=lampMode.value==='auto'?automatic:lampMode.value;
+    layer.dataset.lamp=!canEdit||lampMode.value==='auto'?automatic:lampMode.value;
   }
   lampMode.addEventListener('change',syncLamp);
   const lampObserver=new MutationObserver(syncLamp);
@@ -105,6 +106,7 @@
     for(const [id,item] of items) item.classList.toggle('selected',id===selected);
   }
   function setOpen(open){panel.hidden=!open;layer.classList.toggle('editing',open);toggle.setAttribute('aria-expanded',String(open));if(!open){lampMode.value='auto';syncLamp();}sync();}
+  if(canEdit){
   toggle.addEventListener('click',event=>{event.stopPropagation();setOpen(panel.hidden)});
   // Opening debug also releases artwork drag targets and closes its overlay.
   const debugObserver=new MutationObserver(()=>{
@@ -135,6 +137,9 @@
   });
   const endDrag=()=>{dragging=null;};
   layer.addEventListener('pointerup',endDrag);layer.addEventListener('pointercancel',endDrag);
+  }else{
+    toggle.remove();panel.remove();
+  }
   window.addEventListener('resize',()=>{for(const id of originals)render(id)});
   for(const id of originals)render(id);sync();
 })();

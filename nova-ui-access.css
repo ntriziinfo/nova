@@ -1,0 +1,18 @@
+/* Applied in the head before the customer page can paint. */
+html.novaStorePlay #vertexConnectionBadge,
+html.novaStorePlay #debugToggleBtn,
+html.novaStorePlay #debugDrawer,
+html.novaStorePlay #secretPanel,
+html.novaStorePlay .side > .card:not(.oddsPublic):not(.slumpPublic),
+html.novaStorePlay #novaSymbolPreviewOpen,
+html.novaStorePlay #novaSymbolPreview,
+html.novaStorePlay #layoutEditToggleBtn,
+html.novaStorePlay #layoutEditorPanel,
+html.novaStorePlay .pagePanControl,
+html.novaStorePlay #bellNaviAdjustBtn,
+html.novaStorePlay #novaArtToggle,
+html.novaStorePlay #novaArtPanel,
+html.novaStorePlay #novaResultAdjust,
+html.novaStorePlay .novaResultSettings {
+  display: none !important;
+}
