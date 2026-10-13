@@ -5720,8 +5720,9 @@
     const afterBonusGames = holdAfterBonusGames ? normalizeBonusAfterGames(session.bonusStartGames) : normalizeBonusAfterGames(normalState.sinceBonus);
     setText("jagAfterBonusDataMeter", formatMeterDigits(afterBonusGames, 4, 9999));
     if(afterBonusMeter) afterBonusMeter.classList.toggle("is-bonus-held", holdAfterBonusGames);
+    setText("jagAtDataMeter", stats.atFirstCountPartial ? "---" : formatMeterDigits(stats.atFirstCount, 3, 999));
+    // bigCount already includes upper BIG; upperBigCount is its breakdown.
     setText("jagBigDataMeter", formatMeterDigits(stats.bigCount, 3, 999));
-    setText("jagRegDataMeter", formatMeterDigits((stats.upperBigCount), 3, 999));
     const stLampOn = !!($("stLamp") && $("stLamp").classList.contains("on"));
     const jagChanceLit = !!(active || normalState.bonusPending || jagChanceHold || stLampOn || bonusConfirmBgmHold);
     if(reelArea) reelArea.classList.toggle("jagChanceLit", jagChanceLit);
