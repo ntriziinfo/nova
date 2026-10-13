@@ -293,18 +293,20 @@
             <button class="infoCloseBtn" id="roleCounterCloseBtn" type="button" aria-label="役カウンターを閉じる" title="閉じる">×</button>
           </div>
           <div id="roleCounterPanelBody">
-            <h2>全役カウンター</h2>
+            <h2>AT・BIG・設定差のある小役</h2>
+            <p class="small">台累計 / 総回転数 <b id="roleCounterTotalGames">0</b> G</p>
             <table class="oddsTable roleCounterTable">
-              <tr><td>役</td><td>回数</td><td>実践値</td></tr>
-              <tr><td>BB</td><td id="roleCounterBigCount">0</td><td id="roleCounterBigOdds">-</td></tr>
-              <tr><td>フリーズBIG</td><td id="roleCounterPremiumBigCount">0</td><td id="roleCounterPremiumBigOdds">-</td></tr>
-              <tr><td>上位BIG</td><td id="roleCounterRegCount">0</td><td id="roleCounterRegOdds">-</td></tr>
-
-              <tr><td>リプレイ</td><td id="roleCounterReplayCount">0</td><td id="roleCounterReplayOdds">-</td></tr>
-              <tr><td>ベル</td><td id="roleCounterBellCount">0</td><td id="roleCounterBellOdds">-</td></tr>
-
-
+              <tr><th scope="col">役</th><th scope="col">回数</th><th scope="col">実践値</th></tr>
+              <tr><td>AT（初当たり）</td><td id="roleCounterAtCount">0</td><td id="roleCounterAtOdds">—</td></tr>
+              <tr><td>BIG（合算）</td><td id="roleCounterBigCount">0</td><td id="roleCounterBigOdds">—</td></tr>
             </table>
+            <h2>通常時の小役</h2>
+            <p class="small">小役集計対象 <b id="roleCounterNormalGames">0</b> G</p>
+            <table class="oddsTable roleCounterTable">
+              <thead><tr><th scope="col">役</th><th scope="col">回数</th><th scope="col">実践値</th></tr></thead>
+              <tbody id="roleCounterSmallRows"></tbody>
+            </table>
+            <p class="small">AT・BIGの実践値は総回転数から算出。BIGは通常・上位を合算します。<br>小役はこのカウンター追加後の通常時（高確・前兆を含む）を集計し、CZ・AT・ボーナス・準備中は含みません。台累計は管理リセットで区切られます。</p>
           </div>
         </div>
         <div class="audioPanel" id="audioPanel">
@@ -800,7 +802,8 @@
 <script src="nova-spin-resume.js?v=20260929-spin-resume"></script>
 <script src="nova-play-access.js?v=20261001-save-recovery"></script>
 <script src="nova-history.js?v=20261001-history-performance"></script>
-<script src="nova-game.js?v=20261013-machine-totals-audio"></script>
+<script src="nova-role-counter.js?v=20261014-role-counter"></script>
+<script src="nova-game.js?v=20261014-role-counter"></script>
 <button type="button" id="novaSymbolPreviewOpen">ノヴァ目を確認</button>
 <dialog id="novaSymbolPreview"><h2>ノヴァ目</h2><label>出目<select id="novaPatternSelect"><option value="WEAK_NOVA">弱ノヴァ目：左3連</option><option value="STRONG_MIDDLE">強ノヴァ目：左・中3連</option><option value="STRONG_RIGHT">強ノヴァ目：左・右3連</option><option value="SUPER_NOVA" selected>スーパーノヴァ目：全リール3連</option></select></label><p id="novaPatternDescription"></p><div id="novaSymbolPreviewGrid"></div><p>出目の確認用です。通常時のスーパーはBIG・フリーズ各50%。ボーナス中は対象外。弱・強と自然出現率は未設定。</p><button type="button" id="novaSymbolPreviewClose">閉じる</button></dialog>
 </body>

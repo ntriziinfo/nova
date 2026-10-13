@@ -3933,6 +3933,7 @@
     const totalFee = Math.max(0, Number(source && source.totalFee) || 0);
     const totalPaid = Math.max(0, Number(source && source.totalPaid) || 0);
     return {
+      ...NovaRoleCounter.snapshot(source),
       totalFee,
       totalPaid,
       profit:totalPaid - totalFee,
@@ -5167,6 +5168,7 @@
     }
 
     countRoleStat(result, !!(resolved.bonusReady || resolved.regReady));
+    NovaRoleCounter.record(stats,result,resolved);
     if(normalReward > 0){
       stats.totalPaid = (Number(stats.totalPaid) || 0) + normalReward;
       playPayoutSound(result, normalReward);
@@ -5803,29 +5805,7 @@
     setText("wdCounterSuika", stats.suikaCount || 0);
     setText("wdCounterCherry", stats.cherryCount || 0);
     setText("wdCounterReplay", stats.replayCount || 0);
-    const roleCounterDenominator = normalRoleStatDenominator();
-    const roleCounterOddsText = count=>{
-      const n = Number(count) || 0;
-      const total = Number(roleCounterDenominator) || 0;
-      if(n <= 0 || total <= 0) return "-";
-      return `1/${(total / n).toFixed(1)}`;
-    };
-    setText("roleCounterBigCount", stats.bigCount || 0);
-    setText("roleCounterBigOdds", roleCounterOddsText(stats.bigCount));
-    setText("roleCounterPremiumBigCount", stats.premiumBigCount || 0);
-    setText("roleCounterPremiumBigOdds", roleCounterOddsText(stats.premiumBigCount));
-    setText("roleCounterRegCount", (stats.upperBigCount) || 0);
-    setText("roleCounterRegOdds", roleCounterOddsText((stats.upperBigCount)));
-    setText("roleCounterGrapeCount", stats.grapeCount || 0);
-    setText("roleCounterGrapeOdds", roleCounterOddsText(stats.grapeCount));
-    setText("roleCounterReplayCount", stats.replayCount || 0);
-    setText("roleCounterReplayOdds", roleCounterOddsText(stats.replayCount));
-    setText("roleCounterBellCount", stats.bellCount || 0);
-    setText("roleCounterBellOdds", roleCounterOddsText(stats.bellCount));
-    setText("roleCounterPieroCount", stats.smallCount || 0);
-    setText("roleCounterPieroOdds", roleCounterOddsText(stats.smallCount));
-    setText("roleCounterCherryCount", stats.cherryCount || 0);
-    setText("roleCounterCherryOdds", roleCounterOddsText(stats.cherryCount));
+    updateRoleCounter(machineDisplay);
     const setMirrorCell = (valueId, label, value)=>{
       const valueEl = $(valueId);
       if(!valueEl) return;
@@ -5904,6 +5884,25 @@
   function normalRoleStatDenominator(){
 
     return (Number(stats.normalSpins) || 0) + (Number(stats.highSpins) || 0);
+  }
+
+  function updateRoleCounter(machineDisplay=machineDisplayStats()){
+    const set=(id,value)=>{const el=$(id);if(el)el.textContent=value;};
+    const format=value=>(Number(value)||0).toLocaleString('ja-JP');
+    set('roleCounterTotalGames',format(machineDisplay.totalSpins));
+    set('roleCounterAtCount',machineDisplay.atFirstCountPartial?'—':format(machineDisplay.atFirstCount));
+    set('roleCounterAtOdds',machineDisplay.atFirstCountPartial?'—':NovaRoleCounter.odds(machineDisplay.atFirstCount,machineDisplay.totalSpins));
+    set('roleCounterBigCount',format(machineDisplay.bigCount));
+    set('roleCounterBigOdds',NovaRoleCounter.odds(machineDisplay.bigCount,machineDisplay.totalSpins));
+    const counted=NovaRoleCounter.display(stats,machineDisplayBase,playSessionStartStats);
+    set('roleCounterNormalGames',format(counted.normalRoleGames));
+    const body=$('roleCounterSmallRows');
+    if(!body)return;
+    if(!body.children.length)body.innerHTML=NovaRoleCounter.roles.map(role=>`<tr><td>${role.label}</td><td id="roleCounter${role.id}Count">0</td><td id="roleCounter${role.id}Odds">—</td></tr>`).join('');
+    for(const role of NovaRoleCounter.roles){
+      set(`roleCounter${role.id}Count`,format(counted[role.key]));
+      set(`roleCounter${role.id}Odds`,NovaRoleCounter.odds(counted[role.key],counted.normalRoleGames));
+    }
   }
 
   function countOddsText(count, denominator=Number(stats.totalSpins) || 0){

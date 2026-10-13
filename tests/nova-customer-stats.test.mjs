@@ -27,7 +27,7 @@ test('AT first entries count once, while comeback, stock and upper transitions s
 });
 
 test('session baselines include AT counts so changing players does not double count prior ATs',()=>{
-  const c=vm.createContext({});vm.runInContext(fn('sessionBaselineStats'),c);
+  const c=vm.createContext({});vm.runInContext(fs.readFileSync('nova-role-counter.js','utf8')+fn('sessionBaselineStats'),c);
   const result=c.sessionBaselineStats({atFirstCount:7,atFirstCountPartial:true,bigCount:11,totalSpins:3456});
   assert.equal(result.atFirstCount,7);assert.equal(result.atFirstCountPartial,true);assert.equal(result.bigCount,11);
 });
