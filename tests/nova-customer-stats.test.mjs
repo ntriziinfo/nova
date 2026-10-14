@@ -34,7 +34,7 @@ test('session baselines include AT counts so changing players does not double co
 
 test('cabinet totals survive player changes and reloads without changing gameplay counters',()=>{
   const c=vm.createContext({machineDisplayBase:{totalSpins:1500,bigCount:8,atFirstCount:4,sinceBonus:50},
-    stats:{totalSpins:0,bigCount:0,atFirstCount:0,totalFee:0,totalPaid:0},playSessionStartStats:{totalSpins:0,bigCount:0,atFirstCount:0},normalState:{sinceBonus:0}});
+    displaySinceBonusOffset:null,stats:{totalSpins:0,bigCount:0,atFirstCount:0,totalFee:0,totalPaid:0},playSessionStartStats:{totalSpins:0,bigCount:0,atFirstCount:0},normalState:{sinceBonus:0}});
   vm.runInContext(fn('machineDisplayStats')+';Math.random=()=>{throw Error("display must not draw")}',c);
   assert.equal(c.machineDisplayStats().totalSpins,1500);
   Object.assign(c.stats,{totalSpins:100,bigCount:0,atFirstCount:0,totalFee:300,totalPaid:200});c.normalState.sinceBonus=100;

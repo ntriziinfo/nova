@@ -13,7 +13,7 @@ function harness(saved=null){
  const $=id=>{if(!elements.has(id))elements.set(id,{dataset:{},classList:{toggle:noop},disabled:false,textContent:''});return elements.get(id);};
  const c=vm.createContext({console:{warn:(...args)=>errors.push(args)},settings:{setting:1,title:'NOVA',audioBalanceVersion:12,masterVolume:.7},stats:{roleStatVersion:1,totalSpins:0,normalSpins:0,highSpins:0,totalFee:0,totalPaid:0,slumpHistory:[]},normalState:{},session:{active:false},completeTrialState:{},
   safeStorageGet:key=>storage.has(key)?storage.get(key):null,safeStorageSet:(key,value)=>{storage.set(key,value);return true;},
-  storageRestoreBlocked:false,playAccess:{owned:()=>true},VERTEX_CONTROLLER_ENABLED:false,
+  storageRestoreBlocked:false,storeResumeState:null,displaySinceBonusOffset:null,storeEndSnapshot:null,playAccess:{owned:()=>true},VERTEX_CONTROLLER_ENABLED:false,
   PREFERENCES_STORAGE_KEY:'preferences',STORAGE_KEY:'state',STORAGE_RESUME_KEY:'resume',
   A_TYPE_MODE:true,AUDIO_BALANCE_VERSION:12,ROLE_STAT_COUNTER_VERSION:1,DEFAULT_COMPLETE_LIMIT_PT:0,DEFAULT_MASTER_VOLUME:.7,DEFAULT_BGM_VOLUME:.2,DEFAULT_SFX_VOLUME:.3,DEFAULT_PAYOUT_VOLUME:.3,
   SETTING:{1:{},2:{},3:{},4:{},5:{},6:{}},RESULT:Object.fromEntries(['BELL','REPLAY','NEBULA','MISS','BIG','STRONG_NOVA'].map(k=>[k,{name:k,label:k,cls:k}])),
@@ -38,6 +38,55 @@ function spin(c,overrides={}){
 }
 
 function copyStorage(from,to){for(const [key,value] of from.storage)to.storage.set(key,value);}
+
+test('a new player on another device restores server checkpoint without another BET or lottery',()=>{
+ const phases=[
+  {phase:'normal'}, {phase:'cz',czLeft:4},
+  {phase:'art',remaining:543,stock:2},
+  {phase:'art',zone:'sora',zoneLeft:3,remaining:765,stock:1},
+  {phase:'art',researchSortieLeft:5,remaining:400,stock:3},
+  {phase:'art',researchChallengeActive:true,researchChallengeLeft:4,remaining:200},
+  {phase:'art',comebackLeft:3,remaining:0}
+ ];
+ for(const flow of phases)for(const stopped of [[false,false,false],[false,false,true],[false,true,true],[true,true,true]]){
+  const old=harness();assert(old.c.load());
+  old.c.normalState.flow=old.c.NovaFlow.normalize(flow);
+  old.c.stats.totalSpins=1001;old.c.stats.totalFee=3003;old.c.stats.totalPaid=3700;
+  old.c.currentSpin=spin(old.c,{stopped,commonStopColumns:[null,null,['7','B','R']],resolved:{reward:8,flowBefore:old.c.normalState.flow,flowAfter:old.c.normalState.flow}});
+  old.c.displaySinceBonusOffset=30;old.c.persistState();
+  const record=JSON.parse(old.storage.get('resume')),fresh=harness();
+  fresh.c.storeResumeState={state:record,baseline:null};
+  vm.runInContext('Math.random=()=>{throw Error("handoff must not redraw")}',fresh.c);
+  assert(fresh.c.load());assert.deepEqual(fresh.errors,[]);
+  assert.equal(fresh.c.stats.totalSpins,1001);assert.equal(fresh.c.stats.totalPaid,3700);assert.equal(fresh.c.stats.totalFee,3003);
+  assert.deepEqual(json(fresh.c.currentSpin.resolved),record.runtimeState.pendingSpin.resolved);
+  assert.deepEqual(json(fresh.c.currentSpin.stopped),stopped);
+  assert.deepEqual(json(fresh.c.currentSpin.commonStopColumns),[null,null,['7','B','R']]);
+  assert.equal(fresh.c.displaySinceBonusOffset,30);
+ }
+ const old=harness();old.c.load();Object.assign(old.c.session,{active:true,phase:'a_type_bonus',bonusKind:'BIG',paid:72,remaining:12});old.c.persistState();
+ const fresh=harness();fresh.c.storeResumeState={state:JSON.parse(old.storage.get('resume'))};assert(fresh.c.load());
+ assert.equal(fresh.c.session.active,true);assert.equal(fresh.c.session.paid,72);assert.equal(fresh.c.session.phase,'a_type_bonus');
+});
+
+test('same-player local checkpoint wins over an older server save, newer server repairs local corruption',()=>{
+ const base=harness();base.c.load();base.c.stats.totalPaid=300;base.c.persistState();
+ const old=JSON.parse(base.storage.get('state'));old.savedAt=1;old.stats.totalPaid=100;
+ base.c.storeResumeState={state:old};assert(base.c.load());assert.equal(base.c.stats.totalPaid,300);
+ base.storage.set('state','{broken');base.storage.set('resume','{broken');
+ assert(base.c.load());assert.equal(base.c.stats.totalPaid,100);
+});
+
+test('preparing end freezes an immutable checkpoint and rejects late result callbacks',()=>{
+ const h=harness();h.c.load();h.c.currentSpin=spin(h.c);h.c.isSpinning=true;
+ Object.assign(h.c,{stopAutoPlay:noop,stopSpeedToBonus:noop,stopDebugFastSpin:noop,showPlayBlocked:noop,
+  latestAdminSnapshot:()=>({runtimeState:h.c.runtimeStateForStorage(),stats:h.c.stats}),pushAdminState:noop});
+ vm.runInContext(fn('prepareStoreEndSnapshot')+fn('finishSpin'),h.c);
+ const saved=json(h.c.prepareStoreEndSnapshot());
+ h.c.stats.totalPaid=999;h.c.finishSpin('BELL',h.c.currentSpin.resolved);
+ assert.equal(h.c.canUsePlayState(),false);assert.deepEqual(json(h.c.prepareStoreEndSnapshot()),saved);
+ assert.equal(h.c.isSpinning,true,'delayed finish does not settle after checkpoint');
+});
 
 test('reload preserves total games including BIG, without rebuilding it from the smaller role counters',()=>{
  const h=harness();h.c.load();Object.assign(h.c.stats,{totalSpins:1234,normalSpins:700,highSpins:100,totalFee:3702,totalPaid:4000});

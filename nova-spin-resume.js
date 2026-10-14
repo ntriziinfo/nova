@@ -1,6 +1,6 @@
 /* Persist a drawn, unpaid spin. Presentation timers and media objects are not saved. */
 globalThis.NovaSpinResume=(()=>{
- const fields=['result','lineRow','grid','resolved','stopped','pendingStopColumns',
+ const fields=['result','lineRow','grid','resolved','stopped','pendingStopColumns','commonStopColumns',
   'auditGrid','auditPressOrder','auditStopOrder','aimStopOrder','aimAligned','aimWinPlayed',
   'bellNaviOrder','rareNavi','bellNaviVoiceCharacter','bellNaviVoiceStage',
   'normalActiveAtStart','aTypeBonusActiveAtStart','zoneActiveAtStart','zoneType',

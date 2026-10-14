@@ -6,17 +6,19 @@
   const bootParams = new URLSearchParams(location.search);
   const bootMachineId = bootParams.get("machine") || "standalone";
   const bootPlaySessionId = String(bootParams.get("playSessionId") || "");
-  // Display-only machine totals. Never restore another player's counters into the game engine.
+  // Display baselines keep cabinet totals separate from the current player settlement.
   const machineDisplayBase = readMachineDisplayBase();
   const MACHINE_STORAGE_KEY = "nova_slot_state_v1_" + bootMachineId;
   const STORAGE_KEY = bootPlaySessionId ? `${MACHINE_STORAGE_KEY}_session_${bootPlaySessionId}` : MACHINE_STORAGE_KEY;
   const STORAGE_RESUME_KEY = STORAGE_KEY + "_resume";
   const PREFERENCES_STORAGE_KEY = "nova_slot_preferences_v1_" + bootMachineId;
   let storageRestoreBlocked = false;
+  let storeResumeState=null, storeBootReady=false, storeEndSnapshot=null;
+  let displaySinceBonusOffset=null;
   let playAccess = null;
 
   function canUsePlayState(){
-    return !storageRestoreBlocked && !!playAccess?.owned();
+    return !storageRestoreBlocked && !storeEndSnapshot && !!playAccess?.owned();
   }
 
   function showPlayBlocked(reason){
@@ -26,6 +28,7 @@
       occupied:'別のタブでこの台が開いています。先に開いたタブを閉じてから再読み込みしてください。',
       unsupported:'このブラウザでは台の重複起動を確認できません。最新のブラウザでHTTPSの公開ページを開いてください。',
       restore:'保存データを復旧できませんでした。上書きを防ぐため遊技を停止しています。保存データを削除せず、管理者へ連絡してください。',
+      ending:'遊技状態を保存して終了しています。終了処理に失敗した場合は、再読み込みで同じ状態から再開できます。',
       error:'台の起動を確認できませんでした。再読み込みしてください。'
     };
     $('playAccessMessage').textContent=messages[reason] || messages.error;
@@ -3619,7 +3622,7 @@
     };
     const preferences=read(PREFERENCES_STORAGE_KEY,'preferences');
     const full=read(STORAGE_KEY,'game'),resume=read(STORAGE_RESUME_KEY,'game');
-    storageRestoreBlocked=!!((full.present || resume.present) && !full.data && !resume.data);
+    storageRestoreBlocked=!!((full.present || resume.present) && !full.data && !resume.data && !storeResumeState?.state);
     if(storageRestoreBlocked)return false;
     try{
       const preferenceData = preferences.data;
@@ -3637,6 +3640,8 @@
           runtimeState:{...((data && data.runtimeState) || {}), ...(resumeData.runtimeState || {})}
         };
       }
+      if(storeResumeState?.state && (!data || Number(storeResumeState.state.savedAt)>Number(data.savedAt||0)))data=storeResumeState.state;
+      displaySinceBonusOffset=Number.isFinite(data?.displaySinceBonusOffset)?data.displaySinceBonusOffset:null;
       if(preferenceData && preferenceData.settings){
         data = {
           ...(data || {}),
@@ -3897,9 +3902,10 @@
       stats:compactStatsForResume(),
       normalState,
       completeTrialState,
-      runtimeState
+      runtimeState,
+      displaySinceBonusOffset
     });
-    const fullOk = write(STORAGE_KEY, {savedAt, settings, stats, normalState, completeTrialState, runtimeState});
+    const fullOk = write(STORAGE_KEY, {savedAt, settings, stats, normalState, completeTrialState, runtimeState, displaySinceBonusOffset});
     const stateSaved=!!(fullOk || resumeOk);
     updateStorageStatus(stateSaved,preferencesOk);
     return stateSaved;
@@ -3933,7 +3939,7 @@
     }
     output.atFirstCountPartial=!!(machineDisplayBase?.atFirstCountPartial || stats.atFirstCountPartial);
     const newBonus=number(stats.bigCount)>number(start?.bigCount);
-    output.sinceBonus=number(normalState.sinceBonus)+(newBonus ? 0 : number(machineDisplayBase?.sinceBonus));
+    output.sinceBonus=number(normalState.sinceBonus)+(newBonus ? 0 : number(displaySinceBonusOffset ?? machineDisplayBase?.sinceBonus));
     return output;
   }
 
@@ -3964,7 +3970,7 @@
         if(parsed && typeof parsed === "object") saved = sessionBaselineStats(parsed);
       }catch(e){}
     }
-    playSessionStartStats = saved || sessionBaselineStats(stats);
+    playSessionStartStats = saved || (storeResumeState?.baseline ? sessionBaselineStats(storeResumeState.baseline) : sessionBaselineStats(stats));
     if(PLAY_SESSION_BASELINE_STORAGE_KEY){
       safeStorageSet(PLAY_SESSION_BASELINE_STORAGE_KEY, JSON.stringify(playSessionStartStats));
     }
@@ -4007,6 +4013,9 @@
       normalState:{...normalState},
       session:{...session},
       completeTrialState:{...completeTrialState},
+      runtimeState:runtimeStateForStorage(),
+      resumeSettings:{...settings},
+      capturedAt:Date.now(),
       state:{
         isSpinning,
         spinCanStop,
@@ -4081,11 +4090,20 @@
   }
 
   window.__jagAdminSnapshot = latestAdminSnapshot;
-  window.__jagPrepareEndSnapshot = ()=>{
-    const snapshot = latestAdminSnapshot();
+  function prepareStoreEndSnapshot(){
+    if(storeEndSnapshot)return storeEndSnapshot;
+    if(!canUsePlayState())return null;
+    stopAutoPlay();stopSpeedToBonus();stopDebugFastSpin();
+    const snapshot=latestAdminSnapshot();
+    if(!snapshot)return null;
+    snapshot.endPreparedAt=Date.now();
+    // Freeze one immutable checkpoint before any delayed stop/result callbacks run.
     pushAdminState(snapshot);
-    return snapshot;
-  };
+    storeEndSnapshot=JSON.parse(JSON.stringify(snapshot));
+    showPlayBlocked('ending');
+    return storeEndSnapshot;
+  }
+  window.__jagPrepareEndSnapshot = prepareStoreEndSnapshot;
   window.__jagPushAdminState = ()=>pushAdminState(latestAdminSnapshot());
   window.__jagClearLocalPlayState = ()=>{
     if(!canUsePlayState())return;
@@ -4133,7 +4151,9 @@
   function handleAdminCommand(command){
     if(!canUsePlayState())return;
     if(!command || !command.type) return;
-    if(command.type === "applySettings"){
+    if(command.type === "prepareEnd"){
+      if(String(command.sessionId)===PLAY_SESSION_ID)prepareStoreEndSnapshot();
+    }else if(command.type === "applySettings"){
       applyAdminSettings(command.settings || {});
     }else if(command.type === "reset"){
       morningResetGame(false, "管理リセット");
@@ -8311,6 +8331,7 @@
   }
 
   function finishSpin(result, resolved, lineRow=1){
+    if(typeof storeEndSnapshot!=='undefined'&&storeEndSnapshot)return;
     if(resolved?.stockEntry){finishStockEntry();return;}
     if(!isSpinning || (currentSpin && currentSpin.finishing)) return;
     if(typeof playZoneInternalConfirmedSound==='function'&&currentSpin?.stopped?.every(Boolean))playZoneInternalConfirmedSound(resolved);
@@ -10099,8 +10120,16 @@
 
   playAccess=NovaPlayAccess.create(STORAGE_KEY,{blocked:showPlayBlocked});
   window.addEventListener('pagehide',()=>{if(!playAccess.owned())playAccess.close();});
-  playAccess.start(()=>{
+  playAccess.start(async()=>{
+    try{
+      storeResumeState=await NovaStoreResume.connect({
+        enabled:bootParams.get('resumeFromStore')==='1'&&!!bootPlaySessionId&&parent!==window,
+        origin:ADMIN_SERVER ? new URL(ADMIN_SERVER).origin : location.origin,
+        sessionId:bootPlaySessionId,prepare:prepareStoreEndSnapshot,ready:()=>storeBootReady
+      });
+    }catch(error){storageRestoreBlocked=true;showPlayBlocked('restore');return;}
     bootGame();
+    storeBootReady=!storageRestoreBlocked;
     // Register after setup's final save, so pagehide commits before releasing ownership.
     window.addEventListener('pagehide',()=>{
       playAccess.close();
