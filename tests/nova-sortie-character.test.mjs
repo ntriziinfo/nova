@@ -143,6 +143,13 @@ test('reset cancels the hold and stale callbacks cannot unlock a later award',()
  t.api.begin(s);t.api.clear();t.advance(5000);assert.equal(t.events.length,1);
 });
 
-test('duo confirmed third stop uses supplied 1012 effect instead of ordinary award effect',()=>{
- const t=setup(),audio=sound(),s=spin(true,'kushuri_nito');s.stopped=[true,true,true];const played=[];t.api.setSoundPlayer(src=>{played.push(src);return {audio,promise:Promise.resolve()};});t.api.begin(s);assert.deepEqual(played,['assets/media/nova/sortie-award-duo.wav']);assert.equal(audio.loop,false);t.api.stop(s);assert.equal(played.length,1);t.api.clear();
+test('duo third stop layers 1012 with the common win SE once; neither playback ends the other',()=>{
+ const t=setup(),s=spin(true,'kushuri_nito'),played=[],sounds=[];
+ t.api.setSoundPlayer(src=>{const audio=sound();played.push(src);sounds.push(audio);return {audio,promise:Promise.resolve()};});
+ t.api.begin(s);for(const i of [2,1]){s.stopped[i]=true;t.api.stop(s);}assert.equal(played.length,0);
+ s.stopped[0]=true;t.api.stop(s);t.api.stop(s);
+ assert.deepEqual(played,['assets/media/nova/sortie-award-duo.wav','assets/media/nova/sortie-award.mp3']);
+ assert(sounds.every(s=>!s.loop));t.api.updateVolume(.25);assert(sounds.every(s=>s.volume===.25));
+ sounds[1].listeners.get('ended')();assert.equal(sounds[0].paused,false,'common SE must not cut off the duo cue');
+ t.api.clear();assert(sounds.every(s=>s.paused));assert.equal(played.length,2);
 });

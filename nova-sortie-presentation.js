@@ -5,7 +5,7 @@ globalThis.NovaSortie=(()=>{
  const candidates=['sosuke','toto','urapi','giru','sora','ouma','kushuri_nito'];
  const previews=new WeakMap();
  let root,host,reveal,portraits,caption,actors=[],animation=null,revealSpin=null,revealStage=-1;
- let soundPlayer=null,awardSound=null,awardFrame=0,removeSoundListeners=null;
+ let soundPlayer=null,awardSound=null,duoSound=null,awardFrame=0,removeSoundListeners=null;
  let holdUntil=0,holdTimer=null,holdToken=0;
  const waitMs=()=>Math.max(0,Math.ceil(holdUntil-performance.now()));
  function clearHold(){
@@ -56,8 +56,14 @@ globalThis.NovaSortie=(()=>{
   portraits?.style.setProperty('--sortie-win-scale','1');
  }
  function startAward(reduced,zone){
+  // The duo cue accompanies the common win SE; it must not replace it.
+  if(baseZone(zone)==='kushuri_nito')try{
+   const playback=soundPlayer?.('assets/media/nova/sortie-award-duo.wav');
+   duoSound=playback?.audio||null;if(duoSound)duoSound.loop=false;
+   Promise.resolve(playback?.promise).catch(()=>{});
+  }catch{}
   try{
-   const playback=soundPlayer?.(baseZone(zone)==='kushuri_nito'?'assets/media/nova/sortie-award-duo.wav':awardSoundSrc),audio=playback?.audio;if(!audio)return;
+   const playback=soundPlayer?.(awardSoundSrc),audio=playback?.audio;if(!audio)return;
    awardSound=audio;audio.loop=false;
    const onFinish=()=>{if(awardSound===audio)stopAward();};
    audio.addEventListener('error',onFinish);audio.addEventListener('ended',onFinish);
@@ -144,6 +150,7 @@ globalThis.NovaSortie=(()=>{
  function clear(){
   clearHold();
   stopAward();
+  if(duoSound){duoSound.loop=false;duoSound.pause();try{duoSound.currentTime=0;}catch{}duoSound=null;}
   if(root)root.hidden=true;
   animation?.cancel();animation=null;revealSpin=null;revealStage=-1;
   if(reveal)reveal.hidden=true;
@@ -160,6 +167,6 @@ globalThis.NovaSortie=(()=>{
  return {eligible,label,target,begin,stop:render,clear,flash,awardScale,
   get busy(){return waitMs()>0;},get waitMs(){return waitMs();},
   setSoundPlayer:player=>{soundPlayer=player;},
-  updateVolume:volume=>{if(awardSound)awardSound.volume=Math.max(0,Math.min(1,Number(volume)||0));}
+  updateVolume:volume=>{for(const audio of [awardSound,duoSound])if(audio)audio.volume=Math.max(0,Math.min(1,Number(volume)||0));}
  };
 })();

@@ -58,8 +58,10 @@ globalThis.NovaDataCounter=(()=>{
     set('current',format(view.current));set('total',format(totals.totalSpins));
     set('big',format(totals.bigCount));set('at',totals.atFirstCountPartial?'—':format(totals.atFirstCount));
     set('normal',format(view.dataNormalGames));set('art',format(view.dataAtGames));
+    const recorded=n(view.dataNormalGames)+n(view.dataAtGames);
+    set('coverage',recorded<n(totals.totalSpins)?'通常・AT内訳は記録開始後の'+format(recorded)+'G分':'');
     const bars=root.querySelector('.novaHitBars');if(!bars)return;
-    const columns=[...view.hits,{kind:'CURRENT',games:view.current}],fingerprint=JSON.stringify(columns);
+    const columns=[{kind:'CURRENT',games:view.current},...view.hits.slice().reverse()],fingerprint=JSON.stringify(columns);
     if(bars.dataset.values===fingerprint)return;
     bars.dataset.values=fingerprint;
     const nodes=columns.map((hit,i)=>{
@@ -70,8 +72,8 @@ globalThis.NovaDataCounter=(()=>{
       const mark=document.createElement('span');mark.className='novaHitMark';mark.textContent=hit.games>1000?'+':hit.kind==='CURRENT'?'今':hit.kind==='ZONE'?'特':hit.kind==='BIG'?'B':'AT';
       column.append(cells,mark);column.addEventListener('click',()=>set('detail',label));return column;
     });
-    bars.replaceChildren(...nodes);bars.scrollLeft=bars.scrollWidth;
-    set('detail','直近20件 / 列を押すとG数・ゾーン名を表示');
+    bars.replaceChildren(...nodes);bars.scrollLeft=0;
+    set('detail','左が最新 / 直近20件 / 列を押すとG数・ゾーン名を表示');
   }
   return Object.freeze({limit,keys,snapshot,adopt,spin,hit,zone,display,graph,render});
 })();

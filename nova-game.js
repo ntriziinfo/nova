@@ -3310,7 +3310,7 @@
     const firstSpin = Number(points[0] && points[0].spin) || 0;
     const lastVisibleSpin = Number(points[points.length - 1] && points[points.length - 1].spin) || firstSpin;
     const spinRange = Math.max(1, lastVisibleSpin - firstSpin);
-    const xFor = point => pad.left + (((Number(point.spin) || 0) - firstSpin) / spinRange) * plotW;
+    const xFor = point => pad.left + ((lastVisibleSpin - (Number(point.spin) || 0)) / spinRange) * plotW;
     const yFor = profit => pad.top + ((maxProfit - profit) / range) * plotH;
     const fullLastPoint = allPoints[allPoints.length - 1] || {profit:0};
     const current = Number(fullLastPoint.profit) || 0;
@@ -3394,7 +3394,7 @@
     ctx.textAlign = "left";
     ctx.textBaseline = "bottom";
     ctx.font = "800 11px system-ui, sans-serif";
-    ctx.fillText(`G ${formatSlumpNumber(firstSpin)}-${formatSlumpNumber(lastPoint.spin)}`, pad.left, cssHeight - 7);
+    ctx.fillText(`最新 ${formatSlumpNumber(lastPoint.spin)}G ← ${formatSlumpNumber(firstSpin)}G`, pad.left, cssHeight - 7);
     ctx.textAlign = "right";
     ctx.fillText("差pt", cssWidth - pad.right, cssHeight - 7);
 
@@ -7606,7 +7606,7 @@
         const normalAutoStopDelay = autoStopDelayMs(idx);
         const delay = resolved.oumaFreeze ? spinWaitMs + 150 + idx * 300 : speedModeSpinAtStart ? speedModeStopDelay(i)
           : superSpeedStartedAt!==null ? Math.max(0,normalAutoStopDelay-(performance.now()-superSpeedStartedAt)) : normalAutoStopDelay;
-        setTimeout(()=>{if(currentSpin===scheduledSpin)stopSingleReel(i,{oumaAuto:!!resolved.oumaFreeze});}, delay);
+        setTimeout(()=>stopAutoReelInOrder(scheduledSpin,i,{oumaAuto:!!resolved.oumaFreeze}), delay);
       });
     }
     persistState();
@@ -7628,6 +7628,22 @@
       (session.premiumBonus || session.oneGameRenBonus) &&
       willCompleteATypeBonusWithSpin(spin)
     );
+  }
+
+  function stopAutoReelInOrder(spin,i,options={}){
+    if(currentSpin!==spin||!isSpinning||spin.stopped[i]||spin.visualStopping?.[i])return;
+    const next=NovaBellNavi.stopOrder(spin).find(index=>!spin.stopped[index]&&!spin.visualStopping?.[index]);
+    // Worker/native deadlines can arrive before the stop unlock or out of order.
+    // Retry the same drawn spin; never let a later reel become the first press.
+    if(!spinCanStop||isPremiumBigConfirmStopLocked()||next!==i){
+      spin.autoStopRetryTimers ||= [];
+      if(!spin.autoStopRetryTimers[i])spin.autoStopRetryTimers[i]=setTimeout(()=>{
+        spin.autoStopRetryTimers[i]=null;stopAutoReelInOrder(spin,i,options);
+      },autoPollDelayMs());
+      return;
+    }
+    if(spin.autoStopRetryTimers?.[i]){clearTimeout(spin.autoStopRetryTimers[i]);spin.autoStopRetryTimers[i]=null;}
+    stopSingleReel(i,options);
   }
 
   function stopSingleReel(i, options={}){
@@ -7813,7 +7829,7 @@
     const stopOrder = NovaBellNavi.stopOrder(currentSpin);
     stopOrder.forEach((i,idx)=>{
       if(!currentSpin.stopped[i]){
-        setTimeout(()=>{if(currentSpin===scheduledSpin)stopSingleReel(i);}, NovaSuperSpeed.delay(idx * 180,!!scheduledSpin.superSpeedAtStart));
+        setTimeout(()=>stopAutoReelInOrder(scheduledSpin,i), NovaSuperSpeed.delay(idx * 180,!!scheduledSpin.superSpeedAtStart));
       }
     });
   }
