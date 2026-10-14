@@ -2948,6 +2948,7 @@
 
   function resetNormalCountersAfterArt(before,after){
     recordAtFirstEntry(before,after);
+    NovaDataCounter.transition(stats,after);
     if(before?.phase!=='art'||after?.phase!=='normal')return;
     normalState.internal=NovaNormal.afterArt(normalState.internal,before,after,{...settings.novaNormal,setting:settings.setting});
     normalState.sinceBonus=0;
@@ -7758,9 +7759,10 @@
     if(reversePushWrongFirst){
       currentSpin.reversePushWrongOrder = true;
       $("resultText").textContent = "押し順ミス / 77ハズレ";
+      const guidedSpin=currentSpin;
       [2,1,0].forEach((next,idx)=>{
         if(next !== i && !currentSpin.stopped[next]){
-          setTimeout(()=>stopSingleReel(next), 80 + idx * 120);
+          setTimeout(()=>{if(currentSpin===guidedSpin)stopSingleReel(next);}, 80 + idx * 120);
         }
       });
     }
@@ -7801,10 +7803,11 @@
         (r?.flowBefore?.phase==='art'&&r?.flowAfter?.phase==='normal'&&!r.bonusHit&&!r.aTypeBonusReady);
       const resultWaitMs = (resultEnding || NovaLadder.eligible(r?.flowBefore) || currentSpin.speedModeAtStart || isPremiumBigFinalBonusSpin(currentSpin)) ? 0
         : currentSpin.superSpeedAtStart && superSpeedActive ? Math.max(0,currentSpin.superSpeedStartedAt+autoStopDelayMs(2)+autoResultWaitMs-performance.now()) : autoResultWaitMs;
+      const finishedSpin=currentSpin;
       setTimeout(()=>{
-        if(currentSpin){
-          prepareManualBonusOutcome(currentSpin);
-          finishSpin(currentSpin.result, currentSpin.resolved, currentSpin.lineRow);
+        if(currentSpin===finishedSpin && isSpinning && finishedSpin.stopped.every(Boolean)){
+          prepareManualBonusOutcome(finishedSpin);
+          finishSpin(finishedSpin.result, finishedSpin.resolved, finishedSpin.lineRow);
         }
       }, resultWaitMs);
     }
@@ -8266,7 +8269,7 @@
     const audio=new Audio('assets/media/nova/ouma-reverse-v2.wav');oumaReverseAudio=audio;
     audio.preload='auto';audio.volume=sfxOutputVolumeForSource(SFX_OUTPUT_SCALE,'assets/media/nova/ouma-reverse-v2.wav');
     let started=false,fallback=null;
-    const useFallback=()=>{audio.novaCancelPlaybackWatch?.();if(fallback===null)fallback={time:performance.now(),offset:audio.currentTime||0};};
+    const useFallback=()=>{audio.novaCancelPlaybackWatch?.();audio.pause();if(fallback===null)fallback={time:performance.now(),offset:audio.currentTime||0};};
     const clock=()=>fallback?(performance.now()-fallback.time)/1000+fallback.offset:audio.currentTime;
     const begin=()=>{
       if(started||currentSpin!==spin||oumaReverseAudio!==audio)return;
@@ -8348,8 +8351,9 @@
 
   function finishSpin(result, resolved, lineRow=1){
     if(typeof storeEndSnapshot!=='undefined'&&storeEndSnapshot)return;
+    if(!canUsePlayState())return;
     if(resolved?.stockEntry){finishStockEntry();return;}
-    if(!isSpinning || (currentSpin && currentSpin.finishing)) return;
+    if(!isSpinning || !currentSpin || currentSpin.finishing || currentSpin.resolved!==resolved || !currentSpin.stopped.every(Boolean)) return;
     if(typeof playZoneInternalConfirmedSound==='function'&&currentSpin?.stopped?.every(Boolean))playZoneInternalConfirmedSound(resolved);
     try{
     NovaBellNavi.clear();
@@ -10108,7 +10112,7 @@
 
   function bootGame(){
     if(!load()){showPlayBlocked('restore');return;}
-    NovaDataCounter.adopt(stats,normalState.flow);
+    NovaDataCounter.adopt(stats,normalState.flow,normalState.sinceBonus);
     if(!normalState.internal) normalState.internal=NovaNormal.reset(Math.random,settings.setting);
     persistState();
     initializePlaySessionBaseline();

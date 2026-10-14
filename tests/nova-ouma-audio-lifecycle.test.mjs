@@ -22,3 +22,19 @@ test('reverse audio stalling after playback begins switches its reel clock to el
  assert.equal(clocks.length,3);audio.currentTime=1.2;assert.equal(clocks[0](),1.2);
  now=15000;onStall();now=16000;assert.equal(clocks[0](),2.2);assert.equal(clocks.length,3);assert(watchCancelled>0);
 });
+
+test('a failed reverse SE cannot leave the next zero-chain BET waiting for an ended event',()=>{
+ let audio,queued=0;const machine={dataset:{}},button={},flow={zone:'ouma',oumaPending:true};
+ const c=vm.createContext({watchPlaybackProgress:()=>()=>{},
+  Audio:function(){audio=this;this.currentTime=0;this.ended=false;this.paused=false;this.play=()=>new Promise(()=>{});this.pause=()=>{this.paused=true;};this.removeAttribute=()=>{};this.load=()=>{};},
+  performance:{now:()=>0},setTimeout:()=>1,clearTimeout(){},sfxOutputVolumeForSource:()=>1,SFX_OUTPUT_SCALE:1,
+  reels:[0,1,2].map(()=>({style:{setProperty(){}}})),REEL_STRIPS:[[],[],[]],cellHtml(){},NovaReelMotion:{startSynced(){}},
+  currentSpin:{resolved:{oumaFreeze:true},grid:[[],[],[]]},normalState:{flow},debugFastSpinActive:false,
+  isCompleteTrialLocked:()=>false,clearOumaPresentation(){},stopSpeedToBonus(){},
+  document:{getElementById:()=>machine},$:()=>button,stopBtns:[{}],autoPlay:true,
+  NovaArt:{zoneName:()=>'逢魔'},queueAutoStep(){queued++;},autoDelayMs:()=>100});
+ vm.runInContext('var oumaPresentation=null,oumaReverseAudio=null,oumaReverseLoadTimer=null,oumaStoppedTops=[0,0,0];'+['clearOumaReverseAudio','startOumaReverseAudio','scheduleOumaZeroChain'].map(fn).join('\n'),c);
+ c.startOumaReverseAudio(c.currentSpin);audio.onerror();
+ c.currentSpin=null;c.scheduleOumaZeroChain();
+ assert.equal(machine.dataset.oumaFreeze,'bet');assert.equal(button.disabled,false);assert.equal(queued,1);
+});

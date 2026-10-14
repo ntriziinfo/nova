@@ -33,6 +33,29 @@ test('machine display merges session offsets and retains AT gaps and graphs acro
  assert.equal(d.display({totalSpins:1000},null,null).current,0,'legacy history cannot be reconstructed');
 });
 
+test('AT end starts a separate normal interval, including after reload and player handoff',()=>{
+ const d=harness(),stats={totalSpins:0};d.adopt(stats,{phase:'normal'});
+ const spins=(count,phase)=>{for(let i=0;i<count;i++){d.spin(stats,{phase});stats.totalSpins++;}};
+ spins(200,'normal');d.hit(stats,'BIG');d.hit(stats,'AT');d.transition(stats,{phase:'art'});
+ spins(500,'art');d.zone(stats,{phase:'art',zone:'sora'});
+ spins(50,'art');d.zone(stats,{phase:'art'});spins(30,'art');
+ d.transition(stats,{phase:'normal'});assert.equal(d.display(stats).current,0);
+ spins(20,'normal');assert.equal(d.display(stats).current,20);
+ assert.equal(stats.dataNormalGames,220);assert.equal(stats.dataAtGames,580);assert.equal(stats.totalSpins,800);
+ const saved=JSON.parse(JSON.stringify(stats));d.adopt(saved,{phase:'normal'},20);
+ assert.equal(d.display(saved).current,20);
+ const base={...saved,dataHits:JSON.parse(JSON.stringify(saved.dataHits))},start=d.snapshot(saved);start.totalSpins=saved.totalSpins;
+ for(let i=0;i<10;i++){d.spin(saved,{phase:'normal'});saved.totalSpins++;}d.hit(saved,'BIG');
+ const view=d.display(saved,base,start);assert.equal(view.hits.at(-1).games,30);assert.equal(view.hits.at(-1).phase,'normal');
+ assert.equal(view.current,0);assert.equal(view.dataNormalGames,230);assert.equal(view.dataAtGames,580);
+});
+
+test('legacy normal interval excludes elapsed AT games using the existing post-AT counter',()=>{
+ const d=harness(),stats={totalSpins:1000,dataLastHitSpin:400};
+ d.adopt(stats,{phase:'normal'},25);assert.equal(d.display(stats).current,25);
+ assert.equal(stats.totalSpins,1000);
+});
+
 test('live counted games split by phase while bonus and 0G spins remain excluded',()=>{
  const c=vm.createContext({A_TYPE_MODE:true,session:{active:false},normalState:{flow:{phase:'normal'}},stats:{totalSpins:0},
   NovaFlow:{normalize:x=>x},NovaArt:{prepareBet:x=>x},NovaProgress:{beforeBet:x=>x},NovaDecrement:{observe(){},beforeBet(){}},
