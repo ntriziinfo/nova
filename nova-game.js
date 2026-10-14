@@ -2419,7 +2419,7 @@
 
   function targetRtpText(settingNo = settings.setting){
     if(A_TYPE_MODE && !NovaBalance.usesStandardSettings(settings))return "未試算（独自設定）";
-    if(A_TYPE_MODE)return `${(NovaBalance.profile(settingNo).measuredRtp*100).toFixed(2)}%（1万G予備試算）`;
+    if(A_TYPE_MODE)return `${(NovaBalance.profile(settingNo).measuredRtp*100).toFixed(2)}%（1万G試算）`;
   }
 
   function refreshRtpViews(){

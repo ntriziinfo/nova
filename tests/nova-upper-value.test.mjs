@@ -11,8 +11,8 @@ test('approved upper AT allocation strengthens weak-role zones and reduces only 
  }
  assert.equal(a.burstRules.initialSuccess,.5);assert.equal(a.burstRules.success,.65);
 });
-test('live engine exactly replays approved fixed-Sosuke sessions including upper entries and cap',()=>{
- for(const row of JSON.parse(fs.readFileSync('docs/sosuke-fixed50-20261014.json')).deterministicFixtures){
+test('live engine exactly replays approved setting-mode sessions including upper entries and cap',()=>{
+ for(const row of JSON.parse(fs.readFileSync('docs/mode-selection-20261014.json')).deterministicFixtures){
   loadModel();const r=simulate(row.setting,10000,row.seed,{rng:'xoshiro128',exactGames:true,completeLimitPt:19000,completeMyLimitPt:0,stopAtComplete:true,atBetRefund:true,replayRefund:true});
   for(const [actual,expected]of [['totalBet','bet'],['totalPaid','paid'],['net','net'],['peak','peak'],['games','games'],['actualAtZone','zone'],['counts','counts'],['atMetrics','direct']])assert.deepEqual(r[actual],row[expected],row.seed+'/'+actual);
   assert.equal(!!r.firstComplete,row.complete);

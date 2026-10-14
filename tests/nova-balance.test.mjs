@@ -1,8 +1,8 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
 const ctx=vm.createContext({});for(const f of ['nova-tuning.js','nova-art.js','nova-balance.js'])vm.runInContext(fs.readFileSync(f,'utf8'),ctx);const a=ctx.NovaArt,b=ctx.NovaBalance;
-test('RTP metadata identifies the approved fixed-Sosuke 10,000G preliminary estimate',()=>{
- const evidence=JSON.parse(fs.readFileSync('docs/sosuke-fixed50-20261014.json'));
- for(let i=0;i<6;i++){const r=evidence.results[i],p=b.profile(i+1);assert.equal(p.targetGamesPerTrial,10000);assert.equal(p.gamesPerTrial,10000);assert.equal(p.trials,300);assert.equal(p.measuredRtp,r.rtp/100);assert.equal(p.verifiedModel,evidence.id);}
+test('RTP metadata identifies the approved setting-mode 10,000G independent estimates',()=>{
+ const evidence=JSON.parse(fs.readFileSync('docs/mode-selection-20261014.json'));
+ for(let i=0;i<6;i++){const r=evidence.results[i].after,p=b.profile(i+1);assert.equal(p.targetGamesPerTrial,10000);assert.equal(p.gamesPerTrial,10000);assert.equal(p.trials,r.n);assert.equal(p.measuredRtp,r.rtp/100);assert.equal(p.verifiedModel,evidence.id);assert.equal(p.target,evidence.targets[i]/100);}
 });
 
 test('common AT evidence keeps session and episode denominators separate',()=>{

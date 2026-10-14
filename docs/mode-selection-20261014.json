@@ -1,0 +1,1284 @@
+{
+  "proposalOnly": false,
+  "date": "2026-10-14",
+  "sourceCommit": "d3a3ab6da8a6b97a364953bfed21140d5b249ff1",
+  "targets": [
+    95,
+    97,
+    98.75,
+    101,
+    105,
+    114
+  ],
+  "options": {
+    "rng": "xoshiro128",
+    "exactGames": true,
+    "completeLimitPt": 19000,
+    "completeMyLimitPt": 0,
+    "stopAtComplete": true,
+    "atBetRefund": true,
+    "replayRefund": true
+  },
+  "seed": "See validationSeedsBySetting",
+  "validationSeedsBySetting": {
+    "1": "mode-selection-validation-20261014",
+    "2": "mode-selection-validation-20261014",
+    "3": "mode-selection-finalcheck-20261014",
+    "4": "mode-selection-validation-20261014",
+    "5": "mode-selection-validation-20261014",
+    "6": "mode-selection-validation-20261014"
+  },
+  "trialsPerSetting": {
+    "1": 2000,
+    "2": 2000,
+    "3": 5000,
+    "4": 2000,
+    "5": 2000,
+    "6": 2000
+  },
+  "gamesPerTrial": 10000,
+  "rows": {
+    "initial": [
+      [
+        46.9,
+        25,
+        10.7,
+        13.7,
+        3.7
+      ],
+      [
+        48.9,
+        25,
+        10.3,
+        12.6,
+        3.2
+      ],
+      [
+        49.1,
+        25,
+        10.2,
+        12.5,
+        3.2
+      ],
+      [
+        49.8,
+        25,
+        10.1,
+        12.1,
+        3
+      ],
+      [
+        55.8,
+        24.5,
+        8.6,
+        9.1,
+        2
+      ],
+      [
+        50.4,
+        25,
+        9.9,
+        11.8,
+        2.9
+      ]
+    ],
+    "afterHeaven": [
+      [
+        36.7,
+        24.5,
+        10.5,
+        22.3,
+        6
+      ],
+      [
+        38.7,
+        24.8,
+        10.2,
+        20.9,
+        5.4
+      ],
+      [
+        39,
+        24.9,
+        10.1,
+        20.7,
+        5.3
+      ],
+      [
+        39.7,
+        25,
+        10,
+        20.2,
+        5.1
+      ],
+      [
+        46.5,
+        25.5,
+        8.9,
+        15.7,
+        3.4
+      ],
+      [
+        40.4,
+        25.1,
+        9.9,
+        19.7,
+        4.9
+      ]
+    ],
+    "afterLoop": [
+      [
+        8.1,
+        8.7,
+        4.7,
+        14.9,
+        63.6
+      ],
+      [
+        9.2,
+        9.5,
+        4.9,
+        15,
+        61.4
+      ],
+      [
+        9.4,
+        9.6,
+        4.9,
+        15,
+        61.1
+      ],
+      [
+        9.8,
+        9.9,
+        5,
+        15,
+        60.3
+      ],
+      [
+        14.7,
+        12.8,
+        5.6,
+        14.8,
+        52.1
+      ],
+      [
+        10.3,
+        10.2,
+        5.1,
+        15,
+        59.4
+      ]
+    ]
+  },
+  "results": [
+    {
+      "setting": 1,
+      "target": 95,
+      "before": {
+        "n": 800,
+        "rtp": 94.28090416666667,
+        "rtp95": [
+          93.30500114281732,
+          95.25680719051603
+        ],
+        "win": 32.125,
+        "win95": [
+          28.981192880224583,
+          35.43965819292217
+        ],
+        "peak10000": 1.375,
+        "peak1000095": [
+          0.7694761018331765,
+          2.4452866076359525
+        ],
+        "complete": 0,
+        "atDenom": 578.7780055344881,
+        "bonusDenom": 367.891661237785,
+        "base": 30.00955701757729,
+        "initialModes": {
+          "A": 402,
+          "C": 70,
+          "天国": 119,
+          "B": 187,
+          "天国ループ": 22
+        },
+        "afterArtModes": {
+          "A": 3639,
+          "C": 850,
+          "天国": 1354,
+          "B": 2065,
+          "天国ループ": 1637
+        },
+        "atStarts": 9757
+      },
+      "after": {
+        "n": 2000,
+        "rtp": 95.07303166666667,
+        "rtp95": [
+          94.42946522645842,
+          95.71659810687491
+        ],
+        "win": 35.3,
+        "win95": [
+          33.23549955464527,
+          37.420863702809804
+        ],
+        "peak10000": 1.95,
+        "peak1000095": [
+          1.4297175281702397,
+          2.654517473239054
+        ],
+        "complete": 0,
+        "atDenom": 553.3740068777422,
+        "bonusDenom": 350.35433819665155,
+        "base": 29.985758677645116,
+        "initialModes": {
+          "C": 225,
+          "B": 506,
+          "天国ループ": 74,
+          "天国": 268,
+          "A": 927
+        },
+        "afterArtModes": {
+          "天国ループ": 5182,
+          "A": 8454,
+          "C": 2185,
+          "B": 5087,
+          "天国": 3877
+        },
+        "atStarts": 25299
+      }
+    },
+    {
+      "setting": 2,
+      "target": 97,
+      "before": {
+        "n": 800,
+        "rtp": 96.26736666666666,
+        "rtp95": [
+          95.25442614674166,
+          97.28030718659167
+        ],
+        "win": 35.75,
+        "win95": [
+          32.50421866936508,
+          39.1319842840526
+        ],
+        "peak10000": 2.375,
+        "peak1000095": [
+          1.5256294229507172,
+          3.6795751845241886
+        ],
+        "complete": 0,
+        "atDenom": 582.8610440079824,
+        "bonusDenom": 359.6746386674444,
+        "base": 29.996400547891362,
+        "initialModes": {
+          "A": 396,
+          "B": 193,
+          "C": 80,
+          "天国": 108,
+          "天国ループ": 23
+        },
+        "afterArtModes": {
+          "A": 3512,
+          "天国ループ": 1618,
+          "天国": 1384,
+          "B": 1953,
+          "C": 837
+        },
+        "atStarts": 9521
+      },
+      "after": {
+        "n": 2000,
+        "rtp": 97.13295,
+        "rtp95": [
+          96.48562953841467,
+          97.78027046158532
+        ],
+        "win": 39.85,
+        "win95": [
+          37.725708199391576,
+          42.01320928789884
+        ],
+        "peak10000": 2.9499999999999997,
+        "peak1000095": [
+          2.293874659746708,
+          3.7865261064615594
+        ],
+        "complete": 0,
+        "atDenom": 573.8023575474841,
+        "bonusDenom": 352.9462990955907,
+        "base": 30.008275805597123,
+        "initialModes": {
+          "A": 951,
+          "天国": 296,
+          "B": 477,
+          "C": 217,
+          "天国ループ": 59
+        },
+        "afterArtModes": {
+          "B": 4915,
+          "A": 8543,
+          "天国ループ": 4436,
+          "天国": 3396,
+          "C": 2126
+        },
+        "atStarts": 24008
+      }
+    },
+    {
+      "setting": 3,
+      "target": 98.75,
+      "before": {
+        "n": 800,
+        "rtp": 97.05513472592715,
+        "rtp95": [
+          95.91967664283312,
+          98.19059280902117
+        ],
+        "win": 39.125,
+        "win95": [
+          35.802786181882276,
+          42.5511581773049
+        ],
+        "peak10000": 4.25,
+        "peak1000095": [
+          3.0570541054865665,
+          5.880229060749169
+        ],
+        "complete": 0.25,
+        "atDenom": 580.4551342316933,
+        "bonusDenom": 363.9916808594262,
+        "base": 30.02357782263674,
+        "initialModes": {
+          "A": 399,
+          "B": 209,
+          "C": 74,
+          "天国": 89,
+          "天国ループ": 29
+        },
+        "afterArtModes": {
+          "A": 3600,
+          "C": 795,
+          "天国": 1355,
+          "天国ループ": 1625,
+          "B": 1975
+        },
+        "atStarts": 9573
+      },
+      "after": {
+        "n": 5000,
+        "rtp": 98.53628001472592,
+        "rtp95": [
+          98.07045548235901,
+          99.00210454709283
+        ],
+        "win": 41.699999999999996,
+        "win95": [
+          40.34018146364357,
+          43.07256285664028
+        ],
+        "peak10000": 5.18,
+        "peak1000095": [
+          4.5993745485717605,
+          5.829444780960974
+        ],
+        "complete": 0.14,
+        "atDenom": 564.751967596404,
+        "bonusDenom": 357.2507655452557,
+        "base": 29.99143080070986,
+        "initialModes": {
+          "A": 2406,
+          "天国": 640,
+          "C": 517,
+          "B": 1285,
+          "天国ループ": 152
+        },
+        "afterArtModes": {
+          "天国": 8734,
+          "C": 5160,
+          "A": 21832,
+          "B": 12598,
+          "天国ループ": 11005
+        },
+        "atStarts": 60734
+      }
+    },
+    {
+      "setting": 4,
+      "target": 101,
+      "before": {
+        "n": 800,
+        "rtp": 100.46594583333332,
+        "rtp95": [
+          99.38066671781841,
+          101.55122494884824
+        ],
+        "win": 48.875,
+        "win95": [
+          45.42471326701745,
+          52.33603959772606
+        ],
+        "peak10000": 3.5000000000000004,
+        "peak1000095": [
+          2.432455034286968,
+          5.011996708444437
+        ],
+        "complete": 0,
+        "atDenom": 578.6801288936628,
+        "bonusDenom": 358.0693872125482,
+        "base": 30.00613632872887,
+        "initialModes": {
+          "C": 73,
+          "B": 205,
+          "天国": 81,
+          "A": 411,
+          "天国ループ": 30
+        },
+        "afterArtModes": {
+          "A": 3528,
+          "天国": 1296,
+          "B": 1956,
+          "天国ループ": 1503,
+          "C": 786
+        },
+        "atStarts": 9310
+      },
+      "after": {
+        "n": 2000,
+        "rtp": 101.19537536356667,
+        "rtp95": [
+          100.51523781037976,
+          101.87551291675356
+        ],
+        "win": 50.7,
+        "win95": [
+          48.50962708720501,
+          52.88768894815428
+        ],
+        "peak10000": 4.45,
+        "peak1000095": [
+          3.6302529260018988,
+          5.44439648740483
+        ],
+        "complete": 0.3,
+        "atDenom": 568.1435906139941,
+        "bonusDenom": 351.4565451347875,
+        "base": 30.009413269669206,
+        "initialModes": {
+          "B": 484,
+          "A": 1008,
+          "C": 196,
+          "天国": 255,
+          "天国ループ": 57
+        },
+        "afterArtModes": {
+          "A": 8739,
+          "B": 4689,
+          "天国": 3397,
+          "天国ループ": 4118,
+          "C": 2028
+        },
+        "atStarts": 23567
+      }
+    },
+    {
+      "setting": 5,
+      "target": 105,
+      "before": {
+        "n": 800,
+        "rtp": 107.72980128645615,
+        "rtp95": [
+          106.3894324843778,
+          109.0701700885345
+        ],
+        "win": 62.5,
+        "win95": [
+          59.09295407573959,
+          65.78756964933262
+        ],
+        "peak10000": 12.875,
+        "peak1000095": [
+          10.730288670772643,
+          15.374555865762913
+        ],
+        "complete": 1,
+        "atDenom": 559.4108273302772,
+        "bonusDenom": 352.20739417262234,
+        "base": 29.984733812387994,
+        "initialModes": {
+          "天国": 100,
+          "A": 413,
+          "C": 81,
+          "天国ループ": 23,
+          "B": 183
+        },
+        "afterArtModes": {
+          "A": 3403,
+          "B": 1940,
+          "天国": 1229,
+          "C": 770,
+          "天国ループ": 1552
+        },
+        "atStarts": 9162
+      },
+      "after": {
+        "n": 2000,
+        "rtp": 105.3496685614713,
+        "rtp95": [
+          104.54759577201673,
+          106.15174135092586
+        ],
+        "win": 57.49999999999999,
+        "win95": [
+          55.32109791192996,
+          59.65014532406234
+        ],
+        "peak10000": 10.25,
+        "peak1000095": [
+          8.996004071680376,
+          11.656406777560404
+        ],
+        "complete": 0.8,
+        "atDenom": 604.2819058161524,
+        "bonusDenom": 382.72481888291657,
+        "base": 29.991211900685773,
+        "initialModes": {
+          "天国": 187,
+          "B": 500,
+          "A": 1100,
+          "C": 171,
+          "天国ループ": 42
+        },
+        "afterArtModes": {
+          "天国": 2318,
+          "A": 9832,
+          "C": 1772,
+          "B": 4759,
+          "天国ループ": 2346
+        },
+        "atStarts": 21681
+      }
+    },
+    {
+      "setting": 6,
+      "target": 114,
+      "before": {
+        "n": 800,
+        "rtp": 113.59426146449142,
+        "rtp95": [
+          112.25572625744742,
+          114.93279667153544
+        ],
+        "win": 72.875,
+        "win95": [
+          69.69015235579677,
+          75.84120606108536
+        ],
+        "peak10000": 16.75,
+        "peak1000095": [
+          14.322527945107716,
+          19.495278946200223
+        ],
+        "complete": 2.375,
+        "atDenom": 548.324788255223,
+        "bonusDenom": 337.74457429048414,
+        "base": 29.993748110721125,
+        "initialModes": {
+          "B": 223,
+          "C": 82,
+          "A": 389,
+          "天国": 85,
+          "天国ループ": 21
+        },
+        "afterArtModes": {
+          "B": 1822,
+          "A": 3260,
+          "C": 756,
+          "天国": 1239,
+          "天国ループ": 1478
+        },
+        "atStarts": 8855
+      },
+      "after": {
+        "n": 2000,
+        "rtp": 113.84109425635887,
+        "rtp95": [
+          112.99116967479421,
+          114.69101883792352
+        ],
+        "win": 75.25,
+        "win95": [
+          73.3113930636268,
+          77.09179249754729
+        ],
+        "peak10000": 19.05,
+        "peak1000095": [
+          17.388897962581215,
+          20.82977161689054
+        ],
+        "complete": 1.65,
+        "atDenom": 551.8507618356612,
+        "bonusDenom": 340.71766945712125,
+        "base": 29.993858851649083,
+        "initialModes": {
+          "C": 219,
+          "天国": 245,
+          "A": 998,
+          "B": 490,
+          "天国ループ": 48
+        },
+        "afterArtModes": {
+          "天国ループ": 3344,
+          "A": 8413,
+          "C": 1822,
+          "天国": 3034,
+          "B": 4690
+        },
+        "atStarts": 22052
+      }
+    }
+  ],
+  "id": "mode-selection-20261014-10000g",
+  "approvedDate": "2026-10-14",
+  "deterministicFixtures": [
+    {
+      "setting": 1,
+      "seed": "mode-selection-validation-20261014|s1|0",
+      "bet": 30000,
+      "paid": 29591,
+      "net": -409,
+      "peak": 2466,
+      "games": 10000,
+      "zone": {
+        "normal": {
+          "games": 2442,
+          "wins": 10
+        },
+        "upper": {
+          "games": 0,
+          "wins": 0
+        }
+      },
+      "counts": {
+        "normal": 5959,
+        "cz": 650,
+        "prep": 67,
+        "align": 20,
+        "bonus": 404,
+        "at": 2693,
+        "zone": 207,
+        "zero": 11,
+        "BIG": 20,
+        "REG": 0,
+        "czEntries": 37,
+        "strongEntries": 2,
+        "czWins": 14,
+        "artEntries": 16,
+        "zoneEntries": 53,
+        "gameCzEntries": 35,
+        "ceilingCzEntries": 0,
+        "rareCzEntries": 4,
+        "backgroundCzEntries": 0,
+        "highNormalG": 687,
+        "favoredNormalG": 2951
+      },
+      "direct": {
+        "eligible": 2438,
+        "high": 525,
+        "zoneWins": 9,
+        "directWins": 0,
+        "directPoints": 0,
+        "promotions": 11,
+        "suica100": 0,
+        "suica300": 0
+      },
+      "complete": false
+    },
+    {
+      "setting": 1,
+      "seed": "mode-selection-validation-20261014|s1|8",
+      "bet": 30000,
+      "paid": 44654,
+      "net": 14654,
+      "peak": 17053,
+      "games": 10000,
+      "zone": {
+        "normal": {
+          "games": 1766,
+          "wins": 2
+        },
+        "upper": {
+          "games": 2100,
+          "wins": 20
+        }
+      },
+      "counts": {
+        "normal": 4512,
+        "cz": 658,
+        "prep": 69,
+        "align": 19,
+        "bonus": 341,
+        "at": 4132,
+        "zone": 269,
+        "zero": 23,
+        "BIG": 19,
+        "REG": 0,
+        "czEntries": 40,
+        "strongEntries": 0,
+        "czWins": 9,
+        "artEntries": 13,
+        "zoneEntries": 60,
+        "gameCzEntries": 40,
+        "ceilingCzEntries": 0,
+        "rareCzEntries": 0,
+        "backgroundCzEntries": 0,
+        "highNormalG": 480,
+        "favoredNormalG": 2479
+      },
+      "direct": {
+        "eligible": 3870,
+        "high": 1104,
+        "zoneWins": 20,
+        "directWins": 0,
+        "directPoints": 0,
+        "promotions": 12,
+        "suica100": 0,
+        "suica300": 0
+      },
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "seed": "mode-selection-validation-20261014|s2|0",
+      "bet": 30000,
+      "paid": 28968,
+      "net": -1032,
+      "peak": 1066,
+      "games": 10000,
+      "zone": {
+        "normal": {
+          "games": 2038,
+          "wins": 8
+        },
+        "upper": {
+          "games": 169,
+          "wins": 3
+        }
+      },
+      "counts": {
+        "normal": 6116,
+        "cz": 801,
+        "prep": 83,
+        "align": 23,
+        "bonus": 436,
+        "at": 2365,
+        "zone": 176,
+        "zero": 3,
+        "BIG": 23,
+        "REG": 0,
+        "czEntries": 47,
+        "strongEntries": 3,
+        "czWins": 14,
+        "artEntries": 11,
+        "zoneEntries": 36,
+        "gameCzEntries": 45,
+        "ceilingCzEntries": 0,
+        "rareCzEntries": 5,
+        "backgroundCzEntries": 0,
+        "highNormalG": 932,
+        "favoredNormalG": 3306
+      },
+      "direct": {
+        "eligible": 2210,
+        "high": 410,
+        "zoneWins": 11,
+        "directWins": 0,
+        "directPoints": 0,
+        "promotions": 7,
+        "suica100": 0,
+        "suica300": 0
+      },
+      "complete": false
+    },
+    {
+      "setting": 2,
+      "seed": "mode-selection-validation-20261014|s2|1324",
+      "bet": 30000,
+      "paid": 46078,
+      "net": 16078,
+      "peak": 17822,
+      "games": 10000,
+      "zone": {
+        "normal": {
+          "games": 2300,
+          "wins": 16
+        },
+        "upper": {
+          "games": 2052,
+          "wins": 22
+        }
+      },
+      "counts": {
+        "normal": 4266,
+        "cz": 440,
+        "prep": 44,
+        "align": 16,
+        "bonus": 288,
+        "at": 4618,
+        "zone": 328,
+        "zero": 13,
+        "BIG": 16,
+        "REG": 0,
+        "czEntries": 27,
+        "strongEntries": 1,
+        "czWins": 9,
+        "artEntries": 9,
+        "zoneEntries": 73,
+        "gameCzEntries": 25,
+        "ceilingCzEntries": 0,
+        "rareCzEntries": 3,
+        "backgroundCzEntries": 0,
+        "highNormalG": 437,
+        "favoredNormalG": 2357
+      },
+      "direct": {
+        "eligible": 4359,
+        "high": 661,
+        "zoneWins": 36,
+        "directWins": 0,
+        "directPoints": 0,
+        "promotions": 14,
+        "suica100": 0,
+        "suica300": 0
+      },
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "seed": "mode-selection-finalcheck-20261014|s3|0",
+      "bet": 30000,
+      "paid": 26060,
+      "net": -3940,
+      "peak": 0,
+      "games": 10000,
+      "zone": {
+        "normal": {
+          "games": 1895,
+          "wins": 5
+        },
+        "upper": {
+          "games": 0,
+          "wins": 0
+        }
+      },
+      "counts": {
+        "normal": 6924,
+        "cz": 532,
+        "prep": 50,
+        "align": 15,
+        "bonus": 267,
+        "at": 2067,
+        "zone": 145,
+        "zero": 4,
+        "BIG": 15,
+        "REG": 0,
+        "czEntries": 29,
+        "strongEntries": 2,
+        "czWins": 9,
+        "artEntries": 12,
+        "zoneEntries": 33,
+        "gameCzEntries": 26,
+        "ceilingCzEntries": 0,
+        "rareCzEntries": 5,
+        "backgroundCzEntries": 0,
+        "highNormalG": 1108,
+        "favoredNormalG": 3318
+      },
+      "direct": {
+        "eligible": 1895,
+        "high": 238,
+        "zoneWins": 5,
+        "directWins": 0,
+        "directPoints": 0,
+        "promotions": 8,
+        "suica100": 0,
+        "suica300": 0
+      },
+      "complete": false
+    },
+    {
+      "setting": 3,
+      "seed": "mode-selection-finalcheck-20261014|s3|2004",
+      "bet": 29766,
+      "paid": 48776,
+      "net": 19010,
+      "peak": 19010,
+      "games": 9922,
+      "zone": {
+        "normal": {
+          "games": 2224,
+          "wins": 3
+        },
+        "upper": {
+          "games": 2484,
+          "wins": 28
+        }
+      },
+      "counts": {
+        "normal": 3787,
+        "cz": 467,
+        "prep": 52,
+        "align": 14,
+        "bonus": 258,
+        "at": 4993,
+        "zone": 351,
+        "zero": 29,
+        "BIG": 14,
+        "REG": 0,
+        "czEntries": 28,
+        "strongEntries": 0,
+        "czWins": 7,
+        "artEntries": 10,
+        "zoneEntries": 77,
+        "gameCzEntries": 28,
+        "ceilingCzEntries": 0,
+        "rareCzEntries": 0,
+        "backgroundCzEntries": 0,
+        "highNormalG": 361,
+        "favoredNormalG": 2002
+      },
+      "direct": {
+        "eligible": 4717,
+        "high": 1349,
+        "zoneWins": 28,
+        "directWins": 0,
+        "directPoints": 0,
+        "promotions": 12,
+        "suica100": 0,
+        "suica300": 0
+      },
+      "complete": true
+    },
+    {
+      "setting": 4,
+      "seed": "mode-selection-validation-20261014|s4|0",
+      "bet": 30000,
+      "paid": 30090,
+      "net": 90,
+      "peak": 2554,
+      "games": 10000,
+      "zone": {
+        "normal": {
+          "games": 1897,
+          "wins": 13
+        },
+        "upper": {
+          "games": 443,
+          "wins": 2
+        }
+      },
+      "counts": {
+        "normal": 6147,
+        "cz": 676,
+        "prep": 69,
+        "align": 18,
+        "bonus": 378,
+        "at": 2555,
+        "zone": 157,
+        "zero": 8,
+        "BIG": 18,
+        "REG": 0,
+        "czEntries": 39,
+        "strongEntries": 1,
+        "czWins": 11,
+        "artEntries": 14,
+        "zoneEntries": 42,
+        "gameCzEntries": 34,
+        "ceilingCzEntries": 0,
+        "rareCzEntries": 6,
+        "backgroundCzEntries": 0,
+        "highNormalG": 532,
+        "favoredNormalG": 2921
+      },
+      "direct": {
+        "eligible": 2341,
+        "high": 435,
+        "zoneWins": 15,
+        "directWins": 0,
+        "directPoints": 0,
+        "promotions": 8,
+        "suica100": 0,
+        "suica300": 0
+      },
+      "complete": false
+    },
+    {
+      "setting": 4,
+      "seed": "mode-selection-validation-20261014|s4|1077",
+      "bet": 26685,
+      "paid": 45688,
+      "net": 19003,
+      "peak": 19003,
+      "games": 8895,
+      "zone": {
+        "normal": {
+          "games": 3396,
+          "wins": 27
+        },
+        "upper": {
+          "games": 1356,
+          "wins": 12
+        }
+      },
+      "counts": {
+        "normal": 2363,
+        "cz": 647,
+        "prep": 73,
+        "align": 19,
+        "bonus": 378,
+        "at": 5061,
+        "zone": 354,
+        "zero": 31,
+        "BIG": 19,
+        "REG": 0,
+        "czEntries": 38,
+        "strongEntries": 1,
+        "czWins": 10,
+        "artEntries": 12,
+        "zoneEntries": 81,
+        "gameCzEntries": 38,
+        "ceilingCzEntries": 0,
+        "rareCzEntries": 1,
+        "backgroundCzEntries": 0,
+        "highNormalG": 238,
+        "favoredNormalG": 1558
+      },
+      "direct": {
+        "eligible": 4759,
+        "high": 1425,
+        "zoneWins": 36,
+        "directWins": 0,
+        "directPoints": 0,
+        "promotions": 13,
+        "suica100": 0,
+        "suica300": 0
+      },
+      "complete": true
+    },
+    {
+      "setting": 5,
+      "seed": "mode-selection-validation-20261014|s5|0",
+      "bet": 30000,
+      "paid": 26042,
+      "net": -3958,
+      "peak": 1571,
+      "games": 10000,
+      "zone": {
+        "normal": {
+          "games": 1835,
+          "wins": 11
+        },
+        "upper": {
+          "games": 0,
+          "wins": 0
+        }
+      },
+      "counts": {
+        "normal": 6810,
+        "cz": 618,
+        "prep": 66,
+        "align": 19,
+        "bonus": 344,
+        "at": 2011,
+        "zone": 132,
+        "zero": 4,
+        "BIG": 19,
+        "REG": 0,
+        "czEntries": 35,
+        "strongEntries": 2,
+        "czWins": 12,
+        "artEntries": 13,
+        "zoneEntries": 33,
+        "gameCzEntries": 35,
+        "ceilingCzEntries": 0,
+        "rareCzEntries": 2,
+        "backgroundCzEntries": 0,
+        "highNormalG": 930,
+        "favoredNormalG": 3363
+      },
+      "direct": {
+        "eligible": 1830,
+        "high": 208,
+        "zoneWins": 10,
+        "directWins": 0,
+        "directPoints": 0,
+        "promotions": 7,
+        "suica100": 0,
+        "suica300": 0
+      },
+      "complete": false
+    },
+    {
+      "setting": 5,
+      "seed": "mode-selection-validation-20261014|s5|1005",
+      "bet": 27096,
+      "paid": 46103,
+      "net": 19007,
+      "peak": 19007,
+      "games": 9032,
+      "zone": {
+        "normal": {
+          "games": 3571,
+          "wins": 20
+        },
+        "upper": {
+          "games": 1288,
+          "wins": 8
+        }
+      },
+      "counts": {
+        "normal": 2673,
+        "cz": 496,
+        "prep": 48,
+        "align": 14,
+        "bonus": 260,
+        "at": 5158,
+        "zone": 383,
+        "zero": 31,
+        "BIG": 14,
+        "REG": 0,
+        "czEntries": 28,
+        "strongEntries": 1,
+        "czWins": 6,
+        "artEntries": 10,
+        "zoneEntries": 75,
+        "gameCzEntries": 27,
+        "ceilingCzEntries": 0,
+        "rareCzEntries": 2,
+        "backgroundCzEntries": 0,
+        "highNormalG": 222,
+        "favoredNormalG": 1568
+      },
+      "direct": {
+        "eligible": 4866,
+        "high": 1051,
+        "zoneWins": 24,
+        "directWins": 0,
+        "directPoints": 0,
+        "promotions": 15,
+        "suica100": 0,
+        "suica300": 0
+      },
+      "complete": true
+    },
+    {
+      "setting": 6,
+      "seed": "mode-selection-validation-20261014|s6|0",
+      "bet": 30000,
+      "paid": 36964,
+      "net": 6964,
+      "peak": 6964,
+      "games": 10000,
+      "zone": {
+        "normal": {
+          "games": 3649,
+          "wins": 33
+        },
+        "upper": {
+          "games": 0,
+          "wins": 0
+        }
+      },
+      "counts": {
+        "normal": 4491,
+        "cz": 736,
+        "prep": 79,
+        "align": 24,
+        "bonus": 414,
+        "at": 3957,
+        "zone": 299,
+        "zero": 17,
+        "BIG": 24,
+        "REG": 0,
+        "czEntries": 45,
+        "strongEntries": 0,
+        "czWins": 15,
+        "artEntries": 15,
+        "zoneEntries": 76,
+        "gameCzEntries": 43,
+        "ceilingCzEntries": 0,
+        "rareCzEntries": 2,
+        "backgroundCzEntries": 0,
+        "highNormalG": 540,
+        "favoredNormalG": 2783
+      },
+      "direct": {
+        "eligible": 3639,
+        "high": 685,
+        "zoneWins": 31,
+        "directWins": 0,
+        "directPoints": 0,
+        "promotions": 18,
+        "suica100": 0,
+        "suica300": 0
+      },
+      "complete": false
+    },
+    {
+      "setting": 6,
+      "seed": "mode-selection-validation-20261014|s6|1131",
+      "bet": 28347,
+      "paid": 47357,
+      "net": 19010,
+      "peak": 19010,
+      "games": 9449,
+      "zone": {
+        "normal": {
+          "games": 2391,
+          "wins": 28
+        },
+        "upper": {
+          "games": 2198,
+          "wins": 22
+        }
+      },
+      "counts": {
+        "normal": 3360,
+        "cz": 495,
+        "prep": 43,
+        "align": 14,
+        "bonus": 262,
+        "at": 4876,
+        "zone": 399,
+        "zero": 23,
+        "BIG": 14,
+        "REG": 0,
+        "czEntries": 28,
+        "strongEntries": 1,
+        "czWins": 8,
+        "artEntries": 8,
+        "zoneEntries": 78,
+        "gameCzEntries": 24,
+        "ceilingCzEntries": 0,
+        "rareCzEntries": 5,
+        "backgroundCzEntries": 0,
+        "highNormalG": 514,
+        "favoredNormalG": 1709
+      },
+      "direct": {
+        "eligible": 4593,
+        "high": 487,
+        "zoneWins": 49,
+        "directWins": 0,
+        "directPoints": 0,
+        "promotions": 14,
+        "suica100": 0,
+        "suica300": 0
+      },
+      "complete": true
+    }
+  ]
+}

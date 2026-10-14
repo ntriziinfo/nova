@@ -9,7 +9,8 @@ test('reset lottery exhaustively matches impurity and initial mode allocation',(
    assert.equal(state.games,0);assert.equal(state.level,'low');
   }
   for(const {pt,weight} of n.resetDistribution(setting))assert.equal(counts[pt],weight*100);
-  assert.deepEqual(modes,{A:5000,B:2500,C:1000,天国:1200,天国ループ:300});
+  const approved=JSON.parse(fs.readFileSync('docs/mode-selection-20261014.json')).rows.initial[setting-1];
+  assert.deepEqual(modes,Object.fromEntries(n.modes.map((mode,i)=>[mode,Math.round(approved[i]*100)])));
  }
 });
 test('load normalization and bonus release do not redraw reset points',()=>{for(const pt of [0,25,50,75,90,100]){assert.equal(n.normalize(JSON.parse(JSON.stringify({impurity:pt}))).impurity,pt);}const s=n.claim(n.reset(()=>.999),false,()=>0);assert.equal(s.state.impurity,0);assert.equal(s.sets,1);assert.equal(s.zones[0],'urapi');assert.equal(n.claim(s.state).sets,0);});

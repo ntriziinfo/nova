@@ -19,7 +19,8 @@ test('legacy modes migrate while valid heaven and saved CZ reservations survive'
 });
 
 test('AT exit redraws heaven without changing impurity, and bonus cannot demote it',()=>{
- assert.equal(n.reset(()=>.5,6).mode,'B');assert.equal(n.ceiling(n.reset(()=>.5,6)),700);
+ assert.equal(n.reset(()=>.5,6).mode,'A');assert.equal(n.ceiling(n.reset(()=>.5,6)),800);
+ assert.equal(n.reset(()=>.6,6).mode,'B');assert.equal(n.ceiling(n.reset(()=>.6,6)),700);
  for(const dryAtEnd of [false,true]){
   const ended=n.afterArt({mode:'天国',games:100,impurity:20,level:'high',highLeft:10},{phase:'art'},{phase:'normal',dryAtEnd},{},()=>0);
   assert.equal(ended.games,0);assert.equal(ended.mode,'A');assert.equal(ended.impurity,dryAtEnd?22:20);assert.equal(ended.level,'low');
