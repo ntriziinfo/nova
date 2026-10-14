@@ -4670,7 +4670,7 @@
       showOverlay(normalState.flow.phase === "art" ? (normalState.flow.initialStage?"AT準備中":"AT") : "ボーナス終了");
     }
     if(aTypeEnd && !premiumOneGameRen && normalizeATypeBonusKind(endedBonusKind)==='BIG'){
-      displayNovaResult(NovaResults.bonus(resultPayout,normalState.flow));
+      displayNovaResult(NovaResults.bonus(resultPayout,normalState.flow,normalState.internal?.mode));
     }
     updateDisplay();
     persistState();
@@ -5154,6 +5154,7 @@
     NovaAim.hide();
     NovaInitialDuo.clear();
     normalState.resultCard=card;NovaResults.show(card);
+    if(card.kind==='bonus')persistState(); // Also save a character revealed after a deferred win animation.
     $('overlay')?.classList.remove('show');
     pauseNormalBgm();
     // Keep AUTO selected; its audio gate waits for the complete eyecatch before BET.

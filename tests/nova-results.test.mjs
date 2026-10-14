@@ -17,6 +17,64 @@ test('BB result preserves its awarded points and destination through reload with
  }
 });
 
+test('BB character hints have exact unconditional rates for each post-bonus mode',()=>{
+ const cases=[
+  ['A',{kushuri:4250,toto:4250,nito:500,sosuke:500,urapi:500,ouma:0,giru:0,sora:0}],
+  ['B',{kushuri:3250,toto:3250,nito:1000,sosuke:1000,urapi:500,ouma:1000,giru:0,sora:0}],
+  ['C',{kushuri:2500,toto:2500,nito:1000,sosuke:1000,urapi:1500,ouma:1000,giru:500,sora:0}],
+  ...['天国','天国ループ'].map(mode=>[mode,{kushuri:2350,toto:2350,nito:1000,sosuke:1000,urapi:1500,ouma:1000,giru:500,sora:300}])
+ ];
+ for(const [mode,expected] of cases){
+  const counts=Object.fromEntries(Object.keys(expected).map(k=>[k,0]));let draws=0;
+  const flow=Object.freeze({phase:'normal'});
+  for(let i=0;i<10000;i++){
+   const card=r.bonus('150',flow,mode,()=>{draws++;return (i+.5)/10000;});
+   counts[card.character]++;assert.equal(card.kind,'bonus');assert.equal(card.pt,'150');assert.equal(card.color,'blue');
+  }
+  assert.deepEqual(counts,expected,mode);assert.equal(draws,10000);
+  assert.equal(r.bonusHintRates(mode).reduce((n,h)=>n+h.percent,0),100);
+ }
+});
+
+test('BB mode confirmations never appear below their required mode, at AT entry, or with unknown data',()=>{
+ for(const mode of ['A','B','C','天国','天国ループ']){
+  const rates=r.bonusHintRates(mode);let boundary=0;
+  for(const hint of rates){
+   if(!hint.percent)continue;
+   for(const delta of [.00001,hint.percent-.00001]){
+    const character=r.bonus('150',{phase:'normal'},mode,()=>(boundary+delta)/100).character;
+    assert(hint.characters.includes(character),mode+' / '+hint.id);
+   }
+   boundary+=hint.percent;
+  }
+  for(const phase of ['art','cz',undefined])assert.equal(r.bonus('150',{phase},mode,()=>{throw Error('AT cannot hint its next normal mode');}).character,'nova');
+ }
+ for(const mode of [undefined,'','unknown',null,0])assert.equal(r.bonus('150',{phase:'normal'},mode,()=>{throw Error('unknown mode must not draw');}).character,'nova');
+ for(const roll of [NaN,-.1,1,Infinity])assert.equal(r.bonus('150',{phase:'normal'},'天国',()=>roll).character,'nova');
+});
+
+test('BB mode image uses separate crypto randomness and keeps its saved image without consuming the game RNG',async()=>{
+ let draws=0;const c=vm.createContext({crypto:{getRandomValues(a){draws++;a[0]=Math.floor(.99*4294967296);return a;}}});
+ vm.runInContext(fs.readFileSync('nova-results.js','utf8'),c);vm.runInContext('Math.random=()=>{throw Error("game RNG used by hint")}',c);
+ const flow=Object.freeze({phase:'normal'}),card=c.NovaResults.bonus('150',flow,'天国');
+ assert.equal(card.character,'sora');assert.equal(draws,1);
+ const {c:view,fields,images,flush}=presenter();view.show(card);images[0].onload();await flush();
+ const saved=JSON.parse(JSON.stringify(card));view.hide();view.show(saved);
+ assert.equal(images[0].src,'assets/illustrations/lamps-20260916/sora1.png');assert.equal(draws,1);
+ assert.equal(fields.span.textContent,'BB獲得');assert.equal(fields.output.textContent,'150pt');
+ assert.equal(fields['.novaResultNext'].textContent,'次のBETで通常へ');
+ assert(!JSON.stringify(saved).includes('天国'),'result must not disclose the exact internal mode');
+});
+
+test('all BB hint images render as bonus awards, including the two initial-zone characters',async()=>{
+ for(const [character,file] of Object.entries({kushuri:'lamps-20260928/kushuri.png',toto:'lamps-20260916/toto.png',nito:'lamps-20260928/nito.png',sosuke:'lamps-20260916/sosuke.png',urapi:'lamps-20260916/urapi.png',ouma:'lamps-20260916/ouma1.png',giru:'lamps-20260916/giru1.png',sora:'lamps-20260916/sora1.png'})){
+  const {c,fields,images,flush}=presenter();c.show({kind:'bonus',character,color:'blue',pt:'150',next:'通常'});
+  images[0].onload();await flush();assert.equal(images[0].src,'assets/illustrations/'+file);
+  assert.equal(c.root.dataset.initial,'false');assert.equal(fields.span.textContent,'BB獲得');
+  assert.equal(fields['.novaResultTotal'].hidden,true);assert.equal(fields.output.textContent,'150pt');
+ }
+});
+
 test('sortie result uses this challenge hit count including the final award, without a result draw or modifying stocks',()=>{
  for(let count=0;count<=10;count++){
   for(const won of [false,true]){

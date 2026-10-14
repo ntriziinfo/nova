@@ -1,0 +1,238 @@
+{
+  "scope": "BB終了時、AT非当選で通常へ戻る場合のみ。昇格後のモードを示唆",
+  "percentages": "枠単位の排他的な出現率。同じ枠の2キャラは半々",
+  "rng": "crypto.getRandomValues（遊技抽選とは別）",
+  "background": "全て青",
+  "ratesByMode": {
+    "A": [
+      {
+        "label": "デフォルト",
+        "characters": [
+          "kushuri",
+          "toto"
+        ],
+        "percent": 85
+      },
+      {
+        "label": "モードB以上示唆",
+        "characters": [
+          "nito",
+          "sosuke"
+        ],
+        "percent": 10
+      },
+      {
+        "label": "モードC以上示唆",
+        "characters": [
+          "urapi"
+        ],
+        "percent": 5
+      },
+      {
+        "label": "モードB以上確定",
+        "characters": [
+          "ouma"
+        ],
+        "percent": 0
+      },
+      {
+        "label": "モードC以上確定",
+        "characters": [
+          "giru"
+        ],
+        "percent": 0
+      },
+      {
+        "label": "天国以上確定",
+        "characters": [
+          "sora"
+        ],
+        "percent": 0
+      }
+    ],
+    "B": [
+      {
+        "label": "デフォルト",
+        "characters": [
+          "kushuri",
+          "toto"
+        ],
+        "percent": 65
+      },
+      {
+        "label": "モードB以上示唆",
+        "characters": [
+          "nito",
+          "sosuke"
+        ],
+        "percent": 20
+      },
+      {
+        "label": "モードC以上示唆",
+        "characters": [
+          "urapi"
+        ],
+        "percent": 5
+      },
+      {
+        "label": "モードB以上確定",
+        "characters": [
+          "ouma"
+        ],
+        "percent": 10
+      },
+      {
+        "label": "モードC以上確定",
+        "characters": [
+          "giru"
+        ],
+        "percent": 0
+      },
+      {
+        "label": "天国以上確定",
+        "characters": [
+          "sora"
+        ],
+        "percent": 0
+      }
+    ],
+    "C": [
+      {
+        "label": "デフォルト",
+        "characters": [
+          "kushuri",
+          "toto"
+        ],
+        "percent": 50
+      },
+      {
+        "label": "モードB以上示唆",
+        "characters": [
+          "nito",
+          "sosuke"
+        ],
+        "percent": 20
+      },
+      {
+        "label": "モードC以上示唆",
+        "characters": [
+          "urapi"
+        ],
+        "percent": 15
+      },
+      {
+        "label": "モードB以上確定",
+        "characters": [
+          "ouma"
+        ],
+        "percent": 10
+      },
+      {
+        "label": "モードC以上確定",
+        "characters": [
+          "giru"
+        ],
+        "percent": 5
+      },
+      {
+        "label": "天国以上確定",
+        "characters": [
+          "sora"
+        ],
+        "percent": 0
+      }
+    ],
+    "天国": [
+      {
+        "label": "デフォルト",
+        "characters": [
+          "kushuri",
+          "toto"
+        ],
+        "percent": 47
+      },
+      {
+        "label": "モードB以上示唆",
+        "characters": [
+          "nito",
+          "sosuke"
+        ],
+        "percent": 20
+      },
+      {
+        "label": "モードC以上示唆",
+        "characters": [
+          "urapi"
+        ],
+        "percent": 15
+      },
+      {
+        "label": "モードB以上確定",
+        "characters": [
+          "ouma"
+        ],
+        "percent": 10
+      },
+      {
+        "label": "モードC以上確定",
+        "characters": [
+          "giru"
+        ],
+        "percent": 5
+      },
+      {
+        "label": "天国以上確定",
+        "characters": [
+          "sora"
+        ],
+        "percent": 3
+      }
+    ],
+    "天国ループ": [
+      {
+        "label": "デフォルト",
+        "characters": [
+          "kushuri",
+          "toto"
+        ],
+        "percent": 47
+      },
+      {
+        "label": "モードB以上示唆",
+        "characters": [
+          "nito",
+          "sosuke"
+        ],
+        "percent": 20
+      },
+      {
+        "label": "モードC以上示唆",
+        "characters": [
+          "urapi"
+        ],
+        "percent": 15
+      },
+      {
+        "label": "モードB以上確定",
+        "characters": [
+          "ouma"
+        ],
+        "percent": 10
+      },
+      {
+        "label": "モードC以上確定",
+        "characters": [
+          "giru"
+        ],
+        "percent": 5
+      },
+      {
+        "label": "天国以上確定",
+        "characters": [
+          "sora"
+        ],
+        "percent": 3
+      }
+    ]
+  }
+}

@@ -34,6 +34,14 @@ test('BB result keeps AUTO selected and advances only after the result sound fin
  c.bonusConfirmSoundPlaying=false;c.runAutoStep();assert.equal(calls.filter(x=>x[0]==='spin').length,1);
 });
 
+test('BB character selected before a win animation is saved when finally revealed',()=>{
+ const {c,after,calls}=setup();c.NovaAim.busy=true;
+ const card={kind:'bonus',character:'giru',color:'blue',pt:'150',next:'通常'};
+ c.displayNovaResult(card);assert.equal(after.length,1);assert.equal(calls.filter(x=>x[0]==='show').length,0);
+ c.NovaAim.busy=false;after[0]();assert.equal(c.normalState.resultCard,card);
+ assert.equal(calls.filter(x=>x[0]==='save').length,1);
+});
+
 test('final sortie award completes its hold before the result, then AUTO waits for result audio and advances once',()=>{
  const {c,calls}=setup();c.normalState.pendingSortieResult={kind:'sortie',character:'all',color:'gold',count:4};
  c.normalState.flow={phase:'art',remaining:'500',queuedZones:['sora','sora','toto','giru']};const flow=JSON.stringify(c.normalState.flow);

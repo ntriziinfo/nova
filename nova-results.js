@@ -9,6 +9,24 @@ globalThis.NovaResults=(()=>{
   {character:'ouma2',color:'gold',minSetting:5,percent:2},
   {character:'group',color:'rainbow',minSetting:6,percent:1}
  ];
+ const bonusModes=['A','B','C','天国','天国ループ'];
+ const bonusModeHints=[
+  {id:'default',label:'デフォルト',characters:['kushuri','toto']},
+  {id:'b-hint',label:'モードB以上示唆',characters:['nito','sosuke'],minimum:1,percent:20,otherPercent:10},
+  {id:'c-hint',label:'モードC以上示唆',characters:['urapi'],minimum:2,percent:15,otherPercent:5},
+  {id:'b-confirmed',label:'モードB以上確定',characters:['ouma'],minimum:1,percent:10,otherPercent:0},
+  {id:'c-confirmed',label:'モードC以上確定',characters:['giru'],minimum:2,percent:5,otherPercent:0},
+  {id:'heaven-confirmed',label:'天国以上確定',characters:['sora'],minimum:3,percent:3,otherPercent:0}
+ ];
+ function bonusHintRates(mode){
+  const index=bonusModes.indexOf(mode);if(index<0)return [];
+  const hints=bonusModeHints.slice(1).map(h=>({...h,characters:[...h.characters],percent:index>=h.minimum?h.percent:h.otherPercent}));
+  return [{...bonusModeHints[0],characters:[...bonusModeHints[0].characters],percent:100-hints.reduce((sum,h)=>sum+h.percent,0)},...hints];
+ }
+ function bonusVisualRandom(){
+  // Presentation has its own randomness; never fall back to the game's Math.random.
+  try{return globalThis.crypto.getRandomValues(new Uint32Array(1))[0]/4294967296;}catch{return NaN;}
+ }
  function pick(kind,zone,setting,rng=Math.random){
   if(kind==='at'){
    // Reuse the existing single result draw; presentation never consumes an extra game draw.
@@ -27,9 +45,17 @@ globalThis.NovaResults=(()=>{
   if(before?.zone&&!after?.zone)return {kind:'zone',...pick('zone',before.zone,setting,rng),pt:String(after?.award??before.award??0)};
   return null;
  }
- function bonus(pt,flow){
-  // Character/mode hints are not assigned yet. This common card uses no lottery draw.
-  return {kind:'bonus',character:'nova',color:'blue',pt:String(pt),next:flow?.phase==='art'?'AT':'通常'};
+ function bonus(pt,flow,mode,rng=bonusVisualRandom){
+  const result={kind:'bonus',character:'nova',color:'blue',pt:String(pt),next:flow?.phase==='art'?'AT':'通常'};
+  // AT end draws a new mode, so a BB returning to AT cannot hint the next normal mode.
+  if(flow?.phase!=='normal')return result;
+  const rates=bonusHintRates(mode);if(!rates.length)return result;
+  let roll=rng()*100;if(!Number.isFinite(roll)||roll<0||roll>=100)return result;
+  for(const hint of rates){
+   if(roll<hint.percent)return {...result,character:hint.characters[Math.floor(roll/hint.percent*hint.characters.length)]};
+   roll-=hint.percent;
+  }
+  return result;
  }
  function sortie(event,flow){
   if(!event?.finished||!Number.isInteger(event.hits)||event.hits<0)return null;
@@ -68,8 +94,8 @@ globalThis.NovaResults=(()=>{
    positions=Object.fromEntries(Object.entries(previous).map(([id,p])=>[id,Object.fromEntries(['x','y','w','h'].filter(k=>Number.isFinite(p[k])).map(k=>[k,p[k]]))]));
   }
  }catch{positions={};}
- const key=()=>active?.kind==='bonus'?'bonus-blue':active?.kind==='sortie'?'sortie-gold':active?active.character+'-'+active.color:'sosuke-red';
- const layout=()=>({...defaults,...(active?.character==='all'?{x:14,y:28,w:72,h:36,numberX:20,numberY:80,numberW:60,numberH:13,font:8}:{}),...(active?.kind==='sortie'?{numberX:4,numberW:92,font:6}:{}),...(active?.kind==='bonus'?{font:14}:{}),...positions[key()]});
+ const key=()=>active?.kind==='bonus'?'bonus-'+(active.character==='nova'?'blue':active.character):active?.kind==='sortie'?'sortie-gold':active?active.character+'-'+active.color:'sosuke-red';
+ const layout=()=>({...defaults,...(active?.character==='all'?{x:14,y:28,w:72,h:36,numberX:20,numberY:80,numberW:60,numberH:13,font:8}:{}),...(active?.kind==='sortie'?{numberX:4,numberW:92,font:6}:{}),...(active?.kind==='bonus'?{font:14,...positions['bonus-blue']}:{}),...positions[key()]});
  function loadImage(character,color){
   const src=character==='nova'?'assets/logo/nova_logo.svg':'assets/illustrations/'+(characterImages[character]||characterImages.sosuke),cached=images.get(src);
   if(cached&&!cached.failed)return cached;
@@ -130,7 +156,8 @@ globalThis.NovaResults=(()=>{
   button.onclick=()=>{if(!active){preview=true;show({kind:'preview',character:'sosuke',color:'red',pt:'1234'});}select.value=key();fill();panel.show();};
   select.insertAdjacentHTML('beforeend','<option value="sortie-gold">出陣チャレンジ・獲得数</option>');
   select.insertAdjacentHTML('beforeend','<option value="bonus-blue">BB終了・共通</option>');
-  select.onchange=()=>{preview=true;const [character,color]=select.value.split('-');show(character==='bonus'?bonus('150',{phase:'normal'}):character==='sortie'?sortie({finished:true,hits:5},{queuedZones:['sora','sora','ura_sora','giru','kushuri_nito']}):{kind:'preview',character,color,pt:'1234'});fill();};
+  select.insertAdjacentHTML('beforeend',bonusModeHints.flatMap(h=>h.characters.map(id=>`<option value="bonus-${id}">BB終了・${names[id]}／${h.label}</option>`)).join(''));
+  select.onchange=()=>{preview=true;const [character,color]=select.value.split('-');show(character==='bonus'?{...bonus('150',{phase:'normal'}),character:color==='blue'?'nova':color}:character==='sortie'?sortie({finished:true,hits:5},{queuedZones:['sora','sora','ura_sora','giru','kushuri_nito']}):{kind:'preview',character,color,pt:'1234'});fill();};
   panel.oninput=e=>{const k=e.target.dataset.field;if(!k)return;let v=Number(e.target.value);if(!Number.isFinite(v))return;v=Math.max(['x','y','imageX','imageY','numberX','numberY'].includes(k)?-100:1,Math.min(200,v));positions[key()]={...layout(),[k]:v};try{localStorage.setItem('nova_result_layout_v2',JSON.stringify(positions));}catch{}apply();};
   panel.querySelector('#novaResultReset').onclick=()=>{delete positions[key()];localStorage.setItem('nova_result_layout_v2',JSON.stringify(positions));apply();fill();};
   panel.querySelector('#novaResultClose').onclick=()=>{panel.close();if(preview){preview=false;hide();}};
@@ -173,5 +200,5 @@ globalThis.NovaResults=(()=>{
  }
  function hide(){imageRequest++;if(root)root.hidden=true;active=null;}
  if(typeof document!=='undefined')document.addEventListener('DOMContentLoaded',init);
- return {pick,transition,bonus,sortie,chain,show,hide,get visible(){return !!active},get editing(){return !!panel?.open}};
+ return {pick,transition,bonus,bonusHintRates,sortie,chain,show,hide,get visible(){return !!active},get editing(){return !!panel?.open}};
 })();
