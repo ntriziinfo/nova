@@ -7866,7 +7866,7 @@
     // A rare role, CZ win, direct award or challenge entry alone is not a zone guarantee.
     const zone=resolved?.atOutcome?.zone;
     const after=resolved?.flowAfter;
-    if(after?.phase==='art'&&((zone&&(after.atPrelude?.zones?.includes(zone)||zone===after.pendingZone))||resolved?.comebackEvent==='success'))return 'hot';
+    if(after?.phase==='art'&&((zone&&(after.atPrelude?.zones?.some(z=>z===zone||(z==='fixed50_sosuke'&&zone==='sosuke'))||zone===after.pendingZone))||resolved?.comebackEvent==='success'))return 'hot';
     if(before?.phase==='art')return Number(resolved?.atOutcome?.direct)>0?'bigChance':'chance';
     if((before?.phase||'normal')==='normal'&&Number(resolved?.czChance)>=.6)return 'bigChance';
     return 'chance';

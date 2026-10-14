@@ -1,0 +1,499 @@
+{
+  "id": "sosuke-fixed50-20261014-10000g",
+  "approvedChoice": "上乗せ額の平均を保つよう頻度を減らして反映",
+  "baseCommit": "80efb0b73cc0a92d59869453dec5d2eb50101834",
+  "games": 10000,
+  "trials": 300,
+  "options": {
+    "rng": "xoshiro128",
+    "exactGames": true,
+    "completeLimitPt": 19000,
+    "completeMyLimitPt": 0,
+    "stopAtComplete": true,
+    "atBetRefund": true,
+    "replayRefund": true
+  },
+  "assumptions": {
+    "fixedQuotaAward": 50,
+    "ordinaryPrelude": true,
+    "ordinarySevenAndRoulette": true,
+    "zonePaidGames": 2,
+    "additionalZoneBet": 6,
+    "rouletteUpgrade": false,
+    "fixedZonePromotion": false,
+    "existingZonesPreserved": true
+  },
+  "baselineHashes": {
+    "nova-complete.js": "ff3796e6f4aa810393ab5e79d0daab7e12d76982ce6a402b03a68155d45f2a8c",
+    "nova-tuning.js": "6ab505d1aac2c671696ea383c10ffd3e85b8e2ce91ac7d5641d80fd8e27d9f4b",
+    "nova-decrement.js": "e1cda1eff88e32819c691ea9685c366ef4f9b0c8d9781c801dcb0a9b93fa0bc4",
+    "nova-art.js": "62c1bab78b0e32f40ddae65b1977688cb241a13d6e8a27187cc9118fec45c12a",
+    "nova-balance.js": "1178a0813e98e6a6d40c4205993a7dd52999bca793f22ebf7cf78de8a1dd1f50",
+    "nova-flow.js": "996a9d6c84770f1dd3750b99e99638083290c559647b9638cc9a1a95275830a5",
+    "nova-normal.js": "32132433cdd7cbc7e48da1f8a6aeb867af9033aa9fa3b4aa3507e03a4a4a9291",
+    "nova-progress.js": "533808b030882b0238b085307f90aea0dace177aa4dcba782e513fa378850bbe",
+    "nova-stock-entry.js": "37be2cb9e81c4408880d2bac473e80e9b49ad1824b7a5ccf32ad43aa0f007e91",
+    "nova-game.js": "6e0d65d60078c1558d2baf2ec5138adde4ce68faf562f0bd172ea848811985e8"
+  },
+  "approvedCandidateHashes": {
+    "nova-art.js": "49bb1c28c6b637cf727bf908f79d8c26ababbb2b4ab2dfb5ca4092116f8108d0",
+    "nova-balance.js": "b0a87192163f75cdb449fe5a27585c42fed7dd7d5c0d364a0d95cc9e9c617dfc",
+    "nova-stock-entry.js": "d1a7eecdb5000e08410d1676e4971421cfea991a38d741f200f9464e846bbc2a",
+    "nova-game.js": "c6993af1a86ef69997f9c4799d6ec16ad310942cf5cf5fd738bcc5951a79eb7e"
+  },
+  "results": [
+    {
+      "setting": 1,
+      "n": 300,
+      "rtp": 92.90374444444444,
+      "rtp95": [
+        91.33859544457853,
+        94.46889344431037
+      ],
+      "win": 31.666666666666668,
+      "peak10000": 0.6666666666666666,
+      "complete": 0,
+      "fixedWon": 826,
+      "fixedFinished": 826,
+      "fixedGames": 1652,
+      "fixedPoints": 41300
+    },
+    {
+      "setting": 2,
+      "n": 300,
+      "rtp": 95.71260000000001,
+      "rtp95": [
+        94.13285612184058,
+        97.29234387815943
+      ],
+      "win": 35.333333333333336,
+      "peak10000": 2.3333333333333335,
+      "complete": 0,
+      "fixedWon": 1350,
+      "fixedFinished": 1349,
+      "fixedGames": 2698,
+      "fixedPoints": 67450
+    },
+    {
+      "setting": 3,
+      "n": 300,
+      "rtp": 96.64607468041838,
+      "rtp95": [
+        94.77124860759172,
+        98.52090075324504
+      ],
+      "win": 39.666666666666664,
+      "peak10000": 3.6666666666666665,
+      "complete": 0.3333333333333333,
+      "fixedWon": 833,
+      "fixedFinished": 831,
+      "fixedGames": 1662,
+      "fixedPoints": 41550
+    },
+    {
+      "setting": 4,
+      "n": 300,
+      "rtp": 102.38518888888888,
+      "rtp95": [
+        100.51567398229848,
+        104.25470379547927
+      ],
+      "win": 50.666666666666664,
+      "peak10000": 6.333333333333333,
+      "complete": 0,
+      "fixedWon": 1494,
+      "fixedFinished": 1494,
+      "fixedGames": 2988,
+      "fixedPoints": 74700
+    },
+    {
+      "setting": 5,
+      "n": 300,
+      "rtp": 106.97485197883734,
+      "rtp95": [
+        104.85462657854599,
+        109.0950773791287
+      ],
+      "win": 61.666666666666664,
+      "peak10000": 11.333333333333334,
+      "complete": 0.6666666666666666,
+      "fixedWon": 356,
+      "fixedFinished": 354,
+      "fixedGames": 708,
+      "fixedPoints": 17700
+    },
+    {
+      "setting": 6,
+      "n": 300,
+      "rtp": 116.04281867060212,
+      "rtp95": [
+        113.8054694805976,
+        118.28016786060662
+      ],
+      "win": 76.33333333333333,
+      "peak10000": 23.666666666666668,
+      "complete": 2,
+      "fixedWon": 377,
+      "fixedFinished": 377,
+      "fixedGames": 754,
+      "fixedPoints": 18850
+    }
+  ],
+  "deterministicFixtures": [
+    {
+      "setting": 1,
+      "seed": "fixed50-independent-20261014|s1|0",
+      "net": 2824,
+      "peak": 2824,
+      "bet": 30000,
+      "paid": 32824,
+      "games": 10000,
+      "complete": false,
+      "fixed": {
+        "won": 5,
+        "games": 10,
+        "finished": 5,
+        "points": 250
+      },
+      "direct": {
+        "eligible": 3050,
+        "high": 1224,
+        "zoneWins": 18,
+        "directWins": 0,
+        "directPoints": 0,
+        "promotions": 17,
+        "suica100": 0,
+        "suica300": 0
+      },
+      "zone": {
+        "normal": {
+          "games": 2972,
+          "wins": 17
+        },
+        "upper": {
+          "games": 65,
+          "wins": 1
+        }
+      },
+      "counts": {
+        "normal": 5493,
+        "cz": 567,
+        "prep": 68,
+        "align": 19,
+        "bonus": 363,
+        "at": 3275,
+        "zone": 215,
+        "zero": 6,
+        "BIG": 19,
+        "REG": 0,
+        "czEntries": 33,
+        "strongEntries": 3,
+        "czWins": 15,
+        "artEntries": 15,
+        "zoneEntries": 51,
+        "gameCzEntries": 31,
+        "ceilingCzEntries": 0,
+        "rareCzEntries": 5,
+        "backgroundCzEntries": 0,
+        "highNormalG": 672,
+        "favoredNormalG": 2910
+      }
+    },
+    {
+      "setting": 2,
+      "seed": "fixed50-independent-20261014|s2|0",
+      "net": 132,
+      "peak": 2920,
+      "bet": 30000,
+      "paid": 30132,
+      "games": 10000,
+      "complete": false,
+      "fixed": {
+        "won": 2,
+        "games": 4,
+        "finished": 2,
+        "points": 100
+      },
+      "direct": {
+        "eligible": 2406,
+        "high": 526,
+        "zoneWins": 10,
+        "directWins": 0,
+        "directPoints": 0,
+        "promotions": 10,
+        "suica100": 0,
+        "suica300": 0
+      },
+      "zone": {
+        "normal": {
+          "games": 2405,
+          "wins": 11
+        },
+        "upper": {
+          "games": 0,
+          "wins": 0
+        }
+      },
+      "counts": {
+        "normal": 5752,
+        "cz": 870,
+        "prep": 95,
+        "align": 26,
+        "bonus": 436,
+        "at": 2639,
+        "zone": 182,
+        "zero": 5,
+        "BIG": 26,
+        "REG": 0,
+        "czEntries": 50,
+        "strongEntries": 1,
+        "czWins": 11,
+        "artEntries": 15,
+        "zoneEntries": 47,
+        "gameCzEntries": 50,
+        "ceilingCzEntries": 0,
+        "rareCzEntries": 1,
+        "backgroundCzEntries": 0,
+        "highNormalG": 597,
+        "favoredNormalG": 2984
+      }
+    },
+    {
+      "setting": 3,
+      "seed": "fixed50-independent-20261014|s3|0",
+      "net": 1442,
+      "peak": 5046,
+      "bet": 30000,
+      "paid": 31442,
+      "games": 10000,
+      "complete": false,
+      "fixed": {
+        "won": 2,
+        "games": 4,
+        "finished": 2,
+        "points": 100
+      },
+      "direct": {
+        "eligible": 2407,
+        "high": 467,
+        "zoneWins": 15,
+        "directWins": 0,
+        "directPoints": 0,
+        "promotions": 9,
+        "suica100": 0,
+        "suica300": 0
+      },
+      "zone": {
+        "normal": {
+          "games": 1649,
+          "wins": 6
+        },
+        "upper": {
+          "games": 758,
+          "wins": 10
+        }
+      },
+      "counts": {
+        "normal": 6217,
+        "cz": 561,
+        "prep": 61,
+        "align": 16,
+        "bonus": 313,
+        "at": 2608,
+        "zone": 224,
+        "zero": 7,
+        "BIG": 16,
+        "REG": 0,
+        "czEntries": 31,
+        "strongEntries": 2,
+        "czWins": 7,
+        "artEntries": 12,
+        "zoneEntries": 43,
+        "gameCzEntries": 30,
+        "ceilingCzEntries": 0,
+        "rareCzEntries": 3,
+        "backgroundCzEntries": 0,
+        "highNormalG": 683,
+        "favoredNormalG": 3218
+      }
+    },
+    {
+      "setting": 4,
+      "seed": "fixed50-independent-20261014|s4|0",
+      "net": -1604,
+      "peak": 2045,
+      "bet": 30000,
+      "paid": 28396,
+      "games": 10000,
+      "complete": false,
+      "fixed": {
+        "won": 4,
+        "games": 8,
+        "finished": 4,
+        "points": 200
+      },
+      "direct": {
+        "eligible": 2200,
+        "high": 355,
+        "zoneWins": 17,
+        "directWins": 0,
+        "directPoints": 0,
+        "promotions": 6,
+        "suica100": 0,
+        "suica300": 0
+      },
+      "zone": {
+        "normal": {
+          "games": 1922,
+          "wins": 15
+        },
+        "upper": {
+          "games": 266,
+          "wins": 3
+        }
+      },
+      "counts": {
+        "normal": 6687,
+        "cz": 441,
+        "prep": 47,
+        "align": 14,
+        "bonus": 273,
+        "at": 2374,
+        "zone": 164,
+        "zero": 5,
+        "BIG": 14,
+        "REG": 0,
+        "czEntries": 28,
+        "strongEntries": 0,
+        "czWins": 9,
+        "artEntries": 10,
+        "zoneEntries": 42,
+        "gameCzEntries": 24,
+        "ceilingCzEntries": 0,
+        "rareCzEntries": 4,
+        "backgroundCzEntries": 0,
+        "highNormalG": 720,
+        "favoredNormalG": 3199
+      }
+    },
+    {
+      "setting": 5,
+      "seed": "fixed50-independent-20261014|s5|0",
+      "net": -6738,
+      "peak": 0,
+      "bet": 30000,
+      "paid": 23262,
+      "games": 10000,
+      "complete": false,
+      "fixed": {
+        "won": 0,
+        "games": 0,
+        "finished": 0,
+        "points": 0
+      },
+      "direct": {
+        "eligible": 1448,
+        "high": 168,
+        "zoneWins": 13,
+        "directWins": 0,
+        "directPoints": 0,
+        "promotions": 3,
+        "suica100": 0,
+        "suica300": 0
+      },
+      "zone": {
+        "normal": {
+          "games": 1450,
+          "wins": 13
+        },
+        "upper": {
+          "games": 0,
+          "wins": 0
+        }
+      },
+      "counts": {
+        "normal": 7133,
+        "cz": 767,
+        "prep": 70,
+        "align": 20,
+        "bonus": 329,
+        "at": 1580,
+        "zone": 101,
+        "zero": 6,
+        "BIG": 20,
+        "REG": 0,
+        "czEntries": 43,
+        "strongEntries": 2,
+        "czWins": 15,
+        "artEntries": 10,
+        "zoneEntries": 26,
+        "gameCzEntries": 39,
+        "ceilingCzEntries": 0,
+        "rareCzEntries": 6,
+        "backgroundCzEntries": 0,
+        "highNormalG": 789,
+        "favoredNormalG": 3962
+      }
+    },
+    {
+      "setting": 6,
+      "seed": "fixed50-independent-20261014|s6|0",
+      "net": 7338,
+      "peak": 10317,
+      "bet": 30000,
+      "paid": 37338,
+      "games": 10000,
+      "complete": false,
+      "fixed": {
+        "won": 2,
+        "games": 4,
+        "finished": 2,
+        "points": 100
+      },
+      "direct": {
+        "eligible": 3187,
+        "high": 641,
+        "zoneWins": 25,
+        "directWins": 0,
+        "directPoints": 0,
+        "promotions": 10,
+        "suica100": 0,
+        "suica300": 0
+      },
+      "zone": {
+        "normal": {
+          "games": 2116,
+          "wins": 17
+        },
+        "upper": {
+          "games": 1069,
+          "wins": 13
+        }
+      },
+      "counts": {
+        "normal": 5130,
+        "cz": 715,
+        "prep": 76,
+        "align": 20,
+        "bonus": 370,
+        "at": 3431,
+        "zone": 258,
+        "zero": 11,
+        "BIG": 20,
+        "REG": 0,
+        "czEntries": 40,
+        "strongEntries": 1,
+        "czWins": 13,
+        "artEntries": 11,
+        "zoneEntries": 63,
+        "gameCzEntries": 38,
+        "ceilingCzEntries": 0,
+        "rareCzEntries": 3,
+        "backgroundCzEntries": 0,
+        "highNormalG": 753,
+        "favoredNormalG": 2826
+      }
+    }
+  ],
+  "limitation": "付与する残ptの期待値を維持。追加される準備・ゾーンのBETやゲーム数まで含めた機械割の一致を保証しない。各設定300回の予備試算。"
+}

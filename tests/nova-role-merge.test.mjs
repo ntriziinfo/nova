@@ -23,7 +23,7 @@ test('all state role tables retire chance eyes and strong suika; AT realizes 4.5
  }
  assert.equal(n.pay('BELL'),8);assert.equal(n.pay('BELL15'),15);
 });
-test('common rare roles share all normal/AT lotteries; strong NOVA has exact four branches',()=>{
+test('common rares share lotteries; strong NOVA preserves four base branches before fixed-zone thinning',()=>{
  loadModel();const a=NovaArt,n=NovaNormal;
  for(let setting=1;setting<=6;setting++)for(const high of [false,true]){
   near(n.roleCzRate({level:high?'high':'low'},'WEAK_SUICA',setting),n.roleCzRate({level:high?'high':'low'},'WEAK_NOVA',setting));
@@ -32,12 +32,12 @@ test('common rare roles share all normal/AT lotteries; strong NOVA has exact fou
    const left=a.resolveAtRole({...state},'WEAK_SUICA',setting,xoshiro128(seed));
    assert.deepEqual(left,a.resolveAtRole({...state},'WEAK_NOVA',setting,xoshiro128(seed)));
    const upper=a.resolveAtRole({...state,researchUpper:true},'WEAK_SUICA',setting,xoshiro128(seed));
-   near(upper.direct,left.direct*1.5);near(a.extraZoneChance(setting,'WEAK_SUICA',true,high),([12,12,23,12,12,12][setting-1]/[1.7,4.25,2.5,4.5,3.2,4.85][setting-1])*a.extraZoneChance(setting,'WEAK_SUICA',false,high));
+   near(upper.direct,0);near(left.direct,0);if(left.fixed50)assert(upper.fixed50);near(a.extraZoneChance(setting,'WEAK_SUICA',true,high),([12,12,23,12,12,12][setting-1]/[1.7,4.25,2.5,4.5,3.2,4.85][setting-1])*a.extraZoneChance(setting,'WEAK_SUICA',false,high));
   }
  }
  for(const [roll,direct,zone]of [[0,true,false],[.19999,true,false],[.2,false,true],[.39999,false,true],[.4,true,true],[.59999,true,true],[.6,false,false],[.99999,false,false]]){
   let first=true;const out=a.resolveAtRole({},'STRONG_NOVA',3,()=>first?(first=false,roll):.5);
-  assert.equal(out.direct>0,direct);assert.equal(!!out.zone,zone);
+  assert.equal(out.direct,0);assert.equal(!!out.fixed50,direct);assert.equal(!!(out.fixed50?out.extraZone:out.zone),zone);
  }
 });
 test('all six 15pt bell orders survive navigation, save and AUTO without redrawing',()=>{
