@@ -1,0 +1,36 @@
+#flowToggleBtn { cursor:pointer; }
+#flowToggleBtn:focus-visible { outline:2px solid #ffd56b;outline-offset:3px; }
+#novaFlowGuide {
+  box-sizing:border-box;position:fixed;inset:0;margin:auto;padding:0;
+  width:min(1050px,calc(100vw - 24px));height:min(94vh,1100px);height:min(94dvh,1100px);
+  max-width:calc(100vw - 24px);max-height:calc(100dvh - 24px);
+  color:#edf4ff;background:#090e20;border:1px solid #caa959;border-radius:12px;
+  box-shadow:0 16px 80px #000b;overflow:hidden;
+}
+#novaFlowGuide:not([open]) { display:none; }
+#novaFlowGuide[open] { display:flex;flex-direction:column; }
+#novaFlowGuide::backdrop { background:#000c; }
+#novaFlowGuide button {
+  min-height:44px;padding:8px 14px;border:1px solid #577086;border-radius:8px;
+  background:#17243b;color:#edf4ff;font:700 14px/1.3 system-ui;cursor:pointer;box-shadow:none;
+}
+#novaFlowGuide button:focus-visible { outline:2px solid #ffd56b;outline-offset:2px; }
+.novaFlowGuideHead { display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 14px;flex:none; }
+.novaFlowGuideHead h2 { margin:0;font:700 20px/1.3 system-ui;color:#ffd56b; }
+.novaFlowGuideNav { display:flex;align-items:center;flex-wrap:wrap;gap:8px;padding:0 14px 10px;flex:none; }
+#novaFlowGuide .novaFlowGuideNav button[aria-pressed="true"] { background:#ffd56b;border-color:#ffd56b;color:#111b31; }
+#novaFlowGuideZoom { margin-left:auto; }
+.novaFlowGuideViewport { flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;padding:8px;scrollbar-gutter:stable; }
+#novaFlowGuideImage { display:block;width:100%;height:auto;max-width:none;margin:0 auto; }
+.novaFlowGuideViewport.isZoomed #novaFlowGuideImage { width:200%;min-width:1100px; }
+#novaFlowGuide [hidden] { display:none!important; }
+#novaFlowGuideStatus { padding:14px;font:16px/1.5 system-ui; }
+@media (max-width:600px) {
+  #audioDock > #flowToggleBtn { width:64px;min-width:64px;font-size:14px; }
+  #novaFlowGuide { width:calc(100vw - 12px);max-width:calc(100vw - 12px);height:calc(100dvh - 20px);max-height:calc(100dvh - 20px); }
+  .novaFlowGuideHead { padding:8px; }
+  .novaFlowGuideHead h2 { font-size:18px; }
+  .novaFlowGuideNav { padding:0 8px 8px;gap:5px; }
+  #novaFlowGuide button { font-size:12px;padding:8px; }
+  .novaFlowGuideViewport { padding:0;scrollbar-gutter:auto; }
+}

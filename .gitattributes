@@ -64,3 +64,5 @@ assets/media/nova/at-prelude-start-20261013.mp3 -filter -diff -merge -text
 assets/media/nova/at-prelude-20261013.sources.json -filter -diff -merge text
 # Small mobile delivery copies; keep licensed originals and the LFS archive intact.
 assets/mobile-20261013/** -filter -diff -merge -text
+# Lightweight on-demand reference pages; no LFS archive rebuild required.
+assets/guide/game-flow-20261014-*.webp -filter -diff -merge -text

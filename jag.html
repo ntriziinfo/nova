@@ -81,6 +81,8 @@
 <script src="nova-comeback-presentation.js?v=20260909-comeback-114"></script>
 <link rel="stylesheet" href="nova-mobile.css?v=20261014-touch-layout">
 <script src="nova-mobile.js?v=20261014-touch-layout" defer></script>
+<link rel="stylesheet" href="nova-flow-guide.css?v=20261014">
+<script src="nova-flow-guide.js?v=20261014" defer></script>
 <style>
 /* Fit the original nebula art to reel width; its transparent vertical margins
    no longer shrink the lettering to the cell height. Keep native proportions. */
@@ -93,6 +95,22 @@
 <style>.cell img[src*="/gang-v3/"]{width:100% !important;height:100% !important;max-width:100% !important;max-height:100% !important;object-fit:contain !important;filter:none !important;}</style>
 </head>
 <body>
+<dialog id="novaFlowGuide" aria-labelledby="novaFlowGuideTitle">
+  <header class="novaFlowGuideHead">
+    <h2 id="novaFlowGuideTitle">ゲームフロー</h2>
+    <button id="novaFlowGuideClose" type="button" autofocus aria-label="ゲームフローを閉じる">閉じる ×</button>
+  </header>
+  <nav class="novaFlowGuideNav" aria-label="フローのページ選択">
+    <button type="button" data-flow-page="0" aria-pressed="true">1 通常時〜AT</button>
+    <button type="button" data-flow-page="1" aria-pressed="false">2 AT〜上位・引き戻し</button>
+    <button id="novaFlowGuideZoom" type="button" aria-pressed="false">拡大</button>
+  </nav>
+  <div class="novaFlowGuideViewport" tabindex="0" aria-label="ゲームフロー画像。拡大時はスクロールして閲覧できます。">
+    <p id="novaFlowGuideStatus" role="status" hidden></p>
+    <button id="novaFlowGuideRetry" type="button" hidden>再読み込み</button>
+    <img id="novaFlowGuideImage" width="1697" height="2400" decoding="async" alt="通常時からCZ、BIG、AT初当たりまでのゲームフロー">
+  </div>
+</dialog>
 <div id="storageStatus" class="storageStatus" role="alert" hidden><span id="storageStatusMessage"></span><button id="retryStateSave" type="button">再保存</button></div>
 <div id="playAccessStatus" class="playAccessStatus" role="alertdialog" aria-modal="true" aria-labelledby="playAccessMessage" hidden><div><p id="playAccessMessage"></p><button id="reloadPlayAccess" type="button">再読み込み</button></div></div>
 <div class="confetti" id="confetti"></div>
@@ -177,6 +195,7 @@
         <div class="jagControlDeck"></div>
       </div>
       <div class="audioDock" id="audioDock">
+        <button class="utilityTextBtn" id="flowToggleBtn" type="button" aria-label="ゲームフローを開く" aria-haspopup="dialog" aria-controls="novaFlowGuide" aria-expanded="false">フロー</button>
         <button class="utilityToggleBtn" id="slumpToggleBtn" type="button" aria-label="スランプグラフを開く" aria-expanded="false" title="スランプグラフ">
           <picture class="novaResponsiveImage"><source media="(max-width:1024px)" srcset="assets/mobile-20261013/icon_slump_graph_blue.webp"><img src="assets/ui/icon_slump_graph_blue.png" alt=""></picture>
         </button>
