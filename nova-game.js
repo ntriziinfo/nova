@@ -5700,7 +5700,7 @@
     const internal=NovaNormal.normalize(normalState.internal);
     syncCzPreludeGlow(isSpinning?currentSpin?.resolved:null);
     // Per-spin blackout is cleared by BET, never restored from a previous game's progress.
-    if($('novaInternalStatus'))$('novaInternalStatus').textContent='小役CZ抽選 / '+internal.games+'G（共通天井'+NovaNormal.ceiling(internal)+'G） / '+(internal.level==='high'?'高確（保証'+internal.highLeft+'G）':'低確')+ (normalState.flow?.phase==='art'?' / '+'AT '+(normalState.flow.atHigh?'高確（保証'+normalState.flow.atHighLeft+'G）':'低確'):'')+' / 穢れ'+internal.impurity+'pt / 特化予約 '+(session.active?(session.bonusZones||[]):(normalState.flow?.queuedZones||[])).map(z=>NovaArt.zoneName(z)).join('・');
+    if($('novaInternalStatus'))$('novaInternalStatus').textContent='モード '+internal.mode+' / '+internal.games+'G（天井'+NovaNormal.ceiling(internal)+'G） / '+(internal.level==='high'?'高確（保証'+internal.highLeft+'G）':'低確')+ (normalState.flow?.phase==='art'?' / '+'AT '+(normalState.flow.atHigh?'高確（保証'+normalState.flow.atHighLeft+'G）':'低確'):'')+' / 穢れ'+internal.impurity+'pt / 特化予約 '+(session.active?(session.bonusZones||[]):(normalState.flow?.queuedZones||[])).map(z=>NovaArt.zoneName(z)).join('・');
     const flowStatus=$("novaFlowStatus");
     if(flowStatus){
       const checkpointStatus=normalState.resultCard?.kind==='checkpoint'?{text:'スーパーノヴァチャレンジまで0pt',gold:true}:!session.active&&!normalState.bonusPending&&!normalState.resultCard&&!normalState.pendingZoneResult&&!normalState.ladderAwardPresentation&&!isCompleteTrialLocked()?atCheckpointStatus(normalState.flow,NovaProgress.snapshot(),profit):null;
@@ -6122,8 +6122,8 @@
     if($("premiumForceStatus")) $("premiumForceStatus").value = "OFF";
     $("stLamp").classList.remove("on");
     setMorningBarReels();
-    showMessage(reason, `設定${settings.setting}据え置き / 朝一リセット / 共通天井${NovaNormal.ceiling()}G＋前兆`);
-    $("resultText").textContent = `朝一 / 共通天井${NovaNormal.ceiling()}G＋前兆`;
+    showMessage(reason, `設定${settings.setting}据え置き / 朝一リセット / モード別天井200〜800G`);
+    $("resultText").textContent = `朝一 / モード別天井200〜800G`;
     persistState();
     updateDisplay();
     log(`[RESET] ${reason} / 設定${settings.setting} / Aタイプ通常`);
@@ -6131,7 +6131,7 @@
   }
 
   function morningResetGame(confirmFirst=true, reason="朝一リセット"){
-    const message = `設定はそのままでCOMPLETEを解除し、朝一状態（共通天井${NovaNormal.ceiling()}G＋前兆）に戻しますか？`;
+    const message = `設定はそのままでCOMPLETEを解除し、朝一状態（モード別天井200〜800G）に戻しますか？`;
     if(confirmFirst && !confirm(message)) return false;
     return resetRuntimeForMorning(reason);
   }
@@ -6159,7 +6159,7 @@
     const help = document.createElement("div");
     help.className = "help";
     help.style.margin = "-2px 0 10px";
-    help.textContent = `朝一リセット：設定はそのまま、COMPLETE解除、通常と同じ天井${NovaNormal.ceiling()}G＋前兆。`;
+    help.textContent = `朝一リセット：設定はそのまま、COMPLETE解除、モードを再抽選（天井200〜800G）。`;
     anchor.insertAdjacentElement("afterend", help);
     anchor.insertAdjacentElement("afterend", row);
   }
@@ -6305,14 +6305,14 @@
     const forceSelect=document.getElementById('forceResult');
     for(const [value,label] of [['ART','AT突入'],['SORTIE','出陣チャレンジ（10G・1回予約）'],['URA_CHALLENGE','スーパーノヴァチャレンジ（10G・HOLDあり）'],['COMEBACK','引き戻しゾーン（5G）'],...Object.keys(NovaNormal.rare).filter(k=>!isNovaResult(k)).map(k=>[k,RESULT[k].name]),['RARE','ATレア役'],...NovaArt.zoneIds.map(k=>['ZONE_'+k,NovaArt.zoneName(k)+'ゾーン'])]){const option=document.createElement('option');option.value=value;option.textContent=label;forceSelect.append(option);}
     const normalPanel=document.createElement('details');normalPanel.id='novaNormalConfig';
-    normalPanel.innerHTML='<summary>小役CZ抽選・穢れ・状態</summary><output id="novaInternalStatus"></output><label>天井カウンター<input id="novaNormalGames" type="number" min="0" max="'+NovaNormal.ceiling()+'" value="0"></label><label>内部状態<select id="novaLevel"><option value="low">低確</option><option value="high">高確</option></select></label><label>穢れpt<input id="novaImpurity" type="number" min="0" max="100" value="0"></label><button id="novaApplyInternal" type="button">内部状態を適用</button><p>レア小役でCZを抽選します。通常モード・天国・規定GのCZ抽選はありません。スイカ・弱ノヴァで高確も抽選し、高確中は小役CZ当選率を優遇。強ノヴァは強CZ確定です。天井は朝一も共通'+NovaNormal.ceiling()+'G＋前兆、BIG／突破確定CZを各50%。リセット時の穢れ振り分けは従来どおり。穢れ100ptは次のボーナスで消費し、AT＋特化ゾーンを予約。通常スーパーノヴァ目の1/2はプレミアムBIG。</p>';
+    normalPanel.innerHTML='<summary>モード・規定GのCZ抽選・穢れ</summary><output id="novaInternalStatus"></output><label>モード<select id="novaNormalMode">'+NovaNormal.modes.map(mode=>'<option>'+mode+'</option>').join('')+'</select></label><label>天井カウンター<input id="novaNormalGames" type="number" min="0" max="800" value="0"></label><label>内部状態<select id="novaLevel"><option value="low">低確</option><option value="high">高確</option></select></label><label>穢れpt<input id="novaImpurity" type="number" min="0" max="100" value="0"></label><button id="novaApplyInternal" type="button">内部状態を適用</button><p>Aは800G、Bは700G、Cは400G、天国・天国ループは200GでBIG確定。通常＋CZのG数を数え、ボーナスごとにリセットしてモード昇格を抽選します。AT初当たりまでは降格なし。AT終了時にモードを再抽選します。50Gは天国系でガセCZ、天国系以外でも10%。全モード100GでCZに入り、ボーナス抽選は101Gから再開します。ガセCZはレア役でも成功しません。通常の弱レア役CZ抽選は従来の10%、強ノヴァは101G以降に強CZ前兆へ。レア役からの出陣抽選は別に行います。穢れ100ptは次のボーナスで消費し、AT＋特化ゾーンを予約します。</p>';
     const resetTable=document.createElement('div');resetTable.innerHTML='<table><tr><th>設定</th>'+NovaNormal.resetImpurityPoints.map(pt=>'<th>'+pt+'pt</th>').join('')+'</tr>'+NovaNormal.resetImpurityWeights.map((row,i)=>'<tr><td>'+(i+1)+'</td>'+row.map(w=>'<td>'+w+'%</td>').join('')+'</tr>').join('')+'</table>';normalPanel.append(resetTable);
-    const nc=NovaNormal.config(settings.novaNormal);for(const [k,v]of Object.entries(nc).filter(([k])=>!['bandMultiplier','regChainGain'].includes(k))){const label=document.createElement('label');label.textContent=({highMultiplier:'高確CZ倍率',downMiss:'ハズレ降格率',downReplay:'リプレイ降格率',czFailureGain:'CZ失敗の穢れpt',bonusFailureGain:'ボーナスAT非突入の穢れpt',atDryGain:'AT駆け抜けの穢れpt',ceilingGain:'共通天井到達の穢れpt',superDenom:'通常スーパーノヴァ目分母'})[k];const input=document.createElement('input');input.type='number';input.step='any';input.value=v;input.dataset.normalConfig=k;label.append(input);normalPanel.append(label);}
+    const nc=NovaNormal.config(settings.novaNormal);for(const [k,v]of Object.entries(nc).filter(([k])=>!['bandMultiplier','regChainGain'].includes(k))){const label=document.createElement('label');label.textContent=({highMultiplier:'高確CZ倍率',downMiss:'ハズレ降格率',downReplay:'リプレイ降格率',czFailureGain:'CZ失敗の穢れpt',bonusFailureGain:'ボーナスAT非突入の穢れpt',atDryGain:'AT駆け抜けの穢れpt',ceilingGain:'天井到達の穢れpt',superDenom:'通常スーパーノヴァ目分母'})[k];const input=document.createElement('input');input.type='number';input.step='any';input.value=v;input.dataset.normalConfig=k;label.append(input);normalPanel.append(label);}
     const roleCzTable=document.createElement('div');roleCzTable.id='novaRoleCzTable';
     const renderRoleCzTable=()=>{roleCzTable.innerHTML='<p>各小役成立時のCZ当選率（低確／高確）</p><table><tr><th>設定</th>'+Object.keys(NovaNormal.rare).map(role=>'<th>'+RESULT[role].name+'</th>').join('')+'</tr>'+[1,2,3,4,5,6].map(setting=>'<tr><td>'+setting+'</td>'+Object.keys(NovaNormal.rare).map(role=>'<td>'+['low','high'].map(level=>(NovaNormal.roleCzRate({level},role,setting,settings.novaNormal)*100).toFixed(2)+'%').join('／')+'</td>').join('')+'</tr>').join('')+'</table>';};renderRoleCzTable();normalPanel.append(roleCzTable);
     const saveNormal=document.createElement('button');saveNormal.textContent='通常設定を保存';saveNormal.onclick=()=>{const c={};normalPanel.querySelectorAll('[data-normal-config]').forEach(x=>c[x.dataset.normalConfig]=x.valueAsNumber);settings.novaNormal=NovaNormal.config(c);renderRoleCzTable();refreshRtpViews();saveNormal.textContent=persistState()?'通常設定を保存しました':'保存に失敗しました';};normalPanel.append(saveNormal);
     document.getElementById('saveFlowConfig').closest('details').after(normalPanel);
-    document.getElementById('novaApplyInternal').onclick=()=>{if(isSpinning||session.active)return;normalState.internal=NovaNormal.normalize({games:$('novaNormalGames').value,level:$('novaLevel').value,highLeft:$('novaLevel').value==='high'?10:0,impurity:$('novaImpurity').value});persistState();updateDisplay();};
+    document.getElementById('novaApplyInternal').onclick=()=>{if(isSpinning||session.active)return;normalState.internal=NovaNormal.normalize({mode:$('novaNormalMode').value,games:$('novaNormalGames').value,modeChecked:Math.floor(Number($('novaNormalGames').value)/100),fiftyChecked:Number($('novaNormalGames').value)>=50,level:$('novaLevel').value,highLeft:$('novaLevel').value==='high'?10:0,impurity:$('novaImpurity').value});persistState();updateDisplay();};
     const artPanel=document.createElement('details');artPanel.id='novaArtConfig';
     artPanel.innerHTML='<summary>AT・特化ゾーン設定</summary><p>初当たりは準備3G→赤7→ルーレット→くしゅり＆にと3G。初期ptは全設定共通の配分と成立役から決まります。ATレベルはありません。通常ATは8pt／15ptベルで純増4.5pt/G、上位ATは15ptベルで純増7pt/G。上位の直乗せ当選時ptは通常の1.5倍。スイカ・弱ノヴァは共通の上乗せ抽選と15%の高確移行、強ノヴァは直乗せのみ20%／特化のみ20%／両方20%です。</p><p>出陣はスイカ・弱ノヴァ・強ノヴァ成立時の低確率抽選。当選で特化ゾーン確定、突入時はネビュラを狙え（追加BETなし）。フリーズ告知はありません。出陣は10G、ストック率10／25／40／60／80%を抽選し、最低2個を獲得。初当たりの5%はスーパーノヴァチャレンジ（突破50%）。レア役契機・累計差枚＋2,400ptごとのチャレンジは突破65%。10Gでベル・リプレイ・レア役はHOLD、次Gでノヴァを狙え。レア役は突破確定。差枚契機では残りpt・未消化ストックをリセットし、成否とも特化1個で再開します。到達点はAT終了後も引き継ぎます。</p>';
     const commonTable=document.createElement('div');

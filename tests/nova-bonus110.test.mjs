@@ -9,7 +9,7 @@ let seed=110202609;const rng=()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0
 test('all CZ wins produce BIG; bonus ends at exactly 50pt and legacy REG cannot return',()=>{
  for(let setting=1;setting<=6;setting++)for(let i=0;i<100;i++){
   const flow=NovaFlow.enterCZ(false,{czChance:1},rng);flow.remaining=1;
-  assert.equal(n.spin({},flow,setting,{},rng,'BELL').internalBonus.kind,'BIG');
+  assert.equal(n.spin({games:120},flow,setting,{},rng,'BELL').internalBonus.kind,'BIG');
  }
  for(const kind of ['BIG','MID','REG']){
   let state={bonusKind:kind,paid:0,bonusArtSets:0};

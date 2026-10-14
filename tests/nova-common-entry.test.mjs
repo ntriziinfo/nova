@@ -45,7 +45,7 @@ test('adopted weak zone chances use setting and upper state, without net suppres
   for(const low of [false,true]){
    const saved=NovaDecrement.snapshot();saved.low=low;NovaDecrement.bind(saved,setting);
    for(const upper of [false,true])for(const high of [false,true])for(const role of ['WEAK_SUICA','WEAK_NOVA'])for(const net of [-10000,0,4999,5000,5001,20000]){
-    const chance=(upper?12:1)*(high?.25:.15)*scales[setting-1];assert.equal(a.extraZoneChance(setting,role,upper,high,net),chance);
+    const chance=(upper?[12,12,23,12,12,12][setting-1]:[1.7,4.25,2.5,4.5,3.2,4.85][setting-1])*(high?.25:.15)*scales[setting-1];assert.equal(a.extraZoneChance(setting,role,upper,high,net),chance);
     for(const roll of [chance-1e-9,chance]){
      const draws=high?[.999,roll,.5]:[.999,.999,roll,.5];
      const state={atHigh:high,atHighLeft:10,researchUpper:upper,remaining:'8000',sets:'2',queuedZones:['sora']};

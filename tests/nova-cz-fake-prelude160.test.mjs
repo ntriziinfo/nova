@@ -4,7 +4,7 @@ import {loadModel} from '../scripts/zone-v2-model.mjs';
 loadModel();const n=NovaNormal;
 const saved=s=>JSON.parse(JSON.stringify(s));
 const sequence=(...rolls)=>()=>rolls.shift()??.99;
-const spin=(s,role='BELL',rng=()=>.99,setting=3)=>n.spin(s,{phase:'normal'},setting,{},rng,role);
+const spin=(s,role='BELL',rng=()=>.99,setting=3)=>n.spin({games:120,modeChecked:1,fiftyChecked:true,...s},{phase:'normal'},setting,{},rng,role);
 const fake=(total=5)=>spin({},'WEAK_NOVA',sequence(.99,.99,.1,(total-3)/8+.001));
 
 test('a missed rare role starts a fake at 50%, but ordinary roles do not',()=>{
@@ -68,9 +68,8 @@ test('fake hints do not count as a guaranteed win or postpone the ceiling',()=>{
  for(const roll of [.01,.99]){
   let t=spin({...saved(s),games:799},'BELL',()=>roll);
   assert(t.state.ceilingHandled);assert.equal(t.state.impurity,n.defaults.ceilingGain);
-  assert.equal(t.state.prelude.kind,roll<.5?'ceilingBonus':'ceilingCz');
-  for(let i=0;i<12&&!t.entry&&!t.internalBonus;i++)t=spin(saved(t.state));
-  assert(t.entry==='STRONG_CZ'||t.internalBonus);assert.equal(t.state.impurity,n.defaults.ceilingGain);
+  assert.equal(t.state.prelude,null);assert.equal(t.internalBonus.kind,'BIG');
+  assert.equal(t.modeEvent.type,'ceiling');assert.equal(t.state.impurity,n.defaults.ceilingGain);
  }
 });
 

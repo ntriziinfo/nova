@@ -19,10 +19,10 @@ test('only rare roles rewrite losses; wins are absorbing and reload retains prob
 });
 test('last game rewrite awards success and does not add CZ failure impurity',()=>{
  const loss={phase:'cz',remaining:1,success:false,winProbability:.4};
- const t=n.spin({games:0},loss,1,{},()=>0,'STRONG_NOVA');
+ const t=n.spin({games:120},loss,1,{},()=>0,'STRONG_NOVA');
  assert.equal(t.czFlow.success,true);assert.equal(t.direct,false);assert.ok(t.internalBonus);
  assert.equal(t.state.impurity,0);
- const fail=n.spin({games:0},loss,1,{},()=>.99,'MISS');
+ const fail=n.spin({games:120},loss,1,{},()=>.99,'MISS');
  assert.equal(fail.direct,false);assert.equal(fail.internalBonus,null);assert.equal(fail.state.impurity,1);
 });
 test('Bayes lamp weights reproduce all six final confidences for ordinary and strong CZ',()=>{
@@ -90,12 +90,12 @@ test('live lamps and surprise rainbow change only on the third stop',()=>{
 test('full or rainbow lamps end CZ early with a bonus even when direct ART chance is 100%',()=>{
  for(const [remaining,rainbowRoll] of [[2,.9],[20,0]]){
   const flow={phase:'cz',remaining,totalGames:20,success:true,winProbability:1,lampRoll:.9,rainbowRoll};
-  const t=n.spin({games:50},flow,1,{art:{czArt:1}},()=>.9,'MISS');
+  const t=n.spin({games:120},flow,1,{art:{czArt:1}},()=>.9,'MISS');
   assert.equal(t.direct,false);assert.equal(t.internalBonus.source,'CZ全員点灯');
   assert.ok(['BIG','MID'].includes(t.internalBonus.kind));
  }
 });
 test('partial lamps keep CZ running and never award a premature bonus',()=>{
- const t=n.spin({games:50},{phase:'cz',remaining:20,totalGames:20,success:true,winProbability:1,lampRoll:.9,rainbowRoll:.9},1,{},()=>.9,'MISS');
+ const t=n.spin({games:120},{phase:'cz',remaining:20,totalGames:20,success:true,winProbability:1,lampRoll:.9,rainbowRoll:.9},1,{},()=>.9,'MISS');
  assert.equal(t.internalBonus,null);assert.equal(t.direct,false);
 });

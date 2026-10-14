@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 import {loadModel} from '../scripts/zone-v2-model.mjs';
 loadModel();const n=NovaNormal;
-const spin=(state,role='BELL',rng=()=>.99)=>n.spin(state,{phase:'normal'},3,{},rng,role);
+const spin=(state,role='BELL',rng=()=>.99)=>n.spin({games:120,modeChecked:1,fiftyChecked:true,...state},{phase:'normal'},3,{},rng,role);
 
 test('every prelude length enters CZ on full blackout and announces on the first CZ game',()=>{
  for(let total=3;total<=10;total++){
@@ -38,10 +38,9 @@ test('additional roles cannot restart a won prelude, and strong NOVA promotion r
 });
 
 test('ceiling and premium outcomes do not duplicate or leave a stale CZ reservation',()=>{
- let t=spin({games:799},'BELL',()=>.9);assert.equal(t.state.prelude.kind,'ceilingCz');
- for(let i=0;i<11&&!t.entry;i++)t=spin(t.state);
- assert.equal(t.entry,'STRONG_CZ');assert.equal(t.czOptions.strongChance,1);assert.equal(t.entrySource,'ceiling');
- assert.equal(t.state.impurity,10);assert.equal(spin(t.state).state.impurity,10);
+ const t=spin({games:799},'BELL',()=>.9);assert.equal(t.internalBonus.kind,'BIG');assert.equal(t.state.prelude,null);
+ assert.equal(t.modeEvent.type,'ceiling');assert.equal(t.state.impurity,10);
+ const next=spin(n.afterBonus(t.state,()=>0));assert.equal(next.internalBonus,null);assert.equal(next.state.impurity,10);
  const won=spin({},'STRONG_NOVA');
  const frozen=spin(won.state,'FREEZE');assert(frozen.internalBonus.premiumBonus);assert.equal(frozen.state.prelude,null);
  const premium=spin(won.state,'',()=>0);assert.equal(premium.result,'SUPER_NOVA');assert.equal(premium.state.prelude,null);

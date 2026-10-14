@@ -1,12 +1,12 @@
 /* Internal normal-play rules. No supplied image or audio is processed. */
 globalThis.NovaNormal=(()=>{
  const lotteryRules=Object.freeze({version:140,ceilingGames:800,czScale:Object.freeze([.502,.510,.522,.498,.552,.616])});
- // A/B/heaven and game-count zones are retired; a single common ceiling remains.
- const modes=['通常'],ceilings=[lotteryRules.ceilingGames],transitions=[[100]],gameZoneRates={通常:{}},atEndModeWeights={dry:[100],normal:[100]};
+ // Approved mode proposal: docs/mode-zones-20261014.json. Normal + CZ games share the mode clock.
+ const modeRules={"modes":["A","B","C","天国","天国ループ"],"ceilings":[800,700,400,200,200],"initial":[50,25,10,12,3],"promotion":[[60,25,10,4,1],[0,65,20,12,3],[0,0,65,30,5],[0,0,0,80,20],[0,0,0,0,100]],"afterHeaven":[40,25,10,20,5],"afterLoop":[10,10,5,15,60],"fiftyFake":{"heaven":1,"other":0.1},"rates":{"A":{"100":0.1,"200":0.15,"300":0.03,"400":0.25,"500":0.03,"600":0.5,"700":0.03},"B":{"100":0.2,"200":0.03,"300":0.25,"400":0.03,"500":0.45,"600":0.03},"C":{"100":0.4,"200":0.25,"300":0.45},"天国":{"100":0.65},"天国ループ":{"100":0.65}}};const modes=modeRules.modes,ceilings=modeRules.ceilings,transitions=modeRules.promotion,gameZoneRates=modeRules.rates,atEndModeWeights={normal:modeRules.initial};
  const gameZoneConfig={fakeRate:0,preludeMin:3,preludeMax:8,ceilingBonusRate:.5};
  const czPreludeRules=Object.freeze({minGames:3,maxGames:10,fakeOnMissRate:.5});
- function zonePoint(){return false;}
- function zoneRate(){return 0;}
+ function zonePoint(g){return g===50||g>=100&&g%100===0;}
+ function zoneRate(v,g){return gameZoneRates[normalize(v).mode]?.[g]||0;}
  function preludePresentation(){return 'none';}
  function prelude(kind,rng,g){return {kind,originG:g,presentation:'main',left:gameZoneConfig.preludeMin+Math.floor(rng()*(gameZoneConfig.preludeMax-gameZoneConfig.preludeMin+1))};}
  function preludeLabel(p){return p?.presentation==='reel'?'CZ前兆':p?.presentation==='pre'?'ざわつき':p?.presentation==='main'?'NOVA前兆':'前兆中';}
@@ -36,13 +36,13 @@ globalThis.NovaNormal=(()=>{
  const resetImpurityPoints=Object.freeze([0,25,50,75,90,100]);
  const resetImpurityWeights=Object.freeze([[20,25,35,15,4,1],[19,25,35,16,4,1],[18,25,35,16,5,1],[17,25,35,17,5,1],[16,24,35,18,5,2],[15,24,35,18,6,2]].map(Object.freeze));
  function resetDistribution(setting=1){const row=resetImpurityWeights[Math.max(0,Math.min(5,Math.round(Number(setting)||1)-1))];return resetImpurityPoints.map((pt,i)=>({pt,weight:row[i]}));}
- function reset(rng=Math.random,setting=1){const row=resetDistribution(setting);return normalize({impurity:row[weighted(row.map(x=>x.weight),rng)].pt});}
- // Preserve current reel preludes and won legacy preludes, but discard retired mode hints.
- function normalize(v){return {normalVersion:152,prelude:normalizePrelude(v?.prelude),ceilingHandled:!!v?.ceilingHandled,regStreak:0,morningCeiling:false,mode:'通常',games:Math.max(0,Math.floor(Number(v?.games)||0)),level:v?.level==='high'?'high':'low',highLeft:v?.level==='high'?Math.max(0,Math.floor(Number(v?.highLeft)||0)):0,impurity:Math.min(100,Math.max(0,Number(v?.impurity)||0))};}
- function modeWeights(){return [100];}
+ function reset(rng=Math.random,setting=1){const row=resetDistribution(setting);return normalize({impurity:row[weighted(row.map(x=>x.weight),rng)].pt,mode:modes[weighted(modeRules.initial,rng)]});}
+ // Preserve mode/CZ progress across saves. Old single-mode saves migrate to A without losing elapsed games.
+ function normalize(v){return {normalVersion:153,modeChecked:Math.max(0,Math.floor(Number(v?.modeChecked)||0)),fiftyChecked:!!v?.fiftyChecked,prelude:normalizePrelude(v?.prelude),ceilingHandled:!!v?.ceilingHandled,regStreak:0,morningCeiling:false,mode:modes.includes(v?.mode)?v.mode:'A',games:Math.max(0,Math.floor(Number(v?.games)||0)),level:v?.level==='high'?'high':'low',highLeft:v?.level==='high'?Math.max(0,Math.floor(Number(v?.highLeft)||0)):0,impurity:Math.min(100,Math.max(0,Number(v?.impurity)||0))};}
+ function modeWeights(){return modeRules.initial;}
  function weighted(weights,rng){let n=rng()*weights.reduce((a,b)=>a+b,0);return Math.max(0,weights.findIndex(w=>(n-=w)<0));}
- function ceiling(){return lotteryRules.ceilingGames;}
- function favored(){return false;}
+ function ceiling(v){return ceilings[modes.indexOf(normalize(v).mode)];}
+ function favored(v){return zoneRate(v,Math.ceil(v.games/100)*100)>=.15;}
  function multiplier(){return 1;}
  function pay(role){return rare[role]?.pay??(role==='BELL'?8:role==='BELL15'?15:0);}
  function rareFactor(setting=3){return 1+.016*(Math.max(1,Math.min(6,Math.round(Number(setting)||3)))-3);}
@@ -81,7 +81,7 @@ globalThis.NovaNormal=(()=>{
   const i=Math.max(0,Math.min(5,Math.round(Number(setting)||1)-1)),r=redistributionNormalRoles[i];
   const m=NovaTuning.profile(setting).cz*(globalThis.NovaDecrement?.cz(setting)??1)*lotteryRules.czScale[i]*(value?.level==='high'?config(options).highMultiplier:1);
   const total=["WEAK_SUICA","STRONG_SUICA","CHANCE_A","CHANCE_B","WEAK_NOVA"].reduce((s,k)=>s+r[k]*Math.min(1,legacyRare[k].cz*m),0);
-  return czEntryFactors[i]*Math.min(1,total/(r.WEAK_SUICA+r.STRONG_SUICA+r.WEAK_NOVA+r.CHANCE_A+r.CHANCE_B)*([1.26,1.22,1.28,1.18,1.4,1.49][i]));
+  return 0.1*czEntryFactors[i]*Math.min(1,total/(r.WEAK_SUICA+r.STRONG_SUICA+r.WEAK_NOVA+r.CHANCE_A+r.CHANCE_B)*([1.26,1.22,1.28,1.18,1.4,1.49][i]));
  }
  function advance(value,role,flow,options={},rng=Math.random){
   const s=normalize(value),c=config(options),held=s.level==='high'&&s.highLeft>0;
@@ -107,20 +107,42 @@ globalThis.NovaNormal=(()=>{
   if(forced==='CHANCE_A'||forced==='CHANCE_B')forced='MISS';
   options={...options,cz:NovaFlow.forSetting(options.cz,setting)};
   const before=normalize(value),c=config(options.normal),drawn=forced||(flow.phase==='normal'?drawNormalRole(setting,rng):drawRole(setting,rng)),result=drawn==='NAVI_BELL'?'BELL':drawn;
-  flow=NovaFlow.rewrite(flow,result,options.cz,rng);
+  if(flow.modePending&&before.games>=100){flow={...flow,modePending:false,success:rng()<flow.modeChance,winProbability:flow.modeChance};}
+  if(before.games<100&&['cz','strong_cz'].includes(flow.phase))flow={...flow,success:false,winProbability:0};
+  flow=before.games<100||flow.modeFake?NovaFlow.normalize(flow):NovaFlow.rewrite(flow,result,options.cz,rng);
   const state=advance(before,result,flow,{...c,setting},rng),token={normalBellNavi:drawn==='NAVI_BELL',result,state,czFlow:flow,internalBonus:null,entry:'',direct:false,czOptions:options.cz,czChance:before.prelude?.presentation==='reel'&&before.prelude.kind!=='czFake'?1:roleCzRate(before,result,setting,c)};
   if(['cz','strong_cz'].includes(flow.phase)&&before.prelude?.presentation==='reel'&&before.prelude.kind!=='czFake'&&before.prelude.left===0){
    state.prelude=null;token.czPrelude={before:3,after:0,announce:true};
   }
   const bonus=source=>({kind:'BIG',source,internalResult:'BIG'});
-  if(forced==='FREEZE'){state.prelude=null;token.result='MISS';token.internalBonus={...bonus('フリーズ'),premiumBonus:true};return token;}
-  const ceilingReached=!before.ceilingHandled&&(!before.prelude||before.prelude.kind==='czFake')&&before.games+1>=ceiling(before);
-  if(ceilingReached){
-   state.ceilingHandled=true;state.impurity=Math.min(100,state.impurity+c.ceilingGain);
-   state.prelude=rng()<gameZoneConfig.ceilingBonusRate?prelude('ceilingBonus',rng,ceiling(before)):czPrelude('STRONG_CZ',{strongChance:1},rng,ceiling(before),'ceiling');if(flow.phase==='normal')token.message=preludeLabel(state.prelude)+'開始';
+  if(state.games<=100&&token.result==='SUPER_NOVA')token.result='MISS';
+  if(state.games>=ceiling(state)){
+   state.ceilingHandled=true;state.prelude=null;state.impurity=Math.min(100,state.impurity+c.ceilingGain);
+   token.internalBonus=bonus(state.mode+'天井'+ceiling(state)+'G');token.modeEvent={type:'ceiling',mode:state.mode,g:state.games};return token;
   }
   if(flow.phase==='normal'){
-   if(before.prelude?.presentation==='reel'&&!ceilingReached){
+   if(!state.fiftyChecked&&state.games>=50){
+    state.fiftyChecked=true;const heaven=modes.indexOf(state.mode)>=3;
+    if(rng()<(heaven?modeRules.fiftyFake.heaven:modeRules.fiftyFake.other)){
+     token.entry='CZ';token.entrySource='game';state.prelude=null;
+     token.czOptions={...options.cz,czChance:0,modeFake:true};token.modeEvent={type:'fake50',mode:state.mode,g:state.games};return token;
+    }
+   }
+   if(state.games>=100*(state.modeChecked+1)){
+    const checkpoint=100*(state.modeChecked+1);state.modeChecked++;
+    const real=rng()<zoneRate(state,checkpoint);
+    token.modeEvent={type:'zoneMiss',mode:state.mode,g:checkpoint};
+    if(real||checkpoint===100){
+     token.entry='CZ';token.entrySource='game';state.prelude=null;
+     token.czOptions={...options.cz,modeFake:!real,modePending:real&&state.games<=100,modeChance:options.cz.czChance,...(!real||state.games<=100?{czChance:0}:{})};
+     token.modeEvent.type=real?'realZone':'fake100';return token;
+    }
+   }
+  }
+  if(state.games<=100){state.prelude=null;return token;}
+  if(forced==='FREEZE'){state.prelude=null;token.result='MISS';token.internalBonus={...bonus('フリーズ'),premiumBonus:true};return token;}
+  if(flow.phase==='normal'){
+   if(before.prelude?.presentation==='reel'){
     const p=state.prelude;
     // Keep the won CZ and its countdown. Strong NOVA can promote it without
     // restarting the prelude; fake preludes keep the normal rare-role lottery.
@@ -180,10 +202,10 @@ globalThis.NovaNormal=(()=>{
   return token;
  }
  function claim(value,freeze=false,rng=Math.random){const state=normalize(value),zones=[];if(state.impurity>=100){state.impurity=0;zones.push(['urapi','giru','sora','ouma'][Math.min(3,Math.floor(rng()*4))]);}if(freeze)zones.push(['giru','sora','ouma'][Math.min(2,Math.floor(rng()*3))]);return {state,zones:zones.map(z=>NovaArt.upgradeGuaranteedZone(z,rng)),sets:zones.length?1:0};}
- function afterArt(value,before,after,options={},rng=Math.random){const s=normalize(value);if(before?.phase==='art'&&after?.phase==='normal'){s.games=0;s.prelude=null;s.ceilingHandled=false;s.level='low';s.highLeft=0;if(after.dryAtEnd===true)s.impurity=Math.min(100,s.impurity+config(options).atDryGain);}return s;}
+ function afterArt(value,before,after,options={},rng=Math.random){const s=normalize(value);if(before?.phase==='art'&&after?.phase==='normal'){s.games=0;s.modeChecked=0;s.fiftyChecked=false;s.mode=modes[weighted(s.mode==='天国ループ'?modeRules.afterLoop:s.mode==='天国'?modeRules.afterHeaven:modeRules.initial,rng)];s.prelude=null;s.ceilingHandled=false;s.level='low';s.highLeft=0;if(after.dryAtEnd===true)s.impurity=Math.min(100,s.impurity+config(options).atDryGain);}return s;}
  function bonusEnd(value,kind,after,options={}){const s=normalize(value),c=config(options);s.regStreak=0;s.impurity=Math.min(100,s.impurity+(after?.phase!=='art'?c.bonusFailureGain:0));return s;}
- function afterBonus(value,rng=Math.random,setting){const s=normalize(value);return {...s,prelude:null,ceilingHandled:false,morningCeiling:false,games:0,level:'low',highLeft:0};}
+ function afterBonus(value,rng=Math.random,setting){const s=normalize(value);return {...s,prelude:null,ceilingHandled:false,morningCeiling:false,games:0,modeChecked:0,fiftyChecked:false,mode:modes[weighted(transitions[modes.indexOf(s.mode)],rng)],level:'low',highLeft:0};}
  function drawRare(rng=Math.random){const keys=Object.keys(rare);return keys[weighted(keys.map(k=>rare[k].p),rng)];}
  const rareMean=Object.values(rare).reduce((s,r)=>s+r.p*r.pay,0)/Object.values(rare).reduce((s,r)=>s+r.p,0);
- return {normalRoleProbabilities,drawNormalRole,lotteryRules,czPreludeRules,czPreludeStage,roleCzRate,czEntryFactors,modeWeights,gameZoneRates,gameZoneConfig,atEndModeWeights,zonePoint,preludePresentation,zoneRate,normalLabel,resetImpurityPoints,resetImpurityWeights,resetDistribution,reset,modes,ceilings,transitions,rare,rareMean,rareFactor,roleProbabilities,drawRare,defaults,config,normalize,ceiling,favored,multiplier,pay,drawRole,advance,spin,claim,afterArt,bonusEnd,afterBonus};
+ return {modeRules,normalRoleProbabilities,drawNormalRole,lotteryRules,czPreludeRules,czPreludeStage,roleCzRate,czEntryFactors,modeWeights,gameZoneRates,gameZoneConfig,atEndModeWeights,zonePoint,preludePresentation,zoneRate,normalLabel,resetImpurityPoints,resetImpurityWeights,resetDistribution,reset,modes,ceilings,transitions,rare,rareMean,rareFactor,roleProbabilities,drawRare,defaults,config,normalize,ceiling,favored,multiplier,pay,drawRole,advance,spin,claim,afterArt,bonusEnd,afterBonus};
 })();

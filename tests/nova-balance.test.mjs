@@ -1,7 +1,8 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
 const ctx=vm.createContext({});for(const f of ['nova-tuning.js','nova-art.js','nova-balance.js'])vm.runInContext(fs.readFileSync(f,'utf8'),ctx);const a=ctx.NovaArt,b=ctx.NovaBalance;
-test('RTP metadata identifies the adopted 10,000G MY19k calibration',()=>{
- for(let i=0;i<6;i++){const r=JSON.parse(fs.readFileSync('docs/upper-value-defaults-20261014.json')).summaries['baseline-'+(i+1)],p=b.profile(i+1);assert.equal(p.targetGamesPerTrial,10000);assert.equal(p.gamesPerTrial,10000);assert.equal(p.trials,300);assert.equal(p.measuredRtp,r.rtp/100);assert.equal(p.verifiedModel,'upper-value-20261014-10000g');}
+test('RTP metadata identifies the approved 10,000G mode and setting-3 calibration',()=>{
+ const evidence=JSON.parse(fs.readFileSync('docs/mode-zones-20261014.json'));
+ for(let i=0;i<6;i++){const r=evidence.settings[i+1],p=b.profile(i+1);assert.equal(p.targetGamesPerTrial,10000);assert.equal(p.gamesPerTrial,10000);assert.equal(p.trials,i===2?8000:600);assert.equal(p.measuredRtp,r.rtp/100);assert.equal(p.verifiedModel,'mode-zones-20261014-10000g');}
 });
 
 test('common AT evidence keeps session and episode denominators separate',()=>{

@@ -40,7 +40,7 @@ test('last-quota rare trigger waits for the already won zone and preserves award
  assert.deepEqual(run(-10000),run(10000));
 });
 
-test('normal/CZ setting profile uses role lotteries, common ceiling and guaranteed CZ',()=>{
+test('normal/CZ setting profile retains role lotteries alongside mode ceilings',()=>{
  loadModel();const a=NovaArt,n=NovaNormal,f=NovaFlow;
  for(let setting=1;setting<=6;setting++){
   const cfg=f.forSetting({},setting);
@@ -49,7 +49,7 @@ test('normal/CZ setting profile uses role lotteries, common ceiling and guarante
   assert.equal(f.forSetting(cfg,setting).czChance,cfg.czChance);
   assert.equal(n.zoneRate({mode:'通常A',games:99},setting),0);
   assert.equal(n.zoneRate({mode:'通常A',games:199},setting),0);
-  assert.equal(n.afterBonus({mode:'天国準備'},()=>.1,setting).mode,'通常');
+  assert.equal(n.afterBonus({mode:'天国準備'},()=>.1,setting).mode,'A');
   for(let j=0;j<100;j++)assert.notEqual(n.afterArt({}, {phase:'art'}, {phase:'normal',dryAtEnd:true},{setting},()=>j/100).mode,'通常A');
   assert.equal(a.enter({setting},()=>.999999).atLevel,undefined);
  }

@@ -44,6 +44,6 @@ test('CZ entry factor is setting-specific after the cap; strong NOVA remains cer
    assert.equal(n.roleCzRate({level},'STRONG_NOVA',setting),1);assert.equal(n.roleCzRate({level},'BELL',setting),0);
   }
   // Large high multiplier must cap before applying the approved CZ factor.
-  assert.equal(n.roleCzRate({level:'high'},'WEAK_SUICA',setting,{highMultiplier:100}),n.czEntryFactors[setting-1]);
+  assert.equal(n.roleCzRate({level:'high'},'WEAK_SUICA',setting,{highMultiplier:100}),.1*n.czEntryFactors[setting-1]);
  }
 });

@@ -7,13 +7,13 @@ function load(){const c=vm.createContext({});for(const f of ['nova-tuning.js','n
 const {NovaNormal:n,NovaArt:a,NovaFlow:f}=load();
 test('normal NOVA uses pre-spin CZ state; weak NOVA can promote high',()=>{
  for(const level of ['low','high']){
-  const state={level,highLeft:10,games:100};const p=n.roleCzRate(state,'WEAK_NOVA',3);
+  const state={level,highLeft:10,games:120,modeChecked:1,fiftyChecked:true};const p=n.roleCzRate(state,'WEAK_NOVA',3);
   for(const [roll,expected]of [[p-1e-10,'CZ'],[p,'']])assert.equal(n.spin(state,{phase:'normal'},3,{},()=>roll,'WEAK_NOVA').state.prelude?.entry||'',expected);
   const t=n.spin(state,{phase:'normal'},3,{},()=>.25,'STRONG_NOVA');assert.equal(t.entry,'');assert.equal(t.state.prelude.entry,'STRONG_CZ');assert.equal(t.state.level,level);assert.equal(t.czOptions.strongChance,level==='high'?1:.85);
   assert.equal(f.enterCZ(true,t.czOptions,()=>.849).success,true);
   assert.equal(f.enterCZ(true,t.czOptions,()=>.999).success,level==='high');
  }
- for(const role of ['WEAK_SUICA','WEAK_NOVA'])assert.equal(n.spin({}, {phase:'normal'},3,{},()=>0,role).state.prelude.entry,'CZ');
+ for(const role of ['WEAK_SUICA','WEAK_NOVA'])assert.equal(n.spin({games:120,modeChecked:1,fiftyChecked:true}, {phase:'normal'},3,{},()=>0,role).state.prelude.entry,'CZ');
 });
 test('normal guarantee protects exactly ten subsequent games without rare extension',()=>{
  let s=n.advance({mode:'通常C'},'WEAK_SUICA',{phase:'normal'},{},()=>0);assert.equal(s.highLeft,10);
@@ -39,7 +39,7 @@ test('merged SUICA rare 300pt is literal points, not converted G, and pays 6pt',
 });
 test('live normal path passes strong CZ options and preserves normalized AT state',()=>{
  const c=load(),html=readGameSource();
- vm.runInContext("const normalState={internal:{level:'high',highLeft:10},flow:{phase:'normal'}},settings={setting:3};let pendingArtStep=null,pendingForceResult='STRONG_NOVA';"+html.match(/  function drawIndependentATypeOutcome\([^]*?\n  }/)[0],c);
+ vm.runInContext("const normalState={internal:{level:'high',highLeft:10,games:120,modeChecked:1,fiftyChecked:true},flow:{phase:'normal'}},settings={setting:3};let pendingArtStep=null,pendingForceResult='STRONG_NOVA';"+html.match(/  function drawIndependentATypeOutcome\([^]*?\n  }/)[0],c);
  c.drawIndependentATypeOutcome();assert.equal(vm.runInContext('pendingArtStep.flow.phase',c),'normal');
  vm.runInContext("normalState.internal=pendingArtStep.normalInternal;pendingForceResult='BELL';",c);
  for(let i=0;i<11;i++){

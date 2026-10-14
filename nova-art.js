@@ -16,7 +16,7 @@ globalThis.NovaArt=(()=>{
  const bonusLabel=tier=>bonusTier(tier)==='upper'?'上位BIG':'通常BIG';
  const bonusPayout=(state,role)=>Math.min(payout(role),Math.max(0,bonusTarget()-(Number(state?.paid)||0)));
  // Approved 2026-10-14: fewer initial/rare entries, stronger upper-AT zone draws.
- const upperAtRules=Object.freeze({weakZoneMultiplier:12,entryFactors:Object.freeze([.5,.5,.4,.5,.5,.25])});
+ const upperAtRules=Object.freeze({weakZoneMultiplier:12,weakZoneMultipliers:Object.freeze([12,12,23,12,12,12]),entryFactors:Object.freeze([.5,.5,.4,.5,.5,.25])});
  const burstRules=Object.freeze({
   version:2,games:10,success:.65,initialSuccess:.5,initialEntry:.05,
   uraWeights:Object.freeze([1,1,1]),
@@ -391,9 +391,9 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
  const weakAtNetZoneScales=Object.freeze([1,1,1,1,1,1]);
  function extraZoneChance(setting,role,upper=false,high=false,netPt=0){
   if(!['WEAK_SUICA','WEAK_NOVA'].includes(role))return 0;
-  // Upper weak-role draws are 1.5 times the previous multiplier of 8.
+  // Approved mode balance: normal AT and upper AT use separate setting multipliers.
   const i=validSetting(setting)-1;
-  return (upper?upperAtRules.weakZoneMultiplier:1)*(high?.25:.15)*weakAtZoneScales[i]*(netPt>=5000?weakAtNetZoneScales[i]:1)*positiveNetZoneFactor(setting,netPt);
+  return (upper?upperAtRules.weakZoneMultipliers[i]:[1.7,4.25,2.5,4.5,3.2,4.85][i])*(high?.25:.15)*weakAtZoneScales[i]*(netPt>=5000?weakAtNetZoneScales[i]:1)*positiveNetZoneFactor(setting,netPt);
  }
  const checkpointQuietRules=Object.freeze({enabled:true}); // Approved 2026-10-13; fixed earned net quota reaches the checkpoint.
  function checkpointGuaranteed(s,net,next){

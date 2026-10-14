@@ -14,5 +14,5 @@ test('ART win freezes quota, then red seven, roulette, announcement, zone',()=>{
 });
 test('CZ success always goes to a bonus even with legacy direct ART setting',()=>{
  for(const roll of [.1,.8]){let f=ctx.NovaFlow.enterCZ(false,{},()=>0);f.remaining=1;f.success=true;
- const t=ctx.NovaNormal.spin({},f,1,{art:{czArt:1}},()=>roll,'MISS');assert.equal(t.direct,false);assert.ok(['BIG','MID'].includes(t.internalBonus.kind));}
+ const t=ctx.NovaNormal.spin({games:120},f,1,{art:{czArt:1}},()=>roll,'MISS');assert.equal(t.direct,false);assert.ok(['BIG','MID'].includes(t.internalBonus.kind));}
 });

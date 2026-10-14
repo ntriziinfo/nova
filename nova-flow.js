@@ -23,7 +23,7 @@ globalThis.NovaFlow = (() => {
   const lampConfidence=Object.freeze([.01,.05,.30,.60,.80,1]);
   function rewrite(value,role,options={},random=Math.random){
     const state=normalize(value);
-    if(!['cz','strong_cz'].includes(state.phase))return state;
+    if(!['cz','strong_cz'].includes(state.phase)||state.modeFake||state.modePending)return state;
     const rate=bounded(options?.rewriteRates?.[role],rewriteRates[role]||0,0,1);
     state.winProbability+= (1-state.winProbability)*rate;
     if(!state.success && rate>0 && random()<rate)state.success=true;
@@ -138,7 +138,7 @@ globalThis.NovaFlow = (() => {
     if(value?.phase==='rt')return NovaArt.normalize({...value,phase:'art'});
     const phase=['cz','strong_cz','rt'].includes(value?.phase)?value.phase:'normal';
     const remaining=Math.max(0,Math.min(phase==='rt'?50:100,Math.floor(Number(value?.remaining)||0)));
-    return phase==='normal'||remaining===0?{phase:'normal',remaining:0,success:false}:{phase,remaining,success:!!value.success,winProbability:bounded(value?.winProbability,phase==='strong_cz'?.7:.4,0,1),
+    return phase==='normal'||remaining===0?{phase:'normal',remaining:0,success:false}:{phase,remaining,modeFake:!!value.modeFake,modePending:!!value.modePending,modeChance:Number(value.modeChance)||0,success:!!value.success,winProbability:bounded(value?.winProbability,phase==='strong_cz'?.7:.4,0,1),
       totalGames:Math.max(remaining,Math.round(bounded(value?.totalGames,10,1,100))),
       lampRoll:Number.isFinite(value?.lampRoll)?bounded(value.lampRoll,0,0,.999999999):null,
       rainbowRoll:Number.isFinite(value?.rainbowRoll)?bounded(value.rainbowRoll,0,0,.999999999):null};
@@ -147,7 +147,7 @@ globalThis.NovaFlow = (() => {
     const cfg=config(options),success=random()<(strong?cfg.strongChance:cfg.czChance);
     const min=strong?cfg.strongGames:cfg.czGames,max=strong?cfg.strongMaxGames:cfg.czMaxGames;
     const games=min+Math.min(max-min,Math.floor(random()*(max-min+1)));
-    return {phase:strong?'strong_cz':'cz',remaining:games,success,winProbability:strong?cfg.strongChance:cfg.czChance,totalGames:games,lampRoll:random(),rainbowRoll:random()};
+    return {phase:strong?'strong_cz':'cz',modeFake:!!options.modeFake,modePending:!!options.modePending,modeChance:Number(options.modeChance)||0,remaining:games,success,winProbability:strong?cfg.strongChance:cfg.czChance,totalGames:games,lampRoll:random(),rainbowRoll:random()};
   }
   function afterBonus(value,options,sets=0,random=Math.random){return NovaArt.afterBonus(value,options,sets,random);}
   function advance(value){
