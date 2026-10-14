@@ -17,11 +17,11 @@ test('initial challenge success and failure each reserve one ordinary zone witho
  }
 });
 
-test('upper challenge has ten games, initial 5% entry and no direct-point or AT-level reward',()=>{
+test('upper challenge has ten games, approved setting-specific initial entry and no direct-point or AT-level reward',()=>{
  loadModel();const a=NovaArt;
  assert.equal(a.burstRules.awards,undefined);assert.equal(a.burstRules.games,10);assert.equal(a.burstRules.success,.65);assert.equal(a.burstRules.initialSuccess,.5);
  for(let setting=1;setting<=6;setting++){
-  assert.equal(a.enterInitial({setting},()=>.049999).researchChallengeSource,'initial');assert.equal(a.enterInitial({setting},()=>.05).burstPending,false);
+  const p=[.025,.025,.02,.025,.025,.0125][setting-1];assert(Math.abs(a.initialBurstChance(setting)-p)<1e-12);assert.equal(a.enterInitial({setting},()=>p-1e-8).researchChallengeSource,'initial');assert.equal(a.enterInitial({setting},()=>p+1e-8).burstPending,false);
   for(const role of Object.keys(a.burstRules.roles))assert(a.burstChance(role,setting)>0&&a.burstChance(role,setting)<=1);
   assert.equal(a.burstChance('BELL',setting),0);assert.equal(a.burstChance('REPLAY',setting),0);assert.equal(a.enter({setting},()=>.5).atLevel,undefined);
  }

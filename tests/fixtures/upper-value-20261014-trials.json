@@ -1,0 +1,494 @@
+[
+  {
+    "setting": 1,
+    "seed": "upper-verify-20261014|s1|0",
+    "bet": 30000,
+    "paid": 29183,
+    "net": -817,
+    "peak": 0,
+    "games": 10000,
+    "complete": false,
+    "upper": {
+      "spins": 0,
+      "upperGames": 0,
+      "bySource": {
+        "initial": {
+          "started": 0,
+          "won": 0,
+          "failed": 0
+        },
+        "threshold": {
+          "started": 0,
+          "won": 0,
+          "failed": 0
+        },
+        "rare": {
+          "started": 0,
+          "won": 0,
+          "failed": 0
+        }
+      }
+    },
+    "zone": {
+      "normal": {
+        "games": 2378,
+        "wins": 0
+      },
+      "upper": {
+        "games": 0,
+        "wins": 0
+      }
+    }
+  },
+  {
+    "setting": 1,
+    "seed": "upper-verify-20261014|s1|492",
+    "bet": 30000,
+    "paid": 43951,
+    "net": 13951,
+    "peak": 16098,
+    "games": 10000,
+    "complete": false,
+    "upper": {
+      "spins": 49,
+      "upperGames": 456,
+      "bySource": {
+        "initial": {
+          "started": 0,
+          "won": 0,
+          "failed": 0
+        },
+        "threshold": {
+          "started": 6,
+          "won": 3,
+          "failed": 3
+        },
+        "rare": {
+          "started": 0,
+          "won": 0,
+          "failed": 0
+        }
+      }
+    },
+    "zone": {
+      "normal": {
+        "games": 4096,
+        "wins": 2
+      },
+      "upper": {
+        "games": 456,
+        "wins": 0
+      }
+    }
+  },
+  {
+    "setting": 2,
+    "seed": "upper-verify-20261014|s2|0",
+    "bet": 30000,
+    "paid": 23595,
+    "net": -6405,
+    "peak": 0,
+    "games": 10000,
+    "complete": false,
+    "upper": {
+      "spins": 0,
+      "upperGames": 0,
+      "bySource": {
+        "initial": {
+          "started": 0,
+          "won": 0,
+          "failed": 0
+        },
+        "threshold": {
+          "started": 0,
+          "won": 0,
+          "failed": 0
+        },
+        "rare": {
+          "started": 0,
+          "won": 0,
+          "failed": 0
+        }
+      }
+    },
+    "zone": {
+      "normal": {
+        "games": 1413,
+        "wins": 1
+      },
+      "upper": {
+        "games": 0,
+        "wins": 0
+      }
+    }
+  },
+  {
+    "setting": 2,
+    "seed": "upper-verify-20261014|s2|286",
+    "bet": 30000,
+    "paid": 41962,
+    "net": 11962,
+    "peak": 11989,
+    "games": 10000,
+    "complete": false,
+    "upper": {
+      "spins": 28,
+      "upperGames": 92,
+      "bySource": {
+        "initial": {
+          "started": 0,
+          "won": 0,
+          "failed": 0
+        },
+        "threshold": {
+          "started": 4,
+          "won": 2,
+          "failed": 2
+        },
+        "rare": {
+          "started": 0,
+          "won": 0,
+          "failed": 0
+        }
+      }
+    },
+    "zone": {
+      "normal": {
+        "games": 4289,
+        "wins": 8
+      },
+      "upper": {
+        "games": 92,
+        "wins": 1
+      }
+    }
+  },
+  {
+    "setting": 3,
+    "seed": "upper-refine3-20261014|s3|20",
+    "bet": 30000,
+    "paid": 29059,
+    "net": -941,
+    "peak": 1664,
+    "games": 10000,
+    "complete": false,
+    "upper": {
+      "spins": 7,
+      "upperGames": 39,
+      "bySource": {
+        "initial": {
+          "started": 0,
+          "won": 0,
+          "failed": 0
+        },
+        "threshold": {
+          "started": 0,
+          "won": 0,
+          "failed": 0
+        },
+        "rare": {
+          "started": 1,
+          "won": 1,
+          "failed": 0
+        }
+      }
+    },
+    "zone": {
+      "normal": {
+        "games": 2195,
+        "wins": 1
+      },
+      "upper": {
+        "games": 39,
+        "wins": 0
+      }
+    }
+  },
+  {
+    "setting": 3,
+    "seed": "upper-refine3-20261014|s3|351",
+    "bet": 30000,
+    "paid": 47671,
+    "net": 17671,
+    "peak": 18081,
+    "games": 10000,
+    "complete": false,
+    "upper": {
+      "spins": 64,
+      "upperGames": 1368,
+      "bySource": {
+        "initial": {
+          "started": 0,
+          "won": 0,
+          "failed": 0
+        },
+        "threshold": {
+          "started": 7,
+          "won": 4,
+          "failed": 3
+        },
+        "rare": {
+          "started": 2,
+          "won": 2,
+          "failed": 0
+        }
+      }
+    },
+    "zone": {
+      "normal": {
+        "games": 3422,
+        "wins": 7
+      },
+      "upper": {
+        "games": 1368,
+        "wins": 12
+      }
+    }
+  },
+  {
+    "setting": 4,
+    "seed": "upper-verify-20261014|s4|0",
+    "bet": 30000,
+    "paid": 27586,
+    "net": -2414,
+    "peak": 1685,
+    "games": 10000,
+    "complete": false,
+    "upper": {
+      "spins": 7,
+      "upperGames": 15,
+      "bySource": {
+        "initial": {
+          "started": 1,
+          "won": 1,
+          "failed": 0
+        },
+        "threshold": {
+          "started": 0,
+          "won": 0,
+          "failed": 0
+        },
+        "rare": {
+          "started": 0,
+          "won": 0,
+          "failed": 0
+        }
+      }
+    },
+    "zone": {
+      "normal": {
+        "games": 1917,
+        "wins": 3
+      },
+      "upper": {
+        "games": 15,
+        "wins": 0
+      }
+    }
+  },
+  {
+    "setting": 4,
+    "seed": "upper-verify-20261014|s4|80",
+    "bet": 30000,
+    "paid": 46137,
+    "net": 16137,
+    "peak": 17176,
+    "games": 10000,
+    "complete": false,
+    "upper": {
+      "spins": 50,
+      "upperGames": 1629,
+      "bySource": {
+        "initial": {
+          "started": 1,
+          "won": 1,
+          "failed": 0
+        },
+        "threshold": {
+          "started": 7,
+          "won": 6,
+          "failed": 1
+        },
+        "rare": {
+          "started": 0,
+          "won": 0,
+          "failed": 0
+        }
+      }
+    },
+    "zone": {
+      "normal": {
+        "games": 2795,
+        "wins": 3
+      },
+      "upper": {
+        "games": 1628,
+        "wins": 14
+      }
+    }
+  },
+  {
+    "setting": 5,
+    "seed": "upper-verify-20261014|s5|0",
+    "bet": 30000,
+    "paid": 30743,
+    "net": 743,
+    "peak": 1507,
+    "games": 10000,
+    "complete": false,
+    "upper": {
+      "spins": 0,
+      "upperGames": 0,
+      "bySource": {
+        "initial": {
+          "started": 0,
+          "won": 0,
+          "failed": 0
+        },
+        "threshold": {
+          "started": 0,
+          "won": 0,
+          "failed": 0
+        },
+        "rare": {
+          "started": 0,
+          "won": 0,
+          "failed": 0
+        }
+      }
+    },
+    "zone": {
+      "normal": {
+        "games": 2386,
+        "wins": 4
+      },
+      "upper": {
+        "games": 0,
+        "wins": 0
+      }
+    }
+  },
+  {
+    "setting": 5,
+    "seed": "upper-verify-20261014|s5|113",
+    "bet": 22035,
+    "paid": 41041,
+    "net": 19006,
+    "peak": 19006,
+    "games": 7345,
+    "complete": true,
+    "upper": {
+      "spins": 44,
+      "upperGames": 2511,
+      "bySource": {
+        "initial": {
+          "started": 0,
+          "won": 0,
+          "failed": 0
+        },
+        "threshold": {
+          "started": 7,
+          "won": 7,
+          "failed": 0
+        },
+        "rare": {
+          "started": 0,
+          "won": 0,
+          "failed": 0
+        }
+      }
+    },
+    "zone": {
+      "normal": {
+        "games": 1444,
+        "wins": 3
+      },
+      "upper": {
+        "games": 2511,
+        "wins": 31
+      }
+    }
+  },
+  {
+    "setting": 6,
+    "seed": "upper-refine6-20261014|s6|0",
+    "bet": 30000,
+    "paid": 28019,
+    "net": -1981,
+    "peak": 577,
+    "games": 10000,
+    "complete": false,
+    "upper": {
+      "spins": 0,
+      "upperGames": 0,
+      "bySource": {
+        "initial": {
+          "started": 0,
+          "won": 0,
+          "failed": 0
+        },
+        "threshold": {
+          "started": 0,
+          "won": 0,
+          "failed": 0
+        },
+        "rare": {
+          "started": 0,
+          "won": 0,
+          "failed": 0
+        }
+      }
+    },
+    "zone": {
+      "normal": {
+        "games": 1935,
+        "wins": 4
+      },
+      "upper": {
+        "games": 0,
+        "wins": 0
+      }
+    }
+  },
+  {
+    "setting": 6,
+    "seed": "upper-refine6-20261014|s6|510",
+    "bet": 26553,
+    "paid": 45563,
+    "net": 19010,
+    "peak": 19010,
+    "games": 8851,
+    "complete": true,
+    "upper": {
+      "spins": 38,
+      "upperGames": 2406,
+      "bySource": {
+        "initial": {
+          "started": 1,
+          "won": 1,
+          "failed": 0
+        },
+        "threshold": {
+          "started": 7,
+          "won": 7,
+          "failed": 0
+        },
+        "rare": {
+          "started": 0,
+          "won": 0,
+          "failed": 0
+        }
+      }
+    },
+    "zone": {
+      "normal": {
+        "games": 1865,
+        "wins": 7
+      },
+      "upper": {
+        "games": 2406,
+        "wins": 25
+      }
+    }
+  }
+]

@@ -5,12 +5,13 @@ import {xoshiro128,xoshiro128State} from '../scripts/zone-v2-rng.mjs';
 loadModel();const a=NovaArt;
 const reload=s=>a.normalize(JSON.parse(JSON.stringify(s)));
 
-test('fresh entry uses identical quota, multiplier, challenge and three rare upgrades for every setting',()=>{
+test('fresh initial quota, multiplier and three rare upgrades remain common after the setting-specific challenge draw',()=>{
  const reference=[];
  for(let setting=1;setting<=6;setting++)for(let seed=0;seed<128;seed++){
-  const rng=xoshiro128('common-initial-proof-'+seed),c={setting};let flow=a.enterInitial(c,rng);
-  const actual={quota:flow.entryQuota,multiplier:flow.initialMultiplier,challenge:flow.burstPending,awards:[],roles:[]};
-  if(!actual.challenge){
+  const rng=xoshiro128('common-initial-proof-'+seed),c={setting};let flow=a.enterInitial(c,()=>Math.max(.05,rng()));
+  const actual={quota:flow.entryQuota,multiplier:flow.initialMultiplier,awards:[],roles:[]};
+  // Exclude the separately tested challenge route during entry, preserving RNG consumption.
+  {
    for(let g=0;g<12&&flow.initialStage;g++){
     flow=a.prepareBet(reload(flow),c,rng);const out=a.step(flow,c,rng);flow=out.flow;
     if(out.initialAward&&Number.isFinite(out.zoneAward)){actual.awards.push(out.zoneAward);actual.roles.push(out.result);}
@@ -44,7 +45,7 @@ test('adopted weak zone chances use setting and upper state, without net suppres
   for(const low of [false,true]){
    const saved=NovaDecrement.snapshot();saved.low=low;NovaDecrement.bind(saved,setting);
    for(const upper of [false,true])for(const high of [false,true])for(const role of ['WEAK_SUICA','WEAK_NOVA'])for(const net of [-10000,0,4999,5000,5001,20000]){
-    const chance=(high?.25:.15)*scales[setting-1]*(upper?8:1);assert.equal(a.extraZoneChance(setting,role,upper,high,net),chance);
+    const chance=(upper?12:1)*(high?.25:.15)*scales[setting-1];assert.equal(a.extraZoneChance(setting,role,upper,high,net),chance);
     for(const roll of [chance-1e-9,chance]){
      const draws=high?[.999,roll,.5]:[.999,.999,roll,.5];
      const state={atHigh:high,atHighLeft:10,researchUpper:upper,remaining:'8000',sets:'2',queuedZones:['sora']};

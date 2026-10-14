@@ -45,7 +45,7 @@ test('legacy awarded plans and multipliers keep their original weak/strong payou
  }
 });
 
-test('planned rare roles still draw sortie and the initial challenge remains five percent',()=>{
+test('planned rare roles still draw sortie and the initial challenge follows the approved setting-specific entry',()=>{
  loadModel();const a=NovaArt;
  for(let setting=1;setting<=6;setting++){
   for(const net of [-1000,5000,10000]){
@@ -53,7 +53,7 @@ test('planned rare roles still draw sortie and the initial challenge remains fiv
    assert(NovaProgress.drawSortie(setting,'STRONG_NOVA',{flowBefore:{zone:'kushuri_nito',initialStage:'zone'}},()=>rate-1e-10,net));
    assert.equal(NovaProgress.snapshot().sorties,1);
   }
-  for(const [roll,expected]of [[.05-1e-9,true],[.05,false]]){
+  for(const [roll,expected]of [[a.initialBurstChance(setting)-1e-9,true],[a.initialBurstChance(setting),false]]){
    let call=0;const flow=a.enterInitial({setting},()=>[.99,.99,roll][call++]);assert.equal(flow.burstPending,expected);assert.equal(call,3);
    if(expected){assert.equal(flow.initialStage,'');assert.equal(flow.initialBoostActive,false);}
   }

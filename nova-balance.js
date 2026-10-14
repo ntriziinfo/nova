@@ -1,10 +1,10 @@
-/* Approved checkpoint change: docs/checkpoint-quiet-20261013.json; 10,000G, MY19,000pt stop. */
+/* Approved upper-AT allocation: docs/upper-value-defaults-20261014.json; 10,000G, MY19,000pt stop. */
 globalThis.NovaBalance=(()=>{
  // Setting 4–6 win/RTP targets; actual trial estimates are shown separately.
  const targets=[null,null,null,1.005,1.065,1.14];
  const winTargets=[0.15,0.2,0.3,0.55,0.65,0.8],completeTargets=[null,null,null,null,null,null];
  // Actual payouts through 10,000 paid BETs; MY19,000pt completion.
- const measuredRtp=[0.9329361111111111,0.9792467777777777,0.9812796666666667,1.0005923333333333,1.061542223154729,1.1417351996490293];
+ const measuredRtp=[0.9365461111111111,0.9708322222222222,0.9708914444444444,1.0095248888888888,1.0664922584089696,1.14183459688405];
  const normal=[[354.112628,570.311235,6.592194,128,7.464630],[335.340933,496.870459,6.554256,192,7.482946],[318.675842,391.096799,6.455407,124,7.452119],[295.728558,359.759320,6.248231,184,7.301746],[288.226978,283.780845,6.120643,120,7.250883],[276.519476,276.524590,5.897360,176,7.245667]];
  // Exact reward recursion: 50pt grid below the threshold, translation-invariant tail above it.
  function zoneMean(id,options={}){
@@ -74,7 +74,7 @@ globalThis.NovaBalance=(()=>{
  }
  const giruMean=(setting,ura=false)=>zoneMean(ura?'ura_giru':'giru',{setting});
  // Legacy denominator fields are informational; game lotteries use the core rules.
- function profile(setting){const i=Math.max(0,Math.min(5,Math.round(Number(setting)||1)-1)),scale=.21*(1+.12*NovaArt.settingBias[i]);return {setting:i+1,target:targets[i],winTarget:winTargets[i],completeTarget:completeTargets[i],measuredRtp:measuredRtp[i],scale,directDenom:NovaArt.defaults['direct'+(i+1)]/scale,czDenom:120/scale,strongDenom:600/scale,verifiedModel:'checkpoint-quiet-20261013-10000g',verificationLabel:'1万G・300回予備試算',trials:300,gamesPerTrial:10000,targetGamesPerTrial:10000,previousVerifiedModel:i>=3?'win-base30-20261007-50000g':'replay-dual-cap-20261007-10000g'};}
+ function profile(setting){const i=Math.max(0,Math.min(5,Math.round(Number(setting)||1)-1)),scale=.21*(1+.12*NovaArt.settingBias[i]);return {setting:i+1,target:targets[i],winTarget:winTargets[i],completeTarget:completeTargets[i],measuredRtp:measuredRtp[i],scale,directDenom:NovaArt.defaults['direct'+(i+1)]/scale,czDenom:120/scale,strongDenom:600/scale,verifiedModel:'upper-value-20261014-10000g',verificationLabel:'1万G・300回予備試算',trials:300,gamesPerTrial:10000,targetGamesPerTrial:10000,previousVerifiedModel:i>=3?'win-base30-20261007-50000g':'replay-dual-cap-20261007-10000g'};}
  const profiles=targets.map((_,i)=>profile(i+1));
  // Estimates describe the approved defaults, not user-edited lottery settings.
  function usesStandardSettings(settings={}){

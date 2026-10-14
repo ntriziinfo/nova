@@ -1,0 +1,84 @@
+{
+  "conditions": "10,000 paid BETs; MY19,000pt cap, no net cap; approved upper AT rules; 300 trials per setting; standalone defaults",
+  "n": 300,
+  "games": 10000,
+  "seed": "upper-release-20261014",
+  "hashes": {
+    "nova-art.js": "3cfcdc24baa43f88442d0b105889c3f1f4576a11788378e326a3c8e133e9ced5",
+    "nova-normal.js": "93a4be578c6d04c84d3f8a9d4a93d3fa3770b3d0a59c5185930a3ed2929cfcb8",
+    "nova-flow.js": "2b4c6587f123b27c2ed837c9a7b955e4478c2768dce6ca6b794ab5a0de3d4c4e",
+    "nova-balance.js": "12724012fa4034b72c3c1e0af0ec945b80c7411959f1ebec4adf8efa0b2f1d31",
+    "nova-tuning.js": "6ab505d1aac2c671696ea383c10ffd3e85b8e2ce91ac7d5641d80fd8e27d9f4b",
+    "nova-progress.js": "533808b030882b0238b085307f90aea0dace177aa4dcba782e513fa378850bbe",
+    "nova-decrement.js": "e1cda1eff88e32819c691ea9685c366ef4f9b0c8d9781c801dcb0a9b93fa0bc4",
+    "nova-complete.js": "ff3796e6f4aa810393ab5e79d0daab7e12d76982ce6a402b03a68155d45f2a8c"
+  },
+  "summaries": {
+    "baseline-1": {
+      "n": 300,
+      "rtp": 93.65461111111111,
+      "rtp95": [
+        92.16065769598549,
+        95.14856452623673
+      ],
+      "win": 28.666666666666668,
+      "peak10000": 1.3333333333333335,
+      "complete": 0
+    },
+    "baseline-2": {
+      "n": 300,
+      "rtp": 97.08322222222222,
+      "rtp95": [
+        95.58588056883518,
+        98.58056387560926
+      ],
+      "win": 36,
+      "peak10000": 2,
+      "complete": 0
+    },
+    "baseline-3": {
+      "n": 300,
+      "rtp": 97.08914444444444,
+      "rtp95": [
+        95.48136490231664,
+        98.69692398657224
+      ],
+      "win": 39,
+      "peak10000": 2,
+      "complete": 0
+    },
+    "baseline-4": {
+      "n": 300,
+      "rtp": 100.95248888888888,
+      "rtp95": [
+        99.47358140141952,
+        102.43139637635825
+      ],
+      "win": 49.333333333333336,
+      "peak10000": 3.3333333333333335,
+      "complete": 0
+    },
+    "baseline-5": {
+      "n": 300,
+      "rtp": 106.64922584089696,
+      "rtp95": [
+        104.78674022909044,
+        108.51171145270347
+      ],
+      "win": 60.66666666666667,
+      "peak10000": 9,
+      "complete": 0.33333333333333337
+    },
+    "baseline-6": {
+      "n": 300,
+      "rtp": 114.183459688405,
+      "rtp95": [
+        112.5965642172013,
+        115.7703551596087
+      ],
+      "win": 83.33333333333334,
+      "peak10000": 12.666666666666668,
+      "complete": 0.33333333333333337
+    }
+  }
+}
