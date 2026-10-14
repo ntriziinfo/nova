@@ -4669,7 +4669,11 @@
       log("ボーナス終了："+bonusStockSummary+" / "+NovaFlow.label(normalState.flow));
       showOverlay(normalState.flow.phase === "art" ? (normalState.flow.initialStage?"AT準備中":"AT") : "ボーナス終了");
     }
+    if(aTypeEnd && !premiumOneGameRen && normalizeATypeBonusKind(endedBonusKind)==='BIG'){
+      displayNovaResult(NovaResults.bonus(resultPayout,normalState.flow));
+    }
     updateDisplay();
+    persistState();
   }
 
   function consumeContinuationStockForBattle(){

@@ -27,6 +27,13 @@ test('every zone result keeps AUTO on, waits for the eyecatch, then starts the n
  }
 });
 
+test('BB result keeps AUTO selected and advances only after the result sound finishes',()=>{
+ const {c,calls}=setup();c.normalState.flow={phase:'normal'};
+ c.displayNovaResult({kind:'bonus',character:'nova',color:'blue',pt:'150',next:'通常'});
+ c.runAutoStep();assert.equal(c.autoPlay,true);assert.equal(calls.filter(x=>x[0]==='spin').length,0);
+ c.bonusConfirmSoundPlaying=false;c.runAutoStep();assert.equal(calls.filter(x=>x[0]==='spin').length,1);
+});
+
 test('final sortie award completes its hold before the result, then AUTO waits for result audio and advances once',()=>{
  const {c,calls}=setup();c.normalState.pendingSortieResult={kind:'sortie',character:'all',color:'gold',count:4};
  c.normalState.flow={phase:'art',remaining:'500',queuedZones:['sora','sora','toto','giru']};const flow=JSON.stringify(c.normalState.flow);

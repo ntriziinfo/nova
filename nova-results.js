@@ -27,6 +27,10 @@ globalThis.NovaResults=(()=>{
   if(before?.zone&&!after?.zone)return {kind:'zone',...pick('zone',before.zone,setting,rng),pt:String(after?.award??before.award??0)};
   return null;
  }
+ function bonus(pt,flow){
+  // Character/mode hints are not assigned yet. This common card uses no lottery draw.
+  return {kind:'bonus',character:'nova',color:'blue',pt:String(pt),next:flow?.phase==='art'?'AT':'通常'};
+ }
  function sortie(event,flow){
   if(!event?.finished||!Number.isInteger(event.hits)||event.hits<0)return null;
   const card={kind:'sortie',character:'all',color:'gold',count:event.hits};
@@ -64,10 +68,10 @@ globalThis.NovaResults=(()=>{
    positions=Object.fromEntries(Object.entries(previous).map(([id,p])=>[id,Object.fromEntries(['x','y','w','h'].filter(k=>Number.isFinite(p[k])).map(k=>[k,p[k]]))]));
   }
  }catch{positions={};}
- const key=()=>active?.kind==='sortie'?'sortie-gold':active?active.character+'-'+active.color:'sosuke-red';
- const layout=()=>({...defaults,...(active?.character==='all'?{x:14,y:28,w:72,h:36,numberX:20,numberY:80,numberW:60,numberH:13,font:8}:{}),...(active?.kind==='sortie'?{numberX:4,numberW:92,font:6}:{}),...positions[key()]});
+ const key=()=>active?.kind==='bonus'?'bonus-blue':active?.kind==='sortie'?'sortie-gold':active?active.character+'-'+active.color:'sosuke-red';
+ const layout=()=>({...defaults,...(active?.character==='all'?{x:14,y:28,w:72,h:36,numberX:20,numberY:80,numberW:60,numberH:13,font:8}:{}),...(active?.kind==='sortie'?{numberX:4,numberW:92,font:6}:{}),...(active?.kind==='bonus'?{font:14}:{}),...positions[key()]});
  function loadImage(character,color){
-  const src='assets/illustrations/'+(characterImages[character]||characterImages.sosuke),cached=images.get(src);
+  const src=character==='nova'?'assets/logo/nova_logo.svg':'assets/illustrations/'+(characterImages[character]||characterImages.sosuke),cached=images.get(src);
   if(cached&&!cached.failed)return cached;
   const img=new Image();img.draggable=false;img.decoding='async';
   const entry={img,ready:false,failed:false};images.set(src,entry);
@@ -104,7 +108,7 @@ globalThis.NovaResults=(()=>{
   fallback.querySelector('output').style.cssText=`left:${p.numberX}%;top:${p.numberY}%;width:${p.numberW}%;height:${mainHeight}%;font-size:${font}px;`;
   const total=fallback.querySelector('.novaResultTotal');
   if(total)total.style.cssText=`left:${p.numberX}%;top:${p.numberY+mainHeight}%;width:${p.numberW}%;height:${p.numberH-mainHeight}%;font-size:${Math.min(cw*.035,cw*p.numberW/100/((String(active.totalPt||0).length+7)*.75))}px;`;
-  for(const [selector,scale] of [['strong',.048],['span',.034],['.novaResultNext',.032]])fallback.querySelector(selector).style.fontSize=all?cw*scale+'px':'';
+  for(const [selector,scale] of [['strong',.048],['span',.034],['.novaResultNext',.032]])fallback.querySelector(selector).style.fontSize=all?cw*scale+'px':active.kind==='bonus'?cw*({strong:.07,span:.06,'.novaResultNext':.04}[selector])+'px':'';
  }
  function init(){if(root)return;const machine=document.getElementById('machine');if(!machine)return;
   root=document.createElement('div');root.className='novaResultsLayer';root.hidden=true;
@@ -125,7 +129,8 @@ globalThis.NovaResults=(()=>{
   const fill=()=>panel.querySelectorAll('input').forEach(el=>el.value=layout()[el.dataset.field]);
   button.onclick=()=>{if(!active){preview=true;show({kind:'preview',character:'sosuke',color:'red',pt:'1234'});}select.value=key();fill();panel.show();};
   select.insertAdjacentHTML('beforeend','<option value="sortie-gold">出陣チャレンジ・獲得数</option>');
-  select.onchange=()=>{preview=true;const [character,color]=select.value.split('-');show(character==='sortie'?sortie({finished:true,hits:5},{queuedZones:['sora','sora','ura_sora','giru','kushuri_nito']}):{kind:'preview',character,color,pt:'1234'});fill();};
+  select.insertAdjacentHTML('beforeend','<option value="bonus-blue">BB終了・共通</option>');
+  select.onchange=()=>{preview=true;const [character,color]=select.value.split('-');show(character==='bonus'?bonus('150',{phase:'normal'}):character==='sortie'?sortie({finished:true,hits:5},{queuedZones:['sora','sora','ura_sora','giru','kushuri_nito']}):{kind:'preview',character,color,pt:'1234'});fill();};
   panel.oninput=e=>{const k=e.target.dataset.field;if(!k)return;let v=Number(e.target.value);if(!Number.isFinite(v))return;v=Math.max(['x','y','imageX','imageY','numberX','numberY'].includes(k)?-100:1,Math.min(200,v));positions[key()]={...layout(),[k]:v};try{localStorage.setItem('nova_result_layout_v2',JSON.stringify(positions));}catch{}apply();};
   panel.querySelector('#novaResultReset').onclick=()=>{delete positions[key()];localStorage.setItem('nova_result_layout_v2',JSON.stringify(positions));apply();fill();};
   panel.querySelector('#novaResultClose').onclick=()=>{panel.close();if(preview){preview=false;hide();}};
@@ -135,7 +140,7 @@ globalThis.NovaResults=(()=>{
  function show(value){
   init();if(!root)return;
   const request=++imageRequest;active=value;root.hidden=false;root.dataset.loading='true';
-  const all=value.character==='all',isSortie=value.kind==='sortie';
+  const all=value.character==='all',isSortie=value.kind==='sortie',isBonus=value.kind==='bonus';
   root.dataset.kind=value.kind||'';
   root.dataset.initial=String(value.color==='initial');
   root.dataset.color=all?'gold':['red','purple','gold','rainbow'].includes(value.color)?value.color:'blue';
@@ -145,8 +150,8 @@ globalThis.NovaResults=(()=>{
   const roster=art.querySelector('.novaResultStocks');if(roster){roster.hidden=!isSortie||!value.awards?.length;if(isSortie&&value.awards?.length)renderSortieAwards(roster,value.awards);}
   const partner=art.querySelector('.novaResultPartner');if(partner)partner.hidden=value.character!=='kushuri_nito';
   const atLabel='AT総獲得';
-  const label=isSortie?'出陣チャレンジ':all?'有利区間終了 / 累計差枚':settingHints.some(h=>h.character===value.character)?atLabel:`${names[value.character]} ${value.color==='initial'?'AT初期pt':value.kind==='at'?atLabel:value.totalPt!=null?'ゾーン / 今回':'上乗せ'}`;
-  const next=fallback.querySelector('.novaResultNext');if(next){next.hidden=!all;next.textContent=isSortie?'次のBETで特化ゾーン準備':'次のBETでスーパーノヴァチャレンジ';}
+  const label=isBonus?'BB獲得':isSortie?'出陣チャレンジ':all?'有利区間終了 / 累計差枚':settingHints.some(h=>h.character===value.character)?atLabel:`${names[value.character]} ${value.color==='initial'?'AT初期pt':value.kind==='at'?atLabel:value.totalPt!=null?'ゾーン / 今回':'上乗せ'}`;
+  const next=fallback.querySelector('.novaResultNext');if(next){next.hidden=!all&&!isBonus;next.textContent=isBonus?'次のBETで'+(value.next==='AT'?'ATへ':'通常へ'):isSortie?'次のBETで特化ゾーン準備':'次のBETでスーパーノヴァチャレンジ';}
   const total=fallback.querySelector('.novaResultTotal');if(total){total.hidden=value.totalPt==null;total.textContent=value.totalPt==null?'':'連続特化 合計 '+value.totalPt+'pt';}
   num.textContent=String(isSortie?value.count:value.pt);num.setAttribute('aria-label',awardText(value));
   fallback.querySelector('span').textContent=label;fallback.querySelector('output').textContent=awardText(value);
@@ -168,5 +173,5 @@ globalThis.NovaResults=(()=>{
  }
  function hide(){imageRequest++;if(root)root.hidden=true;active=null;}
  if(typeof document!=='undefined')document.addEventListener('DOMContentLoaded',init);
- return {pick,transition,sortie,chain,show,hide,get visible(){return !!active},get editing(){return !!panel?.open}};
+ return {pick,transition,bonus,sortie,chain,show,hide,get visible(){return !!active},get editing(){return !!panel?.open}};
 })();

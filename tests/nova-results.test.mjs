@@ -1,6 +1,22 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
 const c=vm.createContext({});vm.runInContext(fs.readFileSync('nova-results.js','utf8'),c);const r=c.NovaResults;
 
+test('BB result preserves its awarded points and destination through reload without drawing or revealing a mode',()=>{
+ const c=vm.createContext({});vm.runInContext(fs.readFileSync('nova-results.js','utf8'),c);
+ vm.runInContext('Math.random=()=>{throw Error("BB presentation must not consume the game RNG")}',c);
+ for(const phase of ['normal','art']){
+  const flow=Object.freeze({phase,remaining:'500',sets:'2',queuedZones:Object.freeze(['sora'])}),before=JSON.stringify(flow);
+  const saved=JSON.parse(JSON.stringify(c.NovaResults.bonus('150',flow)));
+  assert.deepEqual(saved,{kind:'bonus',character:'nova',color:'blue',pt:'150',next:phase==='art'?'AT':'通常'});
+  assert.equal(JSON.stringify(flow),before);
+  const {c:view,fields}=presenter();view.show(saved);
+  assert.equal(fields.span.textContent,'BB獲得');assert.equal(fields.output.textContent,'150pt');
+  assert.equal(fields['.novaResultNext'].hidden,false);
+  assert.equal(fields['.novaResultNext'].textContent,phase==='art'?'次のBETでATへ':'次のBETで通常へ');
+  view.hide();view.show(saved);assert.equal(fields.output.textContent,'150pt');
+ }
+});
+
 test('sortie result uses this challenge hit count including the final award, without a result draw or modifying stocks',()=>{
  for(let count=0;count<=10;count++){
   for(const won of [false,true]){
