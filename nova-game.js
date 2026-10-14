@@ -3311,7 +3311,7 @@
     const firstSpin = Number(points[0] && points[0].spin) || 0;
     const lastVisibleSpin = Number(points[points.length - 1] && points[points.length - 1].spin) || firstSpin;
     const spinRange = Math.max(1, lastVisibleSpin - firstSpin);
-    const xFor = point => pad.left + ((lastVisibleSpin - (Number(point.spin) || 0)) / spinRange) * plotW;
+    const xFor = point => pad.left + (((Number(point.spin) || 0) - firstSpin) / spinRange) * plotW;
     const yFor = profit => pad.top + ((maxProfit - profit) / range) * plotH;
     const fullLastPoint = allPoints[allPoints.length - 1] || {profit:0};
     const current = Number(fullLastPoint.profit) || 0;
@@ -3395,7 +3395,7 @@
     ctx.textAlign = "left";
     ctx.textBaseline = "bottom";
     ctx.font = "800 11px system-ui, sans-serif";
-    ctx.fillText(`最新 ${formatSlumpNumber(lastPoint.spin)}G ← ${formatSlumpNumber(firstSpin)}G`, pad.left, cssHeight - 7);
+    ctx.fillText(`${formatSlumpNumber(firstSpin)}G → 最新 ${formatSlumpNumber(lastPoint.spin)}G`, pad.left, cssHeight - 7);
     ctx.textAlign = "right";
     ctx.fillText("差pt", cssWidth - pad.right, cssHeight - 7);
 

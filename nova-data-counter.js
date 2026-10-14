@@ -73,7 +73,7 @@ globalThis.NovaDataCounter=(()=>{
     if(!root)return;
     const format=value=>n(value).toLocaleString('ja-JP');
     const set=(name,value)=>{const el=root.querySelector('[data-counter="'+name+'"]');if(el)el.textContent=value;};
-    set('current',format(view.current));set('total',format(totals.totalSpins));
+    set('current',view.current==null?'—':format(view.current));set('total',format(totals.totalSpins));
     set('current-label',view.currentPhase==='art'?'AT中回転数':'現在回転数');
     set('big',format(totals.bigCount));set('at',totals.atFirstCountPartial?'—':format(totals.atFirstCount));
     set('normal',format(view.dataNormalGames));set('art',format(view.dataAtGames));
@@ -87,7 +87,9 @@ globalThis.NovaDataCounter=(()=>{
       const column=document.createElement('button');column.type='button';column.className='novaHitColumn';column.dataset.kind=hit.kind;
       const label=title(hit)+' / '+format(hit.games)+'G';column.title=label;column.setAttribute('aria-label',label);
       const cells=document.createElement('span');cells.className='novaHitCells';
-      for(let tick=10;tick>=1;tick--){const cell=document.createElement('i');cell.className=hit.games>(tick-1)*100?'lit':'';cells.append(cell);}
+      // A 0G hit still occupies one visual step; never change the recorded games.
+      const steps=hit.kind==='CURRENT'?Math.ceil(n(hit.games)/100):Math.max(1,Math.ceil(n(hit.games)/100));
+      for(let tick=10;tick>=1;tick--){const cell=document.createElement('i');cell.className=steps>=tick?'lit':'';cells.append(cell);}
       const mark=document.createElement('span');mark.className='novaHitMark';mark.textContent=hit.games>1000?'+':hit.kind==='CURRENT'?'今':hit.kind==='ZONE'?'特':hit.kind==='BIG'?'B':'AT';
       column.append(cells,mark);column.addEventListener('click',()=>set('detail',label));return column;
     });

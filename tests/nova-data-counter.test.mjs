@@ -5,6 +5,16 @@ import vm from 'node:vm';
 const js=fs.readFileSync('nova-data-counter.js','utf8');
 const game=fs.readFileSync('nova-game.js','utf8');
 const fn=name=>game.match(new RegExp('  function '+name+'\\([^]*?\\n  }'))[0];
+test('0G AT and zone wins occupy one visual step without changing recorded games or empty current column',()=>{
+ const node=()=>({dataset:{},children:[],setAttribute(){},addEventListener(){},append(...items){this.children.push(...items);},replaceChildren(...items){this.children=items;}});
+ const bars=node(),labels=new Map(),root={querySelector:s=>s==='.novaHitBars'?bars:labels.get(s)};
+ const c=vm.createContext({document:{createElement:node}});vm.runInContext(js,c);
+ const hits=[{kind:'BIG',games:101},{kind:'AT',games:0},{kind:'ZONE',zone:'sora',games:0}];
+ c.NovaDataCounter.render(root,{current:0,hits},{totalSpins:101});
+ assert.deepEqual(bars.children.map(b=>b.dataset.kind),['CURRENT','ZONE','AT','BIG']);
+ assert.deepEqual(bars.children.map(b=>b.children[0].children.filter(i=>i.className==='lit').length),[0,1,1,2]);
+ assert.equal(hits[1].games,0);assert.equal(bars.children[2].title,'AT / 0G');
+});
 function harness(){const c=vm.createContext({});vm.runInContext(js+';Math.random=()=>{throw Error("display used game RNG")}',c);return c.NovaDataCounter;}
 
 test('bounded history distinguishes BIG, AT first entry and every new special zone without counting continuations',()=>{
