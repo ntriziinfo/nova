@@ -264,6 +264,10 @@ globalThis.NovaAudioManifest=Object.freeze({
     "src": "assets/media/normalized-voices-20261013/nova/bonus_confirm.wav",
     "category": "voice"
   },
+  "assets/media/nova/checkpoint-bgm.mp3": {
+    "src": "assets/media/normalized-20261012/nova/checkpoint-bgm.mp3",
+    "category": "bgm"
+  },
   "assets/media/nova/continue-sora.wav": {
     "src": "assets/media/normalized-voices-20261013/nova/continue-sora.wav",
     "category": "voice"

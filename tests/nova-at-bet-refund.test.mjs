@@ -30,7 +30,7 @@ test('suspended quota phases and zero remaining cannot receive unearned refunds'
 });
 test('live BET billing refunds once, keeps the actual fee, and excludes replays, BIG and pending bonus',()=>{
  const h=vm.createContext({A_TYPE_MODE:true,NovaArt:a,SPIN_COST:3,session:{active:false},normalState:{flow:at(false)},stats:{totalFee:0},clearCzReelBlackout(){},recordSlumpPoint(){},updateCompleteTrialState(){}});
- h.jagChainCount=null;h.jagChainBonusHandoff=false;
+ h.jagChainCount=null;h.jagChainBonusHandoff=false;h.performance={now:()=>0};
  for(const name of ['chainCountStep','chargeSpinCost'])vm.runInContext(fs.readFileSync('nova-game.js','utf8').match(new RegExp('  function '+name+'\\([^]*?\\n  }'))[0],h);
  h.chargeSpinCost();assert.equal(h.stats.totalFee,3);assert.equal(h.normalState.flow.remaining,'203');
  h.normalState.replayFree=true;h.chargeSpinCost();assert.equal(h.stats.totalFee,3);assert.equal(h.normalState.flow.remaining,'203');assert.equal(h.normalState.replayFree,false);

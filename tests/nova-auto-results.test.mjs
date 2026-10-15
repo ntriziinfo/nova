@@ -15,6 +15,7 @@ function setup(autoPlay=true){
   playLockedBonusConfirmSound:src=>{c.bonusConfirmSoundPlaying=true;calls.push(['sound',src]);},bgmOutputVolume:()=>.5,BGM_OUTPUT_SCALE:1,
   canPlayCompleteTrial:()=>true,isRogiThirdStopHoldActive:()=>false,queueAutoStep:()=>calls.push(['poll']),autoPollDelayMs:()=>75,autoDelayMs:()=>250,
   spin:()=>{calls.push(['spin']);c.normalState.resultCard=null;}});
+ c.autoPacingWaitMs=()=>0;
  vm.runInContext(fn('displayNovaResult')+'\n'+fn('showSortieResultIfReady')+'\n'+fn('runAutoStep'),c);
  return {c,calls,after};
 }

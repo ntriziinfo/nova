@@ -46,11 +46,11 @@ globalThis.NovaResults=(()=>{
   return null;
  }
  function bonus(pt,flow,mode,rng=bonusVisualRandom){
-  const result={kind:'bonus',character:'nova',color:'blue',pt:String(pt),next:flow?.phase==='art'?'AT':'通常'};
+  const result={kind:'bonus',character:'kushuri',color:'blue',pt:String(pt),next:flow?.phase==='art'?'AT':'通常'};
   // AT end draws a new mode, so a BB returning to AT cannot hint the next normal mode.
-  if(flow?.phase!=='normal')return result;
-  const rates=bonusHintRates(mode);if(!rates.length)return result;
+  const rates=flow?.phase==='normal'?bonusHintRates(mode):[];
   let roll=rng()*100;if(!Number.isFinite(roll)||roll<0||roll>=100)return result;
+  if(!rates.length)return {...result,character:roll<50?'kushuri':'toto'};
   for(const hint of rates){
    if(roll<hint.percent)return {...result,character:hint.characters[Math.floor(roll/hint.percent*hint.characters.length)]};
    roll-=hint.percent;
@@ -97,7 +97,7 @@ globalThis.NovaResults=(()=>{
  const key=()=>active?.kind==='bonus'?'bonus-'+(active.character==='nova'?'blue':active.character):active?.kind==='sortie'?'sortie-gold':active?active.character+'-'+active.color:'sosuke-red';
  const layout=()=>({...defaults,...(active?.character==='all'?{x:14,y:28,w:72,h:36,numberX:20,numberY:80,numberW:60,numberH:13,font:8}:{}),...(active?.kind==='sortie'?{numberX:4,numberW:92,font:6}:{}),...(active?.kind==='bonus'?{font:14,...positions['bonus-blue']}:{}),...positions[key()]});
  function loadImage(character,color){
-  const src=character==='nova'?'assets/logo/nova_logo.svg':'assets/illustrations/'+(characterImages[character]||characterImages.sosuke),cached=images.get(src);
+  const src='assets/illustrations/'+(characterImages[character]||characterImages.sosuke),cached=images.get(src);
   if(cached&&!cached.failed)return cached;
   const img=new Image();img.draggable=false;img.decoding='async';
   const entry={img,ready:false,failed:false};images.set(src,entry);
@@ -157,7 +157,7 @@ globalThis.NovaResults=(()=>{
   select.insertAdjacentHTML('beforeend','<option value="sortie-gold">出陣チャレンジ・獲得数</option>');
   select.insertAdjacentHTML('beforeend','<option value="bonus-blue">BB終了・共通</option>');
   select.insertAdjacentHTML('beforeend',bonusModeHints.flatMap(h=>h.characters.map(id=>`<option value="bonus-${id}">BB終了・${names[id]}／${h.label}</option>`)).join(''));
-  select.onchange=()=>{preview=true;const [character,color]=select.value.split('-');show(character==='bonus'?{...bonus('150',{phase:'normal'}),character:color==='blue'?'nova':color}:character==='sortie'?sortie({finished:true,hits:5},{queuedZones:['sora','sora','ura_sora','giru','kushuri_nito']}):{kind:'preview',character,color,pt:'1234'});fill();};
+  select.onchange=()=>{preview=true;const [character,color]=select.value.split('-');show(character==='bonus'?{...bonus('150',{phase:'normal'}),character:color==='blue'?'kushuri':color}:character==='sortie'?sortie({finished:true,hits:5},{queuedZones:['sora','sora','ura_sora','giru','kushuri_nito']}):{kind:'preview',character,color,pt:'1234'});fill();};
   panel.oninput=e=>{const k=e.target.dataset.field;if(!k)return;let v=Number(e.target.value);if(!Number.isFinite(v))return;v=Math.max(['x','y','imageX','imageY','numberX','numberY'].includes(k)?-100:1,Math.min(200,v));positions[key()]={...layout(),[k]:v};try{localStorage.setItem('nova_result_layout_v2',JSON.stringify(positions));}catch{}apply();};
   panel.querySelector('#novaResultReset').onclick=()=>{delete positions[key()];localStorage.setItem('nova_result_layout_v2',JSON.stringify(positions));apply();fill();};
   panel.querySelector('#novaResultClose').onclick=()=>{panel.close();if(preview){preview=false;hide();}};
@@ -165,6 +165,8 @@ globalThis.NovaResults=(()=>{
   new ResizeObserver(apply).observe(machine);window.addEventListener('resize',apply);
  }
  function show(value){
+  // Old saved BB cards used an unrequested logo. Migrate the image only, without a draw.
+  if(value?.kind==='bonus'&&value.character==='nova')value={...value,character:'kushuri'};
   init();if(!root)return;
   const request=++imageRequest;active=value;root.hidden=false;root.dataset.loading='true';
   const all=value.character==='all',isSortie=value.kind==='sortie',isBonus=value.kind==='bonus';

@@ -11,8 +11,8 @@ test('approved upper AT allocation strengthens weak-role zones and reduces only 
  }
  assert.equal(a.burstRules.initialSuccess,.5);assert.equal(a.burstRules.success,.65);
 });
-test('live engine exactly replays approved upper-direct sessions including every ledger and flow counter',()=>{
- const report=JSON.parse(fs.readFileSync('docs/upper-direct50-20261015.json'));
+test('live engine replays approved checkpoint-ten and upper-direct sessions including every ledger and flow counter',()=>{
+ const report=JSON.parse(fs.readFileSync('docs/checkpoint10-20261015.json'));
  assert.equal(report.deterministicFixtures.length,6);
  for(const row of report.deterministicFixtures){
   assert(row.atMetrics.directWins>0);

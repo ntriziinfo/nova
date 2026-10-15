@@ -7,7 +7,7 @@ test('BB result preserves its awarded points and destination through reload with
  for(const phase of ['normal','art']){
   const flow=Object.freeze({phase,remaining:'500',sets:'2',queuedZones:Object.freeze(['sora'])}),before=JSON.stringify(flow);
   const saved=JSON.parse(JSON.stringify(c.NovaResults.bonus('150',flow)));
-  assert.deepEqual(saved,{kind:'bonus',character:'nova',color:'blue',pt:'150',next:phase==='art'?'AT':'通常'});
+  assert.deepEqual(saved,{kind:'bonus',character:'kushuri',color:'blue',pt:'150',next:phase==='art'?'AT':'通常'});
   assert.equal(JSON.stringify(flow),before);
   const {c:view,fields}=presenter();view.show(saved);
   assert.equal(fields.span.textContent,'BB獲得');assert.equal(fields.output.textContent,'150pt');
@@ -47,10 +47,10 @@ test('BB mode confirmations never appear below their required mode, at AT entry,
    }
    boundary+=hint.percent;
   }
-  for(const phase of ['art','cz',undefined])assert.equal(r.bonus('150',{phase},mode,()=>{throw Error('AT cannot hint its next normal mode');}).character,'nova');
+  for(const phase of ['art','cz',undefined])for(const roll of [0,.49999,.5,.99999])assert.equal(r.bonus('150',{phase},mode,()=>roll).character,roll<.5?'kushuri':'toto');
  }
- for(const mode of [undefined,'','unknown',null,0])assert.equal(r.bonus('150',{phase:'normal'},mode,()=>{throw Error('unknown mode must not draw');}).character,'nova');
- for(const roll of [NaN,-.1,1,Infinity])assert.equal(r.bonus('150',{phase:'normal'},'天国',()=>roll).character,'nova');
+ for(const mode of [undefined,'','unknown',null,0])for(const roll of [0,.5,.99999])assert.equal(r.bonus('150',{phase:'normal'},mode,()=>roll).character,roll<.5?'kushuri':'toto');
+ for(const roll of [NaN,-.1,1,Infinity])assert.equal(r.bonus('150',{phase:'normal'},'天国',()=>roll).character,'kushuri');
 });
 
 test('BB mode image uses separate crypto randomness and keeps its saved image without consuming the game RNG',async()=>{
@@ -145,6 +145,13 @@ function presenter(){
  const flush=()=>new Promise(resolve=>setImmediate(resolve));
  return {c,images,shown,fields,flush};
 }
+
+test('legacy BB logo saves show a default portrait without altering awarded points or the save',async()=>{
+ const saved=Object.freeze({kind:'bonus',character:'nova',color:'blue',pt:'345',next:'AT'});
+ const {c,images,fields,flush}=presenter();c.show(saved);images[0].onload();await flush();
+ assert.equal(images[0].src,'assets/illustrations/lamps-20260928/kushuri.png');assert.equal(fields.output.textContent,'345pt');
+ c.hide();c.show(saved);assert.equal(saved.character,'nova');assert.equal(fields['.novaResultNext'].textContent,'次のBETでATへ');
+});
 
 test('sortie result restores the exact acquired count, with no pt unit or AT setting hint, and resets its next-step text',async()=>{
  const {c,fields,flush}=presenter();

@@ -48,6 +48,7 @@
   const SORTIE_ZONE_BGM_SRC = "assets/media/nova/sortie-bgm.mp3";
   const NOVA_ART_BGM_SRC = "assets/media/nova/RUSH.wav";
   const NOVA_UPPER_ART_BGM_SRC = "assets/media/nova/upper-at-bgm.mp3";
+  const NOVA_CHECKPOINT_BGM_SRC = "assets/media/nova/checkpoint-bgm.mp3";
   const NOVA_BIG_BGM_SRC = "assets/media/nova/BIG.wav";
 
   const CZ_BGM_SRC = "assets/media/nova/audiostock_860274.mp3";
@@ -591,7 +592,7 @@
   let czIntroVoiceHold = null;
   let comebackIntroVoiceHold = null;
   let superSpeedActive = false;
-  let superFullAuto = false; // Keep the user's selection while AT runs at ordinary AUTO speed.
+  let superFullAuto = false; // Keep paid AUTO selected while AT uses its own presentation pace.
   let superSpeedMode = 'nonstop';
   let superSpeedMenu = null;
   let superSpeedPending = false; // Finish the current spin before switching presentation speed.
@@ -599,6 +600,7 @@
   let superSpeedDebugAllowed = false; // Standalone debugging only; cleared by page reload.
   let superSpeedPermissionTimer = null;
   let superSpeedNextBetAt = 0;
+  let autoLastBetAt = null; // Monotonic, runtime-only; never persisted or used by a lottery.
   let speedToBonusActive = false;
   let speedToBonusTimer = null;
   let speedToBonusCount = 0;
@@ -2981,6 +2983,7 @@
     // Capture both ledgers before BET, also when FAST does not render every game.
     jagChainCount=chainCountStep(jagChainCount,!!(session.active||jagChainBonusHandoff||normalState.bonusPending||normalState.flow?.phase==='art'),Number(stats.totalPaid)||0,Number(stats.totalFee)||0).state;
     if(!session.active && normalState.flow?.phase==='art' && normalState.flow.zero)return;
+    autoLastBetAt=performance.now();
     // Only a pre-update save can still own a free-BET entitlement.
     if(A_TYPE_MODE && normalState.replayFree){normalState.replayFree=false;return;}
     stats.totalFee = (Number(stats.totalFee) || 0) + SPIN_COST;
@@ -4904,6 +4907,7 @@
       if(flow.researchChallengeActive || isSpinning&&currentSpin?.resolved?.researchChallenge)return SORTIE_ZONE_BGM_SRC;
       if(flow.initialStage==='zone'&&['kushuri_nito','kushuri','nito'].includes(flow.zone))return INITIAL_DUO_ZONE_BGM_SRC;
       const zoneTracks = {sosuke:SOSUKE_ZONE_BGM_SRC,toto:TOTO_ZONE_BGM_SRC,urapi:URAPI_ZONE_BGM_SRC,sora:SORA_ZONE_BGM_SRC,giru:GIRU_ZONE_BGM_SRC,ouma:OUMA_ZONE_BGM_SRC};
+      if(atCheckpointStatus(flow,NovaProgress.snapshot(),currentProfit())?.gold)return NOVA_CHECKPOINT_BGM_SRC;
       return zoneTracks[flow.zone] || (flow.researchUpper ? NOVA_UPPER_ART_BGM_SRC : NOVA_ART_BGM_SRC);
     }
     if(!session.active && ["cz","strong_cz"].includes(normalState.flow?.phase)){
@@ -5992,6 +5996,7 @@
     stopDebugFastSpin("初期化のため高速停止");
     stopSpeedToBonus("初期化のためSPEED停止");
     if(!confirm("統計と現在の状態を初期化しますか？")) return;
+    autoLastBetAt=null;
     clearCzIntroVoiceHold(true);
     NovaAim.reset();
     clearComebackIntroVoiceHold();
@@ -6063,6 +6068,7 @@
   }
 
   function resetRuntimeForMorning(reason="朝一リセット"){
+    autoLastBetAt=null;
     clearCzIntroVoiceHold(true);
     NovaAim.reset();
     clearComebackIntroVoiceHold();
@@ -7252,6 +7258,10 @@
     // A queued ending (including after a zone result/reload) consumes no BET or RNG.
     if(showSortieResultIfReady()){updateDisplay();scheduleNextAuto();return;}
     if(showCheckpointResultIfReady(true)){persistState();updateDisplay();scheduleNextAuto();return;}
+    if(autoPlay){
+      const wait=autoPacingWaitMs();
+      if(wait>0){queueAutoStep(wait);return;}
+    }
     if(A_TYPE_MODE&&['SORTIE','FREEZE'].includes(forceResult))takeForcedResult();
     if(tryStockEntry())return;
     applyQueuedControlInput();
@@ -7457,6 +7467,7 @@
       normalActiveAtStart:normalActiveAtSpinStart,
       speedModeAtStart:speedModeSpinAtStart,
       autoStopAtStart:autoPlay,
+      autoPacingAtStart:autoPacingProfile(),
       superSpeedAtStart:superSpeedActive,
       superSpeedStartedAt,
       bonusAnnouncementTiming,
@@ -7801,7 +7812,7 @@
       const keyboardResultWaitMs = currentSpin.keyboardTurboStop
         ? Math.round(RESULT_WAIT_MS / KEYBOARD_STOP_TURBO_MULTIPLIER)
         : RESULT_WAIT_MS;
-      const autoResultWaitMs = currentSpin.autoStopAtStart ? autoScaledDelayMs(keyboardResultWaitMs) : keyboardResultWaitMs;
+      const autoResultWaitMs = currentSpin.autoStopAtStart ? NovaSuperSpeed.resultDelay(keyboardResultWaitMs,currentSpin.autoPacingAtStart) : keyboardResultWaitMs;
       const r=currentSpin.resolved;
       const resultEnding=!!normalState.pendingZoneResult ||
         (!!r?.flowBefore?.zone&&!r?.flowAfter?.zone) ||
@@ -8581,7 +8592,7 @@
     }
 
     if(autoPlay){
-      status.textContent = superSpeedPending ? `超ハイスピード予約：次のゲームから / ${NovaSuperSpeed.modes[superSpeedMode]}` : superSpeedActive ? `超ハイスピード中：通常AUTOの6倍 / ${NovaSuperSpeed.modes[superSpeedMode]}` : superFullAuto ? "ノンストップ継続中：ATは通常AUTOで消化 / AT終了後に6倍速へ自動復帰" : "オート中：Aタイプを2倍速で自動消化";
+      status.textContent = superSpeedPending ? `超ハイスピード予約：次のゲームから / ${NovaSuperSpeed.modes[superSpeedMode]}` : superSpeedActive ? `超ハイスピード中 / ${NovaSuperSpeed.modes[superSpeedMode]}` : superFullAuto ? "超AUTO継続中：AT高速消化 / AT終了後に超ハイスピードへ復帰" : "通常AUTO中：基本2.8秒/G（演出待ちあり）";
       status.style.color = "var(--green)";
     }else{
       status.textContent = "オート停止中";
@@ -8623,7 +8634,17 @@
     return NovaSuperSpeed.delay(Math.max(minMs, Math.round((Number(ms) || 0) / AUTO_SPEED_MULTIPLIER)),superSpeedActive);
   }
 
+  function autoPacingProfile(){
+    return !autoPlay || !superFullAuto || superSpeedPending ? 'normal' : superSpeedActive ? 'fast' : 'at';
+  }
+
+  function autoPacingWaitMs(){
+    return NovaSuperSpeed.remainingWait(autoLastBetAt,performance.now(),autoPacingProfile());
+  }
+
   function autoDelayMs(){
+    const profile=NovaSuperSpeed.pacing[autoPacingProfile()];
+    if(profile.nextMs!==undefined)return profile.nextMs;
     const baseMs = Math.max(100, (Number(settings.autoDelay) || 0.5) * 1000);
     return autoScaledDelayMs(baseMs);
   }
@@ -8734,6 +8755,11 @@
       return;
     }
 
+    // A watchdog or a retry must respect the same BET deadline. Never catch up
+    // by running extra draws after a stalled or backgrounded browser resumes.
+    const paceWait=autoPacingWaitMs();
+    if(paceWait>0){queueAutoStep(paceWait);return;}
+
     if(!session.active){
       if(!A_TYPE_MODE && normalState.bonusPending && pendingBonusWaitDone()){
         stopAutoPlay("BONUS確定画面のためAUTO停止");
@@ -8766,7 +8792,7 @@
     readSettings();
     // Anchor all deadlines to BET so DOM/rendering time does not compound the
     // sixfold interval. Never catch up by resolving more than one spin at once.
-    queueAutoStep(superSpeedActive?Math.max(0,superSpeedNextBetAt-performance.now()):autoDelayMs());
+    queueAutoStep(Math.max(autoPacingWaitMs(),superSpeedActive?Math.max(0,superSpeedNextBetAt-performance.now()):autoDelayMs()));
   }
 
   function speedToBonusUnavailableReason(){
@@ -8903,7 +8929,7 @@
     btn.disabled=!running && !!reason;
     btn.classList.toggle('on',running);
     btn.setAttribute('aria-pressed',String(running));
-    btn.title=running ? `${superSpeedPending ? '次のゲームから' : superSpeedActive ? '6倍速で消化中' : 'ATを通常AUTOで消化中'} / ${NovaSuperSpeed.modes[superSpeedMode]} / 押すと選択・停止` : reason || '超ハイスピードの終了条件を選択';
+    btn.title=running ? `${superSpeedPending ? '次のゲームから' : superSpeedActive ? '超ハイスピードで消化中' : 'ATを超AUTOで消化中'} / ${NovaSuperSpeed.modes[superSpeedMode]} / 押すと選択・停止` : reason || '超ハイスピードの終了条件を選択';
     superSpeedMenu?.update({running,mode:superSpeedMode,disabled:Object.fromEntries(Object.keys(NovaSuperSpeed.modes).map(mode=>[mode,reason || (NovaSuperSpeed.reached(mode,normalState.flow,session,normalState) ? 'すでに到達しています' : '')]))});
   }
 
@@ -8929,13 +8955,13 @@
       return true;
     }
     if(confirmed){
-      // Keep the existing AUTO loop; only subsequent presentation delays return to normal.
+      // Keep the AUTO loop; subsequent games use the paid AT presentation pace.
       if(superSpeedActive || superSpeedPending){
         setSuperSpeedActive(false);
         superSpeedPending=false;
         superSpeedNextBetAt=0;
         updateAutoUi();
-        log('AT確定のため通常AUTOへ切替 / AT終了後に超フルオートへ自動復帰');
+        log('AT確定のため超AUTOでAT消化 / AT終了後に超ハイスピードへ自動復帰');
       }
       return false;
     }

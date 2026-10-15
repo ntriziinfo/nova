@@ -273,7 +273,7 @@ const tuning={"weak":128,"strong":1500,"other":1.15,"tilts":[-0.28,-0.28,-0.28,0
   const bell=(target-chance*(mean-3))/(5+7*share);
   return {...r,BELL:bell*(1-share),BELL15:bell*share,REPLAY:1-chance-bell};
  }
- function drawAtRole(setting,upper,rng){let roll=rng();for(const [role,p]of Object.entries(roleProbabilities(setting,upper)))if((roll-=p)<0)return role;return 'REPLAY';}
+ function drawAtRole(setting,upper,rng,target){let roll=rng();for(const [role,p]of Object.entries(roleProbabilities(setting,upper,target)))if((roll-=p)<0)return role;return 'REPLAY';}
  const zoneEntryScale=[0.405,0.475,0.415,0.5,0.485,0.485];
  // Normalize by actual rare-role frequency, preserving the average AT zone entry rate.
  const zoneRoleWeights=Object.freeze({WEAK_SUICA:1,STRONG_SUICA:10,CHANCE_A:8/3,CHANCE_B:8/3,WEAK_NOVA:1,STRONG_NOVA:10});
@@ -482,7 +482,8 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
  }s=startZone(s,z,{...c,setting:options.setting,allowUra:true},rng);zoneStartFlow=normalize(s);}
   if(!s.zone&&!s.atPrelude&&integer(s.stock)>0n){s.stock=(integer(s.stock)-1n).toString();return {result:'MISS',flow:s,internalBonus:{kind:'BIG',source:'空ゾーンストック',internalResult:'BIG'}};}
   if(!s.zone&&!s.atPrelude&&integer(s.remaining)===0n)return stepComeback(beginComeback(s),options,rng,forced);
-  const mix=atMix(options.setting);c.rare=mix.chance;const roll=rng();result=s.zone?(roll<.6?'REPLAY':roll<.9?'BELL':'MISS'):drawAtRole(options.setting,s.researchUpper,rng);
+  const checkpointTen=!!options.checkpointQuiet&&checkpointGuaranteed(s,options.netPt,options.checkpointNext);
+  const mix=atMix(options.setting);c.rare=mix.chance;const roll=rng();result=s.zone?(roll<.6?'REPLAY':roll<.9?'BELL':'MISS'):drawAtRole(options.setting,checkpointTen||s.researchUpper,rng,checkpointTen?10:undefined);
   if(['NEBULA','MISS','BELL','BELL15','REPLAY','WEAK_NOVA','STRONG_NOVA','SUPER_NOVA'].includes(forced))result=forced;
   if(s.zone){
    const rules=zoneRules(s,c),free=s.zero;

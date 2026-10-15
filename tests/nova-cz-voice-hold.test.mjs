@@ -20,7 +20,7 @@ function setup(){
   isSpinning:false,bonusEndBgmPlaying:false,bonusConfirmSoundPlaying:false,canPlayCompleteTrial:()=>true,
   stopAllReels:()=>stopped++,autoPlay:true,stopSuperSpeedIfNeeded:()=>false,isRogiThirdStopHoldActive:()=>false,
   session:{active:false},A_TYPE_MODE:true,queueAutoStep:()=>queued++,autoDelayMs:()=>100,
-  startNextBet:()=>started++
+  startNextBet:()=>started++,autoPacingWaitMs:()=>0
  });
  for(const name of ['clearCzIntroVoiceHold','isCzIntroVoiceHolding','holdCzIntroVoice','playOneShotSound','runAutoStep'])vm.runInContext(fn(name),c);
  // Exercise the real BET entry guards; the sentinel is where game mutation would begin.

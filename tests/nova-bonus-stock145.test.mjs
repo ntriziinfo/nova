@@ -71,6 +71,7 @@ test('AUTO uses the live entry path to consume multiple bonus stocks without sto
   bonusConfirmSoundPlaying:false,oumaPresentation:null,session:{active:false},normalState:{flow:a.afterBonus(a.enter({},rng),{},3)},
   canPlayCompleteTrial:()=>true,isRogiThirdStopHoldActive:()=>false,queueAutoStep(){},autoDelayMs:()=>0,
   spin:()=>{spins++;ctx.normalState.flow=a.step(a.prepareBet(ctx.normalState.flow,{},rng),{},rng).flow;}});
+ ctx.autoPacingWaitMs=()=>0;
  vm.runInContext(html.match(/  function runAutoStep\([^]*?\n  }/)[0],ctx);
  do{ctx.runAutoStep();assert.equal(ctx.autoPlay,true);assert.ok(spins<2000);}while(ctx.normalState.flow.sets!=='0'||ctx.normalState.flow.entryStage||ctx.normalState.flow.zone);
  assert.ok(spins>3);assert.equal(ctx.normalState.flow.phase,'art');

@@ -8,7 +8,7 @@ function setup(){
  const timers=new Map();let id=0;
  const button={classList:{toggle(name,value){button[name]=value;}},setAttribute(name,value){button[name]=value;}};
  const debugButton={setAttribute(){}},debugStatus={};
- const c=vm.createContext({superSpeedMode:'nonstop',superSpeedMenu:null,superFullAuto:false,superSpeedActive:false,superSpeedPending:false,superSpeedAllowed:false,superSpeedDebugAllowed:false,superSpeedPermissionTimer:null,superSpeedNextBetAt:0,performance:{now:()=>1000},
+ const c=vm.createContext({autoLastBetAt:null,superSpeedMode:'nonstop',superSpeedMenu:null,superFullAuto:false,superSpeedActive:false,superSpeedPending:false,superSpeedAllowed:false,superSpeedDebugAllowed:false,superSpeedPermissionTimer:null,superSpeedNextBetAt:0,performance:{now:()=>1000},
   SLOT_DEBUG_ENABLED:true,VERTEX_CONTROLLER_ENABLED:false,SLOT_PLAY_SESSION:false,
   normalState:{flow:{phase:'normal'}},session:{active:false},autoPlay:false,autoTimer:null,isSpinning:false,
   debugFastSpinActive:false,bonusEndBgmPlaying:false,bonusConfirmSoundPlaying:false,
@@ -19,7 +19,7 @@ function setup(){
   startAutoPlay(){c.autoPlay=true;},updateAutoUi(){c.updateSuperSpeedUi();},log(){},queueAutoStep(){},AUTO_SPEED_MULTIPLIER:2,MIN_SPIN_WAIT_MS:500,
   settings:{autoDelay:.5}});
  vm.runInContext(fs.readFileSync('nova-super-speed.js','utf8'),c);
- for(const name of ['canDebugSuperSpeed','hasSuperSpeedPermission','setSuperSpeedDebugPermission','superSpeedUnavailableReason','updateSuperSpeedUi','applySuperSpeedPermission','setSuperSpeedActive','stopSuperSpeedIfNeeded','startSuperSpeed','autoScaledDelayMs','autoDelayMs','autoStopDelayMs','autoPollDelayMs'])vm.runInContext(fn(name),c);
+ for(const name of ['canDebugSuperSpeed','hasSuperSpeedPermission','setSuperSpeedDebugPermission','superSpeedUnavailableReason','updateSuperSpeedUi','applySuperSpeedPermission','setSuperSpeedActive','stopSuperSpeedIfNeeded','startSuperSpeed','autoScaledDelayMs','autoPacingProfile','autoPacingWaitMs','autoDelayMs','autoStopDelayMs','autoPollDelayMs'])vm.runInContext(fn(name),c);
  return {c,button,debugButton,debugStatus,timers};
 }
 
@@ -110,7 +110,7 @@ test('all AUTO spin, stop, result and inter-game delays use exactly one sixth, w
  before.forEach((v,i)=>assert.equal(after[i],v/6));
 });
 
-test('every AT confirmation route schedules the next BET at normal AUTO speed without changing game state',()=>{
+test('every AT confirmation route schedules the next BET at paid AT speed without changing game state',()=>{
  for(const route of ['art','bonus','premium','prep']){
   const {c,timers,button}=setup();let spins=0,logs=0;
   Object.assign(c,{A_TYPE_MODE:true,oumaPresentation:null,readSettings(){},canPlayCompleteTrial:()=>true,
@@ -126,7 +126,7 @@ test('every AT confirmation route schedules the next BET at normal AUTO speed wi
   c.scheduleNextAuto();
   assert.equal(c.autoPlay,true);assert.equal(c.superSpeedActive,false);assert.equal(c.superSpeedPending,false);
   assert.equal(c.superFullAuto,true);assert.equal(button.disabled,false);assert.equal(button.on,true);assert.equal(logs,1);
-  assert.equal(timers.size,1);const scheduled=timers.get(c.autoTimer);assert.equal(scheduled.ms,normalDelay);
+  assert.equal(timers.size,1);const scheduled=timers.get(c.autoTimer);assert.equal(scheduled.ms,100);
   timers.delete(c.autoTimer);scheduled.fn();assert.equal(spins,1);assert.equal(logs,1);
   assert.equal(JSON.stringify([c.normalState,c.session]),state);
  }
@@ -140,7 +140,7 @@ test('AUTO handoff respects audio, manual STOP and permission revocation; AT exi
  c.setSuperSpeedDebugPermission(true);c.startSuperSpeed();c.normalState.flow.phase='art';
  c.bonusConfirmSoundPlaying=true;c.runAutoStep();
  assert.equal(c.autoPlay,true);assert.equal(c.superSpeedActive,false);assert.equal(spins,0);assert.equal(waits.at(-1),75);
- c.bonusConfirmSoundPlaying=false;c.runAutoStep();assert.equal(spins,1);assert.equal(waits.at(-1),250);
+ c.bonusConfirmSoundPlaying=false;c.runAutoStep();assert.equal(spins,1);assert.equal(waits.at(-1),100);
  c.normalState.flow.phase='normal';c.runAutoStep();assert.equal(c.superSpeedActive,true);assert.equal(spins,2);
  c.stopAutoPlay('user');c.runAutoStep();assert.equal(spins,2);
  c.startSuperSpeed();c.normalState.flow.phase='art';c.setSuperSpeedDebugPermission(false);
@@ -281,4 +281,53 @@ test('mode selection can change while running, but cannot start at an already re
  c.stopAutoPlay();c.normalState.flow.phase='cz';c.startSuperSpeed('cz');assert.equal(c.autoPlay,false);
  c.normalState.bonusPending=true;c.startSuperSpeed('bonus');assert.equal(c.autoPlay,false);
  c.startSuperSpeed('unknown');assert.equal(c.autoPlay,false);
+});
+
+test('free AUTO, paid normal and paid AT use independent BET periods and paid pacing ignores the legacy delay slider',()=>{
+ const {c}=setup();c.autoPlay=true;c.autoLastBetAt=1000;c.performance.now=()=>1200;
+ assert.equal(c.autoPacingProfile(),'normal');assert.equal(c.autoPacingWaitMs(),2600);
+ c.setSuperSpeedDebugPermission(true);c.startSuperSpeed();
+ assert.equal(c.autoPacingProfile(),'fast');assert.equal(c.autoPacingWaitMs(),0);
+ c.settings.autoDelay=10;assert.equal(c.autoDelayMs(),500/12);
+ c.normalState.flow={phase:'art'};c.stopSuperSpeedIfNeeded();
+ assert.equal(c.autoPacingProfile(),'at');assert.equal(c.autoPacingWaitMs(),600);assert.equal(c.autoDelayMs(),100);
+ c.normalState.flow={phase:'normal'};c.stopSuperSpeedIfNeeded();assert.equal(c.autoPacingProfile(),'fast');
+});
+
+test('BET deadline gates retries and watchdogs, includes elapsed presentation time, and never catches up missed draws',()=>{
+ const {c,timers}=setup();let now=1200,spins=0;
+ Object.assign(c,{autoPlay:true,autoLastBetAt:1000,performance:{now:()=>now},A_TYPE_MODE:true,oumaPresentation:null,
+  isRogiThirdStopHoldActive:()=>false,canPlayCompleteTrial:()=>true,
+  spin(){spins++;c.autoLastBetAt=now;c.isSpinning=true;}});
+ for(const name of ['queueAutoStep','runAutoStep'])vm.runInContext(fn(name),c);
+ const before=JSON.stringify([c.normalState,c.session]);
+ vm.runInContext('Math.random=()=>{throw Error("pacing consumed a draw");}',c);
+ c.runAutoStep();assert.equal(spins,0);assert.equal(timers.get(c.autoTimer).ms,2600);
+ now=3799;c.runAutoStep();assert.equal(spins,0);
+ now=3800;c.runAutoStep();assert.equal(spins,1);
+ c.isSpinning=false;now=60000;c.runAutoStep();assert.equal(spins,2,'one draw after a long browser stall');
+ c.isSpinning=false;c.runAutoStep();assert.equal(spins,2);assert.equal(timers.get(c.autoTimer).ms,2800);
+ assert.equal(JSON.stringify([c.normalState,c.session]),before);
+});
+
+test('audio hold and permission revocation take priority over an elapsed paid deadline',()=>{
+ const {c,timers}=setup();let spins=0;
+ Object.assign(c,{A_TYPE_MODE:true,oumaPresentation:null,autoLastBetAt:0,
+  isRogiThirdStopHoldActive:()=>false,canPlayCompleteTrial:()=>true,
+  spin(){spins++;},stopAutoWatchdog(){},NovaClock:{setBackgroundEnabled(){}}});
+ for(const name of ['queueAutoStep','runAutoStep','stopAutoPlay'])vm.runInContext(fn(name),c);
+ c.applySuperSpeedPermission(true);c.startSuperSpeed();c.bonusConfirmSoundPlaying=true;
+ c.runAutoStep();assert.equal(spins,0);assert(c.autoTimer);
+ c.applySuperSpeedPermission(false);assert.equal(c.autoTimer,null);
+ c.bonusConfirmSoundPlaying=false;c.runAutoStep();assert.equal(spins,0);assert.equal(c.autoPlay,false);
+});
+
+test('post-stop pacing uses the BET snapshot and does not modify aim, sortie or voice holds',()=>{
+ const {c}=setup();const snapshot='at';
+ c.autoPlay=true;c.superFullAuto=true;c.superSpeedActive=true;
+ assert.equal(c.NovaSuperSpeed.resultDelay(1000,snapshot),150,'later mode changes cannot retime an AT spin');
+ assert.equal(c.NovaSuperSpeed.resultDelay(1000,'normal'),500);
+ assert.equal(c.NovaSuperSpeed.resultDelay(1000,'fast'),1000/12);
+ assert.equal(c.NovaSuperSpeed.remainingWait(null,0,'at'),0,'fresh page has no persisted monotonic deadline');
+ assert.match(source,/resultDelay\(keyboardResultWaitMs,currentSpin.autoPacingAtStart\)/);
 });

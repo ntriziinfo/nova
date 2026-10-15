@@ -1,0 +1,14 @@
+{
+  "originalFile": "audiostock_1004874.mp3",
+  "source": "checkpoint-bgm.mp3",
+  "originalUnmodified": true,
+  "bytes": 3035520,
+  "sha256": "ce2c6cf242f7285af50a4b21da1fd9969b7be4f342b34bd55c32f77233b6634d",
+  "durationSeconds": 75.818188,
+  "sampleRate": 48000,
+  "channels": 2,
+  "category": "bgm",
+  "trigger": "Normal or upper AT while the gold Super NOVA Challenge countdown is visible. Bonuses, zones, challenges and results retain priority.",
+  "loop": true,
+  "usage": "User-provided copyrighted audio for the requested NOVA BGM only. No training use."
+}

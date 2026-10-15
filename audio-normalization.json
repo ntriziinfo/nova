@@ -1692,6 +1692,29 @@
       }
     },
     {
+      "src": "assets/media/nova/checkpoint-bgm.mp3",
+      "category": "bgm",
+      "targetLufs": -18,
+      "output": "assets/media/normalized-20261012/nova/checkpoint-bgm.mp3",
+      "sourceSha256": "ce2c6cf242f7285af50a4b21da1fd9969b7be4f342b34bd55c32f77233b6634d",
+      "outputSha256": "2a75a372fdb667478291b0c5f7526ac513f8621f42d625bbb9fdf6e6c838d250",
+      "rate": 48000,
+      "channels": 2,
+      "duration": 75.818187,
+      "outputDuration": 75.818187,
+      "gainDb": -8.84,
+      "before": {
+        "lufs": -8.91,
+        "peakDbtp": 0.91,
+        "rangeLu": 2.7
+      },
+      "after": {
+        "lufs": -18.01,
+        "peakDbtp": -8.13,
+        "rangeLu": 2.7
+      }
+    },
+    {
       "src": "assets/media/nova/continue-sora.wav",
       "category": "voice",
       "measurementVersion": 2,

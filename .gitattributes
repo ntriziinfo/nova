@@ -66,3 +66,6 @@ assets/media/nova/at-prelude-20261013.sources.json -filter -diff -merge text
 assets/mobile-20261013/** -filter -diff -merge -text
 # Lightweight on-demand reference pages; no LFS archive rebuild required.
 assets/guide/game-flow-20261014-*.webp -filter -diff -merge -text
+
+assets/media/nova/checkpoint-bgm.mp3 -filter -diff -merge -text
+assets/media/nova/checkpoint-bgm.source.json -filter -diff -merge text
