@@ -14,8 +14,8 @@ export function check(){
  for(const file of ['nova-ladder-presentation.js','nova-direct-award.js'])vm.runInContext(fs.readFileSync(path.join(root,file),'utf8'),ui);
  const game=fs.readFileSync('nova-game.js','utf8');
  vm.runInContext(game.match(/  function rareCueGrade\([^]*?\n  }/)[0],ui);
-  for(const upper of [false,true])for(let setting=1;setting<=6;setting++){
-   let flow={...NovaArt.enter({setting},()=>.5),researchUpper:upper,remaining:'500',burstUsed:true};
+  for(let setting=1;setting<=6;setting++){
+   let flow={...NovaArt.enter({setting},()=>.5),researchUpper:false,remaining:'500',burstUsed:true};
    let t=NovaArt.step(reload(flow),{setting},seq([.9,.9,.1,.1,.5,.5]),'STRONG_NOVA');
    assert.equal(t.atOutcome.direct,0);assert.equal(t.atOutcome.fixed50,true);assert.equal(t.flow.remaining,'500');
    assert.equal(ui.NovaDirectAward.amount({...t,flowBefore:flow,flowAfter:t.flow}),0,'No immediate +50 overlay');
@@ -58,7 +58,7 @@ export function check(){
 }
 test('fixed Sosuke: full entry, exact 50pt, persistence, simultaneous/queued awards, UI and checkpoint suppression',check);
 
-test('fixed Sosuke probability preserves the former conditional mean in normal and upper AT',()=>{
+test('50pt awards keep their hit rates: fixed Sosuke in normal AT and direct credit in upper AT',()=>{
  loadModel();
  for(const upper of [false,true])for(const role of ['WEAK_SUICA','WEAK_NOVA','STRONG_NOVA']){
   const rule=NovaArt.atRoleRules[role]||{values:[20,30,50,100,300],weights:[.6,.3,.098,.0018,.0002]};
@@ -67,10 +67,35 @@ test('fixed Sosuke probability preserves the former conditional mean in normal a
   for(let setting=1;setting<=6;setting++)for(const [roll,hit]of [[chance-1e-10,true],[chance,false],[.999999,false]]){
    const draws=role==='STRONG_NOVA'?[.1,roll]:[.99,0,roll,.99];
    const t=NovaArt.resolveAtRole({researchUpper:upper},role,setting,seq(draws));
-   assert.equal(!!t.fixed50,hit);assert.equal(t.direct,0);
-   assert.equal(t.zone,hit?'sosuke':'');
+   assert.equal(!!t.fixed50,hit&&!upper);assert.equal(t.direct,hit&&upper?50:0);
+   assert.equal(t.zone,hit&&!upper?'sosuke':'');
   }
  }
  assert.equal(NovaBalance.zoneMean('fixed50_sosuke'),50);
  assert(!NovaArt.zoneIds.includes('fixed50_sosuke'),'Fixed reward cannot leak into ordinary zone selection');
+});
+
+test('upper AT credits 50pt once, retains simultaneous zones and previously earned fixed stocks',()=>{
+ loadModel();const ui=vm.createContext({});vm.runInContext(fs.readFileSync('nova-direct-award.js','utf8'),ui);
+ for(let setting=1;setting<=6;setting++){
+  const flow={...NovaArt.enter({setting},()=>.5),researchUpper:true,remaining:'500',burstUsed:true};
+  let t=NovaArt.step(reload(flow),{setting},seq([.9,.9,.1,.1,.5,.5]),'STRONG_NOVA');
+  assert.equal(t.atOutcome.direct,50);assert(!t.atOutcome.fixed50);assert.equal(t.atOutcome.zone,'');
+  assert.equal(t.flow.remaining,'550');assert.deepEqual(t.flow.atPrelude.zones,[]);
+  assert.equal(ui.NovaDirectAward.directAmount({...t,flowBefore:flow,flowAfter:t.flow}),50);
+  assert.equal(NovaArt.settleZone(NovaArt.normalize(reload(t.flow))).remaining,'550');
+  while(t.flow.atPrelude)t=NovaArt.step(reload(t.flow),{setting},()=>.99,'REPLAY');
+  assert.equal(t.flow.entryStage,'');assert.equal(t.flow.pendingZone,'');assert.equal(t.flow.remaining,'541');
+  t=NovaArt.step(reload(flow),{setting},seq([.9,.9,.5,0,.9,.5,.5]),'STRONG_NOVA');
+  assert.equal(t.atOutcome.direct,50);assert(t.atOutcome.zone);assert(!t.atOutcome.fixed50);
+  assert.deepEqual(t.flow.atPrelude.zones,[t.atOutcome.zone]);
+  const zone=t.atOutcome.zone;
+  while(t.flow.atPrelude)t=NovaArt.step(reload(t.flow),{setting},()=>.99,'REPLAY');
+  assert.equal(t.flow.entryStage,'seven');assert.equal(t.flow.pendingZone,zone);assert(!t.flow.pendingFixed50);
+  t=NovaArt.step(reload(flow),{setting,checkpointQuiet:true,netPt:2100,checkpointNext:2400},()=>0,'STRONG_NOVA');
+  assert(t.atOutcome.checkpointQuiet);assert.equal(t.atOutcome.direct,0);assert.equal(t.atOutcome.zone,'');
+  t=NovaArt.step(reload({...flow,queuedZones:['fixed50_sosuke']}),{setting},()=>.99);
+  assert(t.flow.fixed50Zone);assert.equal(t.flow.award,'50');
+  const settled=NovaArt.settleZone(reload(t.flow));assert.equal(BigInt(settled.remaining),BigInt(t.flow.remaining)+50n);
+ }
 });

@@ -32,7 +32,7 @@ test('common rares share lotteries; strong NOVA preserves four base branches bef
    const left=a.resolveAtRole({...state},'WEAK_SUICA',setting,xoshiro128(seed));
    assert.deepEqual(left,a.resolveAtRole({...state},'WEAK_NOVA',setting,xoshiro128(seed)));
    const upper=a.resolveAtRole({...state,researchUpper:true},'WEAK_SUICA',setting,xoshiro128(seed));
-   near(upper.direct,0);near(left.direct,0);if(left.fixed50)assert(upper.fixed50);near(a.extraZoneChance(setting,'WEAK_SUICA',true,high),([12,12,23,12,12,12][setting-1]/[1.7,4.25,2.5,4.5,3.2,4.85][setting-1])*a.extraZoneChance(setting,'WEAK_SUICA',false,high));
+   assert([0,50].includes(upper.direct));assert(!upper.fixed50);near(left.direct,0);if(left.fixed50)near(upper.direct,50);near(a.extraZoneChance(setting,'WEAK_SUICA',true,high),([12,12,23,12,12,12][setting-1]/[1.7,4.25,2.5,4.5,3.2,4.85][setting-1])*a.extraZoneChance(setting,'WEAK_SUICA',false,high));
   }
  }
  for(const [roll,direct,zone]of [[0,true,false],[.19999,true,false],[.2,false,true],[.39999,false,true],[.4,true,true],[.59999,true,true],[.6,false,false],[.99999,false,false]]){

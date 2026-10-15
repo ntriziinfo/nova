@@ -422,8 +422,8 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
    if(r<.2||r>=.4&&r<.6)out.direct=drawAmount({"up":0.5,"hit":0.5,"values":[20,30,50,100,300],"weights":[0.6,0.3,0.098,0.0018,0.0002]});
    if(r>=.2&&r<.6)out.zone=pickAtZone(setting,wasHigh,rng,false,!!s.researchUpper);
   }
-  // Dedicated fixed reward uses the ordinary prelude and entry, never immediate credit.
-  if(out.direct){out.fixed50=true;out.extraZone=out.zone;out.zone='sosuke';out.direct=0;}
+  // Normal AT uses the fixed Sosuke route; upper AT credits the same 50pt directly.
+  if(out.direct&&!s.researchUpper){out.fixed50=true;out.extraZone=out.zone;out.zone='sosuke';out.direct=0;}
   if(wasHigh&&!held&&(role==='REPLAY'||role==='MISS')&&rng()<(role==='REPLAY'?.05:.08)){s.atHigh=false;s.atHighLeft=0;}
   return out;
  }

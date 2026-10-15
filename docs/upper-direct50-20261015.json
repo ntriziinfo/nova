@@ -1,0 +1,1682 @@
+{
+  "approval": "2026-10-15: 上位ATの50pt固定宗介を同じ当選頻度の第三停止＋50pt直乗せへ変更して反映",
+  "games": 10000,
+  "trialsPerSetting": 300,
+  "seed": "upper-direct50-20261015",
+  "options": {
+    "rng": "xoshiro128",
+    "exactGames": true,
+    "completeLimitPt": 19000,
+    "completeMyLimitPt": 0,
+    "stopAtComplete": true,
+    "atBetRefund": true,
+    "replayRefund": true
+  },
+  "baselineHashes": {
+    "nova-art.js": "417d22e6550c8462edefea7cb7ee7a0ec3ac87b5ad683c48bc0e8652b5cd7187",
+    "nova-balance.js": "bd61a10e9b03a90bd827f0e29a3f0f4bff28a2b90601bb9689114ca8635ba8e1",
+    "nova-flow.js": "996a9d6c84770f1dd3750b99e99638083290c559647b9638cc9a1a95275830a5",
+    "nova-normal.js": "658619bcba6c7ae63022ffa8200ce0dddffc114fa372a0e495e63b923c402ba8",
+    "nova-tuning.js": "6ab505d1aac2c671696ea383c10ffd3e85b8e2ce91ac7d5641d80fd8e27d9f4b",
+    "nova-decrement.js": "e1cda1eff88e32819c691ea9685c366ef4f9b0c8d9781c801dcb0a9b93fa0bc4",
+    "nova-progress.js": "533808b030882b0238b085307f90aea0dace177aa4dcba782e513fa378850bbe",
+    "nova-complete.js": "ff3796e6f4aa810393ab5e79d0daab7e12d76982ce6a402b03a68155d45f2a8c"
+  },
+  "adoptedHashes": {
+    "nova-art.js": "0f515ed5f137cb6b2ee41a4bfd0cdbd7888fee7c029fb458d6fe042ecaa286e9",
+    "nova-balance.js": "bd61a10e9b03a90bd827f0e29a3f0f4bff28a2b90601bb9689114ca8635ba8e1",
+    "nova-flow.js": "996a9d6c84770f1dd3750b99e99638083290c559647b9638cc9a1a95275830a5",
+    "nova-normal.js": "658619bcba6c7ae63022ffa8200ce0dddffc114fa372a0e495e63b923c402ba8",
+    "nova-tuning.js": "6ab505d1aac2c671696ea383c10ffd3e85b8e2ce91ac7d5641d80fd8e27d9f4b",
+    "nova-decrement.js": "e1cda1eff88e32819c691ea9685c366ef4f9b0c8d9781c801dcb0a9b93fa0bc4",
+    "nova-progress.js": "533808b030882b0238b085307f90aea0dace177aa4dcba782e513fa378850bbe",
+    "nova-complete.js": "ff3796e6f4aa810393ab5e79d0daab7e12d76982ce6a402b03a68155d45f2a8c"
+  },
+  "differences": [
+    {
+      "setting": 1,
+      "before": 94.87734444444445,
+      "after": 95.2012,
+      "delta": 0.32385555555555223,
+      "afterCi95": [
+        93.55823323091975,
+        96.84416676908025
+      ],
+      "win": 35.333333333333336,
+      "reach10000": 1.3333333333333335,
+      "deltaCi95": [
+        -0.034635459580581285,
+        0.6823465706916858
+      ],
+      "upperDirectAwards": 62
+    },
+    {
+      "setting": 2,
+      "before": 97.53374444444445,
+      "after": 97.15054444444445,
+      "delta": -0.38320000000000576,
+      "afterCi95": [
+        95.51656623817819,
+        98.7845226507107
+      ],
+      "win": 38.333333333333336,
+      "reach10000": 2.666666666666667,
+      "deltaCi95": [
+        -1.0132074971472527,
+        0.24680749714724115
+      ],
+      "upperDirectAwards": 95
+    },
+    {
+      "setting": 3,
+      "before": 97.50680840141735,
+      "after": 96.93468850379577,
+      "delta": -0.5721198976215813,
+      "afterCi95": [
+        95.05521521968573,
+        98.81416178790579
+      ],
+      "win": 37,
+      "reach10000": 3.6666666666666665,
+      "deltaCi95": [
+        -1.1239673530113339,
+        -0.02027244223182878
+      ],
+      "upperDirectAwards": 53
+    },
+    {
+      "setting": 4,
+      "before": 101.39194996456726,
+      "after": 101.30764444444445,
+      "delta": -0.08430552012281822,
+      "afterCi95": [
+        99.57432997124721,
+        103.04095891764169
+      ],
+      "win": 53,
+      "reach10000": 4,
+      "deltaCi95": [
+        -0.7762926026131443,
+        0.6076815623675078
+      ],
+      "upperDirectAwards": 127
+    },
+    {
+      "setting": 5,
+      "before": 104.23343962623413,
+      "after": 103.96090916315876,
+      "delta": -0.27253046307536,
+      "afterCi95": [
+        101.8994345286024,
+        106.02238379771514
+      ],
+      "win": 55.00000000000001,
+      "reach10000": 9,
+      "deltaCi95": [
+        -0.6354881711102021,
+        0.09042724495948201
+      ],
+      "upperDirectAwards": 33
+    },
+    {
+      "setting": 6,
+      "before": 117.23946825222396,
+      "after": 116.43562893369823,
+      "delta": -0.8038393185257231,
+      "afterCi95": [
+        114.2251865778817,
+        118.64607128951477
+      ],
+      "win": 79.66666666666666,
+      "reach10000": 24,
+      "deltaCi95": [
+        -1.624837328043025,
+        0.017158690991578962
+      ],
+      "upperDirectAwards": 48
+    }
+  ],
+  "deterministicFixtures": [
+    {
+      "lowestNet": -408,
+      "maxMy": 10879,
+      "completeReason": null,
+      "checkpointStats": {
+        "version": 167,
+        "next": 12000,
+        "pending": 0,
+        "sorties": 0,
+        "earned": 4,
+        "started": 4,
+        "upperRetries": 2,
+        "discardedPt": 3120,
+        "discardedZones": 0,
+        "discardedSets": 0,
+        "discardedBonusStocks": 0,
+        "newAt": 0,
+        "rewardZones": 5
+      },
+      "atPayoutBins": {
+        "0-499": 0,
+        "500-999": 7,
+        "1000-1999": 3,
+        "2000-2999": 0,
+        "3000-4999": 0,
+        "5000-9999": 1,
+        "10000+": 1
+      },
+      "actualAtZone": {
+        "normal": {
+          "games": 2782,
+          "wins": 2
+        },
+        "upper": {
+          "games": 950,
+          "wins": 3
+        }
+      },
+      "upper": {
+        "spins": 29,
+        "upperGames": 950,
+        "bySource": {
+          "initial": {
+            "started": 1,
+            "won": 1,
+            "failed": 0
+          },
+          "threshold": {
+            "started": 4,
+            "won": 3,
+            "failed": 1
+          },
+          "rare": {
+            "started": 0,
+            "won": 0,
+            "failed": 0
+          }
+        }
+      },
+      "rare": {
+        "eligibleRoles": {
+          "WEAK_NOVA": 60,
+          "WEAK_SUICA": 194,
+          "STRONG_NOVA": 3
+        },
+        "eligibleByPhase": {
+          "normal": {
+            "WEAK_NOVA": 37,
+            "WEAK_SUICA": 124,
+            "STRONG_NOVA": 1
+          },
+          "cz": {
+            "WEAK_NOVA": 7,
+            "WEAK_SUICA": 7
+          },
+          "at": {
+            "WEAK_SUICA": 62,
+            "WEAK_NOVA": 15,
+            "STRONG_NOVA": 2
+          },
+          "zone": {
+            "WEAK_SUICA": 1,
+            "WEAK_NOVA": 1
+          }
+        },
+        "triggersByRole": {
+          "WEAK_SUICA": 4,
+          "STRONG_NOVA": 1
+        },
+        "draws": 10000,
+        "triggered": 5,
+        "pending": 0,
+        "started": 5,
+        "completed": 5,
+        "newAt": 1,
+        "spins": 50,
+        "stocks": 34,
+        "guaranteedStocks": 0,
+        "byPhase": {
+          "at": 4,
+          "normal": 1
+        },
+        "tiers": {
+          "0.25": 1,
+          "0.6": 1,
+          "0.8": 3
+        },
+        "stockHist": {
+          "5": 1,
+          "7": 3,
+          "8": 1
+        },
+        "zones": {
+          "sosuke": 10,
+          "ura_sora": 1,
+          "toto": 3,
+          "ouma": 5,
+          "giru": 5,
+          "ura_ouma": 1,
+          "sora": 4,
+          "kushuri_nito": 1,
+          "urapi": 2,
+          "ura_giru": 2
+        }
+      },
+      "atLevelMetrics": {
+        "0": {
+          "entries": 12,
+          "completed": 12,
+          "completedPaid": 31519,
+          "completedNet": 18706,
+          "games": 4271
+        },
+        "1": {
+          "entries": 0,
+          "completed": 0,
+          "completedPaid": 0,
+          "completedNet": 0,
+          "games": 0
+        },
+        "2": {
+          "entries": 0,
+          "completed": 0,
+          "completedPaid": 0,
+          "completedNet": 0,
+          "games": 0
+        },
+        "3": {
+          "entries": 0,
+          "completed": 0,
+          "completedPaid": 0,
+          "completedNet": 0,
+          "games": 0
+        },
+        "4": {
+          "entries": 0,
+          "completed": 0,
+          "completedPaid": 0,
+          "completedNet": 0,
+          "games": 0
+        },
+        "5": {
+          "entries": 0,
+          "completed": 0,
+          "completedPaid": 0,
+          "completedNet": 0,
+          "games": 0
+        }
+      },
+      "bonusMetrics": {
+        "normal": {
+          "completed": 12,
+          "nebulaWins": 11
+        },
+        "upper": {
+          "completed": 0,
+          "nebulaWins": 0
+        }
+      },
+      "atMetrics": {
+        "eligible": 3737,
+        "high": 675,
+        "zoneWins": 6,
+        "directWins": 1,
+        "directPoints": 50,
+        "promotions": 10,
+        "suica100": 0,
+        "suica300": 0
+      },
+      "seed": "upper-direct50-20261015|s1|101",
+      "setting": 1,
+      "initialMode": "B",
+      "cutoff": {
+        "games": 10000,
+        "totalBet": 30000,
+        "totalPaid": 39872,
+        "net": 9872,
+        "peak": 10471,
+        "phase": "cz"
+      },
+      "games": 10000,
+      "totalBet": 30000,
+      "totalPaid": 39872,
+      "rtp": 1.3290666666666666,
+      "net": 9872,
+      "peak": 10471,
+      "maxDrawdown": 3057,
+      "maxNormalGames": 800,
+      "maxBonusGap": 2656,
+      "maxArtNet": 8701,
+      "freezes": 0,
+      "ceilings": 5,
+      "release": 1,
+      "bonusNet": 1.2489270386266094,
+      "counts": {
+        "normal": 4970,
+        "cz": 471,
+        "prep": 43,
+        "align": 12,
+        "bonus": 233,
+        "at": 3996,
+        "zone": 275,
+        "zero": 12,
+        "BIG": 12,
+        "REG": 0,
+        "czEntries": 29,
+        "strongEntries": 0,
+        "czWins": 7,
+        "artEntries": 12,
+        "zoneEntries": 65,
+        "gameCzEntries": 27,
+        "ceilingCzEntries": 0,
+        "rareCzEntries": 2,
+        "backgroundCzEntries": 0,
+        "highNormalG": 608,
+        "favoredNormalG": 2584
+      },
+      "zones": {
+        "kushuri_nito": 12,
+        "urapi": 7,
+        "sosuke": 12,
+        "ura_sora": 1,
+        "toto": 5,
+        "ouma": 5,
+        "giru": 9,
+        "sora": 9,
+        "ura_ouma": 3,
+        "ura_giru": 2
+      },
+      "normalRoles": {
+        "REPLAY": 1847,
+        "MISS": 2915,
+        "WEAK_NOVA": 37,
+        "WEAK_SUICA": 124,
+        "BELL": 46,
+        "STRONG_NOVA": 1
+      },
+      "normalPayout": {
+        "bet": 14910,
+        "paid": 6653,
+        "games": 4970
+      },
+      "endPhase": "cz",
+      "firstComplete": null,
+      "unspentZoneStocks": 0,
+      "unspentAtQuota": 0
+    },
+    {
+      "lowestNet": -2865,
+      "maxMy": 9880,
+      "completeReason": null,
+      "checkpointStats": {
+        "version": 167,
+        "next": 7200,
+        "pending": 0,
+        "sorties": 0,
+        "earned": 2,
+        "started": 2,
+        "upperRetries": 0,
+        "discardedPt": 1732,
+        "discardedZones": 0,
+        "discardedSets": 0,
+        "discardedBonusStocks": 0,
+        "newAt": 0,
+        "rewardZones": 2
+      },
+      "atPayoutBins": {
+        "0-499": 0,
+        "500-999": 7,
+        "1000-1999": 2,
+        "2000-2999": 1,
+        "3000-4999": 0,
+        "5000-9999": 1,
+        "10000+": 1
+      },
+      "actualAtZone": {
+        "normal": {
+          "games": 2621,
+          "wins": 19
+        },
+        "upper": {
+          "games": 609,
+          "wins": 7
+        }
+      },
+      "upper": {
+        "spins": 8,
+        "upperGames": 609,
+        "bySource": {
+          "initial": {
+            "started": 0,
+            "won": 0,
+            "failed": 0
+          },
+          "threshold": {
+            "started": 2,
+            "won": 2,
+            "failed": 0
+          },
+          "rare": {
+            "started": 1,
+            "won": 1,
+            "failed": 0
+          }
+        }
+      },
+      "rare": {
+        "eligibleRoles": {
+          "WEAK_NOVA": 84,
+          "WEAK_SUICA": 261,
+          "STRONG_NOVA": 8
+        },
+        "eligibleByPhase": {
+          "normal": {
+            "WEAK_NOVA": 53,
+            "WEAK_SUICA": 125,
+            "STRONG_NOVA": 4
+          },
+          "cz": {
+            "WEAK_SUICA": 22,
+            "WEAK_NOVA": 8
+          },
+          "zone": {
+            "WEAK_SUICA": 1,
+            "WEAK_NOVA": 1,
+            "STRONG_NOVA": 1
+          },
+          "at": {
+            "WEAK_SUICA": 111,
+            "WEAK_NOVA": 22,
+            "STRONG_NOVA": 3
+          },
+          "prep": {
+            "WEAK_SUICA": 2
+          }
+        },
+        "triggersByRole": {
+          "WEAK_NOVA": 1,
+          "WEAK_SUICA": 1
+        },
+        "draws": 10000,
+        "triggered": 2,
+        "pending": 0,
+        "started": 2,
+        "completed": 2,
+        "newAt": 0,
+        "spins": 20,
+        "stocks": 12,
+        "guaranteedStocks": 0,
+        "byPhase": {
+          "at": 2
+        },
+        "tiers": {
+          "0.6": 1,
+          "0.4": 1
+        },
+        "stockHist": {
+          "5": 1,
+          "7": 1
+        },
+        "zones": {
+          "ouma": 2,
+          "kushuri_nito": 1,
+          "urapi": 2,
+          "giru": 3,
+          "ura_sora": 1,
+          "toto": 1,
+          "ura_ouma": 1,
+          "ura_giru": 1
+        }
+      },
+      "atLevelMetrics": {
+        "0": {
+          "entries": 13,
+          "completed": 12,
+          "completedPaid": 25818,
+          "completedNet": 14892,
+          "games": 3708
+        },
+        "1": {
+          "entries": 0,
+          "completed": 0,
+          "completedPaid": 0,
+          "completedNet": 0,
+          "games": 0
+        },
+        "2": {
+          "entries": 0,
+          "completed": 0,
+          "completedPaid": 0,
+          "completedNet": 0,
+          "games": 0
+        },
+        "3": {
+          "entries": 0,
+          "completed": 0,
+          "completedPaid": 0,
+          "completedNet": 0,
+          "games": 0
+        },
+        "4": {
+          "entries": 0,
+          "completed": 0,
+          "completedPaid": 0,
+          "completedNet": 0,
+          "games": 0
+        },
+        "5": {
+          "entries": 0,
+          "completed": 0,
+          "completedPaid": 0,
+          "completedNet": 0,
+          "games": 0
+        }
+      },
+      "bonusMetrics": {
+        "normal": {
+          "completed": 21,
+          "nebulaWins": 10
+        },
+        "upper": {
+          "completed": 2,
+          "nebulaWins": 2
+        }
+      },
+      "atMetrics": {
+        "eligible": 3232,
+        "high": 757,
+        "zoneWins": 26,
+        "directWins": 5,
+        "directPoints": 250,
+        "promotions": 15,
+        "suica100": 0,
+        "suica300": 0
+      },
+      "seed": "upper-direct50-20261015|s2|0",
+      "setting": 2,
+      "initialMode": "A",
+      "cutoff": {
+        "games": 10000,
+        "totalBet": 30000,
+        "totalPaid": 36360,
+        "net": 6360,
+        "peak": 7015,
+        "phase": "art"
+      },
+      "games": 10000,
+      "totalBet": 30000,
+      "totalPaid": 36360,
+      "rtp": 1.212,
+      "net": 6360,
+      "peak": 7015,
+      "maxDrawdown": 2862,
+      "maxNormalGames": 800,
+      "maxBonusGap": 1560,
+      "maxArtNet": 6189,
+      "freezes": 0,
+      "ceilings": 8,
+      "release": 1,
+      "bonusNet": 1.231121281464531,
+      "counts": {
+        "normal": 4953,
+        "cz": 799,
+        "prep": 80,
+        "align": 23,
+        "bonus": 437,
+        "at": 3466,
+        "zone": 242,
+        "zero": 8,
+        "BIG": 23,
+        "REG": 0,
+        "czEntries": 45,
+        "strongEntries": 3,
+        "czWins": 15,
+        "artEntries": 13,
+        "zoneEntries": 62,
+        "gameCzEntries": 41,
+        "ceilingCzEntries": 0,
+        "rareCzEntries": 7,
+        "backgroundCzEntries": 0,
+        "highNormalG": 606,
+        "favoredNormalG": 2857
+      },
+      "zones": {
+        "kushuri_nito": 14,
+        "toto": 5,
+        "urapi": 4,
+        "sora": 5,
+        "sosuke": 16,
+        "giru": 10,
+        "ouma": 3,
+        "ura_sora": 1,
+        "ura_giru": 2,
+        "ura_ouma": 2
+      },
+      "normalRoles": {
+        "MISS": 2809,
+        "WEAK_NOVA": 53,
+        "REPLAY": 1913,
+        "WEAK_SUICA": 125,
+        "BELL": 49,
+        "STRONG_NOVA": 4
+      },
+      "normalPayout": {
+        "bet": 14859,
+        "paid": 6881,
+        "games": 4953
+      },
+      "endPhase": "art",
+      "firstComplete": null,
+      "unspentZoneStocks": 0,
+      "unspentAtQuota": 99
+    },
+    {
+      "lowestNet": -4062,
+      "maxMy": 17321,
+      "completeReason": null,
+      "checkpointStats": {
+        "version": 167,
+        "next": 14400,
+        "pending": 0,
+        "sorties": 0,
+        "earned": 5,
+        "started": 5,
+        "upperRetries": 4,
+        "discardedPt": 1043,
+        "discardedZones": 0,
+        "discardedSets": 0,
+        "discardedBonusStocks": 0,
+        "newAt": 0,
+        "rewardZones": 5
+      },
+      "atPayoutBins": {
+        "0-499": 1,
+        "500-999": 4,
+        "1000-1999": 2,
+        "2000-2999": 0,
+        "3000-4999": 0,
+        "5000-9999": 2,
+        "10000+": 1
+      },
+      "actualAtZone": {
+        "normal": {
+          "games": 2336,
+          "wins": 10
+        },
+        "upper": {
+          "games": 1484,
+          "wins": 20
+        }
+      },
+      "upper": {
+        "spins": 47,
+        "upperGames": 1484,
+        "bySource": {
+          "initial": {
+            "started": 0,
+            "won": 0,
+            "failed": 0
+          },
+          "threshold": {
+            "started": 5,
+            "won": 3,
+            "failed": 2
+          },
+          "rare": {
+            "started": 1,
+            "won": 1,
+            "failed": 0
+          }
+        }
+      },
+      "rare": {
+        "eligibleRoles": {
+          "WEAK_SUICA": 227,
+          "WEAK_NOVA": 57,
+          "STRONG_NOVA": 3
+        },
+        "eligibleByPhase": {
+          "normal": {
+            "WEAK_SUICA": 114,
+            "WEAK_NOVA": 38
+          },
+          "zone": {
+            "WEAK_SUICA": 2
+          },
+          "at": {
+            "WEAK_SUICA": 99,
+            "WEAK_NOVA": 17,
+            "STRONG_NOVA": 3
+          },
+          "prep": {
+            "WEAK_SUICA": 3
+          },
+          "cz": {
+            "WEAK_NOVA": 2,
+            "WEAK_SUICA": 9
+          }
+        },
+        "triggersByRole": {
+          "WEAK_SUICA": 5
+        },
+        "draws": 10000,
+        "triggered": 5,
+        "pending": 0,
+        "started": 5,
+        "completed": 5,
+        "newAt": 3,
+        "spins": 50,
+        "stocks": 19,
+        "guaranteedStocks": 4,
+        "byPhase": {
+          "cz": 1,
+          "at": 2,
+          "normal": 2
+        },
+        "tiers": {
+          "0.6": 2,
+          "0.1": 2,
+          "0.4": 1
+        },
+        "stockHist": {
+          "2": 3,
+          "6": 1,
+          "7": 1
+        },
+        "zones": {
+          "urapi": 4,
+          "ouma": 1,
+          "ura_sora": 1,
+          "giru": 2,
+          "sosuke": 4,
+          "ura_ouma": 1,
+          "sora": 3,
+          "kushuri_nito": 2,
+          "toto": 1
+        }
+      },
+      "atLevelMetrics": {
+        "0": {
+          "entries": 10,
+          "completed": 10,
+          "completedPaid": 33106,
+          "completedNet": 19804,
+          "games": 4434
+        },
+        "1": {
+          "entries": 0,
+          "completed": 0,
+          "completedPaid": 0,
+          "completedNet": 0,
+          "games": 0
+        },
+        "2": {
+          "entries": 0,
+          "completed": 0,
+          "completedPaid": 0,
+          "completedNet": 0,
+          "games": 0
+        },
+        "3": {
+          "entries": 0,
+          "completed": 0,
+          "completedPaid": 0,
+          "completedNet": 0,
+          "games": 0
+        },
+        "4": {
+          "entries": 0,
+          "completed": 0,
+          "completedPaid": 0,
+          "completedNet": 0,
+          "games": 0
+        },
+        "5": {
+          "entries": 0,
+          "completed": 0,
+          "completedPaid": 0,
+          "completedNet": 0,
+          "games": 0
+        }
+      },
+      "bonusMetrics": {
+        "normal": {
+          "completed": 12,
+          "nebulaWins": 5
+        },
+        "upper": {
+          "completed": 0,
+          "nebulaWins": 0
+        }
+      },
+      "atMetrics": {
+        "eligible": 3829,
+        "high": 849,
+        "zoneWins": 28,
+        "directWins": 1,
+        "directPoints": 50,
+        "promotions": 11,
+        "suica100": 0,
+        "suica300": 0
+      },
+      "seed": "upper-direct50-20261015|s3|117",
+      "setting": 3,
+      "initialMode": "A",
+      "cutoff": {
+        "games": 10000,
+        "totalBet": 30000,
+        "totalPaid": 41394,
+        "net": 11394,
+        "peak": 13259,
+        "phase": "normal"
+      },
+      "games": 10000,
+      "totalBet": 30000,
+      "totalPaid": 41394,
+      "rtp": 1.3798,
+      "net": 11394,
+      "peak": 13259,
+      "maxDrawdown": 4061,
+      "maxNormalGames": 800,
+      "maxBonusGap": 2388,
+      "maxArtNet": 9489,
+      "freezes": 0,
+      "ceilings": 6,
+      "release": 1,
+      "bonusNet": 1.2644628099173554,
+      "counts": {
+        "normal": 4866,
+        "cz": 406,
+        "prep": 40,
+        "align": 12,
+        "bonus": 242,
+        "at": 4110,
+        "zone": 324,
+        "zero": 21,
+        "BIG": 12,
+        "REG": 0,
+        "czEntries": 24,
+        "strongEntries": 0,
+        "czWins": 6,
+        "artEntries": 10,
+        "zoneEntries": 68,
+        "gameCzEntries": 23,
+        "ceilingCzEntries": 0,
+        "rareCzEntries": 1,
+        "backgroundCzEntries": 0,
+        "highNormalG": 467,
+        "favoredNormalG": 2494
+      },
+      "zones": {
+        "kushuri_nito": 12,
+        "urapi": 9,
+        "ouma": 10,
+        "ura_sora": 4,
+        "giru": 6,
+        "sosuke": 8,
+        "ura_ouma": 3,
+        "sora": 12,
+        "toto": 2,
+        "ura_giru": 2
+      },
+      "normalRoles": {
+        "REPLAY": 1846,
+        "MISS": 2822,
+        "BELL": 46,
+        "WEAK_SUICA": 114,
+        "WEAK_NOVA": 38
+      },
+      "normalPayout": {
+        "bet": 14598,
+        "paid": 6590,
+        "games": 4866
+      },
+      "endPhase": "normal",
+      "firstComplete": null,
+      "unspentZoneStocks": 0,
+      "unspentAtQuota": 0
+    },
+    {
+      "lowestNet": -1289,
+      "maxMy": 3911,
+      "completeReason": null,
+      "checkpointStats": {
+        "version": 167,
+        "next": 4800,
+        "pending": 0,
+        "sorties": 0,
+        "earned": 1,
+        "started": 1,
+        "upperRetries": 0,
+        "discardedPt": 2,
+        "discardedZones": 0,
+        "discardedSets": 0,
+        "discardedBonusStocks": 0,
+        "newAt": 0,
+        "rewardZones": 1
+      },
+      "atPayoutBins": {
+        "0-499": 0,
+        "500-999": 4,
+        "1000-1999": 4,
+        "2000-2999": 2,
+        "3000-4999": 1,
+        "5000-9999": 0,
+        "10000+": 0
+      },
+      "actualAtZone": {
+        "normal": {
+          "games": 2170,
+          "wins": 14
+        },
+        "upper": {
+          "games": 111,
+          "wins": 1
+        }
+      },
+      "upper": {
+        "spins": 7,
+        "upperGames": 111,
+        "bySource": {
+          "initial": {
+            "started": 0,
+            "won": 0,
+            "failed": 0
+          },
+          "threshold": {
+            "started": 1,
+            "won": 1,
+            "failed": 0
+          },
+          "rare": {
+            "started": 0,
+            "won": 0,
+            "failed": 0
+          }
+        }
+      },
+      "rare": {
+        "eligibleRoles": {
+          "WEAK_SUICA": 237,
+          "WEAK_NOVA": 68,
+          "STRONG_NOVA": 4
+        },
+        "eligibleByPhase": {
+          "normal": {
+            "WEAK_SUICA": 144,
+            "WEAK_NOVA": 43,
+            "STRONG_NOVA": 2
+          },
+          "cz": {
+            "WEAK_SUICA": 27,
+            "WEAK_NOVA": 8
+          },
+          "at": {
+            "WEAK_SUICA": 63,
+            "WEAK_NOVA": 16,
+            "STRONG_NOVA": 2
+          },
+          "prep": {
+            "WEAK_SUICA": 2
+          },
+          "zone": {
+            "WEAK_NOVA": 1,
+            "WEAK_SUICA": 1
+          }
+        },
+        "triggersByRole": {},
+        "draws": 10000,
+        "triggered": 0,
+        "pending": 0,
+        "started": 0,
+        "completed": 0,
+        "newAt": 0,
+        "spins": 0,
+        "stocks": 0,
+        "guaranteedStocks": 0,
+        "byPhase": {},
+        "tiers": {},
+        "stockHist": {},
+        "zones": {}
+      },
+      "atLevelMetrics": {
+        "0": {
+          "entries": 11,
+          "completed": 11,
+          "completedPaid": 17857,
+          "completedNet": 10075,
+          "games": 2594
+        },
+        "1": {
+          "entries": 0,
+          "completed": 0,
+          "completedPaid": 0,
+          "completedNet": 0,
+          "games": 0
+        },
+        "2": {
+          "entries": 0,
+          "completed": 0,
+          "completedPaid": 0,
+          "completedNet": 0,
+          "games": 0
+        },
+        "3": {
+          "entries": 0,
+          "completed": 0,
+          "completedPaid": 0,
+          "completedNet": 0,
+          "games": 0
+        },
+        "4": {
+          "entries": 0,
+          "completed": 0,
+          "completedPaid": 0,
+          "completedNet": 0,
+          "games": 0
+        },
+        "5": {
+          "entries": 0,
+          "completed": 0,
+          "completedPaid": 0,
+          "completedNet": 0,
+          "games": 0
+        }
+      },
+      "bonusMetrics": {
+        "normal": {
+          "completed": 20,
+          "nebulaWins": 5
+        },
+        "upper": {
+          "completed": 3,
+          "nebulaWins": 3
+        }
+      },
+      "atMetrics": {
+        "eligible": 2278,
+        "high": 244,
+        "zoneWins": 13,
+        "directWins": 1,
+        "directPoints": 50,
+        "promotions": 9,
+        "suica100": 0,
+        "suica300": 0
+      },
+      "seed": "upper-direct50-20261015|s4|0",
+      "setting": 4,
+      "initialMode": "C",
+      "cutoff": {
+        "games": 10000,
+        "totalBet": 30000,
+        "totalPaid": 29304,
+        "net": -696,
+        "peak": 3385,
+        "phase": "bonus"
+      },
+      "games": 10000,
+      "totalBet": 30000,
+      "totalPaid": 29304,
+      "rtp": 0.9768,
+      "net": -696,
+      "peak": 3385,
+      "maxDrawdown": 4671,
+      "maxNormalGames": 800,
+      "maxBonusGap": 990,
+      "maxArtNet": 2837,
+      "freezes": 1,
+      "ceilings": 12,
+      "release": 2,
+      "bonusNet": 1.4164648910411621,
+      "counts": {
+        "normal": 6128,
+        "cz": 751,
+        "prep": 90,
+        "align": 24,
+        "bonus": 413,
+        "at": 2447,
+        "zone": 147,
+        "zero": 4,
+        "BIG": 24,
+        "REG": 0,
+        "czEntries": 43,
+        "strongEntries": 0,
+        "czWins": 11,
+        "artEntries": 11,
+        "zoneEntries": 37,
+        "gameCzEntries": 43,
+        "ceilingCzEntries": 0,
+        "rareCzEntries": 0,
+        "backgroundCzEntries": 0,
+        "highNormalG": 777,
+        "favoredNormalG": 3630
+      },
+      "zones": {
+        "kushuri_nito": 11,
+        "giru": 4,
+        "sora": 5,
+        "sosuke": 5,
+        "urapi": 8,
+        "ouma": 2,
+        "toto": 2
+      },
+      "normalRoles": {
+        "WEAK_SUICA": 144,
+        "MISS": 3560,
+        "REPLAY": 2325,
+        "WEAK_NOVA": 43,
+        "BELL": 53,
+        "SUPER_NOVA": 1,
+        "STRONG_NOVA": 2
+      },
+      "normalPayout": {
+        "bet": 18384,
+        "paid": 8263,
+        "games": 6128
+      },
+      "endPhase": "normal",
+      "firstComplete": null,
+      "unspentZoneStocks": 0,
+      "unspentAtQuota": 0
+    },
+    {
+      "lowestNet": -2848,
+      "maxMy": 5983,
+      "completeReason": null,
+      "checkpointStats": {
+        "version": 167,
+        "next": 4800,
+        "pending": 0,
+        "sorties": 0,
+        "earned": 1,
+        "started": 1,
+        "upperRetries": 0,
+        "discardedPt": 89,
+        "discardedZones": 0,
+        "discardedSets": 0,
+        "discardedBonusStocks": 0,
+        "newAt": 0,
+        "rewardZones": 1
+      },
+      "atPayoutBins": {
+        "0-499": 0,
+        "500-999": 4,
+        "1000-1999": 3,
+        "2000-2999": 2,
+        "3000-4999": 2,
+        "5000-9999": 0,
+        "10000+": 0
+      },
+      "actualAtZone": {
+        "normal": {
+          "games": 2440,
+          "wins": 11
+        },
+        "upper": {
+          "games": 112,
+          "wins": 0
+        }
+      },
+      "upper": {
+        "spins": 7,
+        "upperGames": 112,
+        "bySource": {
+          "initial": {
+            "started": 0,
+            "won": 0,
+            "failed": 0
+          },
+          "threshold": {
+            "started": 1,
+            "won": 1,
+            "failed": 0
+          },
+          "rare": {
+            "started": 1,
+            "won": 0,
+            "failed": 0
+          }
+        }
+      },
+      "rare": {
+        "eligibleRoles": {
+          "WEAK_SUICA": 219,
+          "WEAK_NOVA": 71,
+          "STRONG_NOVA": 5
+        },
+        "eligibleByPhase": {
+          "normal": {
+            "WEAK_SUICA": 153,
+            "WEAK_NOVA": 46,
+            "STRONG_NOVA": 3
+          },
+          "at": {
+            "WEAK_SUICA": 45,
+            "WEAK_NOVA": 19,
+            "STRONG_NOVA": 2
+          },
+          "zone": {
+            "WEAK_NOVA": 1,
+            "WEAK_SUICA": 1
+          },
+          "cz": {
+            "WEAK_NOVA": 5,
+            "WEAK_SUICA": 19
+          },
+          "prep": {
+            "WEAK_SUICA": 1
+          }
+        },
+        "triggersByRole": {
+          "WEAK_SUICA": 2
+        },
+        "draws": 10000,
+        "triggered": 2,
+        "pending": 0,
+        "started": 2,
+        "completed": 2,
+        "newAt": 2,
+        "spins": 20,
+        "stocks": 10,
+        "guaranteedStocks": 0,
+        "byPhase": {
+          "normal": 2
+        },
+        "tiers": {
+          "0.1": 1,
+          "0.8": 1
+        },
+        "stockHist": {
+          "2": 1,
+          "8": 1
+        },
+        "zones": {
+          "toto": 3,
+          "kushuri_nito": 1,
+          "giru": 1,
+          "urapi": 2,
+          "sora": 2,
+          "ouma": 1
+        }
+      },
+      "atLevelMetrics": {
+        "0": {
+          "entries": 12,
+          "completed": 11,
+          "completedPaid": 19784,
+          "completedNet": 11084,
+          "games": 2987
+        },
+        "1": {
+          "entries": 0,
+          "completed": 0,
+          "completedPaid": 0,
+          "completedNet": 0,
+          "games": 0
+        },
+        "2": {
+          "entries": 0,
+          "completed": 0,
+          "completedPaid": 0,
+          "completedNet": 0,
+          "games": 0
+        },
+        "3": {
+          "entries": 0,
+          "completed": 0,
+          "completedPaid": 0,
+          "completedNet": 0,
+          "games": 0
+        },
+        "4": {
+          "entries": 0,
+          "completed": 0,
+          "completedPaid": 0,
+          "completedNet": 0,
+          "games": 0
+        },
+        "5": {
+          "entries": 0,
+          "completed": 0,
+          "completedPaid": 0,
+          "completedNet": 0,
+          "games": 0
+        }
+      },
+      "bonusMetrics": {
+        "normal": {
+          "completed": 16,
+          "nebulaWins": 7
+        },
+        "upper": {
+          "completed": 3,
+          "nebulaWins": 3
+        }
+      },
+      "atMetrics": {
+        "eligible": 2558,
+        "high": 417,
+        "zoneWins": 11,
+        "directWins": 1,
+        "directPoints": 50,
+        "promotions": 8,
+        "suica100": 0,
+        "suica300": 0
+      },
+      "seed": "upper-direct50-20261015|s5|103",
+      "setting": 5,
+      "initialMode": "C",
+      "cutoff": {
+        "games": 10000,
+        "totalBet": 30000,
+        "totalPaid": 30812,
+        "net": 812,
+        "peak": 3135,
+        "phase": "art"
+      },
+      "games": 10000,
+      "totalBet": 30000,
+      "totalPaid": 30812,
+      "rtp": 1.0270666666666666,
+      "net": 812,
+      "peak": 3135,
+      "maxDrawdown": 3523,
+      "maxNormalGames": 800,
+      "maxBonusGap": 1727,
+      "maxArtNet": 2879,
+      "freezes": 0,
+      "ceilings": 11,
+      "release": 2,
+      "bonusNet": 1.2535612535612535,
+      "counts": {
+        "normal": 5957,
+        "cz": 619,
+        "prep": 67,
+        "align": 19,
+        "bonus": 351,
+        "at": 2753,
+        "zone": 234,
+        "zero": 3,
+        "BIG": 19,
+        "REG": 0,
+        "czEntries": 35,
+        "strongEntries": 2,
+        "czWins": 8,
+        "artEntries": 12,
+        "zoneEntries": 45,
+        "gameCzEntries": 33,
+        "ceilingCzEntries": 0,
+        "rareCzEntries": 4,
+        "backgroundCzEntries": 0,
+        "highNormalG": 617,
+        "favoredNormalG": 2845
+      },
+      "zones": {
+        "kushuri_nito": 13,
+        "toto": 6,
+        "sora": 8,
+        "urapi": 3,
+        "sosuke": 8,
+        "giru": 5,
+        "ouma": 1,
+        "ura_ouma": 1
+      },
+      "normalRoles": {
+        "REPLAY": 2206,
+        "MISS": 3492,
+        "WEAK_SUICA": 153,
+        "WEAK_NOVA": 46,
+        "BELL": 57,
+        "STRONG_NOVA": 3
+      },
+      "normalPayout": {
+        "bet": 17871,
+        "paid": 7992,
+        "games": 5957
+      },
+      "endPhase": "art",
+      "firstComplete": null,
+      "unspentZoneStocks": 0,
+      "unspentAtQuota": 185
+    },
+    {
+      "lowestNet": -3384,
+      "maxMy": 10018,
+      "completeReason": null,
+      "checkpointStats": {
+        "version": 167,
+        "next": 7200,
+        "pending": 0,
+        "sorties": 0,
+        "earned": 2,
+        "started": 2,
+        "upperRetries": 1,
+        "discardedPt": 326,
+        "discardedZones": 0,
+        "discardedSets": 0,
+        "discardedBonusStocks": 0,
+        "newAt": 0,
+        "rewardZones": 2
+      },
+      "atPayoutBins": {
+        "0-499": 0,
+        "500-999": 4,
+        "1000-1999": 3,
+        "2000-2999": 1,
+        "3000-4999": 1,
+        "5000-9999": 2,
+        "10000+": 0
+      },
+      "actualAtZone": {
+        "normal": {
+          "games": 2897,
+          "wins": 33
+        },
+        "upper": {
+          "games": 402,
+          "wins": 4
+        }
+      },
+      "upper": {
+        "spins": 20,
+        "upperGames": 402,
+        "bySource": {
+          "initial": {
+            "started": 0,
+            "won": 0,
+            "failed": 0
+          },
+          "threshold": {
+            "started": 2,
+            "won": 1,
+            "failed": 1
+          },
+          "rare": {
+            "started": 1,
+            "won": 1,
+            "failed": 0
+          }
+        }
+      },
+      "rare": {
+        "eligibleRoles": {
+          "WEAK_NOVA": 78,
+          "WEAK_SUICA": 281,
+          "STRONG_NOVA": 1
+        },
+        "eligibleByPhase": {
+          "normal": {
+            "WEAK_NOVA": 48,
+            "WEAK_SUICA": 179,
+            "STRONG_NOVA": 1
+          },
+          "cz": {
+            "WEAK_SUICA": 21,
+            "WEAK_NOVA": 2
+          },
+          "at": {
+            "WEAK_SUICA": 80,
+            "WEAK_NOVA": 28
+          },
+          "prep": {
+            "WEAK_SUICA": 1
+          }
+        },
+        "triggersByRole": {},
+        "draws": 10000,
+        "triggered": 0,
+        "pending": 0,
+        "started": 0,
+        "completed": 0,
+        "newAt": 0,
+        "spins": 0,
+        "stocks": 0,
+        "guaranteedStocks": 0,
+        "byPhase": {},
+        "tiers": {},
+        "stockHist": {},
+        "zones": {}
+      },
+      "atLevelMetrics": {
+        "0": {
+          "entries": 11,
+          "completed": 11,
+          "completedPaid": 26351,
+          "completedNet": 15035,
+          "games": 3772
+        },
+        "1": {
+          "entries": 0,
+          "completed": 0,
+          "completedPaid": 0,
+          "completedNet": 0,
+          "games": 0
+        },
+        "2": {
+          "entries": 0,
+          "completed": 0,
+          "completedPaid": 0,
+          "completedNet": 0,
+          "games": 0
+        },
+        "3": {
+          "entries": 0,
+          "completed": 0,
+          "completedPaid": 0,
+          "completedNet": 0,
+          "games": 0
+        },
+        "4": {
+          "entries": 0,
+          "completed": 0,
+          "completedPaid": 0,
+          "completedNet": 0,
+          "games": 0
+        },
+        "5": {
+          "entries": 0,
+          "completed": 0,
+          "completedPaid": 0,
+          "completedNet": 0,
+          "games": 0
+        }
+      },
+      "bonusMetrics": {
+        "normal": {
+          "completed": 17,
+          "nebulaWins": 7
+        },
+        "upper": {
+          "completed": 2,
+          "nebulaWins": 2
+        }
+      },
+      "atMetrics": {
+        "eligible": 3305,
+        "high": 879,
+        "zoneWins": 36,
+        "directWins": 1,
+        "directPoints": 50,
+        "promotions": 12,
+        "suica100": 0,
+        "suica300": 0
+      },
+      "seed": "upper-direct50-20261015|s6|103",
+      "setting": 6,
+      "initialMode": "A",
+      "cutoff": {
+        "games": 10000,
+        "totalBet": 30000,
+        "totalPaid": 35779,
+        "net": 5779,
+        "peak": 6634,
+        "phase": "normal"
+      },
+      "games": 10000,
+      "totalBet": 30000,
+      "totalPaid": 35779,
+      "rtp": 1.1926333333333334,
+      "net": 5779,
+      "peak": 6634,
+      "maxDrawdown": 3381,
+      "maxNormalGames": 800,
+      "maxBonusGap": 1622,
+      "maxArtNet": 4634,
+      "freezes": 0,
+      "ceilings": 12,
+      "release": 2,
+      "bonusNet": 1.4290030211480362,
+      "counts": {
+        "normal": 5163,
+        "cz": 643,
+        "prep": 72,
+        "align": 19,
+        "bonus": 331,
+        "at": 3517,
+        "zone": 255,
+        "zero": 14,
+        "BIG": 19,
+        "REG": 0,
+        "czEntries": 39,
+        "strongEntries": 0,
+        "czWins": 7,
+        "artEntries": 11,
+        "zoneEntries": 57,
+        "gameCzEntries": 39,
+        "ceilingCzEntries": 0,
+        "rareCzEntries": 0,
+        "backgroundCzEntries": 0,
+        "highNormalG": 776,
+        "favoredNormalG": 2573
+      },
+      "zones": {
+        "kushuri_nito": 11,
+        "urapi": 10,
+        "toto": 7,
+        "sosuke": 11,
+        "ura_sora": 1,
+        "giru": 5,
+        "ouma": 9,
+        "sora": 2,
+        "ura_giru": 1
+      },
+      "normalRoles": {
+        "MISS": 3070,
+        "REPLAY": 1845,
+        "WEAK_NOVA": 48,
+        "WEAK_SUICA": 179,
+        "BELL": 20,
+        "STRONG_NOVA": 1
+      },
+      "normalPayout": {
+        "bet": 15489,
+        "paid": 6769,
+        "games": 5163
+      },
+      "endPhase": "normal",
+      "firstComplete": null,
+      "unspentZoneStocks": 0,
+      "unspentAtQuota": 0
+    }
+  ]
+}
