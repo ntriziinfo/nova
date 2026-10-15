@@ -8600,7 +8600,7 @@
     }
 
     if(autoPlay){
-      status.textContent = superSpeedPending ? `超ハイスピード予約：次のゲームから / ${NovaSuperSpeed.modes[superSpeedMode]}` : superSpeedActive ? `超ハイスピード中 / ${NovaSuperSpeed.modes[superSpeedMode]}` : superFullAuto ? "超AUTO継続中：AT高速消化 / AT終了後に超ハイスピードへ復帰" : "通常AUTO中：基本2.8秒/G（演出待ちあり）";
+      status.textContent = superSpeedPending ? `超ハイスピード予約：次のゲームから / ${NovaSuperSpeed.modes[superSpeedMode]}` : superSpeedActive ? `超ハイスピード中 / ${NovaSuperSpeed.modes[superSpeedMode]}` : superFullAuto ? "超AUTO継続中：AT高速消化 / AT終了後に超ハイスピードへ復帰" : "通常AUTO中：通常0.4秒/G・AT確定後1.6秒/G（演出待ちあり）";
       status.style.color = "var(--green)";
     }else{
       status.textContent = "オート停止中";
@@ -8639,11 +8639,12 @@
   }
 
   function autoScaledDelayMs(ms, minMs=50){
-    return NovaSuperSpeed.delay(Math.max(minMs, Math.round((Number(ms) || 0) / AUTO_SPEED_MULTIPLIER)),superSpeedActive);
+    return Math.max(minMs, Math.round((Number(ms) || 0) / AUTO_SPEED_MULTIPLIER))*NovaSuperSpeed.pacing[autoPacingProfile()].delayScale;
   }
 
   function autoPacingProfile(){
-    return !autoPlay || !superFullAuto || superSpeedPending ? 'normal' : superSpeedActive ? 'fast' : 'at';
+    if(autoPlay && superFullAuto && !superSpeedPending)return superSpeedActive ? 'fast' : 'at';
+    return autoPlay && NovaSuperSpeed.atConfirmed(normalState.flow,session,normalState) ? 'normalAt' : 'normal';
   }
 
   function autoPacingWaitMs(){
@@ -8651,10 +8652,7 @@
   }
 
   function autoDelayMs(){
-    const profile=NovaSuperSpeed.pacing[autoPacingProfile()];
-    if(profile.nextMs!==undefined)return profile.nextMs;
-    const baseMs = Math.max(100, (Number(settings.autoDelay) || 0.5) * 1000);
-    return autoScaledDelayMs(baseMs);
+    return NovaSuperSpeed.pacing[autoPacingProfile()].nextMs;
   }
 
   function autoPollDelayMs(){

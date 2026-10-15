@@ -62,7 +62,7 @@ test('manual and AUTO spins accept super speed immediately but keep current spin
   assert.equal(c.autoDelayMs(),delay,'in-flight game retains its previous speed');
   assert.match(button.title,/次のゲーム/);assert.equal(c.stopSuperSpeedIfNeeded(),false);assert.equal(c.superSpeedPending,true);
   c.isSpinning=false;c.stopSuperSpeedIfNeeded();
-  assert.equal(c.superSpeedPending,false);assert.equal(c.superSpeedActive,true);assert.equal(c.autoDelayMs(),delay/6);
+  assert.equal(c.superSpeedPending,false);assert.equal(c.superSpeedActive,true);assert.equal(c.autoDelayMs(),delay/2);
  }
 });
 
@@ -103,11 +103,12 @@ test('CZ and non-winning bonus stay fast; AT win returns to normal AUTO before a
  assert.equal(c.NovaSuperSpeed.atConfirmed({phase:'normal'},{},{bonusPending:true,prepSets:1}),true);
  assert.equal(c.NovaSuperSpeed.atConfirmed({phase:'normal'},{active:false,bonusArtSets:2}),false,'past bonus wins must not block normal play');
 });
-test('all AUTO spin, stop, result and inter-game delays use exactly one sixth, with no engine or RNG calls',()=>{
- const {c}=setup();const before=[c.autoDelayMs(),c.autoPollDelayMs(),...[0,1,2].map(i=>c.autoStopDelayMs(i)),c.autoScaledDelayMs(1000)];
- c.superSpeedActive=true;
+test('ordinary AUTO spin, stop and inter-game delays are twice paid normal timing without RNG calls',()=>{
+ const {c}=setup();c.autoPlay=true;vm.runInContext('Math.random=()=>{throw Error("timing consumed a draw");}',c);
+ const before=[c.autoDelayMs(),c.autoPollDelayMs(),...[0,1,2].map(i=>c.autoStopDelayMs(i)),c.autoScaledDelayMs(1000)];
+ c.superFullAuto=true;c.superSpeedActive=true;
  const after=[c.autoDelayMs(),c.autoPollDelayMs(),...[0,1,2].map(i=>c.autoStopDelayMs(i)),c.autoScaledDelayMs(1000)];
- before.forEach((v,i)=>assert.equal(after[i],v/6));
+ before.forEach((v,i)=>assert.equal(after[i],v/2));
 });
 
 test('every AT confirmation route schedules the next BET at paid AT speed without changing game state',()=>{
@@ -285,7 +286,7 @@ test('mode selection can change while running, but cannot start at an already re
 
 test('free AUTO, paid normal and paid AT use independent BET periods and paid pacing ignores the legacy delay slider',()=>{
  const {c}=setup();c.autoPlay=true;c.autoLastBetAt=1000;c.performance.now=()=>1200;
- assert.equal(c.autoPacingProfile(),'normal');assert.equal(c.autoPacingWaitMs(),2600);
+ assert.equal(c.autoPacingProfile(),'normal');assert.equal(c.autoPacingWaitMs(),200);
  c.setSuperSpeedDebugPermission(true);c.startSuperSpeed();
  assert.equal(c.autoPacingProfile(),'fast');assert.equal(c.autoPacingWaitMs(),0);
  c.settings.autoDelay=10;assert.equal(c.autoDelayMs(),500/12);
@@ -302,11 +303,11 @@ test('BET deadline gates retries and watchdogs, includes elapsed presentation ti
  for(const name of ['queueAutoStep','runAutoStep'])vm.runInContext(fn(name),c);
  const before=JSON.stringify([c.normalState,c.session]);
  vm.runInContext('Math.random=()=>{throw Error("pacing consumed a draw");}',c);
- c.runAutoStep();assert.equal(spins,0);assert.equal(timers.get(c.autoTimer).ms,2600);
- now=3799;c.runAutoStep();assert.equal(spins,0);
- now=3800;c.runAutoStep();assert.equal(spins,1);
+ c.runAutoStep();assert.equal(spins,0);assert.equal(timers.get(c.autoTimer).ms,200);
+ now=1399;c.runAutoStep();assert.equal(spins,0);
+ now=1400;c.runAutoStep();assert.equal(spins,1);
  c.isSpinning=false;now=60000;c.runAutoStep();assert.equal(spins,2,'one draw after a long browser stall');
- c.isSpinning=false;c.runAutoStep();assert.equal(spins,2);assert.equal(timers.get(c.autoTimer).ms,2800);
+ c.isSpinning=false;c.runAutoStep();assert.equal(spins,2);assert.equal(timers.get(c.autoTimer).ms,400);
  assert.equal(JSON.stringify([c.normalState,c.session]),before);
 });
 
@@ -326,8 +327,26 @@ test('post-stop pacing uses the BET snapshot and does not modify aim, sortie or 
  const {c}=setup();const snapshot='at';
  c.autoPlay=true;c.superFullAuto=true;c.superSpeedActive=true;
  assert.equal(c.NovaSuperSpeed.resultDelay(1000,snapshot),150,'later mode changes cannot retime an AT spin');
- assert.equal(c.NovaSuperSpeed.resultDelay(1000,'normal'),500);
+ assert.equal(c.NovaSuperSpeed.resultDelay(1000,'normal'),1000/6);
+ assert.equal(c.NovaSuperSpeed.resultDelay(1000,'normalAt'),300);
  assert.equal(c.NovaSuperSpeed.resultDelay(1000,'fast'),1000/12);
  assert.equal(c.NovaSuperSpeed.remainingWait(null,0,'at'),0,'fresh page has no persisted monotonic deadline');
  assert.match(source,/resultDelay\(keyboardResultWaitMs,currentSpin.autoPacingAtStart\)/);
+});
+
+test('free AUTO follows all AT confirmation routes and returns to ordinary timing without paid permission',()=>{
+ for(const route of ['art','bonus','premium','prep']){
+  const {c}=setup();c.autoPlay=true;c.autoLastBetAt=1000;c.performance.now=()=>1200;
+  if(route==='art')c.normalState.flow={phase:'art'};
+  if(route==='bonus')c.session={active:true,bonusArtSets:1};
+  if(route==='premium')Object.assign(c.normalState,{bonusPending:true,premiumBonus:true});
+  if(route==='prep')Object.assign(c.normalState,{bonusPending:true,prepSets:1});
+  const before=JSON.stringify([c.normalState,c.session]);
+  vm.runInContext('Math.random=()=>{throw Error("timing consumed a draw");}',c);
+  assert.equal(c.autoPacingProfile(),'normalAt');assert.equal(c.autoPacingWaitMs(),1400);assert.equal(c.autoDelayMs(),200);
+  assert.equal(c.hasSuperSpeedPermission(),false);assert.equal(c.superSpeedActive,false);
+  assert.equal(JSON.stringify([c.normalState,c.session]),before);
+  c.normalState={flow:{phase:'normal'}};c.session={active:false};
+  assert.equal(c.autoPacingProfile(),'normal');assert.equal(c.autoPacingWaitMs(),200);
+ }
 });

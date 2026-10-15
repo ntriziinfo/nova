@@ -3,9 +3,10 @@ globalThis.NovaSuperSpeed=Object.freeze({
   multiplier:6,
   // BET-to-BET minimums. Audio and presentation locks can extend a game.
   pacing:Object.freeze({
-    normal:Object.freeze({periodMs:2800,resultMs:500}),
-    fast:Object.freeze({periodMs:200,resultMs:1000/12,nextMs:500/12}),
-    at:Object.freeze({periodMs:800,resultMs:150,nextMs:100})
+    normal:Object.freeze({periodMs:400,resultMs:1000/6,nextMs:500/6,delayScale:1/3}),
+    normalAt:Object.freeze({periodMs:1600,resultMs:300,nextMs:200,delayScale:2}),
+    fast:Object.freeze({periodMs:200,resultMs:1000/12,nextMs:500/12,delayScale:1/6}),
+    at:Object.freeze({periodMs:800,resultMs:150,nextMs:100,delayScale:1})
   }),
   remainingWait(lastBetAt,now,profile='normal'){
     if(lastBetAt===null||!Number.isFinite(lastBetAt))return 0;
@@ -13,7 +14,7 @@ globalThis.NovaSuperSpeed=Object.freeze({
   },
   resultDelay(ms,profile='normal'){
     const scaled=Math.max(50,Math.round((Number(ms)||0)/2));
-    return profile==='fast'?scaled/6:profile==='at'?Math.min(scaled,this.pacing.at.resultMs):scaled;
+    return profile==='fast'?scaled/6:profile==='normal'?scaled/3:Math.min(scaled,(this.pacing[profile]||this.pacing.normal).resultMs);
   },
   modes:Object.freeze({cz:'CZまで',bonus:'ボーナス当選まで',at:'AT初当たりまで',nonstop:'ノンストップ'}),
   reached(mode,flow,session={},normal={}){

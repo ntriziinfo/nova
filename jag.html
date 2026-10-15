@@ -47,7 +47,7 @@
 <script src="nova-audio.js?v=20261012-normalized"></script>
 <script src="nova-beat-lamps.js?v=20260930-ios-audio-172"></script>
 <script src="nova-clock.js?v=20260917-background-129"></script>
-<script src="nova-super-speed.js?v=20261015-auto-pacing"></script>
+<script src="nova-super-speed.js?v=20261015-auto-half"></script>
 <script src="nova-super-speed-menu.js?v=20261011-super-speed-menu"></script>
 <script src="nova-reel-motion.js?v=20260917-background-129"></script>
 <link rel="stylesheet" href="nova-results.css?v=20261015-mode-history">
@@ -662,8 +662,9 @@
           </div>
         </div>
         <div class="field">
-          <label>オート間隔（秒 / AUTOは2倍速）</label>
-          <input id="autoDelayInput" type="number" min="0.1" max="10" step="0.1" value="0.5" />
+          <label>通常AUTO：通常0.4秒/G・AT確定後1.6秒/G</label>
+          <div class="help">超ハイスピードの約1/2の速度。音声・確定演出の終了待ちあり。</div>
+          <input id="autoDelayInput" type="hidden" value="0.5" />
         </div>
         <div class="row">
           <button class="subBtn" id="autoStartBtn">オート開始</button>
@@ -844,7 +845,7 @@
 <script src="nova-history.js?v=20261001-history-performance"></script>
 <script src="nova-role-counter.js?v=20261014-role-counter"></script>
 <script src="nova-data-counter.js?v=20261015-mode-history"></script>
-<script src="nova-game.js?v=20261015-mode-history"></script>
+<script src="nova-game.js?v=20261015-auto-half"></script>
 <button type="button" id="novaSymbolPreviewOpen">ノヴァ目を確認</button>
 <dialog id="novaSymbolPreview"><h2>ノヴァ目</h2><label>出目<select id="novaPatternSelect"><option value="WEAK_NOVA">弱ノヴァ目：左3連</option><option value="STRONG_MIDDLE">強ノヴァ目：左・中3連</option><option value="STRONG_RIGHT">強ノヴァ目：左・右3連</option><option value="SUPER_NOVA" selected>スーパーノヴァ目：全リール3連</option></select></label><p id="novaPatternDescription"></p><div id="novaSymbolPreviewGrid"></div><p>出目の確認用です。通常時のスーパーはBIG・フリーズ各50%。ボーナス中は対象外。弱・強と自然出現率は未設定。</p><button type="button" id="novaSymbolPreviewClose">閉じる</button></dialog>
 </body>
