@@ -1,12 +1,25 @@
 /* Presentation speed only: never resolves a role, charges a BET or advances a flow. */
 globalThis.NovaSuperSpeed=Object.freeze({
   multiplier:6,
+  // Average elapsed time per counted game, including presentation holds.
+  targetPeriod(profile='normal'){return ['fast','at'].includes(profile)?720:1440;},
+  budgetWait(budget,now,profile='normal'){
+    return budget?.periodMs===this.targetPeriod(profile)?Math.max(0,budget.dueAt-now):0;
+  },
+  recordBet(budget,now,profile='normal'){
+    const periodMs=this.targetPeriod(profile);
+    // Repay consecutive presentation holds within five minutes of carry.
+    // A minute without a counted BET starts a fresh pace after a pause/stall.
+    const continuous=budget?.periodMs===periodMs&&now-budget.lastAt<=60000;
+    const previous=continuous?Math.max(now-300000,budget.dueAt):now;
+    return {periodMs,dueAt:previous+periodMs,lastAt:now};
+  },
   // BET-to-BET minimums. Audio and presentation locks can extend a game.
   pacing:Object.freeze({
     normal:Object.freeze({periodMs:400,resultMs:1000/6,nextMs:500/6,delayScale:1/3}),
-    normalAt:Object.freeze({periodMs:1600,resultMs:300,nextMs:200,delayScale:2}),
+    normalAt:Object.freeze({periodMs:1200,resultMs:225,nextMs:150,delayScale:1.5}),
     fast:Object.freeze({periodMs:200,resultMs:1000/12,nextMs:500/12,delayScale:1/6}),
-    at:Object.freeze({periodMs:800,resultMs:150,nextMs:100,delayScale:1})
+    at:Object.freeze({periodMs:600,resultMs:112.5,nextMs:75,delayScale:.75})
   }),
   remainingWait(lastBetAt,now,profile='normal'){
     if(lastBetAt===null||!Number.isFinite(lastBetAt))return 0;

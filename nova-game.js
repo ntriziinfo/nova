@@ -601,6 +601,7 @@
   let superSpeedPermissionTimer = null;
   let superSpeedNextBetAt = 0;
   let autoLastBetAt = null; // Monotonic, runtime-only; never persisted or used by a lottery.
+  let autoPacingBudget = null; // AUTO-only elapsed-time target; cleared on STOP/reset.
   let speedToBonusActive = false;
   let speedToBonusTimer = null;
   let speedToBonusCount = 0;
@@ -2984,6 +2985,7 @@
     jagChainCount=chainCountStep(jagChainCount,!!(session.active||jagChainBonusHandoff||normalState.bonusPending||normalState.flow?.phase==='art'),Number(stats.totalPaid)||0,Number(stats.totalFee)||0).state;
     if(!session.active && normalState.flow?.phase==='art' && normalState.flow.zero)return;
     autoLastBetAt=performance.now();
+    autoPacingBudget=autoPlay?NovaSuperSpeed.recordBet(autoPacingBudget,autoLastBetAt,autoPacingProfile()):null;
     // Only a pre-update save can still own a free-BET entitlement.
     if(A_TYPE_MODE && normalState.replayFree){normalState.replayFree=false;return;}
     stats.totalFee = (Number(stats.totalFee) || 0) + SPIN_COST;
@@ -6004,7 +6006,7 @@
     stopDebugFastSpin("初期化のため高速停止");
     stopSpeedToBonus("初期化のためSPEED停止");
     if(!confirm("統計と現在の状態を初期化しますか？")) return;
-    autoLastBetAt=null;
+    autoLastBetAt=null;autoPacingBudget=null;
     clearCzIntroVoiceHold(true);
     NovaAim.reset();
     clearComebackIntroVoiceHold();
@@ -6076,7 +6078,7 @@
   }
 
   function resetRuntimeForMorning(reason="朝一リセット"){
-    autoLastBetAt=null;
+    autoLastBetAt=null;autoPacingBudget=null;
     clearCzIntroVoiceHold(true);
     NovaAim.reset();
     clearComebackIntroVoiceHold();
@@ -7205,6 +7207,20 @@
     spinWaitTimer=setTimeout(()=>{spinWaitTimer=null;if(currentSpin!==spin)return;spinCanStop=true;syncCabinetControlState();},spinWaitMsForMode(false));
     persistState();updateDisplay();syncCabinetControlState();scheduleNextAuto();return true;
   }
+  function showFixedSosukeResultIfReady(){
+    const pending=normalState.ladderAwardPresentation;
+    if(!pending?.flow?.fixed50Zone||debugFastSpinActive||isSpinning)return false;
+    // The fixed zone has already credited its 50pt. Reveal it without borrowing
+    // the next AT game's BET/role; that game starts after the result closes.
+    if(!pending.started){
+      pending.started=true;pending.revealUntil=Date.now()+1000;
+      NovaLadder.sync(pending.flow);NovaLadder.award(pending.card.pt,true);
+      playLockedBonusConfirmSound('assets/media/nova/ladder-final-award-under1000.wav',sfxOutputVolume());
+    }else if(Date.now()>=Number(pending.revealUntil||0)){
+      delete normalState.ladderAwardPresentation;displayNovaResult(pending.card);
+    }
+    persistState();updateDisplay();scheduleNextAuto();return true;
+  }
   function finishStockEntry(){
     const spin=currentSpin;if(!spin?.resolved?.stockEntry)return;
     if(spinWaitTimer){clearTimeout(spinWaitTimer);spinWaitTimer=null;}
@@ -7265,6 +7281,7 @@
     if(isCzIntroVoiceHolding())return;
     // A queued ending (including after a zone result/reload) consumes no BET or RNG.
     if(showSortieResultIfReady()){updateDisplay();scheduleNextAuto();return;}
+    if(normalState.ladderAwardPresentation?.flow?.fixed50Zone&&showFixedSosukeResultIfReady())return;
     if(showCheckpointResultIfReady(true)){persistState();updateDisplay();scheduleNextAuto();return;}
     if(autoPlay){
       const wait=autoPacingWaitMs();
@@ -8600,7 +8617,7 @@
     }
 
     if(autoPlay){
-      status.textContent = superSpeedPending ? `超ハイスピード予約：次のゲームから / ${NovaSuperSpeed.modes[superSpeedMode]}` : superSpeedActive ? `超ハイスピード中 / ${NovaSuperSpeed.modes[superSpeedMode]}` : superFullAuto ? "超AUTO継続中：AT高速消化 / AT終了後に超ハイスピードへ復帰" : "通常AUTO中：通常0.4秒/G・AT確定後1.6秒/G（演出待ちあり）";
+      status.textContent = superSpeedPending ? `超ハイスピード予約：次のゲームから / ${NovaSuperSpeed.modes[superSpeedMode]}` : superSpeedActive ? `超ハイスピード中：8時間で約4万G / ${NovaSuperSpeed.modes[superSpeedMode]}` : superFullAuto ? "超AUTO継続中：8時間で約4万G / AT終了後に超ハイスピードへ復帰" : "通常AUTO中：8時間で約2万G（演出待ち込みの目安）";
       status.style.color = "var(--green)";
     }else{
       status.textContent = "オート停止中";
@@ -8631,6 +8648,7 @@
     stopSpeedToBonus("AUTO開始のためSPEED停止");
     readSettings();
     autoPlay = true;
+    autoPacingBudget=null;
     NovaClock.setBackgroundEnabled(true);
     startAutoWatchdog();
     updateAutoUi();
@@ -8648,7 +8666,8 @@
   }
 
   function autoPacingWaitMs(){
-    return NovaSuperSpeed.remainingWait(autoLastBetAt,performance.now(),autoPacingProfile());
+    const now=performance.now(),profile=autoPacingProfile();
+    return Math.max(NovaSuperSpeed.remainingWait(autoLastBetAt,now,profile),NovaSuperSpeed.budgetWait(autoPacingBudget,now,profile));
   }
 
   function autoDelayMs(){
@@ -8704,6 +8723,7 @@
   function stopAutoPlay(reason){
     if(!autoPlay && !autoTimer && !superFullAuto) return;
     autoPlay = false;
+    autoPacingBudget=null;
     superFullAuto = false;
     setSuperSpeedActive(false);
     superSpeedPending = false;

@@ -8,7 +8,7 @@ const fn=name=>source.match(new RegExp('  function '+name+'\\([^]*?\\n  }'))[0];
 const noop=()=>{};
 function harness(){
  const cards=[];
- const c=vm.createContext({performance:{now:()=>0},A_TYPE_MODE:true,SPIN_COST:3,debugFastSpinActive:false,
+ const c=vm.createContext({autoPlay:false,performance:{now:()=>0},A_TYPE_MODE:true,SPIN_COST:3,debugFastSpinActive:false,
   settings:{setting:1},session:{active:false},normalState:{flow:{phase:'normal'},bonusPending:true},
   stats:{totalPaid:100,totalFee:1000},jagChainCount:null,jagChainBonusHandoff:false,
   jagLastGamePayout:0,RESULT:{MISS:{},BELL:{},REPLAY:{}},
