@@ -10,7 +10,7 @@ test('legacy modes migrate while valid heaven and saved CZ reservations survive'
  for(const mode of ['通常A','通常B','通常C','チャンス','天国準備','天国','天国A','天国B','特殊']){
   const state=n.normalize({mode,games:321,impurity:75,morningCeiling:true,level:'high',highLeft:8,prelude:{kind:'fake',left:4}});
   assert.equal(state.mode,mode==='天国'?'天国':'A');assert.equal(state.games,321);assert.equal(state.impurity,75);assert.equal(state.highLeft,8);
-  assert.equal(state.morningCeiling,false);assert.equal(state.prelude,null);assert.equal(n.ceiling(state),mode==='天国'?200:800);
+  assert.equal(state.morningCeiling,true);assert.equal(state.prelude,null);assert.equal(n.ceiling(state),mode==='天国'?200:600);
   assert.deepEqual(n.normalize(JSON.parse(JSON.stringify(state))),state);
  }
  const saved=n.normalize({mode:'通常B',games:300,modeChecked:3,fiftyChecked:true,prelude:{kind:'cz',left:1}});
@@ -19,8 +19,8 @@ test('legacy modes migrate while valid heaven and saved CZ reservations survive'
 });
 
 test('AT exit redraws heaven without changing impurity, and bonus cannot demote it',()=>{
- assert.equal(n.reset(()=>.5,6).mode,'A');assert.equal(n.ceiling(n.reset(()=>.5,6)),800);
- assert.equal(n.reset(()=>.6,6).mode,'B');assert.equal(n.ceiling(n.reset(()=>.6,6)),700);
+ assert.equal(n.reset(()=>.5,6).mode,'A');assert.equal(n.ceiling(n.reset(()=>.5,6)),600);
+ assert.equal(n.reset(()=>.6,6).mode,'B');assert.equal(n.ceiling(n.reset(()=>.6,6)),600);
  for(const dryAtEnd of [false,true]){
   const ended=n.afterArt({mode:'天国',games:100,impurity:20,level:'high',highLeft:10},{phase:'art'},{phase:'normal',dryAtEnd},{},()=>0);
   assert.equal(ended.games,0);assert.equal(ended.mode,'A');assert.equal(ended.impurity,dryAtEnd?22:20);assert.equal(ended.level,'low');
