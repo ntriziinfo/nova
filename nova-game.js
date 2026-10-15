@@ -7,7 +7,7 @@
   const bootMachineId = bootParams.get("machine") || "standalone";
   const bootPlaySessionId = String(bootParams.get("playSessionId") || "");
   // Display baselines keep cabinet totals separate from the current player settlement.
-  const machineDisplayBase = readMachineDisplayBase();
+  let machineDisplayBase = readMachineDisplayBase();
   const MACHINE_STORAGE_KEY = "nova_slot_state_v1_" + bootMachineId;
   const STORAGE_KEY = bootPlaySessionId ? `${MACHINE_STORAGE_KEY}_session_${bootPlaySessionId}` : MACHINE_STORAGE_KEY;
   const STORAGE_RESUME_KEY = STORAGE_KEY + "_resume";
@@ -5158,7 +5158,7 @@
     NovaAim.hide();
     NovaInitialDuo.clear();
     normalState.resultCard=card;NovaResults.show(card);
-    if(card.kind==='bonus')persistState(); // Also save a character revealed after a deferred win animation.
+    if(card.kind==='bonus'||card.color==='mode')persistState(); // Also save a character revealed after a deferred win animation.
     $('overlay')?.classList.remove('show');
     pauseNormalBgm();
     // Keep AUTO selected; its audio gate waits for the complete eyecatch before BET.
@@ -5227,13 +5227,21 @@
         }else displayNovaResult(zoneCard);
       }
       if(completedLadderPresentation){delete normalState.ladderAwardPresentation;displayNovaResult(completedLadderPresentation.card);}
+      let atResultCard=null;
       if(resolved.flowBefore?.phase==='art'&&normalState.flow.phase==='normal'&&!resolved.bonusHit&&!resolved.aTypeBonusReady){
         const acquired=chainCountStep(jagChainCount,true,Number(stats.totalPaid)||0,Number(stats.totalFee)||0).count;
-        displayNovaResult({kind:'at',...NovaResults.pick('at','',settings.setting),pt:String(acquired),accounting:'net'});
+        // Keep the historical result draw so a visual change cannot shift the gameplay RNG stream.
+        NovaResults.pick('at','',settings.setting);
+        atResultCard={kind:'at',pt:String(acquired),accounting:'net'};
         jagChainCount=null;
         delete normalState.resultAtStartPaid;
       }
       resetNormalCountersAfterArt(resolved.flowBefore,normalState.flow);
+      if(atResultCard){
+        // Draw the mode first, preserving the existing game RNG order. The portrait uses separate visual randomness.
+        const hint=NovaResults.bonus(atResultCard.pt,normalState.flow,normalState.internal?.mode);
+        displayNovaResult({...atResultCard,character:hint.character,color:'mode',next:'通常'});
+      }
       NovaDataCounter.zone(stats,normalState.flow);
       normalState.risingRemain = 0;
       normalState.mode = normalState.flow.phase;
@@ -10176,7 +10184,8 @@
       storeResumeState=await NovaStoreResume.connect({
         enabled:bootParams.get('resumeFromStore')==='1'&&!!bootPlaySessionId&&parent!==window,
         origin:ADMIN_SERVER ? new URL(ADMIN_SERVER).origin : location.origin,
-        sessionId:bootPlaySessionId,prepare:prepareStoreEndSnapshot,ready:()=>storeBootReady
+        sessionId:bootPlaySessionId,prepare:prepareStoreEndSnapshot,ready:()=>storeBootReady,
+        display:base=>{if(base&&typeof base==='object'&&!Array.isArray(base))machineDisplayBase=base;}
       });
     }catch(error){storageRestoreBlocked=true;showPlayBlocked('restore');return;}
     bootGame();

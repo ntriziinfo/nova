@@ -17,7 +17,7 @@ test('0G AT and zone wins occupy one visual step without changing recorded games
 });
 function harness(){const c=vm.createContext({});vm.runInContext(js+';Math.random=()=>{throw Error("display used game RNG")}',c);return c.NovaDataCounter;}
 
-test('bounded history distinguishes BIG, AT first entry and every new special zone without counting continuations',()=>{
+test('full history distinguishes BIG, AT first entry and every new special zone without counting continuations',()=>{
  const d=harness(),stats={totalSpins:900,totalFee:120,totalPaid:800};
  for(let i=0;i<232;i++){d.spin(stats,{phase:'normal'});stats.totalSpins++;}
  d.hit(stats,'BIG');d.hit(stats,'AT');
@@ -29,7 +29,7 @@ test('bounded history distinguishes BIG, AT first entry and every new special zo
  assert.equal(stats.dataHits[0].games,232);assert.equal(stats.dataNormalGames,232);assert.equal(stats.dataAtGames,1);
  const restored=JSON.parse(JSON.stringify(stats));d.zone(restored,{phase:'art',zone:'sora'});assert.equal(restored.dataHitSeq,4);
  for(let i=0;i<10000;i++){stats.totalSpins++;d.hit(stats,'BIG');}
- assert.equal(stats.dataHits.length,20);assert.equal(stats.totalFee,120);assert.equal(stats.totalPaid,800);
+ assert.equal(stats.dataHits.length,10004);assert.equal(stats.dataHits[0].games,232);assert.equal(stats.totalFee,120);assert.equal(stats.totalPaid,800);
 });
 
 test('machine display merges session offsets and retains AT gaps and graphs across players',()=>{

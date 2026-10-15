@@ -7,12 +7,12 @@ test('BB result preserves its awarded points and destination through reload with
  for(const phase of ['normal','art']){
   const flow=Object.freeze({phase,remaining:'500',sets:'2',queuedZones:Object.freeze(['sora'])}),before=JSON.stringify(flow);
   const saved=JSON.parse(JSON.stringify(c.NovaResults.bonus('150',flow)));
-  assert.deepEqual(saved,{kind:'bonus',character:'kushuri',color:'blue',pt:'150',next:phase==='art'?'AT':'通常'});
+  assert.deepEqual(saved,{kind:'bonus',character:'kushuri',color:phase==='normal'?'mode':'blue',pt:'150',next:phase==='art'?'AT':'通常'});
   assert.equal(JSON.stringify(flow),before);
   const {c:view,fields}=presenter();view.show(saved);
   assert.equal(fields.span.textContent,'BB獲得');assert.equal(fields.output.textContent,'150pt');
   assert.equal(fields['.novaResultNext'].hidden,false);
-  assert.equal(fields['.novaResultNext'].textContent,phase==='art'?'次のBETでATへ':'次のBETで通常へ');
+  assert.equal(fields['.novaResultNext'].textContent,phase==='art'?'次のBETでATへ':'次回モード示唆 / 次のBETで通常へ');
   view.hide();view.show(saved);assert.equal(fields.output.textContent,'150pt');
  }
 });
@@ -29,7 +29,7 @@ test('BB character hints have exact unconditional rates for each post-bonus mode
   const flow=Object.freeze({phase:'normal'});
   for(let i=0;i<10000;i++){
    const card=r.bonus('150',flow,mode,()=>{draws++;return (i+.5)/10000;});
-   counts[card.character]++;assert.equal(card.kind,'bonus');assert.equal(card.pt,'150');assert.equal(card.color,'blue');
+   counts[card.character]++;assert.equal(card.kind,'bonus');assert.equal(card.pt,'150');assert.equal(card.color,'mode');
   }
   assert.deepEqual(counts,expected,mode);assert.equal(draws,10000);
   assert.equal(r.bonusHintRates(mode).reduce((n,h)=>n+h.percent,0),100);
@@ -62,7 +62,7 @@ test('BB mode image uses separate crypto randomness and keeps its saved image wi
  const saved=JSON.parse(JSON.stringify(card));view.hide();view.show(saved);
  assert.equal(images[0].src,'assets/illustrations/lamps-20260916/sora1.png');assert.equal(draws,1);
  assert.equal(fields.span.textContent,'BB獲得');assert.equal(fields.output.textContent,'150pt');
- assert.equal(fields['.novaResultNext'].textContent,'次のBETで通常へ');
+ assert.equal(fields['.novaResultNext'].textContent,'次回モード示唆 / 次のBETで通常へ');
  assert(!JSON.stringify(saved).includes('天国'),'result must not disclose the exact internal mode');
 });
 
@@ -140,7 +140,7 @@ test('purple, gold and rainbow hint thresholds include their lower boundary and 
 test('zone result includes final increment and preserves large point values',()=>{const before={zone:'ouma',award:'100'},after={zone:'',award:'300'};assert.equal(r.transition(before,after,1,()=>0).pt,'300');assert.equal(r.transition(before,{zone:'ouma',award:'300'},1),null);assert.equal(r.transition(before,{zone:'',award:'9007199254740999'},1).pt,'9007199254740999');});
 function presenter(){
  const source=fs.readFileSync('nova-results.js','utf8'),images=[],shown=[],fields={span:{},output:{},'.novaResultTotal':{},'.novaResultNext':{}};
- const c=vm.createContext({root:{hidden:true,dataset:{}},art:{querySelector:()=>({replaceWith:img=>shown.push(img.src)})},num:{setAttribute(){}},fallback:{querySelector:tag=>fields[tag]},names:{sora:'空',ouma:'逢魔'},init(){},apply(){},Image:class{constructor(){images.push(this);this.naturalWidth=100;}decode(){return Promise.resolve();}}});
+ const c=vm.createContext({card:{},root:{hidden:true,dataset:{}},art:{querySelector:()=>({replaceWith:img=>shown.push(img.src)})},num:{setAttribute(){}},fallback:{querySelector:tag=>fields[tag]},names:{sora:'空',ouma:'逢魔'},init(){},apply(){},Image:class{constructor(){images.push(this);this.naturalWidth=100;}decode(){return Promise.resolve();}}});
  vm.runInContext(source.match(/ const settingHints=\[[^]*?\n \];/)[0]+source.match(/ const characterImages=.*;/)[0]+'const images=new Map();let imageRequest=0,active=null;'+source.slice(source.indexOf(' function loadImage('),source.indexOf(' function apply('))+source.slice(source.indexOf(' function show(value)'),source.indexOf(" if(typeof document")),c);
  const flush=()=>new Promise(resolve=>setImmediate(resolve));
  return {c,images,shown,fields,flush};

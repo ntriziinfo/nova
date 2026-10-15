@@ -1,6 +1,6 @@
 /* Authenticated entry-page handoff. No credentials or state in the URL. */
 globalThis.NovaStoreResume=(()=>{
-  function connect({enabled,origin,sessionId,prepare,ready}){
+  function connect({enabled,origin,sessionId,prepare,ready,display}){
     if(!enabled)return Promise.resolve(null);
     return new Promise((resolve,reject)=>{
       let received=false;
@@ -11,7 +11,8 @@ globalThis.NovaStoreResume=(()=>{
         const msg=event.data;
         if(event.source!==parent||event.origin!==origin||msg?.sessionId!==sessionId)return;
         if(msg.type==='nova-store-bootstrap'&&!received){
-          received=true;clearInterval(interval);clearTimeout(timeout);resolve(msg.resumeState||null);
+          received=true;clearInterval(interval);clearTimeout(timeout);
+          display?.(msg.machineDisplayBaseline);resolve(msg.resumeState||null);
         }
         if(msg.type==='nova-store-prepare-end'&&received&&ready()){
           const snapshot=prepare();

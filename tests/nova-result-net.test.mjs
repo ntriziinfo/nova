@@ -63,3 +63,17 @@ test('zero-game chains and legacy free replays subtract only fees actually charg
  c.chargeSpinCost();assert.equal(c.stats.totalFee,1003);
  assert.equal(c.chainCountStep(c.jagChainCount,true,108,1003).count,5);
 });
+
+test('AT returning to normal hints the newly selected mode, using no extra game draws and keeping the exact payout',()=>{
+ const {c,cards}=harness();
+ c.recordAtFirstEntry=()=>{};vm.runInContext(fn('resetNormalCountersAfterArt'),c);
+ c.normalState.internal=c.NovaNormal.normalize({mode:'天国ループ',games:200});
+ let draws=0,visualDraws=0;c.random=()=>{draws++;return 0;};vm.runInContext('Math.random=random',c);
+ c.crypto={getRandomValues(a){visualDraws++;a[0]=Math.floor(.99*4294967296);return a;}};
+ const before={...c.NovaArt.enter({},()=>.5),remaining:'0',comebackLeft:1};c.normalState.flow=before;
+ c.applyNormalResult('MISS',{reward:0,flowBefore:before,flowAfter:{phase:'normal'},comebackEvent:'failure'});
+ assert.equal(c.normalState.internal.mode,'A');assert.equal(cards[0].character,'urapi','mode A can hint C but never confirms B/C/heaven');
+ assert.equal(cards[0].color,'mode');assert.equal(cards[0].kind,'at');assert.equal(cards[0].next,'通常');
+ assert.equal(c.stats.totalPaid,100);assert.equal(c.stats.totalFee,1000);assert.equal(draws,2,'one historical result draw and one existing next-mode draw');assert.equal(visualDraws,1);
+ const saved=JSON.parse(JSON.stringify(cards[0]));assert.equal(saved.character,cards[0].character);
+});

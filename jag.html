@@ -33,7 +33,7 @@
 <link rel="preload" as="image" href="assets/controls/start_lever_ball.png">
 <link rel="preload" as="image" href="assets/controls/stop_button_red_cut.png">
 <link rel="stylesheet" href="nova-game.css?v=20261013-speed-audio-credit">
-<link rel="stylesheet" href="nova-data-counter.css?v=20261014-compact-data">
+<link rel="stylesheet" href="nova-data-counter.css?v=20261015-mode-history">
 <link rel="stylesheet" href="nova-cabinet.css?v=20261013-audio-wait">
 <link rel="stylesheet" href="nova-remaining-counters.css?v=20261013-checkpoint-cue">
 <script src="nova-remaining-counters.js?v=20261013-checkpoint-cue"></script>
@@ -50,8 +50,8 @@
 <script src="nova-super-speed.js?v=20261015-auto-pacing"></script>
 <script src="nova-super-speed-menu.js?v=20261011-super-speed-menu"></script>
 <script src="nova-reel-motion.js?v=20260917-background-129"></script>
-<link rel="stylesheet" href="nova-results.css?v=20261012-sortie-awards">
-<script src="nova-results.js?v=20261015-bb-defaults"></script>
+<link rel="stylesheet" href="nova-results.css?v=20261015-mode-history">
+<script src="nova-results.js?v=20261015-mode-history"></script>
 <link rel="stylesheet" href="nova-ladder-presentation.css?v=20260917-initial-131">
 <script src="nova-ladder-presentation.js?v=20261013-mobile-loading"></script>
 <link rel="stylesheet" href="nova-bell-navi.css?v=20260930-role-merge">
@@ -306,9 +306,10 @@
               <p class="novaCounterNote" data-counter="coverage"></p>
               <div id="novaHitHistory">
                 <div class="novaHitLegend"><span class="big">■ BIG</span><span class="art">■ AT・特化</span><span>1目盛り100G</span></div>
-                <div class="novaHitChart"><div class="novaHitScale"><span>1000</span><span>500</span><span>0</span></div><div class="novaHitBars" aria-label="当たり履歴"></div></div>
-                <p class="novaCounterNote" data-counter="detail">左が最新 / 直近20件 / 列を押すとG数・ゾーン名を表示</p>
-                <details class="novaCounterNote"><summary>集計について</summary>現在回転数は直前の当たりから。AT終了後は0Gから通常回転数を数え、AT中G数を合算しません。1,000G超は＋表示。AT回数は初当たりのみ。<br>通常G数はCZ・準備を含み、AT中G数は特化・引き戻しを含みます。BIG消化中・0G連はG数に含めません。区分別G数・履歴は更新後から記録します。</details>
+                <div class="novaHitChart"><div class="novaHitScale"><span>800</span><span>400</span><span>0</span></div><div class="novaHitBars" aria-label="当たり履歴"></div></div>
+                <nav class="novaHitPager" aria-label="当たり履歴のページ"><button type="button" data-hit-page="latest">最新</button><button type="button" data-hit-page="newer">新しい</button><span data-counter="page"></span><button type="button" data-hit-page="older">古い</button><button type="button" data-hit-page="oldest">最初</button></nav>
+                <p class="novaCounterNote" data-counter="detail">左が新しい履歴 / 列を押すとG数・ゾーン名を表示</p>
+                <details class="novaCounterNote"><summary>集計について</summary>現在回転数は直前の当たりから。AT終了後は0Gから通常回転数を数え、AT中G数を合算しません。800G超は＋表示。AT回数は初当たりのみ。<br>通常G数はCZ・準備を含み、AT中G数は特化・引き戻しを含みます。BIG消化中・0G連はG数に含めません。管理リセットまでの記録済み履歴を表示します。過去に削除された履歴は復元できません。</details>
               </div>
             </section>
           </div>
@@ -837,13 +838,13 @@
 <audio id="barBgm" loop preload="auto"></audio>
 <audio id="voiceSound" preload="auto"></audio>
 
-<script src="nova-store-resume.js?v=20261014-handoff"></script>
+<script src="nova-store-resume.js?v=20261015-mode-history"></script>
 <script src="nova-spin-resume.js?v=20260929-spin-resume"></script>
 <script src="nova-play-access.js?v=20261001-save-recovery"></script>
 <script src="nova-history.js?v=20261001-history-performance"></script>
 <script src="nova-role-counter.js?v=20261014-role-counter"></script>
-<script src="nova-data-counter.js?v=20261014-shared-data"></script>
-<script src="nova-game.js?v=20261015-checkpoint-bgm"></script>
+<script src="nova-data-counter.js?v=20261015-mode-history"></script>
+<script src="nova-game.js?v=20261015-mode-history"></script>
 <button type="button" id="novaSymbolPreviewOpen">ノヴァ目を確認</button>
 <dialog id="novaSymbolPreview"><h2>ノヴァ目</h2><label>出目<select id="novaPatternSelect"><option value="WEAK_NOVA">弱ノヴァ目：左3連</option><option value="STRONG_MIDDLE">強ノヴァ目：左・中3連</option><option value="STRONG_RIGHT">強ノヴァ目：左・右3連</option><option value="SUPER_NOVA" selected>スーパーノヴァ目：全リール3連</option></select></label><p id="novaPatternDescription"></p><div id="novaSymbolPreviewGrid"></div><p>出目の確認用です。通常時のスーパーはBIG・フリーズ各50%。ボーナス中は対象外。弱・強と自然出現率は未設定。</p><button type="button" id="novaSymbolPreviewClose">閉じる</button></dialog>
 </body>

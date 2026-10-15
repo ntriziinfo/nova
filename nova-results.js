@@ -46,7 +46,7 @@ globalThis.NovaResults=(()=>{
   return null;
  }
  function bonus(pt,flow,mode,rng=bonusVisualRandom){
-  const result={kind:'bonus',character:'kushuri',color:'blue',pt:String(pt),next:flow?.phase==='art'?'AT':'通常'};
+  const result={kind:'bonus',character:'kushuri',color:flow?.phase==='normal'?'mode':'blue',pt:String(pt),next:flow?.phase==='art'?'AT':'通常'};
   // AT end draws a new mode, so a BB returning to AT cannot hint the next normal mode.
   const rates=flow?.phase==='normal'?bonusHintRates(mode):[];
   let roll=rng()*100;if(!Number.isFinite(roll)||roll<0||roll>=100)return result;
@@ -167,12 +167,13 @@ globalThis.NovaResults=(()=>{
  function show(value){
   // Old saved BB cards used an unrequested logo. Migrate the image only, without a draw.
   if(value?.kind==='bonus'&&value.character==='nova')value={...value,character:'kushuri'};
+  if(value?.kind==='bonus'&&value.next==='通常')value={...value,color:'mode'};
   init();if(!root)return;
   const request=++imageRequest;active=value;root.hidden=false;root.dataset.loading='true';
   const all=value.character==='all',isSortie=value.kind==='sortie',isBonus=value.kind==='bonus';
   root.dataset.kind=value.kind||'';
   root.dataset.initial=String(value.color==='initial');
-  root.dataset.color=all?'gold':['red','purple','gold','rainbow'].includes(value.color)?value.color:'blue';
+  root.dataset.color=all?'gold':['red','purple','gold','rainbow','mode'].includes(value.color)?value.color:'blue';
   root.dataset.all=String(all);
   root.dataset.duo=String(value.character==='kushuri_nito');
   const ensemble=art.querySelector('.novaResultEnsemble');if(ensemble)ensemble.hidden=!all||isSortie;
@@ -180,7 +181,7 @@ globalThis.NovaResults=(()=>{
   const partner=art.querySelector('.novaResultPartner');if(partner)partner.hidden=value.character!=='kushuri_nito';
   const atLabel='AT総獲得';
   const label=isBonus?'BB獲得':isSortie?'出陣チャレンジ':all?'有利区間終了 / 累計差枚':settingHints.some(h=>h.character===value.character)?atLabel:`${names[value.character]} ${value.color==='initial'?'AT初期pt':value.kind==='at'?atLabel:value.totalPt!=null?'ゾーン / 今回':'上乗せ'}`;
-  const next=fallback.querySelector('.novaResultNext');if(next){next.hidden=!all&&!isBonus;next.textContent=isBonus?'次のBETで'+(value.next==='AT'?'ATへ':'通常へ'):isSortie?'次のBETで特化ゾーン準備':'次のBETでスーパーノヴァチャレンジ';}
+  const next=fallback.querySelector('.novaResultNext');if(next){next.hidden=!all&&!isBonus&&value.color!=='mode';next.textContent=value.color==='mode'?'次回モード示唆 / 次のBETで通常へ':isBonus?'次のBETで'+(value.next==='AT'?'ATへ':'通常へ'):isSortie?'次のBETで特化ゾーン準備':'次のBETでスーパーノヴァチャレンジ';}
   const total=fallback.querySelector('.novaResultTotal');if(total){total.hidden=value.totalPt==null;total.textContent=value.totalPt==null?'':'連続特化 合計 '+value.totalPt+'pt';}
   num.textContent=String(isSortie?value.count:value.pt);num.setAttribute('aria-label',awardText(value));
   fallback.querySelector('span').textContent=label;fallback.querySelector('output').textContent=awardText(value);
