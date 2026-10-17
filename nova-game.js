@@ -2986,6 +2986,10 @@
     if(!session.active && normalState.flow?.phase==='art' && normalState.flow.zero)return;
     autoLastBetAt=performance.now();
     autoPacingBudget=autoPlay?NovaSuperSpeed.recordBet(autoPacingBudget,autoLastBetAt,autoPacingProfile()):null;
+    if(autoPlay&&superFullAuto&&VERTEX_CONTROLLER_ENABLED&&PLAY_SESSION_ID&&ADMIN_SERVER){
+      // The entry page authenticates and deduplicates this daily usage record.
+      try{window.parent.postMessage({type:'nova-super-speed-used',sessionId:PLAY_SESSION_ID},new URL(ADMIN_SERVER,location.href).origin);}catch(e){}
+    }
     // Only a pre-update save can still own a free-BET entitlement.
     if(A_TYPE_MODE && normalState.replayFree){normalState.replayFree=false;return;}
     stats.totalFee = (Number(stats.totalFee) || 0) + SPIN_COST;
