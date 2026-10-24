@@ -7147,7 +7147,9 @@
     if(spin.resolved.czLamp)document.getElementById('machine').dataset.czOrder=(spin.resolved.czLampPresentation?.order||NovaFlow.lampOrder(spin.resolved.czLamp,settings.setting)).join(',');
     reels.forEach((reel,i)=>{
       const column=spin.stopped[i]&&spin.auditGrid?.every(row=>row?.[i])?spin.auditGrid.map(row=>row[i]):spin.grid.map(row=>row[i]);
-      setReelColumn(i,column,NovaSortie.eligible(spin)?'':i===1?spin.spec.label:'',spin.spec.cls,spin.stopped[i]&&!NovaSortie.eligible(spin)?spin.lineRow:null);
+      const ladder=spin.ladderResultPresentation?null:globalThis.NovaLadder?.outcome?.(spin.resolved);
+      const displaySpec=ladder?RESULT[ladder.result]:spin.spec;
+      setReelColumn(i,column,NovaSortie.eligible(spin)?'':i===1?displaySpec.label:'',displaySpec.cls,spin.stopped[i]&&!NovaSortie.eligible(spin)?(ladder?(ladder.won?1:null):spin.lineRow):null);
       reel.classList.toggle('spinning',!spin.stopped[i]);
       stopBtns[i].disabled=spin.stopped[i]||!!spin.pendingStopColumns[i];
       if(!spin.stopped[i])NovaReelMotion.start(i,reel,REEL_STRIPS[i],currentReelTopIndex(i),!!spin.artReverse,cellHtml);
@@ -7740,6 +7742,10 @@
     if(!options.visualReady&&NovaReelMotion.has(i)){col=nearestCommonStopColumn(i,currentSpin,column=>NovaReelMotion.distance(i,column))||col;}
     const sortieTarget=NovaSortie.target(currentSpin,i,REEL_STRIPS);
     if(sortieTarget){col=options.visualColumn||sortieTarget.column;setGridColumn(grid,i,col);}
+    // Keep the original common-stop RNG calls above; only the visible target
+    // changes. auditPressOrder already persists the middle-first fail pattern.
+    const ladderTarget=globalThis.NovaLadder?.target?.(currentSpin,i,REEL_STRIPS,RESULT,gridHasOnlyAllowedPaylines);
+    if(ladderTarget){col=options.visualColumn||ladderTarget.column;setGridColumn(grid,i,col);}
     if(currentSpin.manualBonusStop && stopOrder === 3 && !options.visualColumn){
       col = manualBonusFinalColumnForReel(i, currentSpin, col);
     }
@@ -7760,9 +7766,10 @@
       }).catch(error=>{console.error(error);spin.visualStopping[i]=false;spin.pendingStopColumns[i]=null;stopBtns[i].disabled=false;persistState();});
       return;
     }
-    const label = sortieTarget ? "" : i === 1 ? spec.label : "";
+    const displaySpec = ladderTarget ? RESULT[ladderTarget.result] : spec;
+    const label = sortieTarget ? "" : i === 1 ? displaySpec.label : "";
 
-    stopReel(i, col, label, spec.cls, sortieTarget || currentSpin.manualBonusStop || result === "MISS" ? null : lineRow, stopOrder);
+    stopReel(i, col, label, displaySpec.cls, ladderTarget ? (ladderTarget.won?1:null) : sortieTarget || currentSpin.manualBonusStop || result === "MISS" ? null : lineRow, stopOrder);
     (currentSpin.auditStopOrder ||= []).push(i);
     currentSpin.auditGrid ||= [[],[],[]];
     for(let row=0;row<3;row++)currentSpin.auditGrid[row][i]=col[row];
@@ -7901,7 +7908,7 @@
   }
 
   function playRareNaviSound(spin){
-    if(debugFastSpinActive||speedToBonusActive||!spin?.rareNavi||spin.rareNaviSoundPlayed||spin.resolved?.researchSortie||isComebackChanceSpin(spin.resolved))return;
+    if(debugFastSpinActive||speedToBonusActive||!spin?.rareNavi||spin.rareNaviSoundPlayed||spin.resolved?.researchSortie||isComebackChanceSpin(spin.resolved)||globalThis.NovaLadder?.outcome?.(spin.resolved))return;
     spin.rareNaviSoundPlayed=true;
     playOneShotSound('assets/media/nova/rare-navi.mp3',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
   }
@@ -7931,7 +7938,7 @@
     if(spin.resolved?.researchSortie||isComebackChanceSpin(spin.resolved))return;
     // Queued zones can start after flowBefore was captured on their first BET.
     const zone=String((spin.resolved?.zoneStartFlow||spin.resolved?.flowAfter)?.zone||'').replace(/^ura_/,'');
-    if(['urapi','ouma'].includes(zone))return;
+    if(['urapi','ouma'].includes(zone)||globalThis.NovaLadder?.outcome?.(spin.resolved))return;
     // Cue rarity is visual-only: retain the existing single game-RNG character draw.
     if(spin.resolved?.flowBefore?.phase==='art'&&['bigChance','hot'].includes(grade)&&cueRng()>=.2)grade='chance';
     spin.rareCueVoice.grade=grade;
@@ -8438,7 +8445,9 @@
     const stGameAdd = (resolved.add || 0) + (resolved.zoneStGames || 0);
     const stockAdd = (resolved.sets || 0) + (resolved.zoneSets || 0);
     const zoneGameAdd = resolved.zoneGameAdd || 0;
-    const lineText = result !== "MISS" ? ` / ${lineName(lineRow)}ライン` : "";
+    const ladderDisplay=currentSpin.ladderResultPresentation?null:globalThis.NovaLadder?.outcome?.(resolved);
+    const displayResult=ladderDisplay?.result||result;
+    const lineText = displayResult !== "MISS" ? ` / ${lineName(ladderDisplay?1:lineRow)}ライン` : "";
     const zoneRemainAfterSpin = resolved.zoneGame ? Math.max(0, session.bigZone - 1, resolved.bigZone || 0) + zoneGameAdd : null;
     const zoneText = resolved.zoneGame
       ? goraiZoneRemainText(zoneRemainAfterSpin, currentSpin?.zoneType || session.bigZoneType)
@@ -8459,7 +8468,7 @@
     if(resolved.bigZone > 0 && zoneText) resultParts.push(zoneText);
     if(resultParts.length === 0) resultParts.push(isNormalSpinResult ? "払い出しなし" : "0pt");
     if(resolved.zoneGame && zoneText) resultParts.push(zoneText);
-    $("resultText").textContent = `${RESULT[result].name}${lineText} / ${resultParts.join(" / ")}`;
+    $("resultText").textContent = `${RESULT[displayResult].name}${lineText} / ${resultParts.join(" / ")}`;
     const holdRogiThirdStopEffect = shouldHoldRogiThirdStopEffect(currentSpin);
     const holdSpeedBonusRogiEffect = currentSpin && currentSpin.speedModeBonusRogiEffect;
     const premiumConfirmMovieSpin = currentSpin && currentSpin.premiumBigConfirmMovieEffect;
@@ -9546,6 +9555,7 @@
   }
 
   function payoutSoundSrcFor(result, reward=0, spin=currentSpin){
+    if(globalThis.NovaLadder?.outcome?.(spin?.resolved)?.won)return REPLAY_SOUND_SRC;
     if(A_TYPE_MODE && ["BELL","BELL15","GRAPE","BELL3"].includes(result))return PAYOUT_3PT_BELL_SOUND_SRC;
     if(isPremiumBigBonusPieroSound(result, spin)) return PREMIUM_PIERO_SYMBOL_SOUND_SRC;
     if(result === "REPLAY") return REPLAY_SOUND_SRC;
@@ -9561,6 +9571,7 @@
   }
 
   function shouldSuppressPayoutSound(result="", reward=0, spin=currentSpin){
+    if(globalThis.NovaLadder?.outcome?.(spin?.resolved)&&['WEAK_SUICA','STRONG_SUICA','CHANCE_A','CHANCE_B','WEAK_NOVA','STRONG_NOVA','SUPER_NOVA'].includes(result))return true;
     if(spin && spin.zoneActiveAtStart && result === "MISS" && Number(reward) > 0) return true;
     return false;
   }
@@ -9591,17 +9602,17 @@
     playOneShotSound(src,sfxOutputVolume(),{allowDuringPremiumConfirm:true});
   }
   function playWeakNovaSound(result,resolved){
-    if(result!=='WEAK_NOVA' || resolved?.weakNovaSoundPlayed || isComebackChanceSpin(resolved))return;
+    if(result!=='WEAK_NOVA' || resolved?.weakNovaSoundPlayed || isComebackChanceSpin(resolved)||globalThis.NovaLadder?.outcome?.(resolved))return;
     if(resolved)resolved.weakNovaSoundPlayed=true;
     playOneShotSound('assets/media/nova/weak-nova.wav',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
   }
   function playStrongNovaSound(result,resolved){
-    if(result!=='STRONG_NOVA' || resolved?.strongNovaSoundPlayed || isComebackChanceSpin(resolved))return;
+    if(result!=='STRONG_NOVA' || resolved?.strongNovaSoundPlayed || isComebackChanceSpin(resolved)||globalThis.NovaLadder?.outcome?.(resolved))return;
     if(resolved)resolved.strongNovaSoundPlayed=true;
     playOneShotSound('assets/media/nova/strong_nova.wav',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
   }
   function playChanceSound(result,resolved){
-    if(!['CHANCE_A','CHANCE_B'].includes(result)||resolved?.chanceSoundPlayed||isComebackChanceSpin(resolved))return;
+    if(!['CHANCE_A','CHANCE_B'].includes(result)||resolved?.chanceSoundPlayed||isComebackChanceSpin(resolved)||globalThis.NovaLadder?.outcome?.(resolved))return;
     if(resolved)resolved.chanceSoundPlayed=true;
     playWinSound(false);
   }
@@ -9646,7 +9657,7 @@
       playOneShotSound(stopOrder===3?(currentSpin?.result==='MISS'?'assets/media/nova/ouma-fail.wav':'assets/media/nova/shutter-close.wav'):'assets/media/nova/shutter.wav',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
       return;
     }
-    if(stopOrder===3&&currentSpin?.result==='SUPER_NOVA'&&!isComebackChanceSpin(currentSpin.resolved)){
+    if(stopOrder===3&&currentSpin?.result==='SUPER_NOVA'&&!isComebackChanceSpin(currentSpin.resolved)&&!globalThis.NovaLadder?.outcome?.(currentSpin.resolved)){
       if(currentSpin.superNovaStopSoundPlayed)return;
       currentSpin.superNovaStopSoundPlayed=true;
       if(currentSpin.resolved?.oumaFreeze)return;

@@ -2,6 +2,33 @@
 globalThis.NovaLadder=(()=>{
  const {setTimeout,clearTimeout}=globalThis.NovaClock||globalThis;
  const eligible=f=>f?.phase==='art'&&['sosuke','giru'].includes(f.zone)&&Array.isArray(f.ladder)&&f.ladder.length>0;
+ // Read the committed ladder transition, including equal-value rungs and the
+ // last rung after settleZone clears zone. Never redraw or replace its role.
+ function outcome(resolved){
+  const flow=resolved?.zoneStartFlow||resolved?.flowBefore;
+  if(!resolved?.zoneSpin||resolved.aTypeBonusGame||resolved.stockEntry||resolved.researchSortie||resolved.aim||!eligible(flow)||flow.entryStage)return null;
+  const won=Number(resolved.flowAfter?.ladderIndex)>Number(flow.ladderIndex);
+  return {won,result:won?'REPLAY':'MISS'};
+ }
+ const stopGrids=new WeakMap();
+ function target(spin,index,strips,results,isSafe){
+  const display=spin?.ladderResultPresentation?null:outcome(spin?.resolved);
+  if(!display)return null;
+  const middleFirst=spin.auditPressOrder?.[0]===1;
+  const centers=results.REPLAY.reel.slice();
+  if(!display.won)centers[middleFirst?1:2]=results.BELL.reel[middleFirst?1:2];
+  let cache=stopGrids.get(strips);if(!cache){cache=new Map();stopGrids.set(strips,cache);}
+  const key=centers.join('|');let grid=cache.get(key);
+  if(!grid){
+   const choices=strips.map((strip,i)=>strip.map((_,top)=>[0,1,2].map(row=>strip[(top+row)%strip.length])).filter(col=>col[1]===centers[i]));
+   outer:for(const left of choices[0])for(const middle of choices[1])for(const right of choices[2]){
+    const candidate=[0,1,2].map(row=>[left[row],middle[row],right[row]]);
+    if(isSafe(candidate,display.result)){grid=candidate;cache.set(key,grid);break outer;}
+   }
+   if(!grid)throw new Error('No valid ladder presentation stop grid');
+  }
+  return {...display,column:grid.map(row=>row[index])};
+ }
  const values=[50,100,200,300,500,1000,2000,3000],images=new Map();
  let host,root,upper,lower,amount,amountText,key='',timer,unlock,locked=false,token=0;
  function setAmount(points){
@@ -102,5 +129,5 @@ globalThis.NovaLadder=(()=>{
   if(!started&&promoted)closeThenReveal('settled');
  }
  if(typeof document!=='undefined'){document.addEventListener('DOMContentLoaded',init);window.addEventListener('resize',()=>{if(root&&!root.hidden)layout();});}
- return {eligible,sync,bet,stop,hide,award,get busy(){return locked;}};
+ return {eligible,outcome,target,sync,bet,stop,hide,award,get busy(){return locked;}};
 })();
