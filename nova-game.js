@@ -7149,7 +7149,7 @@
       const column=spin.stopped[i]&&spin.auditGrid?.every(row=>row?.[i])?spin.auditGrid.map(row=>row[i]):spin.grid.map(row=>row[i]);
       const ladder=spin.ladderResultPresentation?null:globalThis.NovaLadder?.outcome?.(spin.resolved);
       const displaySpec=ladder?RESULT[ladder.result]:spin.spec;
-      setReelColumn(i,column,NovaSortie.eligible(spin)?'':i===1?displaySpec.label:'',displaySpec.cls,spin.stopped[i]&&!NovaSortie.eligible(spin)?(ladder?(ladder.won?1:null):spin.lineRow):null);
+      setReelColumn(i,column,NovaSortie.eligible(spin)||NovaAim.isNovaZoneSpin?.(spin)?'':i===1?displaySpec.label:'',displaySpec.cls,spin.stopped[i]&&!NovaSortie.eligible(spin)?(ladder?(ladder.won?1:null):spin.lineRow):null);
       reel.classList.toggle('spinning',!spin.stopped[i]);
       stopBtns[i].disabled=spin.stopped[i]||!!spin.pendingStopColumns[i];
       if(!spin.stopped[i])NovaReelMotion.start(i,reel,REEL_STRIPS[i],currentReelTopIndex(i),!!spin.artReverse,cellHtml);
@@ -7746,6 +7746,8 @@
     // changes. auditPressOrder already persists the middle-first fail pattern.
     const ladderTarget=globalThis.NovaLadder?.target?.(currentSpin,i,REEL_STRIPS,RESULT,gridHasOnlyAllowedPaylines);
     if(ladderTarget){col=options.visualColumn||ladderTarget.column;setGridColumn(grid,i,col);}
+    const novaZoneTarget=NovaAim.novaZoneStopTarget?.(currentSpin,i,REEL_STRIPS,RESULT);
+    if(novaZoneTarget){col=options.visualColumn||novaZoneTarget.column;setGridColumn(grid,i,col);}
     if(currentSpin.manualBonusStop && stopOrder === 3 && !options.visualColumn){
       col = manualBonusFinalColumnForReel(i, currentSpin, col);
     }
@@ -7767,7 +7769,7 @@
       return;
     }
     const displaySpec = ladderTarget ? RESULT[ladderTarget.result] : spec;
-    const label = sortieTarget ? "" : i === 1 ? displaySpec.label : "";
+    const label = sortieTarget || novaZoneTarget ? "" : i === 1 ? displaySpec.label : "";
 
     stopReel(i, col, label, displaySpec.cls, ladderTarget ? (ladderTarget.won?1:null) : sortieTarget || currentSpin.manualBonusStop || result === "MISS" ? null : lineRow, stopOrder);
     (currentSpin.auditStopOrder ||= []).push(i);
@@ -8458,7 +8460,8 @@
     const resultParts = [];
     if(resolved.artSetWon)resultParts.push("ネビュラ揃い / "+NovaArt.bonusStockLabel({...session,...NovaArt.advanceBonus(session,true,reward)},normalState.flow));
     if(resolved.artMessage)resultParts.push(NovaSortie.label(resolved.artMessage));
-    const novaPattern = novaPatternFromGrid(currentSpin?.grid);
+    // A two-reel tease in these zones is a failed SUPER NOVA, not a rare-role hit.
+    const novaPattern = NovaAim.isNovaZoneSpin?.(currentSpin)&&result==='MISS'?'':novaPatternFromGrid(currentSpin?.grid);
     if(currentSpin) currentSpin.novaPattern = novaPattern;
     if(novaPattern) resultParts.push(NOVA_PATTERN_NAMES[novaPattern]);
     if(reward > 0) resultParts.push("+" + reward + "pt");

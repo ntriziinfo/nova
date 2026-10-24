@@ -153,6 +153,28 @@ globalThis.NovaAim=(()=>{
   const onLine=valid&&hit || (rank<3 && !(valid&&!hit&&index===0));
   return {onLine,aligned:valid&&hit,rank};
  }
+ // Three-cell NOVA logos in Ouma/Urapi use their own stop order cues. This
+ // changes only the displayed strips, never the drawn result or 0G freeze.
+ function isNovaZoneSpin(spin){
+  const r=spin?.resolved,f=r?.zoneStartFlow||r?.flowBefore;
+  return !!(r?.zoneSpin&&!r.aTypeBonusGame&&!r.stockEntry&&!r.researchSortie&&!r.aim&&!r.oumaFreeze&&!r.oumaFailed&&
+   f?.phase==='art'&&!f.entryStage&&['ouma','urapi'].includes(String(f.zone).replace(/^ura_/,''))&&['MISS','SUPER_NOVA'].includes(spin.result));
+ }
+ function novaZoneStopTarget(spin,index,strips,results){
+  if(!isNovaZoneSpin(spin))return null;
+  const order=spin.auditPressOrder||spin.auditStopOrder||[],rank=order.indexOf(index)+1;
+  if(!rank)return null;
+  const won=spin.result==='SUPER_NOVA';
+  // A middle-first miss reveals itself immediately. An outer-first miss
+  // breaks on the other outer reel: second for scissors, third otherwise.
+  const missReel=order[0]===1?1:2-order[0];
+  const onLine=won||index!==missReel;
+  const strip=strips[index],logo=[0,1,2].map(row=>`NOVA_${index}_${row}`);
+  const column=onLine?logo:strip.map((_,top)=>[0,1,2].map(row=>strip[(top+row)%strip.length]))
+   .find(col=>col.every(symbol=>!String(symbol).startsWith('NOVA_')&&symbol!==results.WEAK_SUICA.reel[index]));
+  if(!column||!strip.some((_,top)=>column.every((symbol,row)=>strip[(top+row)%strip.length]===symbol)))throw new Error('No valid NOVA zone stop column');
+  return {column,onLine,won,rank};
+ }
  function fail(playSound){
   if(!active||!root||root.hidden||root.dataset.failed==='true')return;
   root.dataset.failed='true';playSound();
@@ -197,5 +219,5 @@ globalThis.NovaAim=(()=>{
   document.addEventListener('visibilitychange',()=>{if(document.hidden)pendingStart?.();});
   window.addEventListener('resize',layout);
  }
- return {hasGuide,drawGuide,stopTarget,bet,stop,hide,layout,fail,win,afterWin,reset,isCzIntro,syncAtWait,get busy(){return winLocked;}};
+ return {hasGuide,drawGuide,stopTarget,isNovaZoneSpin,novaZoneStopTarget,bet,stop,hide,layout,fail,win,afterWin,reset,isCzIntro,syncAtWait,get busy(){return winLocked;}};
 })();
