@@ -48,6 +48,46 @@ test('actual stop grids match every supported outcome using real consecutive str
   assert.equal(run('REEL_STRIPS.every((s,c)=>s.some((_,i)=>[0,1,2].every(r=>grid[r][c]===s[(i+r)%20])))'),true);
  }
 });
+
+test('left upper or middle watermelon is reserved for a drawn watermelon on every stop candidate',()=>{
+ const violations=run(`(()=>{
+  const violations=[];
+  for(const role of ['MISS','CZ','STRONG_CZ','BELL','BELL15','REPLAY','NEBULA','BIG','BAR3','WEAK_SUICA']){
+   for(const row of [0,1,2])for(const first of [0,1,2])buildNovaReelGrid(role,row,first);
+  }
+  for(const [key,grids]of novaStopGridCache){
+   const role=key.split(':')[0];
+   for(const grid of grids){
+    const leftCue=grid[0][0]===SUICA_SYMBOL||grid[1][0]===SUICA_SYMBOL;
+    if(leftCue!==(role==='WEAK_SUICA')||displayedResultFromGrid(grid)!==role){
+     violations.push({key,grid});break;
+    }
+    if(role!=='WEAK_SUICA'&&gridPaylineRows(grid).some(line=>line.every(symbol=>symbol===SUICA_SYMBOL))){
+     violations.push({key,grid});break;
+    }
+   }
+  }
+  return violations;
+ })()`);
+ assert.equal(violations.length,0,JSON.stringify(violations));
+});
+
+test('stop-grid filtering preserves the visual RNG draw count on cold and cached selections',()=>{
+ const draws=run(`(()=>{
+  const original=Math.random,counts=[];
+  try{
+   let calls=0;Math.random=()=>{calls++;return .5;};
+   novaStopGridCache.clear();
+   for(const role of ['MISS','BELL','BELL15','REPLAY','NEBULA','BIG','BAR3','WEAK_SUICA']){
+    for(let pass=0;pass<2;pass++){
+     const before=calls;buildNovaReelGrid(role,1);counts.push(calls-before);
+    }
+   }
+   return counts;
+  }finally{Math.random=original;}
+ })()`);
+ assert.deepEqual(Array.from(draws),Array(16).fill(1));
+});
 test('bell pays 8 normally and caps the final BIG payout at the remaining 50pt target',()=>{
  assert.equal(run('normalRewardFor("BELL")'),8);
  assert.equal(run('resolveATypeBonusOutcome("BELL").reward'),8);

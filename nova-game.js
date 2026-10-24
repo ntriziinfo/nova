@@ -6532,6 +6532,10 @@
   function gridHasOnlyAllowedPaylines(grid, allowedResult="MISS"){
     if(A_TYPE_MODE){
       const target=displayResultFor(allowedResult);
+      // Left upper/middle watermelon is a confirmed watermelon cue. Filter
+      // only the visual candidates; never promote a miss or redraw the role.
+      if(!['WEAK_SUICA','STRONG_SUICA'].includes(target)&&
+        [grid?.[0]?.[0],grid?.[1]?.[0]].includes(SUICA_SYMBOL))return false;
       if(displayedResultFromGrid(grid)!==target)return false;
       return gridPaylineRows(grid).every(row=>{const r=displayedResultFromRow(row);return r==='MISS'||r===target||r==='BELL'&&target==='BELL'||r==='SUICA'&&['WEAK_SUICA','STRONG_SUICA'].includes(target);});
     }
