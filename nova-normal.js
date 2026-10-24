@@ -113,6 +113,10 @@ globalThis.NovaNormal=(()=>{
   if(before.games<100&&['cz','strong_cz'].includes(flow.phase))flow={...flow,success:false,winProbability:0};
   flow=before.games<100||flow.modeFake?NovaFlow.normalize(flow):NovaFlow.rewrite(flow,result,options.cz,rng);
   const state=advance(before,result,flow,{...c,setting},rng),token={normalBellNavi:drawn==='NAVI_BELL',result,state,czFlow:flow,internalBonus:null,entry:'',direct:false,czOptions:options.cz,czChance:before.prelude?.presentation==='reel'&&before.prelude.kind!=='czFake'?1:roleCzRate(before,result,setting,c)};
+  // Keep the drawn watermelon for internal lotteries; CZ reels and cash use replay.
+  if(['cz','strong_cz'].includes(flow.phase)&&result==='WEAK_SUICA'){
+   token.internalResult=result;token.result='REPLAY';
+  }
   if(['cz','strong_cz'].includes(flow.phase)&&before.prelude?.presentation==='reel'&&before.prelude.kind!=='czFake'&&before.prelude.left===0){
    state.prelude=null;token.czPrelude={before:3,after:0,announce:true};
   }

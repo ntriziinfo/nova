@@ -3066,9 +3066,10 @@
   function drawRareSortie(result,resolved){
     if(!A_TYPE_MODE)return;
     // Draw once at BET after the real role. Saved spins never draw again on resume.
-    resolved.sortieWon=NovaProgress.drawSortie(settings.setting,result,resolved,Math.random,currentProfit());
-    if(!(typeof debugFastSpinActive!=='undefined'&&debugFastSpinActive)&&globalThis.NovaStockEntry?.drawFake&&NovaProgress.sortieEligible(result,resolved)){
-      resolved.sortieFakeWon=NovaStockEntry.drawFake(NovaProgress.sortieChance(settings.setting,result,currentProfit()),resolved.sortieWon);
+    const internalResult=resolved.internalResult??result;
+    resolved.sortieWon=NovaProgress.drawSortie(settings.setting,internalResult,resolved,Math.random,currentProfit());
+    if(!(typeof debugFastSpinActive!=='undefined'&&debugFastSpinActive)&&globalThis.NovaStockEntry?.drawFake&&NovaProgress.sortieEligible(internalResult,resolved)){
+      resolved.sortieFakeWon=NovaStockEntry.drawFake(NovaProgress.sortieChance(settings.setting,internalResult,currentProfit()),resolved.sortieWon);
     }
   }
 
@@ -3459,7 +3460,7 @@
     if(inCz){token.czFlow.lampRoll??=Math.random();token.czFlow.rainbowRoll??=Math.random();}
     const ceilingHit=token.internalBonus?.source?.includes('天井');
     pendingArtStep={
-      result:token.result,normalBellNavi:token.normalBellNavi,normalInternal:token.state,czEntry:token.entry,czPrelude:token.czPrelude,czChance:token.czChance,
+      result:token.result,internalResult:token.internalResult,normalBellNavi:token.normalBellNavi,normalInternal:token.state,czEntry:token.entry,czPrelude:token.czPrelude,czChance:token.czChance,
       flow:token.direct?NovaArt.enterInitial({...settings.novaArt,setting:settings.setting}):token.entry?NovaFlow.enterCZ(token.entry==='STRONG_CZ',token.czOptions ?? settings.novaFlow):token.internalBonus?NovaFlow.normalize(null):NovaFlow.advance(token.czFlow),
       czLamp:token.czLamp || (inCz?{...NovaFlow.drawLamp({...token.czFlow,
         success:token.czFlow.success||!!token.internalBonus||token.direct,
@@ -3564,6 +3565,7 @@
               ? "単独当選"
               : "";
       return {
+        internalResult:artStep?.internalResult,
         normalInternal:artStep?.normalInternal,
         normalBellNavi:!!artStep?.normalBellNavi&&result==='BELL',
         czPrelude:artStep?.czPrelude,

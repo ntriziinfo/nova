@@ -107,7 +107,7 @@ export function simulate(setting,games,seed,options={}){
   }
   const normal=flow.phase==='normal',charged=bet(normal?'normal':'cz');
   if(normal){counts.highNormalG+=state.level==='high';counts.favoredNormalG+=n.favored(state);}
-  const t=n.spin(state,flow,setting,{scale,normal:options.normal,cz:options.cz,art:c},rng);roleSortie(t.result,normal?'normal':'cz');state=t.state;maxNormalGames=Math.max(maxNormalGames,state.games);paid+=cash(t.result);replay=t.result==='REPLAY';
+  const t=n.spin(state,flow,setting,{scale,normal:options.normal,cz:options.cz,art:c},rng);roleSortie(t.internalResult??t.result,normal?'normal':'cz');state=t.state;maxNormalGames=Math.max(maxNormalGames,state.games);paid+=cash(t.result);replay=t.result==='REPLAY';
   if(normal){normalRoles[t.result]=(normalRoles[t.result]||0)+1;normalPayout.bet+=charged;normalPayout.paid+=cash(t.result);normalPayout.games++;}
   if(t.result==='SUPER_NOVA'){const freeze=rng()<.5;if(freeze)freezes++;flow={phase:'normal'};bonus('BIG',freeze);}
   else if(t.internalBonus){if(t.internalBonus.source.includes('天井'))ceilings++;else counts.czWins++;flow={phase:'normal'};bonus(t.internalBonus.kind);}
