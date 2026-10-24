@@ -2,7 +2,7 @@
 globalThis.NovaResults=(()=>{
  const chars=['sosuke','toto','urapi','giru','sora','ouma'];
  const initialChars=['kushuri','nito','kushuri_nito'];
- const names={sosuke:'宗介',toto:'とと',urapi:'うらぴ',giru:'ギル',sora:'空',ouma:'逢魔',kushuri:'くしゅり',nito:'にと',kushuri_nito:'くしゅり＆にと',boss:'ボス集合',sora2:'空（私服）',ouma2:'逢魔（私服）',group:'全員集合'};
+ const names={sosuke:'宗介',toto:'とと',urapi:'うらぴ',giru:'ギル',sora:'空',ouma:'逢魔',kushuri:'くしゅり',nito:'にと',kushuri_nito:'くしゅり＆にと',boss:'ボス集合',sora2:'空（私服）',ouma2:'逢魔（私服）',group:'全員集合',plush_kushuri:'くしゅりぬい',plush_toto:'ととぬい',plush_nito:'にとぬい',plush_sosuke:'宗介ぬい',plush_urapi:'うらぴぬい',plush_neko:'ねこぬい',plush_yamada:'やまだぬい',plush_nigo:'にごぬい',plush_giru:'ギルぬい',plush_sora:'そらぬい',plush_ouma:'おうまぬい'};
  const settingHints=[
   {character:'boss',color:'blue',minSetting:2,percent:10},
   {character:'sora2',color:'purple',minSetting:4,percent:3},
@@ -11,13 +11,17 @@ globalThis.NovaResults=(()=>{
  ];
  const bonusModes=['A','B','C','天国','天国ループ'];
  const bonusModeHints=[
-  {id:'default',label:'デフォルト',characters:['kushuri','toto']},
-  {id:'b-hint',label:'モードB以上示唆',characters:['nito','sosuke'],minimum:1,percent:20,otherPercent:10},
-  {id:'c-hint',label:'モードC以上示唆',characters:['urapi'],minimum:2,percent:15,otherPercent:5},
-  {id:'b-confirmed',label:'モードB以上確定',characters:['ouma'],minimum:1,percent:10,otherPercent:0},
-  {id:'c-confirmed',label:'モードC以上確定',characters:['giru'],minimum:2,percent:5,otherPercent:0},
-  {id:'heaven-confirmed',label:'天国以上確定',characters:['sora'],minimum:3,percent:3,otherPercent:0}
+  {id:'default',label:'デフォルト',characters:['plush_kushuri','plush_toto']},
+  {id:'b-hint',label:'モードB以上示唆',characters:['plush_nito','plush_sosuke'],minimum:1,percent:20,otherPercent:10},
+  {id:'c-hint',label:'モードC以上示唆',characters:['plush_urapi','plush_neko'],minimum:2,percent:15,otherPercent:5},
+  {id:'b-confirmed',label:'モードB以上確定',characters:['plush_yamada'],minimum:1,percent:10,otherPercent:0},
+  {id:'c-confirmed',label:'モードC以上確定',characters:['plush_nigo'],minimum:2,percent:5,otherPercent:0},
+  {id:'heaven-confirmed',label:'天国以上確定',characters:['plush_giru','plush_sora','plush_ouma'],minimum:3,percent:3,otherPercent:0}
  ];
+ // Migrate saved portraits by their old hint meaning, not by character name.
+ // Old Ouma/Giru certified B/C; their new plush portraits certify heaven.
+ const legacyModePortraits={nova:'plush_kushuri',kushuri:'plush_kushuri',toto:'plush_toto',nito:'plush_nito',sosuke:'plush_sosuke',urapi:'plush_urapi',ouma:'plush_yamada',giru:'plush_nigo',sora:'plush_sora'};
+ const legacyModeLayouts={plush_kushuri:'kushuri',plush_toto:'toto',plush_nito:'nito',plush_sosuke:'sosuke',plush_urapi:'urapi',plush_neko:'urapi',plush_yamada:'ouma',plush_nigo:'giru',plush_giru:'sora',plush_sora:'sora',plush_ouma:'sora'};
  function bonusHintRates(mode){
   const index=bonusModes.indexOf(mode);if(index<0)return [];
   const hints=bonusModeHints.slice(1).map(h=>({...h,characters:[...h.characters],percent:index>=h.minimum?h.percent:h.otherPercent}));
@@ -46,11 +50,11 @@ globalThis.NovaResults=(()=>{
   return null;
  }
  function bonus(pt,flow,mode,rng=bonusVisualRandom){
-  const result={kind:'bonus',character:'kushuri',color:flow?.phase==='normal'?'mode':'blue',pt:String(pt),next:flow?.phase==='art'?'AT':'通常'};
+  const result={kind:'bonus',character:'plush_kushuri',color:flow?.phase==='normal'?'mode':'blue',pt:String(pt),next:flow?.phase==='art'?'AT':'通常'};
   // AT end draws a new mode, so a BB returning to AT cannot hint the next normal mode.
   const rates=flow?.phase==='normal'?bonusHintRates(mode):[];
   let roll=rng()*100;if(!Number.isFinite(roll)||roll<0||roll>=100)return result;
-  if(!rates.length)return {...result,character:roll<50?'kushuri':'toto'};
+  if(!rates.length)return {...result,character:roll<50?'plush_kushuri':'plush_toto'};
   for(const hint of rates){
    if(roll<hint.percent)return {...result,character:hint.characters[Math.floor(roll/hint.percent*hint.characters.length)]};
    roll-=hint.percent;
@@ -82,7 +86,7 @@ globalThis.NovaResults=(()=>{
   const state={totalPt,zoneCount,open:pending};
   return {state,card:zoneCount>1||pending?{...card,totalPt,zoneCount}:card};
  }
- const characterImages={sosuke:'lamps-20260916/sosuke.png',toto:'lamps-20260916/toto.png',urapi:'lamps-20260916/urapi.png',giru:'lamps-20260916/giru1.png',sora:'lamps-20260916/sora1.png',ouma:'lamps-20260916/ouma1.png',kushuri:'lamps-20260928/kushuri.png',nito:'lamps-20260928/nito.png',kushuri_nito:'lamps-20260928/nito.png',boss:'result-boss.png',sora2:'result-sora2.png',ouma2:'result-ouma2.png',group:'result-group.png'};
+ const characterImages={sosuke:'lamps-20260916/sosuke.png',toto:'lamps-20260916/toto.png',urapi:'lamps-20260916/urapi.png',giru:'lamps-20260916/giru1.png',sora:'lamps-20260916/sora1.png',ouma:'lamps-20260916/ouma1.png',kushuri:'lamps-20260928/kushuri.png',nito:'lamps-20260928/nito.png',kushuri_nito:'lamps-20260928/nito.png',boss:'result-boss.png',sora2:'result-sora2.png',ouma2:'result-ouma2.png',group:'result-group.png',plush_kushuri:'result-plush-20261024/kushuri.png',plush_toto:'result-plush-20261024/toto.png',plush_nito:'result-plush-20261024/nito.png',plush_sosuke:'result-plush-20261024/sosuke.png',plush_urapi:'result-plush-20261024/urapi.png',plush_neko:'result-plush-20261024/neko.png',plush_yamada:'result-plush-20261024/yamada.png',plush_nigo:'result-plush-20261024/nigo.png',plush_giru:'result-plush-20261024/giru.png',plush_sora:'result-plush-20261024/sora.png',plush_ouma:'result-plush-20261024/ouma.png'};
  const defaults={x:22,y:34,w:56,h:23,imageX:0,imageY:0,scale:100,numberX:47,numberY:51,numberW:51,numberH:30,font:10};
  const images=new Map();
  let positions={},root,card,art,num,fallback,panel,select,preview=false,active=null,imageRequest=0;
@@ -95,7 +99,9 @@ globalThis.NovaResults=(()=>{
   }
  }catch{positions={};}
  const key=()=>active?.kind==='bonus'?'bonus-'+(active.character==='nova'?'blue':active.character):active?.kind==='sortie'?'sortie-gold':active?active.character+'-'+active.color:'sosuke-red';
- const layout=()=>({...defaults,...(active?.character==='all'?{x:14,y:28,w:72,h:36,numberX:20,numberY:80,numberW:60,numberH:13,font:8}:{}),...(active?.kind==='sortie'?{numberX:4,numberW:92,font:6}:{}),...(active?.kind==='bonus'?{font:14,...positions['bonus-blue']}:{}),...positions[key()]});
+ const legacyKey=()=>{const character=legacyModeLayouts[active?.character];return character?(active.kind==='bonus'?'bonus-'+character:character+'-'+active.color):'';};
+ const baseLayout=()=>({...defaults,...(active?.character==='all'?{x:14,y:28,w:72,h:36,numberX:20,numberY:80,numberW:60,numberH:13,font:8}:{}),...(active?.kind==='sortie'?{numberX:4,numberW:92,font:6}:{}),...(active?.kind==='bonus'?{font:14,...positions['bonus-blue']}: {})});
+ const layout=()=>({...baseLayout(),...positions[legacyKey()],...positions[key()]});
  function loadImage(character,color){
   const src='assets/illustrations/'+(characterImages[character]||characterImages.sosuke),cached=images.get(src);
   if(cached&&!cached.failed)return cached;
@@ -157,16 +163,16 @@ globalThis.NovaResults=(()=>{
   select.insertAdjacentHTML('beforeend','<option value="sortie-gold">出陣チャレンジ・獲得数</option>');
   select.insertAdjacentHTML('beforeend','<option value="bonus-blue">BB終了・共通</option>');
   select.insertAdjacentHTML('beforeend',bonusModeHints.flatMap(h=>h.characters.map(id=>`<option value="bonus-${id}">BB終了・${names[id]}／${h.label}</option>`)).join(''));
-  select.onchange=()=>{preview=true;const [character,color]=select.value.split('-');show(character==='bonus'?{...bonus('150',{phase:'normal'}),character:color==='blue'?'kushuri':color}:character==='sortie'?sortie({finished:true,hits:5},{queuedZones:['sora','sora','ura_sora','giru','kushuri_nito']}):{kind:'preview',character,color,pt:'1234'});fill();};
+  select.onchange=()=>{preview=true;const [character,color]=select.value.split('-');show(character==='bonus'?{...bonus('150',{phase:'normal'}),character:color==='blue'?'plush_kushuri':color}:character==='sortie'?sortie({finished:true,hits:5},{queuedZones:['sora','sora','ura_sora','giru','kushuri_nito']}):{kind:'preview',character,color,pt:'1234'});fill();};
   panel.oninput=e=>{const k=e.target.dataset.field;if(!k)return;let v=Number(e.target.value);if(!Number.isFinite(v))return;v=Math.max(['x','y','imageX','imageY','numberX','numberY'].includes(k)?-100:1,Math.min(200,v));positions[key()]={...layout(),[k]:v};try{localStorage.setItem('nova_result_layout_v2',JSON.stringify(positions));}catch{}apply();};
-  panel.querySelector('#novaResultReset').onclick=()=>{delete positions[key()];localStorage.setItem('nova_result_layout_v2',JSON.stringify(positions));apply();fill();};
+  panel.querySelector('#novaResultReset').onclick=()=>{if(legacyKey())positions[key()]=baseLayout();else delete positions[key()];localStorage.setItem('nova_result_layout_v2',JSON.stringify(positions));apply();fill();};
   panel.querySelector('#novaResultClose').onclick=()=>{panel.close();if(preview){preview=false;hide();}};
   }
   new ResizeObserver(apply).observe(machine);window.addEventListener('resize',apply);
  }
  function show(value){
-  // Old saved BB cards used an unrequested logo. Migrate the image only, without a draw.
-  if(value?.kind==='bonus'&&value.character==='nova')value={...value,character:'kushuri'};
+  // Replace saved BB / normal-return AT art without rerolling its hint or payout.
+  if((value?.kind==='bonus'||value?.kind==='at'&&value.color==='mode')&&legacyModePortraits[value.character])value={...value,character:legacyModePortraits[value.character]};
   if(value?.kind==='bonus'&&value.next==='通常')value={...value,color:'mode'};
   init();if(!root)return;
   const request=++imageRequest;active=value;root.hidden=false;root.dataset.loading='true';

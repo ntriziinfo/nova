@@ -1,0 +1,82 @@
+{
+  "description": "User-provided original illustrations, copied byte-for-byte without editing.",
+  "assets": [
+    {
+      "id": "ouma",
+      "originalFile": "おうまぬい.png",
+      "file": "ouma.png",
+      "sha256": "6b7fb08c1efa002fdfae22d2c4149cc805aa8486e999fd8bb9d88736eb51c20b",
+      "bytes": 1572126
+    },
+    {
+      "id": "sora",
+      "originalFile": "そらぬい.png",
+      "file": "sora.png",
+      "sha256": "292866b187be27ad774be0032982082cc6f43ee64a48fcb25630238a3698ae1c",
+      "bytes": 1521710
+    },
+    {
+      "id": "giru",
+      "originalFile": "ギルぬい.png",
+      "file": "giru.png",
+      "sha256": "d7ff7d08b9f646ae6702dcc01503bda03283ef618bd45c55b242d8670e50ace6",
+      "bytes": 1617643
+    },
+    {
+      "id": "urapi",
+      "originalFile": "うらぴぬい.png",
+      "file": "urapi.png",
+      "sha256": "b3dcb454531655db8108deeef212f24e8f947380c6b0502552b048df64b2c2e7",
+      "bytes": 1474146
+    },
+    {
+      "id": "yamada",
+      "originalFile": "やまだぬい.png",
+      "file": "yamada.png",
+      "sha256": "43fa5355c1fa1217ff41ff38b3c1ed7c7bab65b05ac473bc4e4b250516b9daf3",
+      "bytes": 1177978
+    },
+    {
+      "id": "kushuri",
+      "originalFile": "くしゅりぬい.png",
+      "file": "kushuri.png",
+      "sha256": "b1658ae283d2db4ebd5e14f07ef1dc197fdb4c33e2929e986e1f0ce34a3230ef",
+      "bytes": 1965104
+    },
+    {
+      "id": "sosuke",
+      "originalFile": "そうすけぬい.png",
+      "file": "sosuke.png",
+      "sha256": "339ff9c60d3995906ad38b2fa7644394d4eb0ec21684cd9e6b740d2dc0a770af",
+      "bytes": 1316971
+    },
+    {
+      "id": "toto",
+      "originalFile": "ととぬい.png",
+      "file": "toto.png",
+      "sha256": "5ff2c244571581ad8bc8b21d75cac2a77524063a70150ba969bddae6a5857859",
+      "bytes": 1338631
+    },
+    {
+      "id": "neko",
+      "originalFile": "ねこぬい.png",
+      "file": "neko.png",
+      "sha256": "ac4e66f9d91f271886fbead4ccac5736ec530fc2bf499b83dc6526f66b891805",
+      "bytes": 1732337
+    },
+    {
+      "id": "nigo",
+      "originalFile": "にごぬい.png",
+      "file": "nigo.png",
+      "sha256": "dd4d6402f30175a951d18ea0ae727194bcb0b2377a5541c31dd5cc4bd1cd5c3f",
+      "bytes": 1444222
+    },
+    {
+      "id": "nito",
+      "originalFile": "にとぬい.png",
+      "file": "nito.png",
+      "sha256": "b7424fafbce114d55bd7279e1de15c2a15902985612a725e5447437674c1d1c5",
+      "bytes": 1693657
+    }
+  ]
+}

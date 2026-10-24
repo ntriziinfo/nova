@@ -1,0 +1,316 @@
+{
+  "date": "2026-10-24",
+  "scope": "BB終了時・通常へ戻るAT終了時のモード示唆リザルト",
+  "changes": "ユーザー提供のぬいぐるみ原画へ差し替え。示唆カテゴリ全体の出現率は維持し、同カテゴリ内のキャラは均等に選択。",
+  "gameplay": "ゲーム抽選・乱数消費・獲得pt・ストック・モード移行は変更なし。",
+  "ratesByMode": {
+    "A": [
+      {
+        "id": "default",
+        "label": "デフォルト",
+        "totalPercent": 85,
+        "characters": [
+          "plush_kushuri",
+          "plush_toto"
+        ],
+        "perCharacterPercent": 42.5
+      },
+      {
+        "id": "b-hint",
+        "label": "モードB以上示唆",
+        "totalPercent": 10,
+        "characters": [
+          "plush_nito",
+          "plush_sosuke"
+        ],
+        "perCharacterPercent": 5
+      },
+      {
+        "id": "c-hint",
+        "label": "モードC以上示唆",
+        "totalPercent": 5,
+        "characters": [
+          "plush_urapi",
+          "plush_neko"
+        ],
+        "perCharacterPercent": 2.5
+      },
+      {
+        "id": "b-confirmed",
+        "label": "モードB以上確定",
+        "totalPercent": 0,
+        "characters": [
+          "plush_yamada"
+        ],
+        "perCharacterPercent": 0
+      },
+      {
+        "id": "c-confirmed",
+        "label": "モードC以上確定",
+        "totalPercent": 0,
+        "characters": [
+          "plush_nigo"
+        ],
+        "perCharacterPercent": 0
+      },
+      {
+        "id": "heaven-confirmed",
+        "label": "天国以上確定",
+        "totalPercent": 0,
+        "characters": [
+          "plush_giru",
+          "plush_sora",
+          "plush_ouma"
+        ],
+        "perCharacterPercent": 0
+      }
+    ],
+    "B": [
+      {
+        "id": "default",
+        "label": "デフォルト",
+        "totalPercent": 65,
+        "characters": [
+          "plush_kushuri",
+          "plush_toto"
+        ],
+        "perCharacterPercent": 32.5
+      },
+      {
+        "id": "b-hint",
+        "label": "モードB以上示唆",
+        "totalPercent": 20,
+        "characters": [
+          "plush_nito",
+          "plush_sosuke"
+        ],
+        "perCharacterPercent": 10
+      },
+      {
+        "id": "c-hint",
+        "label": "モードC以上示唆",
+        "totalPercent": 5,
+        "characters": [
+          "plush_urapi",
+          "plush_neko"
+        ],
+        "perCharacterPercent": 2.5
+      },
+      {
+        "id": "b-confirmed",
+        "label": "モードB以上確定",
+        "totalPercent": 10,
+        "characters": [
+          "plush_yamada"
+        ],
+        "perCharacterPercent": 10
+      },
+      {
+        "id": "c-confirmed",
+        "label": "モードC以上確定",
+        "totalPercent": 0,
+        "characters": [
+          "plush_nigo"
+        ],
+        "perCharacterPercent": 0
+      },
+      {
+        "id": "heaven-confirmed",
+        "label": "天国以上確定",
+        "totalPercent": 0,
+        "characters": [
+          "plush_giru",
+          "plush_sora",
+          "plush_ouma"
+        ],
+        "perCharacterPercent": 0
+      }
+    ],
+    "C": [
+      {
+        "id": "default",
+        "label": "デフォルト",
+        "totalPercent": 50,
+        "characters": [
+          "plush_kushuri",
+          "plush_toto"
+        ],
+        "perCharacterPercent": 25
+      },
+      {
+        "id": "b-hint",
+        "label": "モードB以上示唆",
+        "totalPercent": 20,
+        "characters": [
+          "plush_nito",
+          "plush_sosuke"
+        ],
+        "perCharacterPercent": 10
+      },
+      {
+        "id": "c-hint",
+        "label": "モードC以上示唆",
+        "totalPercent": 15,
+        "characters": [
+          "plush_urapi",
+          "plush_neko"
+        ],
+        "perCharacterPercent": 7.5
+      },
+      {
+        "id": "b-confirmed",
+        "label": "モードB以上確定",
+        "totalPercent": 10,
+        "characters": [
+          "plush_yamada"
+        ],
+        "perCharacterPercent": 10
+      },
+      {
+        "id": "c-confirmed",
+        "label": "モードC以上確定",
+        "totalPercent": 5,
+        "characters": [
+          "plush_nigo"
+        ],
+        "perCharacterPercent": 5
+      },
+      {
+        "id": "heaven-confirmed",
+        "label": "天国以上確定",
+        "totalPercent": 0,
+        "characters": [
+          "plush_giru",
+          "plush_sora",
+          "plush_ouma"
+        ],
+        "perCharacterPercent": 0
+      }
+    ],
+    "天国": [
+      {
+        "id": "default",
+        "label": "デフォルト",
+        "totalPercent": 47,
+        "characters": [
+          "plush_kushuri",
+          "plush_toto"
+        ],
+        "perCharacterPercent": 23.5
+      },
+      {
+        "id": "b-hint",
+        "label": "モードB以上示唆",
+        "totalPercent": 20,
+        "characters": [
+          "plush_nito",
+          "plush_sosuke"
+        ],
+        "perCharacterPercent": 10
+      },
+      {
+        "id": "c-hint",
+        "label": "モードC以上示唆",
+        "totalPercent": 15,
+        "characters": [
+          "plush_urapi",
+          "plush_neko"
+        ],
+        "perCharacterPercent": 7.5
+      },
+      {
+        "id": "b-confirmed",
+        "label": "モードB以上確定",
+        "totalPercent": 10,
+        "characters": [
+          "plush_yamada"
+        ],
+        "perCharacterPercent": 10
+      },
+      {
+        "id": "c-confirmed",
+        "label": "モードC以上確定",
+        "totalPercent": 5,
+        "characters": [
+          "plush_nigo"
+        ],
+        "perCharacterPercent": 5
+      },
+      {
+        "id": "heaven-confirmed",
+        "label": "天国以上確定",
+        "totalPercent": 3,
+        "characters": [
+          "plush_giru",
+          "plush_sora",
+          "plush_ouma"
+        ],
+        "perCharacterPercent": 1
+      }
+    ],
+    "天国ループ": [
+      {
+        "id": "default",
+        "label": "デフォルト",
+        "totalPercent": 47,
+        "characters": [
+          "plush_kushuri",
+          "plush_toto"
+        ],
+        "perCharacterPercent": 23.5
+      },
+      {
+        "id": "b-hint",
+        "label": "モードB以上示唆",
+        "totalPercent": 20,
+        "characters": [
+          "plush_nito",
+          "plush_sosuke"
+        ],
+        "perCharacterPercent": 10
+      },
+      {
+        "id": "c-hint",
+        "label": "モードC以上示唆",
+        "totalPercent": 15,
+        "characters": [
+          "plush_urapi",
+          "plush_neko"
+        ],
+        "perCharacterPercent": 7.5
+      },
+      {
+        "id": "b-confirmed",
+        "label": "モードB以上確定",
+        "totalPercent": 10,
+        "characters": [
+          "plush_yamada"
+        ],
+        "perCharacterPercent": 10
+      },
+      {
+        "id": "c-confirmed",
+        "label": "モードC以上確定",
+        "totalPercent": 5,
+        "characters": [
+          "plush_nigo"
+        ],
+        "perCharacterPercent": 5
+      },
+      {
+        "id": "heaven-confirmed",
+        "label": "天国以上確定",
+        "totalPercent": 3,
+        "characters": [
+          "plush_giru",
+          "plush_sora",
+          "plush_ouma"
+        ],
+        "perCharacterPercent": 1
+      }
+    ]
+  },
+  "savedResults": "旧B確定の逢魔はやまだぬい、旧C確定のギルはにごぬいへ置換。保存済み示唆の意味を維持し再抽選しない。",
+  "atEntryBB": "ATへ進むBB終了時はくしゅりぬい・ととぬいを50%ずつ表示。次回モードは示唆しない。",
+  "assetManifest": "assets/illustrations/result-plush-20261024/sources.json"
+}

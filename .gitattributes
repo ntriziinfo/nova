@@ -69,3 +69,6 @@ assets/guide/game-flow-20261014-*.webp -filter -diff -merge -text
 
 assets/media/nova/checkpoint-bgm.mp3 -filter -diff -merge -text
 assets/media/nova/checkpoint-bgm.source.json -filter -diff -merge text
+# Supplied original mode-result portraits, loaded on demand without rebuilding the media archive.
+assets/illustrations/result-plush-20261024/*.png -filter -diff -merge -text
+assets/illustrations/result-plush-20261024/sources.json -filter -diff -merge text

@@ -7,7 +7,7 @@ test('BB result preserves its awarded points and destination through reload with
  for(const phase of ['normal','art']){
   const flow=Object.freeze({phase,remaining:'500',sets:'2',queuedZones:Object.freeze(['sora'])}),before=JSON.stringify(flow);
   const saved=JSON.parse(JSON.stringify(c.NovaResults.bonus('150',flow)));
-  assert.deepEqual(saved,{kind:'bonus',character:'kushuri',color:phase==='normal'?'mode':'blue',pt:'150',next:phase==='art'?'AT':'通常'});
+  assert.deepEqual(saved,{kind:'bonus',character:'plush_kushuri',color:phase==='normal'?'mode':'blue',pt:'150',next:phase==='art'?'AT':'通常'});
   assert.equal(JSON.stringify(flow),before);
   const {c:view,fields}=presenter();view.show(saved);
   assert.equal(fields.span.textContent,'BB獲得');assert.equal(fields.output.textContent,'150pt');
@@ -19,10 +19,10 @@ test('BB result preserves its awarded points and destination through reload with
 
 test('BB character hints have exact unconditional rates for each post-bonus mode',()=>{
  const cases=[
-  ['A',{kushuri:4250,toto:4250,nito:500,sosuke:500,urapi:500,ouma:0,giru:0,sora:0}],
-  ['B',{kushuri:3250,toto:3250,nito:1000,sosuke:1000,urapi:500,ouma:1000,giru:0,sora:0}],
-  ['C',{kushuri:2500,toto:2500,nito:1000,sosuke:1000,urapi:1500,ouma:1000,giru:500,sora:0}],
-  ...['天国','天国ループ'].map(mode=>[mode,{kushuri:2350,toto:2350,nito:1000,sosuke:1000,urapi:1500,ouma:1000,giru:500,sora:300}])
+  ['A',{plush_kushuri:4250,plush_toto:4250,plush_nito:500,plush_sosuke:500,plush_urapi:250,plush_neko:250,plush_yamada:0,plush_nigo:0,plush_giru:0,plush_sora:0,plush_ouma:0}],
+  ['B',{plush_kushuri:3250,plush_toto:3250,plush_nito:1000,plush_sosuke:1000,plush_urapi:250,plush_neko:250,plush_yamada:1000,plush_nigo:0,plush_giru:0,plush_sora:0,plush_ouma:0}],
+  ['C',{plush_kushuri:2500,plush_toto:2500,plush_nito:1000,plush_sosuke:1000,plush_urapi:750,plush_neko:750,plush_yamada:1000,plush_nigo:500,plush_giru:0,plush_sora:0,plush_ouma:0}],
+  ...['天国','天国ループ'].map(mode=>[mode,{plush_kushuri:2350,plush_toto:2350,plush_nito:1000,plush_sosuke:1000,plush_urapi:750,plush_neko:750,plush_yamada:1000,plush_nigo:500,plush_giru:100,plush_sora:100,plush_ouma:100}])
  ];
  for(const [mode,expected] of cases){
   const counts=Object.fromEntries(Object.keys(expected).map(k=>[k,0]));let draws=0;
@@ -47,27 +47,28 @@ test('BB mode confirmations never appear below their required mode, at AT entry,
    }
    boundary+=hint.percent;
   }
-  for(const phase of ['art','cz',undefined])for(const roll of [0,.49999,.5,.99999])assert.equal(r.bonus('150',{phase},mode,()=>roll).character,roll<.5?'kushuri':'toto');
+  for(const phase of ['art','cz',undefined])for(const roll of [0,.49999,.5,.99999])assert.equal(r.bonus('150',{phase},mode,()=>roll).character,roll<.5?'plush_kushuri':'plush_toto');
  }
- for(const mode of [undefined,'','unknown',null,0])for(const roll of [0,.5,.99999])assert.equal(r.bonus('150',{phase:'normal'},mode,()=>roll).character,roll<.5?'kushuri':'toto');
- for(const roll of [NaN,-.1,1,Infinity])assert.equal(r.bonus('150',{phase:'normal'},'天国',()=>roll).character,'kushuri');
+ for(const mode of [undefined,'','unknown',null,0])for(const roll of [0,.5,.99999])assert.equal(r.bonus('150',{phase:'normal'},mode,()=>roll).character,roll<.5?'plush_kushuri':'plush_toto');
+ for(const roll of [NaN,-.1,1,Infinity])assert.equal(r.bonus('150',{phase:'normal'},'天国',()=>roll).character,'plush_kushuri');
 });
 
 test('BB mode image uses separate crypto randomness and keeps its saved image without consuming the game RNG',async()=>{
- let draws=0;const c=vm.createContext({crypto:{getRandomValues(a){draws++;a[0]=Math.floor(.99*4294967296);return a;}}});
+ let draws=0;const c=vm.createContext({crypto:{getRandomValues(a){draws++;a[0]=Math.floor(.985*4294967296);return a;}}});
  vm.runInContext(fs.readFileSync('nova-results.js','utf8'),c);vm.runInContext('Math.random=()=>{throw Error("game RNG used by hint")}',c);
  const flow=Object.freeze({phase:'normal'}),card=c.NovaResults.bonus('150',flow,'天国');
- assert.equal(card.character,'sora');assert.equal(draws,1);
+ assert.equal(card.character,'plush_sora');assert.equal(draws,1);
  const {c:view,fields,images,flush}=presenter();view.show(card);images[0].onload();await flush();
  const saved=JSON.parse(JSON.stringify(card));view.hide();view.show(saved);
- assert.equal(images[0].src,'assets/illustrations/lamps-20260916/sora1.png');assert.equal(draws,1);
+ assert.equal(images[0].src,'assets/illustrations/result-plush-20261024/sora.png');assert.equal(draws,1);
  assert.equal(fields.span.textContent,'BB獲得');assert.equal(fields.output.textContent,'150pt');
  assert.equal(fields['.novaResultNext'].textContent,'次回モード示唆 / 次のBETで通常へ');
  assert(!JSON.stringify(saved).includes('天国'),'result must not disclose the exact internal mode');
 });
 
-test('all BB hint images render as bonus awards, including the two initial-zone characters',async()=>{
- for(const [character,file] of Object.entries({kushuri:'lamps-20260928/kushuri.png',toto:'lamps-20260916/toto.png',nito:'lamps-20260928/nito.png',sosuke:'lamps-20260916/sosuke.png',urapi:'lamps-20260916/urapi.png',ouma:'lamps-20260916/ouma1.png',giru:'lamps-20260916/giru1.png',sora:'lamps-20260916/sora1.png'})){
+test('all supplied plush hint images render as bonus awards',async()=>{
+ for(const id of ['kushuri','toto','nito','sosuke','urapi','neko','yamada','nigo','giru','sora','ouma']){
+  const character='plush_'+id,file='result-plush-20261024/'+id+'.png';
   const {c,fields,images,flush}=presenter();c.show({kind:'bonus',character,color:'blue',pt:'150',next:'通常'});
   images[0].onload();await flush();assert.equal(images[0].src,'assets/illustrations/'+file);
   assert.equal(c.root.dataset.initial,'false');assert.equal(fields.span.textContent,'BB獲得');
@@ -141,7 +142,7 @@ test('zone result includes final increment and preserves large point values',()=
 function presenter(){
  const source=fs.readFileSync('nova-results.js','utf8'),images=[],shown=[],fields={span:{},output:{},'.novaResultTotal':{},'.novaResultNext':{}};
  const c=vm.createContext({card:{},root:{hidden:true,dataset:{}},art:{querySelector:()=>({replaceWith:img=>shown.push(img.src)})},num:{setAttribute(){}},fallback:{querySelector:tag=>fields[tag]},names:{sora:'空',ouma:'逢魔'},init(){},apply(){},Image:class{constructor(){images.push(this);this.naturalWidth=100;}decode(){return Promise.resolve();}}});
- vm.runInContext(source.match(/ const settingHints=\[[^]*?\n \];/)[0]+source.match(/ const characterImages=.*;/)[0]+'const images=new Map();let imageRequest=0,active=null;'+source.slice(source.indexOf(' function loadImage('),source.indexOf(' function apply('))+source.slice(source.indexOf(' function show(value)'),source.indexOf(" if(typeof document")),c);
+ vm.runInContext(source.match(/ const settingHints=\[[^]*?\n \];/)[0]+source.match(/ const characterImages=.*;/)[0]+source.match(/ const legacyModePortraits=.*;/)[0]+'const images=new Map();let imageRequest=0,active=null;'+source.slice(source.indexOf(' function loadImage('),source.indexOf(' function apply('))+source.slice(source.indexOf(' function show(value)'),source.indexOf(" if(typeof document")),c);
  const flush=()=>new Promise(resolve=>setImmediate(resolve));
  return {c,images,shown,fields,flush};
 }
@@ -149,8 +150,19 @@ function presenter(){
 test('legacy BB logo saves show a default portrait without altering awarded points or the save',async()=>{
  const saved=Object.freeze({kind:'bonus',character:'nova',color:'blue',pt:'345',next:'AT'});
  const {c,images,fields,flush}=presenter();c.show(saved);images[0].onload();await flush();
- assert.equal(images[0].src,'assets/illustrations/lamps-20260928/kushuri.png');assert.equal(fields.output.textContent,'345pt');
+ assert.equal(images[0].src,'assets/illustrations/result-plush-20261024/kushuri.png');assert.equal(fields.output.textContent,'345pt');
  c.hide();c.show(saved);assert.equal(saved.character,'nova');assert.equal(fields['.novaResultNext'].textContent,'次のBETでATへ');
+});
+
+test('saved BB and AT mode portraits preserve their old confirmation meaning without rerolling',async()=>{
+ for(const kind of ['bonus','at'])for(const [character,replacement] of Object.entries({kushuri:'kushuri',toto:'toto',nito:'nito',sosuke:'sosuke',urapi:'urapi',ouma:'yamada',giru:'nigo',sora:'sora'})){
+  const saved=Object.freeze({kind,character,color:'mode',pt:'1234',next:'通常'}),before=JSON.stringify(saved);
+  const {c,images,fields,flush}=presenter();vm.runInContext('Math.random=()=>{throw Error("saved hint must not reroll")}',c);
+  c.show(saved);images[0].onload();await flush();
+  assert.equal(images[0].src,`assets/illustrations/result-plush-20261024/${replacement}.png`);
+  assert.equal(fields.output.textContent,'1234pt');assert.equal(c.root.dataset.color,'mode');
+  c.hide();c.show(saved);assert.equal(images.length,1);assert.equal(JSON.stringify(saved),before);
+ }
 });
 
 test('sortie result restores the exact acquired count, with no pt unit or AT setting hint, and resets its next-step text',async()=>{
