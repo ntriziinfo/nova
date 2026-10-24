@@ -53,11 +53,11 @@ test('overlapping game checkpoint is deferred once and the 50G fake boundary sta
  assert.equal(first.state.modeChecked,1);assert.equal(next.entry,'CZ');assert.equal(next.modeEvent.g,200);assert.equal(next.state.modeChecked,2);
  for(const mode of n.modes)for(const r of [.099,.101])assert.equal(!!spin(n.normalize({mode,games:49}),{phase:'normal'},()=>r).entry,n.modes.indexOf(mode)>=3||r<.1);
 });
-test('approved setting 3 keeps base and net speed; weak-role zone rates use the adopted allocation',()=>{
+test('approved AT4 keeps base and net speed; weak-role zone rates use the adopted allocation',()=>{
  for(let setting=1;setting<=6;setting++){
   const probs=n.normalRoleProbabilities(setting),paid=Object.entries(probs).reduce((sum,[k,p])=>sum+p*(k==='NAVI_BELL'?8:n.pay(k)+a.replayRefund(k)),0);
   assert(Math.abs(50/(3-paid)-30)<1e-9);
-  for(const upper of [false,true])assert(Math.abs(Object.entries(a.roleProbabilities(setting,upper)).reduce((sum,[k,p])=>sum+p*a.cashPayout(k),0)-3-(upper?7:4.5))<1e-9);
+  for(const upper of [false,true])assert(Math.abs(Object.entries(a.roleProbabilities(setting,upper)).reduce((sum,[k,p])=>sum+p*a.cashPayout(k),0)-3-4)<1e-9);
  }
  for(const role of ['WEAK_SUICA','WEAK_NOVA'])for(const [upper,high,p]of [[false,false,.05625],[false,true,.09375],[true,false,.5175],[true,true,.8625]])assert(Math.abs(a.extraZoneChance(3,role,upper,high,0)-p)<1e-12);
 });

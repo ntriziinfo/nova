@@ -3,8 +3,8 @@ globalThis.NovaNormal=(()=>{
  const lotteryRules=Object.freeze({version:140,ceilingGames:800,czScale:Object.freeze([.502,.510,.522,.498,.552,.616])});
  // Approved mode proposal: docs/mode-zones-20261014.json. Normal + CZ games share the mode clock.
  const modeRules={"modes":["A","B","C","天国","天国ループ"],"ceilings":[800,700,400,200,200],"initial":[50,25,10,12,3],"promotion":[[60,25,10,4,1],[0,65,20,12,3],[0,0,65,30,5],[0,0,0,80,20],[0,0,0,0,100]],"afterHeaven":[40,25,10,20,5],"afterLoop":[10,10,5,15,60],"fiftyFake":{"heaven":1,"other":0.1},"rates":{"A":{"100":0.1,"200":0.15,"300":0.03,"400":0.25,"500":0.03,"600":0.5,"700":0.03},"B":{"100":0.2,"200":0.03,"300":0.25,"400":0.03,"500":0.45,"600":0.03},"C":{"100":0.4,"200":0.25,"300":0.45},"天国":{"100":0.65},"天国ループ":{"100":0.65}}};const modes=modeRules.modes,ceilings=modeRules.ceilings,transitions=modeRules.promotion,gameZoneRates=modeRules.rates,atEndModeWeights={normal:modeRules.initial};
- // Approved reset / AT-end selection: docs/mode-selection-20261014.json.
- const modeSelection={"initial":[[46.9,25,10.7,13.7,3.7],[48.9,25,10.3,12.6,3.2],[49.1,25,10.2,12.5,3.2],[49.8,25,10.1,12.1,3],[55.8,24.5,8.6,9.1,2],[50.4,25,9.9,11.8,2.9]],"afterHeaven":[[36.7,24.5,10.5,22.3,6],[38.7,24.8,10.2,20.9,5.4],[39,24.9,10.1,20.7,5.3],[39.7,25,10,20.2,5.1],[46.5,25.5,8.9,15.7,3.4],[40.4,25.1,9.9,19.7,4.9]],"afterLoop":[[8.1,8.7,4.7,14.9,63.6],[9.2,9.5,4.9,15,61.4],[9.4,9.6,4.9,15,61.1],[9.8,9.9,5,15,60.3],[14.7,12.8,5.6,14.8,52.1],[10.3,10.2,5.1,15,59.4]]};
+ // Approved reset / AT-end selection: docs/at4-mode-cz-20261025.json.
+ const modeSelection={"initial":[[46.9,25,10.7,13.7,3.7],[48.9,25,10.3,12.6,3.2],[49.1,25,10.2,12.5,3.2],[49.8,25,10.1,12.1,3],[47.8,24.5,13.399999999999999,12.3,2],[50.4,25,9.9,11.8,2.9]],"afterHeaven":[[36.7,24.5,10.5,22.3,6],[38.7,24.8,10.2,20.9,5.4],[39,24.9,10.1,20.7,5.3],[39.7,25,10,20.2,5.1],[38.5,25.5,13.7,18.9,3.4],[40.4,25.1,9.9,19.7,4.9]],"afterLoop":[[8.1,8.7,4.7,14.9,63.6],[9.2,9.5,4.9,15,61.4],[9.4,9.6,4.9,15,61.1],[9.8,9.9,5,15,60.3],[6.699999999999999,12.8,10.399999999999999,18,52.1],[10.3,10.2,5.1,15,59.4]]};
  const gameZoneConfig={fakeRate:0,preludeMin:3,preludeMax:8,ceilingBonusRate:.5};
  const czPreludeRules=Object.freeze({minGames:3,maxGames:10,fakeOnMissRate:.5});
  function zonePoint(g){return g===50||g>=100&&g%100===0;}
@@ -215,3 +215,4 @@ globalThis.NovaNormal=(()=>{
  const rareMean=Object.values(rare).reduce((s,r)=>s+r.p*r.pay,0)/Object.values(rare).reduce((s,r)=>s+r.p,0);
  return {modeSelection,modeRules,normalRoleProbabilities,drawNormalRole,lotteryRules,czPreludeRules,czPreludeStage,roleCzRate,czEntryFactors,modeWeights,gameZoneRates,gameZoneConfig,atEndModeWeights,zonePoint,preludePresentation,zoneRate,normalLabel,resetImpurityPoints,resetImpurityWeights,resetDistribution,reset,modes,ceilings,transitions,rare,rareMean,rareFactor,roleProbabilities,drawRare,defaults,config,normalize,ceiling,favored,multiplier,pay,drawRole,advance,spin,claim,afterArt,bonusEnd,afterBonus};
 })();
+

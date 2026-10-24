@@ -1,10 +1,10 @@
 import test from 'node:test';import assert from 'node:assert/strict';import {loadModel} from '../scripts/zone-v2-model.mjs';
-test('earned checkpoint countdown pays ten net points per game with unchanged rare rates in all settings and AT tiers',()=>{
+test('earned checkpoint countdown pays four net points per game with unchanged rare rates in all settings and AT tiers',()=>{
  loadModel();const a=NovaArt;
  for(let setting=1;setting<=6;setting++)for(const upper of [false,true]){
-  const p=a.roleProbabilities(setting,true,10),original=a.roleProbabilities(setting,upper);
+  const p=a.roleProbabilities(setting,true,a.atNetRules.checkpoint),original=a.roleProbabilities(setting,upper);
   assert(Math.abs(Object.values(p).reduce((s,v)=>s+v,0)-1)<1e-12);assert(Object.values(p).every(v=>v>=0));
-  assert(Math.abs(Object.entries(p).reduce((s,[role,v])=>s+v*(a.cashPayout(role)-3),0)-10)<1e-12);
+  assert(Math.abs(Object.entries(p).reduce((s,[role,v])=>s+v*(a.cashPayout(role)-3),0)-4)<1e-12);
   for(const role of ['WEAK_SUICA','WEAK_NOVA','STRONG_NOVA'])assert.equal(p[role],original[role]);
   const start={...a.enter({setting},()=>.5),remaining:'400',researchUpper:upper};let net=0;
   for(let i=0;i<1000;i++){
@@ -12,7 +12,7 @@ test('earned checkpoint countdown pays ten net points per game with unchanged ra
    assert.equal(out.atOutcome.checkpointQuiet,true);assert.equal(out.atOutcome.direct,0);assert.equal(out.atOutcome.zone,'');
    assert.equal(out.result==='BELL',false);const paid=a.cashPayout(out.result);net+=paid-3;assert.equal(Number(out.flow.remaining),403-paid);
   }
-  assert(Math.abs(net/1000-10)<.02);
+  assert(Math.abs(net/1000-4)<.02);
  }
 });
 test('outside an earned countdown the existing normal/upper draws and rare awards are untouched',()=>{

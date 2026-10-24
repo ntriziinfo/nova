@@ -14,7 +14,7 @@ globalThis.NovaFlow = (() => {
   function forSetting(value={},setting){
     const cfg=config(value),i=Math.max(0,Math.min(5,Math.round(Number(setting)||1)-1));
     // Keep explicit debug overrides and guaranteed/rare-CZ probabilities.
-    if(cfg.czChance===defaults.czChance)cfg.czChance=[.5504,.556,.5588,.5792,.5932,.6336][i];
+    if(cfg.czChance===defaults.czChance)cfg.czChance=[.5504,.556,.5588,.5792,.66,.6336][i];
     if(cfg.strongChance===defaults.strongChance)cfg.strongChance=[.7752,.778,.7794,.7896,.7966,.8168][i];
     cfg.rewriteRates={WEAK_SUICA:[0.1782292065925642,0.1782292065925642,0.1782292065925642,0.17822920659256422,0.1782292065925642,0.17072897405726453][i],WEAK_NOVA:[0.1782292065925642,0.1782292065925642,0.1782292065925642,0.17822920659256422,0.1782292065925642,0.17072897405726453][i],STRONG_NOVA:1,...value.rewriteRates};
     return cfg;

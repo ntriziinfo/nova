@@ -58,14 +58,14 @@ export function check(){
 }
 test('fixed Sosuke: full entry, exact 50pt, persistence, simultaneous/queued awards, UI and checkpoint suppression',check);
 
-test('50pt awards keep their hit rates: fixed Sosuke in normal AT and direct credit in upper AT',()=>{
+test('retained 50pt awards: fixed Sosuke in normal AT and direct credit in upper AT',()=>{
  loadModel();
  for(const upper of [false,true])for(const role of ['WEAK_SUICA','WEAK_NOVA','STRONG_NOVA']){
   const rule=NovaArt.atRoleRules[role]||{values:[20,30,50,100,300],weights:[.6,.3,.098,.0018,.0002]};
   const mean=rule.values.reduce((n,v,i)=>n+v*rule.weights[i],0)*(upper?1.5:1),chance=mean/50;
   assert(chance>0&&chance<1);
   for(let setting=1;setting<=6;setting++)for(const [roll,hit]of [[chance-1e-10,true],[chance,false],[.999999,false]]){
-   const draws=role==='STRONG_NOVA'?[.1,roll]:[.99,0,roll,.99];
+   const draws=role==='STRONG_NOVA'?[.1,roll]:[.99,0,roll,.99,0];
    const t=NovaArt.resolveAtRole({researchUpper:upper},role,setting,seq(draws));
    assert.equal(!!t.fixed50,hit&&!upper);assert.equal(t.direct,hit&&upper?50:0);
    assert.equal(t.zone,hit&&!upper?'sosuke':'');

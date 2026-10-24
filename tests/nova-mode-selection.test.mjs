@@ -1,6 +1,6 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
 const c=vm.createContext({});for(const file of ['nova-tuning.js','nova-decrement.js','nova-art.js','nova-balance.js','nova-flow.js','nova-normal.js'])vm.runInContext(fs.readFileSync(file,'utf8'),c);
-const n=c.NovaNormal,evidence=JSON.parse(fs.readFileSync('docs/mode-selection-20261014.json'));
+const n=c.NovaNormal,evidence=JSON.parse(fs.readFileSync('docs/at4-mode-cz-20261025.json'));
 const json=x=>JSON.parse(JSON.stringify(x));
 test('reset and all AT-end mode selections reproduce the approved setting-specific allocation',()=>{
  assert.deepEqual(json(n.modeSelection),evidence.rows);

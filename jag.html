@@ -67,13 +67,13 @@
 <script src="nova-aim-presentation.js?v=20261025-nova-zone-stops"></script>
 <script src="nova-tuning.js?v=20261013-smartslot"></script>
 <script src="nova-decrement.js?v=20261013-smartslot"></script>
-<script src="nova-art.js?v=20261015-checkpoint10"></script>
+<script src="nova-art.js?v=20261025-at4-modecz"></script>
 <script src="nova-complete.js?v=20261014-net-store-limit"></script>
 <link rel="stylesheet" href="nova-complete-presentation.css?v=20261012-complete-screen">
 <script src="nova-complete-presentation.js?v=20261012-complete-screen"></script>
 <script src="nova-balance.js?v=20261014-mode-selection"></script>
-<script src="nova-normal.js?v=20261016-morning600"></script>
-<script src="nova-flow.js?v=20261014-mode-zones"></script>
+<script src="nova-normal.js?v=20261025-at4-modecz"></script>
+<script src="nova-flow.js?v=20261025-at4-modecz"></script>
 <link rel="stylesheet" href="nova-checkpoint-hint.css?v=20261013">
 <script src="nova-checkpoint-hint.js?v=20261013-parity"></script>
 <script src="nova-progress.js?v=20261013-checkpoint-cue"></script>
@@ -730,7 +730,7 @@
         <label>CZ 突入率 1/<input type="number" min="2" max="100000" data-flow-config="czDenom"></label>
         <label>強CZ 突入率 1/<input type="number" min="2" max="100000" data-flow-config="strongDenom"></label>
         <button type="button" id="saveFlowConfig">CZ設定を保存</button><output id="flowConfigStatus"></output>
-        <p>AT残ptは手取りで管理します。通常AT・上位ATの残pt消化中は、BET3ptを残ptへ戻し、払い出し分を減らします（8ptベルなら残ptは5pt減少）。リプレイは3ptを払い戻し、次のBETも3ptです。リプレイによる手取りと残ptの増減はありません。通常時のベースは全設定約30G/50pt。通常ATは純増4.5pt/G、上位ATは純増7pt/G、BIGは50pt。リプレイの戻しはBIGの50pt消化に含めません。累計差枚＋10,000ptでコンプリートとなり停止します。MYによる停止はありません。機械割・勝率はMY上限撤廃後の再試算待ちです。CZ・通常・AT設定や差枚上限を変更した場合は「未試算（独自設定）」と表示します。</p></details>
+        <p>AT残ptは手取りで管理します。通常AT・上位ATの残pt消化中は、BET3ptを残ptへ戻し、払い出し分を減らします（8ptベルなら残ptは5pt減少）。リプレイは3ptを払い戻し、次のBETも3ptです。リプレイによる手取りと残ptの増減はありません。通常時のベースは全設定約30G/50pt。通常AT・上位AT・完走確定中は純増4pt/G、BIGは50pt。リプレイの戻しはBIGの50pt消化に含めません。累計差枚＋10,000ptでコンプリートとなり停止します。MYによる停止はありません。機械割・勝率はMY上限撤廃後の再試算待ちです。CZ・通常・AT設定や差枚上限を変更した場合は「未試算（独自設定）」と表示します。</p></details>
         <button class="subBtn" id="debugNovaPatternsBtn" type="button">ノヴァ目3段階を確認</button>
         <div class="field">
           <label>次回転の出目指定</label>
@@ -845,7 +845,7 @@
 <script src="nova-history.js?v=20261001-history-performance"></script>
 <script src="nova-role-counter.js?v=20261014-role-counter"></script>
 <script src="nova-data-counter.js?v=20261015-mode-history"></script>
-<script src="nova-game.js?v=20261025-player-credit"></script>
+<script src="nova-game.js?v=20261025-at4-modecz"></script>
 <button type="button" id="novaSymbolPreviewOpen">ノヴァ目を確認</button>
 <dialog id="novaSymbolPreview"><h2>ノヴァ目</h2><label>出目<select id="novaPatternSelect"><option value="WEAK_NOVA">弱ノヴァ目：左3連</option><option value="STRONG_MIDDLE">強ノヴァ目：左・中3連</option><option value="STRONG_RIGHT">強ノヴァ目：左・右3連</option><option value="SUPER_NOVA" selected>スーパーノヴァ目：全リール3連</option></select></label><p id="novaPatternDescription"></p><div id="novaSymbolPreviewGrid"></div><p>出目の確認用です。通常時のスーパーはBIG・フリーズ各50%。ボーナス中は対象外。弱・強と自然出現率は未設定。</p><button type="button" id="novaSymbolPreviewClose">閉じる</button></dialog>
 </body>
