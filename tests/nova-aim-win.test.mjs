@@ -217,13 +217,25 @@ test('consecutive wins create independent nonlooping audio instances',()=>{
  c.playAimSevenWinSound();c.playAimSevenWinSound();assert.equal(audios.length,2);assert.notEqual(audios[0],audios[1]);assert.equal(audios[0].loop,false);assert.equal(c.aimWinAudios.size,2);audios[0].onended();assert.equal(c.aimWinAudios.size,1);
 });
 const aimCode=fs.readFileSync('nova-aim-presentation.js','utf8');
-test('right first aligns both symbols; other orders miss while internal result stays intact',()=>{
+test('middle-first and right-first align both winning symbols; left-first still misses',()=>{
  const c=vm.createContext({});vm.runInContext(aimCode,c);
  for(const symbol of ['seven','nebula'])for(const order of [[2,1,0],[2,0,1],[0,1,2],[0,2,1],[1,0,2],[1,2,0]]){
   const result=symbol==='seven'?'BIG':'NEBULA';
   const stops=order.map((index,n)=>c.NovaAim.stopTarget({symbol},result,order.slice(0,n+1),index));
-  assert.equal(stops.every(s=>s.onLine),order[0]===2);
-  assert.equal(stops.at(-1).aligned,order[0]===2);
+  assert.equal(stops.every(s=>s.onLine),order[0]!==0);
+  assert.equal(stops.at(-1).aligned,order[0]!==0);
+ }
+});
+
+test('every stop order keeps a fake seven or nebula cue from lining up, without redrawing',()=>{
+ const c=vm.createContext({});vm.runInContext(aimCode,c);
+ vm.runInContext('Math.random=()=>{throw Error("stop control consumed RNG")}',c);
+ for(const symbol of ['seven','nebula'])for(const order of [[0,1,2],[0,2,1],[1,0,2],[1,2,0],[2,0,1],[2,1,0]]){
+  const aim={symbol,color:'blue',result:'MISS'},before=JSON.stringify(aim);
+  const stops=order.map((index,n)=>c.NovaAim.stopTarget(aim,'MISS',order.slice(0,n+1),index));
+  assert.equal(stops.every(s=>s.onLine),false);
+  assert.equal(stops.at(-1).aligned,false);
+  assert.equal(JSON.stringify(aim),before);
  }
 });
 test('reverse miss breaks on third stop, scissors left-middle is a two-stop confirmation',()=>{

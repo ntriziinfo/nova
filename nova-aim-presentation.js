@@ -147,7 +147,8 @@ globalThis.NovaAim=(()=>{
  }
  // Visual stop control does not redraw or cancel the internal award.
  function stopTarget(aim,result,order,index){
-  const valid=order[0]===2,hit=result===(aim.symbol==='seven'?'BIG':'NEBULA');
+  // Middle-first and right-first both honor the already drawn winning symbol.
+  const valid=order[0]===1||order[0]===2,hit=result===(aim.symbol==='seven'?'BIG':'NEBULA');
   const rank=order.indexOf(index)+1;
   const onLine=valid&&hit || (rank<3 && !(valid&&!hit&&index===0));
   return {onLine,aligned:valid&&hit,rank};

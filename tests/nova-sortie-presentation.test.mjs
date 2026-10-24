@@ -16,12 +16,12 @@ test('sortie begins immediately without a freeze timer or input hold',()=>{
  const source=fs.readFileSync('nova-game.js','utf8');assert(!source.includes('NovaSortie.waitFreeze('));assert(!source.includes('NovaSortie.freezeDelay('));assert(!source.includes('sortieFreezeUntil=Date.now()'));
 });
 
-test('only right-middle-left with an internal win aligns NOVA; every miss shifts the left by one row',()=>{
+test('middle-first or right-middle-left with an internal win aligns NOVA; every miss shifts the left by one row',()=>{
  const c=load();vm.runInContext('Math.random=()=>{throw Error("presentation consumed RNG")}',c);
  for(const won of [false,true])for(const order of orders){
   const resolved={researchSortie:{won},reward:8,flowAfter:{remaining:'765',queuedZones:won?['sora']:[]}},spin={resolved,auditPressOrder:[]},before=JSON.stringify(resolved),columns=[];
   for(const i of order){spin.auditPressOrder.push(i);const target=c.NovaSortie.target(spin,i,strips);columns[i]=plain(target.column);}
-  const aligned=columns.every((col,i)=>col.every((v,row)=>v===`NOVA_${i}_${row}`)),expected=won&&order.join()==='2,1,0';
+  const aligned=columns.every((col,i)=>col.every((v,row)=>v===`NOVA_${i}_${row}`)),expected=won&&(order[0]===1||order.join()==='2,1,0');
   assert.equal(aligned,expected);assert.deepEqual(columns[0],expected?strips[0].slice(1,4):strips[0].slice(0,3));assert.equal(JSON.stringify(resolved),before);
  }
 });
