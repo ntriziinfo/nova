@@ -3984,11 +3984,27 @@
     if(PLAY_SESSION_BASELINE_STORAGE_KEY){
       safeStorageSet(PLAY_SESSION_BASELINE_STORAGE_KEY, JSON.stringify(playSessionStartStats));
     }
+    reconcilePlaySessionBaseline();
+  }
+
+  function reconcilePlaySessionBaseline(){
+    if(!SLOT_PLAY_SESSION || !playSessionStartStats)return;
+    if(!['totalSpins','totalFee','totalPaid'].some(key=>(Number(stats[key])||0)<(Number(playSessionStartStats[key])||0)))return;
+    // Match the settlement server's counter-reset rule and persist the new epoch.
+    playSessionStartStats=sessionBaselineStats({});
+    displaySinceBonusOffset=0;
+    if(PLAY_SESSION_BASELINE_STORAGE_KEY)safeStorageSet(PLAY_SESSION_BASELINE_STORAGE_KEY,JSON.stringify(playSessionStartStats));
   }
 
   function playSessionBaselineProfit(){
     if(playSessionStartStats) return Number(playSessionStartStats.profit) || 0;
     return CREDIT_BASELINE_PROFIT;
+  }
+
+  function playSessionCredit(){
+    reconcilePlaySessionBaseline();
+    const profit=(Number(stats.totalPaid)||0)-(Number(stats.totalFee)||0);
+    return SLOT_PLAY_SESSION ? profit-playSessionBaselineProfit()+(Number(storeResumeState?.creditCarry)||0) : profit;
   }
 
   function adminSnapshot(){
@@ -3997,6 +4013,7 @@
     return {
       machineId,
       playSessionId:PLAY_SESSION_ID,
+      adminCommandLastId,
       playSessionStartStats:playSessionStartStats ? {...playSessionStartStats} : null,
       machineDisplayStats:machineDisplayStats(),
       name: settings.title || machineId,
@@ -4213,7 +4230,10 @@
           const command = row.command || row;
           const commandId = Number(row.id || command.id || row.createdAtMs || 0) || 0;
           if(commandId && commandId <= adminCommandLastId) continue;
-          handleAdminCommand(command);
+          // Restored cabinet state already includes commands before this entry.
+          // A fresh browser must not replay an old reset against the new customer.
+          const commandsAfter=Number(storeResumeState?.commandsAfter)||Number(storeResumeState?.state?.savedAt)||0;
+          if(!commandsAfter || Number(row.createdAtMs)>commandsAfter)handleAdminCommand(command);
           adminCommandLastId = Math.max(adminCommandLastId, commandId);
           safeStorageSet(ADMIN_COMMAND_LAST_ID_KEY, String(adminCommandLastId));
         }
@@ -5694,6 +5714,7 @@
   }
 
   function updateDisplay(){
+    reconcilePlaySessionBaseline();
     syncCompletePresentation();
     showSortieResultIfReady();
     renderRemainingCounters();
@@ -5826,7 +5847,7 @@
       gogoChance.classList.toggle("is-bar-confirm", jagChanceBarConfirm);
       gogoChance.setAttribute("aria-pressed", jagChanceLit ? "true" : "false");
     }
-    const displayCredit = SLOT_PLAY_SESSION ? profit - playSessionBaselineProfit() : profit;
+    const displayCredit = playSessionCredit();
     if(active)jagChainBonusHandoff=false;
     const chain=chainCountStep(jagChainCount,!!(active || jagChainBonusHandoff || normalState.bonusPending || normalState.flow?.phase==='art'),Number(stats.totalPaid)||0,Number(stats.totalFee)||0);
     jagChainCount=chain.state;
@@ -10231,6 +10252,7 @@
         display:base=>{if(base&&typeof base==='object'&&!Array.isArray(base))machineDisplayBase=base;}
       });
     }catch(error){storageRestoreBlocked=true;showPlayBlocked('restore');return;}
+    adminCommandLastId=Math.max(adminCommandLastId,Number(storeResumeState?.lastCommandId)||0);
     bootGame();
     storeBootReady=!storageRestoreBlocked;
     // Register after setup's final save, so pagehide commits before releasing ownership.

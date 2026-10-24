@@ -10,7 +10,7 @@ function setup(){
   const timers = new Map(), calls = [], handled = [], saved = [];
   let id=0;
   const c = vm.createContext({
-    adminCommandPollTimer:null, adminCommandPollInFlight:false, adminCommandPollRequested:false, adminCommandLastId:0,
+    adminCommandPollTimer:null, adminCommandPollInFlight:false, adminCommandPollRequested:false, adminCommandLastId:0,storeResumeState:null,
     ADMIN_COMMAND_LAST_ID_KEY:'last-id', ADMIN_SERVER:'https://admin.test', machineId:'nova-01', window:{fetch:true},
     canUsePlayState:()=>true, AbortSignal,
     setTimeout(fn, ms){ timers.set(++id, {fn, ms}); return id; }, clearTimeout(id){timers.delete(id);},
@@ -49,6 +49,15 @@ test('network failure backs off, revokes permission, and can recover', async()=>
   assert.equal(h.c.connection,'offline');assert.equal(h.c.permission,false);assert.equal([...h.timers.values()][0].ms,5000);
   const next=h.c.pollAdminCommands();h.respond(1);await next;
   assert.equal(h.c.permission,true);assert.equal(h.c.adminCommandPollInFlight,false);
+});
+
+test('a fresh customer device consumes historical command IDs without replaying old resets or settings',async()=>{
+  const h=setup();h.c.storeResumeState={commandsAfter:1000};
+  const p=h.c.pollAdminCommands();
+  h.respond(0,[{id:151,createdAtMs:900,command:{type:'applySettings'}},{id:152,createdAtMs:999,command:{type:'reset'}},
+    {id:153,createdAtMs:1000,command:{type:'reset'}},{id:154,createdAtMs:1100,command:{type:'stopAuto'}}]);await p;
+  assert.deepEqual(h.handled.map(x=>x.type),['stopAuto']);
+  assert.deepEqual(h.saved,['151','152','153','154']);assert.equal(h.c.adminCommandLastId,154);
 });
 test('ownership loss during fetch cannot execute commands or restart polling',async()=>{
   const h=setup(), p=h.c.pollAdminCommands();h.c.canUsePlayState=()=>false;h.respond(0,[{id:1,command:{type:'reset'}}]);await p;
