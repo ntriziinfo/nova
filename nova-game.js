@@ -7925,6 +7925,9 @@
     spin.rareCueVoicePlayed=true;spin.rareCueVoice={character,grade};
     // Keep the character draw so hiding a cue cannot shift later game lotteries.
     if(spin.resolved?.researchSortie||isComebackChanceSpin(spin.resolved))return;
+    // Queued zones can start after flowBefore was captured on their first BET.
+    const zone=String((spin.resolved?.zoneStartFlow||spin.resolved?.flowAfter)?.zone||'').replace(/^ura_/,'');
+    if(['urapi','ouma'].includes(zone))return;
     // Cue rarity is visual-only: retain the existing single game-RNG character draw.
     if(spin.resolved?.flowBefore?.phase==='art'&&['bigChance','hot'].includes(grade)&&cueRng()>=.2)grade='chance';
     spin.rareCueVoice.grade=grade;

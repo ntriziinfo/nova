@@ -61,3 +61,21 @@ test('AT winning rare cues upgrade only 20%, preserve prizes and consume one ori
   const spin={result:'WEAK_NOVA',resolved};c.playRareCueVoice(spin,()=>.5,()=>{throw Error('non-AT-award must not draw cue rarity');});assert.equal(spin.rareCueVoice.grade,resolved.flowBefore.phase==='art'?'chance':'bigChance');
  }
 });
+
+test('queued Urapi and Ouma first spins suppress the chance line without shifting the next lottery',()=>{
+ loadModel();
+ for(const zone of ['urapi','ouma','ura_ouma']){
+  const {c,sounds}=setup(),flow={...NovaArt.enter({setting:3},()=>.5),queuedZones:[zone]};
+  const rng=xoshiro128(73),control=xoshiro128(73);
+  const step=NovaArt.step(flow,{setting:3},rng,'SUPER_NOVA');
+  const expected=NovaArt.step(flow,{setting:3},control,'SUPER_NOVA');
+  assert.equal(flow.zone,'');assert.equal(step.zoneStartFlow.zone,zone.replace(/^ura_/,''));
+  assert.equal(step.flow.zoneLeft,4);assert.equal(step.result,'SUPER_NOVA');
+  const resolved={...step,flowBefore:flow,flowAfter:step.flow},before=JSON.stringify(resolved),spin={result:step.result,resolved};
+  let draws=0;c.playRareCueVoice(spin,()=>{draws++;return rng();});
+  c.playRareCueVoice(spin,()=>{throw Error('duplicate cue draw');});
+  control(); // Preserve the historical presentation draw consumed on this spin.
+  assert.deepEqual(sounds,[],zone);assert.equal(draws,1);assert.equal(JSON.stringify(resolved),before);
+  assert.deepEqual(NovaArt.step(step.flow,{setting:3},rng),NovaArt.step(expected.flow,{setting:3},control));
+ }
+});
