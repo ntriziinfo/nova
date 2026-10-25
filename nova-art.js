@@ -403,7 +403,7 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
   if(!Number.isFinite(Number(net))||!Number.isFinite(Number(next))||Number(next)<=0)return false;
   return Number(net)+Number(s.remaining||0)>=Number(next);
  }
- const weakAtAwardScales=Object.freeze([0.665,0.815,0.67,0.775,0.79,0.84]);
+ const weakAtAwardScales=Object.freeze([0.49,0.67,0.46,0.775,0.79,0.84]);
  function resolveAtRole(s,role,setting,rng=Math.random,netPt=0){
   const rules=commonAtRulesFor(setting),wasHigh=!!s.atHigh,held=wasHigh&&s.atHighLeft>0;
   const out={wasHigh,direct:0,zone:'',promoted:false,rewardFactor:1};if(held)s.atHighLeft--;
