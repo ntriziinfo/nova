@@ -15,10 +15,14 @@ globalThis.NovaBellNavi=(()=>{
   const normal=r?.normalBellNavi&&r.flowBefore?.phase==='normal'&&!spin.aTypeBonusActiveAtStart&&!r.bonusPendingAtStart&&!r.zoneSpin;
   return ['BELL','BELL15'].includes(spin?.result)&&!!(normal||available(spin));
  }
- function drawRareNavi(spin,rng=Math.random){
+ // Presentation-only randomness must not shift the game's lottery sequence.
+ function cueRandom(){return globalThis.crypto?.getRandomValues?globalThis.crypto.getRandomValues(new Uint32Array(1))[0]/4294967296:1;}
+ function drawRareNavi(spin,rng=Math.random,cueRng=cueRandom){
   const role=rareRoles[spin?.result];if(!role||!available(spin))return null;
   const [color,strength]=role;
   const double= strength===2||strength===1&&rng()<.5;
+  if((color==='green'||color==='red')&&spin.resolved.atOutcome?.zone&&cueRng()<.2)
+   return {color:color==='green'?'red':'green',mark:'!'};
   return {color,mark:double&&confirmed(spin)?'!!':'!'};
  }
  function confirmed(spin){

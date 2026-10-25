@@ -6,6 +6,28 @@ const c=vm.createContext({});
 for(const file of ['nova-bell-navi.js','nova-direct-award.js'])vm.runInContext(fs.readFileSync(file,'utf8'),c);
 const n=c.NovaBellNavi,a=c.NovaDirectAward,copy=x=>JSON.parse(JSON.stringify(x));
 const spin=result=>({result,stopped:[false,false,false],resolved:{flowBefore:{phase:'art'}}});
+test('contradictory single alerts occur on exactly 20 percent of eligible zone wins only',()=>{
+ for(const role of ['WEAK_SUICA','STRONG_SUICA','WEAK_NOVA','STRONG_NOVA','SUPER_NOVA']){
+  const original=role.includes('SUICA')?'green':'red',opposite=original==='green'?'red':'green';
+  let contradictions=0;
+  for(let i=0;i<100;i++){
+   const s=spin(role);s.resolved.atOutcome={zone:'sosuke'};const before=JSON.stringify(s);let draws=0;
+   const nav=n.drawRareNavi(s,()=>{draws++;return 0;},()=>(i+.5)/100);
+   if(nav.color===opposite){contradictions++;assert.equal(nav.mark,'!');}
+   assert.equal(draws,['STRONG_SUICA','STRONG_NOVA'].includes(role)?1:0);
+   assert.equal(JSON.stringify(s),before);
+  }
+  assert.equal(contradictions,20);
+  for(const award of [{},{direct:50},{promoted:true}]){
+   const s=spin(role);s.resolved.atOutcome=award;
+   assert.equal(n.drawRareNavi(s,()=>0,()=>0).color,original);
+  }
+ }
+ for(const role of ['CHANCE_A','CHANCE_B']){
+  const s=spin(role);s.resolved.atOutcome={zone:'toto'};
+  assert.equal(n.drawRareNavi(s,()=>0,()=>0).color,'purple');
+ }
+});
 test('losing and high-state-only rare roles never double; RNG consumption is unchanged',()=>{
  for(const role of ['WEAK_SUICA','STRONG_SUICA','CHANCE_A','CHANCE_B','WEAK_NOVA','STRONG_NOVA','SUPER_NOVA']){
   let calls=0;const s=spin(role);s.resolved.atOutcome={promoted:true};
