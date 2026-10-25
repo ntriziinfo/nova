@@ -6,14 +6,26 @@ const c=vm.createContext({});
 for(const file of ['nova-bell-navi.js','nova-direct-award.js'])vm.runInContext(fs.readFileSync(file,'utf8'),c);
 const n=c.NovaBellNavi,a=c.NovaDirectAward,copy=x=>JSON.parse(JSON.stringify(x));
 const spin=result=>({result,stopped:[false,false,false],resolved:{flowBefore:{phase:'art'}}});
-test('rare navigation colors and strength hints: weak never doubles, strong splits evenly',()=>{
+test('losing and high-state-only rare roles never double; RNG consumption is unchanged',()=>{
+ for(const role of ['WEAK_SUICA','STRONG_SUICA','CHANCE_A','CHANCE_B','WEAK_NOVA','STRONG_NOVA','SUPER_NOVA']){
+  let calls=0;const s=spin(role);s.resolved.atOutcome={promoted:true};
+  const before=JSON.stringify(s);assert.equal(n.drawRareNavi(s,()=>{calls++;return 0;}).mark,'!');
+  assert.equal(calls,['STRONG_SUICA','CHANCE_B','STRONG_NOVA'].includes(role)?1:0);
+  assert.equal(JSON.stringify(s),before);
+ }
+ for(const award of [{atOutcome:{direct:50}},{atOutcome:{zone:'sosuke'}},{sortieWon:true},{internalBonus:'BIG'}]){
+  const s=spin('STRONG_SUICA');Object.assign(s.resolved,award);
+  assert.equal(n.drawRareNavi(s,()=>0).mark,'!!');
+ }
+});
+test('rare navigation doubles only on confirmed awards and preserves strength draws',()=>{
  for(const [weak,strong,color]of [['WEAK_SUICA','STRONG_SUICA','green'],['CHANCE_A','CHANCE_B','purple'],['WEAK_NOVA','STRONG_NOVA','red']]){
   for(const roll of [0,.49,.5,.99]){
    assert.deepEqual(copy(n.drawRareNavi(spin(weak),()=>roll)),{color,mark:'!'});
-   assert.deepEqual(copy(n.drawRareNavi(spin(strong),()=>roll)),{color,mark:roll<.5?'!!':'!'});
+   assert.deepEqual(copy(n.drawRareNavi({...spin(strong),resolved:{flowBefore:{phase:'art'},atOutcome:{zone:'sosuke'}}},()=>roll)),{color,mark:roll<.5?'!!':'!'});
   }
  }
- for(const roll of [0,.99])assert.deepEqual(copy(n.drawRareNavi(spin('SUPER_NOVA'),()=>roll)),{color:'red',mark:'!!'});
+ for(const roll of [0,.99])assert.deepEqual(copy(n.drawRareNavi({...spin('SUPER_NOVA'),resolved:{flowBefore:{phase:'art'},internalBonus:'BIG'}},()=>roll)),{color:'red',mark:'!!'});
 });
 test('rare hints keep ordinary-AT scope and never replace yellow bell orders',()=>{
  for(const role of ['BELL','REPLAY','MISS','BIG','NEBULA'])assert.equal(n.drawRareNavi(spin(role)),null);
@@ -33,3 +45,4 @@ test('ladder gains retain their model value but do not use the full-reel overlay
  assert.equal(a.amount({atOutcome:{direct:30},flowBefore:{phase:'art'}}),30);
  assert.equal(a.amount({zoneAward:0,flowBefore:{phase:'art',zone:'giru'}}),0);
 });
+

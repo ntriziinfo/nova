@@ -72,8 +72,8 @@ body[data-art-zone=toto][data-toto-color=rainbow] .novaArtItem[data-artwork=toto
 #zoneRoulette{position:absolute;z-index:90;left:15%;right:15%;top:40%;padding:20px;background:#160e24f2;border:2px solid #e8bb62;border-radius:12px;color:#fff;text-align:center;font:bold 22px system-ui;pointer-events:none;box-shadow:0 0 24px #b859dd}
 #zoneRoulette[hidden]{display:none}
 
-.reel.cz-stop-blackout .window{filter:brightness(0)!important}
-.reel.cz-prelude-blackout .window{filter:brightness(0)!important}
+.reel.cz-stop-blackout .window{filter:brightness(.55)!important}
+.reel.cz-prelude-blackout .window{filter:brightness(.55)!important}
 body[data-game-phase="cz"] #machine:not([data-cz-prelude-active="true"]) .reels{border-radius:12px;box-shadow:0 0 0 2px #63377c,0 0 16px #71399580,0 0 30px #51236950,inset 0 0 16px #51236933!important}
 body[data-game-phase="cz"] #machine:not([data-cz-prelude-active="true"]) .reel{border-color:#70478a!important;box-shadow:0 0 6px #71399566,inset 0 0 8px #51236944!important}
 body[data-game-phase="strong_cz"] #machine .reels,

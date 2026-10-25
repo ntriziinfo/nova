@@ -18,7 +18,12 @@ globalThis.NovaBellNavi=(()=>{
  function drawRareNavi(spin,rng=Math.random){
   const role=rareRoles[spin?.result];if(!role||!available(spin))return null;
   const [color,strength]=role;
-  return {color,mark:strength===2||strength===1&&rng()<.5?'!!':'!'};
+  const double= strength===2||strength===1&&rng()<.5;
+  return {color,mark:double&&confirmed(spin)?'!!':'!'};
+ }
+ function confirmed(spin){
+  const r=spin?.resolved;
+  return !!(Number(r?.atOutcome?.direct)>0||r?.atOutcome?.zone||r?.sortieWon||r?.internalBonus);
  }
  function drawOrder(rng=Math.random){return orders[Math.min(5,Math.max(0,Math.floor(rng()*6)))].slice();}
  function stopOrder(spin){return spin?.resolved?.researchSortie||spin?.resolved?.stockEntry?[2,1,0]:spin?.bellNaviOrder?.slice()||(spin?.resolved?.aim||spin?.zoneActiveAtStart?[2,1,0]:[0,1,2]);}
@@ -58,7 +63,8 @@ globalThis.NovaBellNavi=(()=>{
   // Also hide saved cues on resume; comeback reveals the role only on the reels.
   // Retain the existing visual draws in begin(); sortie owns the visible guide.
   if(active?.resolved?.researchSortie||active?.resolved?.comebackEvent||active?.resolved?.flowBefore?.comebackLeft){root.hidden=true;return;}
-  const signal=active?.rareNavi,order=active?.bellNaviOrder||(!active&&previewing?[0,1,2]:null),stopped=active?.stopped||[];
+  const savedSignal=active?.rareNavi;
+  const signal=savedSignal?.mark==='!!'&&!confirmed(active)?{...savedSignal,mark:'!'}:savedSignal,order=active?.bellNaviOrder||(!active&&previewing?[0,1,2]:null),stopped=active?.stopped||[];
   root.hidden=(!order&&!signal)||!!(active&&stopped.every(Boolean));
   root.dataset.preview=String(!active&&previewing);
   root.dataset.kind=signal?'rare':'bell';root.dataset.color=signal?.color||'yellow';
