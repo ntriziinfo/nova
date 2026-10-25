@@ -7,7 +7,26 @@ import vm from 'node:vm';
 const context=vm.createContext({});vm.runInContext(fs.readFileSync('nova-bell-navi.js','utf8'),context);
 const n=context.NovaBellNavi,copy=x=>JSON.parse(JSON.stringify(x));
 const bell=()=>({result:'BELL',resolved:{flowBefore:{phase:'art'}}});
-test('AT bell nav has all six equally sized random stop-order intervals',()=>{
+test('normal left-first bell navigation is reserved for confirmed CZ entry',()=>{
+ const normal=extra=>({result:'BELL',resolved:{flowBefore:{phase:'normal'},normalBellNavi:true,...extra}});
+ for(const extra of [{},{normalInternal:{prelude:{kind:'czFake'}}},{internalBonus:'BIG'}]){
+  for(let i=0;i<60;i++){
+   let calls=0;const spin=normal(extra),before=JSON.stringify(spin);
+   assert.notEqual(n.drawOrder(()=>{calls++;return (i+.5)/60;},spin)[0],0);
+   assert.equal(calls,1);assert.equal(JSON.stringify(spin),before);
+  }
+ }
+ for(const extra of [{normalInternal:{prelude:{kind:'cz'}}},{flowAfter:{phase:'cz'}},{czPrelude:{enter:true}}]){
+  assert.equal(n.drawOrder(()=>0,normal(extra))[0],0);
+ }
+});
+test('AT left-first only appears with a confirmed reward or won zone prelude',()=>{
+ for(let i=0;i<60;i++)assert.notEqual(n.drawOrder(()=>(i+.5)/60,bell())[0],0);
+ for(const extra of [{atOutcome:{direct:50}},{flowAfter:{atPrelude:{zones:['toto']}}},{atPrelude:{confirmed:true}}]){
+  const s=bell();Object.assign(s.resolved,extra);assert.equal(n.drawOrder(()=>0,s)[0],0);
+ }
+});
+test('unrestricted bell nav has all six equally sized random stop-order intervals',()=>{
  const drawn=[];
  for(let i=0;i<6;i++){
   const order=copy(n.drawOrder(()=>(i+.5)/6));assert.deepEqual(order.slice().sort(),[0,1,2]);drawn.push(order.join(''));

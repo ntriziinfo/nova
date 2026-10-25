@@ -25,7 +25,19 @@ globalThis.NovaBellNavi=(()=>{
   const r=spin?.resolved;
   return !!(Number(r?.atOutcome?.direct)>0||r?.atOutcome?.zone||r?.sortieWon||r?.internalBonus);
  }
- function drawOrder(rng=Math.random){return orders[Math.min(5,Math.max(0,Math.floor(rng()*6)))].slice();}
+ function leftFirstAllowed(spin){
+  const r=spin?.resolved;
+  if(r?.flowBefore?.phase==='art')return confirmed(spin)||!!r.flowAfter?.atPrelude?.zones?.length||!!r.atPrelude?.confirmed;
+  if(r?.flowBefore?.phase!=='normal')return false;
+  if(r.internalBonus||r.bonusPendingAtStart)return false;
+  const prelude=r.normalInternal?.prelude;
+  return ['cz','strong_cz'].includes(r.flowAfter?.phase)||!!r.czPrelude?.enter||!!r.czPrelude?.announce||
+    !!(prelude&&['cz','ceilingCz'].includes(prelude.kind));
+ }
+ function drawOrder(rng=Math.random,spin){
+  const pool=spin&&!leftFirstAllowed(spin)?orders.slice(2):orders;
+  return pool[Math.min(pool.length-1,Math.max(0,Math.floor(rng()*pool.length)))].slice();
+ }
  function stopOrder(spin){return spin?.resolved?.researchSortie||spin?.resolved?.stockEntry?[2,1,0]:spin?.bellNaviOrder?.slice()||(spin?.resolved?.aim||spin?.zoneActiveAtStart?[2,1,0]:[0,1,2]);}
  function init(){
   if(root)return true;
@@ -96,7 +108,7 @@ globalThis.NovaBellNavi=(()=>{
   if(img.complete&&img.naturalWidth>0)img.onload();
  }
  function begin(spin,rng=Math.random){
-  spin.bellNaviOrder=eligible(spin)?drawOrder(rng):null;
+  spin.bellNaviOrder=eligible(spin)?drawOrder(rng,spin):null;
   spin.rareNavi=drawRareNavi(spin,rng);
   // The caller uses the returned numbered order to trigger the bell BET sound.
   active=spin;render();return spin.bellNaviOrder;
