@@ -872,7 +872,7 @@
     credit:{x:38.0, y:85.8, w:12.2, h:11.0},
     count:{x:52.0, y:85.8, w:12.2, h:11.0},
     payout:{x:66.0, y:85.8, w:11.0, h:11.0},
-    bonusdata:{x:22.0, y:1.9, w:56.0, h:7.0}
+    playdata:{x:6, y:18, w:88, h:10.8}
   });
   let pageZoom = 1;
   let pagePanX = PAGE_PAN_DEFAULT;
@@ -3189,7 +3189,7 @@
   }
 
   function scheduleSlumpGraphRender(){
-    if(!audioDock || !audioDock.classList.contains("slumpOpen")) return;
+    if(document.querySelector('.slumpPublic')?.hidden) return;
     if(slumpRenderRequest) return;
     slumpRenderRequest = requestAnimationFrame(()=>{
       slumpRenderRequest = 0;
@@ -5969,7 +5969,7 @@
   }
 
   function updateDataCounter(machineDisplay){
-    if(!audioDock?.classList.contains('slumpOpen'))return;
+    if(!$('slumpPanel')?.classList.contains('novaCabinetData'))return;
     NovaDataCounter.render($('novaDataCounter'),NovaDataCounter.display(stats,machineDisplayBase,playSessionStartStats),machineDisplay||machineDisplayStats());
   }
 
@@ -9790,6 +9790,8 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
 
   function setup(){
     // 公開情報は右上ドックへ移動し、残りの設定カードは非公開デバッグメニューへ移動。
+    const cabinetData = $("slumpPanel");
+    if(cabinetData){cabinetData.classList.add("novaCabinetData");$("machine").appendChild(cabinetData);}
     const slumpPanelBody = $("slumpPanelBody");
     const slumpPublicCard = document.querySelector(".slumpPublic");
     if(slumpPanelBody && slumpPublicCard){

@@ -33,3 +33,33 @@
 #slumpPanel .slumpStats{gap:4px;margin-top:6px;}
 #slumpPanel .slumpStats>div{padding:5px;border-radius:5px;}
 #slumpPanel .slumpStats b{font-size:15px;}
+
+/* Persistent cabinet display, independent of utility popups. */
+#machine #slumpPanel.novaCabinetData{display:block;position:absolute;left:var(--layout-playdata-x,6%);top:var(--layout-playdata-y,18%);width:var(--layout-playdata-w,88%);height:var(--layout-playdata-h,10.8%);max-height:none;min-width:0;transform:none;z-index:48;box-sizing:border-box;padding:10px;border:2px solid #9e819f;background:#0b0812f5;box-shadow:inset 0 0 15px #322442;border-radius:10px;overflow:auto;}
+#slumpPanel.novaCabinetData>.infoPanelHead{display:none;}
+.novaCabinetData #slumpPanelBody{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,3fr);grid-template-rows:auto auto 1fr;gap:5px 12px;height:100%;}
+.novaCabinetData #novaDataCounter{display:contents;}
+.novaCabinetData .novaDataHead{grid-column:1;grid-row:1;grid-template-columns:1fr 1fr;gap:5px;}
+.novaCabinetData .novaDataGraphButton{grid-column:1 / -1;grid-row:3;padding:5px;}
+.novaCabinetData .novaDataGraphButton svg{display:none;}
+.novaCabinetData .novaDataHits{grid-column:1 / -1;display:flex;justify-content:space-around;}
+.novaCabinetData .novaDataHits div{gap:14px;}
+.novaCabinetData .novaGameSplit{grid-column:1;grid-row:2;margin:0;}
+.novaCabinetData [data-counter=coverage]{grid-column:1;grid-row:3;margin:0;}
+.novaCabinetData #novaHitHistory,.novaCabinetData .slumpPublic{grid-column:2;grid-row:1 / 4;min-width:0;margin:0;padding:0;background:none;border:0;box-shadow:none;}
+.novaCabinetData #novaHitHistory details,.novaCabinetData .slumpControls{display:none;}
+#slumpPanel.novaCabinetData .slumpCanvasWrap{height:160px;min-height:160px;}
+#slumpPanel.novaCabinetData #slumpGraph{height:160px;min-height:160px;width:100%;}
+.novaCabinetData .novaHitLegend{margin-top:0;}
+.novaCabinetData .novaHitPager{margin-top:4px;}
+.novaCabinetData .novaHitPager button{padding:3px 5px;}
+
+.novaCabinetData .novaHitCells{height:75px;gap:2px;}
+.novaCabinetData .novaHitChart{padding-top:4px;}
+.novaCabinetData .novaCounterNote{margin-top:3px;}
+.novaCabinetData .novaDataNumber b{font-size:24px;line-height:1.1;}
+.novaCabinetData .novaDataHits b{font-size:18px;line-height:1.2;}
+#slumpPanel.novaCabinetData .slumpCanvasWrap,#slumpPanel.novaCabinetData #slumpGraph{height:120px;min-height:120px;}
+#slumpPanel.novaCabinetData .slumpStats{margin-top:3px;}
+#slumpPanel.novaCabinetData .slumpStats>div{padding:2px 5px;}
+.novaCabinetData .novaHitCells{height:55px;}.novaCabinetData .novaHitPager button{padding:2px 5px;}

@@ -33,7 +33,7 @@
 <link rel="preload" as="image" href="assets/controls/start_lever_ball.png">
 <link rel="preload" as="image" href="assets/controls/stop_button_red_cut.png">
 <link rel="stylesheet" href="nova-game.css?v=20261027-bright-full-height">
-<link rel="stylesheet" href="nova-data-counter.css?v=20261015-mode-history">
+<link rel="stylesheet" href="nova-data-counter.css?v=20261027-cabinet-data">
 <link rel="stylesheet" href="nova-cabinet.css?v=20261027-bell-replay-no-outline">
 <link rel="stylesheet" href="nova-remaining-counters.css?v=20261013-checkpoint-cue">
 <script src="nova-remaining-counters.js?v=20261013-checkpoint-cue"></script>
@@ -197,9 +197,6 @@
       </div>
       <div class="audioDock" id="audioDock">
         <button class="utilityTextBtn" id="flowToggleBtn" type="button" aria-label="ゲームフローを開く" aria-haspopup="dialog" aria-controls="novaFlowGuide" aria-expanded="false">フロー</button>
-        <button class="utilityToggleBtn" id="slumpToggleBtn" type="button" aria-label="スランプグラフを開く" aria-expanded="false" title="スランプグラフ">
-          <picture class="novaResponsiveImage"><source media="(max-width:1024px)" srcset="assets/mobile-20261013/icon_slump_graph_blue.webp"><img src="assets/ui/icon_slump_graph_blue.png" alt=""></picture>
-        </button>
         <button class="utilityToggleBtn" id="oddsToggleBtn" type="button" aria-label="確率表を開く" aria-expanded="false" title="確率表">
           <picture class="novaResponsiveImage"><source media="(max-width:1024px)" srcset="assets/mobile-20261013/icon_odds_percent_blue.webp"><img src="assets/ui/icon_odds_percent_blue.png" alt=""></picture>
         </button>
@@ -281,17 +278,17 @@
               </div>
             </div>
             <div class="layoutEditGroup">
-              <div class="layoutEditGroupTitle">BONUS DATA</div>
+              <div class="layoutEditGroupTitle">遊技データ領域</div>
               <div class="layoutEditRows">
-                <label class="layoutEditRow"><span>X</span><input class="layoutEditInput" type="range" min="0" max="95" step="0.1" data-layout-target="bonusdata" data-layout-prop="x"><b class="layoutEditValue" data-layout-view="bonusdata-x"></b></label>
-                <label class="layoutEditRow"><span>Y</span><input class="layoutEditInput" type="range" min="0" max="40" step="0.1" data-layout-target="bonusdata" data-layout-prop="y"><b class="layoutEditValue" data-layout-view="bonusdata-y"></b></label>
-                <label class="layoutEditRow"><span>W</span><input class="layoutEditInput" type="range" min="20" max="95" step="0.1" data-layout-target="bonusdata" data-layout-prop="w"><b class="layoutEditValue" data-layout-view="bonusdata-w"></b></label>
-                <label class="layoutEditRow"><span>H</span><input class="layoutEditInput" type="range" min="4" max="24" step="0.1" data-layout-target="bonusdata" data-layout-prop="h"><b class="layoutEditValue" data-layout-view="bonusdata-h"></b></label>
+                <label class="layoutEditRow"><span>X</span><input class="layoutEditInput" type="range" min="0" max="95" step="0.1" data-layout-target="playdata" data-layout-prop="x"><b class="layoutEditValue" data-layout-view="playdata-x"></b></label>
+                <label class="layoutEditRow"><span>Y</span><input class="layoutEditInput" type="range" min="0" max="40" step="0.1" data-layout-target="playdata" data-layout-prop="y"><b class="layoutEditValue" data-layout-view="playdata-y"></b></label>
+                <label class="layoutEditRow"><span>W</span><input class="layoutEditInput" type="range" min="20" max="95" step="0.1" data-layout-target="playdata" data-layout-prop="w"><b class="layoutEditValue" data-layout-view="playdata-w"></b></label>
+                <label class="layoutEditRow"><span>H</span><input class="layoutEditInput" type="range" min="4" max="24" step="0.1" data-layout-target="playdata" data-layout-prop="h"><b class="layoutEditValue" data-layout-view="playdata-h"></b></label>
               </div>
             </div>
           </div>
         </div>
-        <div class="infoPanel" id="slumpPanel">
+        <div class="infoPanel" id="slumpPanel" aria-label="遊技データ">
           <div class="infoPanelHead">
             <div class="infoPanelTitle">遊技データ</div>
             <button class="infoCloseBtn" id="slumpCloseBtn" type="button" aria-label="スランプグラフを閉じる" title="閉じる">×</button>
@@ -460,7 +457,6 @@
         </div>
         <div class="wd-data-counter-panel wd-reel-counter-panel" id="reelDataCounter">
           <div class="wd-counter-actions" aria-label="データ表示切替">
-            <button class="wd-counter-action" id="reelSlumpToggleBtn" type="button" aria-expanded="false">スランプグラフ</button>
             <button class="wd-counter-action" id="reelOddsToggleBtn" type="button" aria-expanded="false">設定別確率</button>
             <button class="wd-counter-action" id="reelDataToggleBtn" type="button" aria-expanded="false">データカウンター</button>
           </div>
@@ -494,24 +490,6 @@
         </div>
         <div class="cabinetFrontParts" aria-hidden="true">
           <img loading="lazy" class="cabinetPart cabinetPartReelFront" src="assets/cabinet/parts/rising_part_reel_back_roles.png" alt="">
-        </div>
-        <div class="jagBonusDataMeters" aria-label="BONUS GAME DATA">
-          <div class="jagBonusDataMeter">
-            <span>総回転</span>
-            <b id="jagTotalGameDataMeter">00000</b>
-          </div>
-          <div class="jagBonusDataMeter">
-            <span>ボーナス後回転数</span>
-            <b id="jagAfterBonusDataMeter">0000</b>
-          </div>
-          <div class="jagBonusDataMeter" aria-label="AT初当たり回数">
-            <span>AT</span>
-            <b id="jagAtDataMeter">000</b>
-          </div>
-          <div class="jagBonusDataMeter" aria-label="通常BIG・上位BIGの合計回数">
-            <span>BIG</span>
-            <b id="jagBigDataMeter">000</b>
-          </div>
         </div>
         <div class="jagFrameLamps" aria-hidden="true">
           <span>START</span>
@@ -847,7 +825,7 @@
 <script src="nova-history.js?v=20261001-history-performance"></script>
 <script src="nova-role-counter.js?v=20261014-role-counter"></script>
 <script src="nova-data-counter.js?v=20261015-mode-history"></script>
-<script src="nova-game.js?v=20261027-countdown-layout"></script>
+<script src="nova-game.js?v=20261027-cabinet-data"></script>
 <button type="button" id="novaSymbolPreviewOpen">ノヴァ目を確認</button>
 <dialog id="novaSymbolPreview"><h2>ノヴァ目</h2><label>出目<select id="novaPatternSelect"><option value="WEAK_NOVA">弱ノヴァ目：左3連</option><option value="STRONG_MIDDLE">強ノヴァ目：左・中3連</option><option value="STRONG_RIGHT">強ノヴァ目：左・右3連</option><option value="SUPER_NOVA" selected>スーパーノヴァ目：全リール3連</option></select></label><p id="novaPatternDescription"></p><div id="novaSymbolPreviewGrid"></div><p>出目の確認用です。通常時のスーパーはBIG・フリーズ各50%。ボーナス中は対象外。弱・強と自然出現率は未設定。</p><button type="button" id="novaSymbolPreviewClose">閉じる</button></dialog>
 </body>
