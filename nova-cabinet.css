@@ -228,3 +228,7 @@ body #machine .novaArtItem[data-sortie-won=true] img{opacity:1!important;animati
 /* Bell and replay retain their original artwork without added black outlines. */
 #machine .reel .cell img.bellSymImg,
 #machine .reel .cell img.replaySymImg{filter:none !important;}
+
+/* Opaque cabinet-only mask: above the skin (z=0), below live reels/lamps/data. */
+#novaCabinetMask{position:absolute;left:var(--layout-cabinetmask-x,20%);top:var(--layout-cabinetmask-y,29%);width:var(--layout-cabinetmask-w,60%);height:var(--layout-cabinetmask-h,5%);background:#000;z-index:1;pointer-events:none;}
+.layoutEditInput[type=number]{width:100%;min-width:0;box-sizing:border-box;color:#fff;background:#21182c;border:1px solid #796788;border-radius:4px;padding:5px;}

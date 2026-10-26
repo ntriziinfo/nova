@@ -1,7 +1,7 @@
 /* Bell navigation presentation. Role draws and payouts stay in the game engines. */
 globalThis.NovaBellNavi=(()=>{
  const orders=Object.freeze([[0,1,2],[0,2,1],[1,0,2],[1,2,0],[2,0,1],[2,1,0]].map(Object.freeze));
- const defaults=Object.freeze({x:0,y:0,w:100,h:7.6,gap:.4});
+ const defaults=Object.freeze({x:.5,y:44.3,w:100,h:7.9,gap:0});
  const asset='assets/design/nova-navi-v1/navi-yellow-123.png';
  const rareRoles=Object.freeze({WEAK_SUICA:['green',0],STRONG_SUICA:['green',1],CHANCE_A:['purple',0],CHANCE_B:['purple',1],WEAK_NOVA:['red',0],STRONG_NOVA:['red',1],SUPER_NOVA:['red',2]});
  const rareAsset=signal=>'assets/design/nova-navi-alert-v1/navi-'+signal.color+'-'+(signal.mark==='!!'?'double':'single')+'.png';

@@ -34,11 +34,11 @@
 <link rel="preload" as="image" href="assets/controls/stop_button_red_cut.png">
 <link rel="stylesheet" href="nova-game.css?v=20261027-bright-full-height">
 <link rel="stylesheet" href="nova-data-counter.css?v=20261027-cabinet-data">
-<link rel="stylesheet" href="nova-cabinet.css?v=20261027-bell-replay-no-outline">
+<link rel="stylesheet" href="nova-cabinet.css?v=20261027-layout-defaults">
 <link rel="stylesheet" href="nova-remaining-counters.css?v=20261013-checkpoint-cue">
-<script src="nova-remaining-counters.js?v=20261013-checkpoint-cue"></script>
+<script src="nova-remaining-counters.js?v=20261027-layout-defaults"></script>
 <link rel="stylesheet" href="nova-artwork.css?v=20260928-cz-rainbow-155">
-<script src="nova-artwork.js?v=20261014-store-controls" defer></script>
+<script src="nova-artwork.js?v=20261027-layout-defaults" defer></script>
 <link rel="stylesheet" href="nova-upper-at-background.css?v=20261013-checkpoint-cue">
 <script src="nova-upper-at-background.js?v=20261027-independent-bay"></script>
 <script src="nova-voice-catalog.js?v=20261027-countdown-one"></script>
@@ -56,7 +56,7 @@
 <link rel="stylesheet" href="nova-ladder-presentation.css?v=20260917-initial-131">
 <script src="nova-ladder-presentation.js?v=20261027-independent-bay"></script>
 <link rel="stylesheet" href="nova-bell-navi.css?v=20261027-next-size">
-<script src="nova-bell-navi.js?v=20261027-bell-lines"></script>
+<script src="nova-bell-navi.js?v=20261027-layout-defaults"></script>
 <script src="nova-sortie-presentation.js?v=20261027-60fps"></script>
 <script src="nova-stock-entry.js?v=20261027-independent-bay"></script>
 <link rel="stylesheet" href="nova-initial-duo.css?v=20260928-duo-157">
@@ -140,6 +140,7 @@
 
   <div class="main">
     <section class="machine normal" id="machine">
+      <div id="novaCabinetMask" aria-hidden="true"></div>
       <div class="jagCabinetShell" aria-hidden="true">
         <div class="cabinetPartsScene" aria-hidden="true">
           <picture class="novaResponsiveImage"><source media="(max-width:1024px)" srcset="assets/mobile-20261013/cabinet-game.webp"><img fetchpriority="high" class="novaCabinetArtwork" src="assets/design/nova-cabinet-v1/cabinet-game.png" alt=""></picture>
@@ -277,13 +278,19 @@
                 <label class="layoutEditRow"><span>H</span><input class="layoutEditInput" type="range" min="2" max="24" step="0.1" data-layout-target="payout" data-layout-prop="h"><b class="layoutEditValue" data-layout-view="payout-h"></b></label>
               </div>
             </div>
+            <div class="layoutEditGroup"><div class="layoutEditGroupTitle">筐体目隠し（黒）</div><div class="layoutEditGrid">
+              <label class="layoutEditRow"><span>X</span><input class="layoutEditInput" type="number" min="0" max="100" step="0.1" data-layout-target="cabinetmask" data-layout-prop="x"><b class="layoutEditValue" data-layout-view="cabinetmask-x"></b></label>
+              <label class="layoutEditRow"><span>Y</span><input class="layoutEditInput" type="number" min="0" max="100" step="0.1" data-layout-target="cabinetmask" data-layout-prop="y"><b class="layoutEditValue" data-layout-view="cabinetmask-y"></b></label>
+              <label class="layoutEditRow"><span>W</span><input class="layoutEditInput" type="number" min="0" max="100" step="0.1" data-layout-target="cabinetmask" data-layout-prop="w"><b class="layoutEditValue" data-layout-view="cabinetmask-w"></b></label>
+              <label class="layoutEditRow"><span>H</span><input class="layoutEditInput" type="number" min="0" max="100" step="0.1" data-layout-target="cabinetmask" data-layout-prop="h"><b class="layoutEditValue" data-layout-view="cabinetmask-h"></b></label>
+            </div><small>幅または高さを0にすると非表示。筐体画像だけを覆います。</small></div>
             <div class="layoutEditGroup">
               <div class="layoutEditGroupTitle">遊技データ領域</div>
               <div class="layoutEditRows">
-                <label class="layoutEditRow"><span>X</span><input class="layoutEditInput" type="range" min="0" max="95" step="0.1" data-layout-target="playdata" data-layout-prop="x"><b class="layoutEditValue" data-layout-view="playdata-x"></b></label>
-                <label class="layoutEditRow"><span>Y</span><input class="layoutEditInput" type="range" min="0" max="40" step="0.1" data-layout-target="playdata" data-layout-prop="y"><b class="layoutEditValue" data-layout-view="playdata-y"></b></label>
-                <label class="layoutEditRow"><span>W</span><input class="layoutEditInput" type="range" min="20" max="95" step="0.1" data-layout-target="playdata" data-layout-prop="w"><b class="layoutEditValue" data-layout-view="playdata-w"></b></label>
-                <label class="layoutEditRow"><span>H</span><input class="layoutEditInput" type="range" min="4" max="24" step="0.1" data-layout-target="playdata" data-layout-prop="h"><b class="layoutEditValue" data-layout-view="playdata-h"></b></label>
+                <label class="layoutEditRow"><span>X</span><input class="layoutEditInput" type="number" min="0" max="100" step="0.1" data-layout-target="playdata" data-layout-prop="x"><b class="layoutEditValue" data-layout-view="playdata-x"></b></label>
+                <label class="layoutEditRow"><span>Y</span><input class="layoutEditInput" type="number" min="0" max="100" step="0.1" data-layout-target="playdata" data-layout-prop="y"><b class="layoutEditValue" data-layout-view="playdata-y"></b></label>
+                <label class="layoutEditRow"><span>W</span><input class="layoutEditInput" type="number" min="0" max="100" step="0.1" data-layout-target="playdata" data-layout-prop="w"><b class="layoutEditValue" data-layout-view="playdata-w"></b></label>
+                <label class="layoutEditRow"><span>H</span><input class="layoutEditInput" type="number" min="0" max="100" step="0.1" data-layout-target="playdata" data-layout-prop="h"><b class="layoutEditValue" data-layout-view="playdata-h"></b></label>
               </div>
             </div>
           </div>
@@ -825,7 +832,7 @@
 <script src="nova-history.js?v=20261001-history-performance"></script>
 <script src="nova-role-counter.js?v=20261014-role-counter"></script>
 <script src="nova-data-counter.js?v=20261015-mode-history"></script>
-<script src="nova-game.js?v=20261027-cabinet-data"></script>
+<script src="nova-game.js?v=20261027-layout-defaults"></script>
 <button type="button" id="novaSymbolPreviewOpen">ノヴァ目を確認</button>
 <dialog id="novaSymbolPreview"><h2>ノヴァ目</h2><label>出目<select id="novaPatternSelect"><option value="WEAK_NOVA">弱ノヴァ目：左3連</option><option value="STRONG_MIDDLE">強ノヴァ目：左・中3連</option><option value="STRONG_RIGHT">強ノヴァ目：左・右3連</option><option value="SUPER_NOVA" selected>スーパーノヴァ目：全リール3連</option></select></label><p id="novaPatternDescription"></p><div id="novaSymbolPreviewGrid"></div><p>出目の確認用です。通常時のスーパーはBIG・フリーズ各50%。ボーナス中は対象外。弱・強と自然出現率は未設定。</p><button type="button" id="novaSymbolPreviewClose">閉じる</button></dialog>
 </body>

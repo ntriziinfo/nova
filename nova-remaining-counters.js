@@ -1,7 +1,7 @@
 /* Read-only counters: never normalize, advance, or draw from the game state. */
 globalThis.NovaRemainingCounters=(()=>{
  const defaults=Object.freeze({
-  remainingcounter:Object.freeze({x:22,y:85.8,w:15,h:11})
+  remainingcounter:Object.freeze({x:21.7,y:85.8,w:15.9,h:11})
  });
  const titles={remainingcounter:'共通カウンター（AT・CZ・ゾーン）'};
  const empty=(label,unit)=>({label,value:'—',unit,active:false,hold:false});

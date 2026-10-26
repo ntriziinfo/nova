@@ -16,38 +16,19 @@
   };
   // Retain the old six-lamp migration for browsers with an older saved layout.
   const fitPreviousRow = p => ({x:21.5+(p.x-21.5)*.75,y:43.4+(p.y-43.4)*.75,w:p.w*.75});
-  // Defaults captured from the user's saved eight-lamp layout on 2026-09-28.
-  // Keep the saved precision so adopting this layout does not move the lamps.
+  // User-supplied placement screenshots, 2026-10-27.
   const defaults = {
-    ouma1:{x:39.68896777794596,y:34.461526481127564,w:13.7},
-    sora1:{x:46.607212055740554,y:35.611815814620165,w:14.8},
-    sosuke:{x:62.050265972432456,y:34.41206508600096,w:10.7},
-    toto:{x:57.72358344471355,y:36.98388566650741,w:8.3},
-    urapi:{x:24.36669207421983,y:34.16494449354993,w:15.8},
-    giru1:{x:32.407076713117135,y:36.14899559245103,w:13.8},
-    kushuri:{x:67.43012882429552,y:36.80444338270424,w:12.5},
-    nito:{x:19.820507961225065,y:36.29665551839465,w:12.3}
+    ouma1:{x:39.5,y:33.3,w:13.7},sora1:{x:46.2,y:33.4,w:14.8},
+    sosuke:{x:61.7,y:33.4,w:10.7},toto:{x:56.6,y:35.1,w:8.3},
+    urapi:{x:23.7,y:33.2,w:15.8},giru1:{x:32.9,y:34.3,w:13.8},
+    kushuri:{x:67.4,y:34.5,w:13.1},nito:{x:20.2,y:34.4,w:12.3}
   };
-  const key = 'nova_licensed_artwork_locked_20260928';
+  const key = 'nova_licensed_artwork_locked_20261027';
   const clone = value => JSON.parse(JSON.stringify(value));
   const clamp = (value,min,max) => Math.max(min,Math.min(max,value));
   let positions = clone(defaults), selected = originals[0], dragging = null;
   try {
     let saved = JSON.parse(localStorage.getItem(key));
-    if(!saved){
-      const previous = JSON.parse(localStorage.getItem('nova_licensed_artwork_locked_20260907'));
-      if(previous){
-        saved={};
-        for(const [id,p] of Object.entries(previousDefaults)){
-          const position={...p};
-          for(const field of ['x','y','w']){
-            const value=previous[id]?.[field];
-            if(typeof value==='number'&&Number.isFinite(value))position[field]=clamp(value,field==='w'?4:0,field==='w'?45:96);
-          }
-          saved[id]=fitPreviousRow(position);
-        }
-      }
-    }
     for(const id of originals) for(const field of ['x','y','w']) {
       const value = saved?.[id]?.[field];
       if(typeof value === 'number' && Number.isFinite(value)) positions[id][field]=clamp(value,field==='w'?4:0,field==='w'?45:96);

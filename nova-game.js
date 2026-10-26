@@ -846,8 +846,8 @@
   if(SLOT_DEBUG_ENABLED) document.body.classList.add("debugMode");
   const PAGE_ZOOM_STORAGE_KEY = "nova_unified_page_zoom_v3";
   const PAGE_PAN_STORAGE_KEY = "nova_unified_page_pan_x_v3";
-  const LAYOUT_EDIT_STORAGE_KEY = "nova_layout_editor_locked_20260907";
-  const LAYOUT_DEFAULT_STORAGE_KEY = "nova_layout_default_locked_20260907";
+  const LAYOUT_EDIT_STORAGE_KEY = "nova_layout_editor_locked_20261027";
+  const LAYOUT_DEFAULT_STORAGE_KEY = "nova_layout_default_locked_20261027";
   const LAYOUT_EDITOR_ENABLED = SLOT_DEBUG_ENABLED;
   const PAGE_STAGE_WIDTH = 1360;
   const PAGE_ZOOM_MIN = 0.05;
@@ -866,13 +866,14 @@
   const LAYOUT_DEFAULTS = Object.freeze({
     ...NovaRemainingCounters.defaults,
     navi:{...NovaBellNavi.defaults},
-    flowstatus:{x:22,y:10,w:56},
-    reels:{x:22.7, y:41.4, w:54.0, h:37.4, gap:0.2},
+    flowstatus:{x:38,y:92.6,w:40},
+    reels:{x:22.3, y:35.6, w:55.7, h:36.9, gap:1.6},
     chance:{x:22.0, y:85.8, w:11.9, h:11.0},
     credit:{x:38.0, y:85.8, w:12.2, h:11.0},
-    count:{x:52.0, y:85.8, w:12.2, h:11.0},
+    count:{x:51.6, y:85.8, w:12.2, h:11.0},
     payout:{x:66.0, y:85.8, w:11.0, h:11.0},
-    playdata:{x:6, y:18, w:88, h:10.8}
+    playdata:{x:6, y:18, w:88, h:10.8},
+    cabinetmask:{x:20,y:29,w:60,h:5}
   });
   let pageZoom = 1;
   let pagePanX = PAGE_PAN_DEFAULT;
@@ -1113,6 +1114,7 @@
     syncLayoutEditInputs();
     NovaBellNavi.layout();
     NovaRemainingCounters.measure();
+    scheduleSlumpGraphRender();
     if(saveValue && LAYOUT_EDITOR_ENABLED) safeStorageSet(LAYOUT_EDIT_STORAGE_KEY, JSON.stringify(layoutEditState));
   }
 
