@@ -844,10 +844,10 @@
   }
   setAdminConnectionState("connecting");
   if(SLOT_DEBUG_ENABLED) document.body.classList.add("debugMode");
-  const PAGE_ZOOM_STORAGE_KEY = "nova_unified_page_zoom_v3";
-  const PAGE_PAN_STORAGE_KEY = "nova_unified_page_pan_x_v3";
-  const LAYOUT_EDIT_STORAGE_KEY = "nova_layout_editor_locked_20261027c";
-  const LAYOUT_DEFAULT_STORAGE_KEY = "nova_layout_default_locked_20261027c";
+  const PAGE_ZOOM_STORAGE_KEY = "nova_unified_page_zoom_v4";
+  const PAGE_PAN_STORAGE_KEY = "nova_unified_page_pan_x_v4";
+  const LAYOUT_EDIT_STORAGE_KEY = "nova_layout_editor_locked_20261027d";
+  const LAYOUT_DEFAULT_STORAGE_KEY = "nova_layout_default_locked_20261027d";
   const LAYOUT_EDITOR_ENABLED = SLOT_DEBUG_ENABLED;
   const PAGE_STAGE_WIDTH = 1360;
   const PAGE_ZOOM_MIN = 0.05;
@@ -860,7 +860,7 @@
   const CABINET_X_OFFSET_AT_75 = 0;
   const CABINET_X_OFFSET_AT_100 = 0;
   const CABINET_X_OFFSET_AT_130 = 0;
-  const PAGE_PAN_DEFAULT = -190;
+  const PAGE_PAN_DEFAULT = -125;
   const SLOT_ZOOM_ANCHOR_X = 680;
   const SLOT_ZOOM_ANCHOR_Y = 500;
 
@@ -873,13 +873,13 @@
     credit:{x:38.0, y:85.8, w:12.2, h:11.0},
     count:{x:51.6, y:85.8, w:12.2, h:11.0},
     payout:{x:66.0, y:85.8, w:11.0, h:11.0},
-    playdata:{x:19.7,y:17.5,w:60.5,h:11.5},
+    playdata:{x:19.8,y:13.5,w:60.5,h:11.5},
     cabinetmask:{x:20.3,y:29.5,w:58.9,h:25.7},
     lampmovie:{x:20.4,y:29.6,w:59.1,h:10.7},
-    backgroundmovie:{x:22.3,y:31.8,w:55.7,h:22},
+    backgroundmovie:{x:20.4,y:29.4,w:58.9,h:25.7},
     zonepresentation:{x:22.3,y:31.8,w:55.7,h:8.3},
-    supertitle:{x:21.6,y:29.6,w:56.7,h:10.7},
-    displaygroup:{x:0,y:0,s:100}
+    supertitle:{x:21.5,y:29.6,w:56.7,h:10.7},
+    displaygroup:{x:0.1,y:-0.5,s:122.4}
   });
   let pageZoom = PAGE_ZOOM_DEFAULT;
   let pagePanX = PAGE_PAN_DEFAULT;
@@ -9920,7 +9920,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
       pageZoomResetBtn.addEventListener("click", e=>{
         e.stopPropagation();
         syncZoomAnchorToSlotTop();
-        pageZoom = 1;
+        pageZoom = PAGE_ZOOM_DEFAULT;
         applyPageZoom(true);
       });
     }
