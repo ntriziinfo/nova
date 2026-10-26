@@ -224,3 +224,7 @@ body #machine .novaArtItem[data-sortie-won=true] img{opacity:1!important;animati
 
 /* Hide the decorative yellow payout-line overlay across the reels. */
 #machine .payline{display:none !important;}
+
+/* Bell and replay retain their original artwork without added black outlines. */
+#machine .reel .cell img.bellSymImg,
+#machine .reel .cell img.replaySymImg{filter:none !important;}
