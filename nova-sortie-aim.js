@@ -14,7 +14,7 @@ globalThis.NovaSortieAim=(()=>{
  function show(color='blue',preview=false){
   if(!init())return;
   hide();previewing=preview;video.dataset.color=color;
-  const src='assets/media/nova/sortie-aim-'+(color==='blue'?'blue':'red')+'-20261027.mp4';
+  const src='assets/media/nova/sortie-aim-'+(['blue','red','rainbow'].includes(color)?color:'blue')+'-20261027.mp4';
   if(video.getAttribute('src')!==src)video.src=src;
   host.dataset.aimActive='true';video.hidden=false;images.forEach(img=>img.hidden=false);video.play().catch(()=>{});
  }

@@ -42,10 +42,10 @@ test('sortie has a guaranteed free NOVA center entrance, retains its award throu
  assert(c.tryStockEntry());assert.equal(c.normalState.stockEntry.kind,'sortie');assert.match(c.$('resultText').textContent,/出陣チャンス.*NOVA/);
  assert(c.tryStockEntry());assert.equal(c.currentSpin.result,'NEBULA');assert.equal(c.cues.length,0,'BET is silent');assert.equal(c.voiceSymbol,undefined);assert.equal(c.voiceZone,undefined);
  assert.equal(c.currentSpin.resolved.reward,0);assert.deepEqual(plain(c.currentSpin.grid[1]),['BAR','CHERRY','BAR']);
- await c.stopStockEntryReel(2);
+ await c.stopStockEntryReel(2);assert.equal(c.currentSpin.stopped[2],false);await c.stopStockEntryReel(1);
  assert.equal(c.lockedVoices.length,0);assert.equal(c.cues.length,0,'First stop is silent');
  c.currentSpin=c.NovaSpinResume.restore(c.NovaSpinResume.capture(c.currentSpin),c.RESULT);
- assert.equal(c.currentSpin.resolved.sortieEntry,true);await c.stopStockEntryReel(1);assert.equal(c.lockedVoices.length,0);assert.equal(c.cues.length,0,'Second stop is silent');await c.stopStockEntryReel(0);
+ assert.equal(c.currentSpin.resolved.sortieEntry,true);await c.stopStockEntryReel(2);assert.equal(c.lockedVoices.length,0);assert.equal(c.cues.length,0,'Second stop is silent');await c.stopStockEntryReel(0);
  assert.deepEqual(c.cues,[{src:'assets/media/nova/sortie-nebula-cue.mp3',volume:1}]);
  assert.deepEqual(c.lockedVoices,[{src:c.MODE_EVENT_VOICE_SRCS.sortie,volume:1}]);
  c.finishStockEntry();assert.equal(c.cues.length,1);assert.equal(c.lockedVoices.length,1,'Repeated third-stop callback must not replay the title');
@@ -89,7 +89,7 @@ test('the first queued zone game exposes its pre-draw display state without cons
 test('fake reverse cue consumes only its presentation ticket, preserves paid flow and saved stop progress',async()=>{
  const c=harness();c.normalState.flow={phase:'normal',remaining:'900',queuedZones:[]};c.normalState.pendingFakeSortie=2;const before=JSON.stringify(c.normalState.flow);
  assert(c.tryStockEntry());assert.equal(c.normalState.stockEntry.kind,'sortieFake');assert(c.tryStockEntry());assert.equal(c.currentSpin.result,'MISS');assert.equal(c.currentSpin.resolved.reward,0);assert.equal(c.currentSpin.resolved.sortieCueColor,'red');
- await c.stopStockEntryReel(2);c.currentSpin=c.NovaSpinResume.restore(c.NovaSpinResume.capture(c.currentSpin),c.RESULT);await c.stopStockEntryReel(1);await c.stopStockEntryReel(0);
+ await c.stopStockEntryReel(1);c.currentSpin=c.NovaSpinResume.restore(c.NovaSpinResume.capture(c.currentSpin),c.RESULT);await c.stopStockEntryReel(2);await c.stopStockEntryReel(0);
  assert.equal(c.cues.length,0,'Missed entry never plays the confirmation cue');assert.equal(c.normalState.pendingFakeSortie,1);assert.equal(c.normalState.stockEntry,undefined);assert.equal(c.lockedVoices.length,0);assert.equal(JSON.stringify(c.normalState.flow),before);assert.equal(c.NovaProgress.snapshot().sorties,0);
 });
 test('fake probability is twice the real hit probability, and color draws never call game RNG',()=>{

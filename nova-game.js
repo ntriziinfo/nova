@@ -2490,12 +2490,15 @@
     if(result==='CHANCE_A'||result==='CHANCE_B')return 'MISS';
     if(result === "BONUS_SPECIAL")return "NEBULA";
     if(result==='BURST')return '';
+    if(globalThis.NovaStockEntry?.debugCue(result))return result;
     if(result==='FREEZE'||result==='ART'||result==='COMEBACK'||result==='URA_CHALLENGE'||result==='SORTIE'||result==='RARE'||result.startsWith('ZONE_'))return result;
     if(result === "REACH_ME") return "REACH_ME";
     return A_TYPE_MODE && result ? normalizeATypeResult(result) : result;
   }
 
   function forceResultName(result){
+    const cue=globalThis.NovaStockEntry?.debugCue(result);
+    if(cue)return '出陣NOVA狙え / '+({blue:'青',red:'赤',rainbow:'虹'}[cue.color])+' / '+(cue.fake?'失敗':'成功');
 
     if(result === "SORTIE")return "出陣チャレンジ（10G・1回予約）";
     if(result === "URA_CHALLENGE")return "スーパーノヴァチャレンジ（10G・HOLDあり）";
@@ -2510,6 +2513,14 @@
     if(forceResult==='URA_CHALLENGE' && A_TYPE_MODE && (isATypeBonusActive() || normalState.bonusPending))return '';
     const result=forceResult;
     forceResult='';
+    const cue=globalThis.NovaStockEntry?.debugCue(result);
+    if(A_TYPE_MODE&&cue){
+      normalState.sortieDebugCue=cue;
+      if(cue.fake)normalState.pendingFakeSortie=(Number(normalState.pendingFakeSortie)||0)+1;
+      else{syncNovaProgress();NovaProgress.queueSortie();}
+      log('強制指定：'+forceResultName(result)+'（突入可能なタイミングで1回）');
+      return '';
+    }
     if(A_TYPE_MODE && ['SORTIE','FREEZE'].includes(result)){
       // Use the existing persistent queue and safe entry timing, without forcing a reel role.
       syncNovaProgress();
@@ -5697,7 +5708,7 @@
     stopBtns.forEach((btn, i)=>{
       if(!btn) return;
       const reelStopped = !!(currentSpin && Array.isArray(currentSpin.stopped) && currentSpin.stopped[i]);
-      const reelLive = !!(canStopNow && !reelStopped);
+      const reelLive = !!(canStopNow && !reelStopped && !currentSpin?.visualStopping?.[i] && globalThis.NovaStockEntry?.canStop?.(currentSpin,i)!==false);
       btn.disabled = !reelLive;
       btn.classList.toggle("is-reel-live", reelLive);
       btn.classList.toggle("is-reel-stopped", !reelLive);
@@ -6383,7 +6394,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
   document.addEventListener("DOMContentLoaded", () => {
     if(SLOT_DEBUG_ENABLED){
     const forceSelect=document.getElementById('forceResult');
-    for(const [value,label] of [['ART','AT突入'],['SORTIE','出陣チャレンジ（10G・1回予約）'],['URA_CHALLENGE','スーパーノヴァチャレンジ（10G・HOLDあり）'],['COMEBACK','引き戻しゾーン（5G）'],...Object.keys(NovaNormal.rare).filter(k=>!isNovaResult(k)).map(k=>[k,RESULT[k].name]),['RARE','ATレア役'],...NovaArt.zoneIds.map(k=>['ZONE_'+k,NovaArt.zoneName(k)+'ゾーン'])]){const option=document.createElement('option');option.value=value;option.textContent=label;forceSelect.append(option);}
+    for(const [value,label] of [...['WIN_BLUE','WIN_RED','WIN_RAINBOW','MISS_BLUE','MISS_RED'].map(key=>['SORTIE_AIM_'+key,forceResultName('SORTIE_AIM_'+key)]),['ART','AT突入'],['SORTIE','出陣チャレンジ（10G・1回予約）'],['URA_CHALLENGE','スーパーノヴァチャレンジ（10G・HOLDあり）'],['COMEBACK','引き戻しゾーン（5G）'],...Object.keys(NovaNormal.rare).filter(k=>!isNovaResult(k)).map(k=>[k,RESULT[k].name]),['RARE','ATレア役'],...NovaArt.zoneIds.map(k=>['ZONE_'+k,NovaArt.zoneName(k)+'ゾーン'])]){const option=document.createElement('option');option.value=value;option.textContent=label;forceSelect.append(option);}
     const normalPanel=document.createElement('details');normalPanel.id='novaNormalConfig';
     normalPanel.innerHTML='<summary>モード・規定GのCZ抽選・穢れ</summary><output id="novaInternalStatus"></output><label>モード<select id="novaNormalMode">'+NovaNormal.modes.map(mode=>'<option>'+mode+'</option>').join('')+'</select></label><label>天井カウンター<input id="novaNormalGames" type="number" min="0" max="800" value="0"></label><label>内部状態<select id="novaLevel"><option value="low">低確</option><option value="high">高確</option></select></label><label>穢れpt<input id="novaImpurity" type="number" min="0" max="100" value="0"></label><button id="novaApplyInternal" type="button">内部状態を適用</button><p>通常はA800G、B700G、C400G、天国・天国ループ200GでBIG確定。リセット・設定変更後の初回BBまではA・Bを600Gに短縮し、C・天国系は通常の天井を維持します。通常＋CZのG数を数え、ボーナスごとにリセットしてモード昇格を抽選します。AT初当たりまでは降格なし。AT終了時にモードを再抽選します。50Gは天国系でガセCZ、天国系以外でも10%。全モード100GでCZに入り、ボーナス抽選は101Gから再開します。ガセCZはレア役でも成功しません。通常の弱レア役CZ抽選は従来の10%、強ノヴァは101G以降に強CZ前兆へ。レア役からの出陣抽選は別に行います。穢れ100ptは次のボーナスで消費し、AT＋特化ゾーンを予約します。</p>';
     const resetTable=document.createElement('div');resetTable.innerHTML='<table><tr><th>設定</th>'+NovaNormal.resetImpurityPoints.map(pt=>'<th>'+pt+'pt</th>').join('')+'</tr>'+NovaNormal.resetImpurityWeights.map((row,i)=>'<tr><td>'+(i+1)+'</td>'+row.map(w=>'<td>'+w+'%</td>').join('')+'</tr>').join('')+'</table>';normalPanel.append(resetTable);
@@ -7271,6 +7282,10 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     if(!entry){
       normalState.stockEntry=NovaStockEntry.prepare(normalState.flow,progress,normalState.pendingFakeSortie);
       normalState.stockEntry.color=NovaStockEntry.cueColor?.(normalState.stockEntry.kind==='sortieFake')||'rainbow';
+      const cue=normalState.sortieDebugCue;
+      if(cue&&normalState.stockEntry.kind===(cue.fake?'sortieFake':'sortie')){
+        normalState.stockEntry.color=cue.color;delete normalState.sortieDebugCue;
+      }
       normalState.stockEntry.notBefore=Date.now()+700;
       $('resultText').textContent=NovaStockEntry.message(normalState.stockEntry);
       persistState();updateDisplay();scheduleNextAuto();return true;
@@ -7328,7 +7343,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
   }
   async function stopStockEntryReel(i,options={}){
     const spin=currentSpin;
-    if(!spin?.resolved?.stockEntry||!spinCanStop||spin.stopped[i]||(!options.visualReady&&spin.visualStopping?.[i]))return;
+    if(!spin?.resolved?.stockEntry||!spinCanStop||!NovaStockEntry.canStop(spin,i)||spin.stopped[i]||(!options.visualReady&&spin.visualStopping?.[i]))return;
     const col=spin.grid.map(row=>row[i]);
     if(!options.visualReady){
       (spin.auditPressOrder ||= []).push(i);spin.visualStopping ||= [false,false,false];spin.visualStopping[i]=true;
@@ -7374,7 +7389,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
       const wait=autoPacingWaitMs();
       if(wait>0){queueAutoStep(wait);return;}
     }
-    if(A_TYPE_MODE&&['SORTIE','FREEZE'].includes(forceResult))takeForcedResult();
+    if(A_TYPE_MODE&&(['SORTIE','FREEZE'].includes(forceResult)||NovaStockEntry.debugCue(forceResult)))takeForcedResult();
     if(tryStockEntry())return;
     applyQueuedControlInput();
 

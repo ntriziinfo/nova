@@ -19,10 +19,16 @@ globalThis.NovaStockEntry=(()=>{
   return strips.map((strip,i)=>{
    const n=strip.length,window=top=>[0,1,2].map(row=>strip[(top+row+n)%n]);
    let top=i===1?strip.findIndex((symbol,j)=>symbol==='BAR'&&strip[(j+2)%n]==='BAR'):strip.indexOf('BAR')-1;
-   if(i===1&&entry.kind==='sortieFake')top=strip.findIndex((_,j)=>window(j).every(symbol=>symbol!=='BAR'));
+   if(i===1&&entry.kind==='sortieFake'&&top>=0)top=(top+1)%n;
    if(top<0)throw new Error('NOVA sortie stop window missing');
    return window(top);
   });
+ }
+ function canStop(spin,index){return !spin?.resolved?.sortieEntry||!!spin.stopped?.[1]||index===1;}
+ function debugCue(value){
+  const m=/^SORTIE_AIM_(WIN|MISS)_(BLUE|RED|RAINBOW)$/.exec(value||'');
+  if(!m||m[1]==='MISS'&&m[2]==='RAINBOW')return null;
+  return {fake:m[1]==='MISS',color:m[2].toLowerCase()};
  }
  function message(entry){return entry?.kind==='sortieFake'?'出陣チャンス / 次のBETで中リールにNOVAを狙え':entry?.kind==='sortie'?(entry.stage==='ready'?'出陣チャレンジ / 次のBETで開始':'出陣チャンス / 次のBETで中リールにNOVAを狙え'):entry?.stage==='ready'?NovaArt.zoneName(entry.zone)+'ゾーン / 次のBETで開始':'特化ゾーン準備中 / 次のBETで7を狙え';}
  function show(entry){
@@ -39,5 +45,5 @@ globalThis.NovaStockEntry=(()=>{
  }
  function hide(){if(panel)panel.hidden=true;}
  if(typeof window!=='undefined')window.addEventListener('resize',layout);
- return {sortieColumns,drawFake,cueColor,eligible,matches,prepare,spin,message,show,hide};
+ return {canStop,debugCue,sortieColumns,drawFake,cueColor,eligible,matches,prepare,spin,message,show,hide};
 })();

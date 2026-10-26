@@ -11,7 +11,7 @@ test('sortie-only lamp cue uses muted color videos, three movable images, and cl
   const spin={stockEntry:true,sortieEntry:true,sortieCueColor:color,reward:0},before=JSON.stringify(spin);
   assert.equal(c.NovaAim.bet(null,spin),false);
   const video=elements.find(e=>e.tag==='video');assert.equal(video.muted,true);assert.equal(video.loop,true);assert.equal(video.hidden,false);
-  assert.match(video.src,new RegExp(color==='blue'?'blue':'red'));assert.equal(video.dataset.color,color);
+  assert.match(video.src,new RegExp(color));assert.equal(video.dataset.color,color);
   assert.equal(elements.filter(e=>e.tag==='img'&&!e.hidden).length,3);
   assert.equal(host.dataset.aimActive,'true');assert.equal(JSON.stringify(spin),before);
   c.NovaAim.stop(spin);assert.equal(video.hidden,true);assert.equal(video.paused,true);assert.equal(host.dataset.aimActive,undefined);
@@ -25,5 +25,28 @@ test('live middle strip supports the exact sandwich and failed trigger does not 
   const columns=c.NovaStockEntry.sortieColumns({kind},c.strips);
   assert.equal(JSON.stringify(columns[1])==='["BAR","cherry","BAR"]',kind==='sortie');
   columns.forEach((col,i)=>assert(c.strips[i].some((_,j)=>col.every((s,r)=>s===c.strips[i][(j+r)%20]))));
+ }
+});
+
+test('middle-first gate and debug choices cannot turn rainbow into a miss',()=>{
+ const c=vm.createContext({});vm.runInContext(fs.readFileSync('nova-stock-entry.js','utf8'),c);
+ const s={resolved:{sortieEntry:true},stopped:[false,false,false]};
+ assert.equal(c.NovaStockEntry.canStop(s,0),false);assert.equal(c.NovaStockEntry.canStop(s,2),false);assert.equal(c.NovaStockEntry.canStop(s,1),true);
+ s.stopped[1]=true;assert.equal(c.NovaStockEntry.canStop(s,0),true);assert.equal(c.NovaStockEntry.canStop(s,2),true);
+ for(const key of ['WIN_BLUE','WIN_RED','WIN_RAINBOW','MISS_BLUE','MISS_RED'])assert(c.NovaStockEntry.debugCue('SORTIE_AIM_'+key));
+ assert.equal(c.NovaStockEntry.debugCue('SORTIE_AIM_MISS_RAINBOW'),null);
+ const strips=[['bell','BAR','cherry'],['bell','BAR','cherry','BAR','bell','replay'],['bell','BAR','bell']];
+ assert.equal(JSON.stringify(c.NovaStockEntry.sortieColumns({kind:'sortieFake'},strips)[1]),'["cherry","BAR","bell"]');
+});
+
+test('debug flags queue exactly one real or fake entry with the requested color',()=>{
+ const c=vm.createContext({normalState:{},A_TYPE_MODE:true,forceResult:'',log(){},syncNovaProgress(){},NovaProgress:{queueSortie(){c.queued++;}},queued:0});
+ vm.runInContext(fs.readFileSync('nova-stock-entry.js','utf8'),c);
+ const src=fs.readFileSync('nova-game.js','utf8');
+ for(const name of ['forceResultName','takeForcedResult'])vm.runInContext(src.match(new RegExp('  function '+name+'\\([^]*?\\n  }'))[0],c);
+ for(const [flag,fake,color] of [['WIN_BLUE',false,'blue'],['WIN_RED',false,'red'],['WIN_RAINBOW',false,'rainbow'],['MISS_BLUE',true,'blue'],['MISS_RED',true,'red']]){
+  c.normalState={};c.queued=0;c.forceResult='SORTIE_AIM_'+flag;
+  assert.equal(c.takeForcedResult(),'');assert.equal(c.forceResult,'');assert.equal(c.normalState.sortieDebugCue.color,color);
+  assert.equal(c.queued,fake?0:1);assert.equal(c.normalState.pendingFakeSortie||0,fake?1:0);
  }
 });
