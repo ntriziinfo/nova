@@ -6552,3 +6552,11 @@ body{
   flex-shrink:0;display:block;overflow:hidden;
   transform:none !important;filter:none !important;
 }
+
+/* Make ordinary symbols 10% smaller without changing the full-cell premium symbols. */
+.cell img.symImg:not(.sevenSymImg):not(.barSymImg):not(.nebulaSymImg),
+.cell > .novaLogoTile,
+.cell > .sym{
+  scale:.9;
+  transform-origin:center center;
+}
