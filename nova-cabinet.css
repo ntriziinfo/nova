@@ -259,3 +259,8 @@ body.layoutEditOpen #novaLampMoviePreview{display:block;}
 
 #novaBackgroundMoviePreview{display:none;box-sizing:border-box;border:2px dashed #c89aff;color:#ecd9ff;font:bold 12px system-ui;text-align:center;}
 body.layoutEditOpen #novaBackgroundMoviePreview{display:block;background:#39225955!important;}
+
+#machine>.novaSuperChallengeTitle,#machine>#novaSuperTitlePreview{position:absolute;left:var(--layout-supertitle-x,21.6%);top:var(--layout-supertitle-y,29.6%);width:var(--layout-supertitle-w,56.7%);height:var(--layout-supertitle-h,10.7%);transform:none;object-fit:contain;z-index:49;pointer-events:none;}
+
+#novaSuperTitlePreview{display:none;}
+body.layoutEditOpen #novaSuperTitlePreview{display:block;outline:1px dashed #c89aff;}

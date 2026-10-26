@@ -877,6 +877,7 @@
     cabinetmask:{x:20.3,y:29.5,w:58.9,h:25.7},
     lampmovie:{x:20.4,y:29.6,w:59.1,h:10.7},
     backgroundmovie:{x:22.3,y:31.8,w:55.7,h:22},
+    supertitle:{x:21.6,y:29.6,w:56.7,h:10.7},
     displaygroup:{x:0,y:0,s:100}
   });
   let pageZoom = PAGE_ZOOM_DEFAULT;
