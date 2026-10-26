@@ -245,7 +245,7 @@ body.layoutEditOpen #novaLampMoviePreview{display:block;}
 #novaCabinetStage{position:relative;}
 #novaCabinetStage>#machine{position:absolute!important;inset:0!important;margin:0!important;transform:translate(var(--layout-displaygroup-x,0%),var(--layout-displaygroup-y,0%)) scale(var(--displaygroup-scale,1));transform-origin:50% 45%;z-index:25;pointer-events:none;}
 #novaCabinetStage>#machine .reelArea{pointer-events:auto;}
-#novaCabinetStage .novaDisplayFrame{clip-path:inset(29.8% 19.8% 36.2% 19.8%);}
+#novaCabinetStage .novaDisplayFrame{clip-path:inset(29.8% 19.8% 37.5% 19.8%);}
 .novaOriginalDisplayCover{position:absolute;left:19.8%;top:calc(var(--jag-cabinet-height)*.298);width:60.4%;height:calc(var(--jag-cabinet-height)*.34);background:#000;z-index:1;pointer-events:none;}
 #novaCabinetStage:has(#machine[data-ouma-freeze=lift])>.playControls button,#novaCabinetStage:has(#machine[data-ouma-freeze=hold])>.playControls button,#novaCabinetStage:has(#machine[data-ouma-freeze=fail])>.playControls button{pointer-events:none;}
 #novaCabinetStage:has(#machine[data-ouma-freeze=bet])>.playControls button:not(#spinBtn){pointer-events:none;}
