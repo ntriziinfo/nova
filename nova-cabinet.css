@@ -200,3 +200,18 @@ body[data-zone-roulette-state=confirmed] #machine .novaArtItem[data-roulette-lit
 body #machine .novaArtItem[data-sortie-won=true]{opacity:1!important;animation:novaRouletteConfirmed 160ms steps(1,end) infinite!important}
 body #machine .novaArtItem[data-sortie-won=true] img{opacity:1!important;animation:none!important;filter:brightness(1.4) drop-shadow(0 0 14px #ffe4a0)!important}
 @media(prefers-reduced-motion:reduce){body #machine .novaArtItem[data-sortie-won=true]{animation:none!important}}
+
+/* High-contrast reel surface and alpha-following outlines; source art is unchanged. */
+#machine .reel,
+#machine .reel .cell{background:#fff !important;box-shadow:none !important;}
+#machine .reel::before,
+#machine .reel::after{background:none !important;box-shadow:none !important;}
+#machine .reel .cell{border-color:#d6d6d6 !important;}
+#machine .reel .cell :is(img.symImg,svg.novaFullSymbol){
+  --symbol-black-edge:drop-shadow(.6px 0 0 #000) drop-shadow(-.6px 0 0 #000) drop-shadow(0 .6px 0 #000) drop-shadow(0 -.6px 0 #000);
+  filter:var(--symbol-black-edge) var(--symbol-color-glow,brightness(1)) !important;
+}
+#machine .reel .cell svg.sevenSymImg{--symbol-color-glow:drop-shadow(0 0 3px #e91525) drop-shadow(0 0 6px #b90820);}
+#machine .reel .cell svg.nebulaSymImg{--symbol-color-glow:drop-shadow(0 0 3px #d78aff) drop-shadow(0 0 6px #b650f2);}
+#machine .reel .cell svg.barSymImg{--symbol-color-glow:drop-shadow(0 0 3px #ffe052) drop-shadow(0 0 6px #efb91b);}
+#machine .reel .cell > .sym{-webkit-text-stroke:1px #000;}
