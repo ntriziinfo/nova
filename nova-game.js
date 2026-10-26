@@ -6312,8 +6312,14 @@
     return [0,1,2].map(row=>columns.map(column=>column[row]));
   }
   const NOVA_PATTERN_NAMES = {WEAK_NOVA:"弱ノヴァ目",STRONG_NOVA:"強ノヴァ目",SUPER_NOVA:"スーパーノヴァ目"};
+
+// Presentation only: crop transparent margins using an SVG viewport, preserving source art.
+function fullReelSymbolMarkup(src, className, label, x, y, width, height, sourceWidth, sourceHeight){
+  return `<svg class="symImg ${className} novaFullSymbol" viewBox="${x} ${y} ${width} ${height}" preserveAspectRatio="none" role="img" aria-label="${label}"><image href="${src}" width="${sourceWidth}" height="${sourceHeight}"/></svg>`;
+}
+
   function cellHtml(symbol, label, cls){
-    if(symbol===NEBULA_SYMBOL)return '<img class="symImg nebulaSymImg" src="'+NEBULA_IMAGE_SRC+'" alt="nebula特殊図柄" draggable="false" style="width:100%;height:100%;object-fit:contain;filter:none;transform:none">';
+    if(symbol===NEBULA_SYMBOL)return fullReelSymbolMarkup(NEBULA_IMAGE_SRC,'nebulaSymImg','ネビュラ',19,0,1633,941,1672,941);
     const tile = /^NOVA_([0-2])_([0-2])$/.exec(symbol);
     if(tile) return '<span class="novaLogoTile" aria-label="ノヴァ目 '+tile[1]+' '+tile[2]+'"><img src="'+NOVA_LOGO_SRC+'" draggable="false" alt="" style="left:-'+Number(tile[1])*100+'%;top:-'+Number(tile[2])*100+'%"></span>';
     // Legacy saved visual states must not reintroduce retired artwork.
@@ -6341,9 +6347,9 @@
                     : (symbol === GRAPE_SYMBOL)
                       ? `<img class="symImg grapeSymImg" src="${GRAPE_IMAGE_SRC}" alt="grape symbol" loading="eager" decoding="sync" draggable="false">`
                       : (symbol === "BAR")
-                        ? `<img class="symImg barSymImg" src="${BAR_IMAGE_SRC}" alt="BAR symbol" loading="eager" decoding="sync" draggable="false">`
+                        ? fullReelSymbolMarkup(BAR_IMAGE_SRC,'barSymImg','BAR',11,18,2151,706,2172,724)
                         : (symbol === "7")
-                          ? `<img class="symImg sevenSymImg" src="${SEVEN_IMAGE_SRC}" alt="7 symbol" loading="eager" decoding="sync" draggable="false">`
+                          ? fullReelSymbolMarkup(SEVEN_IMAGE_SRC,'sevenSymImg','7',15,62,1643,865,1672,941)
                           : `<div class="sym ${cls || ""}">${escapeHtml(symbol)}</div>`;
     return `${inner}`;
   }

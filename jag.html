@@ -32,7 +32,7 @@
 <link rel="preload" as="image" href="assets/buttons/btn_speed_half_blue.png" media="(min-width:1025px)">
 <link rel="preload" as="image" href="assets/controls/start_lever_ball.png">
 <link rel="preload" as="image" href="assets/controls/stop_button_red_cut.png">
-<link rel="stylesheet" href="nova-game.css?v=20261013-speed-audio-credit">
+<link rel="stylesheet" href="nova-game.css?v=20261027-full-symbols">
 <link rel="stylesheet" href="nova-data-counter.css?v=20261015-mode-history">
 <link rel="stylesheet" href="nova-cabinet.css?v=20261026-reel-visibility">
 <link rel="stylesheet" href="nova-remaining-counters.css?v=20261013-checkpoint-cue">
@@ -472,8 +472,8 @@
         <div class="payline"></div>
         <div class="reels">
           <div class="reel" data-reel="0"><div class="window">
-            <div class="cell"><picture class="novaResponsiveImage"><source media="(max-width:1024px)" srcset="assets/mobile-20261013/nova-bar-20261027.webp"><img class="symImg barSymImg" src="assets/symbols/gang-v3/nova-bar-20261027.png" alt="BAR symbol" loading="eager" decoding="sync" draggable="false"></picture></div>
-            <div class="cell center"><img class="symImg sevenSymImg" src="assets/symbols/seven-nebula-original.png" alt="7 symbol" loading="eager" decoding="sync" draggable="false"></div>
+            <div class="cell"><svg class="symImg barSymImg novaFullSymbol" viewBox="11 18 2151 706" preserveAspectRatio="none" role="img" aria-label="BAR"><image href="assets/symbols/gang-v3/nova-bar-20261027.png" width="2172" height="724"/></svg></div>
+            <div class="cell center"><svg class="symImg sevenSymImg novaFullSymbol" viewBox="15 62 1643 865" preserveAspectRatio="none" role="img" aria-label="7"><image href="assets/symbols/seven-nebula-original.png" width="1672" height="941"/></svg></div>
             <div class="cell"><picture class="novaResponsiveImage"><source media="(max-width:1024px)" srcset="assets/mobile-20261013/bell.webp"><img class="symImg grapeSymImg" src="assets/symbols/gang-v3/bell.png" alt="grape symbol" loading="eager" decoding="sync" draggable="false"></picture></div>
           </div></div>
           <div class="reel" data-reel="1"><div class="window">
@@ -483,7 +483,7 @@
           </div></div>
           <div class="reel" data-reel="2"><div class="window">
             <div class="cell"><picture class="novaResponsiveImage"><source media="(max-width:1024px)" srcset="assets/mobile-20261013/replay.webp"><img class="symImg cherrySymImg" src="assets/symbols/gang-v3/replay.png" alt="cherry symbol" loading="eager" decoding="sync" draggable="false"></picture></div>
-            <div class="cell center"><picture class="novaResponsiveImage"><source media="(max-width:1024px)" srcset="assets/mobile-20261013/nova-bar-20261027.webp"><img class="symImg barSymImg" src="assets/symbols/gang-v3/nova-bar-20261027.png" alt="BAR symbol" loading="eager" decoding="sync" draggable="false"></picture></div>
+            <div class="cell center"><svg class="symImg barSymImg novaFullSymbol" viewBox="11 18 2151 706" preserveAspectRatio="none" role="img" aria-label="BAR"><image href="assets/symbols/gang-v3/nova-bar-20261027.png" width="2172" height="724"/></svg></div>
             <div class="cell"><div class="sym">🐘</div></div>
           </div></div>
         </div>
@@ -845,7 +845,7 @@
 <script src="nova-history.js?v=20261001-history-performance"></script>
 <script src="nova-role-counter.js?v=20261014-role-counter"></script>
 <script src="nova-data-counter.js?v=20261015-mode-history"></script>
-<script src="nova-game.js?v=20261027-bar"></script>
+<script src="nova-game.js?v=20261027-full-symbols"></script>
 <button type="button" id="novaSymbolPreviewOpen">ノヴァ目を確認</button>
 <dialog id="novaSymbolPreview"><h2>ノヴァ目</h2><label>出目<select id="novaPatternSelect"><option value="WEAK_NOVA">弱ノヴァ目：左3連</option><option value="STRONG_MIDDLE">強ノヴァ目：左・中3連</option><option value="STRONG_RIGHT">強ノヴァ目：左・右3連</option><option value="SUPER_NOVA" selected>スーパーノヴァ目：全リール3連</option></select></label><p id="novaPatternDescription"></p><div id="novaSymbolPreviewGrid"></div><p>出目の確認用です。通常時のスーパーはBIG・フリーズ各50%。ボーナス中は対象外。弱・強と自然出現率は未設定。</p><button type="button" id="novaSymbolPreviewClose">閉じる</button></dialog>
 </body>

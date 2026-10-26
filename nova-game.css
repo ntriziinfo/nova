@@ -6544,3 +6544,11 @@ body{
 .superSpeedMenu button:disabled{opacity:.4;cursor:not-allowed;}
 .superSpeedMenu button:focus-visible{outline:2px solid #fff;outline-offset:1px;}
 .superSpeedMenu .superSpeedMenuStop{text-align:center;color:#ffc9bb;border-color:#895746;}
+
+/* Approved full-cell symbol presentation: 98% width / 96% height. */
+.cell svg.novaFullSymbol{
+  width:98% !important;height:96% !important;
+  max-width:98% !important;max-height:96% !important;
+  flex-shrink:0;display:block;overflow:hidden;
+  transform:none !important;filter:none !important;
+}
