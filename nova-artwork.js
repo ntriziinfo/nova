@@ -3,7 +3,8 @@
 (() => {
   'use strict';
   const canEdit=globalThis.NovaUiAccess?.canEdit === true;
-  const originals = ['ouma1','sora1','sosuke','toto','urapi','giru1','kushuri','nito'];
+  // Later DOM siblings render in front: Sora covers Sosuke; Toto covers Kushuri.
+  const originals = ['ouma1','sosuke','sora1','kushuri','toto','urapi','giru1','nito'];
   const names = {ouma1:'逢魔',sora1:'空',sosuke:'宗介',toto:'とと',urapi:'うらぴ',giru1:'ギル',kushuri:'くしゅり',nito:'にと'};
   const sources = {kushuri:'assets/illustrations/lamps-20260928/kushuri.png',nito:'assets/illustrations/lamps-20260928/nito.png'};
   const previousDefaults = {
@@ -18,12 +19,12 @@
   const fitPreviousRow = p => ({x:21.5+(p.x-21.5)*.75,y:43.4+(p.y-43.4)*.75,w:p.w*.75});
   // User-supplied placement screenshots, 2026-10-27.
   const defaults = {
-    ouma1:{x:39.5,y:33.3,w:13.7},sora1:{x:46.2,y:33.4,w:14.8},
-    sosuke:{x:61.7,y:33.4,w:10.7},toto:{x:56.6,y:35.1,w:8.3},
-    urapi:{x:23.7,y:33.2,w:15.8},giru1:{x:32.9,y:34.3,w:13.8},
-    kushuri:{x:67.4,y:34.5,w:13.1},nito:{x:20.2,y:34.4,w:12.3}
+    ouma1:{x:37.3395,y:29.4353,w:16.7},sora1:{x:45.6599,y:32.7559,w:16.7},
+    sosuke:{x:54.5241,y:29.6733,w:12.6},toto:{x:61.5383,y:33.9498,w:10.1},
+    urapi:{x:23.1599,y:29.4657,w:17.7},giru1:{x:31.6654,y:33.6099,w:15.1},
+    kushuri:{x:66.0111,y:30.8193,w:15.5},nito:{x:18.8457,y:33.2418,w:13.9}
   };
-  const key = 'nova_licensed_artwork_locked_20261027';
+  const key = 'nova_licensed_artwork_locked_20261027b';
   const clone = value => JSON.parse(JSON.stringify(value));
   const clamp = (value,min,max) => Math.max(min,Math.min(max,value));
   let positions = clone(defaults), selected = originals[0], dragging = null;
