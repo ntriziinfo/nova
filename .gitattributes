@@ -77,3 +77,5 @@ assets/illustrations/result-plush-20261024/sources.json -filter -diff -merge tex
 assets/symbols/gang-v3/nova-bar-20261027.png -filter -diff -merge -text
 assets/mobile-20261013/nova-bar-20261027.webp -filter -diff -merge -text
 assets/media/nova/aim/seven-flash-20261027.mp4 -filter -diff -merge -text
+
+assets/media/nova/cz_remaining_1.wav -filter -diff -merge -text

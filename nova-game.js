@@ -866,6 +866,7 @@
   const LAYOUT_DEFAULTS = Object.freeze({
     ...NovaRemainingCounters.defaults,
     navi:{...NovaBellNavi.defaults},
+    flowstatus:{x:22,y:10,w:56},
     reels:{x:22.7, y:41.4, w:54.0, h:37.4, gap:0.2},
     chance:{x:22.0, y:85.8, w:11.9, h:11.0},
     credit:{x:38.0, y:85.8, w:12.2, h:11.0},
@@ -1308,9 +1309,11 @@
   function playCzCountdownOnLever(resolved){
     if(resolved?.bonusPendingAtStart)return;
     const flow=resolved?.flowBefore;
-    const remaining=['cz','strong_cz'].includes(flow?.phase)?flow.remaining
-      :flow?.phase==='art'&&['continue','success','failure'].includes(resolved.comebackEvent)?flow.comebackLeft:0;
-    const src={3:'assets/media/jag/cz_remaining_3.wav?v=count2',2:'assets/media/jag/cz_remaining_2.wav?v=count2',1:'assets/media/jag/cz_last.wav?v=count2'}[remaining];
+    const before=['cz','strong_cz'].includes(flow?.phase)?Number(flow.remaining)
+      :flow?.phase==='art'&&['continue','success','failure'].includes(resolved.comebackEvent)?Number(flow.comebackLeft):NaN;
+    if(!Number.isFinite(before)||before<1)return;
+    const remaining=before-1;
+    const src={3:'assets/media/jag/cz_remaining_3.wav?v=count2',2:'assets/media/jag/cz_remaining_2.wav?v=count2',1:'assets/media/nova/cz_remaining_1.wav',0:'assets/media/jag/cz_last.wav?v=count2'}[remaining];
     if(src)playOneShotSound(src,voiceOutputVolume());
   }
 

@@ -34,14 +34,14 @@
 <link rel="preload" as="image" href="assets/controls/stop_button_red_cut.png">
 <link rel="stylesheet" href="nova-game.css?v=20261027-bright-full-height">
 <link rel="stylesheet" href="nova-data-counter.css?v=20261015-mode-history">
-<link rel="stylesheet" href="nova-cabinet.css?v=20261027-no-yellow-popup">
+<link rel="stylesheet" href="nova-cabinet.css?v=20261027-status-layout">
 <link rel="stylesheet" href="nova-remaining-counters.css?v=20261013-checkpoint-cue">
 <script src="nova-remaining-counters.js?v=20261013-checkpoint-cue"></script>
 <link rel="stylesheet" href="nova-artwork.css?v=20260928-cz-rainbow-155">
 <script src="nova-artwork.js?v=20261014-store-controls" defer></script>
 <link rel="stylesheet" href="nova-upper-at-background.css?v=20261013-checkpoint-cue">
 <script src="nova-upper-at-background.js?v=20261013-checkpoint-cue"></script>
-<script src="nova-voice-catalog.js?v=20261012-complete-screen"></script>
+<script src="nova-voice-catalog.js?v=20261027-countdown-one"></script>
 <script src="nova-audio-manifest.js?v=20261015-checkpoint-bgm"></script>
 <script src="nova-audio-assets.js?v=20261012-normalized"></script>
 <script src="nova-audio.js?v=20261012-normalized"></script>
@@ -231,6 +231,7 @@
             </div>
           </div>
           <div class="layoutEditorGroups">
+<div class="layoutEditGroup"><div class="layoutEditGroupTitle">状態表示（通常・CZ・AT）</div><div class="layoutEditRows"><label class="layoutEditRow"><span>横位置</span><input class="layoutEditInput" type="range" min="0" max="95" step="0.1" data-layout-target="flowstatus" data-layout-prop="x" aria-label="状態表示 横位置"><b class="layoutEditValue" data-layout-view="flowstatus-x"></b></label><label class="layoutEditRow"><span>縦位置</span><input class="layoutEditInput" type="range" min="0" max="120" step="0.1" data-layout-target="flowstatus" data-layout-prop="y" aria-label="状態表示 縦位置"><b class="layoutEditValue" data-layout-view="flowstatus-y"></b></label><label class="layoutEditRow"><span>幅</span><input class="layoutEditInput" type="range" min="10" max="100" step="0.1" data-layout-target="flowstatus" data-layout-prop="w" aria-label="状態表示 幅"><b class="layoutEditValue" data-layout-view="flowstatus-w"></b></label></div></div>
             <div class="layoutEditGroup" id="bellNaviLayoutGroup">
               <div class="layoutEditGroupTitle">ベルナビ（リール基準・調整中は常時表示）</div>
               <div class="layoutEditRows">
@@ -846,7 +847,7 @@
 <script src="nova-history.js?v=20261001-history-performance"></script>
 <script src="nova-role-counter.js?v=20261014-role-counter"></script>
 <script src="nova-data-counter.js?v=20261015-mode-history"></script>
-<script src="nova-game.js?v=20261027-nova-role-display"></script>
+<script src="nova-game.js?v=20261027-countdown-layout"></script>
 <button type="button" id="novaSymbolPreviewOpen">ノヴァ目を確認</button>
 <dialog id="novaSymbolPreview"><h2>ノヴァ目</h2><label>出目<select id="novaPatternSelect"><option value="WEAK_NOVA">弱ノヴァ目：左3連</option><option value="STRONG_MIDDLE">強ノヴァ目：左・中3連</option><option value="STRONG_RIGHT">強ノヴァ目：左・右3連</option><option value="SUPER_NOVA" selected>スーパーノヴァ目：全リール3連</option></select></label><p id="novaPatternDescription"></p><div id="novaSymbolPreviewGrid"></div><p>出目の確認用です。通常時のスーパーはBIG・フリーズ各50%。ボーナス中は対象外。弱・強と自然出現率は未設定。</p><button type="button" id="novaSymbolPreviewClose">閉じる</button></dialog>
 </body>

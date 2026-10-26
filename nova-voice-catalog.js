@@ -147,7 +147,7 @@ globalThis.NovaVoiceCatalog=(()=>{
     ...SOSUKE_LADDER_VOICE_SRCS,
     ...Object.values(RARE_CUE_VOICE_SRCS).flatMap(bank=>Object.values(bank)),
     'assets/media/nova/aim/bonus-nebula-win.wav','assets/media/nova/aim/zone-roulette-confirm.wav?v=20260919-roulette-voice',
-    'assets/media/jag/cz_remaining_3.wav?v=count2','assets/media/jag/cz_remaining_2.wav?v=count2','assets/media/jag/cz_last.wav?v=count2',
+    'assets/media/nova/cz_remaining_1.wav','assets/media/jag/cz_remaining_3.wav?v=count2','assets/media/jag/cz_remaining_2.wav?v=count2','assets/media/jag/cz_last.wav?v=count2',
     ...Object.values(SORTIE_AWARD_VOICE_SRCS)
   ]);
   return Object.freeze({

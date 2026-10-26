@@ -1,0 +1,31 @@
+{
+  "sourceName": "1.wav",
+  "output": "assets/media/nova/cz_remaining_1.wav",
+  "targetSpeechLufs": -14,
+  "before": {
+    "input_i": "-28.36",
+    "input_tp": "-17.39",
+    "input_lra": "0.00",
+    "input_thresh": "-39.33",
+    "output_i": "-14.04",
+    "output_tp": "-3.03",
+    "output_lra": "0.00",
+    "output_thresh": "-25.01",
+    "normalization_type": "linear",
+    "target_offset": "0.04"
+  },
+  "after": {
+    "input_i": "-13.83",
+    "input_tp": "-3.03",
+    "input_lra": "0.00",
+    "input_thresh": "-26.25",
+    "output_i": "-14.01",
+    "output_tp": "-3.20",
+    "output_lra": "0.00",
+    "output_thresh": "-26.43",
+    "normalization_type": "linear",
+    "target_offset": "0.01"
+  },
+  "duration": 1.322667,
+  "sourceSha256": "084ea7a4e6340a4875385b158f4167911e5883c707aa6c97ca0f152b100e013c"
+}
