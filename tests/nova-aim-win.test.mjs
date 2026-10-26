@@ -17,7 +17,7 @@ test('sortie entry loops the rainbow nebula cue and never requests a seven voice
  assert.equal(t.aim.bet(null,resolved),false);
  const root=t.elements.find(e=>e.className==='novaAimPresentation'),video=t.elements.find(e=>e.src==='assets/media/nova/aim/nebula-rainbow.mp4');
  assert.equal(root.dataset.symbol,'nebula');assert.equal(root.dataset.color,'rainbow');assert.equal(video.hidden,false);assert.equal(video.loop,true);assert.equal(video.paused,false);
- assert.equal(t.elements.find(e=>e.src==='assets/media/nova/aim/seven-entry-red.mp4').hidden,true);
+ assert.equal(t.elements.filter(e=>e.src==='assets/media/nova/aim/seven-flash-20261027.mp4')[3].hidden,true);
  assert.equal(t.aim.busy,false);assert.equal(t.timers.size,0);assert.equal(JSON.stringify(resolved),before);
  t.aim.stop(resolved);assert.equal(video.hidden,true);assert.equal(video.paused,true);
 });
@@ -56,7 +56,7 @@ test('upper challenge retains the tunnel and title through HOLD and reveals neit
   assert.equal(video.loop,true);assert.equal(video.muted,true);assert.equal(video.playsInline,true);assert.equal(video.paused,false);
   video.currentTime=3;t.aim.stop(spin);
   const final={researchChallenge:{priorAim:'nova',finished:true,won}};t.aim.bet(null,final);
-  assert.equal(video.currentTime,3);assert.equal(video.paused,false);assert.equal(title.hidden,false);
+  assert.equal(video.paused,true);assert.equal(title.hidden,true);assert.equal(root.dataset.novaCue,'true');assert.equal(t.elements.find(e=>e.className==='novaBarAimTitle').hidden,false);
   assert.equal(t.aim.busy,false);assert.equal(t.timers.size,0);assert.equal(JSON.stringify(spin),before);
   t.aim.stop(final);assert.equal(root.hidden,true);assert.equal(title.hidden,true);assert.equal(video.paused,true);assert.equal(video.currentTime,0);
   t.aim.bet(null,spin);t.aim.reset();assert.equal(root.dataset.superChallenge,undefined);assert.equal(video.paused,true);assert.equal(title.hidden,true);
@@ -66,9 +66,9 @@ test('upper challenge retains the tunnel and title through HOLD and reveals neit
 test('upper challenge restores from a saved spin and releases the lamp bay for normal CZ and seven cues',()=>{
  const t=setup();t.aim.bet(null,JSON.parse(JSON.stringify({researchChallenge:{left:4,priorAim:'nova'}})));
  const title=t.elements.find(e=>e.className==='novaSuperChallengeTitle'),video=t.elements.find(e=>e.src?.endsWith('super-nova-challenge-tunnel-20261012.mp4'));
- assert.equal(title.hidden,false);
+ assert.equal(title.hidden,true);assert.equal(t.elements[0].dataset.novaCue,'true');
  t.aim.bet(null,{flowBefore:{phase:'cz',remaining:20,totalGames:20}});
- assert.equal(title.hidden,true);assert.equal(video.paused,true);assert.equal(t.elements[0].dataset.czIntro,'true');
+ assert.equal(title.hidden,true);assert.equal(video.hidden,true);assert.equal(t.elements[0].dataset.czIntro,'true');
  assert.equal(t.elements.find(e=>e.className==='novaCzIntroTitle').alt,'NOVA Familia 集結ゾーン');
  t.aim.bet(null,{flowBefore:{phase:'art',entryStage:'seven'},flowAfter:{entryStage:'roulette'}});
  assert.equal(t.elements[0].dataset.symbol,'seven');assert.equal(title.hidden,true);
@@ -108,7 +108,7 @@ test('CZ intro can resume after reload, resets cleanly, and never replaces prelu
  assert(t.elements.filter(e=>e.tag==='video'&&!e.hidden).length===0);
  t.aim.bet({symbol:'seven',color:'red',guide:true},{flowBefore:{phase:'art'}});
  assert.equal(t.elements.find(e=>e.src==='assets/ui/nova-shuketsu-zone.png').hidden,true);
- assert.equal(t.elements.find(e=>e.src==='assets/media/nova/aim/seven-red.mp4').hidden,false);
+ assert.equal(t.elements.filter(e=>e.src==='assets/media/nova/aim/seven-flash-20261027.mp4')[1].hidden,false);
 });
 test('comeback fire and title loop across BETs and stops without touching the draw or locking AUTO',()=>{
  const t=setup();t.aim.stop({comebackEvent:'entry',flowBefore:{phase:'art'}});
@@ -133,7 +133,7 @@ test('comeback success and failure stay concealed until the third stop then reve
   assert.equal(root.hidden,false);assert.equal(title.hidden,false);video.currentTime=3;
   t.aim.stop(spin);assert.equal(root.hidden,true);assert.equal(title.hidden,true);assert.equal(video.paused,true);assert.equal(video.currentTime,0);assert.equal(root.dataset.comeback,undefined);
   t.aim.bet(null,{flowBefore:{phase:'art',entryStage:'seven'},flowAfter:{phase:'art',entryStage:'roulette'}});
-  assert.equal(title.hidden,true);assert.equal(video.hidden,true);assert.equal(t.elements.find(e=>e.src?.endsWith('/seven-entry-red.mp4')).hidden,false);
+  assert.equal(title.hidden,true);assert.equal(video.hidden,true);assert.equal(t.elements.filter(e=>e.src==='assets/media/nova/aim/seven-flash-20261027.mp4')[3].hidden,false);
  }
 });
 
@@ -296,7 +296,7 @@ test('zone entry loops the supplied cue until the reels finish, for initial and 
  for(const initialStage of ['', 'entry']){
   const {aim,elements}=setup();
   assert.equal(aim.bet(null,{flowBefore:{phase:'art',entryStage:'seven',initialStage},flowAfter:{phase:'art',entryStage:'roulette'}}),true);
-  const video=elements.find(e=>e.src?.includes('/seven-entry-red.mp4'));
+  const video=elements.filter(e=>e.src==='assets/media/nova/aim/seven-flash-20261027.mp4')[3];
   assert.equal(video.hidden,false);assert.equal(video.loop,true);assert.equal(video.muted,true);assert.equal(video.currentTime,0);assert.equal(video.paused,false);
   assert.equal(elements[0].dataset.zoneEntry,'true');assert.equal(aim.busy,false);
   aim.hide();assert.equal(video.hidden,true);assert.equal(video.paused,true);assert.equal(elements[0].dataset.zoneEntry,undefined);
@@ -309,7 +309,7 @@ test('cue rewinds while hidden and reuses the prepared first frame on the next B
  const {aim,elements}=setup();
  const entry={flowBefore:{phase:'art',entryStage:'seven'},flowAfter:{phase:'art',entryStage:'roulette'}};
  aim.bet(null,entry);
- const video=elements.find(e=>e.src?.includes('/seven-entry-red.mp4'));
+ const video=elements.filter(e=>e.src==='assets/media/nova/aim/seven-flash-20261027.mp4')[3];
  let time=1.5;const seeks=[];
  Object.defineProperty(video,'currentTime',{get:()=>time,set(value){seeks.push({value,hidden:this.hidden,paused:this.paused});time=value;}});
  aim.hide();assert.deepEqual(seeks,[{value:0,hidden:true,paused:true}]);
@@ -322,7 +322,7 @@ test('CZ bonus seven cue shares the new looping movie after preparation, without
   const resolved={flowBefore:{phase},bonusPendingAtStart:true,bonusReady:true,bonusWaitSpin:false};
   // Only zone entry returns true to request an extra seven voice. Bonus BET owns its voice.
   assert.equal(aim.bet(null,resolved),false);
-  const video=elements.find(e=>e.src?.endsWith('/seven-entry-red.mp4'));
+  const video=elements.filter(e=>e.src==='assets/media/nova/aim/seven-flash-20261027.mp4')[3];
   assert.equal(elements[0].hidden,false);assert.equal(video.hidden,false);assert.equal(video.paused,false);
   assert.equal(video.loop,true);assert.equal(video.muted,true);assert.equal(aim.busy,false);
   aim.hide();assert.equal(video.hidden,true);assert.equal(video.paused,true);
@@ -353,7 +353,7 @@ test('initial bonus wait loops the gold movie continuously across stops and BETs
  aim.bet(null,{...waiting,bonusWaitSpin:false,bonusReady:true});
  assert.equal(video.hidden,true);assert.equal(video.paused,true);assert.equal(video.currentTime,0);
  assert.equal(root.dataset.bonusWait,undefined);
- assert.equal(elements.find(e=>e.src?.endsWith('/seven-entry-red.mp4')).hidden,false);
+ assert.equal(elements.filter(e=>e.src==='assets/media/nova/aim/seven-flash-20261027.mp4')[3].hidden,false);
  aim.stop({bonusReady:true});assert.equal(root.hidden,true);
 });
 
@@ -385,7 +385,7 @@ test('AT preparation loops the background and title across three games until the
  }
  assert.equal(t.aim.bet(null,{flowBefore:entry,flowAfter:{...entry,entryStage:'roulette'}}),true);
  assert.equal(title.hidden,true);assert.equal(video.hidden,true);assert.equal(video.paused,true);assert.equal(video.currentTime,0);
- assert.equal(root.dataset.atWait,undefined);assert.equal(t.elements.find(e=>e.src?.endsWith('/seven-entry-red.mp4')).hidden,false);
+ assert.equal(root.dataset.atWait,undefined);assert.equal(t.elements.filter(e=>e.src==='assets/media/nova/aim/seven-flash-20261027.mp4')[3].hidden,false);
  t.aim.syncAtWait({...entry,entryStage:'roulette'});
  assert.equal(root.hidden,false,'idle sync must not dismiss the seven cue');
 });
@@ -414,8 +414,8 @@ test('colored zone seven/nebula guides retain their own movie after the entry re
  const {aim,elements}=setup();
  for(const symbol of ['seven','nebula'])for(const color of ['blue','red','rainbow']){
   aim.bet({symbol,color,result:'MISS',guide:true});
-  assert.equal(elements.find(e=>e.src===`assets/media/nova/aim/${symbol}-${color}.mp4`).hidden,false);
-  assert.equal(elements.find(e=>e.src?.endsWith('/seven-entry-red.mp4')).hidden,true);
+  assert.equal((symbol==='seven'?elements.filter(e=>e.src==='assets/media/nova/aim/seven-flash-20261027.mp4')[['blue','red','rainbow'].indexOf(color)]:elements.find(e=>e.src===`assets/media/nova/aim/${symbol}-${color}.mp4`)).hidden,false);
+  assert.equal(elements.filter(e=>e.src==='assets/media/nova/aim/seven-flash-20261027.mp4')[3].hidden,true);
  }
 });
 
@@ -433,7 +433,7 @@ test('zone entry and colored seven cues play one character voice on BET with the
  context.playAimBetPresentation({aim:{symbol:'seven',color:'red',guide:true},flowBefore:{phase:'art',zone:'toto'}},()=>.9);
  assert.deepEqual(sounds[1],{src:'assets/media/nova/aim/cue-red.wav',volume:.4});
  assert.deepEqual(sounds[2],{src:'assets/media/nova/aim-seven-toto.wav',volume:.6});
- const entry=t.elements.find(e=>e.src?.includes('/seven-entry-red.mp4'));
+ const entry=t.elements.filter(e=>e.src==='assets/media/nova/aim/seven-flash-20261027.mp4')[3];
  assert.equal(entry.hidden,true);assert.equal(entry.paused,true);assert.equal(t.elements[0].dataset.zoneEntry,'false');
  context.playAimBetPresentation({flowBefore:{phase:'art'},flowAfter:{phase:'art',entryStage:'seven'}});assert.equal(sounds.length,3);
  context.debugFastSpinActive=true;
@@ -472,4 +472,12 @@ test('BET fades existing win sound over three seconds and repeat BET does not re
  c.fadeAimWinSoundsOnBet();assert.equal(id,1);
  const next={paused:false,ended:false,volume:.5};c.aimWinAudios.add(next);
  now=3000;frame();assert.equal(audio.volume,0);assert.equal(audio.paused,true);assert.equal(c.aimWinAudios.has(audio),false);assert.equal(next.volume,.5);
+});
+
+test('NOVA BAR movie covers Ouma and Urapi cues without changing outcomes',()=>{
+ for(const zone of ['ouma','ura_ouma','urapi']){
+  const t=setup(),resolved={zoneSpin:true,flowBefore:{phase:'art',zone},flowAfter:{phase:'art',zone}},before=JSON.stringify(resolved);
+  t.aim.bet(null,resolved);assert.equal(t.elements[0].dataset.novaCue,'true');assert.equal(t.elements.find(e=>e.className==='novaBarAimTitle').hidden,false);
+  t.aim.stop(resolved);assert.equal(t.elements[0].hidden,true);assert.equal(JSON.stringify(resolved),before);assert.equal(t.aim.busy,false);
+ }
 });

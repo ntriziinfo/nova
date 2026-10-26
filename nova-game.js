@@ -877,6 +877,7 @@
     cabinetmask:{x:20.3,y:29.5,w:58.9,h:25.7},
     lampmovie:{x:20.4,y:29.6,w:59.1,h:10.7},
     backgroundmovie:{x:22.3,y:31.8,w:55.7,h:22},
+    zonepresentation:{x:22.3,y:31.8,w:55.7,h:8.3},
     supertitle:{x:21.6,y:29.6,w:56.7,h:10.7},
     displaygroup:{x:0,y:0,s:100}
   });
@@ -6332,16 +6333,8 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
   function cellHtml(symbol, label, cls){
     if(symbol===NEBULA_SYMBOL)return fullReelSymbolMarkup(NEBULA_IMAGE_SRC,'nebulaSymImg','ネビュラ',19,0,1633,941,1672,941);
     const tile = /^NOVA_([0-2])_([0-2])$/.exec(symbol);
-    // Temporary appearance only; retain NOVA symbols in strips and outcome logic.
-    // Mixed rows also avoid a full bell/replay line when the complete NOVA block stops.
-    if(tile){
-      const displayRows = [
-        [BELL_SYMBOL,ELEPHANT_SYMBOL,BELL_SYMBOL],
-        [ELEPHANT_SYMBOL,BELL_SYMBOL,ELEPHANT_SYMBOL],
-        [ELEPHANT_SYMBOL,BELL_SYMBOL,ELEPHANT_SYMBOL]
-      ];
-      return cellHtml(displayRows[Number(tile[2])][Number(tile[1])],label,cls);
-    }
+    // BAR is the visible NOVA symbol. Preserve legacy strip IDs for saved games.
+    if(tile)return cellHtml(Number(tile[2])===1?'BAR':Number(tile[2])===0?BELL_SYMBOL:ELEPHANT_SYMBOL,label,cls);
     // Legacy saved visual states must not reintroduce retired artwork.
     if(symbol === GRAPE_SYMBOL) symbol = BELL_SYMBOL;
     if(symbol === PIERROT_SYMBOL || symbol === CHERRY_SYMBOL) symbol = ELEPHANT_SYMBOL;

@@ -264,3 +264,11 @@ body.layoutEditOpen #novaBackgroundMoviePreview{display:block;background:#392259
 
 #novaSuperTitlePreview{display:none;}
 body.layoutEditOpen #novaSuperTitlePreview{display:block;outline:1px dashed #c89aff;}
+
+#machine .novaLadderPresentation,#machine #novaStockPreparation,#machine .novaAimPresentation[data-nova-cue="true"],#machine .novaAimPresentation[data-special-zone="true"]{left:var(--layout-zonepresentation-x,22.3%)!important;top:var(--layout-zonepresentation-y,31.8%)!important;width:var(--layout-zonepresentation-w,55.7%)!important;height:var(--layout-zonepresentation-h,8.3%)!important;}
+.novaBarAimTitle{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:2%;background:radial-gradient(ellipse,#150622e6,transparent);color:#fff5b9;text-shadow:0 2px 4px #000;font:bold clamp(18px,3vw,36px) system-ui;}
+.novaBarAimTitle[hidden]{display:none!important;}
+.novaBarAimTitle img{width:55%;height:85%;object-fit:contain;filter:drop-shadow(0 0 8px #ffcd00);}
+.novaBarAimTitle strong{width:39%;font-size:inherit;}
+
+.novaAimPresentation[data-nova-cue="true"]>video{transform:scale(5);transform-origin:0 0;}
