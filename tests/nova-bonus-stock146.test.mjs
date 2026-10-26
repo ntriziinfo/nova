@@ -51,7 +51,7 @@ test('reduced stock guides retain blue/red/rainbow confidence and half of misses
    if(role==='MISS'){misses++;guidedMisses+=!!aim.guide;}
    if(aim?.guide){counts[aim.color][0]++;counts[aim.color][1]+=role==='NEBULA';}
   }
-  for(const {color,hit} of a.aimColors){const [n,w]=counts[color];assert.ok(n>100);assert.ok(Math.abs(w/n-hit)<.025,`${setting}/${tier}/${color}: ${w/n}`);}
+  for(const {color,hit} of [{color:'blue',hit:.2},{color:'red',hit:.9},{color:'rainbow',hit:1}]){const [n,w]=counts[color];assert.ok(n>100);assert.ok(Math.abs(w/n-hit)<.025,`${setting}/${tier}/${color}: ${w/n}`);}
   assert.ok(Math.abs(guidedMisses/misses-.5)<.015);
  }
 });

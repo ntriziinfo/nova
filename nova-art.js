@@ -255,10 +255,10 @@ globalThis.NovaArt=(()=>{
  function bonusAim(result,rng=Math.random,setting=1,stockEligible=false){
   if(!['NEBULA','MISS'].includes(result))return null;
   // Half of misses still have a guide. Adjust the color mix to its new guided
-  // success prior, preserving blue/red/rainbow confidence at 20/80/100%.
+  // success prior, preserving blue/red/rainbow confidence at 20/90/100%.
   const factor=stockEligible?bonusStockFactor(setting):1,guidedHit=2*factor/(2+factor);
-  const red=factor===1?128/180:(guidedHit-.24)/.6;
-  const colors=[{color:'blue',weight:factor===1?43/180:.95-red,hit:.2},{color:'red',weight:red,hit:.8},{color:'rainbow',weight:.05,hit:1}],success=result==='NEBULA',weights=colors.map(row=>row.weight*(success?row.hit:1-row.hit));
+  const red=(guidedHit-.24)/.7;
+  const colors=[{color:'blue',weight:.95-red,hit:.2},{color:'red',weight:red,hit:.9},{color:'rainbow',weight:.05,hit:1}],success=result==='NEBULA',weights=colors.map(row=>row.weight*(success?row.hit:1-row.hit));
   let roll=rng()*weights.reduce((a,b)=>a+b,0),index=weights.findIndex(w=>(roll-=w)<0);if(index<0)index=success?2:0;
   return {symbol:'nebula',color:colors[index].color,result,guide:success||rng()<.5,forced:false};
  }

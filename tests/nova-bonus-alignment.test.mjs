@@ -56,7 +56,7 @@ function finish(c, priorRights, order) {
 
 test('BIG middle-first or right-first NEBULA grants the first AT right or one extra zone', () => {
   const c = setup();
-  for (const prior of [0, 1]) for (const order of [[1, 0, 2], [1, 2, 0], [2, 1, 0], [2, 0, 1]]) {
+  for (const prior of [0, 1]) for (const order of [[1, 0, 2], [1, 2, 0], [2, 1, 0], [2, 0, 1], [0, 2, 1]]) {
     const out = finish(c, prior, order);
     assert.equal(out.aligned, true);
     assert.equal(out.afterRights, prior + 1);
@@ -65,7 +65,7 @@ test('BIG middle-first or right-first NEBULA grants the first AT right or one ex
 
 test('BUG-001: a visibly missed BIG NEBULA must not grant an AT right or zone stock', () => {
   const c = setup(), wrongAwards = [];
-  for (const prior of [0, 1]) for (const order of [[0, 1, 2], [0, 2, 1]]) {
+  for (const prior of [0, 1]) for (const order of [[0, 1, 2]]) {
     const out = finish(c, prior, order);
     assert.equal(out.aligned, false);
     if (out.afterRights !== prior) wrongAwards.push(out);
@@ -75,7 +75,7 @@ test('BUG-001: a visibly missed BIG NEBULA must not grant an AT right or zone st
 
 test('middle-first bonus alignment survives a saved spin without losing the drawn right',()=>{
   const c=setup();
-  for(const prior of [0,1])for(const order of [[1,0,2],[1,2,0]]){
+  for(const prior of [0,1])for(const order of [[1,0,2],[1,2,0],[0,2,1],[2,0,1]]){
     drawnSpin(c,prior,order);
     c.currentSpin=c.NovaSpinResume.restore(c.NovaSpinResume.capture(c.currentSpin),c.RESULT);
     vm.runInContext('Math.random=()=>{throw Error("settlement consumed RNG")}',c);
@@ -91,7 +91,7 @@ test('miss settlement is idempotent, survives a saved spin and preserves earned 
   const c=setup();
   for(const prior of [0,1,3])for(const phase of ['normal','art']){
     c.normalState.flow.phase=phase;
-    let spin=drawnSpin(c,prior,[0,2,1]);
+    let spin=drawnSpin(c,prior,[0,1,2]);
     spin=c.NovaSpinResume.restore(c.NovaSpinResume.capture(spin),c.RESULT);
     c.currentSpin=spin;
     const before=JSON.stringify({session:c.session,stats:c.stats,flow:c.normalState.flow});

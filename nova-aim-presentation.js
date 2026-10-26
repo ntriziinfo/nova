@@ -172,6 +172,14 @@ globalThis.NovaAim=(()=>{
  }
  // Visual stop control does not redraw or cancel the internal award.
  function stopTarget(aim,result,order,index){
+  if(aim.symbol==='nebula'){
+   // BIG: middle-first reveals on the first stop; scissors on the second.
+   // Left-first is eligible only when followed by the right reel.
+   const first=order[0],rank=order.indexOf(index)+1;
+   const valid=first===1||first===2||(first===0&&(order.length===1||order[1]===2));
+   const hit=result==='NEBULA',missReel=first===1?1:2-first;
+   return {onLine:valid&&hit||(!hit&&index!==missReel&&rank<3),aligned:valid&&hit,rank};
+  }
   // Middle-first and right-first both honor the already drawn winning symbol.
   const valid=order[0]===1||order[0]===2,hit=result===(aim.symbol==='seven'?'BIG':'NEBULA');
   const rank=order.indexOf(index)+1;
