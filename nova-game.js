@@ -209,7 +209,7 @@
     DEVIL_ZONE:{name:"DEVIL ZONE", reel:["7","7","BAR"], label:"DZ", cls:"purple", kind:"payadd"},
     SUPER_DEVIL_ZONE:{name:"SUPER DEVIL ZONE", reel:["7","7","7"], label:"SUPER DZ", cls:"red", kind:"payadd"},
     BELL:{name:"8ptベル", reel:[BELL_SYMBOL,BELL_SYMBOL,BELL_SYMBOL], label:"8pt BELL", cls:"gold", kind:"pay"},
-    BELL15:{name:"15ptベル", reel:['7',BELL_SYMBOL,BELL_SYMBOL], label:"15pt BELL", cls:"gold", kind:"pay"},
+    BELL15:{name:"15ptベル", reel:[BELL_SYMBOL,BELL_SYMBOL,BELL_SYMBOL], label:"15pt BELL", cls:"gold", kind:"pay"},
     BELL3:{name:"斜めベル", reel:[BELL_SYMBOL,BELL_SYMBOL,BELL_SYMBOL], label:"", cls:"gold", kind:"pay"},
     REPLAY:{name:"リプレイ", reel:[ELEPHANT_SYMBOL,ELEPHANT_SYMBOL,ELEPHANT_SYMBOL], label:"REPLAY", cls:"blue", kind:"pay"},
     SUICA:{name:"スイカ揃い", reel:["🍋","🍋","🍋"], label:"SUICA", cls:"green", kind:"pay"},
@@ -6560,7 +6560,7 @@
       if(!['WEAK_SUICA','STRONG_SUICA'].includes(target)&&
         [grid?.[0]?.[0],grid?.[1]?.[0]].includes(SUICA_SYMBOL))return false;
       if(displayedResultFromGrid(grid)!==target)return false;
-      return gridPaylineRows(grid).every(row=>{const r=displayedResultFromRow(row);return r==='MISS'||r===target||r==='BELL'&&target==='BELL'||r==='SUICA'&&['WEAK_SUICA','STRONG_SUICA'].includes(target);});
+      return gridPaylineRows(grid).every(row=>{const r=displayedResultFromRow(row);return r==='MISS'||r===target||r==='BELL'&&['BELL','BELL15'].includes(target)||r==='SUICA'&&['WEAK_SUICA','STRONG_SUICA'].includes(target);});
     }
   }
 
@@ -6733,7 +6733,7 @@
       const m=grid?.[1]||[],d=[grid?.[0]?.[0],m[1],grid?.[2]?.[2]],same=(a,s)=>a.length===3&&a.every(x=>x===s),nova=x=>String(x).startsWith('NOVA_');
       if(same(m,SUICA_SYMBOL))return 'STRONG_SUICA';
       if(same(d,SUICA_SYMBOL))return 'WEAK_SUICA';
-      if(same(m,BELL_SYMBOL))return 'BELL';
+      if(same(m,BELL_SYMBOL))return 'BELL15';
       if(same(d,BELL_SYMBOL))return 'BELL';
       if(m.filter(x=>x==='7').length===1&&m.filter(x=>x===BELL_SYMBOL).length===2)return 'BELL15';
       if(m[0]==='7'&&nova(m[2]))return nova(m[1])?'CHANCE_A':'CHANCE_B';
@@ -6936,7 +6936,7 @@
     const cached = novaStopGridCache.get(cacheKey);
     if(cached) return cached[Math.floor(Math.random()*cached.length)].map(row=>row.slice());
     const choices = REEL_STRIPS.map((strip,column) => strip.map((_,top) => reelWindowFromTopIndex(column,top))
-      .filter(items => result==='MISS'||result==='CHANCE_A'||result==='CHANCE_B'||items[(result==='BELL'||result==='WEAK_SUICA')?column:winRow]===(result==='BELL15'?(column===firstReel?'7':BELL_SYMBOL):spec.reel[column])));
+      .filter(items => result==='MISS'||result==='CHANCE_A'||result==='CHANCE_B'||items[(result==='BELL'||result==='WEAK_SUICA')?column:winRow]===spec.reel[column]));
     const grids = [];
     for(const left of choices[0]) for(const middle of choices[1]) for(const right of choices[2]){
       const grid = [0,1,2].map(row => [left[row],middle[row],right[row]]);

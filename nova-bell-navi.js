@@ -96,7 +96,7 @@ globalThis.NovaBellNavi=(()=>{
    const src=signal?rareAsset(signal):asset;setSprite(item.firstChild,src);
    item.firstChild.style.left=-(signal?i:number-1)*100+'%';
    const symbol=item.lastChild;symbol.hidden=active?.result!=='BELL15'||!!signal;
-   if(!symbol.hidden){symbol.src=number===1?'assets/symbols/seven-nebula-original.png':'assets/symbols/gang-v3/bell.png';symbol.alt=number===1?'7を狙う':'ベル';}
+   if(!symbol.hidden){symbol.src='assets/symbols/gang-v3/bell.png';symbol.alt='ベル';}
   });
   layout();
  }
