@@ -1,5 +1,6 @@
 /* Sortie reel presentation only. The engine's role, payout and stock draw stay intact. */
 globalThis.NovaSortie=(()=>{
+ const {requestAnimationFrame,cancelAnimationFrame}=globalThis.NovaFrameClock||globalThis;
  const order=Object.freeze([2,1,0]);
  const characters={sosuke:['sosuke','宗介'],toto:['toto','とと'],urapi:['urapi','うらぴ'],giru:['giru1','ギル'],sora:['sora1','空'],ouma:['ouma1','逢魔'],nito:['nito','にと'],kushuri:['kushuri','くしゅり']};
  const candidates=['sosuke','toto','urapi','giru','sora','ouma','kushuri_nito'];

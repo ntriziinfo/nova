@@ -1,5 +1,6 @@
 /* Display-only audio analysis. No recording, upload, training or asset rewriting. */
 globalThis.NovaBeatLamps=(()=>{
+ const {requestAnimationFrame,cancelAnimationFrame}=globalThis.NovaFrameClock||globalThis;
  const links=new WeakMap(),sources=[];
  function detector(){let average=0,last=-Infinity;return (energy,time)=>{const threshold=Math.max(.025,average*1.2);const beat=energy>threshold&&time-last>=340;average=average*.94+energy*.06;if(beat)last=time;return {beat,last};};}
  const bands={sosuke:[40,100],toto:[100,250],urapi:[250,600],giru1:[600,1500],sora1:[1500,4000],ouma1:[4000,10000]};

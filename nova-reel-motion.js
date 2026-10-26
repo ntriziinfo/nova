@@ -1,5 +1,6 @@
 /* One continuous symbol strip for spinning and landing. Original image assets are reused. */
 globalThis.NovaReelMotion=(()=>{
+ const {requestAnimationFrame,cancelAnimationFrame}=globalThis.NovaFrameClock||globalThis;
  const {setTimeout,clearTimeout}=globalThis.NovaClock||globalThis;
  const rotationMs=800;
  const active=new Map(),mod=(n,m)=>(n%m+m)%m;
