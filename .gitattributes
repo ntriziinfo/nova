@@ -84,3 +84,5 @@ assets/media/nova/upper-at-bgm-805028-20261027.mp3 -filter -diff -merge -text
 assets/media/nova/upper-at-bgm-1287779-20261027.mp3 -filter -diff -merge -text
 
 assets/symbols/gang-v3/cherry-20261027.png -filter -diff -merge -text
+
+assets/symbols/gang-v3/nova-only-20261027.png -filter -diff -merge -text

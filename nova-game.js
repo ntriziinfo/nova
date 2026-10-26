@@ -154,7 +154,7 @@
   const SEVEN_IMAGE_SRC = "assets/symbols/seven-nebula-original.png";
   const MISS_IMAGE_SRC = (globalThis.NovaMedia?.imageSource("assets/symbols/gang-v3/miss.png")||"assets/symbols/gang-v3/miss.png");
   const GRAPE_IMAGE_SRC = (globalThis.NovaMedia?.imageSource("assets/symbols/gang-v3/bell.png")||"assets/symbols/gang-v3/bell.png");
-  const BAR_IMAGE_SRC = (globalThis.NovaMedia?.imageSource("assets/symbols/gang-v3/nova-bar-20261027.png")||"assets/symbols/gang-v3/nova-bar-20261027.png");
+  const BAR_IMAGE_SRC = (globalThis.NovaMedia?.imageSource("assets/symbols/gang-v3/nova-only-20261027.png")||"assets/symbols/gang-v3/nova-only-20261027.png");
   const PIERROT_IMAGE_SRC = "assets/cabinet/edit_parts/piero.png";
   const USER_FACE_SRC = (globalThis.NovaMedia?.imageSource("assets/symbols/gang-v3/miss.png")||"assets/symbols/gang-v3/miss.png");
   const REPLAY_IMAGE_SRC = (globalThis.NovaMedia?.imageSource("assets/symbols/gang-v3/replay.png")||"assets/symbols/gang-v3/replay.png");
@@ -6369,7 +6369,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
                     : (symbol === GRAPE_SYMBOL)
                       ? `<img class="symImg grapeSymImg" src="${GRAPE_IMAGE_SRC}" alt="grape symbol" loading="eager" decoding="sync" draggable="false">`
                       : (symbol === "BAR")
-                        ? fullReelSymbolMarkup(BAR_IMAGE_SRC,'barSymImg','BAR',11,18,2151,706,2172,724)
+                        ? fullReelSymbolMarkup(BAR_IMAGE_SRC,'barSymImg','NOVA',0,27,2046,741,2046,768)
                         : (symbol === "7")
                           ? fullReelSymbolMarkup(SEVEN_IMAGE_SRC,'sevenSymImg','7',15,62,1643,865,1672,941)
                           : `<div class="sym ${cls || ""}">${escapeHtml(symbol)}</div>`;
