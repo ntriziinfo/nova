@@ -875,6 +875,7 @@
     playdata:{x:19.7,y:17.5,w:60.5,h:11.5},
     cabinetmask:{x:20.3,y:29.5,w:58.9,h:25.7},
     lampmovie:{x:22.3,y:31.8,w:55.7,h:8.3},
+    backgroundmovie:{x:22.3,y:31.8,w:55.7,h:22},
     displaygroup:{x:0,y:0,s:100}
   });
   let pageZoom = 1;

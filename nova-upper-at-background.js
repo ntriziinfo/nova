@@ -47,6 +47,7 @@ globalThis.NovaUpperAtBackground=(()=>{
   }
   const src=prelude?'assets/media/nova/at-prelude-background-20261013.mp4':checkpoint?'assets/media/nova/checkpoint-confirmed-background-20261013.mp4':'assets/media/nova/upper-at-background-20261012.mp4';
   if(video.getAttribute('src')!==src){video.pause();video.src=src;video.load?.();}
+  video.dataset.backgroundMovie=String(!prelude);
   video.hidden=false;layout();play();
  }
  function sync(flow,confirmed=false,atPrelude=false){
