@@ -66,3 +66,11 @@ test('in-flight outcomes do not reveal a future reset or award, and queued zone 
  assert.equal(snapshot(flow,options).zonecounter.label,'逢魔ゾーン');assert.equal(snapshot(flow,options).zonecounter.value,'5');
  assert.equal(flow.zoneLeft,1);assert.equal(flow.remaining,'200');
 });
+
+test('BB remaining points override banked AT and clear on exit without changing state',()=>{
+ const flow=Object.freeze({phase:'art',remaining:'1234',zone:'sora',zoneLeft:5});
+ for(const left of [300,120,0])assert.deepEqual(current(flow,{bonus:true,bonusRemaining:left}),{mode:'bonus',label:'BB残り',value:String(left),unit:'pt',active:true,hold:false});
+ assert.equal(current({phase:'normal'},{bonus:true,bonusRemaining:300}).value,'300');
+ assert.equal(current(flow,{bonus:false,bonusRemaining:0}).mode,'zone');
+ assert.equal(flow.remaining,'1234');
+});

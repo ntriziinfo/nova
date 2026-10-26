@@ -5707,7 +5707,7 @@
 
   function renderRemainingCounters(){
     const spin=isSpinning?currentSpin:null;
-    NovaRemainingCounters.render(normalState.flow,{spin,checkpointStatus:atCheckpointStatus(normalState.flow,NovaProgress.snapshot(),currentProfit()),bonus:session.active,bonusPending:normalState.bonusPending,
+    NovaRemainingCounters.render(normalState.flow,{spin,checkpointStatus:atCheckpointStatus(normalState.flow,NovaProgress.snapshot(),currentProfit()),bonus:session.active,bonusRemaining:isATypeBonusActive()?aTypeBonusRemainingNet():undefined,bonusPending:normalState.bonusPending,
       czPrelude:normalState.internal?.prelude?.presentation==='reel'&&!spin?.resolved?.czPrelude?.announce});
   }
 

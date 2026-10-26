@@ -3,7 +3,7 @@ globalThis.NovaRemainingCounters=(()=>{
  const defaults=Object.freeze({
   remainingcounter:Object.freeze({x:21.7,y:85.8,w:15.9,h:11})
  });
- const titles={remainingcounter:'共通カウンター（AT・CZ・ゾーン）'};
+ const titles={remainingcounter:'共通カウンター（BB・AT・CZ・ゾーン）'};
  const empty=(label,unit)=>({label,value:'—',unit,active:false,hold:false});
  const games=value=>String(Math.max(0,Math.floor(Number(value)||0)));
  function points(value){try{return BigInt(/^\d+$/.test(String(value))?value:0).toLocaleString('ja-JP');}catch{return '0';}}
@@ -31,6 +31,7 @@ globalThis.NovaRemainingCounters=(()=>{
   return result;
  }
  function current(flow,options={}){
+  if(options.bonus&&options.bonusRemaining!==undefined)return {mode:'bonus',label:'BB残り',value:points(options.bonusRemaining),unit:'pt',active:true,hold:false};
   const values=snapshot(flow,options);
   // The current zone takes priority over the AT points banked behind it.
   if(values.zonecounter.active||values.zonecounter.label!=='ゾーン残り')return {mode:'zone',...values.zonecounter};
@@ -42,7 +43,7 @@ globalThis.NovaRemainingCounters=(()=>{
  function render(flow,options){
   node ||= document.getElementById('nova-remainingcounter');if(!node)return;
   const value=current(flow,options);
-  node.dataset.checkpoint=String(!!options?.checkpointStatus?.gold);
+  node.dataset.checkpoint=String(value.mode==='at'&&!!options?.checkpointStatus?.gold);
   for(const prop of ['label','value','unit']){const target=node.querySelector('[data-counter-'+prop+']');if(target.textContent!==value[prop])target.textContent=value[prop];}
   for(const prop of ['mode','active','hold'])if(node.dataset[prop]!==String(value[prop]))node.dataset[prop]=String(value[prop]);
   const label=value.label+' '+value.value+value.unit+(value.hold?' HOLD':'');
