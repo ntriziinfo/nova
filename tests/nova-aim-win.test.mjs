@@ -481,3 +481,16 @@ test('NOVA BAR movie covers Ouma and Urapi cues without changing outcomes',()=>{
   t.aim.stop(resolved);assert.equal(t.elements[0].hidden,true);assert.equal(JSON.stringify(resolved),before);assert.equal(t.aim.busy,false);
  }
 });
+
+test('Sora seven restores original colors without changing other cues or the draw',()=>{
+ for(const zone of ['sora','ura_sora'])for(const color of ['blue','red','rainbow']){
+  const t=setup(),aim={symbol:'seven',color,guide:true},r={aim,flowBefore:{phase:'art',zone}},before=JSON.stringify(r);
+  t.aim.bet(aim,r);
+  const video=t.elements.find(e=>e.src===`assets/media/nova/aim/seven-${color}.mp4`);
+  assert.equal(video.hidden,false);assert.equal(video.paused,false);assert.equal(JSON.stringify(r),before);
+  t.aim.hide();assert.equal(video.hidden,true);assert.equal(video.paused,true);
+ }
+ const t=setup(),aim={symbol:'seven',color:'blue',guide:true};t.aim.bet(aim,{flowBefore:{phase:'art',zone:'toto'}});
+ assert.equal(t.elements.find(e=>e.src==='assets/media/nova/aim/seven-blue.mp4').hidden,true);
+ assert.equal(t.elements.some(e=>e.src==='assets/media/nova/aim/seven-flash-20261027.mp4'&&!e.hidden),true);
+});

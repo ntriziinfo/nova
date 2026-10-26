@@ -14,6 +14,11 @@ globalThis.NovaAim=(()=>{
    video.setAttribute('aria-label',`${symbol==='seven'?'7':'nebula'}を狙え！`);
    root.append(video);videos.set(symbol+':'+color,video);
   }
+  // Sora's seven cues retain the original color-specific presentation.
+  for(const color of ['blue','red','rainbow']){
+   const video=document.createElement('video');video.muted=true;video.loop=true;video.playsInline=true;video.preload='metadata';video.hidden=true;
+   video.src=`assets/media/nova/aim/seven-${color}.mp4`;root.append(video);videos.set('sora-seven:'+color,video);
+  }
   const nebulaWin=document.createElement('video');nebulaWin.muted=true;nebulaWin.loop=false;nebulaWin.playsInline=true;nebulaWin.preload=globalThis.NovaMedia?.videoPreload||'auto';nebulaWin.hidden=true;nebulaWin.src='assets/media/nova/aim/nebula-win.mp4';root.append(nebulaWin);videos.set('nebula-win',nebulaWin);
   const bonusNebulaWin=document.createElement('video');bonusNebulaWin.muted=true;bonusNebulaWin.loop=false;bonusNebulaWin.playsInline=true;bonusNebulaWin.preload=globalThis.NovaMedia?.videoPreload||'auto';bonusNebulaWin.hidden=true;bonusNebulaWin.src='assets/media/nova/aim/bonus-nebula-win.mp4';root.append(bonusNebulaWin);videos.set('bonus-nebula-win',bonusNebulaWin);
   const bonusWait=document.createElement('video');bonusWait.muted=true;bonusWait.loop=true;bonusWait.playsInline=true;bonusWait.preload=globalThis.NovaMedia?.videoPreload||'auto';bonusWait.hidden=true;bonusWait.src='assets/media/nova/aim/bonus-nebula-win.mp4';bonusWait.setAttribute('aria-label','初当たりボーナス準備中');root.append(bonusWait);videos.set('bonus-wait',bonusWait);if(!globalThis.NovaMedia?.compact)bonusWait.load?.();
@@ -147,7 +152,9 @@ globalThis.NovaAim=(()=>{
   const entry=zoneEntry||bonusEntry;
   if((!entry&&!hasGuide(aim))||!init())return false;
   const sortieEntry=!!resolved.sortieEntry,sortieColor=resolved.sortieCueColor||'rainbow';
-  const video=videos.get(sortieEntry?'nebula:'+sortieColor:entry?'zone-entry-seven':aim.symbol+':'+aim.color);if(!video)return false;
+  const cueZone=resolved.zoneStartFlow?.zone||resolved.flowBefore?.zone;
+  const soraSeven=!entry&&!sortieEntry&&aim?.symbol==='seven'&&['sora','ura_sora'].includes(cueZone);
+  const video=videos.get(soraSeven?'sora-seven:'+aim.color:sortieEntry?'nebula:'+sortieColor:entry?'zone-entry-seven':aim.symbol+':'+aim.color);if(!video)return false;
   root.dataset.specialZone=String(!!resolved.flowBefore?.zone);
   active=video;root.dataset.color=sortieEntry?sortieColor:entry?'entry':aim.color;root.dataset.symbol=sortieEntry?'nebula':entry?'seven':aim.symbol;root.dataset.zoneEntry=String(entry);root.hidden=false;
   // Rewind on dismissal, while hidden; seeking again on BET discards ready frames.
