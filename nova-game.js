@@ -846,8 +846,8 @@
   if(SLOT_DEBUG_ENABLED) document.body.classList.add("debugMode");
   const PAGE_ZOOM_STORAGE_KEY = "nova_unified_page_zoom_v3";
   const PAGE_PAN_STORAGE_KEY = "nova_unified_page_pan_x_v3";
-  const LAYOUT_EDIT_STORAGE_KEY = "nova_layout_editor_locked_20261027";
-  const LAYOUT_DEFAULT_STORAGE_KEY = "nova_layout_default_locked_20261027";
+  const LAYOUT_EDIT_STORAGE_KEY = "nova_layout_editor_locked_20261027b";
+  const LAYOUT_DEFAULT_STORAGE_KEY = "nova_layout_default_locked_20261027b";
   const LAYOUT_EDITOR_ENABLED = SLOT_DEBUG_ENABLED;
   const PAGE_STAGE_WIDTH = 1360;
   const PAGE_ZOOM_MIN = 0.05;
@@ -872,8 +872,8 @@
     credit:{x:38.0, y:85.8, w:12.2, h:11.0},
     count:{x:51.6, y:85.8, w:12.2, h:11.0},
     payout:{x:66.0, y:85.8, w:11.0, h:11.0},
-    playdata:{x:6, y:18, w:88, h:10.8},
-    cabinetmask:{x:20,y:29,w:60,h:5}
+    playdata:{x:19.7,y:17.5,w:60.5,h:11.5},
+    cabinetmask:{x:20.3,y:29.5,w:58.9,h:25.7}
   });
   let pageZoom = 1;
   let pagePanX = PAGE_PAN_DEFAULT;

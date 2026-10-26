@@ -35,7 +35,7 @@
 #slumpPanel .slumpStats b{font-size:15px;}
 
 /* Persistent cabinet display, independent of utility popups. */
-#machine #slumpPanel.novaCabinetData{display:block;position:absolute;left:var(--layout-playdata-x,6%);top:var(--layout-playdata-y,18%);width:var(--layout-playdata-w,88%);height:var(--layout-playdata-h,10.8%);max-height:none;min-width:0;transform:none;z-index:48;box-sizing:border-box;padding:10px;border:2px solid #9e819f;background:#0b0812f5;box-shadow:inset 0 0 15px #322442;border-radius:10px;overflow:auto;}
+#machine #slumpPanel.novaCabinetData{display:block;position:absolute;left:var(--layout-playdata-x,19.7%);top:var(--layout-playdata-y,17.5%);width:var(--layout-playdata-w,60.5%);height:var(--layout-playdata-h,11.5%);max-height:none;min-width:0;transform:none;z-index:48;box-sizing:border-box;padding:10px;border:2px solid #9e819f;background:#0b0812f5;box-shadow:inset 0 0 15px #322442;border-radius:10px;overflow:auto;}
 #slumpPanel.novaCabinetData>.infoPanelHead{display:none;}
 .novaCabinetData #slumpPanelBody{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,3fr);grid-template-rows:auto auto 1fr;gap:5px 12px;height:100%;}
 .novaCabinetData #novaDataCounter{display:contents;}
