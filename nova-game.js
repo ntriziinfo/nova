@@ -6321,7 +6321,16 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
   function cellHtml(symbol, label, cls){
     if(symbol===NEBULA_SYMBOL)return fullReelSymbolMarkup(NEBULA_IMAGE_SRC,'nebulaSymImg','ネビュラ',19,0,1633,941,1672,941);
     const tile = /^NOVA_([0-2])_([0-2])$/.exec(symbol);
-    if(tile) return '<span class="novaLogoTile" aria-label="ノヴァ目 '+tile[1]+' '+tile[2]+'"><img src="'+NOVA_LOGO_SRC+'" draggable="false" alt="" style="left:-'+Number(tile[1])*100+'%;top:-'+Number(tile[2])*100+'%"></span>';
+    // Temporary appearance only; retain NOVA symbols in strips and outcome logic.
+    // Mixed rows also avoid a full bell/replay line when the complete NOVA block stops.
+    if(tile){
+      const displayRows = [
+        [BELL_SYMBOL,ELEPHANT_SYMBOL,BELL_SYMBOL],
+        [ELEPHANT_SYMBOL,BELL_SYMBOL,ELEPHANT_SYMBOL],
+        [ELEPHANT_SYMBOL,BELL_SYMBOL,ELEPHANT_SYMBOL]
+      ];
+      return cellHtml(displayRows[Number(tile[2])][Number(tile[1])],label,cls);
+    }
     // Legacy saved visual states must not reintroduce retired artwork.
     if(symbol === GRAPE_SYMBOL) symbol = BELL_SYMBOL;
     if(symbol === PIERROT_SYMBOL || symbol === CHERRY_SYMBOL) symbol = ELEPHANT_SYMBOL;
