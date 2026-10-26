@@ -33,8 +33,8 @@
 <link rel="preload" as="image" href="assets/controls/start_lever_ball.png">
 <link rel="preload" as="image" href="assets/controls/stop_button_red_cut.png">
 <link rel="stylesheet" href="nova-game.css?v=20261027-bright-full-height">
-<link rel="stylesheet" href="nova-data-counter.css?v=20261027-layout-symbol-size">
-<link rel="stylesheet" href="nova-cabinet.css?v=20261027-lamp-movie-layout">
+<link rel="stylesheet" href="nova-data-counter.css?v=20261027-display-group">
+<link rel="stylesheet" href="nova-cabinet.css?v=20261027-display-group">
 <link rel="stylesheet" href="nova-remaining-counters.css?v=20261013-checkpoint-cue">
 <script src="nova-remaining-counters.js?v=20261027-bb-counter"></script>
 <link rel="stylesheet" href="nova-artwork.css?v=20260928-cz-rainbow-155">
@@ -279,6 +279,11 @@
                 <label class="layoutEditRow"><span>H</span><input class="layoutEditInput" type="range" min="2" max="24" step="0.1" data-layout-target="payout" data-layout-prop="h"><b class="layoutEditValue" data-layout-view="payout-h"></b></label>
               </div>
             </div>
+            <div class="layoutEditGroup"><div class="layoutEditGroupTitle">表示エリア全体（ランプ・動画・リール・カウンター）</div><div class="layoutEditGrid">
+<label class="layoutEditRow"><span>横移動</span><input class="layoutEditInput" type="number" min="-50" max="50" step="0.1" data-layout-target="displaygroup" data-layout-prop="x"><b class="layoutEditValue" data-layout-view="displaygroup-x"></b></label>
+<label class="layoutEditRow"><span>縦移動</span><input class="layoutEditInput" type="number" min="-50" max="50" step="0.1" data-layout-target="displaygroup" data-layout-prop="y"><b class="layoutEditValue" data-layout-view="displaygroup-y"></b></label>
+<label class="layoutEditRow"><span>倍率</span><input class="layoutEditInput" type="number" min="25" max="200" step="0.1" data-layout-target="displaygroup" data-layout-prop="s"><b class="layoutEditValue" data-layout-view="displaygroup-s"></b></label>
+</div><small>移動0・倍率100%が元の配置。個別配置を保ったまま全体を調整します。</small></div>
             <div class="layoutEditGroup"><div class="layoutEditGroupTitle">キャラランプ部ムービー</div><div class="layoutEditGrid">
               <label class="layoutEditRow"><span>X</span><input class="layoutEditInput" type="number" min="0" max="100" step="0.1" data-layout-target="lampmovie" data-layout-prop="x"><b class="layoutEditValue" data-layout-view="lampmovie-x"></b></label>
               <label class="layoutEditRow"><span>Y</span><input class="layoutEditInput" type="number" min="0" max="100" step="0.1" data-layout-target="lampmovie" data-layout-prop="y"><b class="layoutEditValue" data-layout-view="lampmovie-y"></b></label>
@@ -839,7 +844,8 @@
 <script src="nova-history.js?v=20261001-history-performance"></script>
 <script src="nova-role-counter.js?v=20261014-role-counter"></script>
 <script src="nova-data-counter.js?v=20261015-mode-history"></script>
-<script src="nova-game.js?v=20261027-lamp-movie-layout"></script>
+<script src="nova-display-group.js?v=20261027-group"></script>
+<script src="nova-game.js?v=20261027-display-group"></script>
 <button type="button" id="novaSymbolPreviewOpen">ノヴァ目を確認</button>
 <dialog id="novaSymbolPreview"><h2>ノヴァ目</h2><label>出目<select id="novaPatternSelect"><option value="WEAK_NOVA">弱ノヴァ目：左3連</option><option value="STRONG_MIDDLE">強ノヴァ目：左・中3連</option><option value="STRONG_RIGHT">強ノヴァ目：左・右3連</option><option value="SUPER_NOVA" selected>スーパーノヴァ目：全リール3連</option></select></label><p id="novaPatternDescription"></p><div id="novaSymbolPreviewGrid"></div><p>出目の確認用です。通常時のスーパーはBIG・フリーズ各50%。ボーナス中は対象外。弱・強と自然出現率は未設定。</p><button type="button" id="novaSymbolPreviewClose">閉じる</button></dialog>
 </body>

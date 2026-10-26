@@ -874,7 +874,8 @@
     payout:{x:66.0, y:85.8, w:11.0, h:11.0},
     playdata:{x:19.7,y:17.5,w:60.5,h:11.5},
     cabinetmask:{x:20.3,y:29.5,w:58.9,h:25.7},
-    lampmovie:{x:22.3,y:31.8,w:55.7,h:8.3}
+    lampmovie:{x:22.3,y:31.8,w:55.7,h:8.3},
+    displaygroup:{x:0,y:0,s:100}
   });
   let pageZoom = 1;
   let pagePanX = PAGE_PAN_DEFAULT;
@@ -1091,6 +1092,7 @@
 
   function setLayoutCssVariable(target, prop, value){
     document.documentElement.style.setProperty(`--layout-${target}-${prop}`, `${Math.round(value * 10) / 10}%`);
+    if(target==="displaygroup"&&prop==="s")document.documentElement.style.setProperty("--displaygroup-scale",String(value/100));
   }
 
   function syncLayoutEditInputs(){
@@ -9794,7 +9796,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
   function setup(){
     // 公開情報は右上ドックへ移動し、残りの設定カードは非公開デバッグメニューへ移動。
     const cabinetData = $("slumpPanel");
-    if(cabinetData){cabinetData.classList.add("novaCabinetData");$("machine").appendChild(cabinetData);}
+    if(cabinetData){cabinetData.classList.add("novaCabinetData");($("novaCabinetStage")||$("machine")).appendChild(cabinetData);}
     const slumpPanelBody = $("slumpPanelBody");
     const slumpPublicCard = document.querySelector(".slumpPublic");
     if(slumpPanelBody && slumpPublicCard){
