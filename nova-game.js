@@ -6374,7 +6374,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
               : (symbol === ELEPHANT_SYMBOL)
                 ? `<img class="symImg replaySymImg" src="${REPLAY_IMAGE_SRC}" alt="replay symbol" loading="eager" decoding="sync" draggable="false">`
             : (symbol === BLANK_SYMBOL)
-              ? `<div class="sym blankSym" aria-label="blank"></div>`
+              ? `<img class="symImg blankSymImg" src="assets/symbols/gang-v3/blank-20261027.png" alt="ブランク" loading="eager" decoding="sync" draggable="false">`
               : (symbol === "REPLAY")
                 ? `<img class="symImg replaySymImg" src="${REPLAY_IMAGE_SRC}" alt="replay symbol" loading="eager" decoding="sync" draggable="false">`
                 : (symbol === "🍋")

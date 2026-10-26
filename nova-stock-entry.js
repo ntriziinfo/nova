@@ -3,7 +3,8 @@ globalThis.NovaStockEntry=(()=>{
  let panel;
  const visualRandom=()=>crypto.getRandomValues(new Uint32Array(1))[0]/4294967296;
  function drawFake(chance,won,rng=visualRandom){return !won&&chance>0&&chance<1&&rng()<Math.min(1,2*chance/(1-chance));}
- function cueColor(fake=false,rng=visualRandom){const r=rng();return r<1/3?'blue':r<2/3||fake?'red':'rainbow';}
+ // Real:fake tickets are 1:2. Reuse seven/NOVA blue20/red90/rainbow100 confidence.
+ function cueColor(fake=false,rng=visualRandom){return NovaAimConfidence.pick(1/3,!fake,rng);}
  function fakeReady(flow,progress,pending){return pending>0&&!progress?.sorties&&!flow?.queuedZones?.length&&!Number(flow?.stock||0)&&['normal','art'].includes(flow?.phase)&&!flow.zone&&!flow.initialStage&&!flow.entryStage&&!flow.atPrelude&&!flow.researchSortieLeft&&!flow.burstPending&&!flow.researchChallengeActive&&!flow.comebackLeft&&!flow.comebackConfirmed;}
  function sortieReady(flow,progress){return progress?.sorties>0&&NovaProgress.ready(flow);}
  function eligible(flow,progress,pending=0){return fakeReady(flow,progress,pending)|| sortieReady(flow,progress)||flow?.phase==='art'&&flow.queuedZones?.length>0&&!flow.zone&&!flow.initialStage&&!flow.entryStage&&!flow.atPrelude&&!flow.researchSortieLeft&&!flow.burstPending&&!flow.researchChallengeActive&&!flow.comebackLeft;}

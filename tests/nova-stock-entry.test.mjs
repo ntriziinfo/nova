@@ -12,7 +12,7 @@ function harness(){
  c.MODE_EVENT_VOICE_SRCS=loadVoiceCatalog(c).MODE_EVENT_VOICE_SRCS;
  c.cues=[];c.playOneShotSound=(src,volume)=>c.cues.push({src,volume});
  c.lockedVoices=[];c.playLockedBonusConfirmSound=(src,volume)=>c.lockedVoices.push({src,volume});
- for(const file of ['nova-stock-entry.js','nova-spin-resume.js'])vm.runInContext(fs.readFileSync(file,'utf8'),c);
+ for(const file of ['nova-aim-confidence.js','nova-stock-entry.js','nova-spin-resume.js'])vm.runInContext(fs.readFileSync(file,'utf8'),c);
  c.NovaStockEntry.show=noop;c.NovaStockEntry.hide=noop;
  const source=fs.readFileSync('nova-game.js','utf8');vm.runInContext(source.slice(source.indexOf('  function tryStockEntry(){'),source.indexOf('  async function spin(options={}')),c);
  vm.runInContext('Math.random=()=>{throw Error("entry consumed game RNG")}',c);return c;
@@ -88,7 +88,7 @@ test('the first queued zone game exposes its pre-draw display state without cons
 
 test('fake reverse cue consumes only its presentation ticket, preserves paid flow and saved stop progress',async()=>{
  const c=harness();c.normalState.flow={phase:'normal',remaining:'900',queuedZones:[]};c.normalState.pendingFakeSortie=2;const before=JSON.stringify(c.normalState.flow);
- assert(c.tryStockEntry());assert.equal(c.normalState.stockEntry.kind,'sortieFake');assert(c.tryStockEntry());assert.equal(c.currentSpin.result,'MISS');assert.equal(c.currentSpin.resolved.reward,0);assert.equal(c.currentSpin.resolved.sortieCueColor,'red');
+ assert(c.tryStockEntry());assert.equal(c.normalState.stockEntry.kind,'sortieFake');assert(c.tryStockEntry());assert.equal(c.currentSpin.result,'MISS');assert.equal(c.currentSpin.resolved.reward,0);assert.equal(c.currentSpin.resolved.sortieCueColor,'blue');
  await c.stopStockEntryReel(1);c.currentSpin=c.NovaSpinResume.restore(c.NovaSpinResume.capture(c.currentSpin),c.RESULT);await c.stopStockEntryReel(2);await c.stopStockEntryReel(0);
  assert.equal(c.cues.length,0,'Missed entry never plays the confirmation cue');assert.equal(c.normalState.pendingFakeSortie,1);assert.equal(c.normalState.stockEntry,undefined);assert.equal(c.lockedVoices.length,0);assert.equal(JSON.stringify(c.normalState.flow),before);assert.equal(c.NovaProgress.snapshot().sorties,0);
 });
@@ -105,4 +105,10 @@ test('sortie windows are contiguous and the fake never stops the middle NOVA san
   cols.forEach((col,i)=>assert(c.REEL_STRIPS[i].some((_,j)=>col.every((s,r)=>s===c.REEL_STRIPS[i][(j+r)%c.REEL_STRIPS[i].length]))));
   assert.equal(cols[1][0]==='BAR'&&cols[1][2]==='BAR',kind==='sortie');
  }
+});
+
+test('sortie colors share blue20 red90 rainbow100 confidence with a 1:2 real/fake prior',()=>{
+ const c=harness(),a=c.NovaStockEntry,n=30000,counts={blue:[0,0],red:[0,0],rainbow:[0,0]};
+ for(let i=0;i<n;i++){const r=(i+.5)/n;counts[a.cueColor(false,()=>r)][0]++;counts[a.cueColor(true,()=>r)][1]+=2;}
+ for(const [color,target] of Object.entries({blue:.2,red:.9,rainbow:1})){const [win,miss]=counts[color];assert.ok(Math.abs(win/(win+miss)-target)<.001,color);}
 });
