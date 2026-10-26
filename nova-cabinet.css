@@ -237,7 +237,7 @@ body #machine .novaArtItem[data-sortie-won=true] img{opacity:1!important;animati
 #machine .reel .cell img.symImg:not(.sevenSymImg):not(.barSymImg):not(.nebulaSymImg){width:90%!important;height:90%!important;max-width:90%!important;max-height:90%!important;object-fit:contain!important;scale:1;flex-shrink:0;}
 
 /* Movie coordinates are independent of reel and status-label placement. */
-#machine .novaAimPresentation,#machine #novaUpperAtBackground,#machine #novaLampMoviePreview{left:var(--layout-lampmovie-x,22.3%)!important;top:var(--layout-lampmovie-y,31.8%)!important;width:var(--layout-lampmovie-w,55.7%)!important;height:var(--layout-lampmovie-h,8.3%)!important;}
+#machine .novaAimPresentation,#machine #novaUpperAtBackground,#machine #novaLampMoviePreview{left:var(--layout-lampmovie-x,20.4%)!important;top:var(--layout-lampmovie-y,29.6%)!important;width:var(--layout-lampmovie-w,59.1%)!important;height:var(--layout-lampmovie-h,10.7%)!important;}
 #novaLampMoviePreview{display:none;position:absolute;z-index:65;box-sizing:border-box;border:2px dashed #68e8ff;background:#123d5355;color:#b8f5ff;font:bold 12px system-ui;text-align:center;pointer-events:none;}
 body.layoutEditOpen #novaLampMoviePreview{display:block;}
 

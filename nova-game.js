@@ -846,13 +846,14 @@
   if(SLOT_DEBUG_ENABLED) document.body.classList.add("debugMode");
   const PAGE_ZOOM_STORAGE_KEY = "nova_unified_page_zoom_v3";
   const PAGE_PAN_STORAGE_KEY = "nova_unified_page_pan_x_v3";
-  const LAYOUT_EDIT_STORAGE_KEY = "nova_layout_editor_locked_20261027b";
-  const LAYOUT_DEFAULT_STORAGE_KEY = "nova_layout_default_locked_20261027b";
+  const LAYOUT_EDIT_STORAGE_KEY = "nova_layout_editor_locked_20261027c";
+  const LAYOUT_DEFAULT_STORAGE_KEY = "nova_layout_default_locked_20261027c";
   const LAYOUT_EDITOR_ENABLED = SLOT_DEBUG_ENABLED;
   const PAGE_STAGE_WIDTH = 1360;
   const PAGE_ZOOM_MIN = 0.05;
   const PAGE_ZOOM_MAX = 2.00;
   const PAGE_ZOOM_STEP = 0.05;
+  const PAGE_ZOOM_DEFAULT = 1.35;
   const PAGE_PAN_MIN = -260;
   const PAGE_PAN_MAX = 260;
   const PAGE_ZOOM_BASE = 1.00;
@@ -874,11 +875,11 @@
     payout:{x:66.0, y:85.8, w:11.0, h:11.0},
     playdata:{x:19.7,y:17.5,w:60.5,h:11.5},
     cabinetmask:{x:20.3,y:29.5,w:58.9,h:25.7},
-    lampmovie:{x:22.3,y:31.8,w:55.7,h:8.3},
+    lampmovie:{x:20.4,y:29.6,w:59.1,h:10.7},
     backgroundmovie:{x:22.3,y:31.8,w:55.7,h:22},
     displaygroup:{x:0,y:0,s:100}
   });
-  let pageZoom = 1;
+  let pageZoom = PAGE_ZOOM_DEFAULT;
   let pagePanX = PAGE_PAN_DEFAULT;
   let layoutEditOpen = false;
   let layoutDefaultState = JSON.parse(JSON.stringify(LAYOUT_DEFAULTS));
