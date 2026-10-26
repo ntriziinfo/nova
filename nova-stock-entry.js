@@ -23,8 +23,8 @@ globalThis.NovaStockEntry=(()=>{
  }
  function layout(){
   if(!panel||panel.hidden)return;
-  const host=document.getElementById('machine'),reels=host.querySelector('.reels'),status=document.getElementById('novaFlowStatus'),b=host.getBoundingClientRect(),r=reels.getBoundingClientRect(),scale=b.width/host.offsetWidth||1;
-  const bottom=(r.top-b.top)/scale-5,top=Math.max(status?(status.getBoundingClientRect().bottom-b.top)/scale+4:0,bottom-r.width/scale*.26);
+  const host=document.getElementById('machine'),reels=host.querySelector('.reels'),b=host.getBoundingClientRect(),r=reels.getBoundingClientRect(),scale=b.width/host.offsetWidth||1;
+  const bottom=(r.top-b.top)/scale-5,top=Math.max(0,bottom-r.width/scale*.26);
   Object.assign(panel.style,{left:(r.left-b.left)/scale+'px',top:top+'px',width:r.width/scale+'px',height:Math.max(40,bottom-top)+'px',fontSize:r.width/scale*.036+'px'});
  }
  function hide(){if(panel)panel.hidden=true;}

@@ -34,10 +34,10 @@ globalThis.NovaAim=(()=>{
  // Same geometry as the ladder shutter: lamp bay, above the real reels.
  function layout(){
   if(!root||root.hidden)return;
-  const reels=host.querySelector('.reels'),status=document.getElementById('novaFlowStatus');if(!reels)return;
+  const reels=host.querySelector('.reels');if(!reels)return;
   const base=host.getBoundingClientRect(),r=reels.getBoundingClientRect(),scale=base.width/host.offsetWidth||1;
   const bottom=(r.top-base.top)/scale-5;
-  const top=Math.max(status?(status.getBoundingClientRect().bottom-base.top)/scale+4:0,bottom-r.width/scale*.26);
+  const top=Math.max(0,bottom-r.width/scale*.26);
   Object.assign(root.style,{left:(r.left-base.left)/scale+'px',top:top+'px',width:r.width/scale+'px',height:Math.max(40,bottom-top)+'px'});
  }
  function hide(){

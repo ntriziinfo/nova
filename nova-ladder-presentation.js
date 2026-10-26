@@ -45,11 +45,11 @@ globalThis.NovaLadder=(()=>{
  }
  // Follow the lamp bay above the reels, including cabinet scaling and layout edits.
  function layout(){
-  const reels=host.querySelector('.reels'),status=document.getElementById('novaFlowStatus');
+  const reels=host.querySelector('.reels');
   if(!reels)return;
   const base=host.getBoundingClientRect(),r=reels.getBoundingClientRect(),scale=base.width/host.offsetWidth||1;
   const bottom=(r.top-base.top)/scale-5;
-  const top=Math.max(status?(status.getBoundingClientRect().bottom-base.top)/scale+4:0,bottom-r.width/scale*.26);
+  const top=Math.max(0,bottom-r.width/scale*.26);
   const height=Math.max(40,bottom-top);
   Object.assign(root.style,{left:(r.left-base.left)/scale+'px',top:top+'px',width:r.width/scale+'px',height:height+'px'});
   host.style.setProperty('--ladder-lamp-lift',-(height+30)+'px');
