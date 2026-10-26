@@ -290,3 +290,5 @@ body.layoutEditOpen #novaSuperTitlePreview{display:block;outline:1px dashed #c89
 #machine>.novaSortieAim-symbol{position:absolute;pointer-events:none;left:var(--layout-sortieaimsymbol-x,42%);top:var(--layout-sortieaimsymbol-y,26.5%);width:var(--layout-sortieaimsymbol-w,14%);height:var(--layout-sortieaimsymbol-h,9%);z-index:49;object-fit:contain;}
 #machine>.novaSortieAim-aim{position:absolute;pointer-events:none;left:var(--layout-sortieaimaim-x,57%);top:var(--layout-sortieaimaim-y,28.5%);width:var(--layout-sortieaimaim-w,20%);height:var(--layout-sortieaimaim-h,5.5%);z-index:49;object-fit:contain;}
 .novaSortieAimPart[hidden],.novaSortieAimBg[hidden]{display:none!important;}
+
+#machine .reel .cell img.symImg.blankSymImg{width:45%!important;height:45%!important;max-width:45%!important;max-height:45%!important;}
