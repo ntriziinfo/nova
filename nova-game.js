@@ -873,7 +873,8 @@
     count:{x:51.6, y:85.8, w:12.2, h:11.0},
     payout:{x:66.0, y:85.8, w:11.0, h:11.0},
     playdata:{x:19.7,y:17.5,w:60.5,h:11.5},
-    cabinetmask:{x:20.3,y:29.5,w:58.9,h:25.7}
+    cabinetmask:{x:20.3,y:29.5,w:58.9,h:25.7},
+    lampmovie:{x:22.3,y:31.8,w:55.7,h:8.3}
   });
   let pageZoom = 1;
   let pagePanX = PAGE_PAN_DEFAULT;
