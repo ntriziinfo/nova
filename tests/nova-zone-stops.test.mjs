@@ -16,7 +16,7 @@ function setup(){
  const strips=source.slice(source.indexOf('  const REEL_STRIPS ='),source.indexOf('  function mod('));
  vm.runInContext('const A_TYPE_PREMIUM_BIG_PAYOUT=500;const A_TYPE_MODE=true;'+constants+results+
   'const novaStopGridCache=new Map();const novaSymbol=(c,r)=>`NOVA_${c}_${r}`;const isNovaGrid=grid=>[0,1,2].every(r=>[0,1,2].every(c=>grid[r][c]===novaSymbol(c,r)));'+strips+
-  ['mod','reelWindowFromTopIndex','normalizeATypeResult','displayResultFor','isMiddleLineOnlyResult','hasBellDiagonal',
+  ['novaGrid','mod','reelWindowFromTopIndex','normalizeATypeResult','displayResultFor','isMiddleLineOnlyResult','hasBellDiagonal',
    'cherryResultFromRow','cherryResultFromRows','displayedResultFromGrid','displayedResultFromRow','gridPaylineRows',
    'gridHasOnlyAllowedPaylines','buildNovaReelGrid','buildForcedNovaGrid','novaPatternFromGrid','isNovaResult','setGridColumn'].map(fn).join('\n')+
   '\nglobalThis.strips=REEL_STRIPS;globalThis.results=RESULT;',c);
@@ -29,7 +29,7 @@ function draw(c,zone,role,overrides={}){
  return {result:step.result,spec:c.results[step.result],grid:c.buildNovaReelGrid(step.result,1),lineRow:1,stopped:[false,false,false],auditPressOrder:[],
   resolved:{...step,flowBefore:before,flowAfter:step.flow,reward:c.NovaNormal.pay(step.result)}};
 }
-function fullLogo(spin,i){return spin.grid.every((row,r)=>row[i]===`NOVA_${i}_${r}`);}
+function fullLogo(spin,i){return spin.grid[1][i]==="BAR";}
 
 test('all six orders reveal wins and misses at the requested stop, using contiguous real reel strips',()=>{
  const c=setup();

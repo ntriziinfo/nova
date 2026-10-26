@@ -149,7 +149,7 @@
   const NEBULA_SYMBOL = 'NEBULA';
   const NEBULA_IMAGE_SRC = 'assets/symbols/nebula-original.png';
   const SUICA_IMAGE_SRC = (globalThis.NovaMedia?.imageSource("assets/symbols/gang-v3/suika.png")||"assets/symbols/gang-v3/suika.png");
-  const CHERRY_IMAGE_SRC = (globalThis.NovaMedia?.imageSource("assets/symbols/gang-v3/replay.png")||"assets/symbols/gang-v3/replay.png");
+  const CHERRY_IMAGE_SRC = "assets/symbols/gang-v3/cherry-20261027.png";
   const BELL_IMAGE_SRC = (globalThis.NovaMedia?.imageSource("assets/symbols/gang-v3/bell.png")||"assets/symbols/gang-v3/bell.png");
   const SEVEN_IMAGE_SRC = "assets/symbols/seven-nebula-original.png";
   const MISS_IMAGE_SRC = (globalThis.NovaMedia?.imageSource("assets/symbols/gang-v3/miss.png")||"assets/symbols/gang-v3/miss.png");
@@ -192,13 +192,13 @@
     NEBULA:{name:'nebula特殊図柄揃い',label:'NEBULA',reel:[NEBULA_SYMBOL,NEBULA_SYMBOL,NEBULA_SYMBOL],cls:'purple',kind:'miss'},
     WEAK_SUICA:{name:'スイカ',label:'スイカ',reel:[SUICA_SYMBOL,SUICA_SYMBOL,SUICA_SYMBOL],cls:'green',kind:'rare'},
     STRONG_SUICA:{name:'強スイカ',label:'強スイカ',reel:[SUICA_SYMBOL,SUICA_SYMBOL,SUICA_SYMBOL],cls:'green',kind:'rare'},
-    CHANCE_A:{name:'チャンス目A',label:'チャンス目A',reel:['7','NOVA_1_1','NOVA_2_1'],cls:'purple',kind:'rare'},
-    CHANCE_B:{name:'チャンス目B',label:'チャンス目B',reel:['7','BAR','NOVA_2_1'],cls:'purple',kind:'rare'},
+    CHANCE_A:{name:'チャンス目A',label:'チャンス目A',reel:['7','BAR','BAR'],cls:'purple',kind:'rare'},
+    CHANCE_B:{name:'チャンス目B',label:'チャンス目B',reel:['7',NEBULA_SYMBOL,'BAR'],cls:'purple',kind:'rare'},
     CZ:{name:"CZ突入",reel:["7","BAR","7"],label:"CZ",cls:"purple",kind:"miss"},
     STRONG_CZ:{name:"強CZ突入",reel:["7","BAR","7"],label:"強CZ",cls:"gold",kind:"miss"},
-    WEAK_NOVA:{name:"弱ノヴァ目",reel:["NOVA_0_1","NOVA_1_1","NOVA_2_1"],label:"弱ノヴァ目",cls:"purple",kind:"miss"},
-    STRONG_NOVA:{name:"強ノヴァ目",reel:["NOVA_0_1","NOVA_1_1","NOVA_2_1"],label:"強ノヴァ目",cls:"purple",kind:"miss"},
-    SUPER_NOVA:{name:"スーパーノヴァ目",reel:["NOVA_0_1","NOVA_1_1","NOVA_2_1"],label:"スーパーノヴァ目",cls:"gold",kind:"miss"},
+    WEAK_NOVA:{name:"弱チェリー",reel:[CHERRY_SYMBOL,"ANY","ANY"],label:"弱チェリー",cls:"purple",kind:"miss"},
+    STRONG_NOVA:{name:"強チェリー",reel:[CHERRY_SYMBOL,CHERRY_SYMBOL,CHERRY_SYMBOL],label:"強チェリー",cls:"purple",kind:"miss"},
+    SUPER_NOVA:{name:"スーパーノヴァ目",reel:["BAR","BAR","BAR"],label:"スーパーノヴァ目",cls:"gold",kind:"miss"},
     MISS:{name:"ハズレ", reel:[ELEPHANT_SYMBOL,PIERROT_SYMBOL,GRAPE_SYMBOL], label:"MISS", cls:"", kind:"miss"},
     SMALL:{name:"特殊役", reel:[PIERROT_SYMBOL,PIERROT_SYMBOL,PIERROT_SYMBOL], label:"SPECIAL", cls:"blue", kind:"payadd"},
     MID:{name:"RB", reel:["7","7","BAR"], label:"RB", cls:"purple", kind:"payadd"},
@@ -6295,14 +6295,16 @@
 
   const NOVA_LOGO_SRC = "assets/design/nova-cabinet-v1/lower-panel-original.webp";
   function novaSymbol(column, row){ return "NOVA_" + column + "_" + row; }
-  function novaGrid(){ return [0,1,2].map(row => [0,1,2].map(column => novaSymbol(column,row))); }
-  function isNovaGrid(grid){ return [0,1,2].every(row => [0,1,2].every(column => grid?.[row]?.[column] === novaSymbol(column,row))); }
+  function novaGrid(){
+    return [0,1,2].map(row => REEL_STRIPS.map(strip => strip[(strip.indexOf("BAR") + row - 1 + strip.length)%strip.length]));
+  }
+  function isNovaGrid(grid){ return grid?.[1]?.length===3 && grid[1].every(symbol=>symbol==="BAR") || [0,1,2].every(row=>[0,1,2].every(column=>grid?.[row]?.[column]===novaSymbol(column,row))); }
   function novaPatternFromGrid(grid){
-    const triple = [0,1,2].map(column => [0,1,2].every(row => grid?.[row]?.[column] === novaSymbol(column,row)));
-    if(!triple[0]) return "";
-    if(triple[1] && triple[2]) return "SUPER_NOVA";
-    if(triple[1] || triple[2]) return "STRONG_NOVA";
-    return "WEAK_NOVA";
+    if(grid?.[1]?.length===3 && (grid[1].every(symbol=>symbol==='BAR') || grid[1][0]==='BAR'&&grid[1][2]==='BAR'&&grid?.[0]?.[1]==='BAR'&&grid?.[2]?.[1]==='BAR'))return 'SUPER_NOVA';
+    const leftRows=[0,2].filter(row=>grid?.[row]?.[0]===CHERRY_SYMBOL);
+    if(!leftRows.length)return '';
+    const strong=leftRows.some(row=>grid?.[1]?.[1]===CHERRY_SYMBOL&&grid?.[2-row]?.[2]===CHERRY_SYMBOL);
+    return strong?'STRONG_NOVA':'WEAK_NOVA';
   }
   function isNovaResult(result){
     return ["WEAK_NOVA","STRONG_NOVA","SUPER_NOVA"].includes(result);
@@ -6314,16 +6316,23 @@
       internalResult:"SUPER_NOVA",gamesSinceLastBonusAtStart:normalizeBonusAfterGames(normalState.sinceBonus)};
   }
   function buildForcedNovaGrid(result){
-    const tripleColumns = result === "SUPER_NOVA" ? [0,1,2] : result === "STRONG_NOVA" ? [0,Math.random()<0.5?1:2] : [0];
-    const columns = [0,1,2].map(column => {
-      if(tripleColumns.includes(column)) return [0,1,2].map(row=>novaSymbol(column,row));
-      const choices = REEL_STRIPS[column].map((_,top)=>reelWindowFromTopIndex(column,top))
-        .filter(items=>!items.every((symbol,row)=>symbol===novaSymbol(column,row)));
-      return choices[Math.floor(Math.random()*choices.length)];
-    });
-    return [0,1,2].map(row=>columns.map(column=>column[row]));
+    // Preserve the former presentation draw count: weak/strong two, super zero.
+    if(result==='SUPER_NOVA')return novaGrid();
+    const first=Math.random(),second=Math.random(),key='cherry:'+result;
+    let choices=novaStopGridCache.get(key);
+    if(!choices){
+      choices=[];
+      const windows=REEL_STRIPS.map((strip,c)=>strip.map((_,top)=>reelWindowFromTopIndex(c,top)));
+      for(const l of windows[0])for(const m of windows[1])for(const r of windows[2]){
+        const grid=[0,1,2].map(row=>[l[row],m[row],r[row]]);
+        if(novaPatternFromGrid(grid)===result&&gridHasOnlyAllowedPaylines(grid,result))choices.push(grid);
+      }
+      if(!choices.length)throw new Error('No valid cherry stop for '+result);
+      novaStopGridCache.set(key,choices);
+    }
+    return choices[Math.floor(((first+second)%1)*choices.length)].map(row=>row.slice());
   }
-  const NOVA_PATTERN_NAMES = {WEAK_NOVA:"弱ノヴァ目",STRONG_NOVA:"強ノヴァ目",SUPER_NOVA:"スーパーノヴァ目"};
+  const NOVA_PATTERN_NAMES = {WEAK_NOVA:"弱チェリー",STRONG_NOVA:"強チェリー",SUPER_NOVA:"スーパーノヴァ目"};
 
 // Presentation only: crop transparent margins using an SVG viewport, preserving source art.
 function fullReelSymbolMarkup(src, className, label, x, y, width, height, sourceWidth, sourceHeight){
@@ -6337,7 +6346,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     if(tile)return cellHtml(Number(tile[2])===1?'BAR':Number(tile[2])===0?BELL_SYMBOL:ELEPHANT_SYMBOL,label,cls);
     // Legacy saved visual states must not reintroduce retired artwork.
     if(symbol === GRAPE_SYMBOL) symbol = BELL_SYMBOL;
-    if(symbol === PIERROT_SYMBOL || symbol === CHERRY_SYMBOL) symbol = ELEPHANT_SYMBOL;
+    if(symbol === PIERROT_SYMBOL) symbol = ELEPHANT_SYMBOL;
     const inner =
       (typeof USER_FACE !== "undefined" && symbol === USER_FACE)
         ? `<img class="symImg" src="${USER_FACE_SRC}" alt="small hit symbol" loading="eager" decoding="sync" draggable="false">`
@@ -6419,10 +6428,11 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     const patternSelect = document.getElementById("novaPatternSelect");
     const renderNovaPreview = () => {
       const variant = patternSelect.value;
-      const columns = variant === "WEAK_NOVA" ? [0] : variant === "STRONG_MIDDLE" ? [0,1] : variant === "STRONG_RIGHT" ? [0,2] : [0,1,2];
-      const grid = novaGrid().map(row => row.map((symbol,column) => columns.includes(column) ? symbol : "ANY"));
+      const strong=variant.startsWith('STRONG');
+      const grid=variant==='SUPER_NOVA'?novaGrid():[[CHERRY_SYMBOL,'ANY','ANY'],['ANY',strong?CHERRY_SYMBOL:'ANY','ANY'],['ANY','ANY',strong?CHERRY_SYMBOL:'ANY']];
+      if(variant==='STRONG_RIGHT')grid.reverse();
       document.getElementById("novaSymbolPreviewGrid").innerHTML = grid.flatMap(row => row.map(symbol => '<div>'+ (symbol === "ANY" ? '<span class="novaAnyCell">ANY</span>' : cellHtml(symbol)) + '</div>')).join('');
-      document.getElementById("novaPatternDescription").textContent = NOVA_PATTERN_NAMES[novaPatternFromGrid(grid)] + " — ANYは図柄不問。重複時はスーパー → 強 → 弱の順に判定。";
+      document.getElementById("novaPatternDescription").textContent = variant==='SUPER_NOVA'?'ノヴァ（BAR）揃い':strong?'強チェリー：左上段または下段からチェリー揃い':'弱チェリー：左上段・下段チェリー／他リール不問（強チェリーを除く）';
     };
     patternSelect.addEventListener("change",renderNovaPreview);
     document.getElementById("novaSymbolPreviewOpen").onclick = () => {
@@ -6467,14 +6477,23 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     div.innerHTML = cellHtml(symbol, label, cls);
   }
 
-  const REEL_STRIPS = [0,1,2].map(column => [
-    BELL_SYMBOL,ELEPHANT_SYMBOL,"7",BELL_SYMBOL,ELEPHANT_SYMBOL,
-    SUICA_SYMBOL,BELL_SYMBOL,ELEPHANT_SYMBOL,NEBULA_SYMBOL,BELL_SYMBOL,
-    ELEPHANT_SYMBOL,"BAR",BELL_SYMBOL,ELEPHANT_SYMBOL,novaSymbol(column,0),
-    novaSymbol(column,1),novaSymbol(column,2),BELL_SYMBOL,ELEPHANT_SYMBOL,SUICA_SYMBOL
-  ].map(symbol=>column===1?(symbol===BELL_SYMBOL?ELEPHANT_SYMBOL:symbol===ELEPHANT_SYMBOL?BELL_SYMBOL:symbol):symbol)
-  // Keep counts and the NOVA block; avoid a second replay line on middle-first 15pt bells.
-  .map((symbol,index,strip)=>column===1?(index===3?strip[5]:index===5?strip[3]:symbol):symbol));
+  const REEL_STRIPS = [
+    ["7",ELEPHANT_SYMBOL,"7",BELL_SYMBOL,ELEPHANT_SYMBOL,CHERRY_SYMBOL,BELL_SYMBOL,ELEPHANT_SYMBOL,NEBULA_SYMBOL,BELL_SYMBOL,ELEPHANT_SYMBOL,SUICA_SYMBOL,ELEPHANT_SYMBOL,BELL_SYMBOL,"BAR",CHERRY_SYMBOL,ELEPHANT_SYMBOL,SUICA_SYMBOL,ELEPHANT_SYMBOL,BELL_SYMBOL],
+    [BLANK_SYMBOL,BELL_SYMBOL,SUICA_SYMBOL,"7",SUICA_SYMBOL,ELEPHANT_SYMBOL,BELL_SYMBOL,CHERRY_SYMBOL,ELEPHANT_SYMBOL,NEBULA_SYMBOL,BELL_SYMBOL,SUICA_SYMBOL,BLANK_SYMBOL,BELL_SYMBOL,ELEPHANT_SYMBOL,"BAR",CHERRY_SYMBOL,"BAR",BELL_SYMBOL,ELEPHANT_SYMBOL],
+    ["7",BELL_SYMBOL,"7",ELEPHANT_SYMBOL,BELL_SYMBOL,SUICA_SYMBOL,ELEPHANT_SYMBOL,BELL_SYMBOL,NEBULA_SYMBOL,ELEPHANT_SYMBOL,SUICA_SYMBOL,CHERRY_SYMBOL,ELEPHANT_SYMBOL,BELL_SYMBOL,"BAR",BELL_SYMBOL,ELEPHANT_SYMBOL,CHERRY_SYMBOL,ELEPHANT_SYMBOL,SUICA_SYMBOL]
+  ];
+
+  const CURRENT_REEL_STRIPS=REEL_STRIPS.map(strip=>strip.slice());
+  function selectReelLayout(version=2){
+    const strips=version===1?[0,1,2].map(column=>[
+      BELL_SYMBOL,ELEPHANT_SYMBOL,'7',BELL_SYMBOL,ELEPHANT_SYMBOL,SUICA_SYMBOL,BELL_SYMBOL,ELEPHANT_SYMBOL,NEBULA_SYMBOL,BELL_SYMBOL,
+      ELEPHANT_SYMBOL,'BAR',BELL_SYMBOL,ELEPHANT_SYMBOL,novaSymbol(column,0),novaSymbol(column,1),novaSymbol(column,2),BELL_SYMBOL,ELEPHANT_SYMBOL,SUICA_SYMBOL
+    ].map(symbol=>column===1?(symbol===BELL_SYMBOL?ELEPHANT_SYMBOL:symbol===ELEPHANT_SYMBOL?BELL_SYMBOL:symbol):symbol)
+    .map((symbol,index,strip)=>column===1?(index===3?strip[5]:index===5?strip[3]:symbol):symbol)):CURRENT_REEL_STRIPS;
+    if(REEL_STRIPS.every((strip,i)=>strip.every((symbol,j)=>symbol===strips[i][j])))return;
+    globalThis.NovaLadder?.resetStops?.(REEL_STRIPS);
+    REEL_STRIPS.splice(0,3,...strips.map(strip=>strip.slice()));novaStopGridCache.clear();
+  }
 
   function mod(n, m){
     return ((n % m) + m) % m;
@@ -6579,7 +6598,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
       if(!['WEAK_SUICA','STRONG_SUICA'].includes(target)&&
         [grid?.[0]?.[0],grid?.[1]?.[0]].includes(SUICA_SYMBOL))return false;
       if(displayedResultFromGrid(grid)!==target)return false;
-      return gridPaylineRows(grid).every(row=>{const r=displayedResultFromRow(row);return r==='MISS'||r===target||r==='BELL'&&['BELL','BELL15'].includes(target)||r==='SUICA'&&['WEAK_SUICA','STRONG_SUICA'].includes(target);});
+      return gridPaylineRows(grid).every(row=>{const r=displayedResultFromRow(row);return r==='MISS'||r===target||r==='BELL'&&['BELL','BELL15'].includes(target)||r==='SUICA'&&['WEAK_SUICA','STRONG_SUICA'].includes(target)||r==='CHERRY_TRIPLE'&&target==='STRONG_NOVA';});
     }
   }
 
@@ -6748,13 +6767,17 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
   function displayedResultFromGrid(grid){
     if(A_TYPE_MODE){
       if(grid?.[1]?.every(x=>x===NEBULA_SYMBOL))return "NEBULA";
-      const novaPattern=novaPatternFromGrid(grid);if(novaPattern)return novaPattern;
+      if(grid?.[1]?.[1]==='7'&&[0,2].every(r=>[0,2].every(c=>grid?.[r]?.[c]==='7')))return 'BIG';
+      const novaPattern=novaPatternFromGrid(grid);if(novaPattern)return novaPattern==='SUPER_NOVA'?'BAR3':novaPattern;
       const m=grid?.[1]||[],d=[grid?.[0]?.[0],m[1],grid?.[2]?.[2]],same=(a,s)=>a.length===3&&a.every(x=>x===s),nova=x=>String(x).startsWith('NOVA_');
       if(same(m,SUICA_SYMBOL))return 'STRONG_SUICA';
       if(same(d,SUICA_SYMBOL))return 'WEAK_SUICA';
       if(same(m,BELL_SYMBOL))return 'BELL15';
       if(same(d,BELL_SYMBOL))return 'BELL';
       if(m.filter(x=>x==='7').length===1&&m.filter(x=>x===BELL_SYMBOL).length===2)return 'BELL15';
+
+      if(m[0]==='7'&&m[2]==='BAR'&&m[1]==='BAR')return 'CHANCE_A';
+      if(m[0]==='7'&&m[2]==='BAR'&&m[1]===NEBULA_SYMBOL)return 'CHANCE_B';
       if(m[0]==='7'&&nova(m[2]))return nova(m[1])?'CHANCE_A':'CHANCE_B';
     }
     const rows = Array.isArray(grid) ? grid : [];
@@ -6770,6 +6793,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     if(rowMatches(RESULT.REPLAY.reel)) return "REPLAY";
     if(rowMatches(RESULT.GRAPE.reel)) return "GRAPE";
 
+    if(A_TYPE_MODE)return "MISS";
     const cherryResult = cherryResultFromRows(rows);
     if(cherryResult) return cherryResult;
     return "MISS";
@@ -6797,6 +6821,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
 
   function displayedResultFromRow(row){
     if(!Array.isArray(row) || row.length < 3) return "MISS";
+
     if(row.filter(x=>x==='7').length===1&&row.filter(x=>x===BELL_SYMBOL).length===2)return 'BELL15';
     const exactResults = ["NEBULA","BIG","MID","BAR3","SMALL","BELL","REPLAY","GRAPE","SUICA","CHERRY_TRIPLE"];
 
@@ -6804,6 +6829,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
       const reel = RESULT[result].reel;
       if(row[0] === reel[0] && row[1] === reel[1] && row[2] === reel[2]) return result;
     }
+    if(A_TYPE_MODE)return "MISS";
     const cherryResult = cherryResultFromRow(row);
     if(cherryResult) return cherryResult;
     return "MISS";
@@ -6955,11 +6981,11 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     const cached = novaStopGridCache.get(cacheKey);
     if(cached) return cached[Math.floor(Math.random()*cached.length)].map(row=>row.slice());
     const choices = REEL_STRIPS.map((strip,column) => strip.map((_,top) => reelWindowFromTopIndex(column,top))
-      .filter(items => result==='MISS'||result==='CHANCE_A'||result==='CHANCE_B'||items[(result==='BELL'||result==='WEAK_SUICA')?column:winRow]===spec.reel[column]));
+      .filter(items => result==='BIG'||result==='BAR3'||result==='MISS'||result==='CHANCE_A'||result==='CHANCE_B'||items[(result==='BELL'||result==='WEAK_SUICA')?column:winRow]===spec.reel[column]));
     const grids = [];
     for(const left of choices[0]) for(const middle of choices[1]) for(const right of choices[2]){
       const grid = [0,1,2].map(row => [left[row],middle[row],right[row]]);
-      if(!isNovaGrid(grid) && displayedResultFromGrid(grid) === result && gridHasOnlyAllowedPaylines(grid,result)) grids.push(grid);
+      if(displayedResultFromGrid(grid) === result && gridHasOnlyAllowedPaylines(grid,result)) grids.push(grid);
     }
     if(!grids.length) throw new Error("No valid NOVA reel stop for " + result);
     novaStopGridCache.set(cacheKey,grids);
@@ -7171,6 +7197,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
   function restorePendingSpin(){
     const spin=currentSpin;
     if(!spin)return false;
+    selectReelLayout(spin.reelLayoutVersion||1);
     delete spin.resolved.sortieFreezeUntil; // Resume the paid spin; never repeat its opening hold.
     isSpinning=true;spinCanStop=true;
     NovaBellNavi.restore(spin);
@@ -7330,6 +7357,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
       stopAllReels();
       return;
     }
+    selectReelLayout(2);
     if(isCzIntroVoiceHolding())return;
     // A queued ending (including after a zone result/reload) consumes no BET or RNG.
     if(showSortieResultIfReady()){updateDisplay();scheduleNextAuto();return;}

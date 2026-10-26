@@ -18,7 +18,7 @@ const novaStopGridCache=new Map();
 const novaSymbol=(column,row)=>'NOVA_'+column+'_'+row;
 const isNovaGrid=grid=>[0,1,2].every(r=>[0,1,2].every(c=>grid[r][c]===novaSymbol(c,r)));
 `+strips+[
-'mod','reelWindowFromTopIndex','normalizeATypeResult','displayResultFor','isMiddleLineOnlyResult',
+'novaGrid','mod','reelWindowFromTopIndex','normalizeATypeResult','displayResultFor','isMiddleLineOnlyResult',
 'hasBellDiagonal','cherryResultFromRow','cherryResultFromRows','displayedResultFromGrid',
 'displayedResultFromRow','gridPaylineRows','gridHasOnlyAllowedPaylines','buildNovaReelGrid',
 'normalRewardFor','resolveATypeBonusOutcome','isCherryResult','novaPatternFromGrid','isNovaResult','buildForcedNovaGrid',
@@ -37,9 +37,12 @@ const isNovaRisingMode=()=>false;
 const nextBonusAfterGames=value=>value+1;
 `,context);
 const run=code=>vm.runInContext(code,context);
-test('every reel has exactly one contiguous three-cell logo and no retired symbols',()=>{
- assert.equal(run('REEL_STRIPS.every((s,c)=>s.length===20 && s.filter(x=>x.startsWith("NOVA_")).length===3 && [0,1,2].every(r=>s[14+r]===novaSymbol(c,r)) && !s.some(x=>[GRAPE_SYMBOL,CHERRY_SYMBOL,PIERROT_SYMBOL].includes(x)))'),true);
+test('specified twenty-cell strips contain cherry and middle blanks with no legacy NOVA tiles',()=>{
+ assert.equal(run('REEL_STRIPS.every(s=>s.length===20&&!s.some(x=>x.startsWith("NOVA_")))'),true);
+ assert.equal(run('REEL_STRIPS[1][0]===BLANK_SYMBOL&&REEL_STRIPS[1][12]===BLANK_SYMBOL'),true);
+ assert.equal(run('[[5,15],[7,16],[11,17]].every((positions,c)=>positions.every(i=>REEL_STRIPS[c][i]===CHERRY_SYMBOL))'),true);
 });
+
 test('actual stop grids match every supported outcome using real consecutive strip cells',()=>{
  for(const result of ['NEBULA','MISS','BELL','BELL15','WEAK_SUICA','REPLAY','BIG','BAR3']) for(const row of [0,1,2]){
   run(`globalThis.grid=buildNovaReelGrid(${JSON.stringify(result)},${row});`);
@@ -56,7 +59,7 @@ test('left upper or middle watermelon is reserved for a drawn watermelon on ever
    for(const row of [0,1,2])for(const first of [0,1,2])buildNovaReelGrid(role,row,first);
   }
   for(const [key,grids]of novaStopGridCache){
-   const role=key.split(':')[0];
+   if(key.startsWith('cherry:'))continue;const role=key.split(':')[0];
    for(const grid of grids){
     const leftCue=grid[0][0]===SUICA_SYMBOL||grid[1][0]===SUICA_SYMBOL;
     if(leftCue!==(role==='WEAK_SUICA')||displayedResultFromGrid(grid)!==role){
@@ -107,15 +110,13 @@ test('retired forced outcomes cannot enter active play',()=>{
  assert.equal(run('normalizeATypeResult("GRAPE")'),'BELL');
  for(const name of ['SMALL','CHERRY_ANY','CHERRY_DOUBLE','CHERRY_TRIPLE']) assert.equal(run(`normalizeATypeResult('${name}')`),'MISS');
 });
-test('NOVA patterns require left triple and use super then strong then weak precedence',()=>{
- for(let mask=0;mask<8;mask++){
-  const expected=!(mask&1)?'':mask===7?'SUPER_NOVA':(mask&6)?'STRONG_NOVA':'WEAK_NOVA';
-  const actual=run(`novaPatternFromGrid([0,1,2].map(r=>[0,1,2].map(c=>(${mask}&(1<<c))?novaSymbol(c,r):'ANY')))`);
-  assert.equal(actual,expected,'triple mask '+mask);
- }
- assert.equal(run('novaPatternFromGrid(null)'),'');
- assert.equal(run('novaPatternFromGrid([[novaSymbol(0,1)],[novaSymbol(0,0)],[novaSymbol(0,2)]])'),'');
+test('cherry strength uses left upper/lower and diagonal triple; middle-only left cherry is not a win',()=>{
+ assert.equal(run('novaPatternFromGrid([[CHERRY_SYMBOL,"x","x"],["x",CHERRY_SYMBOL,"x"],["x","x",CHERRY_SYMBOL]])'),'STRONG_NOVA');
+ assert.equal(run('novaPatternFromGrid([["x","x",CHERRY_SYMBOL],["x",CHERRY_SYMBOL,"x"],[CHERRY_SYMBOL,"x","x"]])'),'STRONG_NOVA');
+ assert.equal(run('novaPatternFromGrid([[CHERRY_SYMBOL,"x","x"],["x","x","x"],["x","x","x"]])'),'WEAK_NOVA');
+ assert.equal(run('novaPatternFromGrid([["x","x","x"],[CHERRY_SYMBOL,"x","x"],["x","x","x"]])'),'');
 });
+
 test('forced NOVA outcomes survive normalization and stop at the exact requested strength without payout',()=>{
  for(const result of ['WEAK_NOVA','STRONG_NOVA','SUPER_NOVA']){
   assert.equal(run(`normalizeATypeResult('${result}')`),result);
@@ -203,4 +204,25 @@ test('nearest common stops preserve the role for every reel position and stop or
  console.log('nearest-stop exhaustive statistics',JSON.stringify(stats));assert.ok(stats.BELL.max<20);assert.ok(stats.REPLAY.max<20);
 });
 
- test('15pt bell grids place seven on each first-navigation reel using real strip cells',()=>{for(let first=0;first<3;first++){run('globalThis.grid=buildNovaReelGrid("BELL15",1,'+first+');');assert.equal(run('grid[1]['+first+']'), '7');assert.equal(run('displayedResultFromGrid(grid)'), 'BELL15');assert.equal(run('REEL_STRIPS.every((s,c)=>s.some((_,i)=>[0,1,2].every(r=>grid[r][c]===s[(i+r)%20])))'),true);}});
+ test('15pt bell grids align bells horizontally using real strip cells',()=>{for(let first=0;first<3;first++){run('globalThis.grid=buildNovaReelGrid("BELL15",1,'+first+');');assert.equal(run('grid[1]['+first+']'), '🔔');assert.equal(run('displayedResultFromGrid(grid)'), 'BELL15');assert.equal(run('REEL_STRIPS.every((s,c)=>s.some((_,i)=>[0,1,2].every(r=>grid[r][c]===s[(i+r)%20])))'),true);}});
+
+test('cherry substitution retains exactly two visual RNG draws, BAR NOVA retains zero',()=>{
+ const counts=run(`(()=>{const old=Math.random,out=[];try{let n=0;Math.random=()=>{n++;return .25};for(const role of ['WEAK_NOVA','STRONG_NOVA','SUPER_NOVA']){for(let i=0;i<2;i++){const before=n;buildNovaReelGrid(role);out.push(n-before);}}return out;}finally{Math.random=old;}})()`);
+ assert.deepEqual(Array.from(counts),[2,2,2,2,0,0]);
+});
+
+test('updated strips support both chance roles and the supplied double diagonal seven and BAR diamond',()=>{
+ for(const role of ['CHANCE_A','CHANCE_B','STRONG_SUICA']){
+  run('globalThis.grid=buildNovaReelGrid('+JSON.stringify(role)+')');
+  assert.equal(run('displayedResultFromGrid(grid)'),run('normalizeATypeResult('+JSON.stringify(role)+')'));
+ }
+ run('buildNovaReelGrid("BIG");buildNovaReelGrid("BAR3");');
+ assert.equal(run('novaStopGridCache.get("BIG:1").some(g=>g[0][0]==="7"&&g[2][0]==="7"&&g[0][2]==="7"&&g[2][2]==="7")'),true);
+ assert.equal(run('novaStopGridCache.get("BAR3:1").some(g=>g[0][1]==="BAR"&&g[2][1]==="BAR")'),true);
+});
+
+test('pending layout migration retains the old strips for one spin and resets caches for the next BET',()=>{
+ run('globalThis.originalStrips=JSON.stringify(REEL_STRIPS);selectReelLayout(1);');
+ assert.equal(run('REEL_STRIPS.every((s,c)=>s[14]===novaSymbol(c,0))'),true);
+ run('selectReelLayout(2);');assert.equal(run('JSON.stringify(REEL_STRIPS)===originalStrips'),true);
+});

@@ -33,7 +33,7 @@
 <link rel="preload" as="image" href="assets/controls/start_lever_ball.png">
 <link rel="preload" as="image" href="assets/controls/stop_button_red_cut.png">
 <link rel="stylesheet" href="nova-game.css?v=20261027-bright-full-height">
-<link rel="stylesheet" href="nova-data-counter.css?v=20261027-current-standard">
+<link rel="stylesheet" href="nova-data-counter.css?v=20261027-cherry-reels">
 <link rel="stylesheet" href="nova-cabinet.css?v=20261027-all-aim-reverse">
 <link rel="stylesheet" href="nova-remaining-counters.css?v=20261013-checkpoint-cue">
 <script src="nova-remaining-counters.js?v=20261027-bb-counter"></script>
@@ -766,8 +766,8 @@
 
             <option value="BIG">BIG（777/50pt）</option>
             <option value="BAR3">BAR</option>
-            <option value="WEAK_NOVA">弱ノヴァ目（左3連）</option>
-            <option value="STRONG_NOVA">強ノヴァ目（左＋中または右3連）</option>
+            <option value="WEAK_NOVA">弱チェリー（左上段・下段）</option>
+            <option value="STRONG_NOVA">強チェリー（チェリー揃い）</option>
             <option value="BONUS_SPECIAL">nebula特殊図柄（AT確定／獲得済みなら特化ストック）</option>
             <option value="SUPER_NOVA">スーパーノヴァ目（全リール3連）</option>
 
@@ -865,8 +865,8 @@
 <script src="nova-role-counter.js?v=20261014-role-counter"></script>
 <script src="nova-data-counter.js?v=20261015-mode-history"></script>
 <script src="nova-display-group.js?v=20261027-group"></script>
-<script src="nova-game.js?v=20261027-current-standard"></script>
+<script src="nova-game.js?v=20261027-cherry-reels"></script>
 <button type="button" id="novaSymbolPreviewOpen">ノヴァ目を確認</button>
-<dialog id="novaSymbolPreview"><h2>ノヴァ目</h2><label>出目<select id="novaPatternSelect"><option value="WEAK_NOVA">弱ノヴァ目：左3連</option><option value="STRONG_MIDDLE">強ノヴァ目：左・中3連</option><option value="STRONG_RIGHT">強ノヴァ目：左・右3連</option><option value="SUPER_NOVA" selected>スーパーノヴァ目：全リール3連</option></select></label><p id="novaPatternDescription"></p><div id="novaSymbolPreviewGrid"></div><p>出目の確認用です。通常時のスーパーはBIG・フリーズ各50%。ボーナス中は対象外。弱・強と自然出現率は未設定。</p><button type="button" id="novaSymbolPreviewClose">閉じる</button></dialog>
+<dialog id="novaSymbolPreview"><h2>ノヴァ目</h2><label>出目<select id="novaPatternSelect"><option value="WEAK_NOVA">弱チェリー：左上段・下段</option><option value="STRONG_MIDDLE">強チェリー：右下がり</option><option value="STRONG_RIGHT">強チェリー：右上がり</option><option value="SUPER_NOVA" selected>ノヴァ（BAR）揃い</option></select></label><p id="novaPatternDescription"></p><div id="novaSymbolPreviewGrid"></div><p>出目の確認用です。通常時のスーパーはBIG・フリーズ各50%。ボーナス中は対象外。弱・強チェリーは従来の弱・強ノヴァ目と同じ抽選です。</p><button type="button" id="novaSymbolPreviewClose">閉じる</button></dialog>
 </body>
 </html>

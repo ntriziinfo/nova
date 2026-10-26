@@ -129,5 +129,5 @@ globalThis.NovaLadder=(()=>{
   if(!started&&promoted)closeThenReveal('settled');
  }
  if(typeof document!=='undefined'){document.addEventListener('DOMContentLoaded',init);window.addEventListener('resize',()=>{if(root&&!root.hidden)layout();});}
- return {eligible,outcome,target,sync,bet,stop,hide,award,get busy(){return locked;}};
+ return {resetStops:strips=>stopGrids.delete(strips),eligible,outcome,target,sync,bet,stop,hide,award,get busy(){return locked;}};
 })();

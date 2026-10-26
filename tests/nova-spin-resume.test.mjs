@@ -31,6 +31,7 @@ function harness(saved=null){
  c.NovaBellNavi={restore:spin=>{c.shownOrder=json(spin.bellNaviOrder);},clear:noop};
  c.SORTIE_AWARD_VOICE_SRCS=loadVoiceCatalog(c).SORTIE_AWARD_VOICE_SRCS;
  for(const name of ['reduceSlumpPoints','canUsePlayState','load','runtimeStateForStorage','compactStatsForResume','updateStorageStatus','persistState','playSortieAwardVoice','restorePendingSpin'])vm.runInContext(fn(name),c);
+ c.selectReelLayout=version=>{c.restoredReelLayout=version;};
  return {c,storage,errors,timers,$,voices};
 }
 function spin(c,overrides={}){
@@ -320,4 +321,11 @@ test('reference audio mix migrates once to all50 without changing saved play or 
  const h=harness();h.c.load();Object.assign(h.c.settings,{masterVolume:.25,bgmVolume:.34,sfxVolume:.5,voiceVolume:.64,payoutVolume:.5,audioMuted:true});h.c.stats.totalPaid=321;delete h.c.settings.audioCalibrationVersion;h.c.persistState();
  const again=harness(JSON.parse(h.storage.get('state')));again.c.load();for(const key of ['masterVolume','bgmVolume','sfxVolume','voiceVolume','payoutVolume'])assert.equal(again.c.settings[key],.5);assert.equal(again.c.settings.audioMuted,true);assert.equal(again.c.stats.totalPaid,321);assert.equal(again.c.settings.audioCalibrationVersion,1);
  again.c.settings.voiceVolume=.7;again.c.persistState();const third=harness(JSON.parse(again.storage.get('state')));third.c.load();assert.equal(third.c.settings.voiceVolume,.7);
+});
+
+test('reel layout version survives repeat saves; legacy drawn spins remain legacy until settlement',()=>{
+ const {c}=harness(),old=c.NovaSpinResume.capture(spin(c));
+ assert.equal(old.reelLayoutVersion,2);delete old.reelLayoutVersion;
+ const restored=c.NovaSpinResume.restore(old,c.RESULT);assert.equal(restored.reelLayoutVersion,1);
+ assert.equal(c.NovaSpinResume.capture(restored).reelLayoutVersion,1);
 });

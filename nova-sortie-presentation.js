@@ -95,8 +95,8 @@ globalThis.NovaSortie=(()=>{
   // Middle-first may stop the left reel second, before the final reveal.
   const canAlign=!!spin.resolved.researchSortie.won&&(presses[0]===1||presses.length===3&&order.every((n,i)=>presses[i]===n));
   const aligned=canAlign&&presses.length===3;
-  const strip=strips[index],top=strip.findIndex((s,n)=>[0,1,2].every(row=>strip[(n+row)%strip.length]===`NOVA_${index}_${row}`));
-  if(top<0)throw Error('Missing sortie NOVA column');
+  const strip=strips[index],legacy=strip.indexOf(`NOVA_${index}_0`),bar=strip.indexOf("BAR"),top=legacy>=0?legacy:bar-1;
+  if(legacy<0&&bar<0)throw Error('Missing sortie BAR column');
   const windowAt=n=>[0,1,2].map(row=>strip[((n+row)%strip.length+strip.length)%strip.length]);
   const shift=index===0&&!canAlign;
   return {aligned,column:windowAt(top-(shift?1:0))};

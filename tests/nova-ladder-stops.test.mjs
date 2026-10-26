@@ -18,7 +18,7 @@ function setup(){
  const strips=source.slice(source.indexOf('  const REEL_STRIPS ='),source.indexOf('  function mod('));
  vm.runInContext('const A_TYPE_PREMIUM_BIG_PAYOUT=500;const A_TYPE_MODE=true;'+constants+results+
   'const novaStopGridCache=new Map();const novaSymbol=(c,r)=>`NOVA_${c}_${r}`;const isNovaGrid=grid=>[0,1,2].every(r=>[0,1,2].every(c=>grid[r][c]===novaSymbol(c,r)));'+strips+
-  ['mod','reelWindowFromTopIndex','normalizeATypeResult','displayResultFor','isMiddleLineOnlyResult','hasBellDiagonal',
+  ['novaGrid','mod','reelWindowFromTopIndex','normalizeATypeResult','displayResultFor','isMiddleLineOnlyResult','hasBellDiagonal',
    'cherryResultFromRow','cherryResultFromRows','displayedResultFromGrid','displayedResultFromRow','gridPaylineRows',
    'gridHasOnlyAllowedPaylines','buildNovaReelGrid','buildForcedNovaGrid','novaPatternFromGrid','isNovaResult','setGridColumn','nearestCommonStopColumn',
    'isComebackChanceSpin','playRareNaviSound','rareCueGrade','playRareCueVoice','playWeakNovaSound','playStrongNovaSound','playChanceSound',
