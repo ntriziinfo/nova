@@ -42,7 +42,7 @@ globalThis.NovaBellNavi=(()=>{
   const pool=spin&&!leftFirstAllowed(spin)?orders.slice(2):orders;
   return pool[Math.min(pool.length-1,Math.max(0,Math.floor(rng()*pool.length)))].slice();
  }
- function stopOrder(spin){return spin?.resolved?.researchSortie||spin?.resolved?.stockEntry?[2,1,0]:spin?.bellNaviOrder?.slice()||(spin?.resolved?.aim||spin?.zoneActiveAtStart?[2,1,0]:[0,1,2]);}
+ function stopOrder(spin){return spin?.resolved?.researchSortie||spin?.resolved?.stockEntry||spin?.resolved?.researchChallenge?.priorAim||spin?.resolved?.zoneSpin&&['ouma','urapi'].includes(String((spin.resolved.zoneStartFlow||spin.resolved.flowBefore)?.zone||'').replace(/^ura_/,''))||spin?.resolved?.aim||spin?.resolved?.bonusPendingAtStart&&spin?.resolved?.bonusReady&&!spin?.resolved?.bonusWaitSpin?[2,1,0]:spin?.bellNaviOrder?.slice()||(spin?.resolved?.aim||spin?.zoneActiveAtStart?[2,1,0]:[0,1,2]);}
  function init(){
   if(root)return true;
   host=document.getElementById('machine');if(!host)return false;

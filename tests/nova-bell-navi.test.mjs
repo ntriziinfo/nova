@@ -90,3 +90,7 @@ test('voice follows the remaining displayed guide after wrong order, and stays s
  }
  assert.equal(sounds.length,2);
 });
+
+test('aim AUTO prioritizes reverse order over stale bell navigation',()=>{
+ for(const resolved of [{zoneSpin:true,flowBefore:{zone:'ouma'}},{zoneSpin:true,zoneStartFlow:{zone:'urapi'}},{researchChallenge:{priorAim:'nova'}},{aim:{symbol:'seven'}},{aim:{symbol:'nebula'}},{bonusPendingAtStart:true,bonusReady:true}])assert.deepEqual(copy(n.stopOrder({resolved,bellNaviOrder:[0,1,2]})),[2,1,0]);
+});

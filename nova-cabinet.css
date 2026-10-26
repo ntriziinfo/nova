@@ -274,3 +274,6 @@ body.layoutEditOpen #novaSuperTitlePreview{display:block;outline:1px dashed #c89
 .novaAimPresentation[data-nova-cue="true"]>video{transform:scale(5);transform-origin:0 0;}
 
 #machine .novaAimPresentation[data-sortie="true"]{background:transparent;}
+
+.novaAimReverseNotice{position:absolute;bottom:1%;left:8%;width:84%;padding:2px 0;box-sizing:border-box;text-align:center;background:#080411d9;color:#fff2a2;font:900 clamp(12px,1.6vw,22px)/1.2 system-ui;text-shadow:0 1px 3px #000;z-index:5;}
+.novaAimReverseNotice[hidden]{display:none!important;}

@@ -494,3 +494,10 @@ test('Sora seven restores original colors without changing other cues or the dra
  assert.equal(t.elements.find(e=>e.src==='assets/media/nova/aim/seven-blue.mp4').hidden,true);
  assert.equal(t.elements.some(e=>e.src==='assets/media/nova/aim/seven-flash-20261027.mp4'&&!e.hidden),true);
 });
+
+test('all Nova, seven and nebula aim cues display reverse order and clear it afterwards',()=>{
+ for(const r of [{researchChallenge:{priorAim:'nova'}},{zoneSpin:true,flowBefore:{phase:'art',zone:'ouma'}},...['seven','nebula'].map(symbol=>({aim:{symbol,color:'red',guide:true}})),{bonusPendingAtStart:true,bonusReady:true}]){
+  const t=setup();t.aim.bet(r.aim,r);const notice=t.elements.find(e=>e.className==='novaAimReverseNotice');
+  assert.equal(notice.hidden,false);assert.match(notice.textContent,/右 → 中 → 左/);t.aim.hide();assert.equal(notice.hidden,true);
+ }
+});
