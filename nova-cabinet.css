@@ -221,3 +221,6 @@ body #machine .novaArtItem[data-sortie-won=true] img{opacity:1!important;animati
 
 /* Uses the existing debug layout persistence; initial placement is unchanged. */
 #novaFlowStatus{left:var(--layout-flowstatus-x,22%);top:var(--layout-flowstatus-y,10%);width:var(--layout-flowstatus-w,56%);}
+
+/* Hide the decorative yellow payout-line overlay across the reels. */
+#machine .payline{display:none !important;}
