@@ -154,7 +154,7 @@
   const SEVEN_IMAGE_SRC = "assets/symbols/seven-nebula-original.png";
   const MISS_IMAGE_SRC = (globalThis.NovaMedia?.imageSource("assets/symbols/gang-v3/miss.png")||"assets/symbols/gang-v3/miss.png");
   const GRAPE_IMAGE_SRC = (globalThis.NovaMedia?.imageSource("assets/symbols/gang-v3/bell.png")||"assets/symbols/gang-v3/bell.png");
-  const BAR_IMAGE_SRC = (globalThis.NovaMedia?.imageSource("assets/symbols/gang-v3/bar.png")||"assets/symbols/gang-v3/bar.png");
+  const BAR_IMAGE_SRC = (globalThis.NovaMedia?.imageSource("assets/symbols/gang-v3/nova-bar-20261027.png")||"assets/symbols/gang-v3/nova-bar-20261027.png");
   const PIERROT_IMAGE_SRC = "assets/cabinet/edit_parts/piero.png";
   const USER_FACE_SRC = (globalThis.NovaMedia?.imageSource("assets/symbols/gang-v3/miss.png")||"assets/symbols/gang-v3/miss.png");
   const REPLAY_IMAGE_SRC = (globalThis.NovaMedia?.imageSource("assets/symbols/gang-v3/replay.png")||"assets/symbols/gang-v3/replay.png");
