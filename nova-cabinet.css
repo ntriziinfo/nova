@@ -215,3 +215,6 @@ body #machine .novaArtItem[data-sortie-won=true] img{opacity:1!important;animati
 #machine .reel .cell svg.nebulaSymImg{--symbol-color-glow:drop-shadow(0 0 3px #d78aff) drop-shadow(0 0 6px #b650f2);}
 #machine .reel .cell svg.barSymImg{--symbol-color-glow:drop-shadow(0 0 3px #ffe052) drop-shadow(0 0 6px #efb91b);}
 #machine .reel .cell > .sym{-webkit-text-stroke:1px #000;}
+
+/* Retire the generic yellow result/role popup (CZ failure, REPLAY, BELL, etc.). */
+#overlay,#overlay.show{display:none !important;}

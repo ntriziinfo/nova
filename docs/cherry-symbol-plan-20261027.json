@@ -1,0 +1,8 @@
+{
+  "status": "planned_not_implemented",
+  "requested": "2026-10-27",
+  "asset": "cherry-symbol-gang-v2.png",
+  "workspace_location": "output/imagegen/cherry-symbol-gang-v2.png (workspace root, outside work/nova repository)",
+  "design": "Red cherries with black/gold trim, chain, spade and scratches",
+  "instruction": "Keep this design for future cherry implementation. Do not change reel strips, role probabilities or payouts until the user specifies the cherry behavior."
+}
