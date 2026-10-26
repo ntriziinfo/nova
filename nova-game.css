@@ -6566,8 +6566,14 @@ body{
   filter:drop-shadow(0 0 1px #ff2638) drop-shadow(0 0 3px #e91525) drop-shadow(0 0 6px #b90820) !important;
 }
 .cell svg.novaFullSymbol.nebulaSymImg{
-  filter:drop-shadow(0 0 1px #9b79ff) drop-shadow(0 0 3px #7255e8) drop-shadow(0 0 6px #4934b8) !important;
+  filter:drop-shadow(0 0 1px #f0caff) drop-shadow(0 0 3px #d78aff) drop-shadow(0 0 6px #b650f2) !important;
 }
 .cell svg.novaFullSymbol.barSymImg{
-  filter:drop-shadow(0 0 1px #b49a26) drop-shadow(0 0 3px #8c7414) drop-shadow(0 0 5px #68530c) !important;
+  filter:drop-shadow(0 0 1px #fff5a3) drop-shadow(0 0 3px #ffe052) drop-shadow(0 0 6px #efb91b) !important;
+}
+
+/* BAR and nebula reach both vertical edges; seven retains its approved size. */
+.cell svg.novaFullSymbol.barSymImg,
+.cell svg.novaFullSymbol.nebulaSymImg{
+  height:100% !important;max-height:100% !important;
 }
