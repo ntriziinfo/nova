@@ -878,6 +878,10 @@
     lampmovie:{x:20.4,y:29.6,w:59.1,h:10.7},
     backgroundmovie:{x:20.4,y:29.4,w:58.9,h:25.7},
     zonepresentation:{x:22.3,y:31.8,w:55.7,h:8.3},
+    sortieaimbg:{x:20.4,y:26,w:58.9,h:25.7},
+    sortieaimmiddle:{x:21.5,y:28.5,w:20,h:5.5},
+    sortieaimsymbol:{x:42,y:26.5,w:14,h:9},
+    sortieaimaim:{x:57,y:28.5,w:20,h:5.5},
     supertitle:{x:21.5,y:29.6,w:56.7,h:10.7},
     displaygroup:{x:0.1,y:-0.5,s:122.4}
   });
@@ -7272,7 +7276,9 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
       persistState();updateDisplay();scheduleNextAuto();return true;
     }
     entry.stage='seven';
-    currentSpin=NovaStockEntry.spin(entry,normalState.flow,[0,1,2].map(i=>getReelWindowFromStrip(i,['sortie','sortieFake'].includes(entry.kind)?NEBULA_SYMBOL:'7',entry.kind==='sortieFake'&&i===0?0:1)));
+    // Preserve the previous three presentation RNG draws; replace only the stop windows.
+    const entryColumns=[0,1,2].map(i=>getReelWindowFromStrip(i,['sortie','sortieFake'].includes(entry.kind)?NEBULA_SYMBOL:'7',entry.kind==='sortieFake'&&i===0?0:1));
+    currentSpin=NovaStockEntry.spin(entry,normalState.flow,['sortie','sortieFake'].includes(entry.kind)?NovaStockEntry.sortieColumns(entry,REEL_STRIPS):entryColumns);
     currentSpin.spec=RESULT[currentSpin.result];
     isSpinning=true;spinCanStop=false;
     reels.forEach((reel,i)=>{reel.classList.add('spinning');NovaReelMotion.start(i,reel,REEL_STRIPS[i],currentReelTopIndex(i),false,cellHtml);});
@@ -7280,9 +7286,9 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     // A separate visual draw must not advance the game lottery.
     const visualRng=()=>crypto.getRandomValues(new Uint32Array(1))[0]/4294967296;
     if(['sortie','sortieFake'].includes(entry.kind)){
-      playRandomAimVoice('nebula',visualRng);
+      // Middle-first NOVA cue has no matching voice asset; do not announce nebula/reverse.
     }else playSevenAimVoice(currentSpin.resolved,visualRng);
-    $('resultText').textContent=['sortie','sortieFake'].includes(entry.kind)?'ネビュラを狙え / 逆押し':'7を狙え / 特化ストックの突入演出';
+    $('resultText').textContent=['sortie','sortieFake'].includes(entry.kind)?'中リールにNOVAを狙え！':'7を狙え / 特化ストックの突入演出';
     const spin=currentSpin;
     spinWaitTimer=setTimeout(()=>{spinWaitTimer=null;if(currentSpin!==spin)return;spinCanStop=true;syncCabinetControlState();},spinWaitMsForMode(false));
     persistState();updateDisplay();syncCabinetControlState();scheduleNextAuto();return true;
@@ -7307,7 +7313,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     spin.finishing=true;isSpinning=false;spinCanStop=false;currentSpin=null;
     if(spin.resolved.sortieFake){
       normalState.pendingFakeSortie=Math.max(0,(Number(normalState.pendingFakeSortie)||0)-1);delete normalState.stockEntry;
-      NovaAim.stop(spin.resolved);$('resultText').textContent='ネビュラ揃わず';
+      NovaAim.stop(spin.resolved);$('resultText').textContent='NOVAはさみ目停止せず';
       persistState();updateDisplay();syncCabinetControlState();scheduleNextAuto();return;
     }
     normalState.stockEntry={...NovaStockEntry.prepare(normalState.flow,NovaProgress.snapshot()),stage:'ready',notBefore:Date.now()+500};

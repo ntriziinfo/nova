@@ -94,3 +94,5 @@ test('voice follows the remaining displayed guide after wrong order, and stays s
 test('aim AUTO prioritizes reverse order over stale bell navigation',()=>{
  for(const resolved of [{zoneSpin:true,flowBefore:{zone:'ouma'}},{zoneSpin:true,zoneStartFlow:{zone:'urapi'}},{researchChallenge:{priorAim:'nova'}},{aim:{symbol:'seven'}},{aim:{symbol:'nebula'}},{bonusPendingAtStart:true,bonusReady:true}])assert.deepEqual(copy(n.stopOrder({resolved,bellNaviOrder:[0,1,2]})),[2,1,0]);
 });
+
+test('sortie trigger uses middle first while other aims remain reverse',()=>{assert.deepEqual(copy(n.stopOrder({resolved:{stockEntry:true,sortieEntry:true}})),[1,2,0]);assert.deepEqual(copy(n.stopOrder({resolved:{stockEntry:true}})),[2,1,0]);});

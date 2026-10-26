@@ -5,7 +5,7 @@ function harness(){
  let now=0;
  const noop=()=>{},elements=new Map(),$=id=>{if(!elements.has(id))elements.set(id,{textContent:'',classList:{add:noop}});return elements.get(id);};
  const flow={phase:'art',remaining:'900',queuedZones:['ura_giru','kushuri_nito'],researchSortieLeft:0};
- const c=vm.createContext({crypto:{getRandomValues:a=>(a[0]=0x80000000,a)},sfxOutputVolume:()=>1,Date:{now:()=>now+=1000},normalState:{flow},session:{active:false},currentSpin:null,isSpinning:false,spinCanStop:false,spinWaitTimer:null,NEBULA_SYMBOL:'NEBULA',RESULT:{MISS:{cls:'miss'},BIG:{cls:'big'},NEBULA:{cls:'purple'}},$: $,stopBtns:[{},{},{}],reels:[0,1,2].map(i=>$('reel'+i)),REEL_STRIPS:[[],[],[]],
+ const c=vm.createContext({crypto:{getRandomValues:a=>(a[0]=0x80000000,a)},sfxOutputVolume:()=>1,Date:{now:()=>now+=1000},normalState:{flow},session:{active:false},currentSpin:null,isSpinning:false,spinCanStop:false,spinWaitTimer:null,NEBULA_SYMBOL:'NEBULA',RESULT:{MISS:{cls:'miss'},BIG:{cls:'big'},NEBULA:{cls:'purple'}},$: $,stopBtns:[{},{},{}],reels:[0,1,2].map(i=>$('reel'+i)),REEL_STRIPS:[['REPLAY','BELL','BAR','CHERRY'],['REPLAY','BELL','BAR','CHERRY','BAR','BELL'],['REPLAY','BELL','BAR','BELL']],
   NovaProgress:{snapshot:()=>({pending:0,sorties:0}),ready:flow=>flow.phase==='art'&&!flow.queuedZones?.length},NovaSortie:{clear:noop,flash:noop},NovaBellNavi:{clear:noop},NovaDirectAward:{clear:noop},NovaAim:{hide:noop,bet:noop,stop:noop},NovaLadder:{hide:noop},NovaResults:{hide:noop},NovaArt:{zoneName:z=>z},NovaReelMotion:{start:noop,stop:async()=>true},
   getReelWindowFromStrip:(i,symbol)=>['BELL',symbol,'REPLAY'],currentReelTopIndex:()=>0,cellHtml:noop,showZoneRoulette:noop,pauseNormalBgm:noop,persistState:noop,updateDisplay:noop,scheduleNextAuto:noop,syncCabinetControlState:noop,stopReel:noop,
   playRandomAimVoice:symbol=>{c.voiceSymbol=symbol;},playSevenAimVoice:resolved=>{c.voiceZone=resolved.flowBefore.pendingZone;},playOneShotSound:noop,voiceOutputVolume:()=>1,ZONE_START_VOICE_SRCS:{},setTimeout:f=>{f();return 1;},clearTimeout:noop,spinWaitMsForMode:()=>500,displayNovaResult:card=>{c.normalState.resultCard=card;}});
@@ -36,12 +36,12 @@ test('partial seven stops survive saving without charging a game or consuming th
  await c.stopStockEntryReel(1);await c.stopStockEntryReel(0);assert.equal(c.normalState.stockEntry.stage,'ready');assert.equal(c.normalState.flow.queuedZones.length,2);
 });
 
-test('sortie has a guaranteed free nebula entrance, retains its award through reload, then hands off once',async()=>{
+test('sortie has a guaranteed free NOVA center entrance, retains its award through reload, then hands off once',async()=>{
  const c=harness();c.normalState.flow.queuedZones=[];c.NovaProgress.snapshot=()=>({pending:0,sorties:1});
  const before=JSON.stringify(c.normalState.flow);
- assert(c.tryStockEntry());assert.equal(c.normalState.stockEntry.kind,'sortie');assert.match(c.$('resultText').textContent,/出陣チャンス.*ネビュラ/);
- assert(c.tryStockEntry());assert.equal(c.currentSpin.result,'NEBULA');assert.equal(c.cues.length,0,'BET is silent');assert.equal(c.voiceSymbol,'nebula');assert.equal(c.voiceZone,undefined);
- assert.equal(c.currentSpin.resolved.reward,0);assert.deepEqual(plain(c.currentSpin.grid[1]),['NEBULA','NEBULA','NEBULA']);
+ assert(c.tryStockEntry());assert.equal(c.normalState.stockEntry.kind,'sortie');assert.match(c.$('resultText').textContent,/出陣チャンス.*NOVA/);
+ assert(c.tryStockEntry());assert.equal(c.currentSpin.result,'NEBULA');assert.equal(c.cues.length,0,'BET is silent');assert.equal(c.voiceSymbol,undefined);assert.equal(c.voiceZone,undefined);
+ assert.equal(c.currentSpin.resolved.reward,0);assert.deepEqual(plain(c.currentSpin.grid[1]),['BAR','CHERRY','BAR']);
  await c.stopStockEntryReel(2);
  assert.equal(c.lockedVoices.length,0);assert.equal(c.cues.length,0,'First stop is silent');
  c.currentSpin=c.NovaSpinResume.restore(c.NovaSpinResume.capture(c.currentSpin),c.RESULT);
@@ -96,4 +96,13 @@ test('fake probability is twice the real hit probability, and color draws never 
  const c=harness(),a=c.NovaStockEntry;
  for(const p of [.00212,.00397,.0212,.0397]){const rate=2*p/(1-p);assert(a.drawFake(p,false,()=>rate-1e-10));assert(!a.drawFake(p,false,()=>rate));assert(Math.abs((1-p)*rate-2*p)<1e-12);assert(!a.drawFake(p,true,()=>{throw Error('winner must not draw fake');}));}
  for(const [r,color] of [[0,'blue'],[.5,'red'],[.99,'rainbow']])assert.equal(a.cueColor(false,()=>r),color);for(let i=0;i<100;i++)assert.notEqual(a.cueColor(true,()=>i/100),'rainbow');
+});
+
+test('sortie windows are contiguous and the fake never stops the middle NOVA sandwich',()=>{
+ const c=harness();
+ for(const kind of ['sortie','sortieFake']){
+  const cols=c.NovaStockEntry.sortieColumns({kind},c.REEL_STRIPS);
+  cols.forEach((col,i)=>assert(c.REEL_STRIPS[i].some((_,j)=>col.every((s,r)=>s===c.REEL_STRIPS[i][(j+r)%c.REEL_STRIPS[i].length]))));
+  assert.equal(cols[1][0]==='BAR'&&cols[1][2]==='BAR',kind==='sortie');
+ }
 });

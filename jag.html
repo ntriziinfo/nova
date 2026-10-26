@@ -34,7 +34,7 @@
 <link rel="preload" as="image" href="assets/controls/stop_button_red_cut.png">
 <link rel="stylesheet" href="nova-game.css?v=20261027-bright-full-height">
 <link rel="stylesheet" href="nova-data-counter.css?v=20261027-cherry-reels">
-<link rel="stylesheet" href="nova-cabinet.css?v=20261027-red90">
+<link rel="stylesheet" href="nova-cabinet.css?v=20261027-middle-sortie">
 <link rel="stylesheet" href="nova-remaining-counters.css?v=20261013-checkpoint-cue">
 <script src="nova-remaining-counters.js?v=20261027-bb-counter"></script>
 <link rel="stylesheet" href="nova-artwork.css?v=20260928-cz-rainbow-155">
@@ -56,9 +56,9 @@
 <link rel="stylesheet" href="nova-ladder-presentation.css?v=20260917-initial-131">
 <script src="nova-ladder-presentation.js?v=20261027-nova-bar-zone"></script>
 <link rel="stylesheet" href="nova-bell-navi.css?v=20261027-next-size">
-<script src="nova-bell-navi.js?v=20261027-all-aim-reverse"></script>
+<script src="nova-bell-navi.js?v=20261027-middle-sortie"></script>
 <script src="nova-sortie-presentation.js?v=20261027-60fps"></script>
-<script src="nova-stock-entry.js?v=20261027-nova-bar-zone"></script>
+<script src="nova-stock-entry.js?v=20261027-middle-sortie"></script>
 <link rel="stylesheet" href="nova-initial-duo.css?v=20260928-duo-157">
 <script src="nova-initial-duo.js?v=20261013-mobile-loading"></script>
 <script src="nova-rush-confirm.js?v=20261013-mobile-loading"></script>
@@ -66,7 +66,7 @@
 <script src="nova-direct-award.js?v=20261013-mobile-loading"></script>
 <link rel="stylesheet" href="nova-aim-presentation.css?v=20261012-super-challenge">
 <script src="nova-aim-confidence.js?v=20261027-red90"></script>
-<script src="nova-aim-presentation.js?v=20261027-nova-only"></script>
+<script src="nova-aim-presentation.js?v=20261027-middle-sortie"></script>
 <script src="nova-tuning.js?v=20261013-smartslot"></script>
 <script src="nova-decrement.js?v=20261013-smartslot"></script>
 <script src="nova-art.js?v=20261027-red90"></script>
@@ -287,7 +287,12 @@
 <label class="layoutEditRow"><span>縦移動</span><input class="layoutEditInput" type="number" min="-50" max="50" step="0.1" data-layout-target="displaygroup" data-layout-prop="y"><b class="layoutEditValue" data-layout-view="displaygroup-y"></b></label>
 <label class="layoutEditRow"><span>倍率</span><input class="layoutEditInput" type="number" min="25" max="200" step="0.1" data-layout-target="displaygroup" data-layout-prop="s"><b class="layoutEditValue" data-layout-view="displaygroup-s"></b></label>
 </div><small>移動0・倍率100%が元の配置。個別配置を保ったまま全体を調整します。</small></div>
-            <div class="layoutEditGroup"><div class="layoutEditGroupTitle">特化ゾーン演出</div><div class="layoutEditGrid">
+            <div class="layoutEditGroup"><div class="layoutEditGroupTitle">出陣トリガー：背景ムービー</div><div class="layoutEditGrid"><label class="layoutEditRow"><span>X</span><input class="layoutEditInput" type="number" min="0" max="100" step="0.1" data-layout-target="sortieaimbg" data-layout-prop="x"><b class="layoutEditValue" data-layout-view="sortieaimbg-x"></b></label><label class="layoutEditRow"><span>Y</span><input class="layoutEditInput" type="number" min="0" max="100" step="0.1" data-layout-target="sortieaimbg" data-layout-prop="y"><b class="layoutEditValue" data-layout-view="sortieaimbg-y"></b></label><label class="layoutEditRow"><span>W</span><input class="layoutEditInput" type="number" min="0" max="100" step="0.1" data-layout-target="sortieaimbg" data-layout-prop="w"><b class="layoutEditValue" data-layout-view="sortieaimbg-w"></b></label><label class="layoutEditRow"><span>H</span><input class="layoutEditInput" type="number" min="0" max="100" step="0.1" data-layout-target="sortieaimbg" data-layout-prop="h"><b class="layoutEditValue" data-layout-view="sortieaimbg-h"></b></label></div></div>
+<div class="layoutEditGroup"><div class="layoutEditGroupTitle">出陣トリガー：「中リールに」文字</div><div class="layoutEditGrid"><label class="layoutEditRow"><span>X</span><input class="layoutEditInput" type="number" min="0" max="100" step="0.1" data-layout-target="sortieaimmiddle" data-layout-prop="x"><b class="layoutEditValue" data-layout-view="sortieaimmiddle-x"></b></label><label class="layoutEditRow"><span>Y</span><input class="layoutEditInput" type="number" min="0" max="100" step="0.1" data-layout-target="sortieaimmiddle" data-layout-prop="y"><b class="layoutEditValue" data-layout-view="sortieaimmiddle-y"></b></label><label class="layoutEditRow"><span>W</span><input class="layoutEditInput" type="number" min="0" max="100" step="0.1" data-layout-target="sortieaimmiddle" data-layout-prop="w"><b class="layoutEditValue" data-layout-view="sortieaimmiddle-w"></b></label><label class="layoutEditRow"><span>H</span><input class="layoutEditInput" type="number" min="0" max="100" step="0.1" data-layout-target="sortieaimmiddle" data-layout-prop="h"><b class="layoutEditValue" data-layout-view="sortieaimmiddle-h"></b></label></div></div>
+<div class="layoutEditGroup"><div class="layoutEditGroupTitle">出陣トリガー：NOVA・チェリー・NOVA</div><div class="layoutEditGrid"><label class="layoutEditRow"><span>X</span><input class="layoutEditInput" type="number" min="0" max="100" step="0.1" data-layout-target="sortieaimsymbol" data-layout-prop="x"><b class="layoutEditValue" data-layout-view="sortieaimsymbol-x"></b></label><label class="layoutEditRow"><span>Y</span><input class="layoutEditInput" type="number" min="0" max="100" step="0.1" data-layout-target="sortieaimsymbol" data-layout-prop="y"><b class="layoutEditValue" data-layout-view="sortieaimsymbol-y"></b></label><label class="layoutEditRow"><span>W</span><input class="layoutEditInput" type="number" min="0" max="100" step="0.1" data-layout-target="sortieaimsymbol" data-layout-prop="w"><b class="layoutEditValue" data-layout-view="sortieaimsymbol-w"></b></label><label class="layoutEditRow"><span>H</span><input class="layoutEditInput" type="number" min="0" max="100" step="0.1" data-layout-target="sortieaimsymbol" data-layout-prop="h"><b class="layoutEditValue" data-layout-view="sortieaimsymbol-h"></b></label></div></div>
+<div class="layoutEditGroup"><div class="layoutEditGroupTitle">出陣トリガー：「狙え！」文字</div><div class="layoutEditGrid"><label class="layoutEditRow"><span>X</span><input class="layoutEditInput" type="number" min="0" max="100" step="0.1" data-layout-target="sortieaimaim" data-layout-prop="x"><b class="layoutEditValue" data-layout-view="sortieaimaim-x"></b></label><label class="layoutEditRow"><span>Y</span><input class="layoutEditInput" type="number" min="0" max="100" step="0.1" data-layout-target="sortieaimaim" data-layout-prop="y"><b class="layoutEditValue" data-layout-view="sortieaimaim-y"></b></label><label class="layoutEditRow"><span>W</span><input class="layoutEditInput" type="number" min="0" max="100" step="0.1" data-layout-target="sortieaimaim" data-layout-prop="w"><b class="layoutEditValue" data-layout-view="sortieaimaim-w"></b></label><label class="layoutEditRow"><span>H</span><input class="layoutEditInput" type="number" min="0" max="100" step="0.1" data-layout-target="sortieaimaim" data-layout-prop="h"><b class="layoutEditValue" data-layout-view="sortieaimaim-h"></b></label></div></div>
+<button type="button" id="sortieAimPreview">出陣トリガーの配置プレビュー ON/OFF</button>
+<div class="layoutEditGroup"><div class="layoutEditGroupTitle">特化ゾーン演出</div><div class="layoutEditGrid">
               <label class="layoutEditRow"><span>X</span><input class="layoutEditInput" type="number" min="0" max="100" step="0.1" data-layout-target="zonepresentation" data-layout-prop="x"><b class="layoutEditValue" data-layout-view="zonepresentation-x"></b></label>
               <label class="layoutEditRow"><span>Y</span><input class="layoutEditInput" type="number" min="0" max="100" step="0.1" data-layout-target="zonepresentation" data-layout-prop="y"><b class="layoutEditValue" data-layout-view="zonepresentation-y"></b></label>
               <label class="layoutEditRow"><span>W</span><input class="layoutEditInput" type="number" min="0" max="100" step="0.1" data-layout-target="zonepresentation" data-layout-prop="w"><b class="layoutEditValue" data-layout-view="zonepresentation-w"></b></label>
@@ -866,7 +871,8 @@
 <script src="nova-role-counter.js?v=20261014-role-counter"></script>
 <script src="nova-data-counter.js?v=20261015-mode-history"></script>
 <script src="nova-display-group.js?v=20261027-group"></script>
-<script src="nova-game.js?v=20261027-nova-only"></script>
+<script src="nova-sortie-aim.js?v=20261027-middle"></script>
+<script src="nova-game.js?v=20261027-middle-sortie"></script>
 <button type="button" id="novaSymbolPreviewOpen">ノヴァ目を確認</button>
 <dialog id="novaSymbolPreview"><h2>ノヴァ目</h2><label>出目<select id="novaPatternSelect"><option value="WEAK_NOVA">弱チェリー：左上段・下段</option><option value="STRONG_MIDDLE">強チェリー：右下がり</option><option value="STRONG_RIGHT">強チェリー：右上がり</option><option value="SUPER_NOVA" selected>ノヴァ（BAR）揃い</option></select></label><p id="novaPatternDescription"></p><div id="novaSymbolPreviewGrid"></div><p>出目の確認用です。通常時のスーパーはBIG・フリーズ各50%。ボーナス中は対象外。弱・強チェリーは従来の弱・強ノヴァ目と同じ抽選です。</p><button type="button" id="novaSymbolPreviewClose">閉じる</button></dialog>
 </body>

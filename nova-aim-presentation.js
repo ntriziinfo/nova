@@ -49,6 +49,7 @@ globalThis.NovaAim=(()=>{
   Object.assign(root.style,{left:(r.left-base.left)/scale+'px',top:top+'px',width:r.width/scale+'px',height:Math.max(40,bottom-top)+'px'});
  }
  function hide(){
+  globalThis.NovaSortieAim?.hide();
   if(active){active.pause();active.hidden=true;if(active.currentTime>0)active.currentTime=0;active=null;}
   if(czTitle)czTitle.hidden=true;
   if(comebackTitle)comebackTitle.hidden=true;
@@ -139,6 +140,7 @@ globalThis.NovaAim=(()=>{
   return !!(resolved?.researchChallenge?.priorAim||resolved?.zoneSpin&&!resolved.aTypeBonusGame&&!resolved.aim&&!resolved.oumaFailed&&!resolved.oumaFreeze&&!resolved.artReverse&&f?.phase==='art'&&!f.entryStage&&['ouma','urapi'].includes(String(f.zone||'').replace(/^ura_/,'')));
  }
  function bet(aim,resolved={}){
+  if(resolved.sortieEntry&&globalThis.NovaSortieAim){hide();NovaSortieAim.show(resolved.sortieCueColor||'rainbow');return false;}
   if(isNovaCue(resolved)){
    if(!init())return false;hide();
    if(resolved.aimDisplay?.guide===false){if(resolved.researchChallenge)showSuperChallenge();return false;}

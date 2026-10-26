@@ -14,7 +14,17 @@ globalThis.NovaStockEntry=(()=>{
   return entry.kind===next.kind&&entry.zone===next.zone&&!!entry.fixed50===!!next.fixed50&&entry.count===next.count&&['prepare','seven','ready'].includes(entry.stage);
  }
  function spin(entry,flow,columns){return {result:entry.kind==='sortieFake'?'MISS':entry.kind==='sortie'?'NEBULA':'BIG',lineRow:1,grid:[0,1,2].map(r=>columns.map(c=>c[r])),stopped:[false,false,false],pendingStopColumns:[null,null,null],visualStopping:[false,false,false],auditPressOrder:[],auditStopOrder:[],resolved:{stockEntry:true,sortieEntry:['sortie','sortieFake'].includes(entry.kind),sortieFake:entry.kind==='sortieFake',sortieCueColor:entry.color||'rainbow',reward:0,flowBefore:{...flow,phase:'art',entryStage:'seven',pendingZone:entry.zone},flowAfter:{...flow,entryStage:'roulette',pendingZone:entry.zone}}};}
- function message(entry){return entry?.kind==='sortieFake'?'出陣チャンス / 次のBETでネビュラを狙え':entry?.kind==='sortie'?(entry.stage==='ready'?'出陣チャレンジ / 次のBETで開始':'出陣チャンス / 次のBETでネビュラを狙え'):entry?.stage==='ready'?NovaArt.zoneName(entry.zone)+'ゾーン / 次のBETで開始':'特化ゾーン準備中 / 次のBETで7を狙え';}
+ // Exact contiguous windows from the live strips; no lottery draws.
+ function sortieColumns(entry,strips){
+  return strips.map((strip,i)=>{
+   const n=strip.length,window=top=>[0,1,2].map(row=>strip[(top+row+n)%n]);
+   let top=i===1?strip.findIndex((symbol,j)=>symbol==='BAR'&&strip[(j+2)%n]==='BAR'):strip.indexOf('BAR')-1;
+   if(i===1&&entry.kind==='sortieFake')top=strip.findIndex((_,j)=>window(j).every(symbol=>symbol!=='BAR'));
+   if(top<0)throw new Error('NOVA sortie stop window missing');
+   return window(top);
+  });
+ }
+ function message(entry){return entry?.kind==='sortieFake'?'出陣チャンス / 次のBETで中リールにNOVAを狙え':entry?.kind==='sortie'?(entry.stage==='ready'?'出陣チャレンジ / 次のBETで開始':'出陣チャンス / 次のBETで中リールにNOVAを狙え'):entry?.stage==='ready'?NovaArt.zoneName(entry.zone)+'ゾーン / 次のBETで開始':'特化ゾーン準備中 / 次のBETで7を狙え';}
  function show(entry){
   if(!panel){panel=document.createElement('div');panel.id='novaStockPreparation';panel.setAttribute('role','status');document.getElementById('machine').append(panel);}
   panel.hidden=!entry||entry.stage==='seven';if(panel.hidden)return;
@@ -29,5 +39,5 @@ globalThis.NovaStockEntry=(()=>{
  }
  function hide(){if(panel)panel.hidden=true;}
  if(typeof window!=='undefined')window.addEventListener('resize',layout);
- return {drawFake,cueColor,eligible,matches,prepare,spin,message,show,hide};
+ return {sortieColumns,drawFake,cueColor,eligible,matches,prepare,spin,message,show,hide};
 })();
