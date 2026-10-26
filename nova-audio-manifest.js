@@ -649,7 +649,7 @@ globalThis.NovaAudioManifest=Object.freeze({
     "category": "bgm"
   },
   "assets/media/nova/upper-at-bgm.mp3": {
-    "src": "assets/media/nova/upper-at-bgm-805028-20261027.mp3",
+    "src": "assets/media/nova/upper-at-bgm-1287779-20261027.mp3",
     "category": "bgm"
   },
   "assets/media/nova/urapi-bgm.wav": {

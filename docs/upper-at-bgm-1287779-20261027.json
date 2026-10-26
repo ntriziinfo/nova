@@ -1,0 +1,30 @@
+{
+  "source": "audiostock_1287779.mp3",
+  "sourceSha256": "551fb9c154af78acd51c87dde7b11c44c9e7e04f6a819d429998f0f507bd4738",
+  "output": "assets\\media\\nova\\upper-at-bgm-1287779-20261027.mp3",
+  "targetLufs": -18,
+  "before": {
+    "input_i": "-4.88",
+    "input_tp": "1.54",
+    "input_lra": "1.90",
+    "input_thresh": "-15.07",
+    "output_i": "-17.69",
+    "output_tp": "-10.66",
+    "output_lra": "2.00",
+    "output_thresh": "-27.83",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.31"
+  },
+  "after": {
+    "input_i": "-18.24",
+    "input_tp": "-11.02",
+    "input_lra": "1.90",
+    "input_thresh": "-28.37",
+    "output_i": "-17.69",
+    "output_tp": "-9.17",
+    "output_lra": "2.00",
+    "output_thresh": "-27.83",
+    "normalization_type": "dynamic",
+    "target_offset": "-0.31"
+  }
+}
