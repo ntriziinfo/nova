@@ -7204,6 +7204,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     NovaSortie.begin(spin);
     globalThis.NovaCheckpointHint?.begin(spin,settings.setting);
     playSortieAwardVoice(spin);
+    globalThis.NovaAimConfidence?.prepare(spin.resolved,{...settings.novaArt,setting:settings.setting});
     NovaAim.bet(spin.resolved.aim,spin.resolved);
     NovaInitialDuo.begin(spin.resolved);
     NovaInitialDuo.stop(spin.stopped.filter(Boolean).length);
@@ -8182,13 +8183,17 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
   function playAimBetPresentation(resolved,rng=Math.random){
     if(debugFastSpinActive)return;
     if(resolved.aim)resolved.aim.guide ??= NovaAim.drawGuide(resolved.aim);
+    globalThis.NovaAimConfidence?.prepare(resolved,{...settings.novaArt,setting:settings.setting});
     const entryCue=NovaAim.bet(resolved.aim,resolved);
     if(entryCue)playRandomAimVoice('seven',rng);
     else if(NovaAim.hasGuide(resolved.aim)){
-      playOneShotSound('assets/media/nova/aim/cue-'+resolved.aim.color+'.wav',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
+      playOneShotSound('assets/media/nova/aim/cue-'+(resolved.aimDisplay?.color||resolved.aim.color)+'.wav',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
       if(resolved.aim.symbol==='seven')playSevenAimVoice(resolved,rng);
       else if(resolved.aim.symbol==='nebula')playNebulaAimVoice(resolved,rng);
-    }else if(!resolved.aim)playOumaNovaAimVoice(resolved);
+    }else if(!resolved.aim){
+      if(resolved.aimDisplay?.guide)playOneShotSound('assets/media/nova/aim/cue-'+resolved.aimDisplay.color+'.wav',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
+      playOumaNovaAimVoice(resolved);
+    }
   }
 
   function playOumaNovaAimVoice(resolved){

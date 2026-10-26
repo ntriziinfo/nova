@@ -271,7 +271,13 @@ body.layoutEditOpen #novaSuperTitlePreview{display:block;outline:1px dashed #c89
 .novaBarAimTitle img{width:55%;height:85%;object-fit:contain;filter:drop-shadow(0 0 8px #ffcd00);}
 .novaBarAimTitle strong{width:39%;font-size:inherit;}
 
-.novaAimPresentation[data-nova-cue="true"]>video{transform:scale(5);transform-origin:0 0;}
+/* Preserve the shared movie border and motion; cover its baked-in seven with NOVA artwork. */
+.novaAimPresentation[data-nova-cue="true"] .novaBarAimTitle{inset:14% 0 14%;gap:1%;background:linear-gradient(100deg,#071a56,#1449a5,#071a56);font-style:italic;color:white;text-shadow:-2px -2px 0 #283c68,2px 2px 0 #283c68,0 4px 5px #000;}
+.novaAimPresentation[data-nova-cue="true"][data-color="red"] .novaBarAimTitle{background:linear-gradient(100deg,#790a0e,#e31720,#790a0e);}
+.novaAimPresentation[data-nova-cue="true"][data-color="rainbow"] .novaBarAimTitle{background:linear-gradient(100deg,#a71735,#817709,#188c49,#185bb1,#83249f);}
+.novaBarAimTitle .novaAimArrow{width:23%;text-align:center;font-size:clamp(40px,7vw,95px);line-height:1;}
+.novaAimPresentation[data-nova-cue="true"] .novaBarAimTitle img{width:43%;height:100%;filter:drop-shadow(0 0 7px #fff);}
+.novaAimPresentation[data-nova-cue="true"] .novaBarAimTitle strong{width:31%;font-size:clamp(22px,3.5vw,48px);white-space:nowrap;}
 
 #machine .novaAimPresentation[data-sortie="true"]{background:transparent;}
 

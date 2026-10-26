@@ -108,7 +108,7 @@ test('CZ intro can resume after reload, resets cleanly, and never replaces prelu
  assert(t.elements.filter(e=>e.tag==='video'&&!e.hidden).length===0);
  t.aim.bet({symbol:'seven',color:'red',guide:true},{flowBefore:{phase:'art'}});
  assert.equal(t.elements.find(e=>e.src==='assets/ui/nova-shuketsu-zone.png').hidden,true);
- assert.equal(t.elements.filter(e=>e.src==='assets/media/nova/aim/seven-flash-20261027.mp4')[1].hidden,false);
+ assert.equal(t.elements.find(e=>e.src==='assets/media/nova/aim/seven-red.mp4').hidden,false);
 });
 test('comeback fire and title loop across BETs and stops without touching the draw or locking AUTO',()=>{
  const t=setup();t.aim.stop({comebackEvent:'entry',flowBefore:{phase:'art'}});
@@ -414,7 +414,7 @@ test('colored zone seven/nebula guides retain their own movie after the entry re
  const {aim,elements}=setup();
  for(const symbol of ['seven','nebula'])for(const color of ['blue','red','rainbow']){
   aim.bet({symbol,color,result:'MISS',guide:true});
-  assert.equal((symbol==='seven'?elements.filter(e=>e.src==='assets/media/nova/aim/seven-flash-20261027.mp4')[['blue','red','rainbow'].indexOf(color)]:elements.find(e=>e.src===`assets/media/nova/aim/${symbol}-${color}.mp4`)).hidden,false);
+  assert.equal(elements.find(e=>e.src===`assets/media/nova/aim/${symbol}-${color}.mp4`).hidden,false);
   assert.equal(elements.filter(e=>e.src==='assets/media/nova/aim/seven-flash-20261027.mp4')[3].hidden,true);
  }
 });
@@ -482,7 +482,7 @@ test('NOVA BAR movie covers Ouma and Urapi cues without changing outcomes',()=>{
  }
 });
 
-test('Sora seven restores original colors without changing other cues or the draw',()=>{
+test('All seven zones use original colors without changing the draw',()=>{
  for(const zone of ['sora','ura_sora'])for(const color of ['blue','red','rainbow']){
   const t=setup(),aim={symbol:'seven',color,guide:true},r={aim,flowBefore:{phase:'art',zone}},before=JSON.stringify(r);
   t.aim.bet(aim,r);
@@ -491,8 +491,8 @@ test('Sora seven restores original colors without changing other cues or the dra
   t.aim.hide();assert.equal(video.hidden,true);assert.equal(video.paused,true);
  }
  const t=setup(),aim={symbol:'seven',color:'blue',guide:true};t.aim.bet(aim,{flowBefore:{phase:'art',zone:'toto'}});
- assert.equal(t.elements.find(e=>e.src==='assets/media/nova/aim/seven-blue.mp4').hidden,true);
- assert.equal(t.elements.some(e=>e.src==='assets/media/nova/aim/seven-flash-20261027.mp4'&&!e.hidden),true);
+ assert.equal(t.elements.find(e=>e.src==='assets/media/nova/aim/seven-blue.mp4').hidden,false);
+ assert.equal(t.elements.some(e=>e.src==='assets/media/nova/aim/seven-flash-20261027.mp4'&&!e.hidden),false);
 });
 
 test('all Nova, seven and nebula aim cues display reverse order and clear it afterwards',()=>{
@@ -500,4 +500,18 @@ test('all Nova, seven and nebula aim cues display reverse order and clear it aft
   const t=setup();t.aim.bet(r.aim,r);const notice=t.elements.find(e=>e.className==='novaAimReverseNotice');
   assert.equal(notice.hidden,false);assert.match(notice.textContent,/右 → 中 → 左/);t.aim.hide();assert.equal(notice.hidden,true);
  }
+});
+
+ test('NOVA shares seven color movies with BAR overlay and respects cached no-cue misses',()=>{
+ for(const color of ['blue','red','rainbow']){
+  const t=setup(),r={zoneSpin:true,flowBefore:{phase:'art',zone:'ouma'},aimDisplay:{color,guide:true}},before=JSON.stringify(r);
+  t.aim.bet(null,r);
+  assert.equal(t.elements.find(e=>e.src===`assets/media/nova/aim/seven-${color}.mp4`).hidden,false);
+  assert.equal(t.elements[0].dataset.color,color);
+  assert.equal(t.elements.find(e=>e.className==='novaBarAimTitle').hidden,false);
+  assert.equal(JSON.stringify(r),before);
+  t.aim.hide();assert.equal(t.elements[0].hidden,true);
+ }
+ const t=setup();t.aim.bet(null,{zoneSpin:true,flowBefore:{phase:'art',zone:'ouma'},aimDisplay:{color:null,guide:false}});
+ assert.equal(t.elements[0].hidden,true);assert.equal(t.aim.busy,false);
 });

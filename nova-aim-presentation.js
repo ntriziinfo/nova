@@ -14,7 +14,7 @@ globalThis.NovaAim=(()=>{
    video.setAttribute('aria-label',`${symbol==='seven'?'7':'nebula'}を狙え！`);
    root.append(video);videos.set(symbol+':'+color,video);
   }
-  // Sora's seven cues retain the original color-specific presentation.
+  // Seven and NOVA share the original color-specific presentation.
   for(const color of ['blue','red','rainbow']){
    const video=document.createElement('video');video.muted=true;video.loop=true;video.playsInline=true;video.preload='metadata';video.hidden=true;
    video.src=`assets/media/nova/aim/seven-${color}.mp4`;root.append(video);videos.set('sora-seven:'+color,video);
@@ -34,7 +34,7 @@ globalThis.NovaAim=(()=>{
   const superChallenge=document.createElement('video');superChallenge.muted=true;superChallenge.loop=true;superChallenge.playsInline=true;superChallenge.preload=globalThis.NovaMedia?.compact?'none':'metadata';superChallenge.hidden=true;superChallenge.src='assets/media/nova/super-nova-challenge-tunnel-20261012.mp4';superChallenge.id='novaSuperChallengeBackground';host.append(superChallenge);videos.set('super-challenge',superChallenge);
   superChallengeTitle=document.createElement('img');superChallengeTitle.className='novaSuperChallengeTitle';superChallengeTitle.hidden=true;superChallengeTitle.loading=globalThis.NovaMedia?.compact?'lazy':'eager';superChallengeTitle.src='assets/ui/super-nova-challenge-title-20261012.png';superChallengeTitle.alt='スーパーノヴァチャレンジ';host.append(superChallengeTitle);
   const novaCue=document.createElement('video');novaCue.muted=true;novaCue.loop=true;novaCue.playsInline=true;novaCue.preload='metadata';novaCue.hidden=true;novaCue.src='assets/media/nova/aim/seven-flash-20261027.mp4';root.append(novaCue);videos.set('nova',novaCue);
-  novaBarTitle=document.createElement('div');novaBarTitle.className='novaBarAimTitle';novaBarTitle.hidden=true;novaBarTitle.innerHTML='<img src="assets/symbols/gang-v3/nova-bar-20261027.png" alt="ノヴァ図柄（BAR）"><strong>ノヴァを狙え！</strong>';root.append(novaBarTitle);
+  novaBarTitle=document.createElement('div');novaBarTitle.className='novaBarAimTitle';novaBarTitle.hidden=true;novaBarTitle.innerHTML='<span class="novaAimArrow">⬅</span><img src="assets/symbols/gang-v3/nova-bar-20261027.png" alt="ノヴァ図柄（BAR）"><strong>を狙え！</strong>';root.append(novaBarTitle);
   reverseNotice=document.createElement('div');reverseNotice.className='novaAimReverseNotice';reverseNotice.hidden=true;reverseNotice.textContent='逆押し　右 → 中 → 左';root.append(reverseNotice);
   const win=document.createElement('video');win.muted=true;win.loop=false;win.playsInline=true;win.preload=globalThis.NovaMedia?.videoPreload||'auto';win.hidden=true;win.src='assets/media/nova/aim/seven-win.mp4?v=20260918-rainbow-144';root.append(win);videos.set('win',win);
   return true;
@@ -140,7 +140,9 @@ globalThis.NovaAim=(()=>{
  }
  function bet(aim,resolved={}){
   if(isNovaCue(resolved)){
-   if(!init())return false;hide();active=videos.get('nova');root.hidden=false;root.dataset.novaCue='true';root.dataset.symbol='nova';host.dataset.aimActive='true';active.hidden=false;novaBarTitle.hidden=false;reverseNotice.hidden=false;layout();active.play().catch(()=>{});return false;
+   if(!init())return false;hide();
+   if(resolved.aimDisplay?.guide===false){if(resolved.researchChallenge)showSuperChallenge();return false;}
+   const color=resolved.aimDisplay?.color||'blue';active=videos.get('sora-seven:'+color);root.hidden=false;root.dataset.novaCue='true';root.dataset.color=color;root.dataset.symbol='nova';host.dataset.aimActive='true';active.hidden=false;novaBarTitle.hidden=false;reverseNotice.hidden=false;layout();active.play().catch(()=>{});return false;
   }
   if(resolved.researchChallenge){showSuperChallenge();return false;}
   if(resolved.researchSortie){showSortie();return false;}
@@ -154,8 +156,8 @@ globalThis.NovaAim=(()=>{
   const entry=zoneEntry||bonusEntry;
   if((!entry&&!hasGuide(aim))||!init())return false;
   const sortieEntry=!!resolved.sortieEntry,sortieColor=resolved.sortieCueColor||'rainbow';
-  const cueZone=resolved.zoneStartFlow?.zone||resolved.flowBefore?.zone;
-  const soraSeven=!entry&&!sortieEntry&&aim?.symbol==='seven'&&['sora','ura_sora'].includes(cueZone);
+  if(aim&&resolved.aimDisplay)aim={...aim,color:resolved.aimDisplay.color||aim.color};
+  const soraSeven=!entry&&!sortieEntry&&aim?.symbol==='seven';
   const video=videos.get(soraSeven?'sora-seven:'+aim.color:sortieEntry?'nebula:'+sortieColor:entry?'zone-entry-seven':aim.symbol+':'+aim.color);if(!video)return false;
   root.dataset.specialZone=String(!!resolved.flowBefore?.zone);
   reverseNotice.hidden=false;
