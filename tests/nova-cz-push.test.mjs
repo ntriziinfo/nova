@@ -5,3 +5,17 @@ let count=0;const r={czLamp:{},czCompleted:true};const hooks={auto:true,valid:()
 console.log('Candidate checks passed: 12,000 CZ schedules, final guarantees, monotonic display, PUSH wait/auto/repeated clicks.');
 
 const resumed={czLamp:{},czCompleted:true,czPushWaiting:true};p.wait(resumed,{auto:false,valid:()=>true,reveal:()=>count++});assert.equal(elements.get('novaCzPush').hidden,false);elements.get('novaCzPush').onclick();assert.equal(count,2);
+
+let goldCount=0;
+for(let seed=0;seed<100000;seed++){
+ const won={czLamp:{timingSeed:seed},czCompleted:true,bonusHit:true};
+ const before=JSON.stringify(won);
+ const picked=p.gold(won);goldCount+=picked;
+ assert.equal(p.gold(JSON.parse(before)),picked);
+ assert.equal(JSON.stringify(won),before);
+ assert.equal(p.gold({...won,bonusHit:false}),false);
+}
+assert(goldCount>900&&goldCount<1100, 'Gold should be approximately 1% of confirmed wins: '+goldCount);
+assert.equal(p.gold({czLamp:{success:true,timingSeed:1},czCompleted:true}),false);
+assert.equal(p.gold({czLamp:{},bonusHit:true}),false);
+console.log('Gold PUSH: '+goldCount+'/100000 wins; zero losses; stable after reload; outcomes unchanged.');
