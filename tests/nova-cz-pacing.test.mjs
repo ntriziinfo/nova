@@ -27,5 +27,5 @@ for(let seed=0;seed<2000;seed++)for(const totalGames of [5,15,20])for(const winA
  }
  if(totalGames===15&&winAt===0&&firstExtra)buckets[firstExtra<=5?0:firstExtra<=10?1:2]++;
 }
-assert(buckets.every(n=>n>150),JSON.stringify(buckets));assert(stops.every(n=>n>300));assert(simultaneous>100);
+assert(buckets.every(n=>n>150),JSON.stringify(buckets));assert(stops.every(n=>n>300));assert(simultaneous>0); // Multi-lamp same-stop events are now exceptional.
 console.log(JSON.stringify({rows,firstAdditionalLightEarlyMiddleLate:buckets,lightEventsByStop:stops,simultaneous},null,2));

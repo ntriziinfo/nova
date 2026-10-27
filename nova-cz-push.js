@@ -14,12 +14,23 @@ function fraction(seed,salt){let n=((seed||0)^Math.imul(salt,0x9e3779b9))>>>0;n=
 const cache=new Map();const rawWeights=weights;weights=p=>{if(!cache.has(p))cache.set(p,rawWeights(p));return cache.get(p);};
 // One saved seed selects pacing, stable across stops and reloads.
 function pacing(seed){const r=fraction(seed,823);return r<.25?'early':r<.55?'middle':r<.8?'spread':'late';}
-function lampStop(seed,index,total){
- if(index===1)return 1;
- const r=fraction(seed,index+401),style=pacing(seed);
- const progress=style==='early'?.08+.37*r:style==='middle'?.28+.42*r:style==='spread'?.08+.8*r:.68+.3*r;
- return Math.max(2,Math.min(total*3,1+Math.floor(progress*(total*3-1))));
+const timingCache=new Map();
+function lampSchedule(seed,total){
+ const key=seed+':'+total;if(timingCache.has(key))return timingCache.get(key);
+ const style=pacing(seed),chance=fraction(seed,1229)<.05;
+ const capacity=chance?4:2,used=Array(total).fill(0),times=[1];used[0]=1;
+ for(let i=2;i<=8;i++){
+  const r=fraction(seed,i+401),progress=style==='early'?.08+.37*r:style==='middle'?.28+.42*r:style==='spread'?.08+.8*r:.68+.3*r;
+  const preferred=Math.min(total-1,Math.floor(progress*total));
+  const available=used.map((n,g)=>({n,g})).filter(x=>x.n<capacity).sort((a,b)=>Math.abs(a.g-preferred)-Math.abs(b.g-preferred)||a.g-b.g);
+  const game=available[0]?.g??total-1;used[game]++;
+  const occupied=new Set(times.filter(t=>Math.floor((t-1)/3)===game));
+  let stop=1+Math.floor(fraction(seed,i+701)*3);for(let j=0;j<3&&occupied.has(game*3+stop);j++)stop=stop%3+1;
+  times.push(game*3+stop);
+ }
+ times.sort((a,b)=>a-b);if(timingCache.size>1000)timingCache.clear();timingCache.set(key,times);return times;
 }
+function lampStop(seed,index,total){return lampSchedule(seed,total)[index-1];}
 function display(lamp,stop,won,setting,terminal=false){
  if(!lamp||stop<1)return null;
  const p=rates[Math.max(0,Math.min(5,(Number(setting)||1)-1))],seed=lamp.timingSeed||0;

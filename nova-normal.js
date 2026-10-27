@@ -118,8 +118,8 @@ globalThis.NovaNormal=(()=>{
   options={...options,cz:NovaFlow.forSetting(options.cz,setting)};
   const before=normalize(value),c=config(options.normal),drawn=forced||(flow.phase==='normal'?drawNormalRole(setting,rng):drawRole(setting,rng)),result=drawn==='NAVI_BELL'?'BELL':drawn;
   if(flow.modePending&&before.games>=100){flow={...flow,modePending:false,success:rng()<flow.modeChance,winProbability:flow.modeChance};}
-  if(before.games<100&&['cz','strong_cz'].includes(flow.phase))flow={...flow,success:false,winProbability:0};
-  flow=before.games<100||flow.modeFake?NovaFlow.normalize(flow):NovaFlow.rewrite(flow,result,options.cz,rng);
+  
+  flow=flow.modeFake?NovaFlow.normalize(flow):NovaFlow.rewrite(flow,result,options.cz,rng);
   const state=advance(before,result,flow,{...c,setting},rng),token={normalBellNavi:drawn==='NAVI_BELL',result,state,czFlow:flow,internalBonus:null,entry:'',direct:!!flow.direct,directZone:flow.directZone||'',czOptions:options.cz,czChance:before.prelude?.presentation==='reel'&&before.prelude.kind!=='czFake'?1:roleCzRate(before,result,setting,c)};
   // Keep the drawn watermelon for internal lotteries; CZ reels and cash use replay.
   if(['cz','strong_cz'].includes(flow.phase)&&result==='WEAK_SUICA'){
@@ -129,7 +129,7 @@ globalThis.NovaNormal=(()=>{
    state.prelude=null;token.czPrelude={before:3,after:0,announce:true};
   }
   const bonus=source=>({kind:'BIG',source,internalResult:'BIG'});
-  if(state.games<=100&&token.result==='SUPER_NOVA')token.result='MISS';
+  
   if(state.games>=ceiling(state)){
    state.ceilingHandled=true;state.prelude=null;if(!before.ceilingHandled)state.impurity=Math.min(100,state.impurity+c.ceilingGain);
    if(['cz','strong_cz'].includes(flow.phase)&&flow.remaining>1){flow={...flow,success:true,winProbability:1};token.czFlow=flow;}
@@ -150,12 +150,12 @@ globalThis.NovaNormal=(()=>{
     token.modeEvent={type:'zoneMiss',mode:state.mode,g:checkpoint};
     if(real||checkpoint===100){
      token.entry='CZ';token.entrySource='game';state.prelude=null;
-     token.czOptions={...options.cz,modeFake:!real,modePending:real&&state.games<=100,modeChance:options.cz.czChance,...(!real||state.games<=100?{czChance:0}:{})};
+     token.czOptions={...options.cz,modeFake:!real,modePending:false,modeChance:options.cz.czChance,...(!real?{czChance:0}:{})};
      token.modeEvent.type=real?'realZone':'fake100';return token;
     }
    }
   }
-  if(state.games<=100){state.prelude=null;return token;}
+  
   if(forced==='FREEZE'){state.prelude=null;token.result='MISS';token.internalBonus={...bonus('フリーズ'),premiumBonus:true};return token;}
   if(flow.phase==='normal'){
    if(before.prelude?.presentation==='reel'){

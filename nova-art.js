@@ -413,18 +413,16 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
  }
  const zoneTailControl={threshold:2000,factor:1};
  function zoneAwardFactor(award,next=0){return 1;}
- function zoneRules(s,c=defaults){const id=(s.ura?'ura_':'')+s.zone;
+ const repeatZoneProbabilityFactors=Object.freeze([.8,1.35,1,1.9,1.95,3.2]);
+ function zoneProbabilityFactor(s){return repeatZoneProbabilityFactors[validSetting(s.giruSetting)-1];}
+ function odds(p,k){return p*k/(1-p+p*k);} function zoneRules(s,c=defaults){const k=s.balanceZoneCount>=2?zoneProbabilityFactor(s):1;c={...c};for(const key of ["ladderSosuke","ladderGiru","ladderUraGiru","totoHit","soraHit","soraUraHit","totoReset","soraReset","soraUraReset","urapiSuper","oumaSuper","oumaUraSuper"])c[key]=odds(c[key],k);const id=(s.ura?'ura_':'')+s.zone;
   if(initialZoneId(s.zone))return {family:'initial'};
   if(['sosuke','giru'].includes(s.zone))return {family:'ladder',success:s.fixed50Zone?0:s.zone==='sosuke'?c.ladderSosuke:s.ura?c.ladderUraGiru:c.ladderGiru};
   if(['toto','sora'].includes(s.zone))return {family:'seven',hit:s.zone==='toto'?c.totoHit:s.ura?c.soraUraHit:c.soraHit,reset:Math.min(.3,s.zone==='toto'?c.totoReset:s.ura?c.soraUraReset:c.soraReset)*zoneAwardFactor(s.award),weights:sevenWeights[id]};
   return {family:'nova',awardMultiplier:s.zone==='ouma'&&s.ura?2:1,hit:s.zone==='urapi'?c.urapiSuper:s.ura?c.oumaUraSuper:c.oumaSuper,hundred:s.zone==='urapi'?.3:s.ura?.7:.5,freeze:oumaFreezeRate(s,c)};
  }
  function drawRepeatZoneFactor(setting,rng=Math.random){const row=balanceFor(setting).repeatZone;return row.values[weightedChallenge(row.weights,rng)];}
- function balanceZoneAward(award,factor=1){
-  const raw=integer(award);if(raw===0n||factor===1)return raw;
-  const scale=BigInt(Math.max(100,Math.min(10000,Math.round(Number(factor)*1000))));
-  const rounded=((raw*scale+5000n)/10000n)*10n;return rounded>0n?rounded:10n;
- }
+ function balanceZoneAward(award,factor=1){return integer(award);}
  function startZone(s,z,c,rng=Math.random){
   s=normalize(s);const fixed50=z===fixedSosukeZone||(z==='sosuke'&&s.entryStage==='confirmed'&&s.pendingFixed50),setting=validSetting(c?.setting);
   z=canonicalZone(z);if(s.initialStage==='entry')z=initialZoneForQuota(z,s.entryQuota,s.initialVersion);
@@ -432,12 +430,12 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
   const counted=!initialZoneId(z)&&!fixed50,nextCount=s.balanceZoneCount+(counted?1:0),zoneBalanceFactor=counted&&nextCount>=2?drawRepeatZoneFactor(setting,rng):1;
   const ura=['giru','sora','ouma'].includes(z)&&explicitUra,special=s.entryStage==='confirmed'&&((s.rouletteTable===7&&z==='sosuke')||(s.rouletteTable===6&&z==='giru'))?s.rouletteTable:0;
   // The first earned character zone is common. From the second zone onward,
-  // odd settings use the broad tail and even settings use the narrow band.
+  // Legacy multiplier draws retain RNG cadence only; settlement never scales awards.
   const ladderSetting=counted&&nextCount===1?3:setting,ladder=['sosuke','giru'].includes(z)?(fixed50?sharedLadderTables[0].slice():special?sharedLadderTables[special-1].slice():pickLadder({zone:z,ura},ladderSetting,rng)):[];
   const next={...s,balanceZoneCount:nextCount,zoneBalanceFactor,fixed50Zone:fixed50,pendingFixed50:false,comebackLeft:0,comebackLamp:'',comebackConfirmed:false,dryEligible:false,rouletteTable:0,sevenHits:0,zoneVersion:2,ladder,ladderIndex:0,ladderRevealed:false,ura,oumaPending:false,zoneZones:'0',zoneSets:'0',initialAward:ladder.length?String(ladder[0]):'0',giruSetting:setting,zone:z,zoneLeft:ladder.length||5,award:ladder.length?String(ladder[0]):'0',zero:false,color:'white'};
   if(s.initialStage==='entry'){next.dryEligible=s.dryEligible;return initialZone(next,rng);}return next;
  }
- function oumaFreezeRate(s,c){return Math.min(.95,s.zone==='urapi'?c.urapiFreeze:s.ura?c.oumaUraFreeze:c.oumaFreeze)*zoneAwardFactor(s.award,s.ura?200:100);}
+ function oumaFreezeRate(s,c){c={...c};for(const key of ["urapiFreeze","oumaFreeze","oumaUraFreeze"])c[key]=odds(c[key],s.balanceZoneCount>=2?zoneProbabilityFactor(s):1);return Math.min(.95,s.zone==='urapi'?c.urapiFreeze:s.ura?c.oumaUraFreeze:c.oumaFreeze)*zoneAwardFactor(s.award,s.ura?200:100);}
  // Keep the saved `sets` counter, but consume each bonus stock as an ordinary
  // special zone. Choose once at BET, then use the usual seven/roulette entry.
  function prepareBonusStock(value,options,rng){
@@ -513,7 +511,7 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
   const weights=weakQualityWeights(setting,upper),total=weights.reduce((sum,value)=>sum+value,0),zoneStart=upper?2:1;
   return weakAtResponseChance(setting,upper,high)*weights.slice(zoneStart).reduce((sum,value)=>sum+value,0)/total;
  }
- const checkpointQuietRules=Object.freeze({enabled:true}); // Approved 2026-10-13; fixed earned net quota reaches the checkpoint.
+ const checkpointQuietRules=Object.freeze({enabled:false}); // Approved 2026-10-27: keep lotteries active after a guaranteed checkpoint.
  function checkpointGuaranteed(s,net,next){
   if(s?.phase!=='art'||s.zone||s.entryStage||s.initialStage||s.atPrelude||s.researchSortieLeft||s.comebackLeft||s.comebackConfirmed||s.researchChallengeActive||s.burstPending||s.burstLeft||s.queuedZones?.length||Number(s.stock||0)>0||Number(s.sets||0)>0)return false;
   if(!Number.isFinite(Number(net))||!Number.isFinite(Number(next))||Number(next)<=0)return false;
@@ -635,10 +633,10 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
     const minimum=s.zone==='urapi'?50:s.zone==='ouma'?(s.ura?500:100):0;
     const guaranteeNoFreeze=s.zone==='ouma'&&!s.ura&&!free&&!s.zoneLeft&&integer(s.award)<100n&&result!=='SUPER_NOVA';
     if(!s.zoneLeft&&!free&&integer(s.award)<BigInt(minimum))result='SUPER_NOVA';
-    if(result==='SUPER_NOVA'){const n=Math.max((rng()<rules.hundred?100:50)*rules.awardMultiplier,!s.zoneLeft&&!free?minimum-Number(s.award):0);if(!free&&!forced&&zoneAwardFactor(s.award,n)<1&&rng()>=zoneTailControl.factor){result='MISS';message='スーパーノヴァを狙え';}else{s.award=(integer(s.award)+BigInt(n)).toString();message=(free?'逢魔フリーズ！ 0G連 / ':'')+zoneName(s)+' スーパーノヴァ揃い ＋'+n+'pt';}}
+    if(result==='SUPER_NOVA'){const n=(rng()<rules.hundred?100:50)*rules.awardMultiplier;if(!free&&!forced&&zoneAwardFactor(s.award,n)<1&&rng()>=zoneTailControl.factor){result='MISS';message='スーパーノヴァを狙え';}else{s.award=(integer(s.award)+BigInt(n)).toString();message=(free?'逢魔フリーズ！ 0G連 / ':'')+zoneName(s)+' スーパーノヴァ揃い ＋'+n+'pt';}}
     else message='スーパーノヴァを狙え';
     s.oumaPending=['ouma','urapi'].includes(s.zone)&&result==='SUPER_NOVA'&&!guaranteeNoFreeze;s.zero=false;
-    if(!s.zoneLeft&&!s.oumaPending)finish();
+    if(!s.zoneLeft&&integer(s.award)<BigInt(minimum))s.zoneLeft=1;if(!s.zoneLeft&&!s.oumaPending)finish();
    }
    zoneAward=Math.max(0,Number(integer(s.award)-awardBefore));
   }else{
@@ -663,5 +661,5 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
   s.researchSortieRate=[.1,.25,.4,.6,.8][i<0?4:i];s.researchSortieLeft=10;s.researchSortieHits=0;
   s.comebackLeft=0;s.comebackConfirmed=false;s.comebackLamp='';s.zero=false;s.dryEligible=false;return s;
  }
- return {challengeAimChance,atNetRules,atLowPayoutRules,oneCoinHighDownChance,weakAtAwardScales,weakAtResponseChance,weakQualityWeights,drawWeakAtReward,upperAtRules,initialBurstChance,checkpointQuietRules,checkpointGuaranteed,cashPayout,replayRefund,lowPayoutRoles,lowPayout,atShortfallRefund,scriptedInitialRoles,freshInitialRules,freshInitialBases,previousFreshInitialBases,isFreshInitialRuleVersion,freshInitialBase,freshInitialAward,positiveNetZoneRules,positiveNetZoneFactor,restoreBetCost,extraZoneChance,commonAtRulesFor,balanceFor,drawRepeatZoneFactor,balanceZoneAward,preparationStockWeights,entryWeights:researchEntryWeights,beginResearchSortie,atPreludeRules,initialRareAwards,initialZoneIds,rouletteZones,sevenGuaranteed,initialBoostRules,entryQuotaRules,initialZoneAllowed,initialZoneWeights,pickInitialZone,drawEntryQuota,enterInitial,challengeName,burstReward,comebackRules,comebackChance,comebackRoleProbabilities,drawComebackRole,beginComeback,prepareComeback,stepComeback,burstRules,burstChance,commonAtRules,bonusRules,bonusTier,drawBonusTier,bonusLabel,bonusPayout,bonusAim,aimColors,aimColorsFor,sevenAimRules,drawSevenAim,ladderWeightsFor,ladderGuaranteed,drawLadderRole,lossRewardControl,zoneTailControl,zoneAwardFactor,netRewardControl,netLimits,netRewardFactor,superZoneChance,zoneGroups,zoneGroupWeights,upgradeGuaranteedZone,bonusSpecialRates,zoneRules,ladderTables,ladderTableFor,ladderValues,sevenValues,sevenWeights,atZoneWeights,tuning,atMix,drawAtRare,atRoleRules,pickAtZone,pickNonSosukeZone,resolveAtRole,rareRoles,rareTotal,rareMean,rareFactor,drawRare,roleProbabilities,initialRoleProbabilities,bonusRoleProbabilities,preparationRules,isPreparationStartReplay,preparationStartOrder,preparationDisplayRole,preparationCashPayout,preparationProbabilities,drawPreparationRole,drawPreparationStockCount,preparationRewardRates,drawBonusPreparationReward,atPreparationZoneChance,drawAtPreparationReward,zoneRoleWeights,zoneRoleMultiplier,paidBellChance,drawPreparation,zoneEntryScale,points,bonusTarget,payout,settleZone,prepareBet,oumaFreezeRate,baseZone,zoneName,zoneIds,names,defaults,direct,zoneWeights,pickZone,bonusSpecial,settingBias,biasFor,bonusSpecialFor,advanceBonus,bonusStockLabel,bonusStockRules,bonusStockFactor,bonusStockEligible,drawPaidRole,drawBonus,config,normalize,enter,startZone,afterBonus,step,label};
+ return {repeatZoneProbabilityFactors,challengeAimChance,atNetRules,atLowPayoutRules,oneCoinHighDownChance,weakAtAwardScales,weakAtResponseChance,weakQualityWeights,drawWeakAtReward,upperAtRules,initialBurstChance,checkpointQuietRules,checkpointGuaranteed,cashPayout,replayRefund,lowPayoutRoles,lowPayout,atShortfallRefund,scriptedInitialRoles,freshInitialRules,freshInitialBases,previousFreshInitialBases,isFreshInitialRuleVersion,freshInitialBase,freshInitialAward,positiveNetZoneRules,positiveNetZoneFactor,restoreBetCost,extraZoneChance,commonAtRulesFor,balanceFor,drawRepeatZoneFactor,balanceZoneAward,preparationStockWeights,entryWeights:researchEntryWeights,beginResearchSortie,atPreludeRules,initialRareAwards,initialZoneIds,rouletteZones,sevenGuaranteed,initialBoostRules,entryQuotaRules,initialZoneAllowed,initialZoneWeights,pickInitialZone,drawEntryQuota,enterInitial,challengeName,burstReward,comebackRules,comebackChance,comebackRoleProbabilities,drawComebackRole,beginComeback,prepareComeback,stepComeback,burstRules,burstChance,commonAtRules,bonusRules,bonusTier,drawBonusTier,bonusLabel,bonusPayout,bonusAim,aimColors,aimColorsFor,sevenAimRules,drawSevenAim,ladderWeightsFor,ladderGuaranteed,drawLadderRole,lossRewardControl,zoneTailControl,zoneAwardFactor,netRewardControl,netLimits,netRewardFactor,superZoneChance,zoneGroups,zoneGroupWeights,upgradeGuaranteedZone,bonusSpecialRates,zoneRules,ladderTables,ladderTableFor,ladderValues,sevenValues,sevenWeights,atZoneWeights,tuning,atMix,drawAtRare,atRoleRules,pickAtZone,pickNonSosukeZone,resolveAtRole,rareRoles,rareTotal,rareMean,rareFactor,drawRare,roleProbabilities,initialRoleProbabilities,bonusRoleProbabilities,preparationRules,isPreparationStartReplay,preparationStartOrder,preparationDisplayRole,preparationCashPayout,preparationProbabilities,drawPreparationRole,drawPreparationStockCount,preparationRewardRates,drawBonusPreparationReward,atPreparationZoneChance,drawAtPreparationReward,zoneRoleWeights,zoneRoleMultiplier,paidBellChance,drawPreparation,zoneEntryScale,points,bonusTarget,payout,settleZone,prepareBet,oumaFreezeRate,baseZone,zoneName,zoneIds,names,defaults,direct,zoneWeights,pickZone,bonusSpecial,settingBias,biasFor,bonusSpecialFor,advanceBonus,bonusStockLabel,bonusStockRules,bonusStockFactor,bonusStockEligible,drawPaidRole,drawBonus,config,normalize,enter,startZone,afterBonus,step,label};
 })();
