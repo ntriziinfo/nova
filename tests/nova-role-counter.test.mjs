@@ -42,12 +42,15 @@ test('role counts carry through player changes and reloads, without inventing le
   assert.equal(n.odds(0,100),'—');assert.equal(n.snapshot(stats).normalRoleSuikaCount,12);
 });
 
-test('the counter lists exactly the normal small roles with different probabilities across settings',()=>{
+test('the counter lists the displayable normal roles while their probabilities remain common',()=>{
   const c=context();
   for(const file of ['nova-tuning.js','nova-art.js','nova-balance.js','nova-flow.js','nova-normal.js'])vm.runInContext(fs.readFileSync(file,'utf8'),c);
-  const rates=[1,2,3,4,5,6].map(n=>c.NovaNormal.normalRoleProbabilities(n));
-  const varying=Object.keys(rates[0]).filter(role=>role!=='MISS'&&new Set(rates.map(r=>r[role])).size>1).sort();
-  assert.deepEqual(Array.from(c.NovaRoleCounter.roles,role=>role.result).sort(),varying);
+  const labels=Object.fromEntries(Array.from(c.NovaRoleCounter.roles,role=>[role.result,role.label]));
+  assert.equal(labels.WEAK_SUICA,'スイカ');assert.equal(labels.WEAK_NOVA,'弱チェリー');assert.equal(labels.STRONG_NOVA,'強チェリー');
+  const results=Array.from(c.NovaRoleCounter.roles,role=>role.result).sort(),expected=['BELL','NAVI_BELL','REPLAY','STRONG_NOVA','WEAK_NOVA','WEAK_SUICA'];
+  assert.deepEqual(results,expected);const common=JSON.stringify(c.NovaNormal.normalRoleProbabilities(1));
+  for(let setting=1;setting<=6;setting++){const row=c.NovaNormal.normalRoleProbabilities(setting);assert.equal(JSON.stringify(row),common);for(const role of results)assert(row[role]>0,role);}
+  assert(!results.includes('ONE_COIN'));assert(!results.includes('MISS'));
 });
 
 test('panel displays cumulative AT and combined BIG with their own denominator, and normal-only small-role odds',()=>{

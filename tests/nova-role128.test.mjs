@@ -1,4 +1,3 @@
-import fs from 'node:fs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {loadModel} from '../scripts/zone-v2-model.mjs';
@@ -23,7 +22,8 @@ test('AT exit redraws heaven without changing impurity, and bonus cannot demote 
  assert.equal(n.reset(()=>.6,6).mode,'B');assert.equal(n.ceiling(n.reset(()=>.6,6)),600);
  for(const dryAtEnd of [false,true]){
   const ended=n.afterArt({mode:'天国',games:100,impurity:20,level:'high',highLeft:10},{phase:'art'},{phase:'normal',dryAtEnd},{},()=>0);
-  assert.equal(ended.games,0);assert.equal(ended.mode,'A');assert.equal(ended.impurity,dryAtEnd?22:20);assert.equal(ended.level,'low');
+  const gain=n.config({}).atDryGain*NovaTuning.balanceProfile(3).failureRecovery;
+  assert.equal(ended.games,0);assert.equal(ended.mode,'A');assert.equal(ended.impurity,dryAtEnd?20+gain:20);assert.equal(ended.level,'low');
  }
  const after=n.afterBonus({mode:'天国',impurity:55},()=>0);
  assert.equal(after.mode,'天国');assert.equal(after.impurity,55);assert.equal(after.games,0);
@@ -55,12 +55,14 @@ test('mode ceiling guarantees BIG during a CZ and resets after the bonus',()=>{
 });
 
 test('explicit CZ debug odds and guarantees are not overwritten by setting tuning',()=>{
+ const shared=JSON.parse(JSON.stringify(n.roleProbabilities(1))),normal=JSON.parse(JSON.stringify(n.normalRoleProbabilities(1)));
  for(let setting=1;setting<=6;setting++){
   assert.equal(f.forSetting({czChance:1,strongChance:1},setting).czChance,1);
   assert.equal(f.forSetting({czChance:.2,strongChance:.85},setting).strongChance,.85);
   const p=n.roleProbabilities(setting);
-  assert(Object.values(p).every(p=>p>=0&&p<=1));assert(Math.abs(Object.values(p).reduce((a,b)=>a+b,0)-1)<1e-12);
-  assert(Math.abs(50/(3*(1-p.REPLAY)-Object.entries(p).reduce((sum,[role,p])=>sum+p*n.pay(role),0))-JSON.parse(fs.readFileSync('tests/fixtures/nova-role-merge-approved.json')).sharedBases[setting-1])<1e-10);
+  assert.deepEqual(JSON.parse(JSON.stringify(p)),shared);assert(Object.values(p).every(p=>p>=0&&p<=1));assert(Math.abs(Object.values(p).reduce((a,b)=>a+b,0)-1)<1e-12);
+  const base=n.normalRoleProbabilities(setting),paid=Object.entries(base).reduce((sum,[role,p])=>sum+p*(role==='NAVI_BELL'?8:n.pay(role)),0);
+  assert.deepEqual(JSON.parse(JSON.stringify(base)),normal);assert(Math.abs(50/(3*(1-base.REPLAY)-paid)-30)<1e-10);
  }
  assert.equal(a.initialHitBoost,undefined);
 });

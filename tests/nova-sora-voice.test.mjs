@@ -11,6 +11,7 @@ function setup(){
  for(const name of ['AIM_VOICE_SRCS','SEVEN_ZONE_VOICE_SRCS','NEBULA_ZONE_VOICE_SRCS','ZONE_START_VOICE_SRCS','ZONE_CONTINUE_VOICE_SRCS','OUMA_NOVA_VOICE_SRCS'])vm.runInContext(html.match(new RegExp('  const '+name+'=[^\\n]+'))[0],c);
  for(const name of ['playRandomAimVoice','playSevenAimVoice','playNebulaAimVoice','playAimBetPresentation','playZoneStartVoice','playZoneContinueVoice','playOumaNovaAimVoice','playOumaNovaWinVoice','novaSymbol','isNovaGrid'])vm.runInContext(name==='novaSymbol'||name==='isNovaGrid'?html.match(new RegExp('  function '+name+'[^\\n]+'))[0]:html.match(new RegExp('  function '+name+'\\([^]*?\\n  }'))[0],c);
  vm.runInContext(fs.readFileSync('nova-tuning.js','utf8')+'\n'+fs.readFileSync('nova-art.js','utf8'),c);
+ for(const name of ['currentPreparationVersion','replayGatedBonusPreparation'])vm.runInContext(html.match(new RegExp('  function '+name+'\\([^]*?\\n  }'))[0],c);
  return {c,sounds};
 }
 test('zone seven cues match the character on hits and misses, including reverse zones, without a voice draw',()=>{
@@ -87,6 +88,11 @@ test('bonus entrance seven cues use the common character draw after preparation 
   assert.equal(c.triggerBonusConfirmBetSoundIfNeeded(),true);assert.equal(sounds[0].src,'assets/media/nova/'+voice+'.wav');
   c.normalState.prepLeft=1;c.triggerBonusConfirmBetSoundIfNeeded();assert.equal(sounds.length,1);
  }
+ const {c,sounds}=setup();c.A_TYPE_MODE=true;c.normalState={bonusPending:true,prepConfirmed:true,prepVersion:c.NovaArt.preparationRules.version,prepReady:false,prepLeft:0};
+ const draw=c.playRandomAimVoice;c.playRandomAimVoice=symbol=>draw(symbol,()=>0);
+ vm.runInContext(html.match(/  function triggerBonusConfirmBetSoundIfNeeded\([^]*?\n  }/)[0],c);
+ c.triggerBonusConfirmBetSoundIfNeeded();assert.equal(sounds.length,0);
+ c.normalState.prepReady=true;c.triggerBonusConfirmBetSoundIfNeeded();assert.equal(sounds.at(-1).src,'assets/media/nova/aim_seven_sosuke.wav');
 });
 test('actual confirmed-to-zone BET transitions announce registered zones only once on entry',()=>{
  for(const pendingZone of ['toto','sora','ura_sora','giru','ura_giru','ouma','ura_ouma'])for(const initialStage of ['', 'entry']){

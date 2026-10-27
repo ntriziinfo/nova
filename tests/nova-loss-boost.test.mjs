@@ -1,18 +1,19 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';vm.runInThisContext(fs.readFileSync('nova-tuning.js','utf8')+'\n'+fs.readFileSync('nova-art.js','utf8'));const a=NovaArt;
-test('retired minus-2000 bonus no longer overrides the common AT rules',()=>{
+const sequence=(...values)=>()=>values.shift()??.999999;
+test('retired minus-2000 bonus no longer overrides the profiled weak-role response',()=>{
  assert.equal(a.lossRewardControl.enabled,false);
- for(const atLevel of [0,1,2,3,4,5])for(const [atHigh,chance]of [[false,a.extraZoneChance(1,'WEAK_NOVA',false,false)],[true,a.extraZoneChance(1,'WEAK_NOVA',false,true)]]){
-  let wins=0;for(let i=0;i<1000;i++){const out=a.resolveAtRole({atLevel,atHigh,atHighLeft:10},'WEAK_NOVA',1,()=>(i+.5)/1000,-2000);if(out.fixed50?out.extraZone:out.zone)wins++;}
-  assert.equal(wins,Math.ceil(1000*chance-.5));
+ for(let setting=1;setting<=6;setting++)for(const atHigh of [false,true])for(const role of Object.keys(a.atRoleRules)){
+  const profile=NovaTuning.balanceProfile(setting),weights=a.weakQualityWeights(setting,false),quality=(weights[0]+weights[1]/2)/100;
+  const run=net=>a.resolveAtRole({atHigh,atHighLeft:10},role,setting,sequence(...(atHigh?[]:[.99]),profile.weakResponse/2,quality),net);
+  assert.deepEqual(run(-2000),run(20000));
  }
 });
-test('fixed-zone hit gate retains common AT rules before thinning the former amount draw',()=>{
- for(const treatment of [1,2,3,4,5])for(const [role,rule]of Object.entries(a.atRoleRules)){
-  let wins=0;for(let i=0;i<3000;i++){
-   let first=true;
-   const out=a.resolveAtRole({atLevel:treatment,atHigh:true,atHighLeft:10},role,6,()=>first?(first=false,(i+.5)/3000):0,-50000);
-   assert.equal(out.direct,0);if(out.fixed50){wins++;assert.equal(out.zone,'sosuke');}
-  }
-  assert.equal(wins,Math.round(3000*Math.min(1,rule.hit*a.commonAtRulesFor(6).direct)));
+test('weak-role response gate stays at six percent and quality one keeps the fixed Sosuke route',()=>{
+ for(let setting=1;setting<=6;setting++)for(const role of Object.keys(a.atRoleRules)){
+  const response=a.weakAtResponseChance(setting,false,true),weights=a.weakQualityWeights(setting,false),qualityOne=(weights[0]+weights[1]/2)/100;
+  const miss=a.resolveAtRole({atHigh:true,atHighLeft:10},role,setting,sequence(response),-50000);
+  assert.equal(miss.direct,0);assert.equal(miss.zone,'');assert.equal(!!miss.fixed50,false);
+  const hit=a.resolveAtRole({atHigh:true,atHighLeft:10},role,setting,sequence(response-1e-12,qualityOne),-50000);
+  assert.equal(hit.direct,0);assert.equal(hit.zone,'sosuke');assert.equal(hit.fixed50,true);
  }
 });

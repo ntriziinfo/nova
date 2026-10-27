@@ -6,11 +6,16 @@ globalThis.NovaBellNavi=(()=>{
  const rareRoles=Object.freeze({WEAK_SUICA:['green',0],STRONG_SUICA:['green',1],CHANCE_A:['purple',0],CHANCE_B:['purple',1],WEAK_NOVA:['red',0],STRONG_NOVA:['red',1],SUPER_NOVA:['red',2]});
  const rareAsset=signal=>'assets/design/nova-navi-alert-v1/navi-'+signal.color+'-'+(signal.mark==='!!'?'double':'single')+'.png';
  let host,root,items=[],active=null,previewing=false;
+ function preparationOrder(spin){
+  const row=spin?.resolved?.prepStartOrderStops?.length?spin.resolved.prepStartOrderStops:spin?.resolved?.prepInitialStartOrderStops;
+  return Array.isArray(row)&&row.length===3&&new Set(row).size===3&&row.every(i=>Number.isInteger(i)&&i>=0&&i<3)?row.slice():null;
+ }
  function available(spin){
   const r=spin?.resolved,f=r?.flowBefore;
   return !!(f?.phase==='art'&&!spin.aTypeBonusActiveAtStart&&!r.bonusPendingAtStart&&!r.zoneSpin&&!r.comebackEvent&&!r.burstEvent&&!f.zone&&!f.entryStage&&!f.initialStage&&!f.comebackLeft&&!f.comebackConfirmed&&!f.burstLeft&&!f.burstPending);
  }
  function eligible(spin){
+  if(spin?.result==='REPLAY'&&preparationOrder(spin))return true;
   const r=spin?.resolved;
   const normal=r?.normalBellNavi&&r.flowBefore?.phase==='normal'&&!spin.aTypeBonusActiveAtStart&&!r.bonusPendingAtStart&&!r.zoneSpin;
   return ['BELL','BELL15'].includes(spin?.result)&&!!(normal||available(spin));
@@ -83,9 +88,10 @@ globalThis.NovaBellNavi=(()=>{
   const signal=savedSignal?.mark==='!!'&&!confirmed(active)?{...savedSignal,mark:'!'}:savedSignal,order=active?.bellNaviOrder||(!active&&previewing?[0,1,2]:null),stopped=active?.stopped||[];
   root.hidden=(!order&&!signal)||!!(active&&stopped.every(Boolean));
   root.dataset.preview=String(!active&&previewing);
-  root.dataset.kind=signal?'rare':'bell';root.dataset.color=signal?.color||'yellow';
-  const signalLabel=signal?({green:'スイカ',purple:'チャンス目',red:'ノヴァ目'}[signal.color]+'対応 '+signal.mark):'';
-  root.setAttribute('aria-label',signalLabel||'ベル押し順ナビ');
+  const prep=!!preparationOrder(active);
+  root.dataset.kind=signal?'rare':prep?'preparation':'bell';root.dataset.color=signal?.color||'yellow';
+  const signalLabel=signal?({green:'スイカ',purple:'チャンス目',red:'チェリー／ノヴァ'}[signal.color]+'対応 '+signal.mark):'';
+  root.setAttribute('aria-label',signalLabel||(prep?'開始リプレイ押し順ナビ':'ベル押し順ナビ'));
   if(root.hidden)return;
   const next=order?.find(i=>!stopped[i]);
   items.forEach((item,i)=>{
@@ -112,7 +118,8 @@ globalThis.NovaBellNavi=(()=>{
   if(img.complete&&img.naturalWidth>0)img.onload();
  }
  function begin(spin,rng=Math.random){
-  spin.bellNaviOrder=eligible(spin)?drawOrder(rng,spin):null;
+  const prep=preparationOrder(spin);
+  spin.bellNaviOrder=prep||(eligible(spin)?drawOrder(rng,spin):null);
   spin.rareNavi=drawRareNavi(spin,rng);
   // The caller uses the returned numbered order to trigger the bell BET sound.
   active=spin;render();return spin.bellNaviOrder;
@@ -125,5 +132,5 @@ globalThis.NovaBellNavi=(()=>{
   document.addEventListener('DOMContentLoaded',init);
   window.addEventListener('resize',layout);
  }
- return {defaults,eligible,drawRareNavi,drawOrder,stopOrder,begin,restore,stop,clear,preview,layout};
+ return {defaults,eligible,preparationOrder,drawRareNavi,drawOrder,stopOrder,begin,restore,stop,clear,preview,layout};
 })();

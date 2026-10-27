@@ -3,7 +3,7 @@ globalThis.NovaRoleCounter=(()=>{
   const roles=Object.freeze([
     {id:'Suika',key:'normalRoleSuikaCount',result:'WEAK_SUICA',label:'スイカ'},
     {id:'WeakNova',key:'normalRoleWeakNovaCount',result:'WEAK_NOVA',label:'弱チェリー'},
-    {id:'StrongNova',key:'normalRoleStrongNovaCount',result:'STRONG_NOVA',label:'強ノヴァ'},
+    {id:'StrongNova',key:'normalRoleStrongNovaCount',result:'STRONG_NOVA',label:'強チェリー'},
     {id:'Replay',key:'normalRoleReplayCount',result:'REPLAY',label:'リプレイ'},
     {id:'Bell',key:'normalRoleBellCount',result:'BELL',label:'ベル（ナビなし）'},
     {id:'NaviBell',key:'normalRoleNaviBellCount',result:'NAVI_BELL',label:'押し順ベル'}

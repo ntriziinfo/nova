@@ -48,7 +48,7 @@ test('historical model reproduces the prior independent full-session ledgers and
  }
 });
 
-test('base is 30G for every setting and AT pays net4.5/7 with three paid BETs after replays',()=>{
+test('base is 30G for every setting and AT pays the current net target with three paid BETs after replays',()=>{
  loadModel();const a=NovaArt,n=NovaNormal;
  for(let setting=1;setting<=6;setting++){
   const normal=n.normalRoleProbabilities(setting);
@@ -59,7 +59,7 @@ test('base is 30G for every setting and AT pays net4.5/7 with three paid BETs af
    const roles=a.roleProbabilities(setting,upper);
    assert(Object.values(roles).every(p=>Number.isFinite(p)&&p>=0&&p<=1));
    near(Object.values(roles).reduce((total,p)=>total+p,0),1);
-   near(Object.entries(roles).reduce((total,[role,p])=>total+p*a.cashPayout(role),0)-3,upper?7:4.5);
+   near(Object.entries(roles).reduce((total,[role,p])=>total+p*a.cashPayout(role),0)-3,upper?a.atNetRules.upper:a.atNetRules.normal);
   }
   let flow={...a.enter({setting},()=>.99),remaining:'200'};
   let net=0;
@@ -70,19 +70,26 @@ test('base is 30G for every setting and AT pays net4.5/7 with three paid BETs af
  }
 });
 
-test('initial points, shared state roles and sortie cash mix retain the approved pre-change behavior',()=>{
+test('visible role probabilities are common and fresh initial points remain fixed at 300pt plus rare-role alpha',()=>{
  loadModel('../tests/fixtures/pre-win-base30');
- const expected=Array.from({length:6},(_,i)=>({shared:NovaNormal.roleProbabilities(i+1),legacyInitial:NovaArt.freshInitialRules,initialRoles:NovaArt.roleProbabilities(i+1)}));
+ const legacyInitial=JSON.parse(JSON.stringify(NovaArt.freshInitialRules));
  loadModel();
+ const shared=JSON.parse(JSON.stringify(NovaNormal.roleProbabilities(1))),initialRoles=JSON.parse(JSON.stringify(NovaArt.initialRoleProbabilities(1)));
  for(let setting=1;setting<=6;setting++){
-  assert.deepEqual(NovaNormal.roleProbabilities(setting),expected[setting-1].shared);
-  assert.equal(NovaArt.freshInitialRules.version,20261027);
-  assert.equal(NovaArt.freshInitialRules.legacyVersion,expected[setting-1].legacyInitial.version);
-  assert.deepEqual(NovaArt.freshInitialRules.rareAwards,expected[setting-1].legacyInitial.rareAwards);
-  assert.equal(NovaArt.freshInitialBase(setting,expected[setting-1].legacyInitial.version),100);
-  assert.deepEqual(NovaArt.roleProbabilities(setting,false,5),expected[setting-1].initialRoles);
+  assert.deepEqual(JSON.parse(JSON.stringify(NovaNormal.roleProbabilities(setting))),shared);
+  assert.deepEqual(JSON.parse(JSON.stringify(NovaArt.initialRoleProbabilities(setting))),initialRoles);
+  assert.equal(NovaNormal.roleProbabilities(setting).WEAK_SUICA,.0248);assert.equal(NovaNormal.roleProbabilities(setting).WEAK_NOVA,1/128);assert.equal(NovaNormal.roleProbabilities(setting).STRONG_NOVA,1/2500);
+  assert.equal(NovaNormal.pay('WEAK_SUICA'),3);assert.equal(NovaNormal.pay('WEAK_NOVA'),2);assert.equal(NovaNormal.pay('STRONG_NOVA'),2);
+  assert.equal(NovaArt.freshInitialRules.version,2026102702);
+  assert.equal(NovaArt.freshInitialRules.fixedVersion,2026102701);
+  assert.equal(NovaArt.freshInitialRules.previousVersion,20261027);
+  assert.equal(NovaArt.freshInitialRules.legacyVersion,legacyInitial.version);
+  assert.deepEqual(NovaArt.freshInitialRules.rareAwards,legacyInitial.rareAwards);
+  assert.equal(NovaArt.freshInitialBase(setting,legacyInitial.version),100);
+  const mean=3*Object.entries(NovaArt.initialRoleProbabilities(setting)).reduce((sum,[role,p])=>sum+p*NovaArt.freshInitialAward(setting,role==='BELL15'?'BELL':role),0);
+  near(mean,306.0206038135593);
   let flow=NovaArt.enterInitial({setting},()=>.99);
-  while(flow.initialStage)flow=NovaArt.step(flow,{setting},()=>.99).flow;
-  assert.equal(flow.remaining,String(NovaArt.freshInitialBase(setting)*3));
+  while(flow.initialStage)flow=NovaArt.step(flow,{setting},()=>.99,flow.initialStage==='wait'?'START_REPLAY_LEFT':'').flow;
+  assert.equal(flow.remaining,'300');
  }
 });

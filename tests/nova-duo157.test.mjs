@@ -22,7 +22,7 @@ test('weak/strong roles replace only their game with 100/200; final points and s
  }
 });
 
-test('natural initial-zone roles use the AT frequencies and setting-specific exact award mean',()=>{
+test('natural initial-zone roles keep their dedicated frequencies while the sampled award mean stays near 306.02pt',()=>{
  const rng=xoshiro128('duo157');let sawWeak=0,sawStrong=0;
  for(let setting=1;setting<=6;setting++){
   let total=0;const count=12000;
@@ -35,8 +35,7 @@ test('natural initial-zone roles use the AT frequencies and setting-specific exa
    }
    total+=Number(s.remaining);
   }
-  // Independent approved target includes rare-role rewrites (not just the sealed base).
-  const mean=3*a.freshInitialBase(setting)+6.0206038135593225;assert(Math.abs(total/count-mean)<7,`${setting}: ${total/count} vs ${mean}`);
+  const mean=306.0206038135593;assert(Math.abs(total/count-mean)<1.5,`${setting}: ${total/count} vs ${mean}`);
  }
  assert(sawWeak>0&&sawStrong>0);
 });
@@ -48,7 +47,7 @@ test('BUG-002: reported ordinary duo mean matches the actual queued-stock engine
   let expected=0,lo=0;
   for(let i=0;i<weights.length;i++){
    const pick=(lo+weights[i]/2)/total;lo+=weights[i];
-   for(const [role,p]of Object.entries(a.roleProbabilities(setting))){
+   for(const [role,p]of Object.entries(a.initialRoleProbabilities(setting))){
     if(!p)continue;
     let calls=0,flow={...a.enter({setting},()=>.99),remaining:'0',queuedZones:['kushuri_nito']};
     const rng=()=>calls++===0?pick:.5;
@@ -58,9 +57,9 @@ test('BUG-002: reported ordinary duo mean matches the actual queued-stock engine
   }
   const reported=NovaBalance.zoneMean('kushuri_nito',{setting});
   if(Math.abs(reported-expected)>1e-9)mismatches.push({setting,expected,reported});
-  const boost=a.initialBoostRules.values.reduce((sum,n,i)=>sum+n*a.initialBoostRules.weights[setting-1][i],0);
   const commonUnboosted=204.14706920903956;
-  assert(Math.abs(NovaBalance.zoneMean('kushuri_nito',{setting,initialBoostActive:true})-(3*a.freshInitialBase(setting)+6.0206038135593225)*boost)<1e-9);
+  assert(Math.abs(NovaBalance.zoneMean('kushuri_nito',{setting,initialBoostActive:true})-306.0206038135593)<1e-9);
+  assert(Math.abs(NovaBalance.zoneMean('kushuri_nito',{setting,initialBoostActive:true,initialRuleVersion:20261027})-(3*a.previousFreshInitialBases[setting-1]+6.0206038135593225))<1e-9);
   for(const initialMultiplier of a.initialBoostRules.values){
    assert(Math.abs(NovaBalance.zoneMean('kushuri_nito',{setting,initialBoostActive:true,initialRuleVersion:0,initialMultiplier})-commonUnboosted*initialMultiplier)<1e-9);
    assert.equal(NovaBalance.zoneMean('kushuri_nito',{setting,initialMultiplier}),reported);
@@ -72,7 +71,7 @@ test('BUG-002: reported ordinary duo mean matches the actual queued-stock engine
 test('duo mean without a setting uses the same fallback quota weights as the actual draw',()=>{
  const {values,weights,games}=a.entryQuotaRules;
  const base=values.reduce((sum,pt,i)=>sum+pt*weights[i],0)/weights.reduce((sum,w)=>sum+w,0)/games;
- const expected=games*Object.entries(a.roleProbabilities()).reduce((sum,[role,p])=>sum+p*(a.initialRareAwards[role]??base),0);
+ const expected=games*Object.entries(a.initialRoleProbabilities()).reduce((sum,[role,p])=>sum+p*(a.initialRareAwards[role]??base),0);
  assert(Math.abs(NovaBalance.zoneMean('kushuri_nito')-expected)<1e-9);
 });
 

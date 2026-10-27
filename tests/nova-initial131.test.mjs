@@ -17,14 +17,14 @@ test('default unconfigured initial base has the original mean 200; configured se
  }
 });
 
-test('fresh bonus win waits exactly three paid games then seven, roulette and initial zone',()=>{
+test('fresh bonus win waits for a navigated start replay then seven, roulette and initial zone',()=>{
  let draws=0;let s=a.afterBonus({phase:'normal'},{setting:6},2,()=>{draws++;return .5;});
- assert.equal(draws,3);assert.equal(s.remaining,'0');assert.equal(s.entryQuota,'747');assert.equal(s.sets,'1');
- for(let g=0;g<3;g++){
-  assert.equal(s.initialWait,3-g);assert.equal(s.entryStage,'');assert.equal(s.zone,'');
-  s=a.step(reload(s),{setting:6},()=>.5).flow;
-  assert.equal(s.remaining,'0');assert.equal(s.entryQuota,'747');assert.equal(s.sets,'1');
- }
+ assert.equal(draws,3);assert.equal(s.remaining,'0');assert.equal(s.entryQuota,'300');assert.equal(s.sets,'1');
+ assert.equal(s.initialWait,0);assert.equal(s.initialPreparationVersion,a.preparationRules.version);assert.equal(s.entryStage,'');assert.equal(s.zone,'');
+ let preparation=a.step(reload(s),{setting:6},()=>.5,'BELL');s=preparation.flow;
+ assert.equal(preparation.initialPreparationStarted,false);assert.equal(s.initialStage,'wait');assert.equal(s.remaining,'0');assert.equal(s.entryQuota,'300');assert.equal(s.sets,'1');
+ preparation=a.step(reload(s),{setting:6},()=>.5,'START_REPLAY_RIGHT');s=preparation.flow;
+ assert.equal(preparation.initialPreparationStarted,true);assert.equal(preparation.prepStartOrder,'right');
  assert.equal(s.initialStage,'entry');assert.equal(s.entryStage,'seven');
  let t=a.step(reload(s),{},()=>.5);assert.equal(t.result,'BIG');assert.equal(t.zoneSpin,true);assert.equal(t.flow.entryStage,'roulette');
  t=a.step(reload(t.flow),{},()=>.5,'STRONG_NOVA');assert.equal(t.flow.entryStage,'confirmed');assert.equal(t.flow.rouletteTable,0);
@@ -55,7 +55,7 @@ test('loss, resume and legacy saves never trigger a fresh initial presentation o
  assert.equal(a.afterBonus({phase:'normal'},{},0,never).phase,'normal');
  const old=a.normalize({phase:'art',payoutVersion:1,burstVersion:2,remaining:'937',entryQuota:'1000',sets:'2'});
  assert.equal(old.initialStage,'');const restored=a.afterBonus(old,{},1,never);assert.equal(restored.remaining,'937');assert.equal(restored.sets,'3');assert.equal(restored.initialStage,'');
- const waiting=a.enterInitial({},()=>.5),resumed=a.afterBonus(waiting,{},2,never);assert.equal(resumed.initialWait,3);assert.equal(resumed.remaining,'0');assert.equal(resumed.sets,'2');assert.equal(resumed.entryQuota,'300');
+ const waiting=a.enterInitial({},()=>.5),resumed=a.afterBonus(waiting,{},2,never);assert.equal(resumed.initialWait,0);assert.equal(resumed.initialPreparationVersion,a.preparationRules.version);assert.equal(resumed.remaining,'0');assert.equal(resumed.sets,'2');assert.equal(resumed.entryQuota,'300');
 });
 
 test('ordinary special zones retain random success and independent awards',()=>{

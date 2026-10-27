@@ -33,9 +33,9 @@ test('AT high guarantee counts prelude games, pauses in roulette/zones and survi
  s=a.step(s,{setting:3},()=>0,'BELL').flow;assert.equal(s.remaining,'15');assert.equal(s.atHighLeft,1);assert.equal(s.sets,'0');assert.equal(s.entryStage,'roulette');
 });
 
-test('merged SUICA thinning miss grants no fixed zone or direct points but still pays 6pt',()=>{
+test('merged SUICA thinning miss grants no fixed zone or direct points but still pays 3pt',()=>{
  const seq=[.99,.99,.99,0,.999999,.99];const t=a.step(({...a.enter({},()=>.5),remaining:'150',entryQuota:'150'}),{setting:3},()=>seq.shift()??.99,'WEAK_SUICA');
- assert.equal(t.atOutcome.direct,0);assert.equal(t.flow.remaining,'144');assert(!t.atOutcome.fixed50);assert.equal(a.payout(t.result),6);
+ assert.equal(t.atOutcome.direct,0);assert.equal(t.flow.remaining,'147');assert(!t.atOutcome.fixed50);assert.equal(a.payout(t.result),3);
 });
 test('live normal path passes strong CZ options and preserves normalized AT state',()=>{
  const c=load(),html=readGameSource();
@@ -47,7 +47,9 @@ test('live normal path passes strong CZ options and preserves normalized AT stat
   if(vm.runInContext('!!pendingArtStep.czEntry',c))break;
   vm.runInContext('normalState.internal=pendingArtStep.normalInternal;',c);
  }
- assert.equal(vm.runInContext('pendingArtStep.flow.success',c),true);assert.equal(vm.runInContext('pendingArtStep.flow.winProbability',c),1);
+ assert.equal(vm.runInContext('pendingArtStep.flow.ruleVersion',c),2);assert.equal(vm.runInContext('pendingArtStep.flow.source',c),'rare');
+ assert.equal(vm.runInContext('pendingArtStep.flow.remaining',c),15);assert.equal(vm.runInContext('pendingArtStep.flow.success',c),false);
+ assert.equal(vm.runInContext('pendingArtStep.flow.finalGuarantee',c),true);assert.ok(vm.runInContext('pendingArtStep.flow.perGameChance',c)>0);
  assert.equal(f.normalize({...({...a.enter({},()=>.5),remaining:'150',entryQuota:'150'}),atHigh:true,atHighLeft:7}).atHighLeft,7);
 });
 test('old forced strong bell maps to ordinary bell in both engines',()=>{

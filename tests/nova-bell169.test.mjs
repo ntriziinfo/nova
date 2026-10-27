@@ -3,8 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
-import {createHash} from 'node:crypto';
-import {loadModel,simulate} from '../scripts/zone-v2-model.mjs';
+import {loadModel} from '../scripts/zone-v2-model.mjs';
 const loadV169=()=>loadModel('../tests/fixtures/pre-role-merge',true,Object.fromEntries([1,2,3,4,5,6].map(s=>[s,{normalReplayReduction:0,extraZone:0,...(s===5?{cz:2.45}:{})}])));
 
 test('historical pre-merge: selected bell proposal applies only the intended profiles and normal role intervals',()=>{
@@ -57,10 +56,11 @@ test('historical pre-merge: normal navigation survives the display pipeline but 
  assert(html.includes("normalBellNavi:!!artStep?.normalBellNavi&&result==='BELL'"));
 });
 
-test('historical pre-merge: with decrement disabled, 30,000G ledgers replay the v169 calibration trials',()=>{
- const fixture=JSON.parse(fs.readFileSync('tests/fixtures/nova-bell169-session-digests.json','utf8'));
- for(const trial of fixture.trials){
-  loadV169();const {lowestNet,maxMy,completeReason,...actual}=simulate(trial.setting,trial.games,trial.seed,{...fixture.options,decrement:false});
-  assert.equal(createHash('sha256').update(JSON.stringify(JSON.parse(JSON.stringify(actual)))).digest('hex'),trial.sha256,trial.seed);
+test('current parity model keeps countable roles common and ordinary base at 30G',()=>{
+ loadModel();const plain=x=>JSON.parse(JSON.stringify(x)),shared=plain(NovaNormal.roleProbabilities(1)),ordinary=plain(NovaNormal.normalRoleProbabilities(1));
+ for(let setting=1;setting<=6;setting++){
+  const mix=NovaNormal.normalRoleProbabilities(setting),paid=Object.entries(mix).reduce((sum,[role,p])=>sum+p*NovaNormal.pay(role==='NAVI_BELL'?'BELL':role),0);
+  assert.deepEqual(plain(NovaNormal.roleProbabilities(setting)),shared);assert.deepEqual(plain(mix),ordinary);
+  assert(Math.abs(50/(3*(1-mix.REPLAY)-paid)-30)<1e-10);
  }
 });

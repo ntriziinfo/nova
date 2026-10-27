@@ -1,15 +1,35 @@
 import test from 'node:test';import assert from 'node:assert/strict';import {loadModel} from '../scripts/zone-v2-model.mjs';
-test('AT4 award thinning applies only to weak roles and preserves strong-role awards',()=>{
- loadModel();const a=NovaArt;assert.deepEqual(a.weakAtAwardScales,[.076,.385,.190,.30,.20,.23]);
- for(let setting=1;setting<=6;setting++)for(const upper of [false,true])for(const role of ['WEAK_SUICA','WEAK_NOVA'])for(const [last,keep]of [[a.weakAtAwardScales[setting-1]-1e-9,true],[a.weakAtAwardScales[setting-1],false]]){
-  const draws=[.99,0,0,.99,last];const out=a.resolveAtRole({researchUpper:upper},role,setting,()=>{assert(draws.length);return draws.shift();});assert.equal(draws.length,0);assert.equal(out.direct,keep&&upper?50:0);assert.equal(out.zone,keep&&!upper?'sosuke':'');assert.equal(!!out.fixed50,keep&&!upper);
+test('weak roles keep a common six-percent response and setting-specific quality while strong-role awards remain independent',()=>{
+ loadModel();const a=NovaArt;assert.deepEqual(a.weakAtAwardScales,[1,1,1,1,1,1]);
+ const sequence=(...values)=>()=>values.shift()??.999999;
+ for(let setting=1;setting<=6;setting++)for(const upper of [false,true]){
+  const profile=NovaTuning.balanceProfile(setting),weights=a.weakQualityWeights(setting,upper);
+  assert.equal(a.weakAtResponseChance(setting,upper,false),profile.weakResponse);
+  assert.equal(a.weakAtResponseChance(setting,upper,true),profile.weakResponse*1.5);
+  assert.equal(a.drawWeakAtReward(setting,{upper},()=>profile.weakResponse).quality,-1);
+  const qualityOne=(weights[0]+weights[1]/2)/weights.reduce((sum,value)=>sum+value,0);
+  const kept=a.drawWeakAtReward(setting,{upper},sequence(0,qualityOne));
+  assert.equal(kept.direct,upper?50:0);assert.equal(kept.zone,upper?'':'sosuke');assert.equal(kept.fixed50,!upper);
  }
  for(let setting=1;setting<=6;setting++){const draws=[.1,0];const out=a.resolveAtRole({},'STRONG_NOVA',setting,()=>{assert(draws.length);return draws.shift();});assert.equal(out.fixed50,true);assert.equal(draws.length,0);}
 });
-test('setting 3 and 5 CZ improvements leaves fake, guaranteed, strong CZ and other settings intact',()=>{
- loadModel();const f=NovaFlow;for(let s=1;s<=6;s++)assert.equal(f.forSetting({},s).czChance,[.5504,.556,.68,.5792,.66,.6336][s-1]);
- assert.equal(f.forSetting({},5).strongChance,.7966);assert.equal(f.forSetting({czChance:0},5).czChance,0);assert.equal(f.forSetting({czChance:1},5).czChance,1);
- assert.equal(f.enterCZ(false,f.forSetting({},5),()=>.65999).success,true);assert.equal(f.enterCZ(false,f.forSetting({},5),()=>.66).success,false);
+test('game-entry CZ success follows the approved odd/even profile and preserves explicit overrides',()=>{
+ loadModel();const f=NovaFlow;
+ for(let setting=1;setting<=6;setting++){
+  const profile=NovaTuning.balanceProfile(setting),cfg=f.forSetting({},setting);
+  assert.equal(cfg.czChance,profile.gameCzSuccess);assert.equal(cfg.strongChance,profile.strongCzSuccess);
+  assert.equal(f.enterCZ(false,cfg,()=>profile.gameCzSuccess-1e-9,'game').success,true);
+  assert.equal(f.enterCZ(false,cfg,()=>profile.gameCzSuccess,'game').success,false);
+ }
+ assert.equal(f.forSetting({czChance:0},5).czChance,0);assert.equal(f.forSetting({czChance:1},5).czChance,1);
 });
 
-test('setting 3 CZ threshold preserves fake and guaranteed overrides',()=>{loadModel();const f=NovaFlow;assert.equal(f.enterCZ(false,f.forSetting({},3),()=>.679999).success,true);assert.equal(f.enterCZ(false,f.forSetting({},3),()=>.68).success,false);assert.equal(f.forSetting({czChance:0},3).czChance,0);assert.equal(f.forSetting({czChance:1},3).czChance,1);assert.equal(f.forSetting({},3).strongChance,.7794);});
+test('rare-entry CZ targets and strong targets are wired to the same setting profile',()=>{
+ loadModel();const f=NovaFlow;
+ for(let setting=1;setting<=6;setting++){
+  const profile=NovaTuning.balanceProfile(setting),cfg=f.forSetting({},setting),rare=f.enterCZ(false,cfg,()=>.999999,'rare'),strong=f.enterCZ(true,cfg,()=>.999999,'rare');
+  assert.equal(f.rareTargets[setting-1],profile.rareCzSuccess);assert.equal(f.strongRareTargets[setting-1],profile.strongRareSuccess);
+  assert.equal(rare.targetProbability,profile.rareCzSuccess);assert.equal(strong.targetProbability,profile.strongRareSuccess);
+  assert.equal(rare.remaining,15);assert.equal(strong.remaining,15);
+ }
+});

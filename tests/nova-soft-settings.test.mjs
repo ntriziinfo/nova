@@ -2,14 +2,14 @@ import {readGameSource} from '../scripts/game-source.mjs';
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
 const ctx=vm.createContext({});for(const f of ['nova-tuning.js','nova-art.js','nova-balance.js','nova-flow.js','nova-normal.js'])vm.runInContext(fs.readFileSync(f,'utf8'),ctx);
 const a=ctx.NovaArt,b=ctx.NovaBalance,n=ctx.NovaNormal;
-test('setting 6 has the approved stronger normal mix while every role samples its configured probability',()=>{
+test('all settings share the same visible normal role mix while every role samples its probability',()=>{
  const rows=[1,2,3,4,5,6].map(n.roleProbabilities);
  for(let setting=1;setting<=6;setting++){
-  const row=rows[setting-1];assert(Object.values(row).every(p=>p>=0&&p<=1));assert(Math.abs(Object.values(row).reduce((a,b)=>a+b,0)-1)<1e-12);
+  const row=rows[setting-1];assert.deepEqual(row,rows[2]);assert(Object.values(row).every(p=>p>=0&&p<=1));assert(Math.abs(Object.values(row).reduce((a,b)=>a+b,0)-1)<1e-12);
   const counts={};for(let i=0;i<100000;i++){const r=n.drawRole(setting,()=>(i+.5)/100000);counts[r]=(counts[r]||0)+1;}
   for(const [role,p]of Object.entries(row))assert(Math.abs((counts[role]||0)/100000-p)<.00002);
  }
- assert.equal(rows[5].REPLAY,.54);assert(rows[5].WEAK_SUICA>rows[4].WEAK_SUICA*1.3);assert(rows[5].WEAK_NOVA>rows[4].WEAK_NOVA*1.3);
+ assert.equal(rows[0].REPLAY,.469325);assert.equal(rows[0].WEAK_SUICA,.0248);assert.equal(rows[0].WEAK_NOVA,.0078125);
 });
 
 test('entry and zone differences stay small and all six zones remain possible',()=>{const ps=[1,2,3,4,5,6].map(b.profile);assert.ok(Math.max(...ps.map(p=>p.scale))/Math.min(...ps.map(p=>p.scale))<1.4);assert.ok(ps[0].directDenom/ps[5].directDenom>1 && ps[0].directDenom/ps[5].directDenom<2.5);for(const row of a.zoneWeights){assert.equal(row.reduce((s,x)=>s+x),100);assert.ok(row.every(x=>x>0));}for(let c=0;c<6;c++)assert.ok(Math.abs(a.zoneWeights[0][c]-a.zoneWeights[5][c])<=2.5);});
@@ -21,4 +21,4 @@ test('freeze bonus uses BIG payout target, no setting hint, no old PBB sound',()
  assert.match(h,/premiumChainEligible:false/);assert.doesNotMatch(h,/A_TYPE_PREMIUM_BIG_PAYOUT = 500/);
 });
 
-test('setting-specific ART rare rates preserve expected 4pt',()=>{for(let setting=1;setting<=6;setting++){const rare=a.defaults.rare*a.rareFactor(setting),bell=a.paidBellChance(rare,15,a.rareMean);assert.ok(bell>0&&bell<1);assert.ok(Math.abs((1-rare)*12*bell+rare*(a.rareMean-3)-4)<1e-12);}});
+test('common ART rare rates preserve expected 4pt',()=>{const base=a.roleProbabilities(3);for(let setting=1;setting<=6;setting++){assert.equal(a.rareFactor(setting),1);assert.deepEqual(a.roleProbabilities(setting),base);const rare=a.defaults.rare*a.rareFactor(setting),bell=a.paidBellChance(rare,15,a.rareMean);assert.ok(bell>0&&bell<1);assert.ok(Math.abs((1-rare)*12*bell+rare*(a.rareMean-3)-4)<1e-12);}});

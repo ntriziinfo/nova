@@ -7,10 +7,10 @@ import {loadModel} from '../scripts/zone-v2-model.mjs';
 import {xoshiro128} from '../scripts/zone-v2-rng.mjs';
 loadModel();const a=NovaArt;
 
-test('only secured-AT bonus stock odds change; first AT odds and bonus payouts stay identical',()=>{
+test('only secured-AT bonus stock odds use the setting profile; first AT odds and bonus payouts stay identical',()=>{
  for(let setting=1;setting<=6;setting++)for(const tier of ['normal','upper']){
   const before=a.bonusRoleProbabilities(setting,tier),stock=a.bonusRoleProbabilities(setting,tier,true),factor=a.bonusStockFactor(setting);
-  assert.ok(factor>0&&factor<1);
+  assert.equal(factor,NovaTuning.balanceProfile(setting).bonusStock);assert.ok(factor>0);
   assert.ok(Math.abs(1-(before.BELL/(before.BELL+before.NEBULA))**7-a.bonusRules[tier].atChance)<1e-12);
   assert.equal(stock.BELL,before.BELL);assert.equal(stock.REPLAY,before.REPLAY);
   assert.equal(stock.NEBULA,before.NEBULA*factor);

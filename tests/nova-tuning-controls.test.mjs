@@ -1,8 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import fs from 'node:fs';
-import {createHash} from 'node:crypto';
-import {loadModel,simulate} from '../scripts/zone-v2-model.mjs';
+import {loadModel} from '../scripts/zone-v2-model.mjs';
 import {xoshiro128} from '../scripts/zone-v2-rng.mjs';
 
 const bands=[{net:0,chance:.65},{net:4800,chance:.55},{net:7200,chance:.45},{net:9600,chance:.4}];
@@ -90,10 +88,12 @@ test('historical pre-merge: every setting uses configured base, replay, CZ, uppe
  }
 });
 
-test('historical pre-merge: with decrement disabled, setting 6 preserves the v167 30,000G fixture',()=>{
- const fixture=JSON.parse(fs.readFileSync('tests/fixtures/nova-v167-session-digests.json','utf8'));
- for(const trial of fixture.trials.filter(row=>row.setting===6)){
-  loadModel('../tests/fixtures/pre-role-merge',true,{6:{normalReplayReduction:0,extraZone:0}});const {lowestNet,maxMy,completeReason,...actual}=simulate(trial.setting,trial.games,trial.seed,{...fixture.options,decrement:false});
-  assert.equal(createHash('sha256').update(JSON.stringify(actual)).digest('hex'),trial.sha256);
+test('current parity controls keep normal bell frequency and visible roles common at base30',()=>{
+ loadModel();const plain=x=>JSON.parse(JSON.stringify(x)),shared=plain(NovaNormal.roleProbabilities(1)),ordinary=plain(NovaNormal.normalRoleProbabilities(1));
+ assert.deepEqual(Array.from(NovaTuning.normalBellDenominators),[230,230,230,230,230,230]);
+ for(let setting=1;setting<=6;setting++){
+  const mix=NovaNormal.normalRoleProbabilities(setting),paid=Object.entries(mix).reduce((sum,[role,p])=>sum+p*NovaNormal.pay(role==='NAVI_BELL'?'BELL':role),0);
+  assert.deepEqual(plain(NovaNormal.roleProbabilities(setting)),shared);assert.deepEqual(plain(mix),ordinary);assert.equal(NovaTuning.normalBase(setting),30);
+  assert(Math.abs(50/(3*(1-mix.REPLAY)-paid)-30)<1e-10);
  }
 });

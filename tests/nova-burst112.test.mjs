@@ -43,8 +43,8 @@ test('last-quota rare trigger waits for the already won zone and preserves award
 test('normal/CZ setting profile retains role lotteries alongside mode ceilings',()=>{
  loadModel();const a=NovaArt,n=NovaNormal,f=NovaFlow;
  for(let setting=1;setting<=6;setting++){
-  const cfg=f.forSetting({},setting);
-  assert(cfg.czChance>=.55&&cfg.czChance<=.64);assert(cfg.strongChance>=.77&&cfg.strongChance<=.82);
+  const cfg=f.forSetting({},setting),profile=NovaTuning.balanceProfile(setting);
+  assert.equal(cfg.czChance,profile.gameCzSuccess);assert.equal(cfg.strongChance,profile.strongCzSuccess);
   assert.equal(f.forSetting({strongChance:1},setting).strongChance,1);
   assert.equal(f.forSetting(cfg,setting).czChance,cfg.czChance);
   assert.equal(n.zoneRate({mode:'通常A',games:99},setting),0);

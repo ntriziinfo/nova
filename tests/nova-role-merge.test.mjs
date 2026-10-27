@@ -6,7 +6,7 @@ import {loadModel,simulate} from '../scripts/zone-v2-model.mjs';
 import {xoshiro128} from '../scripts/zone-v2-rng.mjs';
 const near=(a,b)=>assert(Math.abs(a-b)<1e-10,`${a} != ${b}`);
 const retired=['STRONG_SUICA','CHANCE_A','CHANCE_B'];
-test('all state role tables retire chance eyes and strong suika; AT realizes 4.5/7pt net',()=>{
+test('all state role tables retire chance eyes and strong suika; AT realizes the current net targets',()=>{
  loadModel();const a=NovaArt,n=NovaNormal;
  for(let setting=1;setting<=6;setting++){
   for(const row of [n.roleProbabilities(setting),n.normalRoleProbabilities(setting),a.preparationProbabilities(setting),a.comebackRoleProbabilities(setting),a.roleProbabilities(setting),a.roleProbabilities(setting,true)]){
@@ -15,7 +15,7 @@ test('all state role tables retire chance eyes and strong suika; AT realizes 4.5
   }
   for(const upper of [false,true]){
    const row=a.roleProbabilities(setting,upper);
-   near(Object.entries(row).reduce((s,[r,p])=>s+p*a.payout(r),0)-3*(1-row.REPLAY),upper?7:4.5);
+   near(Object.entries(row).reduce((s,[r,p])=>s+p*a.payout(r),0)-3*(1-row.REPLAY),upper?a.atNetRules.upper:a.atNetRules.normal);
    if(upper)assert.equal(row.BELL,0);else near(row.BELL,row.BELL15);
   }
   for(const tier of ['normal','upper']){const p=a.bonusRoleProbabilities(setting,tier);near(1-(p.BELL/(p.BELL+p.NEBULA))**7,a.bonusRules[tier].atChance);}
@@ -27,12 +27,14 @@ test('common rares share lotteries; strong NOVA preserves four base branches bef
  loadModel();const a=NovaArt,n=NovaNormal;
  for(let setting=1;setting<=6;setting++)for(const high of [false,true]){
   near(n.roleCzRate({level:high?'high':'low'},'WEAK_SUICA',setting),n.roleCzRate({level:high?'high':'low'},'WEAK_NOVA',setting));
+  near(a.weakAtResponseChance(setting,false,high),high?.09:.06);near(a.weakAtResponseChance(setting,true,high),high?.09:.06);
+  for(const upper of [false,true]){const weights=a.weakQualityWeights(setting,upper),start=upper?2:1;near(a.extraZoneChance(setting,'WEAK_SUICA',upper,high),a.weakAtResponseChance(setting,upper,high)*weights.slice(start).reduce((sum,value)=>sum+value,0)/weights.reduce((sum,value)=>sum+value,0));}
   for(let i=0;i<100;i++){
    const seed=`${setting}/${high}/${i}`,state={atHigh:high,atHighLeft:10};
    const left=a.resolveAtRole({...state},'WEAK_SUICA',setting,xoshiro128(seed));
    assert.deepEqual(left,a.resolveAtRole({...state},'WEAK_NOVA',setting,xoshiro128(seed)));
    const upper=a.resolveAtRole({...state,researchUpper:true},'WEAK_SUICA',setting,xoshiro128(seed));
-   assert([0,50].includes(upper.direct));assert(!upper.fixed50);near(left.direct,0);if(left.fixed50)near(upper.direct,50);near(a.extraZoneChance(setting,'WEAK_SUICA',true,high),([12,12,23,12,12,12][setting-1]/[1.7,4.25,2.5,4.5,3.2,4.85][setting-1])*a.extraZoneChance(setting,'WEAK_SUICA',false,high));
+   assert([0,10].includes(left.direct));assert([0,15,50].includes(upper.direct));assert(!upper.fixed50);assert([-1,0,1,2,3,4].includes(left.quality));assert([-1,0,1,2,3,4].includes(upper.quality));
   }
  }
  for(const [roll,direct,zone]of [[0,true,false],[.19999,true,false],[.2,false,true],[.39999,false,true],[.4,true,true],[.59999,true,true],[.6,false,false],[.99999,false,false]]){

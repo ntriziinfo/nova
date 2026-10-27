@@ -7,7 +7,7 @@ import {xoshiro128} from '../scripts/zone-v2-rng.mjs';
 test('new AT draws a base quota, multiplier and initial challenge once; resume and reload draw neither',()=>{
  loadModel();const a=NovaArt;let calls=0;const rng=()=>{calls++;return .99;};
  assert.equal(a.afterBonus({phase:'normal'},{},0,rng).phase,'normal');assert.equal(calls,0);
- const fresh=a.afterBonus({phase:'normal'},{},2,rng);assert.equal(calls,3);assert.equal(fresh.entryQuota,'300');assert.equal(fresh.remaining,'0');assert.equal(fresh.initialWait,3);assert.equal(fresh.sets,'1');assert.equal(fresh.setQuota,'200');
+ const fresh=a.afterBonus({phase:'normal'},{},2,rng);assert.equal(calls,3);assert.equal(fresh.entryQuota,'300');assert.equal(fresh.remaining,'0');assert.equal(fresh.initialWait,0);assert.equal(fresh.initialPreparationVersion,a.preparationRules.version);assert.equal(fresh.sets,'1');assert.equal(fresh.setQuota,'200');
  const saved=a.normalize(JSON.parse(JSON.stringify(fresh)));assert.deepEqual(saved,fresh);
  const resumed=a.afterBonus(saved,{},1,rng);assert.equal(calls,3);assert.equal(resumed.remaining,'0');assert.equal(resumed.sets,'2');assert.equal(resumed.entryQuota,'300');
  a.enterInitial({},rng);assert.equal(calls,6);
@@ -19,7 +19,7 @@ test('setting-dependent initial bases plus rare-role rewrites average 180 throug
   const weights=a.entryWeights[setting-1];assert(Math.abs(weights.reduce((x,y)=>x+y,0)-1)<1e-12);
   let offset=0,base=0;
   for(let i=0;i<weights.length;i++){assert(weights[i]>0);assert.equal(a.drawEntryQuota({setting},()=>offset+weights[i]/2),a.entryQuotaRules.values[i]);offset+=weights[i];base+=weights[i]*a.entryQuotaRules.values[i]/3;}
-  const mean=3*Object.entries(a.roleProbabilities(setting)).reduce((sum,[role,p])=>sum+p*(a.initialRareAwards[role]??base),0);
+  const mean=3*Object.entries(a.initialRoleProbabilities(setting)).reduce((sum,[role,p])=>sum+p*(a.initialRareAwards[role]??base),0);
   assert(Math.abs(mean-JSON.parse(fs.readFileSync('tests/fixtures/nova-role-merge-approved.json')).entryMeans[setting-1])<1e-9,setting+': '+mean);
  }
 });

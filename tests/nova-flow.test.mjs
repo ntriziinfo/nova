@@ -25,7 +25,8 @@ test('CZ consumes its selected number of subsequent games and persists success a
 });
 test('new AT reveals its initial quota, consumes actual payouts, then runs five comeback games',()=>{
  let state=flow.afterBonus(null,undefined,1,()=>.5);
- assert.equal(state.remaining,'0');assert.equal(state.initialWait,3);
+ assert.equal(state.remaining,'0');assert.equal(state.initialWait,0);assert.equal(state.initialPreparationVersion,context.NovaArt.preparationRules.version);
+ state=context.NovaArt.step(state,{},()=>.5,'START_REPLAY_MIDDLE').flow;
  for(let g=0;state.initialStage&&g<20;g++)state=context.NovaArt.step(state,{},()=>.5,'BELL').flow;
  assert.equal(state.initialStage,'');assert.equal(state.remaining,'300');
  for(let i=0;i<37;i++)state=context.NovaArt.step(state,{rare:0},()=>.99,'BELL').flow;
