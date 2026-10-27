@@ -586,7 +586,7 @@
   const AUTO_SPEED_MULTIPLIER = 2;
   const SPEED_MODE_MAX_SPINS_PER_SECOND = 10;
   const SPEED_MODE_MULTIPLIER = 3;
-  const COMPLETE_TRIAL_ENABLED = false;
+  const COMPLETE_TRIAL_ENABLED = true; // Live play only; simulations set their own uncapped policy.
   const SLUMP_MAX_HISTORY_POINTS = 20000;
   const SLUMP_MAX_DRAW_POINTS = 1400;
   let autoPlay = false;
@@ -812,7 +812,7 @@
   }
 
   const VERTEX_CONTROLLER_ENABLED = adminParams.get("controller") === "vertex";
-  settings={...NovaComplete.configure(settings,VERTEX_CONTROLLER_ENABLED,COMPLETE_TRIAL_ENABLED),completeEnabled:false};
+  settings=NovaComplete.configure(settings,VERTEX_CONTROLLER_ENABLED,COMPLETE_TRIAL_ENABLED);
   const VERTEX_STORE_ID = String(adminParams.get("storeId") || "").trim();
   const ADMIN_SERVER = (VERTEX_CONTROLLER_ENABLED ? adminParams.get("server") || "" : "").replace(/\/$/, "");
   let machineId = adminParams.get("machine") || bootMachineId;
@@ -3747,7 +3747,7 @@
       if(settings.smartslotBalanceVersion!==20261013){
         settings.novaArt={...NovaArt.defaults};settings.novaNormal={...NovaNormal.defaults};settings.novaFlow={...NovaFlow.defaults};settings.smartslotBalanceVersion=20261013;
       }
-      settings={...NovaComplete.configure(settings,VERTEX_CONTROLLER_ENABLED,COMPLETE_TRIAL_ENABLED),completeEnabled:false};
+      settings=NovaComplete.configure(settings,VERTEX_CONTROLLER_ENABLED,COMPLETE_TRIAL_ENABLED);
       settings.title = normalizeMachineTitle(settings.title);
       if(!SETTING[settings.setting]) settings.setting = 1;
       if(data?.stats) stats = {...stats, ...data.stats};
@@ -4067,15 +4067,15 @@
         movieVolume: settings.movieVolume,
         rogiMovieVolume: settings.rogiMovieVolume,
         audioMuted: settings.audioMuted,
-        completeEnabled:false,
-        completeBasis:'none',
-        completeMyLimitPt:0,
-        completeLimitPt:0
+        completeEnabled:true,
+        completeBasis:'my',
+        completeMyLimitPt:NovaComplete.myLimit(settings),
+        completeLimitPt:NovaComplete.myLimit(settings) // Admin transport field; gameplay net cap remains zero.
       },
       stats:{...adminStats, profit},
       normalState:{...normalState},
       session:{...session},
-      completeTrialState:{locked:false,lockedSetting:0,rescueActive:false,completeProfit:0},
+      completeTrialState:{...completeTrialState},
       runtimeState:runtimeStateForStorage(),
       resumeSettings:{...settings},
       capturedAt:Date.now(),
@@ -4200,7 +4200,14 @@
     setValue("rogiMovieVolume", nextSettings.rogiMovieVolume);
     if(nextSettings.audioMuted !== undefined) settings.audioMuted = !!nextSettings.audioMuted;
     readSettings();
-    settings={...NovaComplete.configure(settings,VERTEX_CONTROLLER_ENABLED,COMPLETE_TRIAL_ENABLED),completeEnabled:false};
+    const requestedLimit=nextSettings.completeMyLimitPt>0?nextSettings.completeMyLimitPt:nextSettings.completeLimitPt;
+    if(Number.isInteger(Number(requestedLimit))&&Number(requestedLimit)>0&&Number(requestedLimit)<=999999){
+      settings.completeMyLimitPt=Number(requestedLimit);
+      settings.completeLimitPt=0;
+    }
+    settings=NovaComplete.configure(settings,VERTEX_CONTROLLER_ENABLED,COMPLETE_TRIAL_ENABLED);
+    // A limit update never clears an already completed machine.
+    updateCompleteTrialState("admin");
     const saved=persistState();
     updateDisplay();
     log(saved ? "管理画面から設定を更新・保存" : "管理画面から設定を更新しましたが、保存できませんでした");
@@ -4285,7 +4292,12 @@
     adminCommandPollTimer = setTimeout(pollAdminCommands, 0);
   }
 
-  function applyStoreCompleteSettings(_controls){return false;}
+  function applyStoreCompleteSettings(controls){
+    const limit=Number(controls?.completeMyLimitPt)>0?Number(controls.completeMyLimitPt):Number(controls?.completeLimitPt);
+    if(!Number.isInteger(limit)||limit<1||limit>999999||limit===NovaComplete.myLimit(settings))return false;
+    applyAdminSettings({completeMyLimitPt:limit});
+    return true;
+  }
 
   // The host only wakes the authenticated server poll; it cannot supply commands.
   window.addEventListener("message", event=>{
