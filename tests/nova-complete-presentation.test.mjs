@@ -55,3 +55,14 @@ test('completion stops fast players before announcing; later result/effect sound
 test('missing audio never removes the terminal screen or unlocks play',()=>{
  const h=setup();h.c.playOneShotSound=()=>undefined;h.setProfit(10000);assert(h.c.updateCompleteTrialState());assert(!h.root().hidden);assert(h.c.isCompleteTrialLocked());
 });
+
+
+test('manual COMPLETE lever repeats voice while blocking BET and all gameplay',async()=>{
+ const h=setup(),c=h.c;c.completeTrialState={locked:true};c.canUsePlayState=()=>true;c.autoPlay=false;
+ const prefix=source.slice(source.indexOf('  async function spin(options={}){'),source.indexOf('    if(NovaSortie.busy)return;',source.indexOf('  async function spin(options={}){')));
+ vm.runInContext(prefix+'throw Error("must never advance gameplay");}',c);
+ await c.spin();await c.spin();assert.equal(h.played.length,2);assert(c.isCompleteTrialLocked());
+ c.autoPlay=true;await c.spin();assert.equal(h.played.length,2);
+ c.autoPlay=false;c.canUsePlayState=()=>false;await c.spin();assert.equal(h.played.length,2);
+ assert.match(source,/spinButton.textContent = "COMPLETE";\s*spinButton.disabled = false/);
+});

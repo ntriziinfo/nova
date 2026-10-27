@@ -6087,7 +6087,7 @@
       spinButton.classList.toggle("stopReady", !sortieHold && isSpinning && canStopNow);
       if(isCompleteTrialLocked() && !isSpinning){
         spinButton.textContent = "COMPLETE";
-        spinButton.disabled = true;
+        spinButton.disabled = false; // Manual voice replay only; spin() still blocks gameplay.
         stopBtns.forEach(b=>b.disabled=true);
       }
     }
@@ -7501,6 +7501,10 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
   }
   async function spin(options={}){
     if(!canUsePlayState())return;
+    if(isCompleteTrialLocked()){
+      if(!autoPlay&&!speedToBonusActive&&!debugFastSpinActive)syncCompletePresentation(true);
+      return; // Audio only: no BET, RNG, or game progression.
+    }
     if(NovaSortie.busy)return;
     if(NovaLadder.busy||NovaAim.busy||NovaDirectAward.busy)return;
     if(NovaResults.editing)return;
