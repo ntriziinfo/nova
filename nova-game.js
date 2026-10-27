@@ -8502,7 +8502,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     if(!canUsePlayState())return;
     if(resolved?.stockEntry){finishStockEntry();return;}
     if(!isSpinning || !currentSpin || currentSpin.finishing || currentSpin.resolved!==resolved || !currentSpin.stopped.every(Boolean)) return;
-    if(NovaCzPresentation.wait(resolved,{setting:settings.setting,auto:!!(currentSpin.autoStopAtStart||currentSpin.speedModeAtStart||debugFastSpinActive),valid:()=>currentSpin?.resolved===resolved&&isSpinning&&canUsePlayState(),reveal:()=>{playCzConfirmedSound(resolved);maybeLightBonusAnnouncementForStop(3,currentSpin);finishSpin(result,resolved,lineRow);}}))return;
+    if(NovaCzPresentation.wait(resolved,{setting:settings.setting,auto:()=>!!(autoPlay||currentSpin?.speedModeAtStart||debugFastSpinActive),valid:()=>currentSpin?.resolved===resolved&&isSpinning&&canUsePlayState(),reveal:()=>{playCzConfirmedSound(resolved);maybeLightBonusAnnouncementForStop(3,currentSpin);finishSpin(result,resolved,lineRow);}}))return;
     if(typeof playZoneInternalConfirmedSound==='function'&&currentSpin?.stopped?.every(Boolean))playZoneInternalConfirmedSound(resolved);
     try{
     NovaBellNavi.clear();
@@ -8887,6 +8887,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
       clearRogiThirdStopHoldForNextGame();
     }
     if(isSpinning){
+      if(NovaCzPresentation.autoPress()){queueAutoStep(autoPollDelayMs());return;}
       requestAutoStopCurrentSpin();
       queueAutoStep(autoPollDelayMs());
       return;

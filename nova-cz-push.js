@@ -25,7 +25,8 @@ function variant(resolved,setting=1){
  return roll<.05*p/(1-p)?'red':'white';
 }
 function gold(resolved){return variant(resolved)==='gold';}
-let pendingPush=null;
+let pendingPush=null,pendingAuto=null;
+function autoPress(){return pendingAuto?.()||false;}
 function wait(resolved,{auto=false,setting=1,valid,reveal}){
  if(!resolved?.czLamp||resolved.czPushConfirmed||!(resolved.czCompleted||resolved.bonusHit||resolved.aTypeBonusReady))return false;
  let button=document.getElementById('novaCzPush');
@@ -34,13 +35,15 @@ function wait(resolved,{auto=false,setting=1,valid,reveal}){
  pendingPush=resolved;
  document.documentElement.classList.remove('novaCzFailed');
  button.className=variant(resolved,setting);button.hidden=false;button.disabled=false;
- let accepted=false;
+ let accepted=false,autoQueued=false;
+ const autoEnabled=()=>typeof auto==='function'?auto():auto;
  const accept=()=>{
   if(pendingPush!==resolved||accepted)return;
   if(!valid()||resolved.czPushConfirmed){button.hidden=true;return;}
   accepted=true;button.disabled=true;
   const complete=()=>{
    if(pendingPush!==resolved)return;
+   pendingAuto=null;
    document.documentElement.classList.remove('novaCzFailed');button.hidden=true;
    if(!valid())return;
    resolved.czPushConfirmed=true;reveal();
@@ -52,8 +55,16 @@ function wait(resolved,{auto=false,setting=1,valid,reveal}){
   // Keep the completed spin pending while the failure presentation fades out.
   setTimeout(complete,900);
  };
- button.onclick=accept;if(auto)setTimeout(accept,600);return true;
+ pendingAuto=()=>{
+  if(pendingPush!==resolved||!valid()||resolved.czPushConfirmed)return false;
+  if(accepted||autoQueued)return true;
+  if(!autoEnabled())return false;
+  autoQueued=true;
+  setTimeout(()=>{autoQueued=false;if(autoEnabled())accept();},600);
+  return true;
+ };
+ button.onclick=accept;autoPress();return true;
 }
-return {tiers,display,wait,gold,variant};
+return {tiers,display,wait,gold,variant,autoPress};
 
 })();
