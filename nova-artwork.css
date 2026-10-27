@@ -108,3 +108,9 @@ body[data-game-phase=bonus][data-bonus-tier=upper] .novaArtLayer .novaArtItem im
 @media(prefers-reduced-motion:reduce){
  #novaCzPush{animation:none;transform:none;filter:drop-shadow(0 0 6px var(--push-glow))}
 }
+/* CZ failure: dim the entire viewport, then restore it before the next BET. */
+.novaCzFailed body::after{content:"";position:fixed;inset:0;z-index:2147483647;pointer-events:none;background:#000;animation:novaCzFailureDim .9s ease-in-out both}
+#novaCzPush.failed{pointer-events:none;animation:novaCzPushFade .6s ease-out both}
+@keyframes novaCzPushFade{from{opacity:1;transform:scale(.94)}to{opacity:0;transform:scale(.88);filter:none}}
+@keyframes novaCzFailureDim{0%,100%{opacity:0}25%,75%{opacity:.65}}
+@media(prefers-reduced-motion:reduce){#novaCzPush.failed{animation:novaCzPushFade .6s linear both}}
