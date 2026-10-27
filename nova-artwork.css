@@ -92,3 +92,19 @@ body[data-game-phase=bonus][data-bonus-tier=upper] .novaArtLayer .novaArtItem im
 #novaCzPush.red{background-image:url('assets/ui/nova-push-red-20261027.png')}
 #novaCzPush.gold{background-image:url('assets/ui/nova-push-gold-20261027.png')}
 #novaCzPush:focus-visible{outline:3px solid #fff;outline-offset:4px}
+
+/* Pulse the alpha-edged PUSH artwork without changing the reveal timing. */
+#novaCzPush{
+ --push-glow:#fff;
+ transform-origin:center;
+ animation:novaPushPulse .8s ease-in-out infinite;
+}
+#novaCzPush.red{--push-glow:#ff263c}
+#novaCzPush.gold{--push-glow:#ffd34d}
+@keyframes novaPushPulse{
+ 0%,100%{transform:scale(.88);filter:drop-shadow(0 0 3px var(--push-glow)) drop-shadow(0 0 5px var(--push-glow))}
+ 50%{transform:scale(1);filter:drop-shadow(0 0 5px var(--push-glow)) drop-shadow(0 0 12px var(--push-glow))}
+}
+@media(prefers-reduced-motion:reduce){
+ #novaCzPush{animation:none;transform:none;filter:drop-shadow(0 0 6px var(--push-glow))}
+}
