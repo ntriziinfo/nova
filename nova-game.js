@@ -3241,6 +3241,7 @@
     for(const sound of oneShotSoundCache.values())sound.pause();
     for(const sound of aimWinAudios)sound.pause();
     oumaIntroAudio?.pause();oumaReverseAudio?.pause();
+    NovaCompletePresentation.setAudio(null); // Release cached audio before replay, not after playback starts.
     const playback=playOneShotSound(MODE_EVENT_VOICE_SRCS.complete,voiceOutputVolume(),{allowDuringPremiumConfirm:true});
     NovaCompletePresentation.setAudio(playback?.audio);
   }
