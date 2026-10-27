@@ -93,3 +93,6 @@ assets/media/nova/sortie-aim-*-20261027.mp4 -filter -diff -merge -text
 assets/symbols/gang-v3/blank-20261027.png -filter -diff -merge -text
 
 assets/ui/nova-push-gold-20261027.png -filter -diff -merge -text
+
+assets/ui/nova-push-white-20261027.png -filter -diff -merge -text
+assets/ui/nova-push-red-20261027.png -filter -diff -merge -text

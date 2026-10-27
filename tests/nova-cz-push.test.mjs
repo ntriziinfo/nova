@@ -19,3 +19,21 @@ assert(goldCount>900&&goldCount<1100, 'Gold should be approximately 1% of confir
 assert.equal(p.gold({czLamp:{success:true,timingSeed:1},czCompleted:true}),false);
 assert.equal(p.gold({czLamp:{},bonusHit:true}),false);
 console.log('Gold PUSH: '+goldCount+'/100000 wins; zero losses; stable after reload; outcomes unchanged.');
+const rates=[.27317164880616657,.2836866010598032,.31678578327216533,.30022044640396806,.326671511627907,.32773931366646597];
+for(let setting=1;setting<=6;setting++){
+ const win={white:0,big:0,gold:0,red:0},loss={white:0,big:0,gold:0,red:0};
+ for(let seed=0;seed<100000;seed++){
+  const r={czLamp:{timingSeed:seed},czCompleted:true,bonusHit:true};
+  win[p.variant(r,setting)]++;
+  loss[p.variant({...r,bonusHit:false},setting)]++;
+ }
+ assert(Math.abs(win.big/100000-.1)<.003);
+ assert(Math.abs(win.red/100000-.2)<.003);
+ assert.equal(loss.big+loss.gold,0);
+ const prior=rates[setting-1],confidence=prior*win.red/(prior*win.red+(1-prior)*loss.red);
+ assert(Math.abs(confidence-.8)<.006);
+ console.log('Setting '+setting+': red calibrated confidence '+(confidence*100).toFixed(2)+'%, big '+win.big+'/100000 wins');
+}
+const css=fs.readFileSync('nova-artwork.css','utf8');
+assert.match(css,/#novaCzPush\.big,#novaCzPush\.gold\{left:0%;top:12\.5%;width:100%;height:70%\}/);
+assert(!fs.readFileSync('nova-cz-push.js','utf8').includes('Math.random'));

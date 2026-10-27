@@ -86,6 +86,9 @@ body[data-game-phase=bonus][data-bonus-tier=upper] .novaArtLayer .novaArtItem im
 /* CZ: steady colored lamp backing; result stays behind PUSH. */
 #machine[data-cz-color=white]{--cz-color:#fff}#machine[data-cz-color=blue]{--cz-color:#458aff}#machine[data-cz-color=yellow]{--cz-color:#ffe544}#machine[data-cz-color=green]{--cz-color:#45f478}#machine[data-cz-color=red]{--cz-color:#ff3450}
 #machine .novaArtLayer[data-lamp=cz] .novaArtItem[data-cz-lit=true] img{filter:brightness(1.3) saturate(1.15) drop-shadow(0 0 12px var(--cz-color,#fff))}
-#novaCzPush{position:absolute;z-index:90;left:25%;top:30%;width:50%;height:35%;border:4px solid white;border-radius:18px;background:linear-gradient(#fff,#b7c0d2,#525d70);box-shadow:0 0 18px #c5d6ff;color:#172030;font:bold clamp(24px,5vw,60px) system-ui;pointer-events:auto}#novaCzPush[hidden]{display:none}
-
-#novaCzPush.gold{border:0;border-radius:0;background:transparent url('assets/ui/nova-push-gold-20261027.png') center/contain no-repeat;box-shadow:none;color:transparent;text-shadow:none}
+#novaCzPush{position:absolute;z-index:90;left:25%;top:30%;width:50%;height:35%;padding:0;border:0;border-radius:0;background:transparent url('assets/ui/nova-push-white-20261027.png') center/contain no-repeat;box-shadow:none;color:transparent;text-shadow:none;pointer-events:auto;cursor:pointer}
+#novaCzPush[hidden]{display:none}
+#novaCzPush.big,#novaCzPush.gold{left:0%;top:12.5%;width:100%;height:70%}
+#novaCzPush.red{background-image:url('assets/ui/nova-push-red-20261027.png')}
+#novaCzPush.gold{background-image:url('assets/ui/nova-push-gold-20261027.png')}
+#novaCzPush:focus-visible{outline:3px solid #fff;outline-offset:4px}
