@@ -62,3 +62,16 @@ test('presentation gate does not mutate gameplay, consume RNG, overwrite other r
  assert.equal(c.normalState.checkpointResultShown,2400);assert.equal(c.normalState.flow,flow);
  assert.equal(c.showCheckpointResultIfReady(true),false);assert.equal(calls,1);
 });
+
+
+test('display countdown survives rare-role prelude and stock without changing gameplay eligibility',()=>{
+ for(const upper of [false,true])for(const patch of [{atPrelude:{left:3}},{queuedZones:['sosuke']},{stock:'1'},{sets:'1'},{atPrelude:{left:2},queuedZones:['sora'],stock:'1'}]){
+  const flow=Object.freeze({...at(500),researchUpper:upper,...patch}),before=JSON.stringify(flow);
+  assert.equal(label(flow,{next:2400},2000,true).left,400);
+  assert.equal(label(flow,{next:2400},2000),null);
+  assert.equal(label({...flow,remaining:'499'},{next:2400},1999,true).left,401);
+  assert.equal(label({...flow,remaining:'399'},{next:2400},2000,true),null);
+  assert.equal(JSON.stringify(flow),before);
+ }
+ for(const patch of [{zone:'sora'},{entryStage:'seven'},{researchSortieLeft:10},{researchChallengeActive:true}])assert.equal(label({...at(500),...patch},{next:2400},2000,true),null);
+});

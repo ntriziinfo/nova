@@ -2725,7 +2725,7 @@
   }
 
   function normalModeLabel(){
-    const checkpoint=atCheckpointStatus(normalState.flow,NovaProgress.snapshot(),currentProfit());
+    const checkpoint=atCheckpointStatus(normalState.flow,NovaProgress.snapshot(),currentProfit(),true);
     if(checkpoint?.gold)return checkpoint.text;
     if(normalState.bonusPending){
       if(replayGatedBonusPreparation())return normalState.prepReady?"7を狙え":"ボーナス準備中 / 開始リプレイ待ち";
@@ -2735,15 +2735,17 @@
     return normalState.flow?.phase==='normal'?NovaNormal.normalLabel(normalState.internal):NovaSortie.label(NovaFlow.label(normalState.flow));
   }
 
-  function atCheckpointStatus(flow,progress,net){
+  function atCheckpointStatus(flow,progress,net,keepAwardCountdown=false){
     // Gold means the cumulative-net checkpoint is earned, never projected from remaining payout.
-    if(flow?.phase!=='art'||flow.zone||flow.entryStage||flow.initialStage||flow.atPrelude||flow.researchSortieLeft||flow.comebackLeft||flow.comebackConfirmed||flow.researchChallengeActive||flow.burstLeft)return null;
+    if(flow?.phase!=='art'||flow.zone||flow.entryStage||flow.initialStage||(!keepAwardCountdown&&flow.atPrelude)||flow.researchSortieLeft||flow.comebackLeft||flow.comebackConfirmed||flow.researchChallengeActive||flow.burstLeft)return null;
     const pending=Number(progress?.pending)>0 || (flow.burstPending&&flow.researchChallengeSource==='threshold');
     if(flow.burstPending&&flow.researchChallengeSource!=='threshold')return null;
     const next=Number(progress?.next),profit=Number(net);
     if(!Number.isFinite(next)||next<=0||!Number.isFinite(profit))return null;
     const left=pending?0:Math.ceil(Math.max(0,next-profit));
-    if(left>0&&!NovaArt.checkpointGuaranteed(flow,profit,next))return null;
+    // Display eligibility includes pending rare-role awards; gameplay/BGM keep their existing gates.
+    const guaranteed=keepAwardCountdown?profit+Number(flow.remaining||0)>=next:NovaArt.checkpointGuaranteed(flow,profit,next);
+    if(left>0&&!guaranteed)return null;
     return {text:`スーパーノヴァチャレンジまで${left.toLocaleString('ja-JP')}pt`,gold:true,left};
   }
 
@@ -5856,7 +5858,7 @@
 
   function renderRemainingCounters(){
     const spin=isSpinning?currentSpin:null;
-    NovaRemainingCounters.render(normalState.flow,{spin,checkpointStatus:atCheckpointStatus(normalState.flow,NovaProgress.snapshot(),currentProfit()),bonus:session.active,bonusRemaining:isATypeBonusActive()?aTypeBonusRemainingNet():undefined,bonusPending:normalState.bonusPending,
+    NovaRemainingCounters.render(normalState.flow,{spin,checkpointStatus:atCheckpointStatus(normalState.flow,NovaProgress.snapshot(),currentProfit(),true),bonus:session.active,bonusRemaining:isATypeBonusActive()?aTypeBonusRemainingNet():undefined,bonusPending:normalState.bonusPending,
       czPrelude:normalState.internal?.prelude?.presentation==='reel'&&!spin?.resolved?.czPrelude?.announce});
   }
 
@@ -5903,7 +5905,7 @@
     if($('novaInternalStatus'))$('novaInternalStatus').textContent='モード '+internal.mode+' / '+internal.games+'G（天井'+NovaNormal.ceiling(internal)+'G） / '+(internal.level==='high'?'高確（保証'+internal.highLeft+'G）':'低確')+ (normalState.flow?.phase==='art'?' / '+'AT '+(normalState.flow.atHigh?'高確（保証'+normalState.flow.atHighLeft+'G）':'低確'):'')+' / 穢れ'+internal.impurity+'pt / 特化予約 '+(session.active?(session.bonusZones||[]):(normalState.flow?.queuedZones||[])).map(z=>NovaArt.zoneName(z)).join('・');
     const flowStatus=$("novaFlowStatus");
     if(flowStatus){
-      const checkpointStatus=normalState.resultCard?.kind==='checkpoint'?{text:'スーパーノヴァチャレンジまで0pt',gold:true}:!session.active&&!normalState.bonusPending&&!normalState.resultCard&&!normalState.pendingZoneResult&&!normalState.ladderAwardPresentation&&!isCompleteTrialLocked()?atCheckpointStatus(normalState.flow,NovaProgress.snapshot(),profit):null;
+      const checkpointStatus=normalState.resultCard?.kind==='checkpoint'?{text:'スーパーノヴァチャレンジまで0pt',gold:true}:!session.active&&!normalState.bonusPending&&!normalState.resultCard&&!normalState.pendingZoneResult&&!normalState.ladderAwardPresentation&&!isCompleteTrialLocked()?atCheckpointStatus(normalState.flow,NovaProgress.snapshot(),profit,true):null;
       flowStatus.textContent=session.active ? aTypeBonusLabel(session.bonusKind)+" 残り"+aTypeBonusRemainingNet()+"pt / "+NovaArt.bonusStockLabel(session,normalState.flow) : checkpointStatus?.text||normalModeLabel();
       flowStatus.dataset.atCheckpoint=String(!!checkpointStatus?.gold);
       flowStatus.dataset.phase=session.active?"bonus":NovaFlow.normalize(normalState.flow).phase;
