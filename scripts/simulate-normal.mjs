@@ -20,7 +20,7 @@ export function simulate(setting,scale,games=1000000,seed=1234567,options={}){
   }
   bet();const claim=n.claim(state,freeze,rng);if(state.impurity===100)release++;state=flow.phase==='art'?claim.state:n.afterBonus(claim.state,rng,setting);claim.zones.push(...prep.zones);if(award.directZone)claim.zones.push(award.directZone);let sets=claim.sets+prep.sets+(award.direct?1:0);const tier=prep.upperBonus?'upper':a.drawBonusTier(rng);
   for(let bonusPaid=0;bonusPaid<a.bonusTarget(kind);){const r=a.drawBonus(rng,setting,tier,flow.phase==='art'||sets>0),pay=a.bonusPayout({paid:bonusPaid},r);bonusPaid+=pay;const feeBefore=fee;bet();bonusFee+=fee-feeBefore;paid+=pay;replay=r==='REPLAY';bonusG++;bonusP+=pay;track();if(r==='NEBULA')sets++;}
-  const beforeResume=flow;flow=a.afterBonus(flow,c,sets,rng);if(prep.upperAt&&flow.phase==='art')flow={...flow,researchUpper:true,burstWon:true,dryEligible:false};state=n.bonusEnd(state,kind,flow);state=n.afterArt(state,beforeResume,flow,{},rng);if(flow.phase==='art'&&claim.zones.length){flow.queuedZones.push(...claim.zones);if(!flow.zone&&!flow.initialStage)flow=a.startZone(flow,flow.queuedZones.shift(),{...c,allowUra:true},rng);}
+  const beforeResume=flow;flow=a.afterBonus(flow,c,sets,rng);if(prep.upperAt&&flow.phase==='art')flow={...flow,researchUpper:true,burstWon:true,dryEligible:false};state=n.bonusEnd(state,kind,flow,{setting});state=n.afterArt(state,beforeResume,flow,{setting},rng);if(flow.phase==='art'&&claim.zones.length){flow.queuedZones.push(...claim.zones);if(!flow.zone&&!flow.initialStage)flow=a.startZone(flow,flow.queuedZones.shift(),{...c,allowUra:true},rng);}
  }
  try{while(count<games){
   track();if(flow.phase==='art'&&artStart===null)artStart=paid-fee;else if(flow.phase!=='art')artStart=null;

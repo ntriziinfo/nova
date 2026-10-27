@@ -5,8 +5,8 @@ import {xoshiro128,xoshiro128State} from '../scripts/zone-v2-rng.mjs';
 loadModel();const a=NovaArt;
 const reload=s=>a.normalize(JSON.parse(JSON.stringify(s)));
 
-test('fresh initial roles stay common while every new entry is fixed at 300pt',()=>{
- const referenceRoles=[];
+test('fresh initial roles and 300pt plus alpha awards stay common across settings',()=>{
+ const referenceRoles=[],referenceAwards=[];
  for(let setting=1;setting<=6;setting++)for(let seed=0;seed<128;seed++){
   const rng=xoshiro128('common-initial-proof-'+seed),c={setting};let flow=a.enterInitial(c,()=>Math.max(.05,rng()));
   const actual={quota:flow.entryQuota,multiplier:flow.initialMultiplier,awards:[],roles:[]};
@@ -20,10 +20,11 @@ test('fresh initial roles stay common while every new entry is fixed at 300pt',(
   }
   assert.equal(actual.quota,'300');assert.equal(actual.multiplier,1);
   assert.deepEqual(actual.awards,actual.roles.map(role=>a.freshInitialAward(setting,role)));
-  assert.deepEqual(actual.awards,[100,100,100]);
-  if(setting===1)referenceRoles.push(actual.roles);else assert.deepEqual(actual.roles,referenceRoles[seed]);
+  assert(actual.awards.every(points=>[100,150,200].includes(points)));
+  assert(actual.awards.reduce((sum,n)=>sum+n,0)>=300);
+  if(setting===1){referenceRoles.push(actual.roles);referenceAwards.push(actual.awards);}else{assert.deepEqual(actual.roles,referenceRoles[seed]);assert.deepEqual(actual.awards,referenceAwards[seed]);}
  }
- for(let setting=1;setting<=6;setting++)assert.equal(NovaBalance.zoneMean('kushuri_nito',{setting,initialBoostActive:true}),300);
+ for(let setting=1;setting<=6;setting++)assert(Math.abs(NovaBalance.zoneMean('kushuri_nito',{setting,initialBoostActive:true})-306.0206038135593)<1e-9);
 });
 
 test('saved multipliers 3-5 and fixed initial plans remain earned; later duo stock is never boosted',()=>{
@@ -41,26 +42,15 @@ test('saved multipliers 3-5 and fixed initial plans remain earned; later duo sto
  assert.equal(a.drawEntryQuota({setting:6},()=>.5,true),300);
 });
 
-test('adopted weak zone chances use setting and upper state, then apply the approved retention',()=>{
- const scales=[.15,.15,.15,.18,.3,.3];
+test('weak zone chances are derived from the common response and each setting quality profile',()=>{
  for(let setting=1;setting<=6;setting++){
-  NovaDecrement.reset(setting,xoshiro128State('common-zone-'+setting));
-  for(const low of [false,true]){
-   const saved=NovaDecrement.snapshot();saved.low=low;NovaDecrement.bind(saved,setting);
-   for(const upper of [false,true])for(const high of [false,true])for(const role of ['WEAK_SUICA','WEAK_NOVA'])for(const net of [-10000,0,4999,5000,5001,20000]){
-    const chance=(upper?[12,12,23,12,12,12][setting-1]:[1.7,4.25,2.5,4.5,3.2,4.85][setting-1])*(high?.25:.15)*scales[setting-1];assert.equal(a.extraZoneChance(setting,role,upper,high,net),chance);
-    for(const [roll,retained,expected] of [[chance-1e-9,a.weakAtAwardScales[setting-1]-1e-9,true],[chance-1e-9,a.weakAtAwardScales[setting-1],false],[chance,.999,false]]){
-     const draws=high?[.999,roll,...(roll<chance?[.5,retained]:[])]:[.999,.999,roll,...(roll<chance?[.5,retained]:[])];
-     const state={atHigh:high,atHighLeft:10,researchUpper:upper,remaining:'8000',sets:'2',queuedZones:['sora']};
-     const out=a.resolveAtRole(state,role,setting,()=>draws.shift()??.999,net);
-     assert.equal(!!out.zone,expected);
-     assert.equal(state.remaining,'8000');assert.equal(state.sets,'2');assert.deepEqual(state.queuedZones,['sora']);
-    }
-   }
+  const profile=NovaTuning.balanceProfile(setting);assert.equal(profile.weakResponse,.06);
+  for(const upper of [false,true])for(const high of [false,true]){
+   const weights=a.weakQualityWeights(setting,upper),total=weights.reduce((sum,value)=>sum+value,0),zoneStart=upper?2:1;
+   const expected=profile.weakResponse*(high?1.5:1)*weights.slice(zoneStart).reduce((sum,value)=>sum+value,0)/total;
+   for(const role of ['WEAK_SUICA','WEAK_NOVA'])for(const net of [-10000,0,5000,20000])assert.equal(a.extraZoneChance(setting,role,upper,high,net),expected);
+   assert.equal(a.weakAtResponseChance(setting,upper,high),profile.weakResponse*(high?1.5:1));
   }
-  // Promotion on this role does not apply the high-rate lottery until a later role.
-  const draws=[0,.999,.4];const state={};
-  const out=a.resolveAtRole(state,'WEAK_NOVA',setting,()=>draws.shift()??.999);
-  assert(out.promoted);assert(state.atHigh);assert.equal(out.zone,'');
+  assert.equal(a.extraZoneChance(setting,'STRONG_NOVA'),0);
  }
 });

@@ -23,21 +23,21 @@ test('AT, bonus, preparation and zone draws do not read the normal lottery',()=>
  assert.deepEqual(trace(),before);
 });
 
-test('independent AT/bonus distributions normalize and retain the approved 4.5/7pt per game',()=>{
+test('independent AT/bonus distributions normalize and retain the current 4pt per game',()=>{
  const a=load().NovaArt;
  for(let setting=1;setting<=6;setting++)for(const upper of [false,true]){
   const row=a.roleProbabilities(setting,upper);
   assert.ok(Object.values(row).every(p=>p>=0&&p<=1));
   assert.ok(Math.abs(Object.values(row).reduce((s,p)=>s+p,0)-1)<1e-12);
   const net=Object.entries(row).reduce((sum,[role,p])=>sum+p*a.payout(role),0)-3*(1-row.REPLAY);
-  assert.ok(Math.abs(net-(upper?7:4.5))<1e-12);
+  assert.ok(Math.abs(net-(upper?a.atNetRules.upper:a.atNetRules.normal))<1e-12);
  }
  const actual={},random=rng();const N=200000;
  for(let i=0;i<N;i++){const role=a.step(a.normalize({payoutVersion:1,remaining:150}),{setting:3},random).result;actual[role]=(actual[role]||0)+1;}
  for(const [role,p]of Object.entries(a.roleProbabilities(3)))assert.ok(Math.abs((actual[role]||0)/N-p)<=6*Math.sqrt(p*(1-p)/N),role);
 });
 
-test('phase-specific roles retire chance eyes and setting 6 normal rare enhancement',()=>{const {NovaNormal:n,NovaArt:a}=load();for(let setting=1;setting<=6;setting++){for(const p of [n.roleProbabilities(setting),a.roleProbabilities(setting),a.preparationProbabilities(setting)]){assert.equal(p.STRONG_BELL,undefined);assert.equal(p.CHANCE_A||0,0);assert.equal(p.CHANCE_B||0,0);}assert.ok(Math.abs(n.roleProbabilities(setting).WEAK_NOVA-n.rareFactor(setting)/128*(setting===6?1.4:1))<1e-12);}});
+test('phase-specific roles retire chance eyes and normal visible roles are common',()=>{const {NovaNormal:n,NovaArt:a}=load(),shared=plain(n.roleProbabilities(1));for(let setting=1;setting<=6;setting++){for(const p of [n.roleProbabilities(setting),a.roleProbabilities(setting),a.preparationProbabilities(setting)]){assert.equal(p.STRONG_BELL,undefined);assert.equal(p.CHANCE_A||0,0);assert.equal(p.CHANCE_B||0,0);}assert.deepEqual(plain(n.roleProbabilities(setting)),shared);assert.equal(n.rareFactor(setting),1);assert.equal(n.roleProbabilities(setting).WEAK_NOVA,1/128);}});
 test('CZ rewrite uses the same threshold for suika and weak NOVA',()=>{const f=load().NovaFlow;assert.equal(f.rewriteRates.WEAK_SUICA,f.rewriteRates.WEAK_NOVA);for(const [role,p]of Object.entries(f.rewriteRates)){const loss={phase:'cz',remaining:10,totalGames:15,success:false,winProbability:.4};assert.equal(f.rewrite(loss,role,{},()=>p-1e-12).success,true);if(p<1)assert.equal(f.rewrite(loss,role,{},()=>p).success,false);}});
 
 test('live bonus preparation routes to its own lottery even when the normal draw is unavailable',()=>{

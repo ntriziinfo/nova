@@ -11,19 +11,18 @@ function load(){
 const sequence=(...values)=>{let index=0;return ()=>values[index++]??.999999999;};
 const plain=value=>JSON.parse(JSON.stringify(value));
 
-test('preparation table preserves rare and ordinary replay rates while adding three equal start replays',()=>{
- const a=load(),ordinary=[0.13311650015250695,0.13365326023376708,0.1341900203150272,0.1347267803962873,0.1352635404775474,0.1358003005588075],bells=[.3308423124428099,.3303230274123373,.32980374238186483,.3292844573513923,.32876517232091973,.32824588729044724],misses=[.1741518540713498,.17366237902056214,.1731729039697748,.1726834289189873,.17219395386819958,.17170447881741197],rare=[
-  [.025652,.00242,.000484],[.026076,.00246,.000492],[.026499999999999996,.0025,.0005],
-  [.026923999999999997,.00254,.000508],[.027348000000000004,.0025800000000000003,.0005160000000000001],[.027772,.0026200000000000004,.000524]
- ];
+test('preparation uses one common role table and three equal start replays',()=>{
+ const a=load(),ordinary=0.1341900203150272,bell=.33899124238186484,miss=.16398540396977482,rare=[.026499999999999996,.0025,.0005],common=plain(a.preparationProbabilities(3));
  assert.equal(a.preparationRules.version,20261027);
  assert.equal(a.preparationRules.startReplayChance,1/3);
  assert.equal(a.preparationRules.meanGames,3);
+ for(const [role,payout]of [['WEAK_SUICA',3],['WEAK_NOVA',2],['STRONG_NOVA',2]])assert.equal(a.preparationCashPayout(role),payout);
  for(let setting=1;setting<=6;setting++){
   const row=a.preparationProbabilities(setting);
-  assert.deepEqual([row.WEAK_SUICA,row.WEAK_NOVA,row.STRONG_NOVA],rare[setting-1]);
-  assert.equal(row.REPLAY,ordinary[setting-1]);
-  assert.equal(row.BELL,bells[setting-1]);assert.equal(row.MISS,misses[setting-1]);
+  assert.deepEqual(plain(row),common);
+  assert.deepEqual([row.WEAK_SUICA,row.WEAK_NOVA,row.STRONG_NOVA],rare);
+  assert.equal(row.REPLAY,ordinary);
+  assert.equal(row.BELL,bell);assert.equal(row.MISS,miss);
   for(const role of a.preparationRules.startReplayRoles)assert.equal(row[role],1/9);
   assert.ok(Object.values(row).every(probability=>probability>=0&&probability<=1));
   assert.ok(Math.abs(Object.values(row).reduce((sum,probability)=>sum+probability,0)-1)<1e-12);
@@ -67,9 +66,16 @@ test('bonus preparation independently draws upper BIG, upper AT and AT entitleme
 test('AT preparation awards only one existing-weight character-zone stock',()=>{
  const a=load(),weak=a.preparationRules.at.weakZone,strong=a.preparationRules.at.strongZone;
  assert.equal(weak,0.06594827586206897);assert.equal(strong,.25);
- assert.deepEqual(plain(a.drawAtPreparationReward('WEAK_SUICA',1,sequence(weak-1e-12,0))),{sets:0,zones:['sosuke']});
- assert.deepEqual(plain(a.drawAtPreparationReward('WEAK_NOVA',1,sequence(weak))),{sets:0,zones:[]});
- assert.deepEqual(plain(a.drawAtPreparationReward('STRONG_NOVA',1,sequence(strong-1e-12,.999999))),{sets:0,zones:['ura_ouma']});
+ for(let setting=1;setting<=6;setting++){
+  const factor=a.balanceFor(setting).preparationReward;
+  assert.equal(a.atPreparationZoneChance('WEAK_SUICA',setting),Math.min(1,weak*factor));
+  assert.equal(a.atPreparationZoneChance('WEAK_NOVA',setting),Math.min(1,weak*factor));
+  assert.equal(a.atPreparationZoneChance('STRONG_NOVA',setting),Math.min(1,strong*factor));
+ }
+ const weak1=a.atPreparationZoneChance('WEAK_SUICA',1),strong1=a.atPreparationZoneChance('STRONG_NOVA',1);
+ assert.deepEqual(plain(a.drawAtPreparationReward('WEAK_SUICA',1,sequence(weak1-1e-12,0))),{sets:0,zones:['sosuke']});
+ assert.deepEqual(plain(a.drawAtPreparationReward('WEAK_NOVA',1,sequence(weak1))),{sets:0,zones:[]});
+ assert.deepEqual(plain(a.drawAtPreparationReward('STRONG_NOVA',1,sequence(strong1-1e-12,.999999))),{sets:0,zones:['ura_ouma']});
  assert.deepEqual(plain(a.drawPreparation('STRONG_NOVA',1,sequence(0,0))),{sets:0,zones:['sosuke']});
 });
 

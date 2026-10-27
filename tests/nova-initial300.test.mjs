@@ -5,11 +5,11 @@ import {xoshiro128} from '../scripts/zone-v2-rng.mjs';
 const reload=(a,s)=>a.normalize(JSON.parse(JSON.stringify(s)));
 const start=(a,setting,rng)=>a.startZone({...a.enterInitial({setting},()=>.99),initialStage:'entry'},'kushuri_nito',{setting},rng);
 
-test('A plan preserves actual AT role frequencies while every new initial award stays at 100pt',()=>{
+test('A plan preserves actual AT role frequencies while new initial awards stay at 300pt plus rare-role additions',()=>{
  loadModel();const a=NovaArt;
  assert.deepEqual(a.freshInitialBases,[100,100,100,100,100,100]);
  assert.deepEqual(a.previousFreshInitialBases,[100,100,100,161,214,249]);
- assert.equal(a.freshInitialRules.version,2026102701);assert.equal(a.freshInitialRules.previousVersion,20261027);assert.equal(a.freshInitialRules.legacyVersion,20261007);
+ assert.equal(a.freshInitialRules.version,2026102702);assert.equal(a.freshInitialRules.fixedVersion,2026102701);assert.equal(a.freshInitialRules.previousVersion,20261027);assert.equal(a.freshInitialRules.legacyVersion,20261007);
  for(let setting=1;setting<=6;setting++){
   const roles=Object.entries(a.roleProbabilities(setting)).filter(([,p])=>p>0);let edge=0;
   const picks=roles.map(([role,p])=>{const pick=edge+p/2;edge+=p;return {role:role==='BELL15'?'BELL':role,p,pick};});
@@ -20,9 +20,9 @@ test('A plan preserves actual AT role frequencies while every new initial award 
    const points=plan.reduce((sum,role)=>sum+a.freshInitialAward(setting,role),0),prob=items.reduce((n,r)=>n*r.p,1);
    distribution[points]=(distribution[points]||0)+prob;mean+=points*prob;
   }
-  assert(Math.abs(mean-300)<1e-9);assert(Math.abs(Object.values(distribution).reduce((a,b)=>a+b,0)-1)<1e-12);
-  assert.deepEqual(Object.keys(distribution),['300']);
-  assert.equal(NovaBalance.zoneMean('kushuri_nito',{setting,initialBoostActive:true}),300);
+  assert(Math.abs(mean-306.0206038135593)<1e-9);assert(Math.abs(Object.values(distribution).reduce((a,b)=>a+b,0)-1)<1e-12);
+  assert.deepEqual(Object.keys(distribution),['300','350','400','450','500','550','600']);
+  assert(Math.abs(NovaBalance.zoneMean('kushuri_nito',{setting,initialBoostActive:true})-mean)<1e-9);
  }
 });
 
@@ -37,9 +37,9 @@ test('fresh entry keeps the approved RNG order and uses the saved model setting'
  let defended={...reload(a,s),initialMultiplier:5};
  for(let i=0;i<3;i++){
   const protectedStep=a.step(reload(a,defended),{setting:6},()=>.99,'STRONG_NOVA');
-  assert.equal(protectedStep.zoneAward,100);defended=protectedStep.flow;
+  assert.equal(protectedStep.zoneAward,200);defended=protectedStep.flow;
  }
- assert.equal(defended.remaining,'300');
+ assert.equal(defended.remaining,'600');
 });
 
 test('three sealed roles survive save/reload and match displayed awards without new role draws',()=>{
@@ -64,11 +64,14 @@ test('legacy awarded plans and multipliers keep their original weak/strong payou
  }
 });
 
-test('new entries stay at 100pt per role while both historical rule tables survive reloads',()=>{
+test('new entries add rare-role points while all historical rule tables survive reloads',()=>{
  loadModel();const a=NovaArt;
- assert(a.isFreshInitialRuleVersion(20261007));assert(a.isFreshInitialRuleVersion(20261027));assert(a.isFreshInitialRuleVersion(2026102701));assert(!a.isFreshInitialRuleVersion(0));
+ assert(a.isFreshInitialRuleVersion(20261007));assert(a.isFreshInitialRuleVersion(20261027));assert(a.isFreshInitialRuleVersion(2026102701));assert(a.isFreshInitialRuleVersion(2026102702));assert(!a.isFreshInitialRuleVersion(0));
  for(let setting=1;setting<=6;setting++){
-  for(const role of ['BELL','WEAK_NOVA','STRONG_NOVA'])assert.equal(a.freshInitialAward(setting,role),100);
+  assert.equal(a.freshInitialAward(setting,'BELL'),100);
+  assert.equal(a.freshInitialAward(setting,'WEAK_NOVA'),150);
+  assert.equal(a.freshInitialAward(setting,'STRONG_NOVA'),200);
+  for(const role of ['BELL','WEAK_NOVA','STRONG_NOVA'])assert.equal(a.freshInitialAward(setting,role,2026102701),100);
   const previousBase=a.previousFreshInitialBases[setting-1];
   assert.equal(a.freshInitialBase(setting,20261027),previousBase);
   assert.equal(a.freshInitialAward(setting,'BELL',20261027),previousBase);
@@ -79,6 +82,15 @@ test('new entries stay at 100pt per role while both historical rule tables survi
   assert.equal(a.freshInitialAward(setting,'WEAK_NOVA',20261007),150);
   assert.equal(a.freshInitialAward(setting,'STRONG_NOVA',20261007),200);
  }
+ let fixed=reload(a,{...a.enterInitial({setting:6},()=>.99),initialRuleVersion:2026102701,initialMultiplier:5,initialStage:'zone',zone:'kushuri_nito',initialRolePlan:['BELL','WEAK_NOVA','STRONG_NOVA'],initialPlan:[100,100,100],initialIndex:0,zoneLeft:3,award:'0',remaining:'0'});
+ for(const expected of [100,100,100]){
+  let calls=0;const out=a.step(reload(a,fixed),{setting:1},()=>{calls++;return .01;});
+  assert.equal(calls,0);assert.equal(out.zoneAward,expected);fixed=out.flow;
+ }
+ assert.equal(fixed.remaining,'300');
+ const pendingFixed=reload(a,{...a.enterInitial({setting:6},()=>.99),initialRuleVersion:2026102701,initialMultiplier:5,initialStage:'entry',initialRolePlan:[],initialPlan:[],remaining:'0'});
+ const sealedFixed=a.startZone(pendingFixed,'kushuri_nito',{setting:6},xoshiro128('saved-fixed-before-plan'));
+ assert.deepEqual(sealedFixed.initialPlan,[100,100,100]);assert.equal(sealedFixed.entryQuota,'300');
  let prior=reload(a,{...a.enterInitial({setting:6},()=>.99),initialRuleVersion:20261027,initialStage:'zone',zone:'kushuri_nito',initialRolePlan:['BELL','WEAK_NOVA','STRONG_NOVA'],initialPlan:[249,299,349],initialIndex:0,zoneLeft:3,award:'0',remaining:'0'});
  for(const expected of [249,299,349]){
   let calls=0;const out=a.step(reload(a,prior),{setting:1},()=>{calls++;return .01;});

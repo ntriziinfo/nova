@@ -90,7 +90,7 @@ export function simulate(setting,games,seed,options={}){
    const r=a.drawBonus(rng,setting,tier,flow.phase==='art'||sets>0),pay=a.bonusPayout?a.bonusPayout({paid:bonusPaid},r):n.pay(r);bonusPaid+=pay;const before=fee;bet('bonus');roleSortie(r,'bonus');bonusFee+=fee-before;paid+=pay+refund(r);replay=r==='REPLAY';bonusG++;bonusP+=pay+refund(r);track();if(r==='NEBULA'){sets++;nebula=true;}
   }
   bonusMetrics[tier].completed++;bonusMetrics[tier].nebulaWins+=nebula;
-  const before=flow;flow=a.afterBonus(flow,c,sets,rng);if(prep.upperAt&&flow.phase==='art')flow={...flow,researchUpper:true,burstWon:true,dryEligible:false};state=n.bonusEnd(state,kind,flow);state=n.afterArt(state,before,flow,{...options.normal,setting},rng);
+  const before=flow;flow=a.afterBonus(flow,c,sets,rng);if(prep.upperAt&&flow.phase==='art')flow={...flow,researchUpper:true,burstWon:true,dryEligible:false};state=n.bonusEnd(state,kind,flow,{...options.normal,setting});state=n.afterArt(state,before,flow,{...options.normal,setting},rng);
   if(before.phase!=='art'&&flow.phase==='art')counts.artEntries++;
   if(flow.phase==='art'&&claim.zones.length){flow.queuedZones.push(...claim.zones);if(!flow.zone&&!flow.initialStage){flow=a.startZone(flow,flow.queuedZones.shift(),{...c,allowUra:true},rng);zoneEntry(flow);}}
  }

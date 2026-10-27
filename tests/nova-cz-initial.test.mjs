@@ -5,7 +5,7 @@ loadModel();const a=NovaArt,n=NovaNormal;
 const reload=s=>a.normalize(JSON.parse(JSON.stringify(s)));
 const zone=s=>a.prepareBet({...s,initialStage:'entry',entryStage:'confirmed',pendingZone:'kushuri_nito'}, {setting:s.modelSetting},()=>.99);
 
-test('every setting awards exactly 100pt for each of the three fresh initial roles',()=>{
+test('every setting awards a 100pt base plus weak and strong rare-role additions',()=>{
  for(let setting=1;setting<=6;setting++){
   const expected=[1,0,0,0,0];
   assert.deepEqual(a.initialBoostRules.weights[setting-1],expected);let edge=0;
@@ -16,7 +16,7 @@ test('every setting awards exactly 100pt for each of the three fresh initial rol
    for(const role of ['BELL','WEAK_NOVA','STRONG_NOVA']){
     const r=a.step(reload(s),{setting},()=>.99,role);assert.equal(r.zoneAward,a.freshInitialAward(setting,role)*(i+1));s=r.flow;
    }
-   assert.equal(s.remaining,'300');assert.equal(s.initialBoostActive,false);assert.equal(s.initialStage,'');
+   assert.equal(s.remaining,String(['BELL','WEAK_NOVA','STRONG_NOVA'].reduce((sum,role)=>sum+a.freshInitialAward(setting,role),0)));assert.equal(s.initialBoostActive,false);assert.equal(s.initialStage,'');
    const again=a.step({...s,queuedZones:['kushuri_nito']},{setting},()=>.999999,'BELL');assert.equal(again.zoneAward,100);
    assert.equal(a.normalize({...fresh,comebackLeft:5}).initialBoostActive,false);
    edge+=expected[i];
@@ -35,15 +35,14 @@ test('initial upper-challenge route and legacy saves cannot boost later duo stoc
  assert.equal(s.remaining,'200');assert.equal(s.award,'200');
 });
 
-test('CZ entry factor is setting-specific after the cap; strong NOVA remains certain',()=>{
- assert.deepEqual(n.czEntryFactors,[0.5516519148129746,0.7208975984965829,0.6281660492320582,0.7979815623975144,0.44354968780320364,0.6129111430899589]);
- for(let setting=1;setting<=6;setting++){
-  for(const level of ['low','high']){
-   const p=n.roleCzRate({level},'WEAK_SUICA',setting);
-   assert(p>0&&p<=n.czEntryFactors[setting-1]);assert.equal(n.roleCzRate({level},'WEAK_NOVA',setting),p);
-   assert.equal(n.roleCzRate({level},'STRONG_NOVA',setting),1);assert.equal(n.roleCzRate({level},'BELL',setting),0);
+test('rare-role CZ entry uses the odd/even profile after the common capped lottery; strong NOVA remains certain',()=>{
+ for(const [level,options]of [['low',{}],['high',{}],['high',{highMultiplier:100}]]){
+  const reference=n.roleCzRate({level},'WEAK_SUICA',3,options)/NovaTuning.balanceProfile(3).rareCzEntry;
+  for(let setting=1;setting<=6;setting++){
+   const p=n.roleCzRate({level},'WEAK_SUICA',setting,options),expected=reference*NovaTuning.balanceProfile(setting).rareCzEntry;
+   assert.ok(Math.abs(p-expected)<1e-12,`${setting}/${level}`);assert.equal(n.roleCzRate({level},'WEAK_NOVA',setting,options),p);
+   assert.equal(n.roleCzRate({level},'STRONG_NOVA',setting,options),1);assert.equal(n.roleCzRate({level},'BELL',setting,options),0);
   }
-  // Large high multiplier must cap before applying the approved CZ factor.
-  assert.equal(n.roleCzRate({level:'high'},'WEAK_SUICA',setting,{highMultiplier:100}),.1*n.czEntryFactors[setting-1]);
  }
+ for(const odd of [1,3,5])assert.ok(n.roleCzRate({},'WEAK_SUICA',odd+1)>n.roleCzRate({},'WEAK_SUICA',odd));
 });

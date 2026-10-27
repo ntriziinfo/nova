@@ -1,16 +1,18 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
 function load(){const c=vm.createContext({});for(const f of ['nova-tuning.js','nova-art.js','nova-normal.js','nova-flow.js','nova-progress.js'])vm.runInContext(fs.readFileSync(f,'utf8'),c);return c;}
 const json=x=>JSON.parse(JSON.stringify(x));
-test('final normal bases and rare-inclusive initial means match all six settings',()=>{
+test('current visible roles are common, ordinary base is 30G, and fresh initial mean is common',()=>{
  const {NovaArt:a,NovaNormal:n,NovaTuning:t}=load();
+ const shared=json(n.roleProbabilities(1)),ordinary=json(n.normalRoleProbabilities(1));
  for(let s=1;s<=6;s++){
-  const p=n.roleProbabilities(s),pay=Object.entries(p).reduce((sum,[r,v])=>sum+v*n.pay(r),0);
-  assert(Object.values(p).every(v=>v>=0&&v<=1));assert(Math.abs(Object.values(p).reduce((sum,v)=>sum+v,0)-1)<1e-12);
-  assert(Math.abs(50/(3*(1-p.REPLAY)-pay)-JSON.parse(fs.readFileSync('tests/fixtures/nova-role-merge-approved.json')).sharedBases[s-1])<1e-9);
-  const weights=a.entryWeights[s-1],mean=weights.reduce((sum,w,i)=>sum+w*a.entryQuotaRules.values[i],0)/3;
-  const roles=a.roleProbabilities(s),awards=a.initialRareAwards;
-  const expected=3*Object.entries(roles).reduce((sum,[r,p])=>sum+p*(awards[r]||mean),0);
-  assert(Math.abs(expected-JSON.parse(fs.readFileSync('tests/fixtures/nova-role-merge-approved.json')).entryMeans[s-1])<1e-9);
+  const p=n.roleProbabilities(s),mix=n.normalRoleProbabilities(s);
+  assert.deepEqual(json(p),shared);assert.deepEqual(json(mix),ordinary);
+  assert(Object.values(mix).every(v=>v>=0&&v<=1));assert(Math.abs(Object.values(mix).reduce((sum,v)=>sum+v,0)-1)<1e-12);
+  const paid=Object.entries(mix).reduce((sum,[r,v])=>sum+v*n.pay(r==='NAVI_BELL'?'BELL':r),0);
+  assert(Math.abs(50/(3*(1-mix.REPLAY)-paid)-t.normalBase(s))<1e-9);assert.equal(t.normalBase(s),30);
+  const roles=a.roleProbabilities(s,false,5);
+  const expected=3*Object.entries(roles).reduce((sum,[r,p])=>sum+p*a.freshInitialAward(s,r==='BELL15'?'BELL':r),0);
+  assert(Math.abs(expected-306.0206038135593)<1e-9);
  }
 });
 test('sortie stock rates vary by setting, guarantee two and preserve quota',()=>{

@@ -15,7 +15,7 @@ test('final payout enters five recovery games immediately; only the fifth miss e
   const before=t.flow;t=a.step(before,{setting:1},()=>.999999,'MISS');
   assert.equal(t.comebackEvent,g===5?'failure':'continue');assert.equal(t.flow.phase,g===5?'normal':'art');
   if(g<5)assert.equal(t.flow.comebackLeft,5-g);
-  else {const end=n.afterArt(internal,before,t.flow,{setting:1},()=>0);assert.equal(end.games,0);assert.equal(end.impurity,12);assert.notEqual(end.mode,'通常A');}
+  else {const end=n.afterArt(internal,before,t.flow,{setting:1},()=>0),gain=n.config({}).atDryGain*NovaTuning.balanceProfile(1).failureRecovery;assert.equal(end.games,0);assert.equal(end.impurity,10+gain);assert.notEqual(end.mode,'通常A');}
  }
 });
 

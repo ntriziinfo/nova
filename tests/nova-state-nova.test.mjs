@@ -33,9 +33,9 @@ test('AT high guarantee counts prelude games, pauses in roulette/zones and survi
  s=a.step(s,{setting:3},()=>0,'BELL').flow;assert.equal(s.remaining,'15');assert.equal(s.atHighLeft,1);assert.equal(s.sets,'0');assert.equal(s.entryStage,'roulette');
 });
 
-test('merged SUICA thinning miss grants no fixed zone or direct points but still pays 6pt',()=>{
+test('merged SUICA thinning miss grants no fixed zone or direct points but still pays 3pt',()=>{
  const seq=[.99,.99,.99,0,.999999,.99];const t=a.step(({...a.enter({},()=>.5),remaining:'150',entryQuota:'150'}),{setting:3},()=>seq.shift()??.99,'WEAK_SUICA');
- assert.equal(t.atOutcome.direct,0);assert.equal(t.flow.remaining,'144');assert(!t.atOutcome.fixed50);assert.equal(a.payout(t.result),6);
+ assert.equal(t.atOutcome.direct,0);assert.equal(t.flow.remaining,'147');assert(!t.atOutcome.fixed50);assert.equal(a.payout(t.result),3);
 });
 test('live normal path passes strong CZ options and preserves normalized AT state',()=>{
  const c=load(),html=readGameSource();

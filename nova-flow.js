@@ -4,12 +4,19 @@ globalThis.NovaFlow = (() => {
   const defaults = Object.freeze({czGames:15,strongGames:15,czMaxGames:20,strongMaxGames:20,czChance:.4,strongChance:.7,czDenom:120,strongDenom:600});
   // Reproduce the measured final result of the former 15--20G pre-drawn CZ
   // with fifteen independent draws in a new rare-entry CZ.
-  const rareTargets=Object.freeze([.595418,.601155,.713047,.623316,.696176,.683866]);
+  // Odd settings are deliberately swingier; even settings receive the steadier
+  // CZ path.  The difference is explicit game character, not a hidden role-rate
+  // hint.  Every CZ still uses the same fixed fifteen games.
+  const rareTargets=Object.freeze([.58,.64,.62,.68,.66,.72]);
   const rarePerGameRates=Object.freeze(rareTargets.map(p=>1-Math.pow(1-p,1/15)));
+  // Once a rare-entry CZ has secured BIG, a separate thin lottery upgrades it
+  // to direct AT. Odd settings carry the wider tail; this is not the same draw
+  // as the basic CZ breakthrough.
+  const rareDirectPerGameRates=Object.freeze([.008,.006,.011,.007,.016,.010]);
   // Low-state strong-NOVA retains the former 85% + rare-rewrite result.
-  const strongRareTargets=Object.freeze([.865019423824826,.8652552092759034,.8654906024511747,.8657256039709306,.8659602144545306,.8705781861645872]);
+  const strongRareTargets=Object.freeze([.82,.84,.85,.87,.88,.90]);
   const strongRarePerGameRates=Object.freeze(strongRareTargets.map(p=>1-Math.pow(1-p,1/15)));
-  const gameRewriteRates=Object.freeze([.209755,.209752,.209748,.209744,.209741,.200384]);
+  const gameRewriteRates=Object.freeze([.20,.15,.22,.17,.24,.19]);
   const directZoneIds=Object.freeze(['toto','urapi','giru','sora','ouma','ura_giru','ura_sora','ura_ouma']);
   const rt = Object.freeze({games:50,replay:.6,bell:.3,miss:.1,netPerGame:1.2});
   const bounded=(value,fallback,min,max)=>Number.isFinite(Number(value))?Math.min(max,Math.max(min,Number(value))):fallback;
@@ -25,9 +32,9 @@ globalThis.NovaFlow = (() => {
   function forSetting(value={},setting){
     const cfg=config({...value,setting}),i=Math.max(0,Math.min(5,Math.round(Number(setting)||1)-1));
     // Keep explicit debug overrides and guaranteed/rare-CZ probabilities.
-    if(cfg.czChance===defaults.czChance)cfg.czChance=[.5504,.556,0.68,.5792,.66,.6336][i];
-    if(cfg.strongChance===defaults.strongChance)cfg.strongChance=[.7752,.778,.7794,.7896,.7966,.8168][i];
-    cfg.rewriteRates={WEAK_SUICA:[0.1782292065925642,0.1782292065925642,0.1782292065925642,0.17822920659256422,0.1782292065925642,0.17072897405726453][i],WEAK_NOVA:[0.1782292065925642,0.1782292065925642,0.1782292065925642,0.17822920659256422,0.1782292065925642,0.17072897405726453][i],STRONG_NOVA:1,...value.rewriteRates};
+    if(cfg.czChance===defaults.czChance)cfg.czChance=[.52,.60,.56,.64,.60,.68][i];
+    if(cfg.strongChance===defaults.strongChance)cfg.strongChance=[.74,.76,.78,.80,.82,.84][i];
+    cfg.rewriteRates={WEAK_SUICA:gameRewriteRates[i],WEAK_NOVA:gameRewriteRates[i],STRONG_NOVA:1,...value.rewriteRates};
     return cfg;
   }
   const rewriteRates=Object.freeze({WEAK_SUICA:0.1782292065925642,WEAK_NOVA:0.1782292065925642,STRONG_NOVA:1});
@@ -52,7 +59,8 @@ globalThis.NovaFlow = (() => {
     if(state.ruleVersion===currentRuleVersion){
       if(state.direct)return state;
       if(state.source==='rare'){
-        if(state.perGameChance>0&&random()<state.perGameChance)promote(state,random);
+        if(!state.success){if(state.perGameChance>0&&random()<state.perGameChance)promote(state,random);}
+        else if(!state.direct&&state.directPerGameChance>0&&random()<state.directPerGameChance)promote(state,random);
         // High-state strong NOVA guarantees only the first rung on the final
         // game. A second independent hit is still required for AT direct.
         if(state.finalGuarantee&&state.remaining===1&&!state.success){state.success=true;state.winProbability=1;}
@@ -188,7 +196,7 @@ globalThis.NovaFlow = (() => {
       totalGames:Math.max(remaining,Math.round(bounded(value?.totalGames,10,1,100))),
       lampRoll:Number.isFinite(value?.lampRoll)?bounded(value.lampRoll,0,0,.999999999):null,
       rainbowRoll:Number.isFinite(value?.rainbowRoll)?bounded(value.rainbowRoll,0,0,.999999999):null,
-      ...(modern?{ruleVersion:currentRuleVersion,source:['rare','game','background','debug','ceiling'].includes(value?.source)?value.source:'game',setting:Math.max(1,Math.min(6,Math.round(Number(value?.setting)||1))),targetProbability:bounded(value?.targetProbability,0,0,1),perGameChance:bounded(value?.perGameChance,0,0,1),finalGuarantee:!!value?.finalGuarantee,direct:!!value?.direct,directZone:directZoneIds.includes(value?.directZone)?value.directZone:''}:{})};
+      ...(modern?{ruleVersion:currentRuleVersion,source:['rare','game','background','debug','ceiling'].includes(value?.source)?value.source:'game',setting:Math.max(1,Math.min(6,Math.round(Number(value?.setting)||1))),targetProbability:bounded(value?.targetProbability,0,0,1),perGameChance:bounded(value?.perGameChance,0,0,1),directPerGameChance:bounded(value?.directPerGameChance,0,0,1),finalGuarantee:!!value?.finalGuarantee,direct:!!value?.direct,directZone:directZoneIds.includes(value?.directZone)?value.directZone:''}:{})};
   }
   function enterCZ(strong,options=defaults,random=Math.random,entrySource=''){
     options=options&&typeof options==='object'?options:{};
@@ -205,7 +213,7 @@ globalThis.NovaFlow = (() => {
           finalGuarantee=cfg.strongChance>=1;
         }else{target=rareTargets[i];perGameChance=rarePerGameRates[i];}
       }
-      return {phase:strong?'strong_cz':'cz',ruleVersion:currentRuleVersion,source,setting:cfg.setting,modeFake:isFake,modePending:isPending,modeChance:Number(options.modeChance)||0,remaining:15,totalGames:15,success:won,direct:false,directZone:'',targetProbability:isFake?0:target,perGameChance:isFake?0:perGameChance,finalGuarantee:isFake?false:finalGuarantee,winProbability:isFake?0:source==='rare'?(finalGuarantee?strongRareTargets[i]:target):source==='ceiling'?1:target,lampRoll:random(),rainbowRoll:random()};
+      return {phase:strong?'strong_cz':'cz',ruleVersion:currentRuleVersion,source,setting:cfg.setting,modeFake:isFake,modePending:isPending,modeChance:Number(options.modeChance)||0,remaining:15,totalGames:15,success:won,direct:false,directZone:'',targetProbability:isFake?0:target,perGameChance:isFake?0:perGameChance,directPerGameChance:isFake||strong?0:rareDirectPerGameRates[i],finalGuarantee:isFake?false:finalGuarantee,winProbability:isFake?0:source==='rare'?(finalGuarantee?strongRareTargets[i]:target):source==='ceiling'?1:target,lampRoll:random(),rainbowRoll:random()};
     }
     const success=random()<(strong?cfg.strongChance:cfg.czChance);
     const min=strong?cfg.strongGames:cfg.czGames,max=strong?cfg.strongMaxGames:cfg.czMaxGames;
@@ -233,5 +241,5 @@ globalThis.NovaFlow = (() => {
     return s.phase==='rt'?`RT 残り${s.remaining}G / 純増1.2pt`:
       s.phase==='cz'?`CZ 残り${s.remaining}G`:s.phase==='strong_cz'?`強CZ 残り${s.remaining}G`:'通常';
   }
-  return Object.freeze({currentRuleVersion,rareTargets,rarePerGameRates,strongRareTargets,strongRarePerGameRates,gameRewriteRates,directZoneIds,forSetting,defaults,rewriteRates,lampConfidence,lampWeights,drawLamp,lampAtStop,lampDisplayAtStop,lampCharacters,lampSeed,lampHints,lampHintForOrder,lampPresentation,lampOrder,directZone,rewrite,rt,config,normalize,enterCZ,afterBonus,advance,drawEntry,drawRT,label});
+  return Object.freeze({currentRuleVersion,rareTargets,rarePerGameRates,rareDirectPerGameRates,strongRareTargets,strongRarePerGameRates,gameRewriteRates,directZoneIds,forSetting,defaults,rewriteRates,lampConfidence,lampWeights,drawLamp,lampAtStop,lampDisplayAtStop,lampCharacters,lampSeed,lampHints,lampHintForOrder,lampPresentation,lampOrder,directZone,rewrite,rt,config,normalize,enterCZ,afterBonus,advance,drawEntry,drawRT,label});
 })();

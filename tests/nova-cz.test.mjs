@@ -23,7 +23,8 @@ test('last game rewrite awards success and does not add CZ failure impurity',()=
  assert.equal(t.czFlow.success,true);assert.equal(t.direct,false);assert.ok(t.internalBonus);
  assert.equal(t.state.impurity,0);
  const fail=n.spin({games:120},loss,1,{},()=>.99,'MISS');
- assert.equal(fail.direct,false);assert.equal(fail.internalBonus,null);assert.equal(fail.state.impurity,1);
+ const gain=n.config({}).czFailureGain*ctx.NovaTuning.balanceProfile(1).failureRecovery;
+ assert.equal(fail.direct,false);assert.equal(fail.internalBonus,null);assert.equal(fail.state.impurity,gain);
 });
 test('Bayes lamp weights reproduce all six final confidences for ordinary and strong CZ',()=>{
  for(const p of [.4,.7,.43,.775,.95]){

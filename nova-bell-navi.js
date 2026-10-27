@@ -90,7 +90,7 @@ globalThis.NovaBellNavi=(()=>{
   root.dataset.preview=String(!active&&previewing);
   const prep=!!preparationOrder(active);
   root.dataset.kind=signal?'rare':prep?'preparation':'bell';root.dataset.color=signal?.color||'yellow';
-  const signalLabel=signal?({green:'スイカ',purple:'チャンス目',red:'ノヴァ目'}[signal.color]+'対応 '+signal.mark):'';
+  const signalLabel=signal?({green:'スイカ',purple:'チャンス目',red:'チェリー／ノヴァ'}[signal.color]+'対応 '+signal.mark):'';
   root.setAttribute('aria-label',signalLabel||(prep?'開始リプレイ押し順ナビ':'ベル押し順ナビ'));
   if(root.hidden)return;
   const next=order?.find(i=>!stopped[i]);

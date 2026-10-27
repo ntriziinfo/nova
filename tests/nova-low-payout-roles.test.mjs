@@ -20,12 +20,15 @@ test('one-coin role is natural only in ordinary normal play and keeps base30 exa
   assert.equal(a.atShortfallRefund('ONE_COIN'),2);
   assert.equal(n.normalLowPayoutRules.oneCoinChance,.1);
   assert.equal(n.normalLowPayoutRules.addedNaviBellChance,1/16);
+  const shared=JSON.parse(JSON.stringify(n.roleProbabilities(1))),ordinary=JSON.parse(JSON.stringify(n.normalRoleProbabilities(1)));
   for(let setting=1;setting<=6;setting++){
     for(const row of [a.roleProbabilities(setting),a.roleProbabilities(setting,true),a.preparationProbabilities(setting),a.bonusRoleProbabilities(setting),a.comebackRoleProbabilities(setting),n.roleProbabilities(setting)]){
       assert.equal(Object.hasOwn(row,'ONE_COIN'),false);
       assert.equal(Object.hasOwn(row,'NAVI_BELL'),false);
     }
     const row=n.normalRoleProbabilities(setting);
+    assert.deepEqual(JSON.parse(JSON.stringify(n.roleProbabilities(setting))),shared);
+    assert.deepEqual(JSON.parse(JSON.stringify(row)),ordinary);
     assert.equal(row.ONE_COIN,.1);
     assert.equal(n.drawNormalRole(setting,()=>.95),'ONE_COIN');
     assert.ok(row.REPLAY>=1/7&&row.REPLAY<=1/5,`setting ${setting}: replay ${row.REPLAY}`);
@@ -35,22 +38,13 @@ test('one-coin role is natural only in ordinary normal play and keeps base30 exa
     assert.ok(Math.abs(paid-4/3)<1e-12,`setting ${setting}: paid ${paid}`);
     assert.ok(Math.abs(50/(3-paid)-30)<1e-10,`setting ${setting}: base ${50/(3-paid)}`);
 
-    const legacy={...n.roleProbabilities(setting)};
-    const formerNaviBell=1/t.normalBellDenominators[setting-1];
-    legacy.NAVI_BELL=formerNaviBell;
-    if(setting===6)legacy.BELL-=formerNaviBell;
-    else legacy.MISS=1-Object.entries(legacy).reduce((sum,[role,p])=>sum+(role==='MISS'?0:p),0);
-    const otherPaid=Object.entries(legacy).reduce((sum,[role,p])=>sum+p*(role==='NAVI_BELL'?8:n.pay(role)),0);
-    legacy.REPLAY=(3-50/t.normalBase(setting)-otherPaid)/3;
-    legacy.MISS=1-Object.entries(legacy).reduce((sum,[role,p])=>sum+(role==='MISS'?0:p),0);
     const added=n.normalLowPayoutRules.addedNaviBellChance;
     const one=n.normalLowPayoutRules.oneCoinChance;
-    assert.ok(Math.abs(row.NAVI_BELL-(legacy.NAVI_BELL+added))<1e-12);
-    assert.ok(Math.abs(row.REPLAY-(legacy.REPLAY-(one+8*added)/3))<1e-12);
-    assert.ok(Math.abs(row.MISS-(legacy.MISS+(-2*one+5*added)/3))<1e-12);
-    for(const role of Object.keys(legacy))if(!['REPLAY','MISS','NAVI_BELL'].includes(role))assert.equal(row[role],legacy[role],`${role} setting ${setting}`);
+    assert.ok(Math.abs(row.NAVI_BELL-(1/t.normalBellDenominators[setting-1]+added))<1e-12);
+    assert.equal(row.ONE_COIN,one);
+    for(const role of Object.keys(shared))if(!['REPLAY','MISS'].includes(role))assert.equal(row[role],shared[role],`${role} setting ${setting}`);
 
-    const entries=Object.entries(row).flatMap(([role,p])=>setting===6?(role==='BELL'?[['NAVI_BELL',row.NAVI_BELL],['BELL',p]]:role==='NAVI_BELL'?[]:[[role,p]]):[[role,p]]);
+    const entries=Object.entries(row);
     let lower=0;
     for(const [role,p] of entries){
       if(p===0)continue;
@@ -81,8 +75,7 @@ test('one-coin role preserves the former miss/replay high-state downgrade hazard
     const row=n.normalRoleProbabilities(setting),base={...n.roleProbabilities(setting)};
     const legacyNavi=1/t.normalBellDenominators[setting-1];
     base.NAVI_BELL=legacyNavi;
-    if(setting===6)base.BELL-=legacyNavi;
-    else base.MISS=1-Object.entries(base).reduce((sum,[role,p])=>sum+(role==='MISS'?0:p),0);
+    base.MISS=1-Object.entries(base).reduce((sum,[role,p])=>sum+(role==='MISS'?0:p),0);
     const otherPaid=Object.entries(base).reduce((sum,[role,p])=>sum+p*(role==='NAVI_BELL'?8:n.pay(role)),0);
     base.REPLAY=(3-50/t.normalBase(setting)-otherPaid)/3;
     base.MISS=1-Object.entries(base).reduce((sum,[role,p])=>sum+(role==='MISS'?0:p),0);

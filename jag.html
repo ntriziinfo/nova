@@ -55,7 +55,7 @@
 <link rel="stylesheet" href="nova-ladder-presentation.css?v=20260917-initial-131">
 <script src="nova-ladder-presentation.js?v=20261027-nova-bar-zone"></script>
 <link rel="stylesheet" href="nova-bell-navi.css?v=20261027-next-size">
-<script src="nova-bell-navi.js?v=20261027-middle-sortie-prep-v2"></script>
+<script src="nova-bell-navi.js?v=20261027-middle-sortie-prep-v2-suica3-cherry2-v1"></script>
 <script src="nova-sortie-presentation.js?v=20261027-60fps"></script>
 <script src="nova-stock-entry.js?v=20261027-blank-confidence"></script>
 <link rel="stylesheet" href="nova-initial-duo.css?v=20260928-duo-157">
@@ -66,15 +66,15 @@
 <link rel="stylesheet" href="nova-aim-presentation.css?v=20261012-super-challenge">
 <script src="nova-aim-confidence.js?v=20261027-red90"></script>
 <script src="nova-aim-presentation.js?v=20261027-big-scissors"></script>
-<script src="nova-tuning.js?v=20261013-smartslot"></script>
+<script src="nova-tuning.js?v=20261027-parity-v174"></script>
 <script src="nova-decrement.js?v=20261013-smartslot"></script>
-<script src="nova-art.js?v=20261027-uncapped-rtp-red90-prep-v2-lowroles-v1"></script>
+<script src="nova-art.js?v=20261027-uncapped-rtp-red90-prep-v2-lowroles-v1-suica3-cherry2-v1-initial-alpha-v1-parity-v174"></script>
 <script src="nova-complete.js?v=20261027-uncapped-rtp"></script>
 <link rel="stylesheet" href="nova-complete-presentation.css?v=20261012-complete-screen">
 <script src="nova-complete-presentation.js?v=20261012-complete-screen"></script>
-<script src="nova-balance.js?v=20261027-uncapped-rtp"></script>
-<script src="nova-normal.js?v=20261027-final-push-cz-prep-v2-onecoin-navibell-base30-v4"></script>
-<script src="nova-flow.js?v=20261027-cz-prep-v2"></script>
+<script src="nova-balance.js?v=20261027-parity-v174-100m"></script>
+<script src="nova-normal.js?v=20261027-final-push-cz-prep-v2-onecoin-navibell-base30-v4-suica3-cherry2-v1-parity-v174"></script>
+<script src="nova-flow.js?v=20261027-cz-prep-v2-parity-v174"></script>
 <link rel="stylesheet" href="nova-checkpoint-hint.css?v=20261013">
 <script src="nova-checkpoint-hint.js?v=20261013-parity"></script>
 <script src="nova-progress.js?v=20261013-checkpoint-cue"></script>
@@ -735,7 +735,7 @@
           <input id="bigAddInput" type="number" min="0" max="1000" step="1" value="50" readonly />
         </div>
         <div class="help">
-          通常BIG・上位BIGとも50pt。通常は白点滅、上位は赤点滅。ネビュラ揃いでATの1SET確定（新規ATの初期ptは300pt固定）。AT期待度は通常52%・上位80%（仮）。穢れ・フリーズ等のAT保証は別枠。
+          通常BIG・上位BIGとも50pt。通常は白点滅、上位は赤点滅。ネビュラ揃いでATの1SET確定（新規ATの初期ptは300pt＋レア役加算）。AT期待度は通常52%・上位80%（仮）。穢れ・フリーズ等のAT保証は別枠。
         </div>
       </div>
 
@@ -754,8 +754,8 @@
         <label>CZ 突入率 1/<input type="number" min="2" max="100000" data-flow-config="czDenom"></label>
         <label>強CZ 突入率 1/<input type="number" min="2" max="100000" data-flow-config="strongDenom"></label>
         <button type="button" id="saveFlowConfig">CZ設定を保存</button><output id="flowConfigStatus"></output>
-        <p>AT残ptは手取りで管理します。通常AT・上位ATの残pt消化中は、BET3ptを残ptへ戻し、払い出し分を減らします（8ptベルなら残ptは5pt減少）。リプレイは3ptを払い戻し、次のBETも3ptです。リプレイによる手取りと残ptの増減はありません。通常時のベースは全設定約30G/50pt。通常AT・上位AT中は純増4pt/G、BIGは50pt。リプレイの戻しはBIGの50pt消化に含めません。標準設定ではコンプリート・MYによる打ち切りを行いません。機械割欄は打ち切りなし10億G連続試算（設定2のみ3シード平均）の最終実測値です。CZ・通常・AT設定や打ち切り条件を変更した場合は「未試算（独自設定）」と表示します。</p></details>
-        <button class="subBtn" id="debugNovaPatternsBtn" type="button">ノヴァ目3段階を確認</button>
+        <p>AT残ptは手取りで管理します。通常AT・上位ATの残pt消化中は、BET3ptを残ptへ戻し、払い出し分を減らします（8ptベルなら残ptは5pt減少）。リプレイは3ptを払い戻し、次のBETも3ptです。リプレイによる手取りと残ptの増減はありません。通常時のベースは全設定約30G/50pt。通常AT・上位AT中は純増4pt/G、BIGは50pt。リプレイの戻しはBIGの50pt消化に含めません。標準設定ではコンプリート・MYによる打ち切りを行いません。機械割欄は初期300pt＋レア役加算と奇数荒波・偶数安定調整後の、打ち切りなし1億G連続試算（各設定1シード）です。有限試行の実測値であり、目標値そのものではありません。CZ・通常・AT設定や打ち切り条件を変更した場合は「未試算（独自設定）」と表示します。</p></details>
+        <button class="subBtn" id="debugNovaPatternsBtn" type="button">チェリー・ノヴァ（BAR）停止形を確認</button>
         <div class="field">
           <label>次回転の出目指定</label>
           <select id="forceResult">
@@ -868,13 +868,13 @@
 <script src="nova-spin-resume.js?v=20260929-spin-resume"></script>
 <script src="nova-play-access.js?v=20261001-save-recovery"></script>
 <script src="nova-history.js?v=20261001-history-performance"></script>
-<script src="nova-role-counter.js?v=20261014-role-counter"></script>
+<script src="nova-role-counter.js?v=20261014-role-counter-suica3-cherry2-v1"></script>
 <script src="nova-data-counter.js?v=20261015-mode-history"></script>
 <script src="nova-display-group.js?v=20261027-group"></script>
 <script src="nova-sortie-aim.js?v=20261027-sortie-lock"></script>
 <script src="nova-cz-push.js?v=20261027-push-variants"></script>
-<script src="nova-game.js?v=20261027-uncapped-rtp-push-variants-cz-prep-v2-onecoin-navibell-base30-v7"></script>
-<button type="button" id="novaSymbolPreviewOpen">ノヴァ目を確認</button>
-<dialog id="novaSymbolPreview"><h2>ノヴァ目</h2><label>出目<select id="novaPatternSelect"><option value="WEAK_NOVA">弱チェリー：左上段・下段</option><option value="STRONG_MIDDLE">強チェリー：右下がり</option><option value="STRONG_RIGHT">強チェリー：右上がり</option><option value="SUPER_NOVA" selected>ノヴァ（BAR）揃い</option></select></label><p id="novaPatternDescription"></p><div id="novaSymbolPreviewGrid"></div><p>出目の確認用です。通常時のスーパーはBIG・フリーズ各50%。ボーナス中は対象外。弱・強チェリーは従来の弱・強ノヴァ目と同じ抽選です。</p><button type="button" id="novaSymbolPreviewClose">閉じる</button></dialog>
+<script src="nova-game.js?v=20261027-uncapped-rtp-push-variants-cz-prep-v2-onecoin-navibell-base30-v7-suica3-cherry2-v1-initial-alpha-v1-parity-v174"></script>
+<button type="button" id="novaSymbolPreviewOpen">チェリー・ノヴァ（BAR）停止形を確認</button>
+<dialog id="novaSymbolPreview"><h2>チェリー・ノヴァ（BAR）停止形</h2><label>出目<select id="novaPatternSelect"><option value="WEAK_NOVA">弱チェリー：左上段・下段</option><option value="STRONG_MIDDLE">強チェリー：右下がり</option><option value="STRONG_RIGHT">強チェリー：右上がり</option><option value="SUPER_NOVA" selected>ノヴァ（BAR）揃い</option></select></label><p id="novaPatternDescription"></p><div id="novaSymbolPreviewGrid"></div><p>出目の確認用です。通常時のノヴァ（BAR）揃いはBIG・フリーズ各50%。ボーナス中は対象外。弱チェリー・強チェリーはそれぞれ既存の抽選を維持します。</p><button type="button" id="novaSymbolPreviewClose">閉じる</button></dialog>
 </body>
 </html>

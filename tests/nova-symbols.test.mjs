@@ -106,6 +106,22 @@ test('provisional one-coin stop uses one bell on the middle line and exact payou
   assert.equal(run(`normalRewardFor(${JSON.stringify(role)})`),payout);
  }
 });
+test('active rare labels and browser settlement keep the approved 3pt and 2pt payouts',()=>{
+ for(const [role,name,label,payout]of [
+  ['WEAK_SUICA','スイカ','スイカ',3],
+  ['WEAK_NOVA','弱チェリー','弱チェリー',2],
+  ['STRONG_NOVA','強チェリー','強チェリー',2]
+ ]){
+  assert.equal(run(`RESULT.${role}.name`),name);
+  assert.equal(run(`RESULT.${role}.label`),label);
+  assert.equal(run(`RESULT.${role}.kind`),'rare');
+  assert.equal(run(`normalRewardFor('${role}')`),payout);
+  run('normalState.flow=NovaFlow.normalize(null);pendingArtStep=null;');
+  assert.equal(run(`resolveNormalOutcome('${role}').reward`),payout);
+  run('session.paid=0;');
+  assert.equal(run(`resolveATypeBonusOutcome('${role}').reward`),payout);
+ }
+});
 test('bell pays 8 normally and caps the final BIG payout at the remaining 50pt target',()=>{
  assert.equal(run('normalRewardFor("BELL")'),8);
  assert.equal(run('resolveATypeBonusOutcome("BELL").reward'),8);
@@ -132,16 +148,16 @@ test('cherry strength uses left upper/lower and diagonal triple; middle-only lef
  assert.equal(run('novaPatternFromGrid([["x","x","x"],[CHERRY_SYMBOL,"x","x"],["x","x","x"]])'),'');
 });
 
-test('forced NOVA outcomes survive normalization and stop at the exact requested strength without payout',()=>{
- for(const result of ['WEAK_NOVA','STRONG_NOVA','SUPER_NOVA']){
+test('forced NOVA outcomes survive normalization, keep their strength and settle their exact payout',()=>{
+ for(const [result,payout] of [['WEAK_NOVA',2],['STRONG_NOVA',2],['SUPER_NOVA',0]]){
   assert.equal(run(`normalizeATypeResult('${result}')`),result);
   for(let i=0;i<40;i++){
    run(`globalThis.forcedGrid=buildNovaReelGrid('${result}');`);
    assert.equal(run('novaPatternFromGrid(forcedGrid)'),result);
    assert.equal(run('REEL_STRIPS.every((s,c)=>s.some((_,top)=>[0,1,2].every(r=>forcedGrid[r][c]===s[(top+r)%20])))'),true);
   }
-  assert.equal(run(`normalRewardFor('${result}')`),0);
-  assert.equal(run(`remaining=96;resolveATypeBonusOutcome('${result}').reward`),0);
+  assert.equal(run(`normalRewardFor('${result}')`),payout);
+  assert.equal(run(`remaining=96;session.paid=0;resolveATypeBonusOutcome('${result}').reward`),payout);
  }
 });
 test('Super NOVA retains one 50:50 BIG or premium-BIG outcome without using the sortie-freeze name',()=>{

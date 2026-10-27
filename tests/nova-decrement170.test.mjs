@@ -88,7 +88,10 @@ test('v170 tuning exactly replays pre-integration independent 30,000G trial ledg
  for(const expected of fixture.trials){
   loadModel('../tests/fixtures/pre-role-merge',true,Object.fromEntries([1,2,3,4,5,6].map(s=>[s,{normalReplayReduction:0,extraZone:0,...(s===5?{cz:2.45}:{})}])));
   const {lowestNet,maxMy,completeReason,...actual}=simulate(expected.setting,30000,expected.seed,{...fixture.options,decrementAudit:true});
-  assert.deepEqual(json(actual),expected,expected.seed);
+  assert.ok(actual.preparationMetrics);
+  for(const phase of ['bonus','at'])for(const key of ['entries','games','bet','paid'])assert.ok(Number.isFinite(actual.preparationMetrics[phase][key])&&actual.preparationMetrics[phase][key]>=0,`${expected.seed}/${phase}/${key}`);
+  const historical=json(actual);delete historical.preparationMetrics;
+  assert.deepEqual(historical,expected,expected.seed);
  }
 });
 

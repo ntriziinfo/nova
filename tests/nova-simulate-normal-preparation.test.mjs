@@ -55,3 +55,27 @@ test('legacy normal simulator keeps CZ direct additive to its BIG and uses repla
     Object.assign(globalThis,saved);
   }
 });
+
+test('legacy normal simulator settles watermelon and cherries with the production cash schedule',()=>{
+  const saved={NovaArt:globalThis.NovaArt,NovaNormal:globalThis.NovaNormal,NovaFlow:globalThis.NovaFlow};
+  let role='';
+  try{
+    globalThis.NovaArt={defaults:{},biasFor:()=>0,bonusSpecialFor:()=>0};
+    globalThis.NovaNormal={
+      reset:()=>({games:0}),normalize:value=>value,
+      pay:value=>({WEAK_SUICA:3,WEAK_NOVA:2,STRONG_NOVA:2})[value]||0,
+      spin:(state,flow)=>({state:{...state,games:(Number(state?.games)||0)+1},result:role,czFlow:flow,internalBonus:null,entry:'',direct:false})
+    };
+    globalThis.NovaFlow={advance:flow=>flow};
+    for(const [result,payout]of [['WEAK_SUICA',3],['WEAK_NOVA',2],['STRONG_NOVA',2]]){
+      role=result;
+      const settled=simulate(1,1,1,1234,{exactGames:true});
+      assert.equal(settled.games,1);
+      assert.equal(settled.totalBet,3);
+      assert.equal(settled.net,payout-3);
+      assert.equal(settled.rtp,payout/3);
+    }
+  }finally{
+    Object.assign(globalThis,saved);
+  }
+});

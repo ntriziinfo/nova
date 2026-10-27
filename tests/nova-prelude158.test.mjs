@@ -10,11 +10,11 @@ const reload=s=>JSON.parse(JSON.stringify(s));
 const base=()=>({...a.enter({},()=>.5),remaining:'500',burstUsed:true});
 
 test('AT hit and fake preludes last 3-5 games including the trigger, preserve saves and confirm only at 3 dark stops',()=>{
- for(const [roll,total]of [[.01,3],[.5,4],[.99,5]])for(const hit of [true,false]){
-  let s=base();
-  for(let g=1;g<=total;g++){
-   const draws=hit?[.99,.99,.25,.5,roll,roll]:[.99,.99,.99,.99,.99,roll,roll];
-   const t=a.step(reload(s),{setting:3},g===1?()=>draws.length?draws.shift():roll:()=>roll,g===1?(hit?'STRONG_NOVA':'WEAK_SUICA'):'REPLAY');
+ for(const total of [3,4,5])for(const hit of [true,false]){
+  let s={...base(),atPrelude:{total,left:total-1,zones:hit?['sosuke']:[]}};
+  assert.deepEqual(a.normalize(reload(s)).atPrelude,s.atPrelude);
+  for(let g=2;g<=total;g++){
+   const t=a.step(reload(s),{setting:3},()=>.99,'REPLAY');
    assert.equal(t.atPrelude.total,total);assert.equal(t.atPrelude.left,total-g);
    assert.equal(t.atPrelude.before,0);
    if(g<total){assert([1,2].includes(t.atPrelude.after));assert.equal(t.flow.entryStage,'');assert(t.flow.atPrelude);}
@@ -27,7 +27,7 @@ test('AT hit and fake preludes last 3-5 games including the trigger, preserve sa
 test('ongoing AT preludes keep extra wins, fixed Sosuke awards, burst reservations and zero remaining points',()=>{
  let s={...base(),remaining:'1',atPrelude:{total:4,left:3,zones:['sora']}};
  let t=a.step(s,{setting:3},()=>.25,'STRONG_NOVA');assert.equal(t.flow.atPrelude.zones.length,2);assert.equal(t.flow.atPrelude.left,2);
- t=a.step(reload(t.flow),{setting:3},(()=>{let v=[.99,.99,0,0,.1,.99];return ()=>v.shift()??.99;})(),'WEAK_SUICA');assert.equal(t.atOutcome.direct,0);assert(t.atOutcome.fixed50);assert.equal(t.flow.atPrelude.left,1);assert.equal(t.flow.entryStage,'');
+ t=a.step(reload(t.flow),{setting:3},(()=>{let v=[.99,.99,0,0,.69,.99];return ()=>v.shift()??.99;})(),'WEAK_SUICA');assert.equal(t.atOutcome.direct,0);assert(t.atOutcome.fixed50);assert.equal(t.flow.atPrelude.left,1);assert.equal(t.flow.entryStage,'');
  t=a.step(reload(t.flow),{setting:3},()=>.99,'BELL');assert.equal(t.flow.pendingZone,'sora');assert.equal(t.flow.queuedZones.length,2);assert(t.flow.queuedZones.includes('fixed50_sosuke'));assert.equal(t.atPrelude.after,3);
  s={...base(),remaining:'0',burstPending:true,atPrelude:{total:3,left:1,zones:['toto']}};
  t=a.step(s,{},()=>.99,'REPLAY');assert(t.atPrelude.confirmed);assert.equal(t.flow.entryStage,'seven');assert(t.flow.burstPending);
@@ -66,7 +66,7 @@ test('each landed reel darkens in the actual stop order, resets on BET, and uses
 test('a supplemental SUICA zone uses the ordinary reel prelude and then seven/roulette entry',()=>{
  loadModel();const engine=NovaArt;
  let s={...engine.enter({setting:3},()=>.5),remaining:'500',burstUsed:true};
- let t=engine.step(s,{setting:3},()=>.005,'WEAK_SUICA');
+ let values=[.99,.99,.99,0,.69,.01],t=engine.step(s,{setting:3},()=>values.shift()??.99,'WEAK_SUICA');
  assert(t.atOutcome.zone);assert.equal(t.atOutcome.direct,0);assert(t.atOutcome.fixed50);
  assert.equal(t.atPrelude.total,3);assert.equal(t.atPrelude.left,2);assert.equal(t.flow.entryStage,'');
  const zone=t.atOutcome.zone;s=reload(t.flow);

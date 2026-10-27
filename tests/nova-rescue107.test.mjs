@@ -10,15 +10,17 @@ test('ceiling rescue reaches cap before bonus claim',()=>{
  assert.equal(t.state.impurity,100);assert.equal(n.claim(t.state,false,()=>.5).sets,1);
 });
 test('bonus failure rescue remains; retired REG streaks no longer add points',()=>{
- let s=n.bonusEnd({regStreak:4},'MID',{phase:'normal'});assert.equal(s.impurity,2);assert.equal(s.regStreak,0);
- s=n.bonusEnd(n.normalize(JSON.parse(JSON.stringify(s))),'BIG',{phase:'normal'});assert.equal(s.impurity,4);
- s=n.bonusEnd(s,'BIG',{phase:'art'});assert.equal(s.impurity,4);assert.equal(s.regStreak,0);
+ const gain=n.config({}).bonusFailureGain*NovaTuning.balanceProfile(3).failureRecovery;
+ let s=n.bonusEnd({regStreak:4},'MID',{phase:'normal'});assert.equal(s.impurity,gain);assert.equal(s.regStreak,0);
+ s=n.bonusEnd(n.normalize(JSON.parse(JSON.stringify(s))),'BIG',{phase:'normal'});assert.equal(s.impurity,2*gain);
+ s=n.bonusEnd(s,'BIG',{phase:'art'});assert.equal(s.impurity,2*gain);assert.equal(s.regStreak,0);
 });
 test('only single initial AT without rewards gains dry rescue',()=>{
  const end=s=>{let before,g=0;while(s.phase==='art'&&g++<10000){before=s;s=a.step(s,{},()=>.99,s.initialStage==='wait'?'START_REPLAY_RIGHT':s.burstPending||s.researchChallengeActive?'MISS':'BELL').flow;}assert.notEqual(s.phase,'art','rescue fixture must finish even with challenge HOLD');return n.afterArt({},before,s).impurity;};
- assert.equal(end(a.afterBonus(null,{},1,()=>.5)),2);
+ const gain=n.config({}).atDryGain*NovaTuning.balanceProfile(3).failureRecovery;
+ assert.equal(end(a.afterBonus(null,{},1,()=>.5)),gain);
  assert.equal(end(a.afterBonus(null,{},2,()=>.5)),0);
  let s=a.step(a.enter(),{},()=>0,'WEAK_SUICA').flow;assert.equal(end(s),0);
  s=a.settleZone(a.startZone(a.enter(),'sosuke'));assert.equal(end(s),0);
- assert.equal(end(a.normalize(JSON.parse(JSON.stringify(a.enter())))),2);
+ assert.equal(end(a.normalize(JSON.parse(JSON.stringify(a.enter())))),gain);
 });

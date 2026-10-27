@@ -11,7 +11,8 @@ test('normal ceiling counter resets only after all five comeback games fail',()=
  assert.equal(after.comebackLeft,5);assert.equal(n.afterArt(normal,before,after).games,245);
  let prior=after;for(let g=0;g<5;g++){prior=after;after=a.step(after,{},()=>.99,'MISS').flow;}
  const state=n.afterArt(normal,prior,after,{},()=>0);
- assert.equal(state.games,0);assert.equal(state.mode,'A');assert.equal(state.impurity,80);assert.equal(state.level,'low');
+ const recovery=n.config({}).atDryGain*ctx.NovaTuning.balanceProfile(3).failureRecovery;
+ assert.equal(state.games,0);assert.equal(state.mode,'A');assert.equal(state.impurity,78+recovery);assert.equal(state.level,'low');
  assert.equal(n.spin(state,after,1,{scale:0},()=>.99,'MISS').state.games,1);assert.equal(normal.games,245);
 });
 

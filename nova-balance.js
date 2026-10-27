@@ -1,12 +1,13 @@
-/* Approved uncapped RTP balance: docs/uncapped-rtp-20261027.md. */
+/* Current parity-v174 RTP evidence: docs/parity-v174-rtp-20261027-100m.json. */
 globalThis.NovaBalance=(()=>{
  // Approved uncapped RTP targets; actual trial estimates are shown separately.
  const targets=[.94,.96,.98,1.03,1.10,1.15];
  const winTargets=[0.15,0.2,0.4,0.55,0.65,0.8],completeTargets=[null,null,null,null,null,null];
- // Final uncapped continuous estimates. Setting 2 uses three independent 1B-G
- // trajectories because its first 1B-G calibration landed outside tolerance.
- const measuredRtp=[0.9396542533333333,0.9596182694444444,0.9817126266666667,1.0299903946666666,1.100591445,1.151460911];
- const trialCounts=[1,3,1,1,1,1];
+ // Current 100M-G continuous estimates after applying the parity-v174
+ // odd-rough/even-steady profiles. These are measured values, not targets.
+ const measuredRtp=[0.94033741,0.9519764333333333,0.9813247433333333,1.0305694666666667,1.0974555166666667,1.1502366733333333];
+ const measuredRtpCi95=[[0.93757055,0.94310427],[0.94929709,0.95465577],[0.977585,0.98506449],[1.0282951,1.03284383],[1.09478145,1.10012959],[1.14710161,1.15337173]];
+ const trialCounts=[1,1,1,1,1,1];
  const normal=[[354.112628,570.311235,6.592194,128,7.464630],[335.340933,496.870459,6.554256,192,7.482946],[318.675842,391.096799,6.455407,124,7.452119],[295.728558,359.759320,6.248231,184,7.301746],[288.226978,283.780845,6.120643,120,7.250883],[276.519476,276.524590,5.897360,176,7.245667]];
  // Exact reward recursion: 50pt grid below the threshold, translation-invariant tail above it.
  function zoneMean(id,options={}){
@@ -31,7 +32,7 @@ globalThis.NovaBalance=(()=>{
    // use a saved multiplier if supplied, otherwise average its current draw.
    if(!options.initialBoostActive)return mean;
    const boosts=a.initialBoostRules;
-   const factor=version===a.freshInitialRules.version?1:boosts.values.includes(options.initialMultiplier)?options.initialMultiplier:boosts.values.reduce((sum,n,i)=>sum+n*boosts.weights[setting-1][i],0);
+   const factor=[a.freshInitialRules.version,a.freshInitialRules.fixedVersion].includes(version)?1:boosts.values.includes(options.initialMultiplier)?options.initialMultiplier:boosts.values.reduce((sum,n,i)=>sum+n*boosts.weights[setting-1][i],0);
    return mean*factor;
   }
   const a=NovaArt,c=a.config(options),s=a.startZone(a.enter({},()=>.5),id,{...c,setting:options.setting},()=>.5),r=a.zoneRules(s,c),limit=a.zoneTailControl.threshold;
@@ -84,7 +85,7 @@ globalThis.NovaBalance=(()=>{
  }
  const giruMean=(setting,ura=false)=>zoneMean(ura?'ura_giru':'giru',{setting});
  // Legacy denominator fields are informational; game lotteries use the core rules.
- function profile(setting){const i=Math.max(0,Math.min(5,Math.round(Number(setting)||1)-1)),scale=.21*(1+.12*NovaArt.settingBias[i]),trials=trialCounts[i];return {setting:i+1,target:targets[i],winTarget:winTargets[i],completeTarget:completeTargets[i],measuredRtp:measuredRtp[i],scale,directDenom:NovaArt.defaults['direct'+(i+1)]/scale,czDenom:120/scale,strongDenom:600/scale,verifiedModel:'uncapped-continuous-20261027-final-1b',verificationLabel:trials===1?'打ち切りなし10億G連続試算':`打ち切りなし10億G×${trials}シード試算`,trials,gamesPerTrial:1000000000,targetGamesPerTrial:1000000000,totalVerifiedGames:trials*1000000000,previousVerifiedModel:'mode-selection-20261014-10000g'};}
+ function profile(setting){const i=Math.max(0,Math.min(5,Math.round(Number(setting)||1)-1)),scale=.21*(1+.12*NovaArt.settingBias[i]),trials=trialCounts[i];return {setting:i+1,target:targets[i],winTarget:winTargets[i],completeTarget:completeTargets[i],measuredRtp:measuredRtp[i],measuredRtpCi95:measuredRtpCi95[i],scale,directDenom:NovaArt.defaults['direct'+(i+1)]/scale,czDenom:120/scale,strongDenom:600/scale,verifiedModel:'parity-v174-100m-20261027',verificationLabel:'奇数荒波・偶数安定／打ち切りなし1億G連続試算（1シード）',trials,gamesPerTrial:100000000,targetGamesPerTrial:100000000,totalVerifiedGames:trials*100000000,previousVerifiedModel:'nova-fixed300-alpha-100m-20261027-v1'};}
  const profiles=targets.map((_,i)=>profile(i+1));
  // Estimates describe the approved defaults, not user-edited lottery settings.
  function usesStandardSettings(settings={}){
