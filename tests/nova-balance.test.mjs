@@ -53,10 +53,12 @@ test('static page starts RTP fields in loading state and cache-busts current scr
  const html=fs.readFileSync('jag.html','utf8');
  assert.match(html,/id="targetRtpViewLegacy">読込中</);
  assert.match(html,/id="adminTargetRtpView">読込中</);
- for(const file of ['nova-art.js','nova-complete.js','nova-game.js'])assert.match(html,new RegExp(`${file.replace('.','\\.')}\\?v=20261027-uncapped-rtp`));
+ assert.match(html,/nova-art\.js\?v=[^"\s]*parity-v174/);
+ assert.match(html,/nova-complete\.js\?v=20261027-live-my/);
+ assert.match(html,/nova-game\.js\?v=[^"\s]*parity-v174/);
  assert.match(html,/nova-balance\.js\?v=20261027-parity-v174-100m/);
- assert.match(html,/標準設定ではコンプリート・MYによる打ち切りを行いません/);
- assert.match(html,/奇数荒波・偶数安定調整後の、打ち切りなし1億G連続試算（各設定1シード）/);
+ assert.match(html,/ライブ遊技はMY19,000ptを基準にコンプリート停止します/);
+ assert.match(html,/奇数荒波・偶数安定調整後の、コンプリート・MY打ち切りなし1億G連続試算（各設定1シード）/);
  assert.doesNotMatch(html,/予備試算|最終検証待ち/);
  assert.doesNotMatch(html,/累計差枚＋10,000ptでコンプリートとなり停止します/);
 });

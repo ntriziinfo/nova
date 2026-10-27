@@ -25,8 +25,46 @@ function variant(resolved,setting=1){
  return roll<.05*p/(1-p)?'red':'white';
 }
 function gold(resolved){return variant(resolved)==='gold';}
-let pendingPush=null;
-function wait(resolved,{auto=false,setting=1,valid,reveal}){if(!resolved?.czLamp||resolved.czPushConfirmed||!(resolved.czCompleted||resolved.bonusHit||resolved.aTypeBonusReady))return false;let button=document.getElementById('novaCzPush');if(!button){button=document.createElement('button');button.id='novaCzPush';button.type='button';button.textContent='PUSH';document.querySelector('.reelArea').append(button);}if(pendingPush===resolved)return true;pendingPush=resolved;button.className=variant(resolved,setting);button.hidden=false;const accept=()=>{if(pendingPush!==resolved)return;if(!valid()||resolved.czPushConfirmed){button.hidden=true;return;}resolved.czPushConfirmed=true;button.hidden=true;reveal();};button.onclick=accept;if(auto)setTimeout(accept,600);return true;}
-return {tiers,display,wait,gold,variant};
+let pendingPush=null,pendingAuto=null;
+function autoPress(){return pendingAuto?.()||false;}
+function wait(resolved,{auto=false,setting=1,valid,reveal}){
+ if(!resolved?.czLamp||resolved.czPushConfirmed||!(resolved.czCompleted||resolved.bonusHit||resolved.aTypeBonusReady))return false;
+ let button=document.getElementById('novaCzPush');
+ if(!button){button=document.createElement('button');button.id='novaCzPush';button.type='button';button.textContent='PUSH';document.querySelector('.reelArea').append(button);}
+ if(pendingPush===resolved)return true;
+ pendingPush=resolved;
+ document.documentElement.classList.remove('novaCzFailed');
+ button.className=variant(resolved,setting);button.hidden=false;button.disabled=false;
+ let accepted=false,autoQueued=false;
+ const autoEnabled=()=>typeof auto==='function'?auto():auto;
+ const accept=()=>{
+  if(pendingPush!==resolved||accepted)return;
+  if(!valid()||resolved.czPushConfirmed){button.hidden=true;return;}
+  accepted=true;button.disabled=true;
+  const complete=()=>{
+   if(pendingPush!==resolved)return;
+   pendingAuto=null;
+   document.documentElement.classList.remove('novaCzFailed');button.hidden=true;
+   if(!valid())return;
+   resolved.czPushConfirmed=true;reveal();
+  };
+  const won=!!(resolved.bonusHit||resolved.aTypeBonusReady||resolved.flowAfter?.phase==='art');
+  if(won){complete();return;}
+  document.documentElement.classList.add('novaCzFailed');
+  button.className+=' failed';
+  // Keep the completed spin pending while the failure presentation fades out.
+  setTimeout(complete,900);
+ };
+ pendingAuto=()=>{
+  if(pendingPush!==resolved||!valid()||resolved.czPushConfirmed)return false;
+  if(accepted||autoQueued)return true;
+  if(!autoEnabled())return false;
+  autoQueued=true;
+  setTimeout(()=>{autoQueued=false;if(autoEnabled())accept();},600);
+  return true;
+ };
+ button.onclick=accept;autoPress();return true;
+}
+return {tiers,display,wait,gold,variant,autoPress};
 
 })();

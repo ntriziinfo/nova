@@ -35,13 +35,13 @@ test('disabled policy unlocks a saved COMPLETE state and cannot immediately relo
  assert.equal(state.locked,false);
 });
 
-test('legacy callers keep the historical store and standalone policies when enabled is omitted',()=>{
+test('live store and standalone both use MY, including legacy net settings',()=>{
  const complete=loadComplete();
  const standalone=complete.configure({setting:1});
  const store=complete.configure({setting:2,completeMyLimitPt:12000},true);
  assert.equal(standalone.completeLimitPt,0);
  assert.equal(complete.myLimit(standalone),19000);
- assert.equal(store.completeBasis,'net');
- assert.equal(store.completeLimitPt,12000);
- assert.equal(complete.myLimit(store),0);
+ assert.equal(store.completeBasis,'my');
+ assert.equal(store.completeLimitPt,0);
+ assert.equal(complete.myLimit(store),12000);
 });

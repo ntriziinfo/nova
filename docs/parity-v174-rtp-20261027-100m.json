@@ -140,5 +140,5 @@
     "scripts/zone-v2-rng.mjs": "cf60c6990d63189943648553c06497440ecc7dbec8214a14a21939c35e589d8b",
     "scripts/report-rtp-parallel.mjs": "4026d29bee0985cfd8209650e6c705aef6c433105376da3d23d2842d32ca9fb7"
   },
-  "sourceHashNote": "Hashes identify the exact simulation inputs. After the run, nova-balance.js changed only to publish these measured RTP values, confidence intervals, labels, and evidence version; no game-lottery input changed."
+  "sourceHashNote": "Hashes identify the exact simulation inputs. After the run, nova-balance.js changed only to publish these measured RTP values, confidence intervals, labels, and evidence version. The later origin/main merge changed nova-complete.js only in its live configure() policy and comment; the simulation-used observe() path stayed byte-identical, and this run used zero limits with stopAtComplete=false. No simulated game-lottery input changed."
 }

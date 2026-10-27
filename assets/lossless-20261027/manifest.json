@@ -1,0 +1,74 @@
+[
+  {
+    "source": "assets/symbols/gang-v3/bar.png",
+    "target": "assets/lossless-20261027/bar.webp",
+    "before": 2252893,
+    "after": 1534460
+  },
+  {
+    "source": "assets/symbols/gang-v3/bell.png",
+    "target": "assets/lossless-20261027/bell.webp",
+    "before": 1598646,
+    "after": 1172806
+  },
+  {
+    "source": "assets/symbols/gang-v3/blank-20261027.png",
+    "target": "assets/lossless-20261027/blank-20261027.webp",
+    "before": 1195664,
+    "after": 705484
+  },
+  {
+    "source": "assets/symbols/gang-v3/cherry-20261027.png",
+    "target": "assets/lossless-20261027/cherry-20261027.webp",
+    "before": 2084210,
+    "after": 1433000
+  },
+  {
+    "source": "assets/symbols/gang-v3/miss.png",
+    "target": "assets/lossless-20261027/miss.webp",
+    "before": 1691531,
+    "after": 1163948
+  },
+  {
+    "source": "assets/symbols/gang-v3/nova-bar-20261027.png",
+    "target": "assets/lossless-20261027/nova-bar-20261027.webp",
+    "before": 1692319,
+    "after": 1196986
+  },
+  {
+    "source": "assets/symbols/gang-v3/nova-only-20261027.png",
+    "target": "assets/lossless-20261027/nova-only-20261027.webp",
+    "before": 1750351,
+    "after": 1197422
+  },
+  {
+    "source": "assets/symbols/gang-v3/replay.png",
+    "target": "assets/lossless-20261027/replay.webp",
+    "before": 1954943,
+    "after": 1312470
+  },
+  {
+    "source": "assets/symbols/gang-v3/seven.png",
+    "target": "assets/lossless-20261027/seven.webp",
+    "before": 2076483,
+    "after": 1524602
+  },
+  {
+    "source": "assets/symbols/gang-v3/suika.png",
+    "target": "assets/lossless-20261027/suika.webp",
+    "before": 1915955,
+    "after": 1411704
+  },
+  {
+    "source": "assets/symbols/seven-nebula-original.png",
+    "target": "assets/lossless-20261027/seven-nebula-original.webp",
+    "before": 1822288,
+    "after": 1379330
+  },
+  {
+    "source": "assets/design/nova-cabinet-v1/cabinet-game.png",
+    "target": "assets/lossless-20261027/cabinet-game.webp",
+    "before": 2042308,
+    "after": 1352804
+  }
+]

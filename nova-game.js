@@ -149,16 +149,16 @@
   const SUICA_SYMBOL = "🍋";
   const NEBULA_SYMBOL = 'NEBULA';
   const NEBULA_IMAGE_SRC = 'assets/symbols/nebula-original.png';
-  const SUICA_IMAGE_SRC = (globalThis.NovaMedia?.imageSource("assets/symbols/gang-v3/suika.png")||"assets/symbols/gang-v3/suika.png");
-  const CHERRY_IMAGE_SRC = "assets/symbols/gang-v3/cherry-20261027.png";
-  const BELL_IMAGE_SRC = (globalThis.NovaMedia?.imageSource("assets/symbols/gang-v3/bell.png")||"assets/symbols/gang-v3/bell.png");
-  const SEVEN_IMAGE_SRC = "assets/symbols/seven-nebula-original.png";
-  const MISS_IMAGE_SRC = (globalThis.NovaMedia?.imageSource("assets/symbols/gang-v3/miss.png")||"assets/symbols/gang-v3/miss.png");
-  const GRAPE_IMAGE_SRC = (globalThis.NovaMedia?.imageSource("assets/symbols/gang-v3/bell.png")||"assets/symbols/gang-v3/bell.png");
-  const BAR_IMAGE_SRC = (globalThis.NovaMedia?.imageSource("assets/symbols/gang-v3/nova-only-20261027.png")||"assets/symbols/gang-v3/nova-only-20261027.png");
+  const SUICA_IMAGE_SRC = (globalThis.NovaMedia?.imageSource("assets/lossless-20261027/suika.webp")||"assets/lossless-20261027/suika.webp");
+  const CHERRY_IMAGE_SRC = "assets/lossless-20261027/cherry-20261027.webp";
+  const BELL_IMAGE_SRC = (globalThis.NovaMedia?.imageSource("assets/lossless-20261027/bell.webp")||"assets/lossless-20261027/bell.webp");
+  const SEVEN_IMAGE_SRC = "assets/lossless-20261027/seven-nebula-original.webp";
+  const MISS_IMAGE_SRC = (globalThis.NovaMedia?.imageSource("assets/lossless-20261027/miss.webp")||"assets/lossless-20261027/miss.webp");
+  const GRAPE_IMAGE_SRC = (globalThis.NovaMedia?.imageSource("assets/lossless-20261027/bell.webp")||"assets/lossless-20261027/bell.webp");
+  const BAR_IMAGE_SRC = (globalThis.NovaMedia?.imageSource("assets/lossless-20261027/nova-only-20261027.webp")||"assets/lossless-20261027/nova-only-20261027.webp");
   const PIERROT_IMAGE_SRC = "assets/cabinet/edit_parts/piero.png";
-  const USER_FACE_SRC = (globalThis.NovaMedia?.imageSource("assets/symbols/gang-v3/miss.png")||"assets/symbols/gang-v3/miss.png");
-  const REPLAY_IMAGE_SRC = (globalThis.NovaMedia?.imageSource("assets/symbols/gang-v3/replay.png")||"assets/symbols/gang-v3/replay.png");
+  const USER_FACE_SRC = (globalThis.NovaMedia?.imageSource("assets/lossless-20261027/miss.webp")||"assets/lossless-20261027/miss.webp");
+  const REPLAY_IMAGE_SRC = (globalThis.NovaMedia?.imageSource("assets/lossless-20261027/replay.webp")||"assets/lossless-20261027/replay.webp");
   const SYMBOL_IMAGE_SRCS = Object.freeze([
     SUICA_IMAGE_SRC,
     NEBULA_IMAGE_SRC,
@@ -636,7 +636,7 @@
   const AUTO_SPEED_MULTIPLIER = 2;
   const SPEED_MODE_MAX_SPINS_PER_SECOND = 10;
   const SPEED_MODE_MULTIPLIER = 3;
-  const COMPLETE_TRIAL_ENABLED = false;
+  const COMPLETE_TRIAL_ENABLED = true; // Live play only; simulations set their own uncapped policy.
   const SLUMP_MAX_HISTORY_POINTS = 20000;
   const SLUMP_MAX_DRAW_POINTS = 1400;
   let autoPlay = false;
@@ -863,7 +863,7 @@
   }
 
   const VERTEX_CONTROLLER_ENABLED = adminParams.get("controller") === "vertex";
-  settings={...NovaComplete.configure(settings,VERTEX_CONTROLLER_ENABLED,COMPLETE_TRIAL_ENABLED),completeEnabled:false};
+  settings=NovaComplete.configure(settings,VERTEX_CONTROLLER_ENABLED,COMPLETE_TRIAL_ENABLED);
   const VERTEX_STORE_ID = String(adminParams.get("storeId") || "").trim();
   const ADMIN_SERVER = (VERTEX_CONTROLLER_ENABLED ? adminParams.get("server") || "" : "").replace(/\/$/, "");
   let machineId = adminParams.get("machine") || bootMachineId;
@@ -3830,7 +3830,7 @@
       if(settings.smartslotBalanceVersion!==20261013){
         settings.novaArt={...NovaArt.defaults};settings.novaNormal={...NovaNormal.defaults};settings.novaFlow={...NovaFlow.defaults};settings.smartslotBalanceVersion=20261013;
       }
-      settings={...NovaComplete.configure(settings,VERTEX_CONTROLLER_ENABLED,COMPLETE_TRIAL_ENABLED),completeEnabled:false};
+      settings=NovaComplete.configure(settings,VERTEX_CONTROLLER_ENABLED,COMPLETE_TRIAL_ENABLED);
       settings.title = normalizeMachineTitle(settings.title);
       if(!SETTING[settings.setting]) settings.setting = 1;
       if(data?.stats) stats = {...stats, ...data.stats};
@@ -4162,15 +4162,15 @@
         movieVolume: settings.movieVolume,
         rogiMovieVolume: settings.rogiMovieVolume,
         audioMuted: settings.audioMuted,
-        completeEnabled:false,
-        completeBasis:'none',
-        completeMyLimitPt:0,
-        completeLimitPt:0
+        completeEnabled:true,
+        completeBasis:'my',
+        completeMyLimitPt:NovaComplete.myLimit(settings),
+        completeLimitPt:NovaComplete.myLimit(settings) // Admin transport field; gameplay net cap remains zero.
       },
       stats:{...adminStats, profit},
       normalState:{...normalState},
       session:{...session},
-      completeTrialState:{locked:false,lockedSetting:0,rescueActive:false,completeProfit:0},
+      completeTrialState:{...completeTrialState},
       runtimeState:runtimeStateForStorage(),
       resumeSettings:{...settings},
       capturedAt:Date.now(),
@@ -4295,7 +4295,14 @@
     setValue("rogiMovieVolume", nextSettings.rogiMovieVolume);
     if(nextSettings.audioMuted !== undefined) settings.audioMuted = !!nextSettings.audioMuted;
     readSettings();
-    settings={...NovaComplete.configure(settings,VERTEX_CONTROLLER_ENABLED,COMPLETE_TRIAL_ENABLED),completeEnabled:false};
+    const requestedLimit=nextSettings.completeMyLimitPt>0?nextSettings.completeMyLimitPt:nextSettings.completeLimitPt;
+    if(Number.isInteger(Number(requestedLimit))&&Number(requestedLimit)>0&&Number(requestedLimit)<=999999){
+      settings.completeMyLimitPt=Number(requestedLimit);
+      settings.completeLimitPt=0;
+    }
+    settings=NovaComplete.configure(settings,VERTEX_CONTROLLER_ENABLED,COMPLETE_TRIAL_ENABLED);
+    // A limit update never clears an already completed machine.
+    updateCompleteTrialState("admin");
     const saved=persistState();
     updateDisplay();
     log(saved ? "管理画面から設定を更新・保存" : "管理画面から設定を更新しましたが、保存できませんでした");
@@ -4380,7 +4387,12 @@
     adminCommandPollTimer = setTimeout(pollAdminCommands, 0);
   }
 
-  function applyStoreCompleteSettings(_controls){return false;}
+  function applyStoreCompleteSettings(controls){
+    const limit=Number(controls?.completeMyLimitPt)>0?Number(controls.completeMyLimitPt):Number(controls?.completeLimitPt);
+    if(!Number.isInteger(limit)||limit<1||limit>999999||limit===NovaComplete.myLimit(settings))return false;
+    applyAdminSettings({completeMyLimitPt:limit});
+    return true;
+  }
 
   // The host only wakes the authenticated server poll; it cannot supply commands.
   window.addEventListener("message", event=>{
@@ -6487,7 +6499,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
               : (symbol === ELEPHANT_SYMBOL)
                 ? `<img class="symImg replaySymImg" src="${REPLAY_IMAGE_SRC}" alt="replay symbol" loading="eager" decoding="sync" draggable="false">`
             : (symbol === BLANK_SYMBOL)
-              ? `<img class="symImg blankSymImg" src="assets/symbols/gang-v3/blank-20261027.png" alt="ブランク" loading="eager" decoding="sync" draggable="false">`
+              ? `<img class="symImg blankSymImg" src="assets/lossless-20261027/blank-20261027.webp" alt="ブランク" loading="eager" decoding="sync" draggable="false">`
               : (symbol === "REPLAY")
                 ? `<img class="symImg replaySymImg" src="${REPLAY_IMAGE_SRC}" alt="replay symbol" loading="eager" decoding="sync" draggable="false">`
                 : (symbol === "🍋")
@@ -8625,7 +8637,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     if(!canUsePlayState())return;
     if(resolved?.stockEntry){finishStockEntry();return;}
     if(!isSpinning || !currentSpin || currentSpin.finishing || currentSpin.resolved!==resolved || !currentSpin.stopped.every(Boolean)) return;
-    if(NovaCzPresentation.wait(resolved,{setting:settings.setting,auto:!!(currentSpin.autoStopAtStart||currentSpin.speedModeAtStart||debugFastSpinActive),valid:()=>currentSpin?.resolved===resolved&&isSpinning&&canUsePlayState(),reveal:()=>{playCzConfirmedSound(resolved);maybeLightBonusAnnouncementForStop(3,currentSpin);finishSpin(result,resolved,lineRow);}}))return;
+    if(NovaCzPresentation.wait(resolved,{setting:settings.setting,auto:()=>!!(autoPlay||currentSpin?.speedModeAtStart||debugFastSpinActive),valid:()=>currentSpin?.resolved===resolved&&isSpinning&&canUsePlayState(),reveal:()=>{playCzConfirmedSound(resolved);maybeLightBonusAnnouncementForStop(3,currentSpin);finishSpin(result,resolved,lineRow);}}))return;
     if(typeof playZoneInternalConfirmedSound==='function'&&currentSpin?.stopped?.every(Boolean))playZoneInternalConfirmedSound(resolved);
     try{
     NovaBellNavi.clear();
@@ -9010,6 +9022,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
       clearRogiThirdStopHoldForNextGame();
     }
     if(isSpinning){
+      if(NovaCzPresentation.autoPress()){queueAutoStep(autoPollDelayMs());return;}
       requestAutoStopCurrentSpin();
       queueAutoStep(autoPollDelayMs());
       return;
