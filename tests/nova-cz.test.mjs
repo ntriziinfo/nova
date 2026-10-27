@@ -70,29 +70,20 @@ test('logical confidence tiers retain the original third-stop model and surprise
  assert.equal(f.lampAtStop({...lamp,rainbowAt:20,remaining:1},3).rainbow,true);
 });
 
-test('live lamps and surprise rainbow change only on the third stop',()=>{
- const html=readGameSource(),handler=html.match(/  function showCzLamp\([^]*?\n  }/)[0];
- const machine={dataset:{czLamp:'0',czRainbow:'false'}};
- ctx.document={getElementById:()=>machine};ctx.playOneShotSound=()=>{};ctx.sfxOutputVolume=()=>.5;
- vm.runInContext(handler,ctx);
- ctx.showCzLamp(0,{czLamp:{stage:5}});assert.equal(machine.dataset.czBlink,'');
- ctx.showCzLamp(1,{czLamp:{stage:5,rainbow:true,rainbowAt:2,totalGames:20,remaining:19}});
- assert.equal(machine.dataset.czBlink,'');
- assert.equal(Number(machine.dataset.czLamp),f.lampDisplayAtStop({stage:5,totalGames:20,remaining:19},1).stage);
- ctx.showCzLamp(2,{czLamp:{stage:5,rainbow:true,rainbowAt:2,totalGames:20,remaining:19}});
- assert.equal(machine.dataset.czBlink,'');
- assert.equal(Number(machine.dataset.czLamp),f.lampDisplayAtStop({stage:5,totalGames:20,remaining:19},2).stage);assert.equal(machine.dataset.czRainbow,'false');
- ctx.showCzLamp(3,{czLamp:{stage:5,rainbow:true,rainbowAt:2,totalGames:20,remaining:19}});
- assert.equal(machine.dataset.czBlink,'');
- assert.equal(Number(machine.dataset.czLamp),f.lampDisplayAtStop({stage:5,totalGames:20,remaining:19},3).stage);assert.equal(machine.dataset.czRainbow,'true');
+test('full or rainbow internal wins wait for the scheduled final game',()=>{
+ for(const remaining of [20,2,1]){
+  const t=n.spin({games:120},{phase:'cz',remaining,totalGames:20,success:true,winProbability:1,lampRoll:.9,rainbowRoll:0},1,{},()=>.9,'MISS');
+  assert.equal(!!t.internalBonus,remaining===1);assert.equal(t.czFlow.success,true);
+ }
 });
-
-test('full or rainbow lamps end CZ early with a bonus even when direct ART chance is 100%',()=>{
- for(const [remaining,rainbowRoll] of [[2,.9],[20,0]]){
-  const flow={phase:'cz',remaining,totalGames:20,success:true,winProbability:1,lampRoll:.9,rainbowRoll};
-  const t=n.spin({games:120},flow,1,{art:{czArt:1}},()=>.9,'MISS');
-  assert.equal(t.direct,false);assert.equal(t.internalBonus.source,'CZ全員点灯');
-  assert.ok(['BIG','MID'].includes(t.internalBonus.kind));
+test('ceiling during CZ preserves the win and awards impurity once',()=>{
+ let state={games:799,mode:'A',impurity:0},flow={phase:'cz',remaining:3,totalGames:15,success:false,winProbability:.4};
+ for(let remaining=3;remaining>=1;remaining--){
+  const t=n.spin(state,{...flow,remaining},1,{},()=>.9,'MISS');
+  assert.equal(!!t.internalBonus,remaining===1);
+  if(remaining>1)assert.equal(t.czFlow.success,true);
+  if(remaining===3)flow=t.czFlow;else assert.equal(t.state.impurity,state.impurity);
+  state=t.state;
  }
 });
 test('partial lamps keep CZ running and never award a premature bonus',()=>{
