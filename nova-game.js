@@ -148,16 +148,16 @@
   const SUICA_SYMBOL = "🍋";
   const NEBULA_SYMBOL = 'NEBULA';
   const NEBULA_IMAGE_SRC = 'assets/symbols/nebula-original.png';
-  const SUICA_IMAGE_SRC = (globalThis.NovaMedia?.imageSource("assets/symbols/gang-v3/suika.png")||"assets/symbols/gang-v3/suika.png");
-  const CHERRY_IMAGE_SRC = "assets/symbols/gang-v3/cherry-20261027.png";
-  const BELL_IMAGE_SRC = (globalThis.NovaMedia?.imageSource("assets/symbols/gang-v3/bell.png")||"assets/symbols/gang-v3/bell.png");
-  const SEVEN_IMAGE_SRC = "assets/symbols/seven-nebula-original.png";
-  const MISS_IMAGE_SRC = (globalThis.NovaMedia?.imageSource("assets/symbols/gang-v3/miss.png")||"assets/symbols/gang-v3/miss.png");
-  const GRAPE_IMAGE_SRC = (globalThis.NovaMedia?.imageSource("assets/symbols/gang-v3/bell.png")||"assets/symbols/gang-v3/bell.png");
-  const BAR_IMAGE_SRC = (globalThis.NovaMedia?.imageSource("assets/symbols/gang-v3/nova-only-20261027.png")||"assets/symbols/gang-v3/nova-only-20261027.png");
+  const SUICA_IMAGE_SRC = (globalThis.NovaMedia?.imageSource("assets/lossless-20261027/suika.webp")||"assets/lossless-20261027/suika.webp");
+  const CHERRY_IMAGE_SRC = "assets/lossless-20261027/cherry-20261027.webp";
+  const BELL_IMAGE_SRC = (globalThis.NovaMedia?.imageSource("assets/lossless-20261027/bell.webp")||"assets/lossless-20261027/bell.webp");
+  const SEVEN_IMAGE_SRC = "assets/lossless-20261027/seven-nebula-original.webp";
+  const MISS_IMAGE_SRC = (globalThis.NovaMedia?.imageSource("assets/lossless-20261027/miss.webp")||"assets/lossless-20261027/miss.webp");
+  const GRAPE_IMAGE_SRC = (globalThis.NovaMedia?.imageSource("assets/lossless-20261027/bell.webp")||"assets/lossless-20261027/bell.webp");
+  const BAR_IMAGE_SRC = (globalThis.NovaMedia?.imageSource("assets/lossless-20261027/nova-only-20261027.webp")||"assets/lossless-20261027/nova-only-20261027.webp");
   const PIERROT_IMAGE_SRC = "assets/cabinet/edit_parts/piero.png";
-  const USER_FACE_SRC = (globalThis.NovaMedia?.imageSource("assets/symbols/gang-v3/miss.png")||"assets/symbols/gang-v3/miss.png");
-  const REPLAY_IMAGE_SRC = (globalThis.NovaMedia?.imageSource("assets/symbols/gang-v3/replay.png")||"assets/symbols/gang-v3/replay.png");
+  const USER_FACE_SRC = (globalThis.NovaMedia?.imageSource("assets/lossless-20261027/miss.webp")||"assets/lossless-20261027/miss.webp");
+  const REPLAY_IMAGE_SRC = (globalThis.NovaMedia?.imageSource("assets/lossless-20261027/replay.webp")||"assets/lossless-20261027/replay.webp");
   const SYMBOL_IMAGE_SRCS = Object.freeze([
     SUICA_IMAGE_SRC,
     NEBULA_IMAGE_SRC,
@@ -6386,7 +6386,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
               : (symbol === ELEPHANT_SYMBOL)
                 ? `<img class="symImg replaySymImg" src="${REPLAY_IMAGE_SRC}" alt="replay symbol" loading="eager" decoding="sync" draggable="false">`
             : (symbol === BLANK_SYMBOL)
-              ? `<img class="symImg blankSymImg" src="assets/symbols/gang-v3/blank-20261027.png" alt="ブランク" loading="eager" decoding="sync" draggable="false">`
+              ? `<img class="symImg blankSymImg" src="assets/lossless-20261027/blank-20261027.webp" alt="ブランク" loading="eager" decoding="sync" draggable="false">`
               : (symbol === "REPLAY")
                 ? `<img class="symImg replaySymImg" src="${REPLAY_IMAGE_SRC}" alt="replay symbol" loading="eager" decoding="sync" draggable="false">`
                 : (symbol === "🍋")
