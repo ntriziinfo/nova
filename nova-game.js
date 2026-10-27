@@ -649,6 +649,7 @@
   let superSpeedMode = 'nonstop';
   let superSpeedMenu = null;
   let superSpeedPending = false; // Finish the current spin before switching presentation speed.
+  let dailySuperSpeedAutoStarted = false;
   let superSpeedAllowed = false; // Authoritative server permission; never restored from local storage.
   let superSpeedDebugAllowed = false; // Standalone debugging only; cleared by page reload.
   let superSpeedPermissionTimer = null;
@@ -4357,7 +4358,7 @@
         const data = await res.json();
         if(!canUsePlayState())return;
         nextPollDelay = 2000;
-        applySuperSpeedPermission(data.controls?.superSpeedAllowed === true);
+        applySuperSpeedPermission(data.controls?.superSpeedAllowed === true,data.controls?.superSpeedAutoStart === true);
         const commands = Array.isArray(data.commands) ? data.commands : [];
         for(const row of commands){
           const command = row.command || row;
@@ -9206,13 +9207,17 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     superSpeedMenu?.update({running,mode:superSpeedMode,disabled:Object.fromEntries(Object.keys(NovaSuperSpeed.modes).map(mode=>[mode,reason || (NovaSuperSpeed.reached(mode,normalState.flow,session,normalState) ? 'すでに到達しています' : '')]))});
   }
 
-  function applySuperSpeedPermission(allowed){
+  function applySuperSpeedPermission(allowed,autoStart=false){
     clearTimeout(superSpeedPermissionTimer);
     superSpeedAllowed=allowed===true;
     // Fail closed if a hung request/background tab prevents fresh permission checks.
     if(superSpeedAllowed)superSpeedPermissionTimer=setTimeout(()=>applySuperSpeedPermission(false),15000);
     if(!hasSuperSpeedPermission() && (superFullAuto || superSpeedActive || superSpeedPending))stopAutoPlay('管理画面の使用許可OFF、または接続切れのため超ハイスピード停止');
     updateSuperSpeedUi();
+    if(superSpeedAllowed && autoStart && !dailySuperSpeedAutoStarted && !superSpeedUnavailableReason()){
+      dailySuperSpeedAutoStarted=true;
+      startSuperSpeed('nonstop');
+    }
   }
 
   function stopSuperSpeedIfNeeded(){
