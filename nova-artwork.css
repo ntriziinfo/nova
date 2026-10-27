@@ -108,6 +108,11 @@ body[data-game-phase=bonus][data-bonus-tier=upper] .novaArtLayer .novaArtItem im
 @media(prefers-reduced-motion:reduce){
  #novaCzPush{animation:none;transform:none;filter:drop-shadow(0 0 6px var(--push-glow))}
 }
+/* Presentation only: follow the existing CZ lamp color without drawing across symbols. */
+#machine[data-cz-color]:not([data-cz-color=""]) .reels::after{content:"";position:absolute;inset:0;box-sizing:border-box;border:3px solid var(--cz-color,#fff);border-radius:7px;box-shadow:0 0 8px var(--cz-color,#fff),0 0 18px var(--cz-color,#fff),inset 0 0 6px var(--cz-color,#fff);pointer-events:none;z-index:30}
+#machine[data-cz-color=rainbow] .reels::after{animation:novaCzReelRainbow 1.4s linear infinite}
+@keyframes novaCzReelRainbow{0%,100%{--cz-color:#ff3450}16%{--cz-color:#ffad36}33%{--cz-color:#ffe544}50%{--cz-color:#45f478}66%{--cz-color:#458aff}83%{--cz-color:#d56dff}}
+@media(prefers-reduced-motion:reduce){#machine[data-cz-color=rainbow] .reels::after{animation:none;--cz-color:#d56dff}}
 /* CZ failure: dim the entire viewport, then restore it before the next BET. */
 .novaCzFailed body::after{content:"";position:fixed;inset:0;z-index:2147483647;pointer-events:none;background:#000;animation:novaCzFailureDim .9s ease-in-out both}
 #novaCzPush.failed{pointer-events:none;animation:novaCzPushFade .6s ease-out both}
