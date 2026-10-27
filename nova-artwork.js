@@ -40,7 +40,9 @@
   for(const id of originals){
     const item=document.createElement('div'); item.className='novaArtItem'; item.dataset.artwork=id;
     const img=document.createElement('img'); img.src=sources[id]||`assets/illustrations/lamps-20260916/${id}.png`; img.alt=names[id]; img.draggable=false;
-    img.addEventListener('load',()=>render(id));
+    // A stable, shape-matched black backing prevents movies showing through dim lamps.
+    item.style.setProperty('--lamp-backing-image',`url("${img.getAttribute('src')}")`);
+    img.addEventListener('load',()=>{item.style.setProperty('--lamp-image-aspect',`${img.naturalWidth}/${img.naturalHeight}`);render(id);});
     item.append(img); layer.append(item); items.set(id,item);
   }
   document.getElementById('machine').append(layer);

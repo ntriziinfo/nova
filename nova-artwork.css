@@ -54,7 +54,7 @@ body.debugOpen #novaArtToggle{display:none}
 body[data-game-phase=art] .novaArtItem img,body[data-game-phase=bonus] .novaArtItem img{opacity:var(--music-lamp-opacity,1)}
 body[data-game-phase=art] .novaArtLayer:not([data-music-sequence=true]) .novaArtItem,body[data-game-phase=bonus] .novaArtLayer:not([data-music-sequence=true]) .novaArtItem{animation:novaMusicFallback 2.4s ease-in-out infinite;animation-delay:calc(var(--music-index,0)*-.28s)}
 body[data-game-phase=art][data-art-zone=""] .novaArtLayer img{filter:brightness(1.25) saturate(1.2) drop-shadow(0 0 6px #ffe4b8)}
-@keyframes novaMusicFallback{0%,60%,100%{opacity:.2}25%{opacity:1}}
+@keyframes novaMusicFallback{0%,60%,100%{filter:brightness(.2)}25%{filter:brightness(1)}}
 /* BIG tier changes only the lamp glow; positions and source artwork are retained. */
 body[data-game-phase=bonus] .novaArtLayer .novaArtItem img{animation:none;filter:brightness(1.25) saturate(1.1) drop-shadow(0 0 7px #fff) drop-shadow(0 0 3px #fff)}
 body[data-game-phase=bonus][data-bonus-tier=upper] .novaArtLayer .novaArtItem img{filter:sepia(1) saturate(7) hue-rotate(320deg) brightness(1.25) drop-shadow(0 0 7px #ff2020) drop-shadow(0 0 3px #ff2020)}
@@ -76,3 +76,9 @@ body[data-game-phase=bonus][data-bonus-tier=upper] .novaArtLayer .novaArtItem im
 .novaArtItem[data-artwork=sosuke]{--lamp-aspect:1189/1516;--lamp-width:117.83998%;--lamp-left:-7.64038%;--lamp-top:4.44753%}
 .novaArtItem[data-artwork=toto]{--lamp-aspect:972/1334;--lamp-width:144.95685%;--lamp-left:-25.40687%;--lamp-top:-2.43210%}
 .novaArtItem[data-artwork=urapi]{--lamp-aspect:2000/2000;--lamp-width:80.28846%;--lamp-left:10.76731%;--lamp-top:9.14255%}
+
+/* Stable black underprint: artwork alpha defines the silhouette, while only the
+ * foreground lamp fades. Keep it tied to each saved position and fitted size. */
+.novaArtItem{isolation:isolate}
+.novaArtItem::before{content:"";position:absolute;left:var(--lamp-left,0%);top:var(--lamp-top,0%);width:var(--lamp-width,100%);aspect-ratio:var(--lamp-image-aspect,var(--lamp-aspect,1));background:var(--lamp-backing-image) center/100% 100% no-repeat;filter:brightness(0);opacity:1;z-index:0;pointer-events:none}
+.novaArtItem img{z-index:1}
