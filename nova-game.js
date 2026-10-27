@@ -2492,8 +2492,13 @@
   }
 
   function targetRtpText(settingNo = settings.setting){
-    if(A_TYPE_MODE && !NovaBalance.usesStandardSettings(settings))return "未試算（独自設定）";
-    if(A_TYPE_MODE){const p=NovaBalance.profile(settingNo);return `${(p.measuredRtp*100).toFixed(2)}%（${p.verificationLabel}）`;}
+    if(!A_TYPE_MODE)return;
+    // The reference trial is uncapped even when live play uses COMPLETE.
+    if(!NovaBalance.usesStandardSettings({...settings,completeEnabled:false,completeBasis:'none',completeLimitPt:0,completeMyLimitPt:0}))return "未試算（独自設定）";
+    const data=globalThis.NovaRtpCurrent;
+    const row=data?.status==='ready'&&data.gamesPerSetting===1_000_000_000&&data.settings?.find(r=>r.setting===Number(settingNo));
+    if(!row||!Number.isFinite(row.rtpPct))return "試算待ち（最新仕様・10億G）";
+    return `${row.rtpPct.toFixed(2)}%（10億G連続・MY／差枚停止なし）`;
   }
 
   function refreshRtpViews(){

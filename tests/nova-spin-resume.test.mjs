@@ -23,7 +23,7 @@ function harness(saved=null){
   jagChainCount:null,jagLastGamePayout:0,jagLastBonusPayout:0,jagChanceHold:false,forceResult:'',forcePremiumEffect:false,pendingForceResult:'',pendingBonusStartOptions:null,devilZoneConfirmIntroPending:false,pendingDevilRushEntryEffect:'',speedFrameOffHold:false,barBgmActive:false,barBgmMode:'',battleBgmActive:false,rogiBgmMuted:false,
   syncNovaProgress:noop,auditCapture:noop,$,document:{getElementById:$},reels:[0,1,2].map(i=>$('reel'+i)),stopBtns:[0,1,2].map(i=>$('stop'+i)),
   setTimeout:f=>{timers.push(f);return timers.length;},clearTimeout:noop,REEL_STRIPS:[[],[],[]],currentReelTopIndex:()=>0,cellHtml:noop,
-  NovaAim:{bet:noop,stop:noop},NovaSortie:{begin:noop,eligible:()=>false},NovaInitialDuo:{begin:noop,stop:noop},NovaLadder:{bet:noop,stop:noop},NovaReelMotion:{start:noop},
+  NovaAim:{bet:noop,stop:noop},NovaSortie:{begin:noop,eligible:()=>false},NovaInitialDuo:{begin:noop,stop:noop},NovaLadder:{bet:noop,stop:noop},NovaReelMotion:{start:noop},NovaCzPresentation:{wait:()=>false},updateCompleteTrialState:noop,
   setReelColumn:noop,showZoneRoulette:noop,renderCzPrelude:noop,syncCzPreludeGlow:noop,updateDisplay:noop,syncCabinetControlState:noop,prepareManualBonusOutcome:noop,startOumaReverseAudio:noop,showCheckpointResultIfReady:()=>false
  });
  for(const file of ['nova-complete.js','nova-tuning.js','nova-art.js','nova-normal.js','nova-flow.js','nova-balance.js','nova-spin-resume.js','nova-history.js'])vm.runInContext(fs.readFileSync(file,'utf8'),c,{filename:file});
@@ -245,10 +245,12 @@ test('replay entitlement and zero-game cost exemptions survive pending saves',()
 
 test('displayed RTP identifies the uncapped verification profile; BIG fields still use the engine target',()=>{
  const {c}=harness();vm.runInContext(fn('targetRtpText'),c);
+ c.NovaRtpCurrent={status:'ready',gamesPerSetting:1000000000,settings:[1,2,3,4,5,6].map(setting=>({setting,rtpPct:94+setting}))};
  for(let setting=1;setting<=6;setting++){
-   const profile=c.NovaBalance.profile(setting);
-   assert.equal(c.targetRtpText(setting),`${(profile.measuredRtp*100).toFixed(2)}%（${profile.verificationLabel}）`);
+   assert.equal(c.targetRtpText(setting),`${(94+setting).toFixed(2)}%（10億G連続・MY／差枚停止なし）`);
  }
+ c.NovaRtpCurrent.status='pending';assert.match(c.targetRtpText(6),/試算待ち/);
+ delete c.NovaRtpCurrent;assert.match(c.targetRtpText(6),/試算待ち/);
  assert.equal(c.NovaArt.bonusTarget(),50);
  for(const field of ['midMulInput','bigMulInput','bigAddInput'])assert(fn('applySettings').includes('$("'+field+'").value = NovaArt.bonusTarget()'));
 });
@@ -285,22 +287,21 @@ test('all storage writes failing reports an error without modifying the running 
  assert.equal(h.$('storageStatus').hidden,false);assert.deepEqual(json({stats:c.stats,normal:c.normalState}),before);
 });
 
-test('custom lottery and stale nonzero COMPLETE fields suppress standard RTP; presentation preferences do not',()=>{
+test('custom lottery suppresses reference RTP; live COMPLETE and presentation preferences do not',()=>{
  const {c}=harness();c.load();vm.runInContext(fn('targetRtpText'),c);
  const standard=json(c.settings);
  assert(c.NovaBalance.usesStandardSettings(standard));
  for(const change of [
   {novaFlow:{...standard.novaFlow,czChance:.99}},
   {novaNormal:{...standard.novaNormal,highMultiplier:3}},
-  {novaArt:{...standard.novaArt,soraHit:.41}},
-  {completeLimitPt:20000}
+  {novaArt:{...standard.novaArt,soraHit:.41}}
  ]){
   c.settings={...standard,...change};
   for(let n=1;n<=6;n++)assert.equal(c.targetRtpText(n),'未試算（独自設定）');
  }
- c.settings={...standard,audioMuted:true,voiceVolume:.1,autoDelay:2,title:'表示変更'};
- const profile=c.NovaBalance.profile(6);
- assert.equal(c.targetRtpText(6),`${(profile.measuredRtp*100).toFixed(2)}%（${profile.verificationLabel}）`);
+ c.NovaRtpCurrent={status:'ready',gamesPerSetting:1000000000,settings:[{setting:6,rtpPct:114.123}]};
+ c.settings={...standard,audioMuted:true,voiceVolume:.1,autoDelay:2,title:'表示変更',completeEnabled:true,completeBasis:'my',completeMyLimitPt:19000,completeLimitPt:10000};
+ assert.equal(c.targetRtpText(6),'114.12%（10億G連続・MY／差枚停止なし）');
  c.settings={...standard,novaFlow:{...standard.novaFlow,czChance:String(c.NovaFlow.defaults.czChance)}};
  assert(c.NovaBalance.usesStandardSettings(c.settings));
 });

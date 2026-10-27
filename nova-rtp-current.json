@@ -1,0 +1,10 @@
+{
+  "schema": "nova-current-rtp/v1",
+  "status": "pending",
+  "commit": "e9348409bae5f24511f7cf18c2cf19e7db87bff7",
+  "sourceCommit": null,
+  "generatedAt": null,
+  "gamesPerSetting": 1000000000,
+  "conditions": "10億G連続・MY／差枚停止なし",
+  "settings": []
+}

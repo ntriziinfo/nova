@@ -52,6 +52,15 @@
     }
   ],
   "framework": null,
-  "buildCommand": "node scripts/prepare-deploy.mjs && node scripts/check.mjs && node scripts/validate-config.mjs",
+  "buildCommand": "node scripts/prepare-deploy.mjs && node scripts/rtp-current.mjs build && node scripts/check.mjs && node scripts/validate-config.mjs",
+  "headers": [
+    {
+      "source": "/nova-rtp-current.:ext(json|js)",
+      "headers": [
+        {"key":"Access-Control-Allow-Origin","value":"*"},
+        {"key":"Cache-Control","value":"no-store"}
+      ]
+    }
+  ],
   "outputDirectory": "."
 }
