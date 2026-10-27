@@ -5,7 +5,7 @@ import {xoshiro128,xoshiro128State} from '../scripts/zone-v2-rng.mjs';
 loadModel();const a=NovaArt;
 const reload=s=>a.normalize(JSON.parse(JSON.stringify(s)));
 
-test('fresh initial roles stay common while quotas and awards use the saved setting base',()=>{
+test('fresh initial roles stay common while every new entry is fixed at 300pt',()=>{
  const referenceRoles=[];
  for(let setting=1;setting<=6;setting++)for(let seed=0;seed<128;seed++){
   const rng=xoshiro128('common-initial-proof-'+seed),c={setting};let flow=a.enterInitial(c,()=>Math.max(.05,rng()));
@@ -13,16 +13,17 @@ test('fresh initial roles stay common while quotas and awards use the saved sett
   // Exclude the separately tested challenge route during entry, preserving RNG consumption.
   {
    for(let g=0;g<12&&flow.initialStage;g++){
-    flow=a.prepareBet(reload(flow),c,rng);const out=a.step(flow,c,rng);flow=out.flow;
+    flow=a.prepareBet(reload(flow),c,rng);const out=a.step(flow,c,rng,flow.initialStage==='wait'?'START_REPLAY_RIGHT':'');flow=out.flow;
     if(out.initialAward&&Number.isFinite(out.zoneAward)){actual.awards.push(out.zoneAward);actual.roles.push(out.result);}
    }
    assert.equal(actual.awards.length,3);
   }
-  assert.equal(actual.quota,String(a.freshInitialBase(setting)*3));assert.equal(actual.multiplier,1);
+  assert.equal(actual.quota,'300');assert.equal(actual.multiplier,1);
   assert.deepEqual(actual.awards,actual.roles.map(role=>a.freshInitialAward(setting,role)));
+  assert.deepEqual(actual.awards,[100,100,100]);
   if(setting===1)referenceRoles.push(actual.roles);else assert.deepEqual(actual.roles,referenceRoles[seed]);
  }
- for(let setting=1;setting<=6;setting++)assert(Math.abs(NovaBalance.zoneMean('kushuri_nito',{setting,initialBoostActive:true})-(3*a.freshInitialBase(setting)+6.0206038135593225))<1e-9);
+ for(let setting=1;setting<=6;setting++)assert.equal(NovaBalance.zoneMean('kushuri_nito',{setting,initialBoostActive:true}),300);
 });
 
 test('saved multipliers 3-5 and fixed initial plans remain earned; later duo stock is never boosted',()=>{
@@ -37,7 +38,7 @@ test('saved multipliers 3-5 and fixed initial plans remain earned; later duo sto
  assert.equal(a.drawEntryQuota({setting:1},()=>.5),150);
  assert.equal(a.drawEntryQuota({setting:6},()=>.5),200);
  assert.equal(a.drawEntryQuota({setting:1},()=>.5,true),300);
- assert.equal(a.drawEntryQuota({setting:6},()=>.5,true),747);
+ assert.equal(a.drawEntryQuota({setting:6},()=>.5,true),300);
 });
 
 test('adopted weak zone chances use setting and upper state, then apply the approved retention',()=>{

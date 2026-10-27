@@ -15,7 +15,7 @@ test('bonus failure rescue remains; retired REG streaks no longer add points',()
  s=n.bonusEnd(s,'BIG',{phase:'art'});assert.equal(s.impurity,4);assert.equal(s.regStreak,0);
 });
 test('only single initial AT without rewards gains dry rescue',()=>{
- const end=s=>{let before,g=0;while(s.phase==='art'&&g++<10000){before=s;s=a.step(s,{},()=>.99,s.burstPending||s.researchChallengeActive?'MISS':'BELL').flow;}assert.notEqual(s.phase,'art','rescue fixture must finish even with challenge HOLD');return n.afterArt({},before,s).impurity;};
+ const end=s=>{let before,g=0;while(s.phase==='art'&&g++<10000){before=s;s=a.step(s,{},()=>.99,s.initialStage==='wait'?'START_REPLAY_RIGHT':s.burstPending||s.researchChallengeActive?'MISS':'BELL').flow;}assert.notEqual(s.phase,'art','rescue fixture must finish even with challenge HOLD');return n.afterArt({},before,s).impurity;};
  assert.equal(end(a.afterBonus(null,{},1,()=>.5)),2);
  assert.equal(end(a.afterBonus(null,{},2,()=>.5)),0);
  let s=a.step(a.enter(),{},()=>0,'WEAK_SUICA').flow;assert.equal(end(s),0);

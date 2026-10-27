@@ -31,7 +31,7 @@ globalThis.NovaBalance=(()=>{
    // use a saved multiplier if supplied, otherwise average its current draw.
    if(!options.initialBoostActive)return mean;
    const boosts=a.initialBoostRules;
-   const factor=boosts.values.includes(options.initialMultiplier)?options.initialMultiplier:boosts.values.reduce((sum,n,i)=>sum+n*boosts.weights[setting-1][i],0);
+   const factor=version===a.freshInitialRules.version?1:boosts.values.includes(options.initialMultiplier)?options.initialMultiplier:boosts.values.reduce((sum,n,i)=>sum+n*boosts.weights[setting-1][i],0);
    return mean*factor;
   }
   const a=NovaArt,c=a.config(options),s=a.startZone(a.enter({},()=>.5),id,{...c,setting:options.setting},()=>.5),r=a.zoneRules(s,c),limit=a.zoneTailControl.threshold;

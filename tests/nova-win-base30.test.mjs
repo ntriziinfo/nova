@@ -76,13 +76,14 @@ test('initial points, shared state roles and sortie cash mix retain the approved
  loadModel();
  for(let setting=1;setting<=6;setting++){
   assert.deepEqual(NovaNormal.roleProbabilities(setting),expected[setting-1].shared);
-  assert.equal(NovaArt.freshInitialRules.version,20261027);
+  assert.equal(NovaArt.freshInitialRules.version,2026102701);
+  assert.equal(NovaArt.freshInitialRules.previousVersion,20261027);
   assert.equal(NovaArt.freshInitialRules.legacyVersion,expected[setting-1].legacyInitial.version);
   assert.deepEqual(NovaArt.freshInitialRules.rareAwards,expected[setting-1].legacyInitial.rareAwards);
   assert.equal(NovaArt.freshInitialBase(setting,expected[setting-1].legacyInitial.version),100);
   assert.deepEqual(NovaArt.roleProbabilities(setting,false,5),expected[setting-1].initialRoles);
   let flow=NovaArt.enterInitial({setting},()=>.99);
-  while(flow.initialStage)flow=NovaArt.step(flow,{setting},()=>.99).flow;
-  assert.equal(flow.remaining,String(NovaArt.freshInitialBase(setting)*3));
+  while(flow.initialStage)flow=NovaArt.step(flow,{setting},()=>.99,flow.initialStage==='wait'?'START_REPLAY_LEFT':'').flow;
+  assert.equal(flow.remaining,'300');
  }
 });

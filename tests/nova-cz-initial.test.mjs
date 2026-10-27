@@ -5,7 +5,7 @@ loadModel();const a=NovaArt,n=NovaNormal;
 const reload=s=>a.normalize(JSON.parse(JSON.stringify(s)));
 const zone=s=>a.prepareBet({...s,initialStage:'entry',entryStage:'confirmed',pendingZone:'kushuri_nito'}, {setting:s.modelSetting},()=>.99);
 
-test('every setting uses its approved base with +50/+100pt rare upgrades',()=>{
+test('every setting awards exactly 100pt for each of the three fresh initial roles',()=>{
  for(let setting=1;setting<=6;setting++){
   const expected=[1,0,0,0,0];
   assert.deepEqual(a.initialBoostRules.weights[setting-1],expected);let edge=0;
@@ -16,7 +16,7 @@ test('every setting uses its approved base with +50/+100pt rare upgrades',()=>{
    for(const role of ['BELL','WEAK_NOVA','STRONG_NOVA']){
     const r=a.step(reload(s),{setting},()=>.99,role);assert.equal(r.zoneAward,a.freshInitialAward(setting,role)*(i+1));s=r.flow;
    }
-   assert.equal(s.remaining,String((3*a.freshInitialBase(setting)+150)*(i+1)));assert.equal(s.initialBoostActive,false);assert.equal(s.initialStage,'');
+   assert.equal(s.remaining,'300');assert.equal(s.initialBoostActive,false);assert.equal(s.initialStage,'');
    const again=a.step({...s,queuedZones:['kushuri_nito']},{setting},()=>.999999,'BELL');assert.equal(again.zoneAward,100);
    assert.equal(a.normalize({...fresh,comebackLeft:5}).initialBoostActive,false);
    edge+=expected[i];

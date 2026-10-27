@@ -35,6 +35,8 @@ globalThis.NovaNormal=(()=>{
  const rare={WEAK_SUICA:{...legacyRare.WEAK_SUICA,p:0.0248},WEAK_NOVA:{...legacyRare.WEAK_NOVA},STRONG_NOVA:{...legacyRare.STRONG_NOVA}};
  const defaults={highMultiplier:2,bandMultiplier:2,downMiss:.08,downReplay:.05,czFailureGain:1,bonusFailureGain:2,atDryGain:2,ceilingGain:10,regChainGain:2,superDenom:32768};
  function config(v={}){const c={...defaults};for(const k in c)if(Number.isFinite(Number(v[k])))c[k]=Math.max(0,Math.min(k==='superDenom'?1e9:100,Number(v[k])));c.superDenom=Math.max(2,c.superDenom);return c;}
+ const normalLowPayoutRules=Object.freeze({version:2,oneCoinChance:.1,addedNaviBellChance:1/16,missShare:2/3,replayShare:1/3});
+ function oneCoinDownChance(options={}){const c=config(options);return c.downMiss*normalLowPayoutRules.missShare+c.downReplay*normalLowPayoutRules.replayShare;}
  const resetImpurityPoints=Object.freeze([0,25,50,75,90,100]);
  const resetImpurityWeights=Object.freeze([[20,25,35,15,4,1],[19,25,35,16,4,1],[18,25,35,16,5,1],[17,25,35,17,5,1],[16,24,35,18,5,2],[15,24,35,18,6,2]].map(Object.freeze));
  function resetDistribution(setting=1){const row=resetImpurityWeights[Math.max(0,Math.min(5,Math.round(Number(setting)||1)-1))];return resetImpurityPoints.map((pt,i)=>({pt,weight:row[i]}));}
@@ -46,7 +48,7 @@ globalThis.NovaNormal=(()=>{
  function ceiling(v){const s=normalize(v);return Math.min(ceilings[modes.indexOf(s.mode)],s.morningCeiling?600:Infinity);}
  function favored(v){return zoneRate(v,Math.ceil(v.games/100)*100)>=.15;}
  function multiplier(){return 1;}
- function pay(role){return rare[role]?.pay??(role==='BELL'?8:role==='BELL15'?15:0);}
+ function pay(role){return rare[role]?.pay??(role==='ONE_COIN'?1:role==='BELL'?8:role==='BELL15'?15:0);}
  function rareFactor(setting=3){return 1+.016*(Math.max(1,Math.min(6,Math.round(Number(setting)||3)))-3);}
  function roleProbabilities(setting=3){return {...[{"WEAK_SUICA":0.0240064,"STRONG_SUICA":0,"CHANCE_A":0,"CHANCE_B":0,"WEAK_NOVA":0.0075625,"STRONG_NOVA":0.00038720000000000003,"REPLAY":0.4464,"BELL":0.005951592437810937,"MISS":0.5156923075621891},{"WEAK_SUICA":0.0244032,"STRONG_SUICA":0,"CHANCE_A":0,"CHANCE_B":0,"WEAK_NOVA":0.0076875,"STRONG_NOVA":0.0003936,"REPLAY":0.4482,"BELL":0.005504552437810947,"MISS":0.513811147562189},{"WEAK_SUICA":0.0248,"STRONG_SUICA":0,"CHANCE_A":0,"CHANCE_B":0,"WEAK_NOVA":0.0078125,"STRONG_NOVA":0.0004,"REPLAY":0.45,"BELL":0.00505751243781094,"MISS":0.511929987562189},{"WEAK_SUICA":0.0251968,"STRONG_SUICA":0,"CHANCE_A":0,"CHANCE_B":0,"WEAK_NOVA":0.0079375,"STRONG_NOVA":0.0004064,"REPLAY":0.45180000000000003,"BELL":0.004610472437810949,"MISS":0.510048827562189},{"WEAK_SUICA":0.0255936,"STRONG_SUICA":0,"CHANCE_A":0,"CHANCE_B":0,"WEAK_NOVA":0.0080625,"STRONG_NOVA":0.0004128,"REPLAY":0.4536,"BELL":0.004163432437810944,"MISS":0.5081676675621891},{"WEAK_SUICA":0.03529664,"STRONG_SUICA":0,"CHANCE_A":0,"CHANCE_B":0,"WEAK_NOVA":0.0114625,"STRONG_NOVA":0.00041920000000000005,"REPLAY":0.54,"BELL":0.005089320634920632,"MISS":0.40773233936507935}][Math.max(0,Math.min(5,Math.round(Number(setting)||3)-1))]};}
  const roleEntries=[1,2,3,4,5,6].map(s=>Object.entries(roleProbabilities(s)));
@@ -55,19 +57,24 @@ globalThis.NovaNormal=(()=>{
  // Keep the shared role table unchanged for CZ, preparation and comeback draws.
  function normalRoleProbabilities(setting=3){
   const key=Math.max(1,Math.min(6,Math.round(Number(setting)||3))),r={...roleProbabilities(key)};
-  // Replay and miss absorb the base adjustment; rare roles and bells stay intact.
-  r.NAVI_BELL=1/NovaTuning.normalBellDenominators[key-1];
-  if(key===6)r.BELL-=r.NAVI_BELL;
+  // Keep the former setting hint bell and add a common 1/16 8pt navigation
+  // bell. One-coin, replay and miss are then solved back to exact base30.
+  const legacyNaviBell=1/NovaTuning.normalBellDenominators[key-1];
+  r.NAVI_BELL=legacyNaviBell+normalLowPayoutRules.addedNaviBellChance;
+  if(key===6)r.BELL-=legacyNaviBell;
   else r.MISS=1-Object.entries(r).reduce((sum,[role,p])=>sum+(role==='MISS'?0:p),0);
+  r.ONE_COIN=normalLowPayoutRules.oneCoinChance;
   const otherPaid=Object.entries(r).reduce((sum,[role,p])=>sum+p*(role==='NAVI_BELL'?8:pay(role)),0);
   r.REPLAY=(3-50/NovaTuning.normalBase(key)-otherPaid)/3;
   r.MISS=1-Object.entries(r).reduce((sum,[role,p])=>sum+(role==='MISS'?0:p),0);
-  if(Object.values(r).some(p=>!Number.isFinite(p)||p<0||p>1))throw new RangeError('Invalid normal base probabilities');
+  const total=Object.values(r).reduce((sum,p)=>sum+p,0);
+  if(Math.abs(total-1)>1e-12||Object.values(r).some(p=>!Number.isFinite(p)||p<0||p>1))throw new RangeError('Invalid normal base probabilities');
   return r;
  }
  const normalRoleEntries=[1,2,3,4,5,6].map(setting=>{
   const mix=normalRoleProbabilities(setting);
-  // Setting 6 splits the existing bell interval without changing the draw count.
+  // Setting 6 keeps the numbered bell before its ordinary-bell remainder and
+  // skips the later explicit key so the expanded interval is counted once.
   return Object.entries(mix).flatMap(([role,p])=>setting===6?(role==='BELL'?[['NAVI_BELL',mix.NAVI_BELL],['BELL',p]]:role==='NAVI_BELL'?[]:[[role,p]]):[[role,p]]);
  });
  function drawNormalRole(setting,rng=Math.random){let r=rng();for(const [role,p]of normalRoleEntries[Math.max(0,Math.min(5,Math.round(Number(setting)||3)-1))])if((r-=p)<0)return role;return 'MISS';}
@@ -96,8 +103,9 @@ globalThis.NovaNormal=(()=>{
      if(rng()<rate){s.level='high';s.highLeft=10;}
     }
    }
-  }else if(!held&&(role==='MISS'||role==='REPLAY')){
-   if(rng()<(role==='MISS'?c.downMiss:c.downReplay)){s.level='low';s.highLeft=0;}
+  }else if(!held&&(role==='MISS'||role==='REPLAY'||role==='ONE_COIN')){
+   const down=role==='MISS'?c.downMiss:role==='REPLAY'?c.downReplay:oneCoinDownChance(c);
+   if(rng()<down){s.level='low';s.highLeft=0;}
   }
 
   if(['cz','strong_cz'].includes(flow?.phase)&&flow.remaining===1&&!flow.success)s.impurity=Math.min(100,s.impurity+c.czFailureGain);
@@ -112,7 +120,7 @@ globalThis.NovaNormal=(()=>{
   if(flow.modePending&&before.games>=100){flow={...flow,modePending:false,success:rng()<flow.modeChance,winProbability:flow.modeChance};}
   if(before.games<100&&['cz','strong_cz'].includes(flow.phase))flow={...flow,success:false,winProbability:0};
   flow=before.games<100||flow.modeFake?NovaFlow.normalize(flow):NovaFlow.rewrite(flow,result,options.cz,rng);
-  const state=advance(before,result,flow,{...c,setting},rng),token={normalBellNavi:drawn==='NAVI_BELL',result,state,czFlow:flow,internalBonus:null,entry:'',direct:false,czOptions:options.cz,czChance:before.prelude?.presentation==='reel'&&before.prelude.kind!=='czFake'?1:roleCzRate(before,result,setting,c)};
+  const state=advance(before,result,flow,{...c,setting},rng),token={normalBellNavi:drawn==='NAVI_BELL',result,state,czFlow:flow,internalBonus:null,entry:'',direct:!!flow.direct,directZone:flow.directZone||'',czOptions:options.cz,czChance:before.prelude?.presentation==='reel'&&before.prelude.kind!=='czFake'?1:roleCzRate(before,result,setting,c)};
   // Keep the drawn watermelon for internal lotteries; CZ reels and cash use replay.
   if(['cz','strong_cz'].includes(flow.phase)&&result==='WEAK_SUICA'){
    token.internalResult=result;token.result='REPLAY';
@@ -201,8 +209,9 @@ globalThis.NovaNormal=(()=>{
    token.czLamp={...NovaFlow.drawLamp(flow,rng),totalGames:flow.totalGames,remaining:flow.remaining};
    const display=NovaFlow.lampAtStop(token.czLamp,3);
    const allLit=flow.success&&(display.stage===6||display.rainbow);
-   if(flow.remaining===1&&flow.success||allLit){
-    token.internalBonus=bonus(allLit?'CZ全員点灯':flow.phase==='cz'?'CZ成功':'強CZ成功');
+   const legacyAllLit=flow.ruleVersion!==NovaFlow.currentRuleVersion&&allLit;
+   if(flow.remaining===1&&flow.success||legacyAllLit){
+    token.internalBonus={...bonus(legacyAllLit?'CZ全員点灯':flow.phase==='cz'?'CZ成功':'強CZ成功'),...(flow.direct?{direct:true,directZone:flow.directZone}:{})};
    }
   }
   return token;
@@ -213,6 +222,6 @@ globalThis.NovaNormal=(()=>{
  function afterBonus(value,rng=Math.random,setting){const s=normalize(value);return {...s,prelude:null,ceilingHandled:false,morningCeiling:false,games:0,modeChecked:0,fiftyChecked:false,mode:modes[weighted(transitions[modes.indexOf(s.mode)],rng)],level:'low',highLeft:0};}
  function drawRare(rng=Math.random){const keys=Object.keys(rare);return keys[weighted(keys.map(k=>rare[k].p),rng)];}
  const rareMean=Object.values(rare).reduce((s,r)=>s+r.p*r.pay,0)/Object.values(rare).reduce((s,r)=>s+r.p,0);
- return {modeSelection,modeRules,normalRoleProbabilities,drawNormalRole,lotteryRules,czPreludeRules,czPreludeStage,roleCzRate,czEntryFactors,modeWeights,gameZoneRates,gameZoneConfig,atEndModeWeights,zonePoint,preludePresentation,zoneRate,normalLabel,resetImpurityPoints,resetImpurityWeights,resetDistribution,reset,modes,ceilings,transitions,rare,rareMean,rareFactor,roleProbabilities,drawRare,defaults,config,normalize,ceiling,favored,multiplier,pay,drawRole,advance,spin,claim,afterArt,bonusEnd,afterBonus};
+ return {modeSelection,modeRules,normalLowPayoutRules,oneCoinDownChance,normalRoleProbabilities,drawNormalRole,lotteryRules,czPreludeRules,czPreludeStage,roleCzRate,czEntryFactors,modeWeights,gameZoneRates,gameZoneConfig,atEndModeWeights,zonePoint,preludePresentation,zoneRate,normalLabel,resetImpurityPoints,resetImpurityWeights,resetDistribution,reset,modes,ceilings,transitions,rare,rareMean,rareFactor,roleProbabilities,drawRare,defaults,config,normalize,ceiling,favored,multiplier,pay,drawRole,advance,spin,claim,afterArt,bonusEnd,afterBonus};
 })();
 

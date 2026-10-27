@@ -26,8 +26,10 @@ const isNovaGrid=grid=>[0,1,2].every(r=>[0,1,2].every(c=>grid[r][c]===novaSymbol
 ].map(fn).join('\n')+`
 const aTypeBonusRemainingNet=()=>remaining;
 let remaining=1;const session={paid:0,bonusKind:"BIG"};const isATypeBonusComplete=()=>session.paid>=NovaArt.bonusTarget(session.bonusKind);
-let pendingATypeInternalBonus=null;let pendingArtStep=null;
+let pendingATypeInternalBonus=null;let pendingArtStep=null;let pendingPreparationRole='';
 let pendingForceResult='';const isChanceLampLit=()=>true;
+const replayGatedBonusPreparation=()=>false;
+const preparationStopOrder=()=>[];
 const normalState={sinceBonus:20,bonusPending:false,risingRemain:0};
 const settings={};
 const NORMAL_ROLE_PAYOUTS={};
@@ -44,7 +46,7 @@ test('specified twenty-cell strips contain cherry and middle blanks with no lega
 });
 
 test('actual stop grids match every supported outcome using real consecutive strip cells',()=>{
- for(const result of ['NEBULA','MISS','BELL','BELL15','WEAK_SUICA','REPLAY','BIG','BAR3']) for(const row of [0,1,2]){
+ for(const result of ['NEBULA','MISS','ONE_COIN','BELL','BELL15','WEAK_SUICA','REPLAY','BIG','BAR3']) for(const row of [0,1,2]){
   run(`globalThis.grid=buildNovaReelGrid(${JSON.stringify(result)},${row});`);
   assert.equal(run('displayedResultFromGrid(grid)'),result);
   assert.equal(run('gridHasOnlyAllowedPaylines(grid,'+JSON.stringify(result)+')'),true);
@@ -55,7 +57,7 @@ test('actual stop grids match every supported outcome using real consecutive str
 test('left upper or middle watermelon is reserved for a drawn watermelon on every stop candidate',()=>{
  const violations=run(`(()=>{
   const violations=[];
-  for(const role of ['MISS','CZ','STRONG_CZ','BELL','BELL15','REPLAY','NEBULA','BIG','BAR3','WEAK_SUICA']){
+  for(const role of ['MISS','CZ','STRONG_CZ','ONE_COIN','BELL','BELL15','REPLAY','NEBULA','BIG','BAR3','WEAK_SUICA']){
    for(const row of [0,1,2])for(const first of [0,1,2])buildNovaReelGrid(role,row,first);
   }
   for(const [key,grids]of novaStopGridCache){
@@ -81,7 +83,7 @@ test('stop-grid filtering preserves the visual RNG draw count on cold and cached
   try{
    let calls=0;Math.random=()=>{calls++;return .5;};
    novaStopGridCache.clear();
-   for(const role of ['MISS','BELL','BELL15','REPLAY','NEBULA','BIG','BAR3','WEAK_SUICA']){
+   for(const role of ['MISS','ONE_COIN','BELL','BELL15','REPLAY','NEBULA','BIG','BAR3','WEAK_SUICA']){
     for(let pass=0;pass<2;pass++){
      const before=calls;buildNovaReelGrid(role,1);counts.push(calls-before);
     }
@@ -89,7 +91,20 @@ test('stop-grid filtering preserves the visual RNG draw count on cold and cached
    return counts;
   }finally{Math.random=original;}
  })()`);
- assert.deepEqual(Array.from(draws),Array(16).fill(1));
+ assert.deepEqual(Array.from(draws),Array(18).fill(1));
+});
+test('provisional one-coin stop uses one bell on the middle line and exact payout',()=>{
+ for(const [role,line,payout] of [
+  ['ONE_COIN',['🔔','__BLANK__','🐘'],1]
+ ]){
+  run(`globalThis.grid=buildNovaReelGrid(${JSON.stringify(role)},0);`);
+  assert.deepEqual(Array.from(run('grid[1]')),line);
+  assert.equal(run('displayedResultFromGrid(grid)'),role);
+  assert.equal(run(`gridHasOnlyAllowedPaylines(grid,${JSON.stringify(role)})`),true);
+  assert.equal(run('REEL_STRIPS.every((s,c)=>s.some((_,i)=>[0,1,2].every(r=>grid[r][c]===s[(i+r)%20])))'),true);
+  assert.equal(run(`normalizeATypeResult(${JSON.stringify(role)})`),role);
+  assert.equal(run(`normalRewardFor(${JSON.stringify(role)})`),payout);
+ }
 });
 test('bell pays 8 normally and caps the final BIG payout at the remaining 50pt target',()=>{
  assert.equal(run('normalRewardFor("BELL")'),8);
@@ -147,9 +162,10 @@ test('Super NOVA retains one 50:50 BIG or premium-BIG outcome without using the 
 test('game resolver carries CZ entry and final success into the bonus pipeline',()=>{
  run('settings.novaFlow={czGames:2,czMaxGames:2,czChance:1};normalState.flow=NovaFlow.normalize(null);globalThis.entry=resolveNormalOutcome("CZ");');
  assert.equal(run('entry.flowAfter.phase'),'cz');
- assert.equal(run('entry.flowAfter.remaining'),2);
+ assert.equal(run('entry.flowAfter.remaining'),15);
+ assert.equal(run('entry.flowAfter.ruleVersion'),2);
  assert.equal(run('entry.bonusHit'),false);
- run('normalState.flow=entry.flowAfter;globalThis.czFirst=resolveNormalOutcome("MISS");');
+ run('normalState.flow={...entry.flowAfter,remaining:2};globalThis.czFirst=resolveNormalOutcome("MISS");');
  assert.equal(run('czFirst.flowAfter.remaining'),1);
  run('normalState.flow=czFirst.flowAfter;pendingATypeInternalBonus={kind:"BIG",source:"CZ成功",gamesSinceLastBonusAtStart:20};globalThis.czLast=resolveNormalOutcome("MISS");');
  assert.equal(run('czLast.czCompleted'),true);

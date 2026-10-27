@@ -55,6 +55,10 @@ test('sortie, comeback, preparation and upper challenge use their own countdowns
   [{researchChallengeActive:true,burstLeft:0,researchAim:'nova'},'スーパーノヴァチャレンジ','0',true],
   [{burstLeft:7},'スーパーノヴァチャレンジ','7',false]
  ])assert.deepEqual(snapshot({phase:'art',remaining:'200',...extra}).zonecounter,{label,value:left,unit:'G',active:true,hold});
+ const replayGated={phase:'art',remaining:'200',initialStage:'wait',initialWait:0,initialPreparationVersion:ctx.NovaArt.preparationRules.version};
+ assert.deepEqual(snapshot(replayGated).zonecounter,{label:'AT準備',value:'開始リプレイ待ち',unit:'',active:true,hold:false});
+ assert.equal(ctx.NovaArt.label(replayGated),'AT準備中 / 開始リプレイ待ち');
+ assert.equal(ctx.NovaArt.label({phase:'art',remaining:'200',initialStage:'wait',initialWait:2}),'AT準備中 / 残り2G');
  assert.equal(snapshot({phase:'art',burstPending:true}).zonecounter.value,'—');
  assert.equal(snapshot({phase:'art',burstPending:true,zone:'sora',zoneLeft:2}).zonecounter.value,'2');
 });

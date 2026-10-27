@@ -47,7 +47,9 @@ test('live normal path passes strong CZ options and preserves normalized AT stat
   if(vm.runInContext('!!pendingArtStep.czEntry',c))break;
   vm.runInContext('normalState.internal=pendingArtStep.normalInternal;',c);
  }
- assert.equal(vm.runInContext('pendingArtStep.flow.success',c),true);assert.equal(vm.runInContext('pendingArtStep.flow.winProbability',c),1);
+ assert.equal(vm.runInContext('pendingArtStep.flow.ruleVersion',c),2);assert.equal(vm.runInContext('pendingArtStep.flow.source',c),'rare');
+ assert.equal(vm.runInContext('pendingArtStep.flow.remaining',c),15);assert.equal(vm.runInContext('pendingArtStep.flow.success',c),false);
+ assert.equal(vm.runInContext('pendingArtStep.flow.finalGuarantee',c),true);assert.ok(vm.runInContext('pendingArtStep.flow.perGameChance',c)>0);
  assert.equal(f.normalize({...({...a.enter({},()=>.5),remaining:'150',entryQuota:'150'}),atHigh:true,atHighLeft:7}).atHighLeft,7);
 });
 test('old forced strong bell maps to ordinary bell in both engines',()=>{

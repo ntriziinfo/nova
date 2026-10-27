@@ -59,7 +59,7 @@ test('forced comeback leaves an unfinished initial award and uses only the winni
   const base={...a.enterInitial({setting:6},()=>.9),initialStage,initialWait:2,initialPlan:[50,50,100],initialIndex:1,
    zone:initialStage==='zone'?'kushuri_nito':'',entryStage:initialStage==='entry'?'seven':''};
   const ctx=vm.createContext({NovaArt:a,A_TYPE_MODE:true,normalState:{flow:base},settings:{setting:6,novaArt:{}},
-   pendingForceResult:'COMEBACK',pendingArtStep:null,pendingATypeInternalBonus:null});
+   pendingForceResult:'COMEBACK',pendingArtStep:null,pendingATypeInternalBonus:null,pendingPreparationRole:''});
   assert.equal(vm.runInContext(draw+';drawNormalResult()',ctx),'MISS');
   const recovery={...ctx.pendingArtStep.flow,comebackLamp:'toto'};
   const won=a.step(recovery,{setting:6},()=>.5,'WEAK_SUICA');

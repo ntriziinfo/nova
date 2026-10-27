@@ -43,7 +43,7 @@ test('CZ rewrite uses the same threshold for suika and weak NOVA',()=>{const f=l
 test('live bonus preparation routes to its own lottery even when the normal draw is unavailable',()=>{
  const c=load(),html=readGameSource();
  const fn=html.match(/  function drawNormalResult\([^]*?\n  }/)[0];
- vm.runInContext(`const A_TYPE_MODE=true,normalState={bonusPending:true,prepLeft:3},settings={setting:6};let pendingArtStep=null,pendingATypeInternalBonus=null,pendingForceResult='';const isNovaResult=()=>false;`+fn,c);
+ vm.runInContext(`const A_TYPE_MODE=true,normalState={bonusPending:true,prepLeft:3},settings={setting:6};let pendingArtStep=null,pendingATypeInternalBonus=null,pendingPreparationRole='',pendingForceResult='';const replayGatedBonusPreparation=()=>false,isNovaResult=()=>false;`+fn,c);
  c.NovaNormal.drawRole=()=>{throw Error('Normal draw used for preparation');};
  c.NovaArt.drawPreparationRole=setting=>{assert.equal(setting,6);return 'WEAK_SUICA';};
  assert.equal(c.drawNormalResult(),'WEAK_SUICA');

@@ -1,0 +1,132 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+
+function load(){
+  const context=vm.createContext({});
+  for(const file of ['nova-tuning.js','nova-art.js','nova-flow.js','nova-normal.js']){
+    vm.runInContext(fs.readFileSync(file,'utf8'),context,{filename:file});
+  }
+  return context;
+}
+
+test('one-coin role is natural only in ordinary normal play and keeps base30 exactly',()=>{
+  const {NovaArt:a,NovaNormal:n,NovaTuning:t}=load();
+  assert.equal(a.lowPayout('ONE_COIN'),1);
+  assert.equal(a.payout('ONE_COIN'),1);
+  assert.equal(a.cashPayout('ONE_COIN'),1);
+  assert.equal(n.pay('ONE_COIN'),1);
+  assert.equal(a.atShortfallRefund('ONE_COIN'),2);
+  assert.equal(n.normalLowPayoutRules.oneCoinChance,.1);
+  assert.equal(n.normalLowPayoutRules.addedNaviBellChance,1/16);
+  for(let setting=1;setting<=6;setting++){
+    for(const row of [a.roleProbabilities(setting),a.roleProbabilities(setting,true),a.preparationProbabilities(setting),a.bonusRoleProbabilities(setting),a.comebackRoleProbabilities(setting),n.roleProbabilities(setting)]){
+      assert.equal(Object.hasOwn(row,'ONE_COIN'),false);
+      assert.equal(Object.hasOwn(row,'NAVI_BELL'),false);
+    }
+    const row=n.normalRoleProbabilities(setting);
+    assert.equal(row.ONE_COIN,.1);
+    assert.equal(n.drawNormalRole(setting,()=>.95),'ONE_COIN');
+    assert.ok(row.REPLAY>=1/7&&row.REPLAY<=1/5,`setting ${setting}: replay ${row.REPLAY}`);
+    assert.ok(Math.abs(Object.values(row).reduce((sum,p)=>sum+p,0)-1)<1e-12);
+    assert.ok(Object.values(row).every(p=>Number.isFinite(p)&&p>=0&&p<=1));
+    const paid=Object.entries(row).reduce((sum,[role,p])=>sum+p*(role==='REPLAY'?3:role==='NAVI_BELL'?8:n.pay(role)),0);
+    assert.ok(Math.abs(paid-4/3)<1e-12,`setting ${setting}: paid ${paid}`);
+    assert.ok(Math.abs(50/(3-paid)-30)<1e-10,`setting ${setting}: base ${50/(3-paid)}`);
+
+    const legacy={...n.roleProbabilities(setting)};
+    const formerNaviBell=1/t.normalBellDenominators[setting-1];
+    legacy.NAVI_BELL=formerNaviBell;
+    if(setting===6)legacy.BELL-=formerNaviBell;
+    else legacy.MISS=1-Object.entries(legacy).reduce((sum,[role,p])=>sum+(role==='MISS'?0:p),0);
+    const otherPaid=Object.entries(legacy).reduce((sum,[role,p])=>sum+p*(role==='NAVI_BELL'?8:n.pay(role)),0);
+    legacy.REPLAY=(3-50/t.normalBase(setting)-otherPaid)/3;
+    legacy.MISS=1-Object.entries(legacy).reduce((sum,[role,p])=>sum+(role==='MISS'?0:p),0);
+    const added=n.normalLowPayoutRules.addedNaviBellChance;
+    const one=n.normalLowPayoutRules.oneCoinChance;
+    assert.ok(Math.abs(row.NAVI_BELL-(legacy.NAVI_BELL+added))<1e-12);
+    assert.ok(Math.abs(row.REPLAY-(legacy.REPLAY-(one+8*added)/3))<1e-12);
+    assert.ok(Math.abs(row.MISS-(legacy.MISS+(-2*one+5*added)/3))<1e-12);
+    for(const role of Object.keys(legacy))if(!['REPLAY','MISS','NAVI_BELL'].includes(role))assert.equal(row[role],legacy[role],`${role} setting ${setting}`);
+
+    const entries=Object.entries(row).flatMap(([role,p])=>setting===6?(role==='BELL'?[['NAVI_BELL',row.NAVI_BELL],['BELL',p]]:role==='NAVI_BELL'?[]:[[role,p]]):[[role,p]]);
+    let lower=0;
+    for(const [role,p] of entries){
+      if(p===0)continue;
+      const midpoint=lower+p/2;
+      assert.equal(n.drawNormalRole(setting,()=>midpoint),role,`${role} setting ${setting}`);
+      if(role==='NAVI_BELL'){
+        let calls=0;
+        const token=n.spin(null,{phase:'normal'},setting,{},()=>calls++===0?midpoint:.999999);
+        assert.equal(token.result,'BELL');
+        assert.equal(token.normalBellNavi,true);
+        assert.equal(n.pay(token.result),8);
+      }
+      lower+=p;
+    }
+  }
+});
+
+test('one-coin role preserves the former miss/replay high-state downgrade hazard',()=>{
+  const {NovaNormal:n,NovaTuning:t}=load();
+  assert.ok(Math.abs(n.oneCoinDownChance()-.07)<1e-12);
+  assert.ok(Math.abs(n.oneCoinDownChance({downMiss:.2,downReplay:.02})-.14)<1e-12);
+  const state={level:'high',highLeft:0,mode:'A',games:200};
+  assert.equal(n.advance(state,'ONE_COIN',{phase:'normal'},{setting:3},()=>.069999).level,'low');
+  assert.equal(n.advance(state,'ONE_COIN',{phase:'normal'},{setting:3},()=>.07).level,'high');
+  assert.equal(n.advance({...state,highLeft:1},'ONE_COIN',{phase:'normal'},{setting:3},()=>0).level,'high');
+  assert.equal(n.roleCzRate({},'ONE_COIN',3,{}),0);
+  for(let setting=1;setting<=6;setting++){
+    const row=n.normalRoleProbabilities(setting),base={...n.roleProbabilities(setting)};
+    const legacyNavi=1/t.normalBellDenominators[setting-1];
+    base.NAVI_BELL=legacyNavi;
+    if(setting===6)base.BELL-=legacyNavi;
+    else base.MISS=1-Object.entries(base).reduce((sum,[role,p])=>sum+(role==='MISS'?0:p),0);
+    const otherPaid=Object.entries(base).reduce((sum,[role,p])=>sum+p*(role==='NAVI_BELL'?8:n.pay(role)),0);
+    base.REPLAY=(3-50/t.normalBase(setting)-otherPaid)/3;
+    base.MISS=1-Object.entries(base).reduce((sum,[role,p])=>sum+(role==='MISS'?0:p),0);
+    const before=base.MISS*n.defaults.downMiss+base.REPLAY*n.defaults.downReplay;
+    const after=row.MISS*n.defaults.downMiss+row.REPLAY*n.defaults.downReplay+row.ONE_COIN*n.oneCoinDownChance();
+    assert.ok(Math.abs(after-before)<1e-12,`setting ${setting}: ${after} != ${before}`);
+  }
+});
+
+test('ordinary, upper and prelude AT defer each low-payout loss into remaining points exactly once',()=>{
+  const {NovaArt:a}=load();
+  for(const researchUpper of [false,true])for(const atPrelude of [null,{total:5,left:4,zones:[]}])for(const [role,payout]of [['ONE_COIN',1]]){
+    const before={...a.enter({setting:3},()=>.5),remaining:'300',researchUpper,...(atPrelude?{atPrelude}:{})};
+    const paidBet=a.restoreBetCost(before,3);
+    assert.equal(paidBet.remaining,'303');
+    const out=a.step(paidBet,{setting:3},()=>.999999,role);
+    const carry=3-payout;
+    assert.equal(out.result,role);
+    assert.equal(out.flow.remaining,String(300+carry));
+    assert.equal(out.atShortfallRefund,carry);
+    assert.equal((payout-3)+(Number(out.flow.remaining)-300),0);
+    assert.equal(out.atOutcome.direct,0);
+    assert.equal(out.atOutcome.zone,'');
+  }
+});
+
+test('one-coin role near zero extends the AT instead of entering comeback early',()=>{
+  const {NovaArt:a}=load();
+  for(const [role,remaining]of [['ONE_COIN','3']]){
+    const before={...a.enter({setting:3},()=>.5),remaining:'1'};
+    const out=a.step(a.restoreBetCost(before,3),{setting:3},()=>.999999,role);
+    assert.equal(out.flow.phase,'art');
+    assert.equal(out.flow.remaining,remaining);
+    assert.equal(out.comebackEvent,undefined);
+  }
+});
+
+test('browser registry exposes the provisional middle-line stop in the debug force menu',()=>{
+  const source=fs.readFileSync('nova-game.js','utf8');
+  const html=fs.readFileSync('jag.html','utf8');
+  assert.match(source,/ONE_COIN:1/);
+  assert.ok(source.includes('ONE_COIN:{name:"1枚役",label:"1枚",reel:[BELL_SYMBOL,BLANK_SYMBOL,ELEPHANT_SYMBOL],cls:"blue",kind:"pay",provisionalStop:true}'));
+  assert.ok(source.includes("...['ONE_COIN'].map(k=>[k,RESULT[k].name+'（暫定停止形）'])"));
+  assert.ok(html.includes('<option value="NAVI_BELL">押し順ベル（8pt）</option>'));
+  assert.ok(source.includes('if(result === "NAVI_BELL")return result;'));
+  assert.ok(source.includes("['ONE_COIN','NAVI_BELL','BELL','REPLAY','MISS','FREEZE']"));
+});

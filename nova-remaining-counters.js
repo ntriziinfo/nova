@@ -25,7 +25,10 @@ globalThis.NovaRemainingCounters=(()=>{
    label='スーパーノヴァチャレンジ';left=resolved?.researchChallenge?.started?10:shown.burstLeft;hold=!!shown.researchAim;
   }
   else if(shown.comebackLeft){label='引き戻しチャレンジ';left=shown.comebackLeft;}
-  else if(shown.initialStage==='wait'){label='AT準備';left=shown.initialWait;}
+  else if(shown.initialStage==='wait'){
+   if(shown.initialPreparationVersion===NovaArt.preparationRules.version)result.zonecounter={label:'AT準備',value:'開始リプレイ待ち',unit:'',active:true,hold:false};
+   else {label='AT準備';left=shown.initialWait;}
+  }
   else if(shown.entryStage||shown.burstPending){result.zonecounter.label=shown.burstPending?'上位AT準備':'特化ゾーン準備';}
   if(label)result.zonecounter={label,value:games(left),unit:'G',active:true,hold};
   return result;

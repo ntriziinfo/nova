@@ -11,7 +11,7 @@ test('legacy replay entitlement grants exactly one free BET; new replay consumes
 test('preparation rares can award ART and a zone, misses cannot',()=>{
  const ctx=vm.createContext({});for(const f of ['nova-tuning.js','nova-art.js','nova-normal.js'])vm.runInContext(fs.readFileSync(f,'utf8'),ctx);
  assert.equal(ctx.NovaArt.drawPreparation('MISS',1,()=>0).sets,0);
- const won=ctx.NovaArt.drawPreparation('STRONG_NOVA',1,()=>0);assert.equal(won.sets,1);assert.equal(won.zones[0],'sosuke');
+ const won=ctx.NovaArt.drawPreparation('STRONG_NOVA',1,()=>0);assert.equal(won.sets,0);assert.equal(won.zones[0],'sosuke');
  assert.equal(ctx.NovaArt.drawPreparation('STRONG_NOVA',1,()=>.99).sets,0);
 });
 test('locked sound waits for ended, not a fixed timeout, and gates play',()=>{
