@@ -5,13 +5,13 @@ import {xoshiro128} from '../scripts/zone-v2-rng.mjs';
 const reload=(a,s)=>a.normalize(JSON.parse(JSON.stringify(s)));
 const start=(a,setting,rng)=>a.startZone({...a.enterInitial({setting},()=>.99),initialStage:'entry'},'kushuri_nito',{setting},rng);
 
-test('A plan preserves actual AT role frequencies while new initial awards stay at 300pt plus rare-role additions',()=>{
+test('A plan preserves the dedicated initial role frequencies while awards stay at 300pt plus rare-role additions',()=>{
  loadModel();const a=NovaArt;
  assert.deepEqual(a.freshInitialBases,[100,100,100,100,100,100]);
  assert.deepEqual(a.previousFreshInitialBases,[100,100,100,161,214,249]);
  assert.equal(a.freshInitialRules.version,2026102702);assert.equal(a.freshInitialRules.fixedVersion,2026102701);assert.equal(a.freshInitialRules.previousVersion,20261027);assert.equal(a.freshInitialRules.legacyVersion,20261007);
  for(let setting=1;setting<=6;setting++){
-  const roles=Object.entries(a.roleProbabilities(setting)).filter(([,p])=>p>0);let edge=0;
+  const roles=Object.entries(a.initialRoleProbabilities(setting)).filter(([,p])=>p>0);let edge=0;
   const picks=roles.map(([role,p])=>{const pick=edge+p/2;edge+=p;return {role:role==='BELL15'?'BELL':role,p,pick};});
   const distribution={};let mean=0;
   for(const first of picks)for(const second of picks)for(const third of picks){

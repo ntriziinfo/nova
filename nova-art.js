@@ -155,7 +155,7 @@ globalThis.NovaArt=(()=>{
  // The base plan is sealed; rare roles in the duo zone can upgrade that game's award.
  const initialRareAwards=Object.freeze({WEAK_SUICA:100,CHANCE_A:100,WEAK_NOVA:100,STRONG_SUICA:200,CHANCE_B:200,STRONG_NOVA:200,SUPER_NOVA:200});
  // Initial and sortie games retain their existing cash role mix.
- function drawInitialRole(setting,rng){let roll=rng();for(const [role,p]of Object.entries(roleProbabilities(setting,false,5)))if((roll-=p)<0)return role==='BELL15'?'BELL':role;return 'REPLAY';}
+ function drawInitialRole(setting,rng){let roll=rng();for(const [role,p]of Object.entries(initialRoleProbabilities(setting)))if((roll-=p)<0)return role==='BELL15'?'BELL':role;return 'REPLAY';}
 
  // Plan the three actual roles once; saved games replay the same awards.
  function scriptedInitialRoles(setting,rng){return Array.from({length:3},()=>drawInitialRole(setting,rng));}
@@ -224,9 +224,10 @@ globalThis.NovaArt=(()=>{
  const rareTotal=Object.values(rareRoles).reduce((sum,v)=>sum+v.p,0);
  const rareMean=Object.values(rareRoles).reduce((sum,v)=>sum+v.p*v.pay,0)/rareTotal;
  const rareFactor=()=>1;
- // Low-payout roles are shared with forced/debug AT settlement. Natural one-coin
- // probability belongs only to NovaNormal.normalRoleProbabilities().
+ // Low-payout roles are shared by normal play and the ordinary/upper AT quota.
+ // Preparations, initial-point games and special zones keep their own role mix.
  const lowPayoutRoles=Object.freeze({ONE_COIN:1});
+ const atLowPayoutRules=Object.freeze({oneCoinChance:.1,replayHighDownChance:.05});
  const lowPayout=role=>lowPayoutRoles[role]??0;
  const payout=role=>rareRoles[role]?.pay??lowPayoutRoles[role]??(role==='BELL'?8:role==='BELL15'?15:0);
  const atShortfallRefund=(role,spinCost=3)=>Object.prototype.hasOwnProperty.call(lowPayoutRoles,role)?Math.max(0,Number(spinCost)-lowPayoutRoles[role]):0;
@@ -341,11 +342,17 @@ const tuning={"weak":128,"strong":1500,"other":1.15,"tilts":[-0.28,-0.28,-0.28,0
  }
  function drawAtRare(setting,rng){const {r,chance}=atMix(setting);let roll=rng()*chance;for(const [role,p]of Object.entries(r))if((roll-=p)<0)return role;return 'STRONG_NOVA';}
  const atNetRules=Object.freeze({normal:4,upper:4,checkpoint:4});
- function roleProbabilities(setting=3,upper=false,target=upper?atNetRules.upper:atNetRules.normal){
+ function atRoleProbabilities(setting,upper,target,oneCoinChance){
   const {r,chance,mean}=atMix(setting),share=upper?1:0.5;
-  const bell=(target-chance*(mean-3))/(5+7*share);
-  return {...r,BELL:bell*(1-share),BELL15:bell*share,REPLAY:1-chance-bell};
+  const bell=(target-chance*(mean-3)-oneCoinChance*(lowPayout('ONE_COIN')-3))/(5+7*share);
+  return {...r,...(oneCoinChance?{ONE_COIN:oneCoinChance}:{}),BELL:bell*(1-share),BELL15:bell*share,REPLAY:1-chance-oneCoinChance-bell};
  }
+ function roleProbabilities(setting=3,upper=false,target=upper?atNetRules.upper:atNetRules.normal){return atRoleProbabilities(setting,upper,target,atLowPayoutRules.oneCoinChance);}
+ // The initial three-game award and sortie keep the pre-one-coin +5pt table.
+ function initialRoleProbabilities(setting=3){return atRoleProbabilities(setting,false,5,0);}
+ // ONE_COIN replaces replay plus the replay interval moved to paid bells. Preserve
+ // the aggregate pre-change 5% high-state downgrade hazard exactly.
+ function oneCoinHighDownChance(upper=false){const share=upper?1:.5;return atLowPayoutRules.replayHighDownChance*(1+(3-lowPayout('ONE_COIN'))/(5+7*share));}
  function drawAtRole(setting,upper,rng,target){let roll=rng();for(const [role,p]of Object.entries(roleProbabilities(setting,upper,target)))if((roll-=p)<0)return role;return 'REPLAY';}
  const zoneEntryScale=[0.405,0.475,0.415,0.5,0.485,0.485];
  // Normalize by actual rare-role frequency, preserving the average AT zone entry rate.
@@ -534,7 +541,7 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
   }
   // Normal AT uses the fixed Sosuke route; upper AT credits the same 50pt directly.
   if(out.direct&&!s.researchUpper&&!out.keepDirect){out.fixed50=true;out.extraZone=out.zone;out.zone='sosuke';out.direct=0;}
-  if(wasHigh&&!held&&(role==='REPLAY'||role==='MISS')&&rng()<(role==='REPLAY'?.05:.08)){s.atHigh=false;s.atHighLeft=0;}
+  if(wasHigh&&!held&&['REPLAY','MISS','ONE_COIN'].includes(role)&&rng()<(role==='ONE_COIN'?oneCoinHighDownChance(!!s.researchUpper):role==='REPLAY'?atLowPayoutRules.replayHighDownChance:.08)){s.atHigh=false;s.atHighLeft=0;}
   return out;
  }
  function step(value,options={},rng=Math.random,forced=''){
@@ -656,5 +663,5 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
   s.researchSortieRate=[.1,.25,.4,.6,.8][i<0?4:i];s.researchSortieLeft=10;s.researchSortieHits=0;
   s.comebackLeft=0;s.comebackConfirmed=false;s.comebackLamp='';s.zero=false;s.dryEligible=false;return s;
  }
- return {challengeAimChance,atNetRules,weakAtAwardScales,weakAtResponseChance,weakQualityWeights,drawWeakAtReward,upperAtRules,initialBurstChance,checkpointQuietRules,checkpointGuaranteed,cashPayout,replayRefund,lowPayoutRoles,lowPayout,atShortfallRefund,scriptedInitialRoles,freshInitialRules,freshInitialBases,previousFreshInitialBases,isFreshInitialRuleVersion,freshInitialBase,freshInitialAward,positiveNetZoneRules,positiveNetZoneFactor,restoreBetCost,extraZoneChance,commonAtRulesFor,balanceFor,drawRepeatZoneFactor,balanceZoneAward,preparationStockWeights,entryWeights:researchEntryWeights,beginResearchSortie,atPreludeRules,initialRareAwards,initialZoneIds,rouletteZones,sevenGuaranteed,initialBoostRules,entryQuotaRules,initialZoneAllowed,initialZoneWeights,pickInitialZone,drawEntryQuota,enterInitial,challengeName,burstReward,comebackRules,comebackChance,comebackRoleProbabilities,drawComebackRole,beginComeback,prepareComeback,stepComeback,burstRules,burstChance,commonAtRules,bonusRules,bonusTier,drawBonusTier,bonusLabel,bonusPayout,bonusAim,aimColors,aimColorsFor,sevenAimRules,drawSevenAim,ladderWeightsFor,ladderGuaranteed,drawLadderRole,lossRewardControl,zoneTailControl,zoneAwardFactor,netRewardControl,netLimits,netRewardFactor,superZoneChance,zoneGroups,zoneGroupWeights,upgradeGuaranteedZone,bonusSpecialRates,zoneRules,ladderTables,ladderTableFor,ladderValues,sevenValues,sevenWeights,atZoneWeights,tuning,atMix,drawAtRare,atRoleRules,pickAtZone,pickNonSosukeZone,resolveAtRole,rareRoles,rareTotal,rareMean,rareFactor,drawRare,roleProbabilities,bonusRoleProbabilities,preparationRules,isPreparationStartReplay,preparationStartOrder,preparationDisplayRole,preparationCashPayout,preparationProbabilities,drawPreparationRole,drawPreparationStockCount,preparationRewardRates,drawBonusPreparationReward,atPreparationZoneChance,drawAtPreparationReward,zoneRoleWeights,zoneRoleMultiplier,paidBellChance,drawPreparation,zoneEntryScale,points,bonusTarget,payout,settleZone,prepareBet,oumaFreezeRate,baseZone,zoneName,zoneIds,names,defaults,direct,zoneWeights,pickZone,bonusSpecial,settingBias,biasFor,bonusSpecialFor,advanceBonus,bonusStockLabel,bonusStockRules,bonusStockFactor,bonusStockEligible,drawPaidRole,drawBonus,config,normalize,enter,startZone,afterBonus,step,label};
+ return {challengeAimChance,atNetRules,atLowPayoutRules,oneCoinHighDownChance,weakAtAwardScales,weakAtResponseChance,weakQualityWeights,drawWeakAtReward,upperAtRules,initialBurstChance,checkpointQuietRules,checkpointGuaranteed,cashPayout,replayRefund,lowPayoutRoles,lowPayout,atShortfallRefund,scriptedInitialRoles,freshInitialRules,freshInitialBases,previousFreshInitialBases,isFreshInitialRuleVersion,freshInitialBase,freshInitialAward,positiveNetZoneRules,positiveNetZoneFactor,restoreBetCost,extraZoneChance,commonAtRulesFor,balanceFor,drawRepeatZoneFactor,balanceZoneAward,preparationStockWeights,entryWeights:researchEntryWeights,beginResearchSortie,atPreludeRules,initialRareAwards,initialZoneIds,rouletteZones,sevenGuaranteed,initialBoostRules,entryQuotaRules,initialZoneAllowed,initialZoneWeights,pickInitialZone,drawEntryQuota,enterInitial,challengeName,burstReward,comebackRules,comebackChance,comebackRoleProbabilities,drawComebackRole,beginComeback,prepareComeback,stepComeback,burstRules,burstChance,commonAtRules,bonusRules,bonusTier,drawBonusTier,bonusLabel,bonusPayout,bonusAim,aimColors,aimColorsFor,sevenAimRules,drawSevenAim,ladderWeightsFor,ladderGuaranteed,drawLadderRole,lossRewardControl,zoneTailControl,zoneAwardFactor,netRewardControl,netLimits,netRewardFactor,superZoneChance,zoneGroups,zoneGroupWeights,upgradeGuaranteedZone,bonusSpecialRates,zoneRules,ladderTables,ladderTableFor,ladderValues,sevenValues,sevenWeights,atZoneWeights,tuning,atMix,drawAtRare,atRoleRules,pickAtZone,pickNonSosukeZone,resolveAtRole,rareRoles,rareTotal,rareMean,rareFactor,drawRare,roleProbabilities,initialRoleProbabilities,bonusRoleProbabilities,preparationRules,isPreparationStartReplay,preparationStartOrder,preparationDisplayRole,preparationCashPayout,preparationProbabilities,drawPreparationRole,drawPreparationStockCount,preparationRewardRates,drawBonusPreparationReward,atPreparationZoneChance,drawAtPreparationReward,zoneRoleWeights,zoneRoleMultiplier,paidBellChance,drawPreparation,zoneEntryScale,points,bonusTarget,payout,settleZone,prepareBet,oumaFreezeRate,baseZone,zoneName,zoneIds,names,defaults,direct,zoneWeights,pickZone,bonusSpecial,settingBias,biasFor,bonusSpecialFor,advanceBonus,bonusStockLabel,bonusStockRules,bonusStockFactor,bonusStockEligible,drawPaidRole,drawBonus,config,normalize,enter,startZone,afterBonus,step,label};
 })();

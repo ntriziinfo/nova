@@ -10,7 +10,7 @@ test('current visible roles are common, ordinary base is 30G, and fresh initial 
   assert(Object.values(mix).every(v=>v>=0&&v<=1));assert(Math.abs(Object.values(mix).reduce((sum,v)=>sum+v,0)-1)<1e-12);
   const paid=Object.entries(mix).reduce((sum,[r,v])=>sum+v*n.pay(r==='NAVI_BELL'?'BELL':r),0);
   assert(Math.abs(50/(3*(1-mix.REPLAY)-paid)-t.normalBase(s))<1e-9);assert.equal(t.normalBase(s),30);
-  const roles=a.roleProbabilities(s,false,5);
+  const roles=a.initialRoleProbabilities(s);
   const expected=3*Object.entries(roles).reduce((sum,[r,p])=>sum+p*a.freshInitialAward(s,r==='BELL15'?'BELL':r),0);
   assert(Math.abs(expected-306.0206038135593)<1e-9);
  }

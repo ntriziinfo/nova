@@ -1,7 +1,14 @@
-import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
+import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';import {createHash} from 'node:crypto';
 const ctx=vm.createContext({});for(const f of ['nova-tuning.js','nova-art.js','nova-balance.js','nova-normal.js','nova-flow.js'])vm.runInContext(fs.readFileSync(f,'utf8'),ctx);const a=ctx.NovaArt,b=ctx.NovaBalance;
-const evidence=JSON.parse(fs.readFileSync('docs/parity-v174-rtp-20261027-100m.json','utf8'));
-test('RTP metadata matches the parity-v174 100M evidence',()=>{
+const evidence=JSON.parse(fs.readFileSync('docs/parity-v174-at-onecoin-rtp-20261027-100m.json','utf8'));
+test('AT one-coin RTP evidence hashes still identify every lottery input',()=>{
+ for(const [file,expected]of Object.entries(evidence.sourceHashes)){
+  if(file==='nova-balance.js')continue;
+  assert.equal(createHash('sha256').update(fs.readFileSync(file)).digest('hex'),expected,file);
+ }
+ assert.match(evidence.sourceHashNote,/nova-balance\.js changed only to publish/);
+});
+test('RTP metadata matches the parity-v174 AT one-coin 100M evidence',()=>{
  const targets=evidence.targets;
  const measured=evidence.settings.map(row=>row.rtp);
  for(let i=0;i<6;i++){
@@ -13,7 +20,7 @@ test('RTP metadata matches the parity-v174 100M evidence',()=>{
   assert.equal(p.measuredRtp,measured[i]);
   assert.deepEqual(Array.from(p.measuredRtpCi95),evidence.settings[i].rtpCi95BatchMeans);
   assert.equal(p.verifiedModel,evidence.version);
-  assert.match(p.verificationLabel,/奇数荒波・偶数安定／打ち切りなし1億G連続試算（1シード）/);
+  assert.match(p.verificationLabel,/AT中1枚役10%／奇数荒波・偶数安定／打ち切りなし1億G連続試算（1シード）/);
   assert.equal(p.target,targets[i]);
   assert.equal(p.scale,.21*(1+.12*a.settingBias[i]));
   assert.equal(evidence.settings[i].firstComplete,null);
@@ -39,7 +46,7 @@ test('standard RTP metadata applies only while both COMPLETE limits stay disable
 test('initial-zone mean supports current and saved initial-point rules',()=>{
  const versions=[a.freshInitialRules.version,a.freshInitialRules.fixedVersion,a.freshInitialRules.previousVersion,a.freshInitialRules.legacyVersion];
  for(const version of versions)for(let setting=1;setting<=6;setting++){
-  const expected=a.entryQuotaRules.games*Object.entries(a.roleProbabilities(setting,false,5)).reduce((sum,[role,p])=>sum+p*a.freshInitialAward(setting,role,version),0);
+  const expected=a.entryQuotaRules.games*Object.entries(a.initialRoleProbabilities(setting)).reduce((sum,[role,p])=>sum+p*a.freshInitialAward(setting,role,version),0);
   const actual=b.zoneMean('kushuri_nito',{setting,initialBoostActive:true,initialRuleVersion:version,initialMultiplier:1});
   assert.ok(Math.abs(actual-expected)<1e-9,`version ${version}, setting ${setting}`);
  }
@@ -56,7 +63,7 @@ test('static page starts RTP fields in loading state and cache-busts current scr
  assert.match(html,/nova-art\.js\?v=[^"\s]*parity-v174/);
  assert.match(html,/nova-complete\.js\?v=20261027-live-my/);
  assert.match(html,/nova-game\.js\?v=[^"\s]*parity-v174/);
- assert.match(html,/nova-balance\.js\?v=20261027-parity-v174-100m/);
+ assert.match(html,/nova-balance\.js\?v=20261027-parity-v174-100m-at-onecoin-v1/);
  assert.match(html,/ライブ遊技はMY19,000ptを基準にコンプリート停止します/);
  assert.match(html,/奇数荒波・偶数安定調整後の、コンプリート・MY打ち切りなし1億G連続試算（各設定1シード）/);
  assert.doesNotMatch(html,/予備試算|最終検証待ち/);

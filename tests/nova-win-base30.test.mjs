@@ -74,10 +74,10 @@ test('visible role probabilities are common and fresh initial points remain fixe
  loadModel('../tests/fixtures/pre-win-base30');
  const legacyInitial=JSON.parse(JSON.stringify(NovaArt.freshInitialRules));
  loadModel();
- const shared=JSON.parse(JSON.stringify(NovaNormal.roleProbabilities(1))),initialRoles=JSON.parse(JSON.stringify(NovaArt.roleProbabilities(1,false,5)));
+ const shared=JSON.parse(JSON.stringify(NovaNormal.roleProbabilities(1))),initialRoles=JSON.parse(JSON.stringify(NovaArt.initialRoleProbabilities(1)));
  for(let setting=1;setting<=6;setting++){
   assert.deepEqual(JSON.parse(JSON.stringify(NovaNormal.roleProbabilities(setting))),shared);
-  assert.deepEqual(JSON.parse(JSON.stringify(NovaArt.roleProbabilities(setting,false,5))),initialRoles);
+  assert.deepEqual(JSON.parse(JSON.stringify(NovaArt.initialRoleProbabilities(setting))),initialRoles);
   assert.equal(NovaNormal.roleProbabilities(setting).WEAK_SUICA,.0248);assert.equal(NovaNormal.roleProbabilities(setting).WEAK_NOVA,1/128);assert.equal(NovaNormal.roleProbabilities(setting).STRONG_NOVA,1/2500);
   assert.equal(NovaNormal.pay('WEAK_SUICA'),3);assert.equal(NovaNormal.pay('WEAK_NOVA'),2);assert.equal(NovaNormal.pay('STRONG_NOVA'),2);
   assert.equal(NovaArt.freshInitialRules.version,2026102702);
@@ -86,7 +86,7 @@ test('visible role probabilities are common and fresh initial points remain fixe
   assert.equal(NovaArt.freshInitialRules.legacyVersion,legacyInitial.version);
   assert.deepEqual(NovaArt.freshInitialRules.rareAwards,legacyInitial.rareAwards);
   assert.equal(NovaArt.freshInitialBase(setting,legacyInitial.version),100);
-  const mean=3*Object.entries(NovaArt.roleProbabilities(setting,false,5)).reduce((sum,[role,p])=>sum+p*NovaArt.freshInitialAward(setting,role==='BELL15'?'BELL':role),0);
+  const mean=3*Object.entries(NovaArt.initialRoleProbabilities(setting)).reduce((sum,[role,p])=>sum+p*NovaArt.freshInitialAward(setting,role==='BELL15'?'BELL':role),0);
   near(mean,306.0206038135593);
   let flow=NovaArt.enterInitial({setting},()=>.99);
   while(flow.initialStage)flow=NovaArt.step(flow,{setting},()=>.99,flow.initialStage==='wait'?'START_REPLAY_LEFT':'').flow;

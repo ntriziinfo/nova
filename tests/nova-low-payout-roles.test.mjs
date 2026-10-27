@@ -10,22 +10,43 @@ function load(){
   }
   return context;
 }
+const sequence=(...values)=>{let index=0;return ()=>values[index++]??.999999999;};
 
-test('one-coin role is natural only in ordinary normal play and keeps base30 exactly',()=>{
+test('one-coin role is natural in ordinary play and AT while excluded phases keep their own tables',()=>{
   const {NovaArt:a,NovaNormal:n,NovaTuning:t}=load();
   assert.equal(a.lowPayout('ONE_COIN'),1);
   assert.equal(a.payout('ONE_COIN'),1);
   assert.equal(a.cashPayout('ONE_COIN'),1);
   assert.equal(n.pay('ONE_COIN'),1);
   assert.equal(a.atShortfallRefund('ONE_COIN'),2);
+  assert.equal(a.atLowPayoutRules.oneCoinChance,.1);
   assert.equal(n.normalLowPayoutRules.oneCoinChance,.1);
   assert.equal(n.normalLowPayoutRules.addedNaviBellChance,1/16);
   const shared=JSON.parse(JSON.stringify(n.roleProbabilities(1))),ordinary=JSON.parse(JSON.stringify(n.normalRoleProbabilities(1)));
   for(let setting=1;setting<=6;setting++){
-    for(const row of [a.roleProbabilities(setting),a.roleProbabilities(setting,true),a.preparationProbabilities(setting),a.bonusRoleProbabilities(setting),a.comebackRoleProbabilities(setting),n.roleProbabilities(setting)]){
+    const at=a.roleProbabilities(setting),upper=a.roleProbabilities(setting,true),initial=a.initialRoleProbabilities(setting);
+    for(const [row,isUpper] of [[at,false],[upper,true]]){
+      assert.equal(row.ONE_COIN,.1);
+      assert.equal(Object.hasOwn(row,'NAVI_BELL'),false);
+      assert.ok(Math.abs(Object.values(row).reduce((sum,p)=>sum+p,0)-1)<1e-12);
+      assert.ok(Object.values(row).every(p=>Number.isFinite(p)&&p>=0&&p<=1));
+      const net=Object.entries(row).reduce((sum,[role,p])=>sum+p*(a.cashPayout(role)-3),0);
+      assert.ok(Math.abs(net-(isUpper?a.atNetRules.upper:a.atNetRules.normal))<1e-12);
+      const {chance,mean}=a.atMix(setting),share=isUpper?1:.5;
+      const oldBell=((isUpper?a.atNetRules.upper:a.atNetRules.normal)-chance*(mean-3))/(5+7*share);
+      const oldReplay=1-chance-oldBell;
+      const newHighDown=row.REPLAY*a.atLowPayoutRules.replayHighDownChance+row.ONE_COIN*a.oneCoinHighDownChance(isUpper);
+      assert.ok(Math.abs(newHighDown-oldReplay*a.atLowPayoutRules.replayHighDownChance)<1e-12);
+      let oneStart=0;for(const [role,p]of Object.entries(row)){if(role==='ONE_COIN')break;oneStart+=p;}
+      const before={...a.enter({setting},()=>.5),remaining:'300',researchUpper:isUpper};
+      const out=a.step(a.restoreBetCost(before,3),{setting},sequence(.999999,oneStart+row.ONE_COIN/2));
+      assert.equal(out.result,'ONE_COIN');assert.equal(out.flow.remaining,'302');assert.equal(out.atShortfallRefund,2);
+    }
+    for(const row of [initial,a.preparationProbabilities(setting),a.bonusRoleProbabilities(setting),a.comebackRoleProbabilities(setting),n.roleProbabilities(setting)]){
       assert.equal(Object.hasOwn(row,'ONE_COIN'),false);
       assert.equal(Object.hasOwn(row,'NAVI_BELL'),false);
     }
+    assert.ok(a.scriptedInitialRoles(setting,()=>a.atMix(setting).chance+.05).every(role=>role!=='ONE_COIN'));
     const row=n.normalRoleProbabilities(setting);
     assert.deepEqual(JSON.parse(JSON.stringify(n.roleProbabilities(setting))),shared);
     assert.deepEqual(JSON.parse(JSON.stringify(row)),ordinary);

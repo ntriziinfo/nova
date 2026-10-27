@@ -100,7 +100,7 @@ test('300pt plus alpha entry and replay-gated preparation mechanics remain fixed
  const {a}=load();assert.equal(a.freshInitialRules.quota,300);assert.deepEqual(plain(a.freshInitialBases),[100,100,100,100,100,100]);assert.equal(a.preparationRules.startReplayChance,1/3);assert.equal(a.preparationRules.meanGames,3);
  for(let setting=1;setting<=6;setting++){
   assert.equal(a.freshInitialAward(setting,'BELL'),100);assert.equal(a.freshInitialAward(setting,'WEAK_NOVA'),150);assert.equal(a.freshInitialAward(setting,'STRONG_NOVA'),200);
-  const row=a.roleProbabilities(setting),mean=3*Object.entries(row).reduce((sum,[role,probability])=>sum+probability*a.freshInitialAward(setting,role==='BELL15'?'BELL':role),0);
+  const row=a.initialRoleProbabilities(setting),mean=3*Object.entries(row).reduce((sum,[role,probability])=>sum+probability*a.freshInitialAward(setting,role==='BELL15'?'BELL':role),0);
   near(mean,306.0206038135593,1e-9);
   const entry=a.enterInitial({setting},()=>.999999);assert.equal(entry.entryQuota,'300');assert.equal(entry.initialPreparationVersion,a.preparationRules.version);assert.equal(entry.initialStage,'wait');
   const preparation=a.preparationProbabilities(setting),startChance=a.preparationRules.startReplayRoles.reduce((sum,role)=>sum+preparation[role],0);
