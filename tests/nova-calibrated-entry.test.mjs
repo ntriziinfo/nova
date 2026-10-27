@@ -3,7 +3,7 @@ const ctx=vm.createContext({});vm.runInContext(fs.readFileSync('nova-tuning.js',
 test('weak NOVA obeys the common threshold and reserves wins in the prelude',()=>{
  for(let setting=1;setting<=6;setting++){
   const threshold=a.extraZoneChance(setting,'WEAK_NOVA');assert(threshold>0&&threshold<1);
-  const run=roll=>{let seq=[.99,.99,.99,.99,roll,.5,.99];return a.step(a.enter({},()=>.5),{setting},()=>seq.shift()??.99,'WEAK_NOVA');};
+  const run=roll=>{let seq=[.99,.99,.99,.99,roll,.5,a.weakAtAwardScales[setting-1]/2];return a.step(a.enter({},()=>.5),{setting},()=>seq.shift()??.99,'WEAK_NOVA');};
   assert.equal(run(threshold-1e-9).flow.atPrelude.zones.length,1);assert.equal(run(threshold+1e-9).flow.atPrelude?.zones.length??0,0);
  }
 });

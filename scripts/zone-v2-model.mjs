@@ -1,6 +1,8 @@
 import fs from 'node:fs';import path from 'node:path';import vm from 'node:vm';import {fileURLToPath} from 'node:url';import {xoshiro128,xoshiro128State} from './zone-v2-rng.mjs';
 export const ROOT=path.dirname(fileURLToPath(import.meta.url));
+let loadedVariant='..';
 export function loadModel(variant='..',cache=true,tuningOverrides){
+ loadedVariant=variant;
  const completeFile=path.join(ROOT,variant,'nova-complete.js');
  vm.runInThisContext(fs.readFileSync(fs.existsSync(completeFile)?completeFile:path.join(ROOT,variant==='..'?'../nova-complete.js':'../tests/fixtures/pre-smartslot-20261013/nova-complete.js'),'utf8'),{filename:'nova-complete.js'});
  globalThis.NovaDecrement=undefined;globalThis.NovaProgress=undefined;
@@ -24,8 +26,12 @@ export function simulate(setting,games,seed,options={}){
  // Frozen historical fixtures retain their original total-G lottery for replay tests.
  const roleSortieRates=options.roleSortieRates||(globalThis.NovaProgress?.sortieChance?Object.fromEntries(['WEAK_SUICA','WEAK_NOVA','STRONG_NOVA'].map(role=>[role,NovaProgress.sortieChance(setting,role)])):null);
  const a=NovaArt,n=NovaNormal,replayRefund=!!a.replayRefund&&options.replayRefund!==false;
- const completeNetLimit=options.completeLimitPt??(NovaComplete.defaultNetLimitPt??(replayRefund?10000:19000));
- const completeMyLimit=options.completeMyLimitPt??(NovaComplete.defaultMyLimitPt??(replayRefund?15000:0)),completion={};
+ // Current production and current simulations are uncapped unless a caller
+ // explicitly opts into a legacy COMPLETE limit. Frozen historical fixtures
+ // keep their own former defaults so their evidence remains reproducible.
+ const currentModel=loadedVariant==='..';
+ const completeNetLimit=options.completeLimitPt??(currentModel?0:(NovaComplete.defaultNetLimitPt??(replayRefund?10000:19000)));
+ const completeMyLimit=options.completeMyLimitPt??(currentModel?0:(NovaComplete.defaultMyLimitPt??(replayRefund?15000:0))),completion={};
  const refund=role=>replayRefund?a.replayRefund(role):0,cash=role=>n.pay(role)+refund(role);
  const c={...a.defaults,setting,...options.art,replayRefund},rng=(options.rng==='xoshiro128'?xoshiro128:options.rng==='mulberry'?mulberry:lcg)(seed);
  globalThis.NovaDecrement?.reset(setting,xoshiro128State(seed+'|decrement-interval'),options.decrement!==false);

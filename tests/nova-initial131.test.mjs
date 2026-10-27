@@ -19,11 +19,11 @@ test('default unconfigured initial base has the original mean 200; configured se
 
 test('fresh bonus win waits exactly three paid games then seven, roulette and initial zone',()=>{
  let draws=0;let s=a.afterBonus({phase:'normal'},{setting:6},2,()=>{draws++;return .5;});
- assert.equal(draws,3);assert.equal(s.remaining,'0');assert.equal(s.entryQuota,'300');assert.equal(s.sets,'1');
+ assert.equal(draws,3);assert.equal(s.remaining,'0');assert.equal(s.entryQuota,'747');assert.equal(s.sets,'1');
  for(let g=0;g<3;g++){
   assert.equal(s.initialWait,3-g);assert.equal(s.entryStage,'');assert.equal(s.zone,'');
   s=a.step(reload(s),{setting:6},()=>.5).flow;
-  assert.equal(s.remaining,'0');assert.equal(s.entryQuota,'300');assert.equal(s.sets,'1');
+  assert.equal(s.remaining,'0');assert.equal(s.entryQuota,'747');assert.equal(s.sets,'1');
  }
  assert.equal(s.initialStage,'entry');assert.equal(s.entryStage,'seven');
  let t=a.step(reload(s),{},()=>.5);assert.equal(t.result,'BIG');assert.equal(t.zoneSpin,true);assert.equal(t.flow.entryStage,'roulette');

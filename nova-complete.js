@@ -3,8 +3,9 @@ globalThis.NovaComplete=(()=>{
  const finite=n=>Number.isFinite(Number(n))?Number(n):0;
  const defaultNetLimitPt=0,defaultMyLimitPt=19000;
  const validLimit=n=>Number.isInteger(Number(n))&&Number(n)>=1&&Number(n)<=999999;
- function myLimit(settings){if(settings?.completeBasis==='net')return 0;const n=Number(settings?.completeMyLimitPt);return validLimit(n)?n:defaultMyLimitPt;}
- function configure(settings={},store=false){
+ function myLimit(settings){if(settings?.completeBasis==='net'||settings?.completeBasis==='none')return 0;const n=Number(settings?.completeMyLimitPt);return validLimit(n)?n:defaultMyLimitPt;}
+ function configure(settings={},store=false,enabled=true){
+  if(enabled===false)return {...settings,completeEnabled:false,completeBasis:'none',completeLimitPt:0,completeMyLimitPt:0};
   if(store||settings.completeBasis==='net')return {...settings,completeBasis:'net',completeLimitPt:validLimit(settings.completeLimitPt)?Number(settings.completeLimitPt):validLimit(settings.completeMyLimitPt)?Number(settings.completeMyLimitPt):defaultMyLimitPt,completeMyLimitPt:0};
   return {...settings,completeLimitPt:defaultNetLimitPt,completeMyLimitPt:myLimit(settings)};
  }

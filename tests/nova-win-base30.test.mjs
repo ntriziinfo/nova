@@ -72,14 +72,17 @@ test('base is 30G for every setting and AT pays net4.5/7 with three paid BETs af
 
 test('initial points, shared state roles and sortie cash mix retain the approved pre-change behavior',()=>{
  loadModel('../tests/fixtures/pre-win-base30');
- const expected=Array.from({length:6},(_,i)=>({shared:NovaNormal.roleProbabilities(i+1),initial:NovaArt.freshInitialRules,initialRoles:NovaArt.roleProbabilities(i+1)}));
+ const expected=Array.from({length:6},(_,i)=>({shared:NovaNormal.roleProbabilities(i+1),legacyInitial:NovaArt.freshInitialRules,initialRoles:NovaArt.roleProbabilities(i+1)}));
  loadModel();
  for(let setting=1;setting<=6;setting++){
   assert.deepEqual(NovaNormal.roleProbabilities(setting),expected[setting-1].shared);
-  assert.deepEqual(NovaArt.freshInitialRules,expected[setting-1].initial);
+  assert.equal(NovaArt.freshInitialRules.version,20261027);
+  assert.equal(NovaArt.freshInitialRules.legacyVersion,expected[setting-1].legacyInitial.version);
+  assert.deepEqual(NovaArt.freshInitialRules.rareAwards,expected[setting-1].legacyInitial.rareAwards);
+  assert.equal(NovaArt.freshInitialBase(setting,expected[setting-1].legacyInitial.version),100);
   assert.deepEqual(NovaArt.roleProbabilities(setting,false,5),expected[setting-1].initialRoles);
   let flow=NovaArt.enterInitial({setting},()=>.99);
   while(flow.initialStage)flow=NovaArt.step(flow,{setting},()=>.99).flow;
-  assert.equal(flow.remaining,'300');
+  assert.equal(flow.remaining,String(NovaArt.freshInitialBase(setting)*3));
  }
 });

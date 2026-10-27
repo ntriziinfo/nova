@@ -127,10 +127,18 @@ globalThis.NovaArt=(()=>{
  const initialZoneIds=Object.freeze(['kushuri_nito']);
  const initialZoneId=z=>['kushuri_nito','kushuri','nito'].includes(z);
  const entryQuotaRules=Object.freeze({version:148,waitGames:3,games:3,values:Object.freeze([150,200,250,300]),weights:Object.freeze([8,12,6,1]),pointValues:Object.freeze([50,100]),pointWeights:Object.freeze([2,1])});
- const freshInitialRules=Object.freeze({version:20261007,quota:300,point:100,rareAwards:Object.freeze({WEAK_SUICA:150,CHANCE_A:150,WEAK_NOVA:150,STRONG_SUICA:200,CHANCE_B:200,STRONG_NOVA:200,SUPER_NOVA:200})});
+ const legacyFreshInitialVersion=20261007;
+ const freshInitialBases=Object.freeze([100,100,100,161,214,249]);
+ const legacyFreshInitialRareAwards=Object.freeze({WEAK_SUICA:150,CHANCE_A:150,WEAK_NOVA:150,STRONG_SUICA:200,CHANCE_B:200,STRONG_NOVA:200,SUPER_NOVA:200});
+ // Keep the former scalar fields for old diagnostics. Current awards are
+ // setting-specific and must be read through freshInitialBase/Award.
+ const freshInitialRules=Object.freeze({version:20261027,legacyVersion:legacyFreshInitialVersion,bases:freshInitialBases,quota:300,point:100,rareAwards:legacyFreshInitialRareAwards});
+ function isFreshInitialRuleVersion(version){return version===freshInitialRules.version||version===legacyFreshInitialVersion;}
+ function freshInitialBase(setting,version=freshInitialRules.version){return version===legacyFreshInitialVersion?100:freshInitialBases[validSetting(setting)-1];}
+ function freshInitialAward(setting,role,version=freshInitialRules.version){const base=freshInitialBase(setting,version);return ['WEAK_SUICA','CHANCE_A','WEAK_NOVA'].includes(role)?base+50:['STRONG_SUICA','CHANCE_B','STRONG_NOVA','SUPER_NOVA'].includes(role)?base+100:base;}
  const researchEntryWeights=[[0.6354105832966211,0.3110670270748763,0.05076124418701584,0.0027611454414867057],[0.4827364503295663,0.3979165543666842,0.10933335303418432,0.010013642269564929],[0.3746442278235266,0.43514331313362564,0.1684706795608236,0.021741779482023913],[0.26914350346608706,0.4431467349623512,0.24321477350531298,0.044494988066248714],[0.19722305399838924,0.4247972702808942,0.30498922781372345,0.07299044790699304],[0.13019579613189197,0.38005441300255294,0.3698054804995187,0.11994431036603637]];
- function drawEntryQuota(c,rng=Math.random,freshInitial=false){const weights=!freshInitial&&Number.isInteger(c?.setting)&&c.setting>=1&&c.setting<=6?researchEntryWeights[c.setting-1]:entryQuotaRules.weights;const drawn=entryQuotaRules.values[weightedChallenge(weights,rng)];return freshInitial?freshInitialRules.quota:drawn;}
- // Fresh ATs share a 300pt base; keep one multiplier draw for RNG continuity.
+ function drawEntryQuota(c,rng=Math.random,freshInitial=false){const weights=!freshInitial&&Number.isInteger(c?.setting)&&c.setting>=1&&c.setting<=6?researchEntryWeights[c.setting-1]:entryQuotaRules.weights;const drawn=entryQuotaRules.values[weightedChallenge(weights,rng)];return freshInitial?freshInitialBase(c?.setting)*entryQuotaRules.games:drawn;}
+ // Fresh ATs use a setting-specific three-game base; keep one multiplier draw for RNG continuity.
  // Retain multiplier values 2-5 for already-awarded saves, but never draw them anew.
  // The multiplier never changes subsequent AT roles, zones or comeback rewards.
  const initialBoostRules=Object.freeze({version:20261007,values:Object.freeze([1,2,3,4,5]),weights:Object.freeze([
@@ -146,7 +154,7 @@ globalThis.NovaArt=(()=>{
  // Plan the three actual roles once; saved games replay the same awards.
  function scriptedInitialRoles(setting,rng){return Array.from({length:3},()=>drawInitialRole(setting,rng));}
  function enterInitial(c,rng=Math.random){const s={...enter(c,rng,true),initialBoostActive:true,initialRuleVersion:freshInitialRules.version,initialVersion:148,remaining:'0',initialStage:'wait',initialWait:entryQuotaRules.waitGames,initialPlan:[],initialIndex:0};s.initialMultiplier=drawInitialMultiplier(c?.setting,rng);if(rng()<initialBurstChance(c?.setting)){s.burstPending=true;s.burstUsed=true;s.researchChallengeSource='initial';}return s;}
- function initialFields(v){return {initialRolePlan:Array.isArray(v?.initialRolePlan)?v.initialRolePlan.slice(0,3).map(role=>['BELL','REPLAY','MISS','WEAK_SUICA','WEAK_NOVA','STRONG_NOVA'].includes(role)?role:'MISS'):[],initialRuleVersion:v?.initialRuleVersion===freshInitialRules.version?freshInitialRules.version:0,initialBoostActive:!!v?.initialBoostActive,initialMultiplier:initialBoostRules.values.includes(v?.initialMultiplier)?v.initialMultiplier:1,...(Number.isFinite(v?.researchChallengeSuccess)&&v.researchChallengeSuccess>=.4&&v.researchChallengeSuccess<=1?{researchChallengeSuccess:v.researchChallengeSuccess}:{}),modelSetting:validSetting(v?.modelSetting),researchSortieLeft:Math.max(0,Number(v?.researchSortieLeft)||0),researchSortieHits:Math.max(0,Number(v?.researchSortieHits)||0),researchSortieRate:Number(v?.researchSortieRate)||0,
+ function initialFields(v){return {initialRolePlan:Array.isArray(v?.initialRolePlan)?v.initialRolePlan.slice(0,3).map(role=>['BELL','REPLAY','MISS','WEAK_SUICA','WEAK_NOVA','STRONG_NOVA'].includes(role)?role:'MISS'):[],initialRuleVersion:isFreshInitialRuleVersion(v?.initialRuleVersion)?v.initialRuleVersion:0,initialBoostActive:!!v?.initialBoostActive,initialMultiplier:initialBoostRules.values.includes(v?.initialMultiplier)?v.initialMultiplier:1,...(Number.isFinite(v?.researchChallengeSuccess)&&v.researchChallengeSuccess>=.4&&v.researchChallengeSuccess<=1?{researchChallengeSuccess:v.researchChallengeSuccess}:{}),modelSetting:validSetting(v?.modelSetting),researchSortieLeft:Math.max(0,Number(v?.researchSortieLeft)||0),researchSortieHits:Math.max(0,Number(v?.researchSortieHits)||0),researchSortieRate:Number(v?.researchSortieRate)||0,
   researchUpper:!!v?.researchUpper,researchThresholdUsed:!!v?.researchThresholdUsed,researchThresholdPending:!!v?.researchThresholdPending,
   researchChallengeActive:!!v?.researchChallengeActive,researchChallengeSource:v?.researchChallengeSource||'',researchAim:v?.researchAim||'',initialVersion:v?.initialVersion===148?148:131,initialStage:['wait','entry','zone'].includes(v?.initialStage)?v.initialStage:'',initialWait:Math.max(0,Math.min(entryQuotaRules.waitGames,Math.floor(Number(v?.initialWait)||0))),initialPlan:Array.isArray(v?.initialPlan)?v.initialPlan.slice(0,5).map(n=>Math.max(0,Math.floor(Number(n)||0))):[],initialIndex:Math.max(0,Math.min(5,Math.floor(Number(v?.initialIndex)||0)))};}
  // Initial ladder presentations only use amounts with the ordinary artwork.
@@ -165,8 +173,8 @@ globalThis.NovaArt=(()=>{
   return plan;
  }
  function initialZone(s,rng){
-  if(s.initialBoostActive&&s.initialRuleVersion===freshInitialRules.version){
-   const roles=scriptedInitialRoles(s.modelSetting,rng),plan=roles.map(role=>freshInitialRules.rareAwards[role]??100);
+  if(s.initialBoostActive&&isFreshInitialRuleVersion(s.initialRuleVersion)){
+   const roles=scriptedInitialRoles(s.modelSetting,rng),plan=roles.map(role=>freshInitialAward(s.modelSetting,role,s.initialRuleVersion));
    return {...s,entryQuota:String(plan.reduce((sum,n)=>sum+n,0)),initialStage:'zone',initialRolePlan:roles,initialPlan:plan,initialIndex:0,zoneLeft:3,award:'0',initialAward:'0',oumaPending:false,zero:false,ladder:[]};
   }
   if(s.initialVersion===148){
@@ -188,9 +196,8 @@ globalThis.NovaArt=(()=>{
   let s=normalize(value);const family=zoneRules(s,config(options)).family,index=s.initialIndex++;let n=s.initialPlan[index]||0;
   s.zoneLeft=Math.max(0,(s.initialVersion===148?3:5)-s.initialIndex);let result='MISS',aim=null;
   if(s.initialVersion===148){
-   result=initialRareAwards[forced]||['BELL','REPLAY','MISS'].includes(forced)?forced:s.initialRolePlan[index]||drawInitialRole(options.setting,rng);
-   const awards=s.initialBoostActive&&s.initialRuleVersion===freshInitialRules.version?freshInitialRules.rareAwards:initialRareAwards;
-   n=awards[result]??n;if(s.initialBoostActive)n*=s.initialMultiplier;s.initialPlan[index]=n;
+   result=initialRareAwards[forced]||['BELL','REPLAY','MISS'].includes(forced)?forced:s.initialRolePlan[index]||drawInitialRole(s.modelSetting,rng);
+   n=s.initialBoostActive&&isFreshInitialRuleVersion(s.initialRuleVersion)?freshInitialAward(s.modelSetting,result,s.initialRuleVersion):initialRareAwards[result]??n;if(s.initialBoostActive)n*=s.initialMultiplier;s.initialPlan[index]=n;
    s.award=(integer(s.award)+BigInt(n)).toString();
   }else if(family==='ladder'){
    s.ladderRevealed=true;s.ladderIndex=index;s.award=String(s.ladder[index]);result=index===0?'MISS':rng()<.7?'REPLAY':'BELL';
@@ -403,7 +410,7 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
   if(!Number.isFinite(Number(net))||!Number.isFinite(Number(next))||Number(next)<=0)return false;
   return Number(net)+Number(s.remaining||0)>=Number(next);
  }
- const weakAtAwardScales=Object.freeze([0.49,0.67,0.46,0.775,0.79,0.84]);
+ const weakAtAwardScales=Object.freeze([0.076,0.385,0.190,0.30,0.20,0.23]);
  function resolveAtRole(s,role,setting,rng=Math.random,netPt=0){
   const rules=commonAtRulesFor(setting),wasHigh=!!s.atHigh,held=wasHigh&&s.atHighLeft>0;
   const out={wasHigh,direct:0,zone:'',promoted:false,rewardFactor:1};if(held)s.atHighLeft--;
@@ -544,5 +551,5 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
   s.researchSortieRate=[.1,.25,.4,.6,.8][i<0?4:i];s.researchSortieLeft=10;s.researchSortieHits=0;
   s.comebackLeft=0;s.comebackConfirmed=false;s.comebackLamp='';s.zero=false;s.dryEligible=false;return s;
  }
- return {challengeAimChance,atNetRules,weakAtAwardScales,upperAtRules,initialBurstChance,checkpointQuietRules,checkpointGuaranteed,cashPayout,replayRefund,scriptedInitialRoles,freshInitialRules,positiveNetZoneRules,positiveNetZoneFactor,restoreBetCost,extraZoneChance,commonAtRulesFor,entryWeights:researchEntryWeights,beginResearchSortie,atPreludeRules,initialRareAwards,initialZoneIds,rouletteZones,sevenGuaranteed,initialBoostRules,entryQuotaRules,initialZoneAllowed,initialZoneWeights,pickInitialZone,drawEntryQuota,enterInitial,challengeName,burstReward,comebackRules,comebackChance,comebackRoleProbabilities,drawComebackRole,beginComeback,prepareComeback,stepComeback,burstRules,burstChance,commonAtRules,bonusRules,bonusTier,drawBonusTier,bonusLabel,bonusPayout,bonusAim,aimColors,aimColorsFor,sevenAimRules,drawSevenAim,ladderWeightsFor,ladderGuaranteed,drawLadderRole,lossRewardControl,zoneTailControl,zoneAwardFactor,netRewardControl,netLimits,netRewardFactor,superZoneChance,zoneGroups,zoneGroupWeights,upgradeGuaranteedZone,bonusSpecialRates,zoneRules,ladderTables,ladderTableFor,ladderValues,sevenValues,sevenWeights,atZoneWeights,tuning,atMix,drawAtRare,atRoleRules,pickAtZone,resolveAtRole,rareRoles,rareTotal,rareMean,rareFactor,drawRare,roleProbabilities,bonusRoleProbabilities,preparationProbabilities,drawPreparationRole,zoneRoleWeights,zoneRoleMultiplier,paidBellChance,drawPreparation,zoneEntryScale,points,bonusTarget,payout,settleZone,prepareBet,oumaFreezeRate,baseZone,zoneName,zoneIds,names,defaults,direct,zoneWeights,pickZone,bonusSpecial,settingBias,biasFor,bonusSpecialFor,advanceBonus,bonusStockLabel,bonusStockRules,bonusStockFactor,bonusStockEligible,drawPaidRole,drawBonus,config,normalize,enter,startZone,afterBonus,step,label};
+ return {challengeAimChance,atNetRules,weakAtAwardScales,upperAtRules,initialBurstChance,checkpointQuietRules,checkpointGuaranteed,cashPayout,replayRefund,scriptedInitialRoles,freshInitialRules,freshInitialBases,isFreshInitialRuleVersion,freshInitialBase,freshInitialAward,positiveNetZoneRules,positiveNetZoneFactor,restoreBetCost,extraZoneChance,commonAtRulesFor,entryWeights:researchEntryWeights,beginResearchSortie,atPreludeRules,initialRareAwards,initialZoneIds,rouletteZones,sevenGuaranteed,initialBoostRules,entryQuotaRules,initialZoneAllowed,initialZoneWeights,pickInitialZone,drawEntryQuota,enterInitial,challengeName,burstReward,comebackRules,comebackChance,comebackRoleProbabilities,drawComebackRole,beginComeback,prepareComeback,stepComeback,burstRules,burstChance,commonAtRules,bonusRules,bonusTier,drawBonusTier,bonusLabel,bonusPayout,bonusAim,aimColors,aimColorsFor,sevenAimRules,drawSevenAim,ladderWeightsFor,ladderGuaranteed,drawLadderRole,lossRewardControl,zoneTailControl,zoneAwardFactor,netRewardControl,netLimits,netRewardFactor,superZoneChance,zoneGroups,zoneGroupWeights,upgradeGuaranteedZone,bonusSpecialRates,zoneRules,ladderTables,ladderTableFor,ladderValues,sevenValues,sevenWeights,atZoneWeights,tuning,atMix,drawAtRare,atRoleRules,pickAtZone,resolveAtRole,rareRoles,rareTotal,rareMean,rareFactor,drawRare,roleProbabilities,bonusRoleProbabilities,preparationProbabilities,drawPreparationRole,zoneRoleWeights,zoneRoleMultiplier,paidBellChance,drawPreparation,zoneEntryScale,points,bonusTarget,payout,settleZone,prepareBet,oumaFreezeRate,baseZone,zoneName,zoneIds,names,defaults,direct,zoneWeights,pickZone,bonusSpecial,settingBias,biasFor,bonusSpecialFor,advanceBonus,bonusStockLabel,bonusStockRules,bonusStockFactor,bonusStockEligible,drawPaidRole,drawBonus,config,normalize,enter,startZone,afterBonus,step,label};
 })();

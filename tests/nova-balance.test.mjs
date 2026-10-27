@@ -1,8 +1,57 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
-const ctx=vm.createContext({});for(const f of ['nova-tuning.js','nova-art.js','nova-balance.js'])vm.runInContext(fs.readFileSync(f,'utf8'),ctx);const a=ctx.NovaArt,b=ctx.NovaBalance;
-test('RTP metadata identifies the approved setting-mode 10,000G independent estimates',()=>{
- const evidence=JSON.parse(fs.readFileSync('docs/mode-selection-20261014.json'));
- for(let i=0;i<6;i++){const r=evidence.results[i].after,p=b.profile(i+1);assert.equal(p.targetGamesPerTrial,10000);assert.equal(p.gamesPerTrial,10000);assert.equal(p.trials,r.n);assert.equal(p.measuredRtp,r.rtp/100);assert.equal(p.verifiedModel,evidence.id);assert.equal(p.target,evidence.targets[i]/100);}
+const ctx=vm.createContext({});for(const f of ['nova-tuning.js','nova-art.js','nova-balance.js','nova-normal.js','nova-flow.js'])vm.runInContext(fs.readFileSync(f,'utf8'),ctx);const a=ctx.NovaArt,b=ctx.NovaBalance;
+const evidence=JSON.parse(fs.readFileSync('docs/uncapped-rtp-20261027-1b.json','utf8'));
+test('RTP metadata matches the machine-readable final uncapped evidence',()=>{
+ const targets=evidence.targets;
+ const measured=evidence.settings.map(row=>row.rtp);
+ for(let i=0;i<6;i++){
+  const p=b.profile(i+1);
+  assert.equal(p.targetGamesPerTrial,1_000_000_000);
+  assert.equal(p.gamesPerTrial,1_000_000_000);
+  assert.equal(p.trials,evidence.settings[i].trials);
+  assert.equal(p.totalVerifiedGames,evidence.settings[i].totalGames);
+  assert.equal(p.measuredRtp,measured[i]);
+  assert.equal(p.verifiedModel,'uncapped-continuous-20261027-final-1b');
+  assert.match(p.verificationLabel,i===1?/打ち切りなし10億G×3シード試算/:/打ち切りなし10億G連続試算/);
+  assert.equal(p.target,targets[i]);
+  assert.equal(p.scale,.21*(1+.12*a.settingBias[i]));
+  assert.equal(evidence.settings[i].completeHits,0);
+  assert.equal(evidence.settings[i].totalBet,evidence.settings[i].totalGames*3);
+  assert.equal(evidence.settings[i].totalPaid-evidence.settings[i].totalBet,evidence.settings[i].net);
+ }
+ assert.deepEqual(Array.from(b.targets),targets);
+ assert.equal(evidence.totalAdoptedGames,8_000_000_000);
+});
+
+test('standard RTP metadata applies only while both COMPLETE limits stay disabled',()=>{
+ assert.equal(b.usesStandardSettings({completeEnabled:false,completeBasis:'none',completeLimitPt:0,completeMyLimitPt:0}),true);
+ assert.equal(b.usesStandardSettings({completeEnabled:true,completeBasis:'none',completeLimitPt:0,completeMyLimitPt:0}),false);
+ assert.equal(b.usesStandardSettings({completeEnabled:false,completeBasis:'net',completeLimitPt:0,completeMyLimitPt:0}),false);
+ assert.equal(b.usesStandardSettings({completeEnabled:false,completeBasis:'none',completeLimitPt:10_000,completeMyLimitPt:0}),false);
+ assert.equal(b.usesStandardSettings({completeEnabled:false,completeBasis:'none',completeLimitPt:0,completeMyLimitPt:19_000}),false);
+});
+
+test('initial-zone mean supports the current setting bases and legacy saved rule',()=>{
+ const versions=[a.freshInitialRules.version,a.freshInitialRules.legacyVersion];
+ for(const version of versions)for(let setting=1;setting<=6;setting++){
+  const expected=a.entryQuotaRules.games*Object.entries(a.roleProbabilities(setting,false,5)).reduce((sum,[role,p])=>sum+p*a.freshInitialAward(setting,role,version),0);
+  const actual=b.zoneMean('kushuri_nito',{setting,initialBoostActive:true,initialRuleVersion:version,initialMultiplier:1});
+  assert.ok(Math.abs(actual-expected)<1e-9,`version ${version}, setting ${setting}`);
+ }
+ const current=b.zoneMean('kushuri_nito',{setting:6,initialBoostActive:true,initialMultiplier:1});
+ const legacy=b.zoneMean('kushuri_nito',{setting:6,initialBoostActive:true,initialRuleVersion:a.freshInitialRules.legacyVersion,initialMultiplier:1});
+ assert.ok(current>legacy);
+});
+
+test('static page starts RTP fields in loading state and cache-busts uncapped scripts',()=>{
+ const html=fs.readFileSync('jag.html','utf8');
+ assert.match(html,/id="targetRtpViewLegacy">読込中</);
+ assert.match(html,/id="adminTargetRtpView">読込中</);
+ for(const file of ['nova-art.js','nova-complete.js','nova-balance.js','nova-game.js'])assert.match(html,new RegExp(`${file.replace('.','\\.')}\\?v=20261027-uncapped-rtp`));
+ assert.match(html,/標準設定ではコンプリート・MYによる打ち切りを行いません/);
+ assert.match(html,/打ち切りなし10億G連続試算（設定2のみ3シード平均）の最終実測値/);
+ assert.doesNotMatch(html,/予備試算|最終検証待ち/);
+ assert.doesNotMatch(html,/累計差枚＋10,000ptでコンプリートとなり停止します/);
 });
 
 test('common AT evidence keeps session and episode denominators separate',()=>{
