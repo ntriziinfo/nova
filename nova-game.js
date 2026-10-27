@@ -2841,6 +2841,7 @@
   }
 
   function maybeLightBonusAnnouncementForStop(stopOrder, spin=currentSpin){
+    if(spin?.resolved?.czLamp&&!spin.resolved.czPushConfirmed)return false;
     if(!spin || !spin.bonusAnnouncementTiming) return false;
     const timing = `stop${stopOrder}`;
     if(spin.bonusAnnouncementTiming !== timing) return false;
@@ -8419,6 +8420,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
   }
 
   function playCzConfirmedSound(resolved){
+    if(resolved?.czLamp&&!resolved.czPushConfirmed)return;
     if(!(resolved?.bonusHit || resolved?.aTypeBonusReady || resolved?.flowAfter?.phase==='art') || resolved.czPatrolPlayed)return;
     resolved.czPatrolPlayed=true;
     playLockedBonusConfirmSound('assets/media/jag/cz_patrol_confirm.wav?v=19',sfxOutputVolume());
@@ -8509,30 +8511,20 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
       order=presentation.order.join(',');
     }else normalState.czLampPresentation=null;
     if(machine.dataset.czOrder!==order)machine.dataset.czOrder=order;
-    const intro=!!czState&&Number(czState.remaining)>0&&Number(czState.remaining)===Number(czState.totalGames);
-    machine.dataset.czIntro=String(intro);
-    if(resolved)resolved.czIntro=intro;
-    // The first game's draws and awards remain intact; only the lamps wait.
-    if(intro){machine.dataset.czLamp='0';machine.dataset.czRainbow='false';if(stopOrder===0)resolved.czLampAtBet=0;return;}
-    if(czSpin&&stopOrder===0){resolved.czLampAtBet=Number(host.dataset.czLamp)||0;return;}
-    if(!czSpin){machine.dataset.czLamp='0';machine.dataset.czRainbow='false';return;}
-    if(stopOrder!==3)return;
-    // Reveal every character at the landed confirmation stop, not at the
-    // internal CZ lottery. Premium overrides may confirm without a lamp roll.
-    const confirmed=stopOrder===3&&!!(resolved.bonusHit||resolved.aTypeBonusReady||resolved.flowAfter?.phase==='art');
-    const display=NovaFlow.lampDisplayAtStop(lamp,stopOrder);if(!display&&!confirmed)return;
-    const target=confirmed?NovaFlow.lampCharacters.length:display.stage;
+    machine.dataset.czIntro='false';
+    if(!czSpin){machine.dataset.czLamp='0';machine.dataset.czRainbow='false';machine.dataset.czColor='';return;}
+    if(stopOrder===0){resolved.czLampAtBet=Number(machine.dataset.czLamp)||0;return;}
+    const terminal=!!(resolved.czCompleted||resolved.bonusHit||resolved.aTypeBonusReady);
+    const won=!!(lamp?.success||resolved.bonusHit||resolved.aTypeBonusReady);
+    const display=NovaCzPresentation.display(lamp,stopOrder,won,settings.setting,terminal);
+    if(!display)return;
     const previous=Number(machine.dataset.czLamp)||0;
-    const newRainbow=(confirmed||display?.rainbow)&&machine.dataset.czRainbow!=='true';
-    if(target>previous)machine.dataset.czLamp=String(target);
-    if(newRainbow)machine.dataset.czRainbow='true';
-    // The final landed stop owns both light and SE.
-    // Repeated finish callbacks see no new light and cannot replay its sound.
-    if(target>previous||newRainbow){
-      (resolved.czLitStops ||= {})[stopOrder]=true;
-      playOneShotSound('assets/media/jag/cz_third_success.wav',sfxOutputVolume());
-    }
-    if(confirmed)playCzConfirmedSound(resolved);
+    const target=Math.max(previous,display.stage);
+    machine.dataset.czLamp=String(target);
+    machine.dataset.czColor=target>=8?'rainbow':target>=7?'red':target>=6?'green':target>=4?'yellow':target>=2?'blue':'white';
+    machine.dataset.czRainbow=String(target>=8);
+    if(target>previous){(resolved.czLitStops ||= {})[stopOrder]=true;playOneShotSound('assets/media/jag/cz_third_success.wav',sfxOutputVolume());}
+
   }
 
   var oumaReverseAudio=null,oumaReverseLoadTimer=null,oumaIntroAudio=null,oumaStoppedTops=[0,0,0];
@@ -8631,6 +8623,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     if(!canUsePlayState())return;
     if(resolved?.stockEntry){finishStockEntry();return;}
     if(!isSpinning || !currentSpin || currentSpin.finishing || currentSpin.resolved!==resolved || !currentSpin.stopped.every(Boolean)) return;
+    if(NovaCzPresentation.wait(resolved,{setting:settings.setting,auto:!!(currentSpin.autoStopAtStart||currentSpin.speedModeAtStart||debugFastSpinActive),valid:()=>currentSpin?.resolved===resolved&&isSpinning&&canUsePlayState(),reveal:()=>{playCzConfirmedSound(resolved);maybeLightBonusAnnouncementForStop(3,currentSpin);finishSpin(result,resolved,lineRow);}}))return;
     if(typeof playZoneInternalConfirmedSound==='function'&&currentSpin?.stopped?.every(Boolean))playZoneInternalConfirmedSound(resolved);
     try{
     NovaBellNavi.clear();
@@ -9679,6 +9672,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
   }
 
   function maybePlayPremiumBigLineupVoice(stopOrder, spin=currentSpin){
+    if(spin?.resolved?.czLamp&&!spin.resolved.czPushConfirmed)return false;
     if(!isPremiumBigLineupSpin(spin)) return;
     if(stopOrder === 2 && !spin.premiumBigSecondStopVoicePlayed){
       spin.premiumBigSecondStopVoicePlayed = true;
@@ -9837,6 +9831,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
   }
   function czThirdStopSound(resolved,previousStage){
     if(!resolved?.czLamp)return '';
+    if((resolved.czCompleted||resolved.bonusHit||resolved.aTypeBonusReady)&&!resolved.czPushConfirmed)return 'assets/media/nova/cz_stop_12.wav';
     if(resolved.czIntro)return 'assets/media/nova/cz_stop_12.wav';
     const failed=resolved.czCompleted&&!resolved.bonusHit&&resolved.flowAfter?.phase==='normal';
     if(failed)return 'assets/media/jag/cz_third_failure.wav';

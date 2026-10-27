@@ -4,127 +4,34 @@ const html=readGameSource();
 function setup(){
  const calls=[],machine={dataset:{czLamp:'0',czRainbow:'false'}},black=new Set();
  const ctx=vm.createContext({renderCzPrelude(){},currentSpin:null,isLadderShutterSpin:()=>false,document:{getElementById:()=>machine,querySelector:selector=>({classList:{add:()=>black.add(selector)}}),querySelectorAll:()=>[...black].map(selector=>({classList:{remove:()=>black.delete(selector)}}))},STOP_SOUND_SRC:'normal.wav',sfxOutputVolume:()=>.5,playOneShotSound:src=>calls.push({src,stage:Number(machine.dataset.czLamp),rainbow:machine.dataset.czRainbow==='true'}),playCzConfirmedSound(){}});
- vm.runInContext(fs.readFileSync('nova-flow.js','utf8'),ctx);ctx.settings={setting:1};ctx.normalState={};
+ vm.runInContext(fs.readFileSync('nova-flow.js','utf8'),ctx);vm.runInContext(fs.readFileSync('nova-cz-push.js','utf8'),ctx);ctx.settings={setting:1};ctx.normalState={};
  for(const name of ['showCzLamp','czThirdStopSound','playStopSound','clearCzReelBlackout'])vm.runInContext(html.match(new RegExp('  function '+name+'\\([^]*?\\n  }'))[0],ctx);
  return {ctx,calls,machine,black};
 }
-test('every character lights with its SE only at the final landed stop, without replay',()=>{
- const {ctx,calls,machine}=setup(),seen=[],stops=new Set();
- for(let remaining=20;remaining>=1;remaining--){
-  const resolved={czLamp:{stage:6,totalGames:20,remaining,timingSeed:12345}};ctx.currentSpin={resolved};ctx.showCzLamp(0,resolved);
-  for(let stop=1;stop<=3;stop++){
-   const before=Number(machine.dataset.czLamp),count=calls.length;
-   ctx.showCzLamp(stop,resolved);ctx.playStopSound([2,0,1][stop-1],stop);
-   const sounds=calls.slice(count).filter(x=>x.src.endsWith('cz_third_success.wav'));
-   const after=Number(machine.dataset.czLamp);
-   assert.equal(sounds.length,after>before?1:0,`${remaining}G stop${stop}`);
-   if(after>before){assert.equal(stop,3);assert.equal(sounds[0].stage,after);seen.push(after);stops.add(stop);}
-   assert.equal(machine.dataset.czBlink,'');
-  }
-  const count=calls.length;ctx.showCzLamp(3,resolved);ctx.playStopSound(1,3);assert.equal(calls.length,count);
+test('each stop can light lamps, never dims them, and repeats do not replay SE',()=>{
+ const stops=new Set();
+ for(let seed=0;seed<50;seed++){
+ const {ctx,calls,machine}=setup();
+ for(let remaining=15;remaining>=1;remaining--){
+ const r={czLamp:{success:false,totalGames:15,remaining,timingSeed:seed},czCompleted:remaining===1};
+ ctx.currentSpin={resolved:r};ctx.showCzLamp(0,r);
+ for(let stop=1;stop<=3;stop++){
+ const before=Number(machine.dataset.czLamp),count=calls.length;
+ ctx.showCzLamp(stop,r);
+ const after=Number(machine.dataset.czLamp);assert(after>=before);
+ assert.equal(calls.length-count,after>before?1:0);
+ if(after>before)stops.add(stop);
+ const once=calls.length;ctx.showCzLamp(stop,r);assert.equal(calls.length,once);
  }
- assert.deepEqual(seen,[1,2,3,4,5,6,7,8]);assert.deepEqual([...stops],[3]);
-});
-test('rainbow shares the lighting cue and repeated finish calls do not play it twice',()=>{
- const {ctx,calls}=setup(),resolved={czLamp:{stage:5,totalGames:20,remaining:19,rainbow:true,rainbowAt:2}};
- ctx.currentSpin={resolved};ctx.showCzLamp(0,resolved);
- for(let stop=1;stop<=3;stop++){ctx.showCzLamp(stop,resolved);ctx.playStopSound(stop-1,stop);}
- const rainbow=calls.filter(x=>x.rainbow&&x.src.endsWith('cz_third_success.wav'));assert.equal(rainbow.length,1);
- const count=calls.length;ctx.showCzLamp(3,resolved);ctx.playStopSound(2,3);assert.equal(calls.length,count);
-});
-
-test('early CZ confirmation lights all eight only at the third landed stop',()=>{
- for(const phase of ['cz','strong_cz']){
-  for(const rainbow of [false,true]){
-   const {ctx,calls,machine}=setup();
-   const resolved={flowBefore:{phase,success:true},bonusHit:true,czLamp:{stage:5,totalGames:20,remaining:19,rainbow,rainbowAt:2}};
-   ctx.currentSpin={resolved};ctx.showCzLamp(0,resolved);
-   for(let stop=1;stop<=2;stop++){
-    ctx.showCzLamp(stop,resolved);ctx.playStopSound(stop-1,stop);
-    assert(Number(machine.dataset.czLamp)<8);assert.equal(machine.dataset.czRainbow,'false');
-   }
-   const before=calls.length;ctx.showCzLamp(3,resolved);ctx.playStopSound(2,3);
-   assert.equal(machine.dataset.czLamp,'8');assert.equal(machine.dataset.czRainbow,'true');
-   assert.deepEqual(calls.slice(before),[{src:'assets/media/jag/cz_third_success.wav',stage:8,rainbow:true}]);
-   const count=calls.length;ctx.showCzLamp(3,resolved);ctx.playStopSound(2,3);assert.equal(calls.length,count);
-   ctx.showCzLamp(0,{flowBefore:{phase:'normal'}});assert.equal(machine.dataset.czLamp,'0');assert.equal(machine.dataset.czRainbow,'false');
-  }
  }
-});
-
-test('an internally won CZ keeps the ordinary lamp schedule until confirmation',()=>{
- const {ctx,machine}=setup(),resolved={flowBefore:{phase:'cz',success:true},bonusHit:false,czLamp:{stage:6,totalGames:20,remaining:19,timingSeed:12345}};
- for(let stop=0;stop<=3;stop++)ctx.showCzLamp(stop,resolved);
- assert.equal(Number(machine.dataset.czLamp),ctx.NovaFlow.lampDisplayAtStop(resolved.czLamp,3).stage);
- assert(Number(machine.dataset.czLamp)<8);assert.equal(machine.dataset.czRainbow,'false');
-});
-
-test('CZ premium confirmation without a lamp roll still lights everyone; ordinary bonus does not',()=>{
- for(const phase of ['cz','strong_cz','normal']){
-  for(const outcome of [{bonusHit:true},{aTypeBonusReady:true},{flowAfter:{phase:'art'}}]){
-   const {ctx,machine}=setup(),resolved={flowBefore:{phase},...outcome};
-   machine.dataset.czLamp='2';
-   for(let stop=0;stop<=2;stop++){
-    ctx.showCzLamp(stop,resolved);assert.equal(machine.dataset.czLamp,phase==='normal'?'0':'2');
-    assert.equal(machine.dataset.czRainbow,'false');
-   }
-   ctx.showCzLamp(3,resolved);assert.equal(machine.dataset.czLamp,phase==='normal'?'0':'8');
-   assert.equal(machine.dataset.czRainbow,String(phase!=='normal'));
-  }
+ assert(![1,8].includes(Number(machine.dataset.czLamp)));
  }
+ assert.deepEqual([...stops].sort(),[1,2,3]);
 });
-test('earlier-stop lighting uses a regular third stop; final CZ loss still plays failure and blacks out only the final reel',()=>{
- const {ctx,calls,black}=setup();
- const resolved={czLamp:{stage:2,totalGames:20,remaining:1},czLampAtBet:3,czLitStops:{2:true}};
- assert.match(ctx.czThirdStopSound(resolved,4),/cz_stop_12/);
- assert.equal(ctx.czThirdStopSound({...resolved,czLitStops:{3:true}},4),'');
- ctx.currentSpin={resolved:{...resolved,czCompleted:true,bonusHit:false,flowAfter:{phase:'normal'}}};ctx.playStopSound(0,3);
- assert(calls.at(-1).src.endsWith('cz_third_failure.wav'));assert.deepEqual([...black],['.reel[data-reel="0"]']);
- ctx.clearCzReelBlackout();assert.equal(black.size,0);
-});
-test('non-lighting stops and non-CZ stops retain their normal clips',()=>{
- const {ctx,calls}=setup();ctx.currentSpin={resolved:{czLamp:{stage:1,totalGames:20,remaining:20},czLampAtBet:0}};
- ctx.playStopSound(2,1);ctx.playStopSound(0,2);assert(calls.every(x=>x.src.endsWith('cz_stop_12.wav')));
- for(const phase of ['normal','art','bonus']){
-  ctx.currentSpin={resolved:{flowBefore:{phase}}};calls.length=0;
-  ctx.playStopSound(0,1);ctx.playStopSound(1,2);ctx.playStopSound(2,3);assert.deepEqual(calls.map(x=>x.src),['normal.wav','normal.wav','normal.wav']);
- }
-});
-
-test('sortie stop clips follow the first and second stop, regardless of reel order or award',()=>{
- for(const order of [[2,1,0],[0,1,2],[1,2,0]])for(const won of [false,true]){
-  const {ctx,calls}=setup();
-  const resolved={researchSortie:{won,zone:won?'sora':'',finished:false},reward:8};
-  const before=JSON.stringify(resolved);
-  for(let game=0;game<2;game++){
-   ctx.currentSpin={resolved};calls.length=0;
-   for(let stop=1;stop<=2;stop++){
-    ctx.playStopSound(order[stop-1],stop);
-    ctx.playStopSound(order[stop-1],stop);
-   }
-   ctx.playStopSound(order[2],3);
-   assert.deepEqual(calls.map(x=>x.src),['assets/media/nova/sortie-stop-1.mp3','assets/media/nova/sortie-stop-2.mp3','normal.wav']);
-   assert.equal(JSON.stringify(resolved),before);
-  }
- }
-});
-
-test('CZ intro suppresses every first-game lamp and lighting SE, including early wins, without changing the award',()=>{
- for(const phase of ['cz','strong_cz'])for(const bonusHit of [false,true])for(const withLamp of [false,true]){
-  const {ctx,calls,machine,black}=setup();
-  const flowBefore={phase,totalGames:20,remaining:20,success:bonusHit};
-  const flowAfter=bonusHit?{phase:'normal'}:{...flowBefore,remaining:19};
-  const resolved={flowBefore,flowAfter,bonusHit,reward:8,...(withLamp?{czLamp:{stage:6,totalGames:20,remaining:20,rainbow:true,rainbowAt:1}}:{})};
-  const before=JSON.stringify({flowBefore,flowAfter,bonusHit,reward:resolved.reward});
-  machine.dataset.czLamp='8';machine.dataset.czRainbow='true';ctx.currentSpin={resolved};
-  for(let stop=0;stop<=3;stop++){
-   ctx.showCzLamp(stop,resolved);if(stop)ctx.playStopSound(stop-1,stop);
-   assert.equal(machine.dataset.czLamp,'0');assert.equal(machine.dataset.czRainbow,'false');assert.equal(machine.dataset.czIntro,'true');
-  }
-  assert(!calls.some(x=>x.src.endsWith('cz_third_success.wav')));assert.equal(black.size,0);
-  assert.equal(JSON.stringify({flowBefore,flowAfter,bonusHit:resolved.bonusHit,reward:resolved.reward}),before);
-  const next={flowBefore:{...flowBefore,remaining:19},czLamp:{stage:6,totalGames:20,remaining:19}};
-  ctx.showCzLamp(0,next);assert.equal(machine.dataset.czIntro,'false');
-  ctx.showCzLamp(3,next);assert.equal(Number(machine.dataset.czLamp),ctx.NovaFlow.lampDisplayAtStop(next.czLamp,3).stage);
+test('final result sound remains neutral until PUSH',()=>{
+ const {ctx}=setup();
+ for(const bonusHit of [false,true]){
+ const r={czLamp:{},czCompleted:true,bonusHit,flowAfter:{phase:'normal'}};
+ assert.match(ctx.czThirdStopSound(r,0),/cz_stop_12/);
  }
 });

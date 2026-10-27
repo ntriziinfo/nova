@@ -131,8 +131,9 @@ globalThis.NovaNormal=(()=>{
   const bonus=source=>({kind:'BIG',source,internalResult:'BIG'});
   if(state.games<=100&&token.result==='SUPER_NOVA')token.result='MISS';
   if(state.games>=ceiling(state)){
-   state.ceilingHandled=true;state.prelude=null;state.impurity=Math.min(100,state.impurity+c.ceilingGain);
-   token.internalBonus=bonus(state.mode+'天井'+ceiling(state)+'G');token.modeEvent={type:'ceiling',mode:state.mode,g:state.games};return token;
+   state.ceilingHandled=true;state.prelude=null;if(!before.ceilingHandled)state.impurity=Math.min(100,state.impurity+c.ceilingGain);
+   if(['cz','strong_cz'].includes(flow.phase)&&flow.remaining>1){flow={...flow,success:true,winProbability:1};token.czFlow=flow;}
+   else{token.internalBonus=bonus(state.mode+'天井'+ceiling(state)+'G');token.modeEvent={type:'ceiling',mode:state.mode,g:state.games};return token;}
   }
   if(flow.phase==='normal'){
    if(!state.fiftyChecked&&state.games>=50){
@@ -206,12 +207,11 @@ globalThis.NovaNormal=(()=>{
    }
   }else if(['cz','strong_cz'].includes(flow.phase)){
    flow.lampRoll??=rng();flow.rainbowRoll??=rng();
-   token.czLamp={...NovaFlow.drawLamp(flow,rng),totalGames:flow.totalGames,remaining:flow.remaining};
+   token.czLamp={success:flow.success,...NovaFlow.drawLamp(flow,rng),totalGames:flow.totalGames,remaining:flow.remaining};
    const display=NovaFlow.lampAtStop(token.czLamp,3);
    const allLit=flow.success&&(display.stage===6||display.rainbow);
-   const legacyAllLit=flow.ruleVersion!==NovaFlow.currentRuleVersion&&allLit;
-   if(flow.remaining===1&&flow.success||legacyAllLit){
-    token.internalBonus={...bonus(legacyAllLit?'CZ全員点灯':flow.phase==='cz'?'CZ成功':'強CZ成功'),...(flow.direct?{direct:true,directZone:flow.directZone}:{})};
+   if(flow.remaining===1&&flow.success){
+    token.internalBonus={...bonus(allLit?'CZ全員点灯':flow.phase==='cz'?'CZ成功':'強CZ成功'),...(flow.direct?{direct:true,directZone:flow.directZone}:{})};
    }
   }
   return token;
