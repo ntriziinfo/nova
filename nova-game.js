@@ -361,7 +361,10 @@
     audioMuted:false,
     audioBalanceVersion:AUDIO_BALANCE_VERSION,
     audioCalibrationVersion:1,
-    completeLimitPt:0
+    completeEnabled:false,
+    completeBasis:"none",
+    completeLimitPt:0,
+    completeMyLimitPt:0
   };
 
   let stats = {
@@ -583,7 +586,7 @@
   const AUTO_SPEED_MULTIPLIER = 2;
   const SPEED_MODE_MAX_SPINS_PER_SECOND = 10;
   const SPEED_MODE_MULTIPLIER = 3;
-  const COMPLETE_TRIAL_ENABLED = true;
+  const COMPLETE_TRIAL_ENABLED = false;
   const SLUMP_MAX_HISTORY_POINTS = 20000;
   const SLUMP_MAX_DRAW_POINTS = 1400;
   let autoPlay = false;
@@ -809,7 +812,7 @@
   }
 
   const VERTEX_CONTROLLER_ENABLED = adminParams.get("controller") === "vertex";
-  settings=NovaComplete.configure(settings,VERTEX_CONTROLLER_ENABLED);
+  settings={...NovaComplete.configure(settings,VERTEX_CONTROLLER_ENABLED,COMPLETE_TRIAL_ENABLED),completeEnabled:false};
   const VERTEX_STORE_ID = String(adminParams.get("storeId") || "").trim();
   const ADMIN_SERVER = (VERTEX_CONTROLLER_ENABLED ? adminParams.get("server") || "" : "").replace(/\/$/, "");
   let machineId = adminParams.get("machine") || bootMachineId;
@@ -2438,7 +2441,7 @@
 
   function targetRtpText(settingNo = settings.setting){
     if(A_TYPE_MODE && !NovaBalance.usesStandardSettings(settings))return "未試算（独自設定）";
-    if(A_TYPE_MODE)return `${(NovaBalance.profile(settingNo).measuredRtp*100).toFixed(2)}%（1万G試算）`;
+    if(A_TYPE_MODE){const p=NovaBalance.profile(settingNo);return `${(p.measuredRtp*100).toFixed(2)}%（${p.verificationLabel}）`;}
   }
 
   function refreshRtpViews(){
@@ -3726,7 +3729,7 @@
       if(settings.lotteryVersion!==33){settings.novaArt={...NovaArt.defaults};settings.novaNormal={...NovaNormal.defaults};settings.novaFlow={...NovaFlow.defaults};settings.lotteryVersion=33;}
       if(settings.zoneVersion!==2){settings.novaArt={...NovaArt.defaults,initial:settings.novaArt?.initial||275};settings.zoneVersion=2;}
       if(settings.zoneLotteryVersion!==3){settings.novaArt={...settings.novaArt,soraUraReset:NovaArt.defaults.soraUraReset};delete settings.novaArt.uraChance;settings.zoneLotteryVersion=3;}
-      if(settings.at150Version!==45){settings.novaArt={...settings.novaArt,...{"initial":150,"ladderSosuke":0.7,"ladderGiru":0.95,"ladderUraGiru":0.98,"totoHit":0.35,"soraHit":0.63,"soraUraHit":0.75,"urapiSuper":0.49,"oumaSuper":0.77,"oumaUraSuper":0.98,"payoutVersion":1}};settings.completeLimitPt=10000;settings.at150Version=45;}
+      if(settings.at150Version!==45){settings.novaArt={...settings.novaArt,...{"initial":150,"ladderSosuke":0.7,"ladderGiru":0.95,"ladderUraGiru":0.98,"totoHit":0.35,"soraHit":0.63,"soraUraHit":0.75,"urapiSuper":0.49,"oumaSuper":0.77,"oumaUraSuper":0.98,"payoutVersion":1}};settings.at150Version=45;}
       if(settings.ladderGuaranteeVersion!==57){settings.novaArt={...settings.novaArt,ladderSosuke:.4,ladderGiru:.5,ladderUraGiru:2/3};settings.ladderGuaranteeVersion=57;}
       if(settings.zoneBalanceVersion!==105){settings.novaArt={...settings.novaArt,oumaUraSuper:.75,oumaUraFreeze:.35,soraUraHit:.75,soraUraReset:.25,soraUraRed:.715};settings.zoneBalanceVersion=105;}
       if(settings.challengeBalanceVersion!==120){settings.novaArt={...settings.novaArt,initial:NovaArt.defaults.initial};settings.challengeBalanceVersion=120;}
@@ -3744,7 +3747,7 @@
       if(settings.smartslotBalanceVersion!==20261013){
         settings.novaArt={...NovaArt.defaults};settings.novaNormal={...NovaNormal.defaults};settings.novaFlow={...NovaFlow.defaults};settings.smartslotBalanceVersion=20261013;
       }
-      settings=NovaComplete.configure(settings,VERTEX_CONTROLLER_ENABLED);
+      settings={...NovaComplete.configure(settings,VERTEX_CONTROLLER_ENABLED,COMPLETE_TRIAL_ENABLED),completeEnabled:false};
       settings.title = normalizeMachineTitle(settings.title);
       if(!SETTING[settings.setting]) settings.setting = 1;
       if(data?.stats) stats = {...stats, ...data.stats};
@@ -3814,6 +3817,8 @@
           completeTrialState.locked = false;
           completeTrialState.lockedSetting = 0;
           completeTrialState.completeProfit = 0;
+          delete completeTrialState.reason;
+          delete completeTrialState.completeMy;
         }
       }
       completeTrialState.lowestNet=Math.min(0,Number(completeTrialState.lowestNet)||0,Number(stats.slumpLow)||0);
@@ -4062,14 +4067,15 @@
         movieVolume: settings.movieVolume,
         rogiMovieVolume: settings.rogiMovieVolume,
         audioMuted: settings.audioMuted,
-        completeBasis:settings.completeBasis||'my',
-        completeMyLimitPt:NovaComplete.myLimit(settings),
-        completeLimitPt: completeLimitPt()
+        completeEnabled:false,
+        completeBasis:'none',
+        completeMyLimitPt:0,
+        completeLimitPt:0
       },
       stats:{...adminStats, profit},
       normalState:{...normalState},
       session:{...session},
-      completeTrialState:{...completeTrialState},
+      completeTrialState:{locked:false,lockedSetting:0,rescueActive:false,completeProfit:0},
       runtimeState:runtimeStateForStorage(),
       resumeSettings:{...settings},
       capturedAt:Date.now(),
@@ -4193,13 +4199,8 @@
     setValue("movieVolume", nextSettings.movieVolume);
     setValue("rogiMovieVolume", nextSettings.rogiMovieVolume);
     if(nextSettings.audioMuted !== undefined) settings.audioMuted = !!nextSettings.audioMuted;
-    if(nextSettings.completeLimitPt !== undefined || nextSettings.completeMyLimitPt !== undefined){
-      const limits=Object.fromEntries(['completeBasis','completeLimitPt','completeMyLimitPt'].filter(key=>nextSettings[key]!==undefined).map(key=>[key,nextSettings[key]]));
-      settings=NovaComplete.configure({...settings,...limits},VERTEX_CONTROLLER_ENABLED);
-      if(completeTrialState.reason==='my'&&!NovaComplete.myLimit(settings))NovaComplete.restore(completeTrialState,completeTrialProfit(),completeLimitPt(),0);
-      updateCompleteTrialState("admin-limit");
-    }
     readSettings();
+    settings={...NovaComplete.configure(settings,VERTEX_CONTROLLER_ENABLED,COMPLETE_TRIAL_ENABLED),completeEnabled:false};
     const saved=persistState();
     updateDisplay();
     log(saved ? "管理画面から設定を更新・保存" : "管理画面から設定を更新しましたが、保存できませんでした");
@@ -4284,11 +4285,7 @@
     adminCommandPollTimer = setTimeout(pollAdminCommands, 0);
   }
 
-  function applyStoreCompleteSettings(controls){
-    if(controls?.completeBasis!=='net'||!Number.isInteger(controls.completeLimitPt)||controls.completeLimitPt<1)return;
-    if(settings.completeBasis==='net'&&settings.completeLimitPt===controls.completeLimitPt&&settings.completeMyLimitPt===0)return;
-    applyAdminSettings({completeBasis:'net',completeLimitPt:controls.completeLimitPt,completeMyLimitPt:0});
-  }
+  function applyStoreCompleteSettings(_controls){return false;}
 
   // The host only wakes the authenticated server poll; it cannot supply commands.
   window.addEventListener("message", event=>{
@@ -4331,6 +4328,7 @@
     if(settings.setting !== previousSetting){
       morningResetGame(false, "設定変更");
       setMorningBarReels();
+      renderSettingTable();
     }
     settings.fee = PAYOUT_BASE;
     settings.stSpins = clamp(Number($("stSpinsInput").value) || 10, 1, 100);
@@ -6047,10 +6045,11 @@
 
     if(A_TYPE_MODE){
       const cfg=NovaFlow.forSetting(settings.novaFlow,settings.setting);
+      const initialBase=typeof NovaArt.freshInitialBase==='function'?NovaArt.freshInitialBase(settings.setting):100;
       let html = '<tr><td>状態</td><td>継続</td><td>契機</td><td>突入時期待度</td></tr>';
       html += '<tr><td>CZ</td><td>'+cfg.czGames+'〜'+cfg.czMaxGames+'G</td><td>スイカ・弱ノヴァなどから設定別抽選</td><td>'+cfg.czChance*100+'%</td></tr>';
       html += '<tr><td>強CZ</td><td>'+cfg.strongGames+'〜'+cfg.strongMaxGames+'G</td><td>強ノヴァ：100%</td><td>'+((cfg.strongChance||0)*100).toFixed(1)+'%</td></tr>';
-      html += '<tr><td>AT</td><td>初期150～1,500pt（レア役で増加）</td><td>ボーナス中nebula・穢れ・フリーズ等</td><td>通常5pt/G・上位8pt/G</td></tr>';
+      html += '<tr><td>AT</td><td>初期'+(initialBase*3)+'～'+((initialBase+100)*3)+'pt（初期3Gの成立役で決定）</td><td>ボーナス中nebula・穢れ・フリーズ等</td><td>通常5pt/G・上位8pt/G</td></tr>';
       table.innerHTML = html;
       renderRegDetailTable();
       return;
@@ -6207,7 +6206,7 @@
   }
 
   function morningResetGame(confirmFirst=true, reason="朝一リセット"){
-    const message = `設定はそのままでCOMPLETEを解除し、朝一状態（初回BBまで最大600G。Cは400G、天国系は200G）に戻しますか？`;
+    const message = `設定はそのままで、朝一状態（初回BBまで最大600G。Cは400G、天国系は200G）に戻しますか？`;
     if(confirmFirst && !confirm(message)) return false;
     return resetRuntimeForMorning(reason);
   }
@@ -6235,7 +6234,7 @@
     const help = document.createElement("div");
     help.className = "help";
     help.style.margin = "-2px 0 10px";
-    help.textContent = `朝一リセット：設定はそのまま、COMPLETE解除、モードを再抽選。初回BBまで最大600G（C：400G／天国系：200G）。BB後は通常のモード別天井。`;
+    help.textContent = `朝一リセット：設定はそのまま、モードを再抽選。初回BBまで最大600G（C：400G／天国系：200G）。BB後は通常のモード別天井。`;
     anchor.insertAdjacentElement("afterend", help);
     anchor.insertAdjacentElement("afterend", row);
   }
@@ -6406,11 +6405,11 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     document.getElementById('saveFlowConfig').closest('details').after(normalPanel);
     document.getElementById('novaApplyInternal').onclick=()=>{if(isSpinning||session.active)return;normalState.internal=NovaNormal.normalize({mode:$('novaNormalMode').value,games:$('novaNormalGames').value,modeChecked:Math.floor(Number($('novaNormalGames').value)/100),fiftyChecked:Number($('novaNormalGames').value)>=50,level:$('novaLevel').value,highLeft:$('novaLevel').value==='high'?10:0,impurity:$('novaImpurity').value});persistState();updateDisplay();};
     const artPanel=document.createElement('details');artPanel.id='novaArtConfig';
-    artPanel.innerHTML='<summary>AT・特化ゾーン設定</summary><p>初当たりは準備3G→赤7→ルーレット→くしゅり＆にと3G。初期ptは全設定共通の配分と成立役から決まります。ATレベルはありません。通常ATは8pt／15ptベルで純増4pt/G、上位AT・完走確定中は15ptベルで純増4pt/G。上位の直乗せ当選時ptは通常の1.5倍。スイカ・弱ノヴァは共通の上乗せ抽選と15%の高確移行、強ノヴァは直乗せのみ20%／特化のみ20%／両方20%です。</p><p>出陣はスイカ・弱ノヴァ・強ノヴァ成立時の低確率抽選。当選で特化ゾーン確定、突入時はネビュラを狙え（追加BETなし）。フリーズ告知はありません。出陣は10G、ストック率10／25／40／60／80%を抽選し、最低2個を獲得。初当たりの5%はスーパーノヴァチャレンジ（突破50%）。レア役契機・累計差枚＋2,400ptごとのチャレンジは突破65%。10Gでベル・リプレイ・レア役はHOLD、次Gでノヴァを狙え。レア役は突破確定。差枚契機では残りpt・未消化ストックをリセットし、成否とも特化1個で再開します。到達点はAT終了後も引き継ぎます。</p>';
+    artPanel.innerHTML='<summary>AT・特化ゾーン設定</summary><p>初当たりは準備3G→赤7→ルーレット→くしゅり＆にと3G。初期ptは設定別の基礎ptと成立役から決まります。ATレベルはありません。通常ATは8pt／15ptベルで純増4pt/G、上位AT中は15ptベルで純増4pt/G。上位の直乗せ当選時ptは通常の1.5倍。スイカ・弱ノヴァは共通の上乗せ抽選と15%の高確移行、強ノヴァは直乗せのみ20%／特化のみ20%／両方20%です。</p><p>出陣はスイカ・弱ノヴァ・強ノヴァ成立時の低確率抽選。当選で特化ゾーン確定、突入時はネビュラを狙え（追加BETなし）。フリーズ告知はありません。出陣は10G、ストック率10／25／40／60／80%を抽選し、最低2個を獲得。初当たりの5%はスーパーノヴァチャレンジ（突破50%）。レア役契機・累計差枚＋2,400ptごとのチャレンジは突破65%。10Gでベル・リプレイ・レア役はHOLD、次Gでノヴァを狙え。レア役は突破確定。差枚契機では残りpt・未消化ストックをリセットし、成否とも特化1個で再開します。到達点はAT終了後も引き継ぎます。</p>';
     const commonTable=document.createElement('div');
-    commonTable.innerHTML='<p>スイカ・弱ノヴァ成立時の特化当選率（AT低確／高確）。累計差枚に応じて今後の特化抽選が変化します。設定1・2は0〜＋1,500ptで基準の5%、設定3は＋500〜3,000ptで10%、設定4は同区間で75%まで低下。設定1〜4は＋5,000ptから追加倍率（65%／80%／85%／75%）を適用し、出陣抽選にも段階倍率を適用します。設定5は差枚0以下で基準の1.3倍、0〜＋2,000ptで0.27倍まで低下し、＋5,000ptからは基準の3.1倍。設定6の特化当選率は差枚で変化しません。設定5・6の出陣抽選はこの倍率の対象外です。獲得済みpt・ストックは維持します。</p><table><tr><th>設定</th><th>ベース G/50pt</th><th>出陣：差枚0以下<br>弱／強</th><th>特化：差枚0以下</th><th>特化：＋3,000pt</th><th>特化：＋5,000pt</th><th>特化：＋8,500pt</th></tr>'+[1,2,3,4,5,6].map(n=>'<tr><td>'+n+'</td><td>'+(50/(3*(1-NovaNormal.normalRoleProbabilities(n).REPLAY)-Object.entries(NovaNormal.normalRoleProbabilities(n)).reduce((sum,[role,p])=>sum+p*NovaNormal.pay(role==='NAVI_BELL'?'BELL':role),0))).toFixed(2)+'</td><td>'+['WEAK_NOVA','STRONG_NOVA'].map(role=>(100*NovaProgress.sortieChance(n,role,0)).toFixed(3)+'%').join('／')+'</td>'+[0,3000,5000,8500].map(net=>'<td>'+[false,true].map(high=>(100*NovaArt.extraZoneChance(n,'WEAK_NOVA',false,high,net)).toFixed(2)+'%').join('／')+'</td>').join('')+'</tr>').join('')+'</table>';artPanel.append(commonTable);
+    commonTable.innerHTML='<p>スイカ・弱ノヴァ成立時の特化当選率（AT低確／高確）。差枚別の元抽選に設定別の弱役報酬保持率を掛けた実効値を表示します。強ノヴァの直乗せ・特化抽選はこの保持率の対象外です。獲得済みpt・ストックは維持します。</p><table><tr><th>設定</th><th>ベース G/50pt</th><th>弱役報酬保持率</th><th>出陣：差枚0以下<br>弱／強</th><th>特化実効：差枚0以下</th><th>特化実効：＋3,000pt</th><th>特化実効：＋5,000pt</th><th>特化実効：＋8,500pt</th></tr>'+[1,2,3,4,5,6].map(n=>{const retain=NovaArt.weakAtAwardScales[n-1];return '<tr><td>'+n+'</td><td>'+(50/(3*(1-NovaNormal.normalRoleProbabilities(n).REPLAY)-Object.entries(NovaNormal.normalRoleProbabilities(n)).reduce((sum,[role,p])=>sum+p*NovaNormal.pay(role==='NAVI_BELL'?'BELL':role),0))).toFixed(2)+'</td><td>'+(retain*100).toFixed(1)+'%</td><td>'+['WEAK_NOVA','STRONG_NOVA'].map(role=>(100*NovaProgress.sortieChance(n,role,0)).toFixed(3)+'%').join('／')+'</td>'+[0,3000,5000,8500].map(net=>'<td>'+[false,true].map(high=>(100*retain*NovaArt.extraZoneChance(n,'WEAK_NOVA',false,high,net)).toFixed(3)+'%').join('／')+'</td>').join('')+'</tr>';}).join('')+'</table>';artPanel.append(commonTable);
     const entryTable=document.createElement('div');entryTable.id='novaEntryQuotaTable';
-    entryTable.innerHTML='<p>初当たりの初期3Gは全設定共通：通常役100pt、弱レア役150pt、強レア役200pt。3G分の成立役とptを開始時に抽選し、各ゲームで表示・加算します。基本300pt、レア役込みで最大600pt・平均約306.0pt。5%の初当たり上位チャレンジ経由はこの3Gを経由しません。出陣・引き戻し・後からのストックは従来の配分です。変更前に獲得済みの初期pt・倍率は維持します。</p><table><tr><th>成立役</th><th>1Gの獲得pt</th></tr><tr><td>通常役</td><td>100pt</td></tr><tr><td>スイカ・弱ノヴァ</td><td>150pt</td></tr><tr><td>強ノヴァ</td><td>200pt</td></tr></table>';artPanel.append(entryTable);
+    entryTable.innerHTML='<p>初当たりの初期3Gは設定別の基礎ptを使用し、弱レア役は基礎＋50pt、強レア役は基礎＋100ptです。3G分の成立役とptを開始時に抽選し、各ゲームで表示・加算します。5%の初当たり上位チャレンジ経由はこの3Gを経由しません。出陣・引き戻し・後からのストックは従来の配分です。変更前の保存データは旧100／150／200ptのまま再開します。</p><table><tr><th>設定</th><th>通常役</th><th>弱レア役</th><th>強レア役</th><th>3G基礎</th><th>平均</th></tr>'+[1,2,3,4,5,6].map(n=>{const base=NovaArt.freshInitialBase(n),probs=NovaArt.roleProbabilities(n,false,5),mean=3*Object.entries(probs).reduce((sum,[role,p])=>sum+p*NovaArt.freshInitialAward(n,role),0);return '<tr><td>'+n+'</td><td>'+base+'pt</td><td>'+(base+50)+'pt</td><td>'+(base+100)+'pt</td><td>'+(base*3)+'pt</td><td>'+mean.toFixed(1)+'pt</td></tr>';}).join('')+'</table>';artPanel.append(entryTable);
     const artLabels={ladderSosuke:'宗介 小役合算率',ladderGiru:'ギル 小役合算率',ladderUraGiru:'裏ギル 小役合算率',totoHit:'とと 7揃い率',totoReset:'とと nebula率',soraHit:'空 7揃い率',soraReset:'空 nebula率',soraUraHit:'裏空 7揃い率（保証前）',soraUraReset:'裏空 nebula率',urapiSuper:'うらぴ スーパーノヴァ率',oumaSuper:'逢魔 スーパーノヴァ率',oumaUraSuper:'裏逢魔 スーパーノヴァ率',urapiFreeze:'うらぴフリーズ継続率',oumaFreeze:'逢魔フリーズ継続率',oumaUraFreeze:'裏逢魔フリーズ継続率'};
     const zoneTable=document.createElement('div');zoneTable.innerHTML='<p>宗介・ギルは通常テーブル①〜⑤を設定別に抽選、裏ギルはテーブル⑥固定・300pt通過確定。同額の段階も突破で次へ進みます。<br>7揃い：全3ゾーン共通＋100pt。nebulaは＋10ptと残り5Gリセット（毎G：とと2%／空15%／裏空30%）。とと7揃い1回、空2回、裏空500pt以上を保証。<br>スーパーノヴァ：通常50・100pt、裏逢魔100・200pt（フリーズ中も共通）。逢魔と裏逢魔はBETでフリーズ抽選、当選時は無料の自動0G連。</p><table><tr><th>設定（準備中抽選）</th>'+['弱上乗せ','強上乗せ','超上乗せ'].map(x=>'<th>'+x+'</th>').join('')+'</tr>'+[1,2,3,4,5,6].map(setting=>NovaArt.zoneGroupWeights(setting,false,true)).map((row,i)=>'<tr><td>'+(i+1)+'</td>'+row.map(p=>'<td>'+p.toFixed(2)+'%</td>').join('')+'</tr>').join('')+'</table><p>弱＝宗介・とと・うらぴ、強＝ギル・空・逢魔、超＝裏3種。強当選後の3%で超へ昇格（従来どおり）。各区分内は3種均等。キャラルーレット中のレア役でテーブル⑥⑦への昇格抽選あり。通常ATの抽選は上記の共通ATを参照。準備中の抽選は従来通り。</p>';artPanel.append(zoneTable);
     const bonusTable=document.createElement('p');bonusTable.textContent='BIGは50pt。通常52%／上位80%のAT期待度（保証契機は別枠）。上位選択率10%の仮設定、全設定共通。白点滅＝通常、赤点滅＝上位。ネビュラを狙えは逆押し。REGは廃止。AT獲得後は特化ストック抽選：通常BIG 約1/'+(1/NovaArt.bonusRoleProbabilities(settings.setting,'normal',true).NEBULA).toFixed(2)+'／G、上位BIG 約1/'+(1/NovaArt.bonusRoleProbabilities(settings.setting,'upper',true).NEBULA).toFixed(2)+'／G。';artPanel.append(bonusTable);
@@ -10302,7 +10301,8 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     connectAdminCommands();
     if(!restorePendingSpin()){
       reels.forEach((_,i)=>setRandomReel(i));
-      showMessage("READY",`BIG ${NovaArt.bonusTarget()}pt / AT初期300pt＋レア役加算 / 設定${settings.setting}`);
+      const initialBase=NovaArt.freshInitialBase(settings.setting);
+      showMessage("READY",`BIG ${NovaArt.bonusTarget()}pt / AT初期${initialBase*3}～${(initialBase+100)*3}pt / 設定${settings.setting}`);
     }
     if($("forceResult")) $("forceResult").value = forceResult;
     if($("premiumForceStatus")) $("premiumForceStatus").value = forcePremiumEffect ? "ON" : "OFF";

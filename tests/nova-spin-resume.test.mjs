@@ -11,13 +11,13 @@ const noop=()=>{};
 function harness(saved=null){
  const storage=new Map(saved?[['state',JSON.stringify(saved)]]:[]),errors=[],timers=[],elements=new Map(),voices=[];
  const $=id=>{if(!elements.has(id))elements.set(id,{dataset:{},classList:{toggle:noop},disabled:false,textContent:''});return elements.get(id);};
- const c=vm.createContext({console:{warn:(...args)=>errors.push(args)},settings:{setting:1,title:'NOVA',audioBalanceVersion:12,masterVolume:.7},stats:{roleStatVersion:1,totalSpins:0,normalSpins:0,highSpins:0,totalFee:0,totalPaid:0,slumpHistory:[]},normalState:{},session:{active:false},completeTrialState:{},
+ const c=vm.createContext({console:{warn:(...args)=>errors.push(args)},settings:{setting:1,title:'NOVA',audioBalanceVersion:12,masterVolume:.7,completeEnabled:false,completeBasis:'none',completeLimitPt:0,completeMyLimitPt:0},stats:{roleStatVersion:1,totalSpins:0,normalSpins:0,highSpins:0,totalFee:0,totalPaid:0,slumpHistory:[]},normalState:{},session:{active:false},completeTrialState:{},
   safeStorageGet:key=>storage.has(key)?storage.get(key):null,safeStorageSet:(key,value)=>{storage.set(key,value);return true;},
   storageRestoreBlocked:false,storeResumeState:null,displaySinceBonusOffset:null,storeEndSnapshot:null,playAccess:{owned:()=>true},VERTEX_CONTROLLER_ENABLED:false,
   PREFERENCES_STORAGE_KEY:'preferences',STORAGE_KEY:'state',STORAGE_RESUME_KEY:'resume',
-  A_TYPE_MODE:true,AUDIO_BALANCE_VERSION:12,ROLE_STAT_COUNTER_VERSION:1,DEFAULT_COMPLETE_LIMIT_PT:0,DEFAULT_MASTER_VOLUME:.7,DEFAULT_BGM_VOLUME:.2,DEFAULT_SFX_VOLUME:.3,DEFAULT_PAYOUT_VOLUME:.3,
+  A_TYPE_MODE:true,AUDIO_BALANCE_VERSION:12,ROLE_STAT_COUNTER_VERSION:1,DEFAULT_COMPLETE_LIMIT_PT:0,COMPLETE_TRIAL_ENABLED:false,DEFAULT_MASTER_VOLUME:.7,DEFAULT_BGM_VOLUME:.2,DEFAULT_SFX_VOLUME:.3,DEFAULT_PAYOUT_VOLUME:.3,
   SETTING:{1:{},2:{},3:{},4:{},5:{},6:{}},RESULT:Object.fromEntries(['BELL','REPLAY','NEBULA','MISS','BIG','STRONG_NOVA'].map(k=>[k,{name:k,label:k,cls:k}])),
-  clamp:(v,a,b)=>Math.max(a,Math.min(b,v)),normalizeMachineTitle:v=>v,normalizeBonusAfterGames:v=>Number(v)||0,normalizeNovaRisingRemain:v=>Number(v)||0,normalizeForceResult:v=>v,isCompleteLockEnabled:()=>true,pickATypeBonusBgm:()=>({src:'bonus.wav'}),
+  clamp:(v,a,b)=>Math.max(a,Math.min(b,v)),normalizeMachineTitle:v=>v,normalizeBonusAfterGames:v=>Number(v)||0,normalizeNovaRisingRemain:v=>Number(v)||0,normalizeForceResult:v=>v,isCompleteLockEnabled:()=>false,pickATypeBonusBgm:()=>({src:'bonus.wav'}),
   currentSpin:null,isSpinning:false,spinCanStop:false,spinWaitTimer:null,autoPlay:false,speedToBonusActive:false,
   debugFastSpinActive:false,voiceOutputVolume:()=>1,playLockedBonusConfirmSound:src=>voices.push(src),
   jagChainCount:null,jagLastGamePayout:0,jagLastBonusPayout:0,jagChanceHold:false,forceResult:'',forcePremiumEffect:false,pendingForceResult:'',pendingBonusStartOptions:null,devilZoneConfirmIntroPending:false,pendingDevilRushEntryEffect:'',speedFrameOffHold:false,barBgmActive:false,barBgmMode:'',battleBgmActive:false,rogiBgmMuted:false,
@@ -142,8 +142,16 @@ test('a tab without ownership cannot overwrite state or apply an admin change',(
 test('first boot completes all migrations and reload retains the same active zone probabilities',()=>{
  const h=harness();h.c.load();assert.deepEqual(h.errors,[]);
  assert.equal(h.c.settings.initialSevenVersion,148);
+ assert.deepEqual(
+  {enabled:h.c.settings.completeEnabled,basis:h.c.settings.completeBasis,net:h.c.settings.completeLimitPt,my:h.c.settings.completeMyLimitPt},
+  {enabled:false,basis:'none',net:0,my:0}
+ );
  for(const key of ['totoHit','totoReset','soraHit','soraReset','soraUraHit','soraUraReset'])assert.equal(h.c.settings.novaArt[key],h.c.NovaArt.defaults[key],key);
- h.c.persistState();const again=harness(JSON.parse(h.storage.get('state')));again.c.load();assert.deepEqual(again.errors,[]);
+ h.c.persistState();const saved=JSON.parse(h.storage.get('state'));assert.deepEqual(
+  {enabled:saved.settings.completeEnabled,basis:saved.settings.completeBasis,net:saved.settings.completeLimitPt,my:saved.settings.completeMyLimitPt},
+  {enabled:false,basis:'none',net:0,my:0}
+ );
+ const again=harness(saved);again.c.load();assert.deepEqual(again.errors,[]);
  assert.deepEqual(json(again.c.settings.novaArt),json(h.c.settings.novaArt));
 });
 
@@ -235,10 +243,11 @@ test('replay entitlement and zero-game cost exemptions survive pending saves',()
  }
 });
 
-test('displayed RTP is unmeasured after MY cap removal; BIG fields still use the engine target',()=>{
+test('displayed RTP identifies the uncapped verification profile; BIG fields still use the engine target',()=>{
  const {c}=harness();vm.runInContext(fn('targetRtpText'),c);
  for(let setting=1;setting<=6;setting++){
-  assert.equal(c.targetRtpText(setting),`${(c.NovaBalance.profile(setting).measuredRtp*100).toFixed(2)}%（1万G試算）`);
+   const profile=c.NovaBalance.profile(setting);
+   assert.equal(c.targetRtpText(setting),`${(profile.measuredRtp*100).toFixed(2)}%（${profile.verificationLabel}）`);
  }
  assert.equal(c.NovaArt.bonusTarget(),50);
  for(const field of ['midMulInput','bigMulInput','bigAddInput'])assert(fn('applySettings').includes('$("'+field+'").value = NovaArt.bonusTarget()'));
@@ -276,7 +285,7 @@ test('all storage writes failing reports an error without modifying the running 
  assert.equal(h.$('storageStatus').hidden,false);assert.deepEqual(json({stats:c.stats,normal:c.normalState}),before);
 });
 
-test('custom lottery and complete limits suppress standard RTP; presentation preferences do not',()=>{
+test('custom lottery and stale nonzero COMPLETE fields suppress standard RTP; presentation preferences do not',()=>{
  const {c}=harness();c.load();vm.runInContext(fn('targetRtpText'),c);
  const standard=json(c.settings);
  assert(c.NovaBalance.usesStandardSettings(standard));
@@ -290,7 +299,8 @@ test('custom lottery and complete limits suppress standard RTP; presentation pre
   for(let n=1;n<=6;n++)assert.equal(c.targetRtpText(n),'未試算（独自設定）');
  }
  c.settings={...standard,audioMuted:true,voiceVolume:.1,autoDelay:2,title:'表示変更'};
- assert.equal(c.targetRtpText(6),`${(c.NovaBalance.profile(6).measuredRtp*100).toFixed(2)}%（1万G試算）`);
+ const profile=c.NovaBalance.profile(6);
+ assert.equal(c.targetRtpText(6),`${(profile.measuredRtp*100).toFixed(2)}%（${profile.verificationLabel}）`);
  c.settings={...standard,novaFlow:{...standard.novaFlow,czChance:String(c.NovaFlow.defaults.czChance)}};
  assert(c.NovaBalance.usesStandardSettings(c.settings));
 });
@@ -307,9 +317,9 @@ test('legacy MY-only lock is released on restore without resetting stats, quota 
  for(const net of [-5000,-1001,10000]){
   const h=harness();h.c.load();h.c.completeTrialState={lowestNet:-20000,locked:true,lockedSetting:1,reason:'my',completeProfit:net,completeMy:15000,maxMy:15000};h.c.stats={...h.c.stats,totalFee:20000,totalPaid:20000+net,slumpHistory:[]};h.c.normalState.flow=h.c.NovaArt.normalize({phase:'art',remaining:'850',stock:'2',queuedZones:['sora'],payoutVersion:1});h.c.persistState();
   const again=harness(JSON.parse(h.storage.get('state')));assert(again.c.load());assert.deepEqual(again.errors,[]);
-  assert.equal(again.c.completeTrialState.lowestNet,-20000);assert.equal(again.c.completeTrialState.locked,net+20000>=19000);assert.equal(again.c.completeTrialState.reason,net+20000>=19000?'my':undefined);
+  assert.equal(again.c.completeTrialState.lowestNet,-20000);assert.equal(again.c.completeTrialState.locked,false);assert.equal(again.c.completeTrialState.lockedSetting,0);assert.equal(again.c.completeTrialState.completeProfit,0);assert.equal(again.c.completeTrialState.reason,undefined);assert.equal(again.c.completeTrialState.completeMy,undefined);
   assert.equal(again.c.stats.totalPaid-h.c.stats.totalFee,net);assert.equal(again.c.normalState.flow.remaining,'850');assert.equal(again.c.normalState.flow.stock,'2');assert.deepEqual(json(again.c.normalState.flow.queuedZones),['sora']);
-  again.c.persistState();const third=harness(JSON.parse(again.storage.get('state')));third.c.load();assert.equal(third.c.completeTrialState.locked,net+20000>=19000);
+  again.c.persistState();const third=harness(JSON.parse(again.storage.get('state')));third.c.load();assert.equal(third.c.completeTrialState.locked,false);assert.equal(third.c.completeTrialState.reason,undefined);assert.equal(third.c.completeTrialState.completeMy,undefined);
  }
 });
 test('saved legacy net-completion is released below MY19k',()=>{

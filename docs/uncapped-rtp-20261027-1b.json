@@ -1,0 +1,174 @@
+{
+  "version": "nova-uncapped-continuous-20261027-final-v1",
+  "generatedAt": "2026-10-27T00:56:04.192Z",
+  "commit": "657265b74390fc1c63886042e442e5ce0b23b0fc",
+  "definition": "Adopted uncapped RTP evidence. Every trajectory is continuous, exact-length, and uses totalPaid / totalBet with the production refund rules.",
+  "targets": [0.94, 0.96, 0.98, 1.03, 1.1, 1.15],
+  "options": {
+    "rng": "xoshiro128",
+    "exactGames": true,
+    "completeLimitPt": 0,
+    "completeMyLimitPt": 0,
+    "stopAtComplete": false,
+    "rareSortie": true,
+    "atBetRefund": true,
+    "replayRefund": true,
+    "recordBlocks": 1000000
+  },
+  "totalAdoptedGames": 8000000000,
+  "settings": [
+    {
+      "setting": 1,
+      "targetRtp": 0.94,
+      "trials": 1,
+      "gamesPerTrial": 1000000000,
+      "totalGames": 1000000000,
+      "totalBet": 3000000000,
+      "totalPaid": 2818962760,
+      "net": -181037240,
+      "rtp": 0.9396542533333333,
+      "differencePoints": -0.034574666666664644,
+      "rtpCi95BatchMeans": [0.9387701680075213, 0.9405383386591475],
+      "seeds": ["nova-uncapped-continuous-1b-20261027-s1"],
+      "completeHits": 0
+    },
+    {
+      "setting": 2,
+      "targetRtp": 0.96,
+      "trials": 3,
+      "gamesPerTrial": 1000000000,
+      "totalGames": 3000000000,
+      "totalBet": 9000000000,
+      "totalPaid": 8636564425,
+      "net": -363435575,
+      "rtp": 0.9596182694444444,
+      "differencePoints": -0.038173055555557056,
+      "rtpCi95BatchMeans": [0.9587516973407983, 0.9604848415480882],
+      "rtpCi95SeedMeans": [0.9590688996230262, 0.9601676392658626],
+      "seeds": [
+        "nova-uncapped-continuous-1b-20261027-s2-final",
+        "nova-uncapped-continuous-1b-20261027-s2-final-b",
+        "nova-uncapped-continuous-1b-20261027-s2-final-c"
+      ],
+      "seedResults": [0.960114799, 0.9595953543333333, 0.959144655],
+      "completeHits": 0
+    },
+    {
+      "setting": 3,
+      "targetRtp": 0.98,
+      "trials": 1,
+      "gamesPerTrial": 1000000000,
+      "totalGames": 1000000000,
+      "totalBet": 3000000000,
+      "totalPaid": 2945137880,
+      "net": -54862120,
+      "rtp": 0.9817126266666667,
+      "differencePoints": 0.17126266666667167,
+      "rtpCi95BatchMeans": [0.9802594001258369, 0.983165853207498],
+      "seeds": ["nova-uncapped-continuous-1b-20261027-s3"],
+      "completeHits": 0
+    },
+    {
+      "setting": 4,
+      "targetRtp": 1.03,
+      "trials": 1,
+      "gamesPerTrial": 1000000000,
+      "totalGames": 1000000000,
+      "totalBet": 3000000000,
+      "totalPaid": 3089971184,
+      "net": 89971184,
+      "rtp": 1.0299903946666666,
+      "differencePoints": -0.0009605333333384536,
+      "rtpCi95BatchMeans": [1.0292421277318675, 1.030738661601467],
+      "seeds": ["nova-uncapped-continuous-1b-20261027-s4"],
+      "completeHits": 0
+    },
+    {
+      "setting": 5,
+      "targetRtp": 1.1,
+      "trials": 1,
+      "gamesPerTrial": 1000000000,
+      "totalGames": 1000000000,
+      "totalBet": 3000000000,
+      "totalPaid": 3301774335,
+      "net": 301774335,
+      "rtp": 1.100591445,
+      "differencePoints": 0.059144499999996825,
+      "rtpCi95BatchMeans": [1.0997984783158536, 1.1013844116841447],
+      "seeds": ["nova-uncapped-continuous-1b-20261027-s5"],
+      "completeHits": 0
+    },
+    {
+      "setting": 6,
+      "targetRtp": 1.15,
+      "trials": 1,
+      "gamesPerTrial": 1000000000,
+      "totalGames": 1000000000,
+      "totalBet": 3000000000,
+      "totalPaid": 3454382733,
+      "net": 454382733,
+      "rtp": 1.151460911,
+      "differencePoints": 0.14609110000001202,
+      "rtpCi95BatchMeans": [1.1505951143765971, 1.152326707623399],
+      "seeds": ["nova-uncapped-continuous-1b-20261027-s6"],
+      "completeHits": 0
+    }
+  ],
+  "retune": {
+    "setting": 2,
+    "fromWeakAtAwardScale": 0.39,
+    "initialOneBillionGameRtp": 0.962689435,
+    "toWeakAtAwardScale": 0.385,
+    "adoptedThreeBillionGameRtp": 0.9596182694444444
+  },
+  "simulationBatches": [
+    {
+      "id": "base-1b",
+      "generatedAt": "2026-10-27T00:02:41.140Z",
+      "settingsUsed": [1, 3, 4, 5, 6],
+      "sourceDiffSha256": "edf549908c5604b0faed804e85f6cab17cddd71c2f0b71fb3f2d2163d31ef5ed",
+      "sourceHashes": {
+        "nova-art.js": "28d292576ab73953ae6df41f26ad53c4dd9d0310c24541aa933962cbdf12b6be",
+        "nova-balance.js": "51f64ae755a4922c61463e36d933a9bc2681ce7be559fe3b4858671ca15ffa4a",
+        "nova-flow.js": "841a028ee1afc6253d5c35a22d65ce8e5ddde0253f4e0b832402c951bcbded93",
+        "nova-normal.js": "de88133072315003c85f0e1f6f1b5f4b5edaa741d0a521b270d8995574e5425f",
+        "nova-tuning.js": "6ab505d1aac2c671696ea383c10ffd3e85b8e2ce91ac7d5641d80fd8e27d9f4b",
+        "nova-decrement.js": "e1cda1eff88e32819c691ea9685c366ef4f9b0c8d9781c801dcb0a9b93fa0bc4",
+        "nova-progress.js": "44b36032f2ab5252b665f4ac0a55e64960f68a71c59ab8336bfe193188e4c628",
+        "nova-complete.js": "aa17ef61942c86536be27dd7cf55cba119bdea6439f1bccd66519d5e427c6264",
+        "scripts/zone-v2-model.mjs": "741082037f6f7baac5326272d628ae3e788deb51c1b64bf6a874f01cbaa5f885",
+        "scripts/zone-v2-rng.mjs": "cf60c6990d63189943648553c06497440ecc7dbec8214a14a21939c35e589d8b"
+      }
+    },
+    {
+      "id": "setting2-retune-1b-x3",
+      "generatedAt": "2026-10-27T00:55:09.074Z",
+      "settingsUsed": [2],
+      "sourceHashes": {
+        "nova-art.js": "09d6167b135e1152dd3e594ff4444471edbafa8d4c79de6b22d1abc69248962a",
+        "nova-balance.js": "51f64ae755a4922c61463e36d933a9bc2681ce7be559fe3b4858671ca15ffa4a",
+        "nova-complete.js": "8325f567a34221e1bd309b3c486031d64a682987b8dab7f41b37ee499c082556",
+        "nova-decrement.js": "e1cda1eff88e32819c691ea9685c366ef4f9b0c8d9781c801dcb0a9b93fa0bc4",
+        "nova-flow.js": "841a028ee1afc6253d5c35a22d65ce8e5ddde0253f4e0b832402c951bcbded93",
+        "nova-normal.js": "de88133072315003c85f0e1f6f1b5f4b5edaa741d0a521b270d8995574e5425f",
+        "nova-progress.js": "44b36032f2ab5252b665f4ac0a55e64960f68a71c59ab8336bfe193188e4c628",
+        "nova-tuning.js": "6ab505d1aac2c671696ea383c10ffd3e85b8e2ce91ac7d5641d80fd8e27d9f4b",
+        "scripts/zone-v2-model.mjs": "741082037f6f7baac5326272d628ae3e788deb51c1b64bf6a874f01cbaa5f885",
+        "scripts/zone-v2-rng.mjs": "cf60c6990d63189943648553c06497440ecc7dbec8214a14a21939c35e589d8b"
+      }
+    }
+  ],
+  "finalSourceHashes": {
+    "nova-art.js": "00c05a82e0c39cebf032517fc751ffb169d3d98ba81d6c0305a80953214ea8a3",
+    "nova-balance.js": "b60d2003911bbfdd5f09bda472699ca5c5eaffe8b8ad6eb7c6280933ed329d8c",
+    "nova-complete.js": "8325f567a34221e1bd309b3c486031d64a682987b8dab7f41b37ee499c082556",
+    "nova-decrement.js": "e1cda1eff88e32819c691ea9685c366ef4f9b0c8d9781c801dcb0a9b93fa0bc4",
+    "nova-flow.js": "841a028ee1afc6253d5c35a22d65ce8e5ddde0253f4e0b832402c951bcbded93",
+    "nova-normal.js": "de88133072315003c85f0e1f6f1b5f4b5edaa741d0a521b270d8995574e5425f",
+    "nova-progress.js": "44b36032f2ab5252b665f4ac0a55e64960f68a71c59ab8336bfe193188e4c628",
+    "nova-tuning.js": "6ab505d1aac2c671696ea383c10ffd3e85b8e2ce91ac7d5641d80fd8e27d9f4b",
+    "scripts/zone-v2-model.mjs": "741082037f6f7baac5326272d628ae3e788deb51c1b64bf6a874f01cbaa5f885",
+    "scripts/zone-v2-rng.mjs": "cf60c6990d63189943648553c06497440ecc7dbec8214a14a21939c35e589d8b"
+  },
+  "finalCodeEquivalence": "The base batch used 0.390 only in the setting-2 scale slot. The adopted final code changes that slot to 0.385; settings 1 and 3-6 use unchanged setting-specific branches. The post-run nova-balance.js edit replaces target and display evidence metadata only; the simulator-consumed profile().scale formula remains 0.21 * (1 + 0.12 * NovaArt.settingBias[i]). The later origin/main nova-art.js change only adjusts BIG cue color confidence while preserving outcomes and RNG call counts, so it does not participate in the simulator payout ledger. The COMPLETE configure fix likewise does not participate in that ledger."
+}
