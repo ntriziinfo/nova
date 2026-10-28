@@ -7,10 +7,10 @@ globalThis.NovaSortie=(()=>{
  const previews=new WeakMap();
  let root,host,reveal,portraits,caption,actors=[],animation=null,revealSpin=null,revealStage=-1;
  let soundPlayer=null,awardSound=null,duoSound=null,awardFrame=0,removeSoundListeners=null;
- let holdUntil=0,holdTimer=null,holdToken=0;
+ let holdUntil=0,holdTimer=null,holdToken=0,heldSpin=null;
  const waitMs=()=>Math.max(0,Math.ceil(holdUntil-performance.now()));
  function clearHold(){
-  ++holdToken;holdUntil=0;
+  ++holdToken;holdUntil=0;heldSpin=null;
   if(holdTimer!==null){NovaClock.clearTimeout(holdTimer);holdTimer=null;}
  }
  function holdAward(){
@@ -91,15 +91,22 @@ globalThis.NovaSortie=(()=>{
  }
  function target(spin,index,strips){
   if(!eligible(spin))return null;
-  const presses=spin.auditPressOrder||[];
-  // Middle-first may stop the left reel second, before the final reveal.
-  const canAlign=!!spin.resolved.researchSortie.won&&(presses[0]===1||presses.length===3&&order.every((n,i)=>presses[i]===n));
-  const aligned=canAlign&&presses.length===3;
+  const presses=spin.auditPressOrder||spin.auditStopOrder||[];
+  const won=!!spin.resolved.researchSortie.won;
+  const decisive=presses[0]===1?1:2-presses[0];
+  const aligned=won&&presses.length===3;
   const strip=strips[index],legacy=strip.indexOf(`NOVA_${index}_0`),bar=strip.indexOf("BAR"),top=legacy>=0?legacy:bar-1;
   if(legacy<0&&bar<0)throw Error('Missing sortie BAR column');
   const windowAt=n=>[0,1,2].map(row=>strip[((n+row)%strip.length+strip.length)%strip.length]);
-  const shift=index===0&&!canAlign;
+  const shift=index===decisive&&!won;
   return {aligned,column:windowAt(top-(shift?1:0))};
+ }
+ function stopVerdict(spin){
+  if(!eligible(spin))return null;
+  const stopped=spin.auditStopOrder||[];
+  if(!stopped.length)return spin.stopped?.length===3&&spin.stopped.every(Boolean)?{won:!!spin.resolved.researchSortie.won}:null;
+  const first=(spin.auditPressOrder||stopped)[0],decisive=first===1?1:2-first;
+  return stopped.includes(decisive)?{won:!!spin.resolved.researchSortie.won}:null;
  }
  function init(){
   if(root)return true;
@@ -124,31 +131,40 @@ globalThis.NovaSortie=(()=>{
   if(reveal&&!reveal.hidden)Object.assign(reveal.style,{left:(r.left-base.left)/scale+'px',top:(r.top-base.top)/scale+'px',width:w+'px',height:r.height/scale+'px',fontSize:w*.038+'px'});
  }
  function revealCharacter(spin,stage){
-  if(revealSpin===spin&&revealStage===stage)return;
+  const verdict=stopVerdict(spin),confirmed=verdict?.won===true;
+  // The confirmation is the same persistent scene from the decisive stop onward.
+  const scene=verdict?(confirmed?'won':'lost'):stage;
+  if(revealSpin===spin&&revealStage===scene)return;
   stopAward();
-  animation?.cancel();animation=null;revealSpin=spin;revealStage=stage;
+  animation?.cancel();animation=null;revealSpin=spin;revealStage=scene;
   const event=spin.resolved.researchSortie;
-  // The final reveal follows the internal stock award, even if NOVA was not aligned manually.
-  if(stage===3&&!event.won){reveal.hidden=true;return;}
+  if(verdict&&!confirmed){
+   reveal.hidden=true;
+   if(!spin.sortieOutcomeSoundPlayed){spin.sortieOutcomeSoundPlayed=true;try{const playback=soundPlayer?.('assets/media/nova/ouma-fail.wav');Promise.resolve(playback?.promise).catch(()=>{});}catch{}}
+   return;
+  }
   const zone=previewZone(spin),base=baseZone(zone);if(!zone){reveal.hidden=true;return;}
   const pair=base==='kushuri_nito',ids=pair?['nito','kushuri']:[base];
   for(const img of actors)img.hidden=!ids.includes(img.dataset.character);
-  reveal.dataset.stage=String(stage);reveal.dataset.confirmed=String(stage===3);reveal.dataset.pair=String(pair);reveal.dataset.zone=zone;
-  caption.textContent=stage===3?(zone.startsWith('ura_')?'裏':'')+(pair?'くしゅり＆にと':characters[base][1])+'ゾーン獲得！':'';
+  reveal.dataset.stage=String(stage);reveal.dataset.confirmed=String(confirmed);reveal.dataset.pair=String(pair);reveal.dataset.zone=zone;
+  caption.textContent=confirmed?(zone.startsWith('ura_')?'裏':'')+(pair?'くしゅり＆にと':characters[base][1])+'ゾーン獲得！':'';
   reveal.hidden=false;
   const reduced=globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-  animation=reveal.animate(stage===3?[{opacity:0},{opacity:1}]:[{opacity:0,offset:0},{opacity:.85,offset:.2},{opacity:.85,offset:.5},{opacity:0,offset:1}],{duration:stage===3?(reduced?1:220):520,easing:'ease-in-out'});
-  if(stage===3){holdAward();startAward(reduced,spin.resolved?.researchSortie?.zone);}
+  animation=reveal.animate(confirmed?[{opacity:0},{opacity:1}]:[{opacity:0,offset:0},{opacity:.85,offset:.2},{opacity:.85,offset:.5},{opacity:0,offset:1}],{duration:confirmed?(reduced?1:220):520,easing:'ease-in-out'});
+  if(confirmed&&!spin.sortieOutcomeSoundPlayed){spin.sortieOutcomeSoundPlayed=true;startAward(reduced,event.zone);}
  }
  function render(spin){
   if(!eligible(spin)||!init())return;
   root.hidden=false;
   const stopped=spin.stopped||[],next=order.find(i=>!stopped[i]);
-  if(stopped.length===3&&stopped.every(Boolean)&&spin.resolved.researchSortie.won)flash(spin.resolved.researchSortie.zone);
-  root.firstChild.textContent=stopped.every(Boolean)?(spin.resolved.researchSortie.won?'特化ゾーン獲得！':'ノヴァ不揃い'):'逆押しでノヴァを狙え';
+  const verdict=stopVerdict(spin);
+  if(verdict?.won)flash(spin.resolved.researchSortie.zone);
+  root.firstChild.textContent=verdict?(verdict.won?'特化ゾーン獲得！':'ノヴァ不揃い'):'逆押しでノヴァを狙え';
   for(const cell of root.querySelectorAll('[data-reel]')){const i=Number(cell.dataset.reel);cell.dataset.stopped=String(!!stopped[i]);cell.dataset.next=String(i===next);}
   for(const reel of host.querySelectorAll('.reel')){const i=Number(reel.dataset.reel);reel.classList.toggle('sortieStopped',!!stopped[i]);reel.style.setProperty('--ouma-rattle-speed',[35,41.5,30.5][i]+'ms');reel.style.setProperty('--ouma-rattle-delay',[0,-15.5,-8.5][i]+'ms');}
   revealCharacter(spin,stopped.filter(Boolean).length);
+  // Keep the existing four-second next-BET hold measured from the third stop.
+  if(stopped.length===3&&stopped.every(Boolean)&&spin.resolved.researchSortie.won&&heldSpin!==spin){holdAward();heldSpin=spin;}
   layout();
  }
  function clear(){
@@ -168,7 +184,7 @@ globalThis.NovaSortie=(()=>{
  }
  function begin(spin){clear();render(spin);}
  if(typeof window!=='undefined')window.addEventListener('resize',layout);
- return {eligible,label,target,begin,stop:render,clear,flash,awardScale,
+ return {eligible,label,target,stopVerdict,begin,stop:render,clear,flash,awardScale,
   get busy(){return waitMs()>0;},get waitMs(){return waitMs();},
   setSoundPlayer:player=>{soundPlayer=player;},
   updateVolume:volume=>{for(const audio of [awardSound,duoSound])if(audio)audio.volume=Math.max(0,Math.min(1,Number(volume)||0));}

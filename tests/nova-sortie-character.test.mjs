@@ -102,7 +102,7 @@ test('winning third stop plays the supplied sound once and scales by its playbac
 test('failed or superseded playback cannot keep audio or animation alive',async()=>{
  const t=setup(),old=sound(),next=sound(),s=spin(true);s.stopped=[true,true,true];let reject;
  t.api.setSoundPlayer(()=>({audio:old,promise:new Promise((_,r)=>{reject=r;})}));t.api.begin(s);t.api.clear();
- t.api.setSoundPlayer(()=>({audio:next,promise:Promise.resolve()}));t.api.begin(spin(true));s.stopped=[true,true,true];t.api.begin(s);
+ t.api.setSoundPlayer(()=>({audio:next,promise:Promise.resolve()}));t.api.begin(spin(true));const nextSpin=spin(true);nextSpin.stopped=[true,true,true];t.api.begin(nextSpin);
  reject(new Error('delayed failure'));await Promise.resolve();assert.equal(next.paused,false);assert.equal(t.frames.size,1);
  next.listeners.get('error')();assert.equal(next.paused,true);assert.equal(t.frames.size,0);assert.equal(t.view().firstChild.style['--sortie-win-scale'],'1');
 });
@@ -152,4 +152,24 @@ test('duo third stop layers 1012 with the common win SE once; neither playback e
  assert(sounds.every(s=>!s.loop));t.api.updateVolume(.25);assert(sounds.every(s=>s.volume===.25));
  sounds[1].listeners.get('ended')();assert.equal(sounds[0].paused,false,'common SE must not cut off the duo cue');
  t.api.clear();assert(sounds.every(s=>s.paused));assert.equal(played.length,2);
+});
+
+test('all six stop orders reveal the character, sound and failure only once at the decisive landing',()=>{
+ for(const order of [[0,1,2],[0,2,1],[1,0,2],[1,2,0],[2,0,1],[2,1,0]])for(const won of [false,true]){
+  const t=setup(),s=spin(won,'kushuri_nito'),played=[];s.auditPressOrder=[];s.auditStopOrder=[];
+  t.api.setSoundPlayer(src=>{played.push(src);return {audio:sound(),promise:Promise.resolve()};});
+  t.api.begin(s);const original=JSON.stringify(s.resolved),decisive=order[0]===1?1:2-order[0];
+  for(const i of order){
+   s.auditPressOrder.push(i);t.api.stop(s); // A pending animation must not reveal the result.
+   const before=s.auditStopOrder.includes(decisive);assert.equal(played.length,before?(won?2:1):0);
+   s.auditStopOrder.push(i);s.stopped[i]=true;t.api.stop(s);
+   const revealed=s.auditStopOrder.includes(decisive);
+   assert.equal(played.length,revealed?(won?2:1):0);
+   if(revealed){assert.equal(t.view().hidden,!won);if(won)assert.equal(t.view().dataset.confirmed,'true');}
+   t.api.stop(s);assert.equal(played.length,revealed?(won?2:1):0);
+  }
+  assert.equal(JSON.stringify(s.resolved),original);assert.equal(t.api.busy,won);
+  assert.deepEqual(played,won?['assets/media/nova/sortie-award-duo.wav','assets/media/nova/sortie-award.mp3']:['assets/media/nova/ouma-fail.wav']);
+  const saved=JSON.parse(JSON.stringify(s));t.api.begin(saved);assert.equal(played.length,won?2:1,'reload must not replay the outcome');
+ }
 });

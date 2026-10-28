@@ -27,6 +27,11 @@ test('live middle strip supports the exact sandwich and failed trigger does not 
  for(const kind of ['sortie','sortieFake']){
   const columns=c.NovaStockEntry.sortieColumns({kind},c.strips);
   assert.equal(JSON.stringify(columns[1])==='["BAR","blank","BAR"]',kind==='sortie');
+  if(kind==='sortieFake'){
+   const upper=c.strips[1].findIndex((s,i)=>s==='BAR'&&c.strips[1][(i+2)%20]==='BAR');
+   assert.equal(JSON.stringify(columns[1]),JSON.stringify([18,19,0].map(offset=>c.strips[1][(upper+offset)%20])));
+   assert.equal(columns[1][2],'BAR');assert.notEqual(columns[1][0],'BAR');
+  }
   columns.forEach((col,i)=>assert(c.strips[i].some((_,j)=>col.every((s,r)=>s===c.strips[i][(j+r)%20]))));
  }
 });
@@ -39,7 +44,7 @@ test('middle-first gate and debug choices cannot turn rainbow into a miss',()=>{
  for(const key of ['WIN_BLUE','WIN_RED','WIN_RAINBOW','MISS_BLUE','MISS_RED'])assert(c.NovaStockEntry.debugCue('SORTIE_AIM_'+key));
  assert.equal(c.NovaStockEntry.debugCue('SORTIE_AIM_MISS_RAINBOW'),null);
  const strips=[['bell','BAR','cherry'],['bell','BAR','cherry','BAR','bell','replay'],['bell','BAR','bell']];
- assert.equal(JSON.stringify(c.NovaStockEntry.sortieColumns({kind:'sortieFake'},strips)[1]),'["cherry","BAR","bell"]');
+ assert.equal(JSON.stringify(c.NovaStockEntry.sortieColumns({kind:'sortieFake'},strips)[1]),'["replay","bell","BAR"]');
 });
 
 test('debug flags queue exactly one real or fake entry with the requested color',()=>{

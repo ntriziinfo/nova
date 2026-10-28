@@ -8163,15 +8163,20 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     spin.stopOutcomeRevealed=verdict;
     const sound=src=>playOneShotSound(src,sfxOutputVolume(),{allowDuringPremiumConfirm:true});
     if(verdict.kind==='aim'){
-      if(verdict.won){spin.earlyAimSoundPlayed=true;playAimSevenWinSound(spin.resolved.aim.symbol,spin.resolved);}
+      if(verdict.won){
+        spin.earlyAimSoundPlayed=true;spin.aimWinPlayed=true;
+        const resolved=spin.resolved,symbol=resolved.aim.symbol;
+        playAimSevenWinSound(symbol,resolved);
+        NovaAim.win(()=>{},symbol,resolved,()=>playZoneContinueVoice(symbol,resolved));
+      }
       else {spin.earlyAimFailurePlayed=true;NovaAim.fail(()=>sound('assets/media/nova/ouma-fail.wav'));}
     }else if(verdict.kind==='nova'){
-      if(verdict.won){if(!spin.superNovaStopSoundPlayed)sound('assets/media/nova/super-nova-stop.wav');spin.superNovaStopSoundPlayed=true;}
+      if(verdict.won){if(!spin.superNovaStopSoundPlayed)sound('assets/media/nova/super-nova-stop.wav');spin.superNovaStopSoundPlayed=true;NovaAim.confirmNova?.();}
       else NovaAim.fail(()=>sound('assets/media/nova/ouma-fail.wav'));
     }else if(verdict.kind==='ladder'){
       if(!spin.ladderOutcomeSoundPlayed)sound(verdict.won?'assets/media/nova/shutter-close.wav':'assets/media/nova/ouma-fail.wav');
       spin.ladderOutcomeSoundPlayed=true;
-      if(!verdict.won)NovaLadder.fail?.();
+      if(verdict.won)NovaLadder.confirm?.(spin.resolved);else NovaLadder.fail?.();
     }else if(verdict.kind==='sortie'){
       if(verdict.won){sound('assets/media/nova/sortie-nebula-cue.mp3');spin.sortieConfirmSoundPlayed=true;}
       else {NovaSortieAim.fail?.();sound('assets/media/nova/ouma-fail.wav');}
@@ -8634,9 +8639,9 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
   }
 
   function playSortieAwardVoice(spin){
-    if(debugFastSpinActive||speedToBonusActive||!spin||spin.sortieAwardVoicePlayed||spin.stopped?.length!==3||!spin.stopped.every(Boolean))return;
+    if(debugFastSpinActive||speedToBonusActive||!spin||spin.sortieAwardVoicePlayed)return;
     const event=spin.resolved?.researchSortie;
-    if(!event?.won)return;
+    if(!event?.won||!NovaSortie.stopVerdict(spin)?.won)return;
     // Follow the awarded character, including wrong-order wins; never the teaser.
     const src=SORTIE_AWARD_VOICE_SRCS[String(event.zone||'').replace(/^(ura_|normal_)/,'')];
     if(!src)return;

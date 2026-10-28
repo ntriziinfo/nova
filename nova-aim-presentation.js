@@ -18,7 +18,7 @@ globalThis.NovaAim=(()=>{
    video.setAttribute('aria-label',`${symbol==='seven'?'7':'nebula'}を狙え！`);
    root.append(video);videos.set(symbol+':'+color,video);
   }
-  // Seven and NOVA share the original color-specific presentation.
+  // Preserve the original color-specific seven presentation.
   for(const color of ['blue','red','rainbow']){
    const video=document.createElement('video');video.muted=true;video.loop=true;video.playsInline=true;video.preload=globalThis.NovaMedia?.compact?'none':'metadata';video.hidden=true;
    video.src=`assets/media/nova/aim/seven-${color}.mp4`;root.append(video);videos.set('sora-seven:'+color,video);
@@ -37,8 +37,20 @@ globalThis.NovaAim=(()=>{
   sortieTitle=document.createElement('img');sortieTitle.className='novaSortieTitle';sortieTitle.hidden=true;sortieTitle.loading=globalThis.NovaMedia?.compact?'lazy':'eager';sortieTitle.src='assets/ui/sortie-challenge-title-20261011.png';sortieTitle.alt='出陣チャレンジ';root.append(sortieTitle);
   const superChallenge=document.createElement('video');superChallenge.muted=true;superChallenge.loop=true;superChallenge.playsInline=true;superChallenge.preload=globalThis.NovaMedia?.compact?'none':'metadata';superChallenge.hidden=true;superChallenge.src='assets/media/nova/super-nova-challenge-tunnel-20261012.mp4';superChallenge.id='novaSuperChallengeBackground';host.append(superChallenge);videos.set('super-challenge',superChallenge);
   superChallengeTitle=document.createElement('img');superChallengeTitle.className='novaSuperChallengeTitle';superChallengeTitle.hidden=true;superChallengeTitle.loading=globalThis.NovaMedia?.compact?'lazy':'eager';superChallengeTitle.src='assets/ui/super-nova-challenge-title-20261012.png';superChallengeTitle.alt='スーパーノヴァチャレンジ';host.append(superChallengeTitle);
-  const novaCue=document.createElement('video');novaCue.muted=true;novaCue.loop=true;novaCue.playsInline=true;novaCue.preload=globalThis.NovaMedia?.compact?'none':'metadata';novaCue.hidden=true;novaCue.src='assets/media/nova/aim/seven-flash-20261027.mp4';root.append(novaCue);videos.set('nova',novaCue);
-  novaBarTitle=document.createElement('div');novaBarTitle.className='novaBarAimTitle';novaBarTitle.hidden=true;aimSymbol=document.createElement('img');aimSymbol.src='assets/lossless-20261027/nova-only-20261027.webp';aimSymbol.alt='NOVA図柄';novaBarTitle.append(aimSymbol);root.append(novaBarTitle);
+  for(const color of ['blue','red','rainbow']){
+   const video=document.createElement('video');video.muted=true;video.loop=true;video.playsInline=true;video.preload=globalThis.NovaMedia?.compact?'none':'metadata';video.hidden=true;
+   video.src=`assets/media/nova/sortie-aim-${color}-20261027.mp4`;root.append(video);videos.set('nova:'+color,video);
+  }
+  novaBarTitle=document.createElement('div');novaBarTitle.className='novaBarAimTitle';novaBarTitle.hidden=true;
+  const artwork=document.createElement('div');artwork.className='novaAimArtwork';
+  for(const part of ['arrow','symbol','caption']){
+   const box=document.createElement('div');box.className='novaAimArtwork-'+part;
+   const img=document.createElement('img');img.draggable=false;
+   img.src=part==='symbol'?'assets/lossless-20261027/nova-only-20261027.webp':'assets/ui/nova-aim-arrow-caption-20261028.png';
+   img.alt=part==='symbol'?'NOVA図柄':part==='arrow'?'左向き矢印':'を狙え！';if(part==='symbol')aimSymbol=img;
+   box.append(img);artwork.append(box);
+  }
+  novaBarTitle.append(artwork);root.append(novaBarTitle);
   reverseNotice=document.createElement('div');reverseNotice.className='novaAimReverseNotice';reverseNotice.hidden=true;reverseNotice.textContent='逆押し　右 → 中 → 左';root.append(reverseNotice);
   const win=document.createElement('video');win.muted=true;win.loop=false;win.playsInline=true;win.preload=globalThis.NovaMedia?.compact?'none':'metadata';win.hidden=true;win.src='assets/media/nova/aim/seven-win.mp4?v=20260918-rainbow-144';root.append(win);videos.set('win',win);
   return true;
@@ -130,6 +142,7 @@ globalThis.NovaAim=(()=>{
   host.dataset.aimActive='true';video.hidden=false;superChallengeTitle.hidden=false;layout();playLoop(video);
  }
  function stop(resolved){
+  if(winLocked)return; // A decisive first/second-stop movie must finish once.
   if(resolved?.researchChallenge){
    if(resolved.researchChallenge.finished)hide();else showSuperChallenge();
    return;
@@ -154,7 +167,7 @@ globalThis.NovaAim=(()=>{
   if(isNovaCue(resolved)){
    if(!init())return false;hide();
    if(resolved.aimDisplay?.guide===false){if(resolved.researchChallenge)showSuperChallenge();return false;}
-   const color=resolved.aimDisplay?.color||'blue';active=videos.get('nebula:'+color);root.hidden=false;root.dataset.novaCue='true';root.dataset.color=color;root.dataset.symbol='nova';host.dataset.aimActive='true';active.hidden=false;showSymbol('nova');reverseNotice.hidden=true;layout();playLoop(active);return false;
+   const color=resolved.aimDisplay?.color||'blue';active=videos.get('nova:'+color);root.hidden=false;root.dataset.novaCue='true';root.dataset.color=color;root.dataset.symbol='nova';host.dataset.aimActive='true';active.hidden=false;showSymbol('nova');reverseNotice.hidden=true;layout();playLoop(active);return false;
   }
   if(resolved.researchChallenge){showSuperChallenge();return false;}
   if(resolved.researchSortie){showSortie();return false;}
@@ -175,7 +188,7 @@ globalThis.NovaAim=(()=>{
   reverseNotice.hidden=true;
   active=video;root.dataset.color=sortieEntry?sortieColor:entry?'entry':aim.color;root.dataset.symbol=sortieEntry?'nebula':entry?'seven':aim.symbol;root.dataset.zoneEntry=String(entry);root.hidden=false;
   // Existing seven/nebula movies already contain the generated arrow, title and symbol.
-  // Only NOVA needs a replacement symbol; never cover the original lettering.
+  // NOVA uses the exact reel artwork over a separate background-only movie.
   // Rewind on dismissal, while hidden; seeking again on BET discards ready frames.
   host.dataset.aimActive='true';video.hidden=false;if(video.currentTime>0)video.currentTime=0;layout();
   playLoop(video);
@@ -224,11 +237,12 @@ globalThis.NovaAim=(()=>{
  function stopVerdict(spin){
   const order=spin?.auditStopOrder||[],r=spin?.resolved;
   if(!r||!order.length)return null;
+  const pressed=spin.aimStopOrder||spin.auditPressOrder||order;
   if(r.stockEntry&&r.sortieEntry)return order.includes(1)?{kind:'sortie',won:!r.sortieFake}:null;
   if(hasGuide(r.aim)){
    const hit=spin.result===(r.aim.symbol==='seven'?'BIG':'NEBULA');
-   for(let n=0;n<order.length;n++){
-    const prefix=order.slice(0,n+1),i=order[n];
+   for(const i of order){
+    const prefix=pressed.slice(0,pressed.indexOf(i)+1);
     const win=stopTarget(r.aim,r.aim.symbol==='seven'?'BIG':'NEBULA',prefix,i);
     const miss=stopTarget(r.aim,'MISS',prefix,i);
     if(win.onLine!==miss.onLine)return {kind:'aim',won:hit&&win.aligned};
@@ -236,11 +250,11 @@ globalThis.NovaAim=(()=>{
    if(order.length===3)return {kind:'aim',won:hit&&!!spin.aimAligned};
   }
   if(isNovaZoneSpin(spin)){
-   const decisive=order[0]===1?1:2-order[0];
+   const decisive=pressed[0]===1?1:2-pressed[0];
    if(order.includes(decisive))return {kind:'nova',won:spin.result==='SUPER_NOVA'};
   }
   const ladder=(r.zoneStartFlow||r.flowBefore)?.ladderRevealed&&!spin.ladderResultPresentation&&globalThis.NovaLadder?.outcome?.(r);
-  if(ladder&&order.includes(order[0]===1?1:2))return {kind:'ladder',won:ladder.won};
+  if(ladder&&order.includes(pressed[0]===1?1:2))return {kind:'ladder',won:ladder.won};
   return null;
  }
  function fail(playSound){
@@ -257,8 +271,9 @@ globalThis.NovaAim=(()=>{
  function win(playSound,symbol='seven',resolved={},playDelayedVoice=null){
   if(!init())return;
   hide();const token=++winToken;winLocked=true;clearTimeout(winTimer);clearTimeout(winVoiceTimer);
-  const key=symbol==='nebula'?(resolved.aTypeBonusGame?'bonus-nebula-win':'nebula-win'):'win';
+  const key=symbol==='nova'?'nova:rainbow':symbol==='nebula'?(resolved.aTypeBonusGame?'bonus-nebula-win':'nebula-win'):'win';
   const video=videos.get(key);active=video;root.hidden=false;root.dataset.symbol=symbol;root.dataset.color='win';
+  if(symbol==='nova'){root.dataset.novaCue='true';showSymbol('nova');}
   host.dataset.aimActive='true';video.hidden=false;video.currentTime=0;layout();
   let started=false;
   const start=()=>{
@@ -287,5 +302,5 @@ globalThis.NovaAim=(()=>{
   document.addEventListener('visibilitychange',()=>{if(document.hidden)pendingStart?.();});
   window.addEventListener('resize',layout);
  }
- return {hasGuide,drawGuide,stopTarget,stopVerdict,isNovaZoneSpin,novaZoneStopTarget,bet,stop,hide,layout,fail,win,afterWin,reset,isCzIntro,syncAtWait,get busy(){return winLocked;}};
+ return {hasGuide,drawGuide,stopTarget,stopVerdict,isNovaZoneSpin,novaZoneStopTarget,bet,stop,hide,layout,fail,win,confirmNova:()=>win(()=>{},'nova'),afterWin,reset,isCzIntro,syncAtWait,get busy(){return winLocked;}};
 })();

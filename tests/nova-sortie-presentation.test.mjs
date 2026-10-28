@@ -16,13 +16,13 @@ test('sortie begins immediately without a freeze timer or input hold',()=>{
  const source=fs.readFileSync('nova-game.js','utf8');assert(!source.includes('NovaSortie.waitFreeze('));assert(!source.includes('NovaSortie.freezeDelay('));assert(!source.includes('sortieFreezeUntil=Date.now()'));
 });
 
-test('middle-first or right-middle-left with an internal win aligns NOVA; every miss shifts the left by one row',()=>{
+test('all stop orders keep the award and reveal the miss at the decisive reel',()=>{
  const c=load();vm.runInContext('Math.random=()=>{throw Error("presentation consumed RNG")}',c);
  for(const won of [false,true])for(const order of orders){
   const resolved={researchSortie:{won},reward:8,flowAfter:{remaining:'765',queuedZones:won?['sora']:[]}},spin={resolved,auditPressOrder:[]},before=JSON.stringify(resolved),columns=[];
   for(const i of order){spin.auditPressOrder.push(i);const target=c.NovaSortie.target(spin,i,strips);columns[i]=plain(target.column);}
-  const aligned=columns.every((col,i)=>col.every((v,row)=>v===`NOVA_${i}_${row}`)),expected=won&&(order[0]===1||order.join()==='2,1,0');
-  assert.equal(aligned,expected);assert.deepEqual(columns[0],expected?strips[0].slice(1,4):strips[0].slice(0,3));assert.equal(JSON.stringify(resolved),before);
+  const aligned=columns.every((col,i)=>col.every((v,row)=>v===`NOVA_${i}_${row}`)),expected=won;
+  assert.equal(aligned,expected);for(const i of [0,1,2])assert.deepEqual(columns[i],!won&&i===(order[0]===1?1:2-order[0])?strips[i].slice(0,3):strips[i].slice(1,4));assert.equal(JSON.stringify(resolved),before);
  }
 });
 test('AUTO and stop-all override hidden bell order only during sortie',()=>{
@@ -35,6 +35,6 @@ test('reload keeps pressed order, pending miss column, and the internal award',(
  for(let i=0;i<3;i++){const col=c.NovaSortie.target(spin,i,strips).column;for(let r=0;r<3;r++)spin.grid[r][i]=col[r];}
  const restored=c.NovaSpinResume.restore(c.NovaSpinResume.capture(spin),{BELL:{}});
  assert.equal(c.NovaSortie.target(restored,0,strips).aligned,true);assert.equal(restored.resolved.reward,8);assert.deepEqual(plain(restored.resolved.flowAfter.queuedZones),['sora']);
- spin.auditPressOrder=[0,2,1];spin.pendingStopColumns=[c.NovaSortie.target(spin,0,strips).column,null,null];
- const missed=c.NovaSpinResume.restore(c.NovaSpinResume.capture(spin),{BELL:{}});assert.equal(c.NovaSortie.target(missed,0,strips).aligned,false);assert.deepEqual(plain(missed.pendingStopColumns[0]),strips[0].slice(0,3));
+ spin.resolved.researchSortie.won=false;spin.auditPressOrder=[0,2,1];spin.pendingStopColumns=[c.NovaSortie.target(spin,0,strips).column,null,null];
+ const missed=c.NovaSpinResume.restore(c.NovaSpinResume.capture(spin),{BELL:{}});assert.equal(c.NovaSortie.target(missed,0,strips).aligned,false);assert.deepEqual(plain(missed.pendingStopColumns[0]),strips[0].slice(1,4));
 });

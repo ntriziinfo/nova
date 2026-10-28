@@ -30,7 +30,7 @@ globalThis.NovaLadder=(()=>{
   return {...display,column:grid.map(row=>row[index])};
  }
  const values=[50,100,200,300,500,1000,2000,3000],images=new Map();
- let host,root,upper,lower,amount,amountText,key='',timer,unlock,locked=false,token=0;
+ let host,root,upper,lower,amount,amountText,key='',timer,unlock,locked=false,token=0,confirmedAward=null;
  function setAmount(points){
   const known=values.includes(Number(points));amount.hidden=!known;amountText.hidden=known;
   if(known)amount.src=`assets/ladder/${points}.png`;else amount.removeAttribute('src');
@@ -64,7 +64,7 @@ globalThis.NovaLadder=(()=>{
   const landed=()=>{
    if(closed||request!==token)return;closed=true;upper.ontransitionend=null;clearTimeout(timer);
    root.dataset.stage='closed';
-   timer=setTimeout(()=>{if(request!==token)return;root.dataset.stage=nextStage;
+   timer=setTimeout(()=>{if(request!==token)return;root.dataset.stage=amount.dataset.final!==undefined?'settled':nextStage;
     unlock=setTimeout(()=>{if(request===token)locked=false;},700);
    },500);
   };
@@ -100,6 +100,7 @@ globalThis.NovaLadder=(()=>{
   if(!flow.ladderRevealed||(!promote&&flow.ladderIndex===0))root.dataset.stage='table';
  }
  function bet(flow){
+  confirmedAward=null;
   if(!eligible(flow)){hide();return;}
   if(!root||root.hidden)sync(flow,false);
   if(!root)return;
@@ -117,12 +118,25 @@ globalThis.NovaLadder=(()=>{
   if(count===1||count===2)root.dataset.stop=String(count);
  }
  function fail(){if(!root||root.hidden)return;root.dataset.failed='true';root.dataset.stage='closed';}
+ function confirm(resolved){
+  if(!outcome(resolved)?.won||!root||root.hidden)return;
+  const before=resolved.zoneStartFlow||resolved.flowBefore,after=resolved.flowAfter;
+  confirmedAward=Number(before.ladder[Math.min(before.ladder.length-1,(before.ladderIndex||0)+1)]);
+  if(eligible(after))sync(after,false);else open(confirmedAward,true);
+ }
  function award(points,started,promoted=false){
   if(!init())return;
   const stage=started?'award':'settled';
   if(root.dataset.awardStarted===String(!!started)&&amount.dataset.final===String(points))return;
   root.dataset.awardStarted=String(!!started);
   root.dataset.failed=String(!started&&!promoted);
+  if(!started&&promoted&&confirmedAward===Number(points)){
+   // The first/second-stop shutter is already running; the third stop only
+   // records its final amount and must not cancel or restart the animation.
+   setAmount(points);amount.alt=`獲得 ${points}pt`;amount.dataset.final=String(points);amount.style.visibility='visible';
+   if(!locked)root.dataset.stage=stage;
+   return;
+  }
   token++;clearTimeout(timer);clearTimeout(unlock);locked=false;
   root.hidden=false;host.dataset.ladderActive='true';layout();root.dataset.stage=stage;
   amount.onload=()=>{amount.style.visibility='visible';};
@@ -130,5 +144,5 @@ globalThis.NovaLadder=(()=>{
   if(!started&&promoted)closeThenReveal('settled');
  }
  if(typeof document!=='undefined'){document.addEventListener('DOMContentLoaded',init);window.addEventListener('resize',()=>{if(root&&!root.hidden)layout();});}
- return {resetStops:strips=>stopGrids.delete(strips),eligible,outcome,target,sync,bet,stop,hide,fail,award,get busy(){return locked;}};
+ return {resetStops:strips=>stopGrids.delete(strips),eligible,outcome,target,sync,bet,stop,hide,fail,confirm,award,get busy(){return locked;}};
 })();

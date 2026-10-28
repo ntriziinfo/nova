@@ -20,8 +20,9 @@ globalThis.NovaStockEntry=(()=>{
   return strips.map((strip,i)=>{
    const n=strip.length,window=top=>[0,1,2].map(row=>strip[(top+row+n)%n]);
    let top=i===1?strip.findIndex((symbol,j)=>symbol==='BAR'&&strip[(j+2)%n]==='BAR'):strip.indexOf('BAR')-1;
-   if(i===1&&entry.kind==='sortieFake'&&top>=0)top=(top+1)%n;
    if(top<0)throw new Error('NOVA sortie stop window missing');
+   // Miss: the upper NOVA of the sandwich rests on the bottom visible row.
+   if(i===1&&entry.kind==='sortieFake')top=(top-2+n)%n;
    return window(top);
   });
  }

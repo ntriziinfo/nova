@@ -8,6 +8,7 @@ const source=fs.readFileSync('nova-game.js','utf8');
 const fn=name=>source.match(new RegExp('  function '+name+'\\([^]*?\\n  }'))[0];
 const json=value=>JSON.parse(JSON.stringify(value));
 const noop=()=>{};
+const sortieVerdict=vm.runInNewContext(fs.readFileSync('nova-sortie-presentation.js','utf8')+';NovaSortie.stopVerdict;');
 function harness(saved=null){
  const storage=new Map(saved?[['state',JSON.stringify(saved)]]:[]),errors=[],timers=[],elements=new Map(),voices=[];
  const $=id=>{if(!elements.has(id))elements.set(id,{dataset:{},classList:{toggle:noop},disabled:false,textContent:''});return elements.get(id);};
@@ -23,7 +24,7 @@ function harness(saved=null){
   jagChainCount:null,jagLastGamePayout:0,jagLastBonusPayout:0,jagChanceHold:false,forceResult:'',forcePremiumEffect:false,pendingForceResult:'',pendingBonusStartOptions:null,devilZoneConfirmIntroPending:false,pendingDevilRushEntryEffect:'',speedFrameOffHold:false,barBgmActive:false,barBgmMode:'',battleBgmActive:false,rogiBgmMuted:false,
   syncNovaProgress:noop,auditCapture:noop,$,document:{getElementById:$},reels:[0,1,2].map(i=>$('reel'+i)),stopBtns:[0,1,2].map(i=>$('stop'+i)),
   setTimeout:f=>{timers.push(f);return timers.length;},clearTimeout:noop,REEL_STRIPS:[[],[],[]],currentReelTopIndex:()=>0,cellHtml:noop,
-  NovaAim:{bet:noop,stop:noop},NovaSortie:{begin:noop,eligible:()=>false},NovaInitialDuo:{begin:noop,stop:noop},NovaLadder:{bet:noop,stop:noop},NovaReelMotion:{start:noop},NovaCzPresentation:{wait:()=>false},updateCompleteTrialState:noop,
+  NovaAim:{bet:noop,stop:noop},NovaSortie:{begin:noop,eligible:()=>false,stopVerdict:sortieVerdict},NovaInitialDuo:{begin:noop,stop:noop},NovaLadder:{bet:noop,stop:noop},NovaReelMotion:{start:noop},NovaCzPresentation:{wait:()=>false},updateCompleteTrialState:noop,
   setReelColumn:noop,showZoneRoulette:noop,renderCzPrelude:noop,syncCzPreludeGlow:noop,updateDisplay:noop,syncCabinetControlState:noop,prepareManualBonusOutcome:noop,startOumaReverseAudio:noop,showCheckpointResultIfReady:()=>false
  });
  for(const file of ['nova-complete.js','nova-tuning.js','nova-art.js','nova-normal.js','nova-flow.js','nova-balance.js','nova-spin-resume.js','nova-history.js'])vm.runInContext(fs.readFileSync(file,'utf8'),c,{filename:file});

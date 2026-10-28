@@ -502,11 +502,11 @@ test('all Nova, seven and nebula aim cues hide supplementary reverse-order instr
  }
 });
 
- test('NOVA shares nebula color movies with BAR overlay and respects cached no-cue misses',()=>{
+ test('NOVA uses clean color movies with exact reel artwork and respects cached no-cue misses',()=>{
  for(const color of ['blue','red','rainbow']){
   const t=setup(),r={zoneSpin:true,flowBefore:{phase:'art',zone:'ouma'},aimDisplay:{color,guide:true}},before=JSON.stringify(r);
   t.aim.bet(null,r);
-  assert.equal(t.elements.find(e=>e.src===`assets/media/nova/aim/nebula-${color}.mp4`).hidden,false);
+  assert.equal(t.elements.find(e=>e.src===`assets/media/nova/sortie-aim-${color}-20261027.mp4`).hidden,false);
   assert.equal(t.elements[0].dataset.color,color);
   assert.equal(t.elements.find(e=>e.className==='novaBarAimTitle').hidden,false);
   assert.equal(JSON.stringify(r),before);
@@ -516,7 +516,7 @@ test('all Nova, seven and nebula aim cues hide supplementary reverse-order instr
  assert.equal(t.elements[0].hidden,true);assert.equal(t.aim.busy,false);
 });
 
-test('original generated captions remain in the movies; only NOVA has a center overlay',()=>{
+test('seven/nebula retain original movies; NOVA uses exact reel art on a clean movie',()=>{
  for(const symbol of ['nova','seven','nebula']){
   const t=setup();
   if(symbol==='nova')t.aim.bet(null,{researchChallenge:{priorAim:true},aimDisplay:{color:'red'}});
@@ -524,8 +524,16 @@ test('original generated captions remain in the movies; only NOVA has a center o
   assert.equal(t.elements.find(e=>e.className==='novaBarAimTitle').hidden,symbol!=='nova');
   assert.equal(t.elements.some(e=>e.className==='novaAimArrow'||e.tag==='strong'),false);
   const source=symbol==='seven'?'seven':'nebula';
-  assert.equal(t.elements.find(e=>e.src==='assets/media/nova/aim/'+source+'-red.mp4').hidden,false);
+  assert.equal(t.elements.find(e=>e.src===(symbol==='nova'?'assets/media/nova/sortie-aim-red-20261027.mp4':'assets/media/nova/aim/'+source+'-red.mp4')).hidden,false);
+  if(symbol==='nova')assert(t.elements.some(e=>e.src==='assets/lossless-20261027/nova-only-20261027.webp'));
   assert.equal(t.elements.find(e=>e.className==='novaAimReverseNotice').hidden,true);
   t.aim.reset();assert.equal(t.elements.find(e=>e.className==='novaBarAimTitle').hidden,true);
  }
+});
+
+test('a decisive-stop win movie survives the later reel stop without replaying',()=>{
+ const t=setup();let sounds=0;t.aim.win(()=>sounds++,'nebula',{aTypeBonusGame:true});
+ const root=t.elements[0],v=t.elements.find(e=>e.src==='assets/media/nova/aim/bonus-nebula-win.mp4');v.onplaying();
+ t.aim.stop({aTypeBonusGame:true});assert.equal(v.hidden,false);assert.equal(root.hidden,false);assert.equal(sounds,1);
+ t.aim.reset();assert.equal(v.hidden,true);assert.equal(t.aim.busy,false);
 });

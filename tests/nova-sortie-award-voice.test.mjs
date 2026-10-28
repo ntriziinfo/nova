@@ -6,6 +6,7 @@ import {loadVoiceCatalog} from './helpers/voice-catalog.mjs';
 
 const source=fs.readFileSync('nova-game.js','utf8');
 const fn=name=>source.match(new RegExp('  (?:async )?function '+name+'\\([^]*?\\n  }'))[0];
+const sortieVerdict=vm.runInNewContext(fs.readFileSync('nova-sortie-presentation.js','utf8')+';NovaSortie.stopVerdict;');
 const spin=(zone,won=true)=>({stopped:[true,true,true],auditPressOrder:[0,1,2],resolved:{researchSortie:{zone,won,hits:2},reward:8,flowAfter:{queuedZones:[zone]}}});
 function setup(){
  const played=[],watches=[],timers=[];
@@ -17,7 +18,7 @@ function setup(){
   SEVEN_CONFIRM_SOUND_SRC:'seven',oneShotSoundCache:new Map(),bonusConfirmSoundPlaying:false,bonusConfirmSoundAudio:null,bonusConfirmSoundTimer:null,
   sfxOutputVolume:()=>.4,voiceOutputVolume:()=>.7,soundOutputVolume:(s,v)=>v,prepareCharacterVoiceAudio(){},updateAutoUi(){},
   setTimeout:f=>{timers.push(f);return timers.length;},clearTimeout(){},watchPlaybackProgress:(a,f)=>{watches.push(f);return ()=>{};},
-  isSpinning:false,NovaSortie:{busy:false,clear(){}},normalState:{},persistState(){},displayNovaResult(card){c.displayed=card;},
+  isSpinning:false,NovaSortie:{busy:false,clear(){},stopVerdict:sortieVerdict},normalState:{},persistState(){},displayNovaResult(card){c.displayed=card;},
   updateDisplay(){c.showSortieResultIfReady();},scheduleNextAuto(){c.scheduled=(c.scheduled||0)+1;}
  });
  loadVoiceCatalog(c);
@@ -66,4 +67,18 @@ test('third-stop and resume paths share routing; manual and AUTO both retain the
  assert.match(fn('stopSingleReel'),/NovaSortie\.stop\(currentSpin\);\s*playSortieAwardVoice\(currentSpin\)/);
  assert.match(fn('restorePendingSpin'),/NovaSortie\.begin\(spin\);[\s\S]*?playSortieAwardVoice\(spin\)/);
  for(const name of ['spin','runAutoStep','scheduleNextAuto'])assert.match(fn(name),/bonusConfirmSoundPlaying/);
+});
+
+test('middle first and scissors announce at the decisive landed reel, once through the last stop',()=>{
+ for(const order of [[0,1,2],[0,2,1],[1,0,2],[1,2,0],[2,0,1],[2,1,0]]){
+  const {c,played}=setup(),s=spin('sosuke');s.stopped=[false,false,false];s.auditPressOrder=[];s.auditStopOrder=[];
+  const decisive=order[0]===1?1:2-order[0],original=JSON.stringify(s.resolved);
+  for(const i of order){
+   s.auditPressOrder.push(i);c.playSortieAwardVoice(s);
+   assert.equal(played.length,s.auditStopOrder.includes(decisive)?1:0);
+   s.stopped[i]=true;s.auditStopOrder.push(i);c.playSortieAwardVoice(s);c.playSortieAwardVoice(s);
+   assert.equal(played.length,s.auditStopOrder.includes(decisive)?1:0);
+  }
+  assert.equal(played.length,1);assert.equal(JSON.stringify(s.resolved),original);
+ }
 });
