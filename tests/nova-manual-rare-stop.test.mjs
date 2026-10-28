@@ -96,3 +96,7 @@ test('wrong bell navigation pays zero but retains the engine decrement and outco
   assert.equal(result.paid,order.join()=== '2,1,0'?(role==='BELL'?8:15):0);assert.equal(result.same,true);
  }
 });
+
+test('no miss candidate displays left seven-cherry-seven',()=>{
+ for(const role of ['MISS','WEAK_SUICA','WEAK_NOVA','STRONG_NOVA']){context.role=role;assert.equal(run("pressedStopCandidates(role).misses.some(g=>g[0][0]==='7'&&g[1][0]===CHERRY_SYMBOL&&g[2][0]==='7')"),false);}
+});

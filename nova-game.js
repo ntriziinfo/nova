@@ -7251,6 +7251,8 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     if(pressedStopCache.has(key))return pressedStopCache.get(key);
     const wins=(novaSheetStopChoices(result)||[]).map(grid=>grid.map(row=>row.slice())),misses=[],windows=REEL_STRIPS.map((strip,c)=>strip.map((_,top)=>reelWindowFromTopIndex(c,top)));
     for(const left of windows[0])for(const middle of windows[1])for(const right of windows[2]){
+      // This physical window is intentionally excluded from ordinary/missed stops.
+      if(left[0]==='7'&&left[1]===CHERRY_SYMBOL&&left[2]==='7')continue;
       const grid=[0,1,2].map(row=>[left[row],middle[row],right[row]]);
       const shown=displayedResultFromGrid(grid);
       // Wins come only from the approved stop list; misses may use any physical window.
