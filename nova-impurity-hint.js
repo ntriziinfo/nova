@@ -1,4 +1,4 @@
-/* Presentation only. No automatic triggers, gameplay RNG, or state writes. */
+/* Presentation only. Cosmetic randomness is isolated from gameplay RNG. */
 globalThis.NovaImpurityHint=(()=>{
  const presets={large:'#ff243d',medium:'#30ff64',small:'#3299ff'};
  let root=null,image=null,timer=null,level='',pending='';
@@ -43,7 +43,25 @@ globalThis.NovaImpurityHint=(()=>{
   }
   const stop=document.createElement('button');stop.type='button';stop.textContent='表示を消す';stop.onclick=hide;controls.append(stop);panel.append(controls);
  }
+ function select(points,roll){
+  const pt=Number(points)||0;
+  if(pt>=100)return roll<.5?'large':'';
+  if(pt>=90)return roll<.3?'medium':'';
+  if(pt>=70)return roll<.2?'small':'';
+  return '';
+ }
+ function queue(state,event){
+  if(['cz-failed','bb-no-at','at-dry'].includes(event))state.pendingImpurityHint=event;
+ }
+ function normalBet(state){
+  if(!state.pendingImpurityHint)return;
+  delete state.pendingImpurityHint;
+  if(state.flow?.phase!=='normal'||state.bonusPending)return;
+  const roll=crypto.getRandomValues(new Uint32Array(1))[0]/4294967296;
+  const size=select(state.internal?.impurity,roll);
+  if(size)show(size);
+ }
  function arm(size){pending=presets[size]?size:'';}
  function onBet(){const size=pending;pending='';if(size)show(size);}
- return {show,hide,mountDebug,arm,onBet};
+ return {show,hide,mountDebug,arm,onBet,select,queue,normalBet};
 })();

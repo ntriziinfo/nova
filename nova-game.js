@@ -3053,6 +3053,7 @@
     NovaDataCounter.transition(stats,after);
     if(before?.phase!=='art'||after?.phase!=='normal')return;
     normalState.internal=NovaNormal.afterArt(normalState.internal,before,after,{...settings.novaNormal,setting:settings.setting});
+    if(after.dryAtEnd===true)NovaImpurityHint.queue(normalState,'at-dry');
     normalState.sinceBonus=0;
   }
 
@@ -4802,6 +4803,7 @@
         normalState.flow=NovaArt.normalize({...normalState.flow,researchUpper:true,burstWon:true,dryEligible:false});
       }
       normalState.internal=NovaNormal.bonusEnd(normalState.internal,endedBonusKind,normalState.flow,{...settings.novaNormal,setting:settings.setting});
+      if(normalState.flow.phase==='normal'&&!premiumOneGameRen)NovaImpurityHint.queue(normalState,'bb-no-at');
       resetNormalCountersAfterArt(beforeBonusResume,normalState.flow);
       if(normalState.flow.phase==='art' && wonZones.length){
         normalState.flow.queuedZones.push(...wonZones);
@@ -5401,6 +5403,7 @@
     normalState.sinceBonus = normalizeBonusAfterGames(resolved.ceilingAfter);
     if(A_TYPE_MODE){
       normalState.flow = NovaFlow.normalize(resolved.flowAfter);
+      if(resolved.czCompleted&&!resolved.bonusHit&&!resolved.aTypeBonusReady&&normalState.flow.phase==='normal')NovaImpurityHint.queue(normalState,'cz-failed');
       if(resolved.sortieFakeWon&&!debugFastSpinActive)normalState.pendingFakeSortie=(Number(normalState.pendingFakeSortie)||0)+1;
       if(!debugFastSpinActive){const sortieCard=NovaResults.sortie(resolved.researchSortie,normalState.flow);if(sortieCard)normalState.pendingSortieResult=sortieCard;}
       const zoneCard=trackZoneResult(resolved.comebackEvent==='entry'?null:NovaResults.transition(resolved.flowBefore,normalState.flow,settings.setting),resolved.zoneStartFlow||resolved.flowBefore,normalState.flow);
@@ -7789,6 +7792,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     if(superSpeedActive)superSpeedNextBetAt=superSpeedStartedAt+autoStopDelayMs(2)+autoScaledDelayMs(RESULT_WAIT_MS)+autoDelayMs();
 
     if(NovaCzPresentation.failureActive){NovaCzPresentation.clearFailureOnBet();playNormalBgm();}
+    if(!session.active)NovaImpurityHint.normalBet(normalState);
     if(SLOT_DEBUG_ENABLED)NovaImpurityHint.onBet();
     fadeAimWinSoundsOnBet();
     NovaDirectAward.clear();
