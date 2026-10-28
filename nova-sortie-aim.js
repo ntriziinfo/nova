@@ -10,7 +10,8 @@ globalThis.NovaSortieAim=(()=>{
     img.setAttribute('role','img');img.setAttribute('aria-label','NOVA・ブランク・NOVA');
     const stack=document.createElement('div');stack.className='novaSortieAimStack';
     for(const name of ['nova-only','blank','nova-only']){
-     const symbol=document.createElement('img');symbol.src='assets/lossless-20261027/'+name+'-20261027.webp';symbol.alt='';symbol.className=name==='blank'?'sortieBlank':'sortieNova';symbol.draggable=false;stack.append(symbol);
+     const file=name==='blank'?'blank-supernova-20261028-v1':'nova-only-20261027';
+     const symbol=document.createElement('img');symbol.src='assets/lossless-20261027/'+file+'.webp';symbol.alt='';symbol.className=name==='blank'?'sortieBlank':'sortieNova';symbol.draggable=false;stack.append(symbol);
     }
     img.append(stack);
    }else{img.src='assets/ui/sortie-aim-20261027/'+src+'.png';img.alt=alt;}img.hidden=true;host.append(img);images.push(img);

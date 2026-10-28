@@ -18,6 +18,12 @@
     "after": 705484
   },
   {
+    "source": "assets/symbols/gang-v3/blank-supernova-20261028-v1.png",
+    "target": "assets/lossless-20261027/blank-supernova-20261028-v1.webp",
+    "before": 2092637,
+    "after": 1550038
+  },
+  {
     "source": "assets/symbols/gang-v3/cherry-20261027.png",
     "target": "assets/lossless-20261027/cherry-20261027.webp",
     "before": 2084210,

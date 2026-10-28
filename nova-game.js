@@ -157,6 +157,7 @@
   const BAR_IMAGE_SRC = (globalThis.NovaMedia?.imageSource("assets/lossless-20261027/nova-only-20261027.webp")||"assets/lossless-20261027/nova-only-20261027.webp");
   const USER_FACE_SRC = (globalThis.NovaMedia?.imageSource("assets/lossless-20261027/miss.webp")||"assets/lossless-20261027/miss.webp");
   const REPLAY_IMAGE_SRC = (globalThis.NovaMedia?.imageSource("assets/lossless-20261027/replay.webp")||"assets/lossless-20261027/replay.webp");
+  const BLANK_IMAGE_SRC = "assets/lossless-20261027/blank-supernova-20261028-v1.webp";
   const SYMBOL_IMAGE_SRCS = Object.freeze([
     SUICA_IMAGE_SRC,
     NEBULA_IMAGE_SRC,
@@ -166,14 +167,15 @@
     MISS_IMAGE_SRC,
     BAR_IMAGE_SRC,
     USER_FACE_SRC,
-    REPLAY_IMAGE_SRC
+    REPLAY_IMAGE_SRC,
+    BLANK_IMAGE_SRC
   ]);
   const REEL_SYMBOL_IMAGES=Object.freeze({
       [CHERRY_SYMBOL]:[CHERRY_IMAGE_SRC,'cherrySymImg','チェリー'],
       [BELL_SYMBOL]:[BELL_IMAGE_SRC,'bellSymImg','ベル'],
       [REPLAY_SYMBOL]:[REPLAY_IMAGE_SRC,'replaySymImg','リプレイ'],
       [SUICA_SYMBOL]:[SUICA_IMAGE_SRC,'suikaSymImg','スイカ'],
-      [BLANK_SYMBOL]:['assets/lossless-20261027/blank-20261027.webp','blankSymImg','ブランク'],
+      [BLANK_SYMBOL]:[BLANK_IMAGE_SRC,'blankSymImg','ブランク'],
       [USER_FACE]:[USER_FACE_SRC,'missSymImg','特殊役'],
       '⭐':[MISS_IMAGE_SRC,'missSymImg','ハズレ']
   });
