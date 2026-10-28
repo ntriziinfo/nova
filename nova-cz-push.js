@@ -73,27 +73,14 @@ function restartFadeIn(button,className){
  void button.offsetWidth;
  button.className=className+' novaCzEntering';
 }
-function getButton(){
- let button=document.getElementById('novaCzPush');
- if(!button){button=document.createElement('button');button.id='novaCzPush';button.type='button';button.textContent='PUSH';document.querySelector('.reelArea').append(button);}
- return button;
-}
-let previewPush=null;
-function showAtBet(resolved){
- if(!resolved?.czLamp||resolved.czPushConfirmed||!(resolved.czCompleted||resolved.bonusHit||resolved.aTypeBonusReady))return false;
- const button=getButton();previewPush=resolved;
- button.hidden=false;button.disabled=true;button.onclick=null;button.className='white';
- return true;
-}
 function wait(resolved,{auto=false,setting=1,valid,reveal,onFailure=()=>{}}){
  if(!resolved?.czLamp||resolved.czPushConfirmed||!(resolved.czCompleted||resolved.bonusHit||resolved.aTypeBonusReady))return false;
- const button=getButton();
+ let button=document.getElementById('novaCzPush');
+ if(!button){button=document.createElement('button');button.id='novaCzPush';button.type='button';button.textContent='PUSH';document.querySelector('.reelArea').append(button);}
  if(pendingPush===resolved)return true;
  pendingPush=resolved;
  clearFailureOnBet();
- if(previewPush!==resolved)restartFadeIn(button,'white');
- else {button.hidden=false;button.className='white';}
- previewPush=null;button.disabled=false;
+ button.hidden=false;button.className='white';button.disabled=false;
  let accepted=false,autoQueued=false;
  const autoEnabled=()=>typeof auto==='function'?auto():auto;
  const accept=()=>{
@@ -120,11 +107,11 @@ function wait(resolved,{auto=false,setting=1,valid,reveal,onFailure=()=>{}}){
   if(accepted||autoQueued)return true;
   if(!autoEnabled())return false;
   autoQueued=true;
-  setTimeout(()=>{autoQueued=false;if(autoEnabled())accept();},600);
+  setTimeout(()=>{autoQueued=false;if(autoEnabled())accept();},1000);
   return true;
  };
  button.onclick=accept;autoPress();return true;
 }
-return {tiers,display,wait,showAtBet,gold,variant,autoPress,clearFailureOnBet,get failureActive(){return failureActive;}};
+return {tiers,display,wait,gold,variant,autoPress,clearFailureOnBet,get failureActive(){return failureActive;}};
 
 })();

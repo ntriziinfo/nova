@@ -5,10 +5,10 @@ assert.deepEqual(JSON.parse(JSON.stringify(p.display({remaining:15,totalGames:15
 assert.deepEqual(JSON.parse(JSON.stringify(p.display({remaining:15,totalGames:15,timingSeed:42},1,true,1,true,true))),{stage:8,color:'rainbow',rainbow:true});
 assert.equal(p.display({remaining:15,totalGames:15,timingSeed:42},0,true,1,false),null);
 assert.equal(p.display({remaining:15,totalGames:15,timingSeed:42},0,false,1),null);
-let count=0;const r={czLamp:{},czCompleted:true,bonusHit:true};const hooks={auto:true,valid:()=>true,reveal:()=>count++};assert.equal(p.wait(r,hooks),true);assert.equal(p.wait(r,hooks),true);assert.equal(timers.length,1);assert.equal(count,0);timers[0]();elements.get('novaCzPush').onclick();assert.equal(count,1);assert.equal(p.wait(r,hooks),false);assert.equal(elements.get('novaCzPush').hidden,true);assert.equal(p.wait({},hooks),false);
+let count=0;const r={czLamp:{},czCompleted:true,bonusHit:true};const hooks={auto:true,valid:()=>true,reveal:()=>count++};assert.equal(p.wait(r,hooks),true);assert.equal(p.wait(r,hooks),true);assert.equal(timers.length,1);assert.equal(timerDelays[0],1000);assert.equal(count,0);timers[0]();elements.get('novaCzPush').onclick();assert.equal(count,1);assert.equal(p.wait(r,hooks),false);assert.equal(elements.get('novaCzPush').hidden,true);assert.equal(p.wait({},hooks),false);
 console.log('Candidate checks passed: 12,000 CZ schedules, final guarantees, monotonic display, PUSH wait/auto/repeated clicks.');
 
-const resumed={czLamp:{},czCompleted:true,czPushWaiting:true,bonusHit:true};p.wait(resumed,{auto:false,valid:()=>true,reveal:()=>count++});assert.equal(elements.get('novaCzPush').hidden,false);assert.match(elements.get('novaCzPush').className,/novaCzEntering/);assert.equal(fadeRestarts,2);elements.get('novaCzPush').onclick();assert.equal(count,2);
+const resumed={czLamp:{},czCompleted:true,czPushWaiting:true,bonusHit:true};p.wait(resumed,{auto:false,valid:()=>true,reveal:()=>count++});assert.equal(elements.get('novaCzPush').hidden,false);assert.equal(elements.get('novaCzPush').className,'white');assert.equal(fadeRestarts,0);elements.get('novaCzPush').onclick();assert.equal(count,2);
 
 let goldCount=0;
 for(let seed=0;seed<100000;seed++){
@@ -84,13 +84,4 @@ assert.match(game,/function playNormalBgm\(\)\{\s*if\(globalThis.NovaCzPresentat
 assert.match(game,/resolved.czFailurePushPlayed=true;\s*pauseNormalBgm\(\);/);
 assert.match(game,/if\(NovaCzPresentation.failureActive\)\{NovaCzPresentation.clearFailureOnBet\(\);playNormalBgm\(\);\}/);
 
-const atBet={czLamp:{remaining:1},czCompleted:true,bonusHit:true};
-const entranceCount=fadeRestarts;
-assert.equal(p.showAtBet({czLamp:{remaining:2}}),false);
-assert.equal(p.showAtBet(atBet),true);
-assert.equal(b.hidden,false);assert.equal(b.disabled,true);assert.equal(b.onclick,null);assert.equal(b.className,'white');
-assert.equal(atBet.czPushConfirmed,undefined);
-p.wait(atBet,{valid:()=>true,reveal:()=>{}});
-assert.equal(b.disabled,false);assert.equal(fadeRestarts,entranceCount);
-b.onclick();assert.equal(atBet.czPushConfirmed,true);
-console.log('Final BET shows PUSH immediately; final stop enables it without another fade.');
+assert.match(game,/const resultWaitMs = \(czPushReady \|\|/);

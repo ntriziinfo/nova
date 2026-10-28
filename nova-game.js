@@ -7921,7 +7921,6 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     }
     playZoneRouletteBetVoice(resolved);
     playAimBetPresentation(resolved);
-    NovaCzPresentation.showAtBet(resolved);
     playCzIntroBetVoice(resolved);
     playRareNaviSound(currentSpin);
     playRareCueVoice(currentSpin);
@@ -8247,7 +8246,8 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
       const resultEnding=!!normalState.pendingZoneResult ||
         (!!r?.flowBefore?.zone&&!r?.flowAfter?.zone) ||
         (r?.flowBefore?.phase==='art'&&r?.flowAfter?.phase==='normal'&&!r.bonusHit&&!r.aTypeBonusReady);
-      const resultWaitMs = (resultEnding || NovaLadder.eligible(r?.flowBefore) || currentSpin.speedModeAtStart || isPremiumBigFinalBonusSpin(currentSpin)) ? 0
+      const czPushReady=!!r?.czLamp&&!r.czPushConfirmed&&!!(r.czCompleted||r.bonusHit||r.aTypeBonusReady);
+      const resultWaitMs = (czPushReady || resultEnding || NovaLadder.eligible(r?.flowBefore) || currentSpin.speedModeAtStart || isPremiumBigFinalBonusSpin(currentSpin)) ? 0
         : currentSpin.superSpeedAtStart && superSpeedActive ? Math.max(0,currentSpin.superSpeedStartedAt+autoStopDelayMs(2)+autoResultWaitMs-performance.now()) : autoResultWaitMs;
       const finishedSpin=currentSpin;
       setTimeout(()=>{
