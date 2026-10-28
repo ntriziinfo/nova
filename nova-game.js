@@ -2643,11 +2643,11 @@
   }
 
   function aTypeBonusRemainingNet(){
-    return Math.max(0, (Number(session.bonusTarget) || aTypeBonusTarget()) - aTypeBonusNet());
+    return Math.max(0, (Number(session.bonusTarget) || aTypeBonusTarget()) - NovaArt.bonusProgress(session));
   }
 
   function isATypeBonusComplete(){
-    return isATypeBonusActive() && (Number(session.paid)||0)>=aTypeBonusTarget();
+    return isATypeBonusActive() && NovaArt.bonusProgress(session)>=aTypeBonusTarget();
   }
 
   function drawATypeBonusResult(){
@@ -2746,7 +2746,7 @@
   }
 
   function normalModeLabel(){
-    const checkpoint=atCheckpointStatus(normalState.flow,NovaProgress.snapshot(),currentProfit(),true);
+    const checkpoint=atCheckpointStatus(normalState.flow,NovaProgress.snapshot(),currentGameProfit(),true);
     if(checkpoint?.gold)return checkpoint.text;
     if(normalState.bonusPending){
       if(replayGatedBonusPreparation())return normalState.prepReady?"7を狙え":"ボーナス準備中";
@@ -3163,9 +3163,9 @@
   function countTotalSpinIfNeeded(aTypeBonusActiveAtSpinStart=false){
     if(A_TYPE_MODE){
       syncNovaProgress();
-      NovaDecrement.observe(currentProfit());
+      NovaDecrement.observe(currentGameProfit());
       const previous=NovaFlow.normalize(normalState.flow);
-      normalState.flow=NovaProgress.beforeBet(previous,{...settings.novaArt,setting:settings.setting},currentProfit(),session.active||normalState.bonusPending||previous.phase==='normal'&&!!normalState.internal?.prelude);
+      normalState.flow=NovaProgress.beforeBet(previous,{...settings.novaArt,setting:settings.setting},currentGameProfit(),session.active||normalState.bonusPending||previous.phase==='normal'&&!!normalState.internal?.prelude);
       recordAtFirstEntry(previous,normalState.flow);
     }
     if(A_TYPE_MODE&&!session.active&&normalState.flow?.phase==='art'){
@@ -3190,14 +3190,28 @@
     if(!A_TYPE_MODE)return;
     // Draw once at BET after the real role. Saved spins never draw again on resume.
     const internalResult=resolved.internalResult??result;
-    resolved.sortieWon=NovaProgress.drawSortie(settings.setting,internalResult,resolved,Math.random,currentProfit());
+    resolved.sortieWon=NovaProgress.drawSortie(settings.setting,internalResult,resolved,Math.random,currentGameProfit());
     if(!(typeof debugFastSpinActive!=='undefined'&&debugFastSpinActive)&&globalThis.NovaStockEntry?.drawFake&&NovaProgress.sortieEligible(internalResult,resolved)){
-      resolved.sortieFakeWon=NovaStockEntry.drawFake(NovaProgress.sortieChance(settings.setting,internalResult,currentProfit()),resolved.sortieWon);
+      resolved.sortieFakeWon=NovaStockEntry.drawFake(NovaProgress.sortieChance(settings.setting,internalResult,currentGameProfit()),resolved.sortieWon);
     }
   }
 
   function currentProfit(){
     return (Number(stats.totalPaid) || 0) - (Number(stats.totalFee) || 0);
+  }
+
+  function currentGameProfit(){
+    // Navigation losses stay out of cash/graphs/settlement, but still advance the game.
+    return currentProfit()+Math.max(0,Number(normalState.novaProgress?.bellNaviForfeitedPt)||0);
+  }
+
+  function settleBellNavigationPenalty(resolved){
+    if(!A_TYPE_MODE||!resolved?.bellNaviPenaltyApplied||resolved.bellNaviPenaltySettled)return;
+    const forfeited=Math.max(0,Number(resolved.internalBellReward)||0);
+    syncNovaProgress().bellNaviForfeitedPt+=forfeited;
+    if(resolved.aTypeBonusGame)session.bellNaviForfeitedPt=(Number(session.bellNaviForfeitedPt)||0)+forfeited;
+    resolved.bellNaviPenaltySettled=true;
+    NovaProgress.observeNet(currentGameProfit());
   }
 
   function completeTrialProfit(){
@@ -3279,9 +3293,9 @@
     // Include charged BET lows; no detailed history is required for MY.
     completeTrialState.lowestNet=Math.min(0,Number(completeTrialState.lowestNet)||0,currentProfit());
     if(A_TYPE_MODE){
-      syncNovaProgress();NovaProgress.observeNet(currentProfit());
+      syncNovaProgress();NovaProgress.observeNet(currentGameProfit());
       // Match the simulator: the regime sees settled net, not the transient BET debit.
-      if(settled)NovaDecrement.observe(currentProfit());
+      if(settled)NovaDecrement.observe(currentGameProfit());
     }
     if(NovaHistory.record(stats, Number(stats.totalSpins)||0, currentProfit(), reduceSlumpPoints, SLUMP_MAX_HISTORY_POINTS)){
       scheduleSlumpGraphRender();
@@ -3576,7 +3590,7 @@
   function drawIndependentATypeOutcome(){
     const flow=NovaFlow.normalize(normalState.flow);
     if(flow.phase==='art'){
-      pendingArtStep=NovaArt.step(flow,{...settings.novaArt,setting:settings.setting,netPt:currentProfit(),checkpointQuiet:NovaArt.checkpointQuietRules.enabled,checkpointNext:NovaProgress.snapshot().next},Math.random,pendingForceResult);
+      pendingArtStep=NovaArt.step(flow,{...settings.novaArt,setting:settings.setting,netPt:currentGameProfit(),checkpointQuiet:NovaArt.checkpointQuietRules.enabled,checkpointNext:NovaProgress.snapshot().next},Math.random,pendingForceResult);
       return {result:NovaArt.preparationDisplayRole?NovaArt.preparationDisplayRole(pendingArtStep.result):pendingArtStep.result,internalBonus:pendingArtStep.internalBonus};
     }
     const token=NovaNormal.spin(normalState.internal,flow,Number(settings.setting)||1,{normal:settings.novaNormal,art:settings.novaArt,cz:settings.novaFlow,scale:NovaBalance.profile(settings.setting).scale},Math.random,pendingForceResult);
@@ -3613,7 +3627,7 @@
       }
       if(!normalState.bonusPending && (pendingForceResult==='ART'||pendingForceResult.startsWith('ZONE_'))){
         const base=normalState.flow?.phase==='art'?normalState.flow:pendingForceResult==='ART'?null:NovaArt.enter({...settings.novaArt,setting:settings.setting});
-        pendingArtStep=pendingForceResult==='ART'?{result:'MISS',flow:NovaArt.enterInitial({...settings.novaArt,setting:settings.setting}),message:'AT準備開始'}:NovaArt.step(base,{...settings.novaArt,setting:settings.setting,netPt:currentProfit(),checkpointQuiet:NovaArt.checkpointQuietRules.enabled,checkpointNext:NovaProgress.snapshot().next},Math.random,pendingForceResult);
+        pendingArtStep=pendingForceResult==='ART'?{result:'MISS',flow:NovaArt.enterInitial({...settings.novaArt,setting:settings.setting}),message:'AT準備開始'}:NovaArt.step(base,{...settings.novaArt,setting:settings.setting,netPt:currentGameProfit(),checkpointQuiet:NovaArt.checkpointQuietRules.enabled,checkpointNext:NovaProgress.snapshot().next},Math.random,pendingForceResult);
         return pendingArtStep.result;
       }
       if(!normalState.bonusPending && normalState.flow?.phase==='art' && !['MID','BAR3'].includes(pendingForceResult)){
@@ -3962,7 +3976,7 @@
           cost:Number(runtime.session.cost) || 0,
           paid:Number(runtime.session.paid) || 0,
           hits:Number(runtime.session.hits) || 0,
-          bonusPointsRemaining:Math.max(0,NovaArt.bonusTarget(runtime.session.bonusKind)-(Number(runtime.session.paid)||0)),
+          bonusPointsRemaining:Math.max(0,NovaArt.bonusTarget(runtime.session.bonusKind)-NovaArt.bonusProgress(runtime.session)),
           bonusArtSets:Math.max(0,Math.floor(Number(runtime.session.bonusArtSets)||0)),
           added:Number(runtime.session.added) || 0,
           addedGames:Number(runtime.session.addedGames) || 0,
@@ -3992,7 +4006,7 @@
           endSignal:runtime.session.endSignal || null
         };
       }
-      if(A_TYPE_MODE && session.active && session.phase==='a_type_bonus'){session.bonusBgmSrc=pickATypeBonusBgm(session.bonusKind).src;session.bonusTarget=NovaArt.bonusTarget(session.bonusKind);session.bonusPointsRemaining=Math.max(0,session.bonusTarget-(Number(session.paid)||0));}
+      if(A_TYPE_MODE && session.active && session.phase==='a_type_bonus'){session.bonusBgmSrc=pickATypeBonusBgm(session.bonusKind).src;session.bonusTarget=NovaArt.bonusTarget(session.bonusKind);session.bonusPointsRemaining=Math.max(0,session.bonusTarget-NovaArt.bonusProgress(session));}
       jagChainCount = runtime.jagChainCount?.payoutVersion===1 && Number.isFinite(runtime.jagChainCount.paid) && Number.isFinite(runtime.jagChainCount.fee) ? {...runtime.jagChainCount} : null;
       jagLastGamePayout = Number(runtime.jagLastGamePayout) || 0;
       jagLastBonusPayout = Number(runtime.jagLastBonusPayout) || 0;
@@ -5112,7 +5126,7 @@
       if(flow.researchChallengeActive || isSpinning&&currentSpin?.resolved?.researchChallenge)return SORTIE_ZONE_BGM_SRC;
       if(flow.initialStage==='zone'&&['kushuri_nito','kushuri','nito'].includes(flow.zone))return INITIAL_DUO_ZONE_BGM_SRC;
       const zoneTracks = {sosuke:SOSUKE_ZONE_BGM_SRC,toto:TOTO_ZONE_BGM_SRC,urapi:URAPI_ZONE_BGM_SRC,sora:SORA_ZONE_BGM_SRC,giru:GIRU_ZONE_BGM_SRC,ouma:OUMA_ZONE_BGM_SRC};
-      if(atCheckpointStatus(flow,NovaProgress.snapshot(),currentProfit())?.gold)return NOVA_CHECKPOINT_BGM_SRC;
+      if(atCheckpointStatus(flow,NovaProgress.snapshot(),currentGameProfit())?.gold)return NOVA_CHECKPOINT_BGM_SRC;
       return zoneTracks[flow.zone] || (flow.researchUpper ? NOVA_UPPER_ART_BGM_SRC : NOVA_ART_BGM_SRC);
     }
     if(!session.active && ["cz","strong_cz"].includes(normalState.flow?.phase)){
@@ -5387,6 +5401,7 @@
   }
   function applyNormalResult(result, resolved, lineRow=1){
     try{
+    settleBellNavigationPenalty(resolved);
     delete normalState.stockEntry; // An actual engine game invalidates any prior presentation ticket.
     if(typeof debugFastSpinActive!=='undefined' && debugFastSpinActive){const audit=fastAtAuditMessage(result,resolved);if(audit)log(`${audit} / ${stats.totalSpins}G`);}
     const completedLadderPresentation=normalState.ladderAwardPresentation?.started?normalState.ladderAwardPresentation:null;
@@ -5656,11 +5671,12 @@
     if(result === "MISS"){
       playLoseSound();
     }
-    }finally{if(A_TYPE_MODE){syncNovaProgress();NovaDecrement.observe(currentProfit());}}
+    }finally{if(A_TYPE_MODE){syncNovaProgress();NovaDecrement.observe(currentGameProfit());}}
   }
 
   function applyResult(result, resolved, lineRow=1){
     try{
+    settleBellNavigationPenalty(resolved);
     playStrongNovaSound(result,resolved);
     playWeakNovaSound(result,resolved);
     playChanceSound(result,resolved);
@@ -5838,7 +5854,7 @@
       : `${session.setNo || 1}SET / ${phaseText} / STOCK${session.stockSets || 0} / 継続${formatRate(session.continuationRate)}`;
     showMessage("ハズレ", [zoneRollText, battleText].filter(Boolean).join(" / "));
     playLoseSound();
-    }finally{if(A_TYPE_MODE){syncNovaProgress();NovaDecrement.observe(currentProfit());}}
+    }finally{if(A_TYPE_MODE){syncNovaProgress();NovaDecrement.observe(currentGameProfit());}}
   }
 
   // Presentation only: reflect existing audio gates without changing input locks.
@@ -5887,14 +5903,14 @@
 
   function renderRemainingCounters(){
     const spin=isSpinning?currentSpin:null;
-    NovaRemainingCounters.render(normalState.flow,{spin,checkpointStatus:atCheckpointStatus(normalState.flow,NovaProgress.snapshot(),currentProfit(),true),bonus:session.active,bonusRemaining:isATypeBonusActive()?aTypeBonusRemainingNet():undefined,bonusPending:normalState.bonusPending,
+    NovaRemainingCounters.render(normalState.flow,{spin,checkpointStatus:atCheckpointStatus(normalState.flow,NovaProgress.snapshot(),currentGameProfit(),true),bonus:session.active,bonusRemaining:isATypeBonusActive()?aTypeBonusRemainingNet():undefined,bonusPending:normalState.bonusPending,
       czPrelude:normalState.internal?.prelude?.presentation==='reel'&&!spin?.resolved?.czPrelude?.announce});
     if(spin&&!session.active){const node=$('novaFlowStatus');if(node)node.textContent=normalModeLabel();}
   }
 
   function syncUpperAtBackground(){
     const resolved=isSpinning?currentSpin?.resolved:null;
-    const checkpoint=atCheckpointStatus(normalState.flow,NovaProgress.snapshot(),currentProfit());
+    const checkpoint=atCheckpointStatus(normalState.flow,NovaProgress.snapshot(),currentGameProfit());
     globalThis.NovaCheckpointHint?.sync(!!checkpoint?.gold);
     const atPrelude=!!(resolved?.atPrelude||normalState.flow?.atPrelude)&&!session.active&&!normalState.bonusPending&&!debugFastSpinActive;
     const specialSpin=resolved&&!atPrelude&&!NovaUpperAtBackground.eligible(resolved.flowAfter,!!checkpoint?.gold);
@@ -5938,7 +5954,7 @@
     if($('novaInternalStatus'))$('novaInternalStatus').textContent='モード '+internal.mode+' / '+internal.games+'G（天井'+NovaNormal.ceiling(internal)+'G） / '+(internal.level==='high'?'高確（保証'+internal.highLeft+'G）':'低確')+ (normalState.flow?.phase==='art'?' / '+'AT '+(normalState.flow.atHigh?'高確（保証'+normalState.flow.atHighLeft+'G）':'低確'):'')+' / 穢れ'+internal.impurity+'pt / 特化予約 '+(session.active?(session.bonusZones||[]):(normalState.flow?.queuedZones||[])).map(z=>NovaArt.zoneName(z)).join('・');
     const flowStatus=$("novaFlowStatus");
     if(flowStatus){
-      const checkpointStatus=normalState.resultCard?.kind==='checkpoint'?{text:'スーパーノヴァチャレンジまで0pt',gold:true}:!session.active&&!normalState.bonusPending&&!normalState.resultCard&&!normalState.pendingZoneResult&&!normalState.ladderAwardPresentation&&!isCompleteTrialLocked()?atCheckpointStatus(normalState.flow,NovaProgress.snapshot(),profit,true):null;
+      const checkpointStatus=normalState.resultCard?.kind==='checkpoint'?{text:'スーパーノヴァチャレンジまで0pt',gold:true}:!session.active&&!normalState.bonusPending&&!normalState.resultCard&&!normalState.pendingZoneResult&&!normalState.ladderAwardPresentation&&!isCompleteTrialLocked()?atCheckpointStatus(normalState.flow,NovaProgress.snapshot(),currentGameProfit(),true):null;
       flowStatus.textContent=session.active ? aTypeBonusLabel(session.bonusKind)+" 残り"+aTypeBonusRemainingNet()+"pt / "+NovaArt.bonusStockLabel(session,normalState.flow) : checkpointStatus?.text||normalModeLabel();
       flowStatus.dataset.atCheckpoint=String(!!checkpointStatus?.gold);
       flowStatus.dataset.phase=session.active?"bonus":NovaFlow.normalize(normalState.flow).phase;
@@ -7336,7 +7352,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
   }
 
   function prepareManualRareOutcome(spin){
-    // Engine flowAfter already includes the bell payout/decrement. Only cash payout changes.
+    // Keep the engine decrement. Settlement records the forfeited cash for internal progress.
     if(spin?.stopped?.every(Boolean)&&['BELL','BELL15'].includes(spin.result)&&spin.bellNaviOrder?.length===3&&!spin.resolved.bellNaviPenaltyApplied){
       const pressed=spin.auditPressOrder||spin.auditStopOrder;
       if(pressed?.length===3&&pressed.some((reel,index)=>reel!==spin.bellNaviOrder[index])){
@@ -7972,7 +7988,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     globalThis.NovaCheckpointHint?.begin(currentSpin,settings.setting);
     renderRemainingCounters();
     syncUpperAtBackground();
-    const checkpointCue=atCheckpointStatus(normalState.flow,NovaProgress.snapshot(),currentProfit());
+    const checkpointCue=atCheckpointStatus(normalState.flow,NovaProgress.snapshot(),currentGameProfit());
     const checkpointCueNext=NovaProgress.snapshot().next;
     if(checkpointCue?.gold&&normalState.checkpointSoundNext!==checkpointCueNext){
       normalState.checkpointSoundNext=checkpointCueNext;
@@ -8090,9 +8106,9 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
 
   function willCompleteATypeBonusWithSpin(spin=currentSpin){
     if(!spin || !spin.aTypeBonusActiveAtStart || !spin.resolved) return false;
-    const reward = Number(spin.resolved.reward) || 0;
+    const reward = Number(spin.resolved.bellNaviPenaltyApplied&&!spin.resolved.bellNaviPenaltySettled?spin.resolved.internalBellReward:spin.resolved.reward) || 0;
     const target = Number(session.bonusTarget) || aTypeBonusTarget();
-    const netAfter = Math.max(0, (Number(session.paid) || 0) + reward);
+    const netAfter = Math.max(0, NovaArt.bonusProgress(session) + reward);
     return target > 0 && netAfter >= target;
   }
 

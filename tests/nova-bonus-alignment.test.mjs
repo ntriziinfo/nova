@@ -28,7 +28,7 @@ function setup() {
   for (const file of ['nova-tuning.js', 'nova-art.js', 'nova-aim-presentation.js', 'nova-spin-resume.js', 'nova-bell-navi.js']) {
     vm.runInContext(fs.readFileSync(file, 'utf8'), c, {filename: file});
   }
-  for (const name of ['resolveATypeBonusOutcome', 'prepareManualBonusOutcome', 'applyResult']) {
+  for (const name of ['currentGameProfit', 'settleBellNavigationPenalty', 'resolveATypeBonusOutcome', 'prepareManualBonusOutcome', 'applyResult']) {
     vm.runInContext(fn(name), c);
   }
   return c;

@@ -21,7 +21,7 @@ function harness(){
   console:{error:e=>{throw e;}}
  });
  for(const file of ['nova-tuning.js','nova-art.js','nova-balance.js','nova-flow.js','nova-normal.js','nova-results.js','nova-role-counter.js','nova-data-counter.js'])vm.runInContext(fs.readFileSync(file,'utf8'),c);
- for(const name of ['chainCountStep','chargeSpinCost','trackZoneResult','applyNormalResult'])vm.runInContext(fn(name),c);
+ for(const name of ['currentGameProfit','settleBellNavigationPenalty','chainCountStep','chargeSpinCost','trackZoneResult','applyNormalResult'])vm.runInContext(fn(name),c);
  return {c,cards};
 }
 

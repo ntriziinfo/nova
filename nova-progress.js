@@ -1,7 +1,7 @@
 /* Session-level sortie queue and cumulative-net checkpoints. Saved with the machine. */
 globalThis.NovaProgress=(()=>{
  const a=NovaArt;
- const empty=()=>({version:167,next:2400,pending:0,sorties:0,earned:0,started:0,upperRetries:0,discardedPt:0,discardedZones:0,discardedSets:0,discardedBonusStocks:0,newAt:0,rewardZones:0});
+ const empty=()=>({version:167,next:2400,pending:0,sorties:0,earned:0,started:0,upperRetries:0,discardedPt:0,discardedZones:0,discardedSets:0,discardedBonusStocks:0,newAt:0,rewardZones:0,bellNaviForfeitedPt:0});
  let state=empty(),latestNet=0;
  function bind(value,priorPeak=0){
   if(value?.version!==167)value={...empty(),next:2400*(1+Math.floor(Math.max(0,Number(priorPeak)||0)/2400))};
