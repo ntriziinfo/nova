@@ -30,7 +30,7 @@ function harness(saved=null){
  // Navigation renderer is tested separately with DOM stubs; restore must not draw an order.
  c.NovaBellNavi={restore:spin=>{c.shownOrder=json(spin.bellNaviOrder);},clear:noop};
  c.SORTIE_AWARD_VOICE_SRCS=loadVoiceCatalog(c).SORTIE_AWARD_VOICE_SRCS;
- for(const name of ['reduceSlumpPoints','canUsePlayState','clearBonusPreparationState','load','runtimeStateForStorage','compactStatsForResume','updateStorageStatus','persistState','playSortieAwardVoice','restoreCzLampPresentation','restorePendingSpin'])vm.runInContext(fn(name),c);
+ for(const name of ['reduceSlumpPoints','canUsePlayState','clearBonusPreparationState','load','runtimeStateForStorage','compactStatsForResume','updateStorageStatus','persistState','playSortieAwardVoice','restoreCzLampPresentation','restorePendingSpin','prepareManualRareOutcome'])vm.runInContext(fn(name),c);
  c.selectReelLayout=version=>{c.restoredReelLayout=version;};
  return {c,storage,errors,timers,$,voices};
 }

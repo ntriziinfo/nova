@@ -15,6 +15,13 @@ test('landing keeps 800ms rotation speed and stops at nearest matching occurrenc
  }
 });
 test('aligned symbols stop immediately with no artificial minimum delay',async()=>{const t=setup();t.a.start(0,t.reel,['A','B','C'],0,false,s=>s);assert.equal(await t.a.stop(0,['A','B','C']),true);t.a.clearAll();});
+
+test('press snapshot fixes selected travel even when processing is delayed',async()=>{
+ const t=setup(),strip=Array.from({length:20},(_,i)=>String(i));t.a.start(0,t.reel,strip,10,false,s=>s);
+ t.tick(10);const at=t.a.capture(0),column=['6','7','8'];assert.equal(t.a.distance(0,column,at),3.75);
+ t.tick(300);assert.equal(t.a.distance(0,column,at),3.75);
+ const done=t.a.stop(0,column,{at});t.tick(151);assert.equal(await done,true);assert.equal(t.a.top(0),6);
+});
 test('audio clock controls all three reels and lands exactly at 4.4 seconds',()=>{
  const t=setup();let audioTime=0,landed=0;const strip=['A','B','C','D','E'];
  for(let i=0;i<3;i++)t.a.startSynced(i,t.reel,strip,['C','D','E'],true,s=>s,()=>audioTime,4400,()=>landed++);
@@ -43,9 +50,9 @@ test('immediate common-role stop lands without advancing time and remains stoppe
   assert.equal(t.win.layer.style.transform,transform);t.a.clearAll();
  }
 });
-test('both bells and replay request immediate landing outside the sortie aim',()=>{
+test('AUTO bells and replay request immediate landing outside the sortie aim',()=>{
  const line=readGameSource().split('\n').find(line=>line.includes('await NovaReelMotion.stop(i,')&&line.includes('immediate:'));
- assert.match(line,/immediate:!sortieTarget&&\['BELL','BELL15','REPLAY'\].includes\(spin.result\)&&!spin.manualBonusStop/);
+ assert.match(line,/immediate:!!options.automatic&&!sortieTarget&&\['BELL','BELL15','REPLAY'\].includes\(spin.result\)&&!spin.manualBonusStop/);
 });
 
 test('landing completes without any animation frame and cannot settle again on return',async()=>{

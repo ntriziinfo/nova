@@ -2,6 +2,7 @@
 globalThis.NovaSpinResume=(()=>{
  const currentReelLayoutVersion=3;
  const fields=['reelLayoutVersion','result','lineRow','grid','resolved','stopped','pendingStopColumns','commonStopColumns',
+  'stopControlVersion','pressStopColumns','pressStopDistances','rareRoleMissed','rareMissPaidApplied',
   'auditGrid','auditPressOrder','auditStopOrder','aimStopOrder','aimAligned','aimWinPlayed',
   'bellNaviOrder','rareNavi','bellNaviVoiceCharacter','bellNaviVoiceStage',
   'normalActiveAtStart','aTypeBonusActiveAtStart','zoneActiveAtStart','zoneType',

@@ -7243,6 +7243,83 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     return best;
   }
 
+  // Physical pull-in candidates are deterministic; never consume lottery RNG here.
+  const pressedStopCache = new Map();
+  function pressedStopCandidates(result){
+    const key=JSON.stringify(REEL_STRIPS)+':'+result;
+    if(pressedStopCache.has(key))return pressedStopCache.get(key);
+    const wins=[],misses=[],windows=REEL_STRIPS.map((strip,c)=>strip.map((_,top)=>reelWindowFromTopIndex(c,top)));
+    for(const left of windows[0])for(const middle of windows[1])for(const right of windows[2]){
+      const grid=[0,1,2].map(row=>[left[row],middle[row],right[row]]);
+      const shown=displayedResultFromGrid(grid);
+      if(shown===result&&gridHasOnlyAllowedPaylines(grid,result))wins.push(grid);
+      // A missed strong cherry may still leave the already-stopped left cherry.
+      // Never substitute an unrelated bell, replay, watermelon or bonus win.
+      if((shown==='MISS'||result==='STRONG_NOVA'&&shown==='WEAK_NOVA')&&
+        gridPaylineRows(grid).every(row=>displayedResultFromRow(row)==='MISS'))misses.push(grid);
+    }
+    const value={wins,misses,safe:new Map()};pressedStopCache.set(key,value);return value;
+  }
+
+  function nearestPressedStopColumn(index,spin,distance,automatic=false){
+    const rare=['WEAK_SUICA','WEAK_NOVA','STRONG_NOVA'].includes(spin.result);
+    const ordinary=['MISS','ONE_COIN','CZ','STRONG_CZ'].includes(spin.result);
+    if(!rare&&!ordinary&&spin.result!=='BELL15')return null;
+    const held=spin.pressStopColumns||[0,1,2].map(c=>spin.pendingStopColumns?.[c]||
+      (spin.stopped[c]?spin.grid.map(row=>row[c]):null));
+    const candidates=rare||ordinary?pressedStopCandidates(ordinary?'MISS':spin.result):{wins:novaSheetStopChoices('BELL15')||[],misses:[]};
+    const canFinish=(nextHeld)=>{
+      if(!rare&&!ordinary)return true;
+      const key=JSON.stringify(nextHeld),cached=candidates.safe.get(key);
+      if(cached!==undefined)return cached;
+      const pool=[...candidates.wins,...candidates.misses].filter(grid=>nextHeld.every((col,c)=>!col||col.every((v,r)=>grid[r][c]===v)));
+      if(!pool.length){candidates.safe.set(key,false);return false;}
+      for(let c=0;c<3;c++)if(!nextHeld[c]){
+        const tops=[];
+        for(let top=0;top<REEL_STRIPS[c].length;top++){
+          const col=reelWindowFromTopIndex(c,top);
+          if(!pool.some(grid=>col.every((v,r)=>grid[r][c]===v)))continue;
+          const heldAfter=nextHeld.slice();heldAfter[c]=col;
+          if(canFinish(heldAfter))tops.push(top);
+        }
+        const maxGap=tops.length?Math.max(...tops.map((top,j)=>(tops[(j+1)%tops.length]-top+REEL_STRIPS[c].length)%REEL_STRIPS[c].length||REEL_STRIPS[c].length)):Infinity;
+        if(maxGap>4){candidates.safe.set(key,false);return false;}
+      }
+      candidates.safe.set(key,true);return true;
+    };
+    const choose=(grids,limit)=>{
+      let best=null,bestDistance=Infinity;const seen=new Set();
+      for(const grid of grids){
+        if(!held.every((col,c)=>!col||col.every((v,r)=>grid[r][c]===v)))continue;
+        const column=grid.map(row=>row[index]),key=column.join('\u001f');
+        if(seen.has(key))continue;seen.add(key);
+        const d=distance(column);
+        if(d<=limit+1e-9&&d<bestDistance){const nextHeld=held.slice();nextHeld[index]=column;if(!canFinish(nextHeld))continue;best={column,grid,distance:d};bestDistance=d;}
+      }
+      return best;
+    };
+    let pick=!spin.rareRoleMissed?choose(ordinary?candidates.misses:candidates.wins,ordinary||rare&&!automatic?4:Infinity):null;
+    if(!pick&&rare){
+      pick=choose(candidates.misses,4);
+      if(!pick)throw new Error('No safe rare-role miss within four symbols');
+      spin.rareRoleMissed=true;
+    }
+    if(!pick){if(ordinary)throw new Error('No safe ordinary stop within four symbols');return null;}
+    spin.pressStopColumns=held;spin.pressStopColumns[index]=pick.column.slice();
+    (spin.pressStopDistances||=[null,null,null])[index]=pick.distance;
+    setGridColumn(spin.grid,index,pick.column);
+    if(spin.result==='ONE_COIN')tagNovaSheetGrid(spin.grid,'ONE_COIN');
+    return pick.column;
+  }
+
+  function prepareManualRareOutcome(spin){
+    if(!spin?.rareRoleMissed||spin.rareMissPaidApplied||!spin.stopped?.every(Boolean))return;
+    spin.rareMissPaidApplied=true;
+    spin.resolved.rareMissPayout=Number(spin.resolved.reward)||0;
+    spin.resolved.reward=0;
+    // result, flowAfter, bonusHit, stocks, and all already-drawn outcomes stay intact.
+  }
+
   function buildGrid(result, winRow=1){
     if(A_TYPE_MODE) return buildNovaReelGrid(result,winRow);
   function buildDiagonalBellGrid(winRows){
@@ -7799,6 +7876,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     if(normalState.flow?.entryStage!=='roulette')showZoneRoulette(null);
     currentSpin = {
       reelLayoutVersion:REEL_LAYOUT_VERSION,
+      stopControlVersion:1,
       artReverse:!!resolved.artReverse,
       result,
       spec,
@@ -8010,7 +8088,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
       return;
     }
     if(spin.autoStopRetryTimers?.[i]){clearTimeout(spin.autoStopRetryTimers[i]);spin.autoStopRetryTimers[i]=null;}
-    stopSingleReel(i,options);
+    stopSingleReel(i,{...options,automatic:options.automatic!==false});
   }
 
   function stopSingleReel(i, options={}){
@@ -8031,6 +8109,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
       $("resultText").textContent = options.keyboardTurbo ? `十字キー高速停止待機... ${waitSeconds}後に停止可能` : `ウェイト中... ${waitSeconds}後に停止可能`;
       return;
     }
+    const motionAt=!options.visualReady?NovaReelMotion.capture(i):null;
     hideBattleIntro();
     if(isRogiHighZoneSpin(currentSpin)) stopRogiStopEffect(true);
 
@@ -8054,7 +8133,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     let col = options.visualColumn || (currentSpin.manualBonusStop
       ? manualStopColumnForReel(i, currentSpin)
       : [grid[0][i], grid[1][i], grid[2][i]]);
-    if(!options.visualReady&&NovaReelMotion.has(i)){col=nearestCommonStopColumn(i,currentSpin,column=>NovaReelMotion.distance(i,column))||col;}
+    if(!options.visualReady&&NovaReelMotion.has(i)){col=nearestCommonStopColumn(i,currentSpin,column=>NovaReelMotion.distance(i,column,motionAt))||col;}
     const sortieTarget=NovaSortie.target(currentSpin,i,REEL_STRIPS);
     if(sortieTarget){col=options.visualColumn||sortieTarget.column;setGridColumn(grid,i,col);}
     // Keep the original common-stop RNG calls above; only the visible target
@@ -8063,6 +8142,9 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     if(ladderTarget){col=options.visualColumn||ladderTarget.column;setGridColumn(grid,i,col);}
     const novaZoneTarget=NovaAim.novaZoneStopTarget?.(currentSpin,i,REEL_STRIPS,RESULT);
     if(novaZoneTarget){col=options.visualColumn||novaZoneTarget.column;setGridColumn(grid,i,col);}
+    if(currentSpin.stopControlVersion===1&&!options.visualReady&&motionAt&&!sortieTarget&&!ladderTarget&&!novaZoneTarget&&!NovaAim.hasGuide(currentSpin.resolved?.aim)&&!currentSpin.resolved?.artReverse){
+      col=nearestPressedStopColumn(i,currentSpin,column=>NovaReelMotion.distance(i,column,motionAt),!!(options.automatic||autoPlay||currentSpin.speedModeAtStart||debugFastSpinActive))||col;
+    }
     if(currentSpin.manualBonusStop && stopOrder === 3 && !options.visualColumn){
       col = manualBonusFinalColumnForReel(i, currentSpin, col);
     }
@@ -8078,7 +8160,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
       persistState();
       Promise.resolve().then(async()=>{
         if(currentSpin!==spin||!isSpinning)return;
-        const landed=await NovaReelMotion.stop(i,col,{immediate:!sortieTarget&&['BELL','BELL15','REPLAY'].includes(spin.result)&&!spin.manualBonusStop});
+        const landed=await NovaReelMotion.stop(i,col,{at:motionAt,immediate:!!options.automatic&&!sortieTarget&&['BELL','BELL15','REPLAY'].includes(spin.result)&&!spin.manualBonusStop});
         if(landed&&currentSpin===spin&&isSpinning)stopSingleReel(i,{...options,visualReady:true,visualColumn:col});
       }).catch(error=>{console.error(error);spin.visualStopping[i]=false;spin.pendingStopColumns[i]=null;stopBtns[i].disabled=false;persistState();});
       return;
@@ -8205,7 +8287,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     const stopOrder = NovaBellNavi.stopOrder(currentSpin);
     stopOrder.forEach((i,idx)=>{
       if(!currentSpin.stopped[i]){
-        setTimeout(()=>stopAutoReelInOrder(scheduledSpin,i), NovaSuperSpeed.delay(idx * 180,!!scheduledSpin.superSpeedAtStart));
+        setTimeout(()=>stopAutoReelInOrder(scheduledSpin,i,{automatic:!!(autoPlay||speedToBonusActive||debugFastSpinActive)}), NovaSuperSpeed.delay(idx * 180,!!scheduledSpin.superSpeedAtStart));
       }
     });
   }
@@ -8748,6 +8830,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     if(!canUsePlayState())return;
     if(resolved?.stockEntry){finishStockEntry();return;}
     if(!isSpinning || !currentSpin || currentSpin.finishing || currentSpin.resolved!==resolved || !currentSpin.stopped.every(Boolean)) return;
+    prepareManualRareOutcome(currentSpin);
     if(NovaCzPresentation.wait(resolved,{setting:settings.setting,auto:()=>!!(autoPlay||currentSpin?.speedModeAtStart||debugFastSpinActive),valid:()=>currentSpin?.resolved===resolved&&isSpinning&&canUsePlayState(),onFailure:()=>playCzFailureSound(resolved),reveal:()=>{playCzConfirmedSound(resolved);maybeLightBonusAnnouncementForStop(3,currentSpin);finishSpin(result,resolved,lineRow);}}))return;
     if(typeof playZoneInternalConfirmedSound==='function'&&currentSpin?.stopped?.every(Boolean))playZoneInternalConfirmedSound(resolved);
     try{

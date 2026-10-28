@@ -50,16 +50,20 @@ globalThis.NovaReelMotion=(()=>{
   const steps=distance+Math.max(0,Math.round((duration/(syncedRotationMs/strip.length)-distance)/strip.length))*strip.length;
   start(i,reel,strip,top,reverse,html,{clock,duration,done,steps});
  }
- function distance(i,column){
+ function capture(i){
+  const s=active.get(i);if(!s)return null;
+  return {pos:s.pos+s.direction*(performance.now()-s.last)/s.stepMs,direction:s.direction};
+ }
+ function distance(i,column,at=capture(i)){
   const s=active.get(i);if(!s)return Infinity;
-  const pos=mod(s.pos+s.direction*(performance.now()-s.last)/s.stepMs,s.strip.length);
+  const pos=mod(at.pos,s.strip.length);
   const ds=s.strip.flatMap((_,n)=>column.every((v,j)=>s.strip[(n+j)%s.strip.length]===v)?[s.direction>0?mod(n-pos,s.strip.length):mod(pos-n,s.strip.length)]:[]);
   return ds.length?Math.min(...ds):Infinity;
  }
  function stop(i,column,options={}){
   const s=active.get(i);if(!s)return Promise.resolve(false);
   const now=performance.now();
-  s.pos=s.strip.length+mod(s.pos-s.strip.length+s.direction*(now-s.last)/s.stepMs,s.strip.length);s.last=now;
+  s.pos=s.strip.length+mod((options.at?options.at.pos:s.pos+s.direction*(now-s.last)/s.stepMs)-s.strip.length,s.strip.length);s.last=now;
   const distances=s.strip.flatMap((_,n)=>column.every((v,j)=>s.strip[(n+j)%s.strip.length]===v)?[s.direction>0?mod(n-mod(s.pos,s.strip.length),s.strip.length):mod(mod(s.pos,s.strip.length)-n,s.strip.length)]:[]);
   if(!distances.length)throw new Error('Stop column is absent from reel strip '+i);
   const distance=Math.min(...distances);
@@ -75,5 +79,5 @@ globalThis.NovaReelMotion=(()=>{
   });
  }
 
- return {rotationMs,startSynced,distance,start,stop,clear,has:i=>active.has(i),top:i=>{const s=active.get(i);return s?mod(Math.round(s.pos),s.strip.length):null;},clearAll:()=>[...active.keys()].forEach(clear)};
+ return {rotationMs,startSynced,capture,distance,start,stop,clear,has:i=>active.has(i),top:i=>{const s=active.get(i);return s?mod(Math.round(s.pos),s.strip.length):null;},clearAll:()=>[...active.keys()].forEach(clear)};
 })();
