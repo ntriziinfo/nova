@@ -54,11 +54,21 @@ test('AUTO and takeover reuse the committed nav order without another random dra
 
 function voiceHarness(){
  const sounds=[],html=readGameSource();
- const c=vm.createContext({debugFastSpinActive:false,speedToBonusActive:false,voiceOutputVolume:()=>.6,playOneShotSound:(src,volume)=>sounds.push({src,volume})});
+ const c=vm.createContext({NovaBellNavi:n,debugFastSpinActive:false,speedToBonusActive:false,voiceOutputVolume:()=>.6,playOneShotSound:(src,volume)=>sounds.push({src,volume})});
  loadVoiceCatalog(c);
  vm.runInContext(html.match(/  const BELL_NAVI_VOICE_SRCS=[^\n]+/)[0]+'\n'+html.match(/  const BELL_NAVI_COMPLETE_VOICE_SRCS=[^\n]+/)[0]+'\n'+html.match(/  function playBellNaviVoice\([^]*?\n  }/)[0],c);
  return {c,sounds};
 }
+
+test('wrong BELL and BELL15 prefixes miss immediately, except during research sortie',()=>{
+ for(const result of ['BELL','BELL15']){
+  assert.equal(n.presentationMissed({result,bellNaviOrder:[2,0,1],auditPressOrder:[2]}),false);
+  assert.equal(n.presentationMissed({result,bellNaviOrder:[2,0,1],auditPressOrder:[2,1]}),true);
+  assert.equal(n.presentationMissed({result,bellNaviOrder:[2,0,1],auditStopOrder:[0]}),true);
+  assert.equal(n.presentationMissed({result,bellNaviOrder:[2,0,1],auditPressOrder:[0],resolved:{researchSortie:{won:true}}}),false);
+ }
+ for(const result of ['REPLAY','MISS'])assert.equal(n.presentationMissed({result,bellNaviOrder:[2,0,1],auditPressOrder:[0]}),false);
+});
 
 test('all six orders keep the randomly selected character through manual and AUTO stops',()=>{
  const voiceIntervals=['sosuke','sora','giru','toto','ouma','nito','kushuri'].flatMap((character,i)=>[[i/7,character],[(i+1)/7-1e-8,character]]);
@@ -78,17 +88,40 @@ test('all six orders keep the randomly selected character through manual and AUT
  }
 });
 
-test('voice follows the remaining displayed guide after wrong order, and stays silent without numbered navigation',()=>{
+test('a wrong press stops every subsequent normal navigation voice',()=>{
  const {c,sounds}=voiceHarness();
  for(const spin of [bell(),{...bell(),stopped:[true,true,true]},{rareNavi:{color:'red',mark:'!!'},stopped:[false,false,false]},{rareNavi:{color:'red',mark:'!!'},stopped:[true,true,true]},null])c.playBellNaviVoice(spin);
  assert.equal(sounds.length,0);
- const spin={...bell(),bellNaviOrder:[2,0,1],stopped:[true,false,false]};
+ const spin={...bell(),bellNaviOrder:[2,0,1],auditPressOrder:[],stopped:[false,false,false]};
  c.playBellNaviVoice(spin,()=>0);assert.equal(sounds[0].src,'assets/media/nova/navi-right-sosuke.wav');
- spin.stopped[2]=true;c.playBellNaviVoice(spin);assert.equal(sounds[1].src,'assets/media/nova/navi-center-sosuke.wav');
+ spin.auditPressOrder.push(2);spin.stopped[2]=true;c.playBellNaviVoice(spin);assert.equal(sounds[1].src,'assets/media/nova/navi-left-sosuke.wav');
+ spin.auditPressOrder.push(1);spin.stopped[1]=true;c.playBellNaviVoice(spin);
+ assert.equal(sounds.length,2,'wrong second press must suppress the next and completion voices');
+ spin.bellNaviFailed=true;spin.auditPressOrder=[2];c.playBellNaviVoice(spin);
+ assert.equal(sounds.length,2,'the persisted failure flag also stays silent');
  for(const flag of ['debugFastSpinActive','speedToBonusActive']){
   c[flag]=true;c.playBellNaviVoice({...bell(),bellNaviOrder:[0,1,2],stopped:[false,false,false]});c[flag]=false;
  }
  assert.equal(sounds.length,2);
+});
+
+test('the first wrong press hides navigation, stops live voices and plays the failure voice once',()=>{
+ const html=readGameSource(),sounds=[],stops=[];
+ const live={paused:0,currentTime:4,pause(){this.paused++;}};
+ const c=vm.createContext({
+  NovaBellNavi:{presentationMissed:n.presentationMissed,stop:spin=>stops.push(spin)},
+  BELL_NAVI_FAILURE_VOICE_SRC:'assets/media/nova/navi-failure-sosuke.wav',
+  voiceOutputVolume:()=>.6,
+  playOneShotSound:(src,volume,options)=>{sounds.push({src,volume,options});return {};}
+ });
+ vm.runInContext(html.match(/  function handleBellNavigationFailure\([^]*?\n  }/)[0],c);
+ const spin={...bell(),bellNaviOrder:[2,0,1],auditPressOrder:[0],bellNaviVoiceAudios:[live]};
+ assert.equal(c.handleBellNavigationFailure(spin),true);
+ assert.equal(spin.bellNaviFailed,true);assert.equal(spin.bellNaviFailurePlayed,true);
+ assert.equal(live.paused,1);assert.equal(live.currentTime,0);assert.equal(spin.bellNaviVoiceAudios.length,0);
+ assert.equal(stops.length,1);assert.equal(sounds.length,1);assert.equal(sounds[0].src,'assets/media/nova/navi-failure-sosuke.wav');assert.equal(sounds[0].volume,.6);assert.equal(sounds[0].options.allowDuringPremiumConfirm,true);
+ assert.equal(c.handleBellNavigationFailure(spin),false);assert.equal(stops.length,1);assert.equal(sounds.length,1);
+ assert.match(html,/auditPressOrder \|\|= \[\]\)\.push\(i\);\s*handleBellNavigationFailure\(currentSpin\);/);
 });
 
 test('aim AUTO prioritizes reverse order over stale bell navigation',()=>{

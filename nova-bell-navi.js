@@ -48,6 +48,11 @@ globalThis.NovaBellNavi=(()=>{
   return pool[Math.min(pool.length-1,Math.max(0,Math.floor(rng()*pool.length)))].slice();
  }
  function stopOrder(spin){if(spin?.resolved?.sortieEntry)return [1,2,0];return spin?.resolved?.researchSortie||spin?.resolved?.stockEntry||spin?.resolved?.researchChallenge?.priorAim||spin?.resolved?.zoneSpin&&['ouma','urapi'].includes(String((spin.resolved.zoneStartFlow||spin.resolved.flowBefore)?.zone||'').replace(/^ura_/,''))||spin?.resolved?.aim||spin?.resolved?.bonusPendingAtStart&&spin?.resolved?.bonusReady&&!spin?.resolved?.bonusWaitSpin?[2,1,0]:spin?.bellNaviOrder?.slice()||(spin?.resolved?.aim||spin?.zoneActiveAtStart?[2,1,0]:[0,1,2]);}
+ function presentationMissed(spin){
+  const order=spin?.bellNaviOrder,pressed=spin?.auditPressOrder||spin?.auditStopOrder||[];
+  return ['BELL','BELL15'].includes(spin?.result)&&order?.length===3&&!spin?.resolved?.researchSortie&&
+   pressed.some((reel,index)=>reel!==order[index]);
+ }
  function init(){
   if(root)return true;
   host=document.getElementById('machine');if(!host)return false;
@@ -86,7 +91,7 @@ globalThis.NovaBellNavi=(()=>{
   if(active?.resolved?.researchSortie||active?.resolved?.comebackEvent||active?.resolved?.flowBefore?.comebackLeft){root.hidden=true;return;}
   const savedSignal=active?.rareNavi;
   const signal=savedSignal?.mark==='!!'&&!confirmed(active)?{...savedSignal,mark:'!'}:savedSignal,order=active?.bellNaviOrder||(!active&&previewing?[0,1,2]:null),stopped=active?.stopped||[];
-  root.hidden=(!order&&!signal)||!!(active&&stopped.every(Boolean));
+  root.hidden=(!order&&!signal)||!!(active&&(stopped.every(Boolean)||active.bellNaviFailed||presentationMissed(active)));
   root.dataset.preview=String(!active&&previewing);
   const prep=!!preparationOrder(active);
   root.dataset.kind=signal?'rare':prep?'preparation':'bell';root.dataset.color=signal?.color||'yellow';
@@ -132,5 +137,5 @@ globalThis.NovaBellNavi=(()=>{
   document.addEventListener('DOMContentLoaded',init);
   window.addEventListener('resize',layout);
  }
- return {defaults,eligible,preparationOrder,drawRareNavi,drawOrder,stopOrder,begin,restore,stop,clear,preview,layout};
+ return {defaults,eligible,preparationOrder,drawRareNavi,drawOrder,stopOrder,presentationMissed,begin,restore,stop,clear,preview,layout};
 })();

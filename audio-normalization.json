@@ -2612,6 +2612,35 @@
       }
     },
     {
+      "src": "assets/media/nova/navi-failure-sosuke.wav",
+      "category": "voice",
+      "measurementVersion": 2,
+      "fileLoudness": {
+        "lufs": -14.27,
+        "peakDbtp": -2,
+        "rangeLu": 0
+      },
+      "targetLufs": -14,
+      "output": "assets/media/normalized-voices-20261013/nova/navi-failure-sosuke.wav",
+      "sourceSha256": "a7e87daf067ed74455f772f80abd3f660e670dac90150a8222ed9bda1cc0c1df",
+      "outputSha256": "11b60ce10be876e0562c719023a0786aef093ed46ebf5b95c79c9d8c3c13c54f",
+      "rate": 48000,
+      "channels": 1,
+      "duration": 1.664,
+      "outputDuration": 1.664,
+      "gainDb": 11.7,
+      "before": {
+        "lufs": -25.38,
+        "peakDbtp": -11.04,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -14.07,
+        "peakDbtp": -2,
+        "rangeLu": 0
+      }
+    },
+    {
       "src": "assets/media/nova/navi-left-giru.wav",
       "category": "voice",
       "measurementVersion": 2,

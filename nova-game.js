@@ -815,6 +815,7 @@
   preloadOneShotSound('assets/media/nova/sortie-nebula-cue.mp3');
   const BELL_NAVI_VOICE_SRCS=NovaVoiceCatalog.BELL_NAVI_VOICE_SRCS;
   const BELL_NAVI_COMPLETE_VOICE_SRCS=NovaVoiceCatalog.BELL_NAVI_COMPLETE_VOICE_SRCS;
+  const BELL_NAVI_FAILURE_VOICE_SRC=NovaVoiceCatalog.BELL_NAVI_FAILURE_VOICE_SRC;
   const AIM_VOICE_SRCS=NovaVoiceCatalog.AIM_VOICE_SRCS;
   const SEVEN_ZONE_VOICE_SRCS=NovaVoiceCatalog.SEVEN_ZONE_VOICE_SRCS;
   const NEBULA_ZONE_VOICE_SRCS=NovaVoiceCatalog.NEBULA_ZONE_VOICE_SRCS;
@@ -942,7 +943,7 @@
     zonepresentation:{x:22.3,y:31.8,w:55.7,h:8.3},
     sortieaimbg:{"x":20.3,"y":29.4,"w":59.1,"h":25.4},
     sortieaimmiddle:{"x":21.5,"y":32.7,"w":19.4,"h":5.8},
-    sortieaimsymbol:{"x":41.5,"y":27.9,"w":16.7,"h":14.4},
+    sortieaimsymbol:{"x":41.5,"y":27.9,"w":16.7,"h":14.4,"compact":28},
     sortieaimaim:{"x":58.7,"y":32.7,"w":20,"h":5.5},
     supertitle:{x:21.5,y:29.6,w:56.7,h:10.7},
     displaygroup:{x:0.1,y:-0.5,s:122.4}
@@ -7333,6 +7334,21 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
       (spin.auditPressOrder||spin.auditStopOrder||[]).some((reel,n)=>reel!==spin.bellNaviOrder[n]);
   }
 
+  function handleBellNavigationFailure(spin){
+    if(!NovaBellNavi.presentationMissed(spin)||spin.bellNaviFailed)return false;
+    spin.bellNaviFailed=true;
+    for(const audio of spin.bellNaviVoiceAudios||[]){
+      try{audio.pause();audio.currentTime=0;}catch(e){}
+    }
+    spin.bellNaviVoiceAudios=[];
+    NovaBellNavi.stop(spin);
+    if(!spin.bellNaviFailurePlayed){
+      spin.bellNaviFailurePlayed=true;
+      playOneShotSound(BELL_NAVI_FAILURE_VOICE_SRC,voiceOutputVolume(),{allowDuringPremiumConfirm:true});
+    }
+    return true;
+  }
+
   function nearestNavigatedBellStop(index,spin,distance){
     if(!['BELL','BELL15'].includes(spin?.result)||spin.bellNaviOrder?.length!==3)return null;
     const held=[0,1,2].map(c=>c===index?null:spin.pendingStopColumns?.[c]||
@@ -8191,6 +8207,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     if(!options.visualReady&&currentSpin.visualStopping?.[i])return;
     if(!options.visualReady){
       (currentSpin.auditPressOrder ||= []).push(i);
+      handleBellNavigationFailure(currentSpin);
       playInitialDuoStop(currentSpin,currentSpin.auditPressOrder.length);
     }
     if(NovaAim.hasGuide(currentSpin.resolved?.aim)&&!options.visualReady){
@@ -8437,7 +8454,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
   }
 
   function playBellNaviVoice(spin,rng=Math.random){
-    if(debugFastSpinActive||speedToBonusActive||!spin?.bellNaviOrder)return;
+    if(debugFastSpinActive||speedToBonusActive||!spin?.bellNaviOrder||spin.bellNaviFailed||NovaBellNavi.presentationMissed(spin))return;
     const stopped=spin.stopped||[],stage=stopped.filter(Boolean).length;
     if(stage>3||spin.bellNaviVoiceStage===stage)return;
     if(!BELL_NAVI_VOICE_SRCS[spin.bellNaviVoiceCharacter]){
@@ -8449,7 +8466,11 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     if(!src)return;
     spin.bellNaviVoiceStage=stage;
     if(spin.resolved?.researchSortie)return; // Preserve the selection draw without an unrelated bell voice.
-    playOneShotSound(src,voiceOutputVolume(),{allowDuringPremiumConfirm:true});
+    const playback=playOneShotSound(src,voiceOutputVolume(),{allowDuringPremiumConfirm:true});
+    if(playback?.audio){
+      spin.bellNaviVoiceAudios ||= [];
+      if(!spin.bellNaviVoiceAudios.includes(playback.audio))spin.bellNaviVoiceAudios.push(playback.audio);
+    }
   }
 
   function playRandomAimVoice(symbol,rng=Math.random){

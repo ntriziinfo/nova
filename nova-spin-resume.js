@@ -6,7 +6,7 @@ globalThis.NovaSpinResume=(()=>{
   'auditGrid','auditPressOrder','auditStopOrder','aimStopOrder','aimAligned','aimWinPlayed',
   'stopOutcomeRevealed','earlyAimSoundPlayed','earlyAimFailurePlayed','superNovaStopSoundPlayed','ladderOutcomeSoundPlayed','sortieConfirmSoundPlayed',
   'sortieOutcomeSoundPlayed','sortieAwardVoicePlayed',
-  'bellNaviOrder','rareNavi','bellNaviVoiceCharacter','bellNaviVoiceStage',
+  'bellNaviOrder','rareNavi','bellNaviVoiceCharacter','bellNaviVoiceStage','bellNaviFailed','bellNaviFailurePlayed',
   'normalActiveAtStart','aTypeBonusActiveAtStart','zoneActiveAtStart','zoneType',
   'battleActiveAtStart','battleRound','pendingBattleOutcome','artReverse',
   'manualBonusStop','manualOutcomeApplied','bonusConfirmWaitSpin','bonusConfirmPrizeSpin',

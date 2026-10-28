@@ -293,6 +293,8 @@ body[data-bonus-at-confirmed="true"] .reels{animation:novaBonusAtRainbow 1.4s li
 #machine>.novaSortieAim-symbol{display:flex;align-items:center;justify-content:center;}
 .novaSortieAimStack{width:100%;height:100%;display:grid;grid-template-rows:1fr 1fr 1fr;justify-items:center;align-items:center;}
 .novaSortieAimStack>img{display:block;width:100%;height:100%;min-height:0;object-fit:contain;}
+.novaSortieAimStack>.sortieNova:first-child{transform:translateY(var(--layout-sortieaimsymbol-compact,28%));}
+.novaSortieAimStack>.sortieNova:last-child{transform:translateY(calc(0% - var(--layout-sortieaimsymbol-compact,28%)));}
 .novaSortieAimStack>.sortieBlank{width:83%;height:83%;}
 
 #machine[data-sortie-aim-failed="true"]>.novaSortieAimPart,#machine[data-sortie-aim-failed="true"]>.novaSortieAimBg{filter:brightness(.25);transition:filter .2s;}

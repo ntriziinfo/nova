@@ -1,0 +1,12 @@
+{
+  "sourceName": "ナビ失敗.wav",
+  "copy": "assets/media/nova/navi-failure-sosuke.wav",
+  "sha256": "a7e87daf067ed74455f772f80abd3f660e670dac90150a8222ed9bda1cc0c1df",
+  "bytes": 159788,
+  "durationSeconds": 1.664,
+  "sampleRate": 48000,
+  "channels": 1,
+  "category": "voice",
+  "trigger": "ベル押し順ナビの最初の誤入力",
+  "originalUnmodified": true
+}

@@ -182,6 +182,15 @@ test('resume preserves resolved prizes and reverse-stop decisions, excluding tim
  assert.equal(c.NovaSpinResume.capture({...spin(c),finishing:true}),null);
 });
 
+test('resume preserves a bell navigation failure without serializing live audio objects',()=>{
+ const {c}=harness(),liveAudio={pause:noop,currentTime:3};
+ const original=spin(c,{bellNaviFailed:true,bellNaviFailurePlayed:true,bellNaviVoiceAudios:[liveAudio]});
+ const saved=c.NovaSpinResume.capture(original),restored=c.NovaSpinResume.restore(saved,c.RESULT);
+ assert.equal(saved.bellNaviFailed,true);assert.equal(saved.bellNaviFailurePlayed,true);
+ assert.equal(restored.bellNaviFailed,true);assert.equal(restored.bellNaviFailurePlayed,true);
+ assert.equal(saved.bellNaviVoiceAudios,undefined);assert.equal(restored.bellNaviVoiceAudios,undefined);
+});
+
 test('UI resume does not BET or redraw and lands already-pressed reels in the original order',()=>{
  const h=harness(),c=h.c;c.load();
  c.currentSpin=c.NovaSpinResume.restore(c.NovaSpinResume.capture(spin(c,{stopped:[false,false,true],auditPressOrder:[2,0,1],pendingStopColumns:[['R','B','7'],['7','B','R'],null]})),c.RESULT);

@@ -400,6 +400,10 @@ globalThis.NovaAudioManifest=Object.freeze({
     "src": "assets/media/normalized-voices-20261013/nova/navi-complete-toto.wav",
     "category": "voice"
   },
+  "assets/media/nova/navi-failure-sosuke.wav": {
+    "src": "assets/media/normalized-voices-20261013/nova/navi-failure-sosuke.wav",
+    "category": "voice"
+  },
   "assets/media/nova/navi-left-giru.wav": {
     "src": "assets/media/normalized-voices-20261013/nova/navi-left-giru.wav",
     "category": "voice"

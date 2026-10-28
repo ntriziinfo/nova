@@ -49,6 +49,7 @@ globalThis.NovaVoiceCatalog=(()=>{
     "nito": "assets/media/nova/navi-complete-nito.wav",
     "kushuri": "assets/media/nova/navi-complete-kushuri.wav"
   };
+  const BELL_NAVI_FAILURE_VOICE_SRC="assets/media/nova/navi-failure-sosuke.wav";
   const AIM_VOICE_SRCS={
     "seven": [
       "assets/media/nova/aim_seven_sosuke.wav",
@@ -137,7 +138,7 @@ globalThis.NovaVoiceCatalog=(()=>{
   // Register new character lines here (or in the banks above). Game copies are
   // loudness-normalized offline; preserve supplied originals separately.
   const CHARACTER_VOICE_SRCS=Object.freeze([
-    ...Object.values(BELL_NAVI_VOICE_SRCS).flat(),...Object.values(BELL_NAVI_COMPLETE_VOICE_SRCS),
+    ...Object.values(BELL_NAVI_VOICE_SRCS).flat(),...Object.values(BELL_NAVI_COMPLETE_VOICE_SRCS),BELL_NAVI_FAILURE_VOICE_SRC,
     ...Object.values(AIM_VOICE_SRCS).flat(),...Object.values(ZONE_START_VOICE_SRCS),
     ...Object.values(ZONE_CONTINUE_VOICE_SRCS),'assets/media/nova/bonus_confirm.wav',
     ...Object.values(MODE_EVENT_VOICE_SRCS),
@@ -153,6 +154,7 @@ globalThis.NovaVoiceCatalog=(()=>{
   return Object.freeze({
     BELL_NAVI_VOICE_SRCS,
     BELL_NAVI_COMPLETE_VOICE_SRCS,
+    BELL_NAVI_FAILURE_VOICE_SRC,
     AIM_VOICE_SRCS,
     SEVEN_ZONE_VOICE_SRCS,
     NEBULA_ZONE_VOICE_SRCS,

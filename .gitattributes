@@ -107,3 +107,7 @@ assets/media/nova/cz-push-20261027.sources.json -filter -diff -merge text
 assets/lossless-20261027/** -filter -diff -merge -text
 assets/ui/impurity-head-20261028.png -filter -diff -merge -text
 assets/ui/nova-aim-arrow-caption-20261028.png -filter -diff -merge -text
+
+# User-supplied bell-navigation failure voice; preserve the original beside its mastered delivery copy.
+assets/media/nova/navi-failure-sosuke.wav -filter -diff -merge -text
+assets/media/nova/navi-failure-sosuke.source.json -filter -diff -merge text
