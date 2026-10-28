@@ -285,10 +285,10 @@ body.layoutEditOpen #novaSuperTitlePreview{display:block;outline:1px dashed #c89
 .novaAimReverseNotice[hidden]{display:none!important;}
 
 /* Independently positioned sortie trigger art; background stays behind reels. */
-#machine>.novaSortieAimBg{position:absolute;pointer-events:none;left:var(--layout-sortieaimbg-x,20.4%);top:var(--layout-sortieaimbg-y,26%);width:var(--layout-sortieaimbg-w,58.9%);height:var(--layout-sortieaimbg-h,25.7%);z-index:20;object-fit:cover;}
-#machine>.novaSortieAim-middle{position:absolute;pointer-events:none;left:var(--layout-sortieaimmiddle-x,21.5%);top:var(--layout-sortieaimmiddle-y,28.5%);width:var(--layout-sortieaimmiddle-w,20%);height:var(--layout-sortieaimmiddle-h,5.5%);z-index:49;object-fit:contain;}
-#machine>.novaSortieAim-symbol{position:absolute;pointer-events:none;left:var(--layout-sortieaimsymbol-x,42%);top:var(--layout-sortieaimsymbol-y,26.5%);width:var(--layout-sortieaimsymbol-w,14%);height:var(--layout-sortieaimsymbol-h,9%);z-index:49;object-fit:contain;}
-#machine>.novaSortieAim-aim{position:absolute;pointer-events:none;left:var(--layout-sortieaimaim-x,57%);top:var(--layout-sortieaimaim-y,28.5%);width:var(--layout-sortieaimaim-w,20%);height:var(--layout-sortieaimaim-h,5.5%);z-index:49;object-fit:contain;}
+#machine>.novaSortieAimBg{position:absolute;pointer-events:none;left:var(--layout-sortieaimbg-x,20.3%);top:var(--layout-sortieaimbg-y,29.4%);width:var(--layout-sortieaimbg-w,59.1%);height:var(--layout-sortieaimbg-h,25.4%);z-index:20;object-fit:cover;}
+#machine>.novaSortieAim-middle{position:absolute;pointer-events:none;left:var(--layout-sortieaimmiddle-x,21.5%);top:var(--layout-sortieaimmiddle-y,32.7%);width:var(--layout-sortieaimmiddle-w,19.4%);height:var(--layout-sortieaimmiddle-h,5.8%);z-index:49;object-fit:contain;}
+#machine>.novaSortieAim-symbol{position:absolute;pointer-events:none;left:var(--layout-sortieaimsymbol-x,41.5%);top:var(--layout-sortieaimsymbol-y,27.9%);width:var(--layout-sortieaimsymbol-w,16.7%);height:var(--layout-sortieaimsymbol-h,14.4%);z-index:49;object-fit:contain;}
+#machine>.novaSortieAim-aim{position:absolute;pointer-events:none;left:var(--layout-sortieaimaim-x,58.7%);top:var(--layout-sortieaimaim-y,32.7%);width:var(--layout-sortieaimaim-w,20%);height:var(--layout-sortieaimaim-h,5.5%);z-index:49;object-fit:contain;}
 .novaSortieAimPart[hidden],.novaSortieAimBg[hidden]{display:none!important;}
 
 #machine .reel .cell img.symImg.blankSymImg:not(.sevenSymImg):not(.barSymImg):not(.nebulaSymImg){width:45%!important;height:45%!important;max-width:45%!important;max-height:45%!important;}

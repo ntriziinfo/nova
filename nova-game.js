@@ -935,10 +935,10 @@
     lampmovie:{x:20.4,y:29.6,w:59.1,h:10.7},
     backgroundmovie:{x:20.4,y:29.4,w:58.9,h:25.7},
     zonepresentation:{x:22.3,y:31.8,w:55.7,h:8.3},
-    sortieaimbg:{x:20.4,y:26,w:58.9,h:25.7},
-    sortieaimmiddle:{x:21.5,y:28.5,w:20,h:5.5},
-    sortieaimsymbol:{x:42,y:26.5,w:14,h:9},
-    sortieaimaim:{x:57,y:28.5,w:20,h:5.5},
+    sortieaimbg:{"x":20.3,"y":29.4,"w":59.1,"h":25.4},
+    sortieaimmiddle:{"x":21.5,"y":32.7,"w":19.4,"h":5.8},
+    sortieaimsymbol:{"x":41.5,"y":27.9,"w":16.7,"h":14.4},
+    sortieaimaim:{"x":58.7,"y":32.7,"w":20,"h":5.5},
     supertitle:{x:21.5,y:29.6,w:56.7,h:10.7},
     displaygroup:{x:0.1,y:-0.5,s:122.4}
   });
@@ -1196,7 +1196,22 @@
     applyLayoutEdit(false);
   }
 
+  function migrateSortieAimLayout(){
+    const key='nova_sortie_aim_layout_20261028';
+    if(safeStorageGet(key)==='1')return;
+    for(const storageKey of [LAYOUT_DEFAULT_STORAGE_KEY,LAYOUT_EDIT_STORAGE_KEY]){
+      try{
+        const saved=safeStorageGet(storageKey);if(!saved)continue;
+        const state=JSON.parse(saved);
+        for(const target of ['sortieaimbg','sortieaimmiddle','sortieaimsymbol','sortieaimaim'])state[target]={...LAYOUT_DEFAULTS[target]};
+        safeStorageSet(storageKey,JSON.stringify(state));
+      }catch(e){/* Invalid saved layouts use the factory defaults below. */}
+    }
+    safeStorageSet(key,'1');
+  }
+
   function loadLayoutDefaultState(){
+    migrateSortieAimLayout();
     try{
       const saved = safeStorageGet(LAYOUT_DEFAULT_STORAGE_KEY);
       layoutDefaultState = saved ? normalizeLayoutState(JSON.parse(saved)) : cloneFactoryLayoutDefaults();
