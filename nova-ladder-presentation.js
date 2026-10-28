@@ -116,6 +116,7 @@ globalThis.NovaLadder=(()=>{
   if(!root||root.hidden||root.dataset.stage!=='challenge')return;
   if(count===1||count===2)root.dataset.stop=String(count);
  }
+ function fail(){if(!root||root.hidden)return;root.dataset.failed='true';root.dataset.stage='closed';}
  function award(points,started,promoted=false){
   if(!init())return;
   const stage=started?'award':'settled';
@@ -129,5 +130,5 @@ globalThis.NovaLadder=(()=>{
   if(!started&&promoted)closeThenReveal('settled');
  }
  if(typeof document!=='undefined'){document.addEventListener('DOMContentLoaded',init);window.addEventListener('resize',()=>{if(root&&!root.hidden)layout();});}
- return {resetStops:strips=>stopGrids.delete(strips),eligible,outcome,target,sync,bet,stop,hide,award,get busy(){return locked;}};
+ return {resetStops:strips=>stopGrids.delete(strips),eligible,outcome,target,sync,bet,stop,hide,fail,award,get busy(){return locked;}};
 })();

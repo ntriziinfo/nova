@@ -4,6 +4,7 @@ globalThis.NovaSpinResume=(()=>{
  const fields=['reelLayoutVersion','result','lineRow','grid','resolved','stopped','pendingStopColumns','commonStopColumns',
   'stopControlVersion','pressStopColumns','pressStopDistances','rareRoleMissed','rareMissPaidApplied',
   'auditGrid','auditPressOrder','auditStopOrder','aimStopOrder','aimAligned','aimWinPlayed',
+  'stopOutcomeRevealed','earlyAimSoundPlayed','earlyAimFailurePlayed','superNovaStopSoundPlayed','ladderOutcomeSoundPlayed','sortieConfirmSoundPlayed',
   'bellNaviOrder','rareNavi','bellNaviVoiceCharacter','bellNaviVoiceStage',
   'normalActiveAtStart','aTypeBonusActiveAtStart','zoneActiveAtStart','zoneType',
   'battleActiveAtStart','battleRound','pendingBattleOutcome','artReverse',

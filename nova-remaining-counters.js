@@ -7,24 +7,44 @@ globalThis.NovaRemainingCounters=(()=>{
  const empty=(label,unit)=>({label,value:'—',unit,active:false,hold:false});
  const games=value=>String(Math.max(0,Math.floor(Number(value)||0)));
  function points(value){try{return BigInt(/^\d+$/.test(String(value))?value:0).toLocaleString('ja-JP');}catch{return '0';}}
+ function leverFlow(flow,spin){
+  const r=spin?.resolved;
+  if(!r||r.stockEntry||r.aTypeBonusGame)return flow;
+  const before=r.zoneStartFlow||r.flowBefore;
+  if(!before)return flow;
+  const shown={...before},dec=k=>shown[k]=Math.max(0,Number(shown[k]||0)-1);
+  if(['cz','strong_cz'].includes(shown.phase)&&!r.czIntro&&!r.bonusPendingAtStart)dec('remaining');
+  if(shown.phase==='art'){
+   if(shown.researchSortieLeft&&r.researchSortie)dec('researchSortieLeft');
+   else if(shown.zone&&r.zoneSpin&&!shown.zero&&!r.oumaFreeze)dec('zoneLeft');
+   else if(r.researchChallenge){
+    if(r.researchChallenge.started){shown.researchChallengeActive=true;shown.burstLeft=10;}
+    if(!r.researchChallenge.priorAim&&r.researchChallenge.role==='MISS')dec('burstLeft');
+   }
+   else if(shown.comebackLeft&&['continue','success','failure'].includes(r.comebackEvent))dec('comebackLeft');
+   else if(shown.initialStage==='wait'&&r.initialPreparationSpin&&shown.initialPreparationVersion!==NovaArt.preparationRules.version)dec('initialWait');
+  }
+  return shown;
+ }
  function snapshot(flow,options={}){
   const result={atcounter:empty('AT残り','pt'),czcounter:empty('CZ残り','G'),zonecounter:empty('ゾーン残り','G')};
   const resolved=options.spin?.resolved;
-  const shown=resolved?.zoneStartFlow||flow||{};
+  const base=resolved?.zoneStartFlow||resolved?.flowBefore||flow||{};
+  const shown=leverFlow(flow,options.spin)||{};
   if(flow?.phase==='art')result.atcounter={...result.atcounter,value:points(flow.remaining),active:true};
   if(options.checkpointStatus?.gold&&result.atcounter.active)result.atcounter={label:'スーパーノヴァチャレンジまで',value:points(options.checkpointStatus.left||0),unit:'pt',active:true,hold:false};
   if(options.bonus)return result; // An interrupted AT keeps its banked points visible.
   if(['cz','strong_cz'].includes(flow?.phase)&&!options.czPrelude&&!options.bonusPending){
-   result.czcounter={...result.czcounter,label:flow.phase==='strong_cz'?'強CZ残り':'CZ残り',value:games(flow.remaining),active:true};
+   result.czcounter={...result.czcounter,label:flow.phase==='strong_cz'?'強CZ残り':'CZ残り',value:games(shown.remaining),active:true};
   }
   if(shown.phase!=='art')return result;
   let label='',left=0,hold=false;
-  if(shown.researchSortieLeft){label='出陣チャレンジ';left=shown.researchSortieLeft;}
+  if(base.researchSortieLeft){label='出陣チャレンジ';left=shown.researchSortieLeft;}
   else if(shown.zone){label=NovaArt.zoneName(shown)+'ゾーン';left=shown.zoneLeft;hold=!!(shown.zero||resolved?.oumaFreeze);}
   else if(shown.researchChallengeActive||shown.burstLeft||resolved?.researchChallenge?.started){
-   label='スーパーノヴァチャレンジ';left=resolved?.researchChallenge?.started?10:shown.burstLeft;hold=!!shown.researchAim;
+   label='スーパーノヴァチャレンジ';left=shown.burstLeft;hold=!!shown.researchAim;
   }
-  else if(shown.comebackLeft){label='引き戻しチャレンジ';left=shown.comebackLeft;}
+  else if(base.comebackLeft){label='引き戻しチャレンジ';left=shown.comebackLeft;}
   else if(shown.initialStage==='wait'){
    if(shown.initialPreparationVersion===NovaArt.preparationRules.version)result.zonecounter={label:'AT準備',value:'開始リプレイ待ち',unit:'',active:true,hold:false};
    else {label='AT準備';left=shown.initialWait;}
@@ -77,5 +97,5 @@ globalThis.NovaRemainingCounters=(()=>{
   const machine=document.getElementById('machine');
   if(machine&&globalThis.ResizeObserver)new ResizeObserver(measure).observe(machine);
  }
- return Object.freeze({defaults,snapshot,current,render,addLayoutControls,measure});
+ return Object.freeze({defaults,leverFlow,snapshot,current,render,addLayoutControls,measure});
 })();

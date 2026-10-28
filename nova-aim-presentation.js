@@ -221,6 +221,28 @@ globalThis.NovaAim=(()=>{
   if(!column||!strip.some((_,top)=>column.every((symbol,row)=>strip[(top+row)%strip.length]===symbol)))throw new Error('No valid NOVA zone stop column');
   return {column,onLine,won,rank};
  }
+ function stopVerdict(spin){
+  const order=spin?.auditStopOrder||[],r=spin?.resolved;
+  if(!r||!order.length)return null;
+  if(r.stockEntry&&r.sortieEntry)return order.includes(1)?{kind:'sortie',won:!r.sortieFake}:null;
+  if(hasGuide(r.aim)){
+   const hit=spin.result===(r.aim.symbol==='seven'?'BIG':'NEBULA');
+   for(let n=0;n<order.length;n++){
+    const prefix=order.slice(0,n+1),i=order[n];
+    const win=stopTarget(r.aim,r.aim.symbol==='seven'?'BIG':'NEBULA',prefix,i);
+    const miss=stopTarget(r.aim,'MISS',prefix,i);
+    if(win.onLine!==miss.onLine)return {kind:'aim',won:hit&&win.aligned};
+   }
+   if(order.length===3)return {kind:'aim',won:hit&&!!spin.aimAligned};
+  }
+  if(isNovaZoneSpin(spin)){
+   const decisive=order[0]===1?1:2-order[0];
+   if(order.includes(decisive))return {kind:'nova',won:spin.result==='SUPER_NOVA'};
+  }
+  const ladder=(r.zoneStartFlow||r.flowBefore)?.ladderRevealed&&!spin.ladderResultPresentation&&globalThis.NovaLadder?.outcome?.(r);
+  if(ladder&&order.includes(order[0]===1?1:2))return {kind:'ladder',won:ladder.won};
+  return null;
+ }
  function fail(playSound){
   if(!active||!root||root.hidden||root.dataset.failed==='true')return;
   root.dataset.failed='true';playSound();
@@ -265,5 +287,5 @@ globalThis.NovaAim=(()=>{
   document.addEventListener('visibilitychange',()=>{if(document.hidden)pendingStart?.();});
   window.addEventListener('resize',layout);
  }
- return {hasGuide,drawGuide,stopTarget,isNovaZoneSpin,novaZoneStopTarget,bet,stop,hide,layout,fail,win,afterWin,reset,isCzIntro,syncAtWait,get busy(){return winLocked;}};
+ return {hasGuide,drawGuide,stopTarget,stopVerdict,isNovaZoneSpin,novaZoneStopTarget,bet,stop,hide,layout,fail,win,afterWin,reset,isCzIntro,syncAtWait,get busy(){return winLocked;}};
 })();

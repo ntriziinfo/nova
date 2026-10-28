@@ -78,3 +78,18 @@ test('BB remaining points override banked AT and clear on exit without changing 
  assert.equal(current(flow,{bonus:false,bonusRemaining:0}).mode,'zone');
  assert.equal(flow.remaining,'1234');
 });
+
+
+test('lever consumes exactly one displayed G, without leaking ST resets or mutating the draw',()=>{
+ for(const zone of ['sosuke','giru','sora','toto','ouma','urapi','kushuri_nito']){
+  const before={phase:'art',zone,zoneLeft:1,remaining:'300'},spin={resolved:{flowBefore:before,zoneSpin:true,flowAfter:{...before,zoneLeft:5}}},saved=JSON.stringify(spin);
+  assert.equal(current(before,{spin}).value,'0');assert.equal(JSON.stringify(spin),saved);
+  assert.equal(current(before,{spin:{resolved:{...spin.resolved,flowBefore:{...before,zero:true}}}}).value,'1');
+ }
+ for(const phase of ['cz','strong_cz'])assert.equal(current({phase,remaining:1},{spin:{resolved:{flowBefore:{phase,remaining:1}}}}).value,'0');
+ for(const [field,flag]of [['researchSortieLeft',{researchSortie:{}}],['comebackLeft',{comebackEvent:'failure'}]]){
+  const before={phase:'art',[field]:1};assert.equal(current(before,{spin:{resolved:{flowBefore:before,...flag}}}).value,'0');
+ }
+ const before={phase:'art',researchChallengeActive:true,burstLeft:4,researchAim:''};
+ for(const [role,priorAim,left]of [['MISS','',3],['BELL','',4],['MISS','common',4]])assert.equal(current(before,{spin:{resolved:{flowBefore:before,researchChallenge:{role,priorAim}}}}).value,String(left));
+});
