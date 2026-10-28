@@ -213,7 +213,7 @@ globalThis.NovaAim=(()=>{
   // breaks on the other outer reel: second for scissors, third otherwise.
   const missReel=order[0]===1?1:2-order[0];
   const onLine=won||index!==missReel;
-  const strip=strips[index],bar=strip.indexOf("BAR"),sheetColumn=globalThis.NovaReelSheetData?.stops?.SUPER_NOVA?.[0]?.map(row=>row[index]);
+  const strip=strips[index],bar=strip.indexOf("BAR"),sheetColumn=globalThis.NovaReelSheetData?.stops?.BAR3?.[0]?.map(row=>row[index]);
   const logo=sheetColumn?.length===3?sheetColumn:strip.includes(`NOVA_${index}_0`)?[0,1,2].map(row=>`NOVA_${index}_${row}`):[0,1,2].map(row=>strip[(bar+row-1+strip.length)%strip.length]);
   const column=onLine?logo:strip.map((_,top)=>[0,1,2].map(row=>strip[(top+row)%strip.length]))
    .find(col=>col.every(symbol=>!String(symbol).startsWith('NOVA_')&&symbol!=='BAR'&&symbol!==results.WEAK_SUICA.reel[index]));

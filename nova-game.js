@@ -6456,7 +6456,10 @@
 
   const NOVA_LOGO_SRC = "assets/design/nova-cabinet-v1/lower-panel-original.webp";
   const NOVA_SHEET_DATA = globalThis.NovaReelSheetData || null;
-  const NOVA_SHEET_STOPS = NOVA_SHEET_DATA?.stops || null;
+  // NOVA aim wins use the approved horizontal BAR (NOVA artwork) layout.
+  // Keep the imported workbook snapshot intact and retain SUPER_NOVA semantics.
+  const NOVA_SHEET_STOPS = NOVA_SHEET_DATA?.stops
+    ? Object.freeze({...NOVA_SHEET_DATA.stops,SUPER_NOVA:NOVA_SHEET_DATA.stops.BAR3}) : null;
   const NOVA_SHEET_ROLE_PROPERTY = "novaSheetRole";
   const novaSheetFingerprint = grid => Array.isArray(grid) ? grid.map(row=>Array.isArray(row)?row.join("\u001f"):"").join("\u001e") : "";
   const novaSheetRoleByFingerprint = new Map();

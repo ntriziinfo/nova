@@ -31,7 +31,7 @@ function draw(c,zone,role,overrides={}){
  return {result:step.result,spec:c.results[step.result],grid:c.buildNovaReelGrid(step.result,1),lineRow:1,stopped:[false,false,false],auditPressOrder:[],
   resolved:{...step,flowBefore:before,flowAfter:step.flow,reward:c.NovaNormal.pay(step.result)}};
 }
-function fullLogo(c,spin,i){return [0,1,2].every(row=>spin.grid[row][i]===c.NovaReelSheetData.stops.SUPER_NOVA[0][row][i]);}
+function fullLogo(c,spin,i){return [0,1,2].every(row=>spin.grid[row][i]===c.NovaReelSheetData.stops.BAR3[0][row][i]);}
 
 test('all six orders reveal wins and misses at the requested stop, using contiguous real reel strips',()=>{
  const c=setup();
@@ -95,4 +95,15 @@ test('automatic reverse freeze, failure transition, entries and unrelated aim cu
   const spin=draw(c,'ouma','MISS');spin.result=role;spin.auditPressOrder=[0];assert.equal(c.target(spin,0),null);
  }
  const noPress=draw(c,'ouma','MISS');assert.equal(c.target(noPress,0),null);
+});
+
+
+test('NOVA wins use a horizontal middle line from the approved strips, never the diamond',()=>{
+ const c=setup();
+ vm.runInContext('Math.random=()=>{throw Error("NOVA display must not redraw")}',c);
+ for(const grid of [c.novaGrid(),c.buildForcedNovaGrid('SUPER_NOVA'),c.buildNovaReelGrid('SUPER_NOVA',1)]){
+  assert.deepEqual(plain(grid[1]),['BAR','BAR','BAR']);
+  assert.deepEqual(plain(grid),plain(c.NovaReelSheetData.stops.BAR3[0]));
+  assert.equal(c.novaPatternFromGrid(grid),'SUPER_NOVA');
+ }
 });
