@@ -41,8 +41,10 @@ function display(lamp,stop,won,setting,terminal=false,revealed=false){
  const p=rates[Math.max(0,Math.min(5,(Number(setting)||1)-1))],seed=lamp.timingSeed||0;
  const roll=fraction(seed,137),yes=selectTier(true,p,roll),no=selectTier(false,p,roll);
  const last=terminal||lamp.remaining===1;
- // Before PUSH the same saved seed produces identical lighting for wins and losses.
- const target=revealed?(won?yes.count:no.count):Math.min(7,yes.count,no.count);
+ // Promote winning presentations to green or above in at least 85% of seeds.
+ // This reads the saved outcome only; rainbow confirmation remains behind PUSH.
+ const base=Math.min(7,yes.count,no.count);
+ const target=revealed?(won?yes.count:no.count):(won&&fraction(seed,1879)<.85?Math.max(6,base):base);
  const total=Math.max(1,lamp.totalGames||15),elapsed=total-(lamp.remaining||1)+1;
  const current=last?(total-1)*3+stop:(elapsed-1)*3+stop;
  let count=0;

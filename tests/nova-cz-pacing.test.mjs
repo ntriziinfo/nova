@@ -7,9 +7,11 @@ const rows=[];
 for(let setting=1;setting<=6;setting++){
  const win=Array(9).fill(0),loss=Array(9).fill(0);
  for(let seed=0;seed<50000;seed++)for(const won of [true,false]){const last=p.display({timingSeed:seed,totalGames:15,remaining:1},3,won,setting);(won?win:loss)[last.stage]++;}
- assert.deepEqual(win,loss,'Pre-PUSH lighting must not reveal the internal result');
+ const greenOrRed=(win[6]+win[7])/50000;
+ assert(greenOrRed>=.8,'At least 80% of winning CZs must finish green or red');
+ assert(loss[6]+loss[7]>0,'Green and red must not guarantee a win');
  assert.equal(win[8]+loss[8],0);
- rows.push({setting,prePushRainbow:0});
+ rows.push({setting,winningGreenOrRed:greenOrRed,prePushRainbow:0});
 }
 const buckets=[0,0,0],stops=[0,0,0];let simultaneous=0;
 for(let seed=0;seed<2000;seed++)for(const totalGames of [5,15,20])for(const winAt of [0,3,totalGames,Infinity]){
