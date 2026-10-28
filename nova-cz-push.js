@@ -99,8 +99,8 @@ function wait(resolved,{auto=false,setting=1,valid,reveal,onFailure=()=>{}}){
   failureActive=true;document.documentElement.classList.add('novaCzFailed');
   button.className+=' failed';
   onFailure(resolved);
-  // Keep the completed spin pending while the failure presentation fades out.
-  setTimeout(complete,900);
+  // Hold the completed spin for two real seconds from blackout, in every speed mode.
+  setTimeout(complete,2000);
  };
  pendingAuto=()=>{
   if(pendingPush!==resolved||!valid()||resolved.czPushConfirmed)return false;
