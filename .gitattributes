@@ -105,3 +105,4 @@ assets/media/nova/cz-push-20261027.sources.json -filter -diff -merge text
 # Lossless delivery copies; original licensed assets remain untouched.
 assets/lossless-20261027/** -filter -diff -merge -text
 assets/ui/impurity-head-20261028.png -filter -diff -merge -text
+assets/ui/nova-aim-arrow-caption-20261028.png -filter -diff -merge -text
