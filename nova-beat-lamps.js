@@ -21,16 +21,22 @@ globalThis.NovaBeatLamps=(()=>{
  }
  function sequenceLight(index,cue,accent=0){if(Number.isFinite(cue.head))return lightLevel(index,cue.head,accent*.4);return cue.all||cue.index===index||cue.group?.includes(index)?.9+.1*accent:.18;}
 
+ const setData=(el,key,value)=>{const text=String(value);if(el.dataset[key]!==text)el.dataset[key]=text;};
+ const setStyle=(el,key,value)=>{if(el.style.getPropertyValue(key)!==value)el.style.setProperty(key,value);};
  const detect=detector();let frame=0,lastBeat=-Infinity,lastTime=0,travel=0;const averages={};
  function start(){if(!frame)frame=requestAnimationFrame(tick);}
  if(typeof document!=='undefined'&&document.addEventListener){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();}
  function attach(audio,ctx){try{if(!audio||!ctx)return;if(!links.has(audio)){const analyser=ctx.createAnalyser();analyser.fftSize=1024;analyser.smoothingTimeConstant=.35;if(!globalThis.NovaAudio?.connect(audio,analyser)){const source=ctx.createMediaElementSource(audio);source.connect(analyser);}analyser.connect(ctx.destination);const link={audio,ctx,analyser,data:new Uint8Array(analyser.frequencyBinCount)};links.set(audio,link);sources.push(link);}if(ctx.state==='suspended')ctx.resume().catch(()=>{});if(!frame)frame=requestAnimationFrame(tick);}catch{/* Native playback and fixed pulse remain available if attachment fails. */}}
- function tick(time){frame=0;const body=document.body,layer=document.querySelector('.novaArtLayer');if(layer){const active=['art','bonus'].includes(body.dataset.gamePhase);const source=active?sources.find(s=>!s.audio.paused&&!s.audio.ended&&!s.audio.muted&&s.audio.volume>0&&s.ctx.state==='running'):null;let ready=false,hz=0;if(source){source.analyser.getByteFrequencyData(source.data);hz=source.ctx.sampleRate/source.analyser.fftSize;const result=detect(bandEnergy(source.data,hz,[45,220]),time);if(result.beat)lastBeat=time;ready=time-lastBeat<2000;}
+ function tick(time){frame=0;const body=document.body,layer=document.querySelector('.novaArtLayer');if(layer){const active=['art','bonus'].includes(body.dataset.gamePhase);
+ // Normal play needs no per-frame DOM traversal or lamp writes. Clear once
+ // when leaving AT/BB, but keep the lightweight clock for the next transition.
+ if(!active&&layer.dataset.musicSequence==='false'){travel=0;lastTime=time;frame=requestAnimationFrame(tick);return;}
+ const source=active?sources.find(s=>!s.audio.paused&&!s.audio.ended&&!s.audio.muted&&s.audio.volume>0&&s.ctx.state==='running'):null;let ready=false,hz=0;if(source){source.analyser.getByteFrequencyData(source.data);hz=source.ctx.sampleRate/source.analyser.fftSize;const result=detect(bandEnergy(source.data,hz,[45,220]),time);if(result.beat)lastBeat=time;ready=time-lastBeat<2000;}
  const items=Array.from(layer.querySelectorAll?.('.novaArtItem')||[]).sort((a,b)=>parseFloat(a.style.left)-parseFloat(b.style.left));
  travel=active?travel+Math.min(50,Math.max(0,time-lastTime)):0;lastTime=time;
- const cue=sequence(travel,body.dataset.gamePhase,items.length||6);layer.dataset.musicSequence=String(active);
- items.forEach((item,index)=>{item.style.setProperty('--music-index',String(index));if(active){let accent=0;if(source&&ready){const id=item.dataset.artwork,energy=bandEnergy(source.data,hz,bands[id]||[250,600]);averages[id]=(averages[id]??energy)*.96+energy*.04;accent=Math.min(1,Math.max(0,(energy-averages[id])/Math.max(.03,averages[id])));}item.style.setProperty('--music-lamp-opacity',String(sequenceLight(index,cue,accent)));}else item.style.removeProperty('--music-lamp-opacity');});
- layer.dataset.musicBeat=String(!!source&&ready);layer.style.removeProperty('--music-lamp-opacity');}
+ const cue=sequence(travel,body.dataset.gamePhase,items.length||6);setData(layer,'musicSequence',active);
+ items.forEach((item,index)=>{setStyle(item,'--music-index',String(index));if(active){let accent=0;if(source&&ready){const id=item.dataset.artwork,energy=bandEnergy(source.data,hz,bands[id]||[250,600]);averages[id]=(averages[id]??energy)*.96+energy*.04;accent=Math.min(1,Math.max(0,(energy-averages[id])/Math.max(.03,averages[id])));}setStyle(item,'--music-lamp-opacity',String(sequenceLight(index,cue,accent)));}else item.style.removeProperty('--music-lamp-opacity');});
+ setData(layer,'musicBeat',!!source&&ready);layer.style.removeProperty('--music-lamp-opacity');}
  frame=requestAnimationFrame(tick);}
  return {attach,detector,bandEnergy,lightLevel,sequence,sequenceLight};
 })();

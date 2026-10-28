@@ -1,7 +1,7 @@
 /* Full hit history with bounded page rendering. No lottery RNG or game-state changes. */
 globalThis.NovaDataCounter=(()=>{
   const limit=20, keys=['dataNormalGames','dataAtGames','dataHitSeq'];
-  const pages=new WeakMap(),machinePages=new Map();
+  const pages=new WeakMap(),machinePages=new Map(),renderedBars=new WeakMap();
   const n=value=>Number.isFinite(Number(value))?Math.max(0,Number(value)):0;
   const names={sosuke:'宗介',toto:'とと',urapi:'うらぴ',giru:'ギル',sora:'空',ouma:'逢魔'};
   function snapshot(stats){return Object.fromEntries(keys.map(key=>[key,n(stats?.[key])]));}
@@ -73,7 +73,7 @@ globalThis.NovaDataCounter=(()=>{
   function render(root,view,totals){
     if(!root)return;
     const format=value=>n(value).toLocaleString('ja-JP');
-    const set=(name,value)=>{const el=root.querySelector('[data-counter="'+name+'"]');if(el)el.textContent=value;};
+    const set=(name,value)=>{const el=root.querySelector('[data-counter="'+name+'"]');if(el&&el.textContent!==String(value))el.textContent=value;};
     set('current',view.current==null?'—':format(view.current));set('total',format(totals.totalSpins));
     set('current-label',view.currentPhase==='art'?'AT中回転数':'現在回転数');
     set('big',format(totals.bigCount));set('at',totals.atFirstCountPartial?'—':format(totals.atFirstCount));
@@ -98,18 +98,39 @@ globalThis.NovaDataCounter=(()=>{
     const columns=[...(latest?[{kind:'CURRENT',games:view.current}]:[]),...hits.slice(begin,end).reverse()],fingerprint=JSON.stringify(columns);
     if(bars.dataset.values===fingerprint)return;
     bars.dataset.values=fingerprint;
-    const nodes=columns.map((hit,i)=>{
+    const previous=renderedBars.get(bars)||[];
+    const records=columns.map((hit,i)=>{
+      const key=hit.kind==='CURRENT'?'CURRENT':JSON.stringify(hit);
+      const old=previous[i];
+      if(old?.key===key){
+        if(hit.kind==='CURRENT')updateColumn(old,hit);
+        return old;
+      }
       const column=document.createElement('button');column.type='button';column.className='novaHitColumn';column.dataset.kind=hit.kind;
-      const label=title(hit)+' / '+format(hit.games)+'G';column.title=label;column.setAttribute('aria-label',label);
+
       const cells=document.createElement('span');cells.className='novaHitCells';
       // A 0G hit still occupies one visual step; never change the recorded games.
       const steps=hit.kind==='CURRENT'?Math.ceil(n(hit.games)/100):Math.max(1,Math.ceil(n(hit.games)/100));
-      for(let tick=8;tick>=1;tick--){const cell=document.createElement('i');cell.className=steps>=tick?'lit':'';cells.append(cell);}
+      const ticks=[];
+      for(let tick=8;tick>=1;tick--){const cell=document.createElement('i');cell.className=steps>=tick?'lit':'';cells.append(cell);ticks.push(cell);}
       const mark=document.createElement('span');mark.className='novaHitMark';mark.textContent=hit.games>800?'+':hit.kind==='CURRENT'?'今':hit.kind==='ZONE'?'特':hit.kind==='BIG'?'B':'AT';
-      column.append(cells,mark);column.addEventListener('click',()=>set('detail',label));return column;
+      column.append(cells,mark);column.addEventListener('click',()=>set('detail',column.title));
+      const record={key,column,ticks,mark};updateColumn(record,hit);return record;
     });
-    bars.replaceChildren(...nodes);bars.scrollLeft=0;
-    set('detail','左が新しい履歴 / 列を押すとG数・ゾーン名を表示');
+    function updateColumn(record,hit){
+      const label=title(hit)+' / '+format(hit.games)+'G';
+      if(record.column.title!==label){record.column.title=label;record.column.setAttribute('aria-label',label);}
+      const steps=hit.kind==='CURRENT'?Math.ceil(n(hit.games)/100):Math.max(1,Math.ceil(n(hit.games)/100));
+      record.ticks.forEach((cell,i)=>{const value=steps>=8-i?'lit':'';if(cell.className!==value)cell.className=value;});
+      const mark=hit.games>800?'+':hit.kind==='CURRENT'?'今':hit.kind==='ZONE'?'特':hit.kind==='BIG'?'B':'AT';
+      if(record.mark.textContent!==mark)record.mark.textContent=mark;
+    }
+    const structureChanged=records.length!==previous.length||records.some((r,i)=>r!==previous[i]);
+    if(structureChanged){
+      bars.replaceChildren(...records.map(r=>r.column));bars.scrollLeft=0;
+      set('detail','左が新しい履歴 / 列を押すとG数・ゾーン名を表示');
+    }
+    renderedBars.set(bars,records);
   }
   return Object.freeze({limit,keys,snapshot,adopt,spin,hit,zone,transition:alignPhase,display,graph,render});
 })();

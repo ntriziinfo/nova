@@ -5905,7 +5905,8 @@
     updateReelFrameMode();
     syncDevilZoneConfirmScreen();
     updatePremiumBigReelMovie();
-    machine.className = "machine " + (active ? "active" : "normal") + (session.paid > 0 ? " win" : "");
+    const machineClass = "machine " + (active ? "active" : "normal") + (session.paid > 0 ? " win" : "");
+    if(machine.className!==machineClass)machine.className=machineClass;
     if(reelArea){
       reelArea.classList.toggle("premiumBigOverlayOn", !!(isATypeBonusActive() && (session.premiumBonus || session.oneGameRenBonus)));
     }
@@ -5980,7 +5981,7 @@
 
     const setText = (id, value)=>{
       const el = $(id);
-      if(el) el.textContent = value;
+      if(el && el.textContent!==String(value)) el.textContent = value;
     };
     const formatMeterDigits = (value, digits=3, max=(10 ** digits) - 1)=>{
       const n = Math.max(0, Math.min(max, Math.round(Math.abs(Number(value) || 0))));
@@ -6038,7 +6039,7 @@
       stEmblem.classList.toggle("is-bonus-pending", !active && normalState.bonusPending);
       stEmblem.classList.toggle("is-profit", active && profit > 0);
       if(A_TYPE_MODE){
-        stEmblem.innerHTML = "A-TYPE<br>BONUS";
+        if(stEmblem.innerHTML!=="A-TYPE<br>BONUS")stEmblem.innerHTML = "A-TYPE<br>BONUS";
       }
       updateDevilStatusLamp();
     }
@@ -6148,7 +6149,7 @@
   }
 
   function updateRoleCounter(machineDisplay=machineDisplayStats()){
-    const set=(id,value)=>{const el=$(id);if(el)el.textContent=value;};
+    const set=(id,value)=>{const el=$(id);if(el&&el.textContent!==String(value))el.textContent=value;};
     const format=value=>(Number(value)||0).toLocaleString('ja-JP');
     set('roleCounterTotalGames',format(machineDisplay.totalSpins));
     set('roleCounterAtCount',machineDisplay.atFirstCountPartial?'—':format(machineDisplay.atFirstCount));

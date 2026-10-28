@@ -57,6 +57,7 @@
   const lampMode=panel.querySelector('#novaLampMode');
   const machine=document.getElementById('machine');
   const chance=document.getElementById('stLamp');
+  const setLampData=(el,key,value)=>{const text=String(value);if(el.dataset[key]!==text)el.dataset[key]=text;};
   function syncLamp(){
     const stage=Number(machine.dataset.czLamp)||0;
     const savedOrder=String(machine.dataset.czOrder||'').split(',');
@@ -64,12 +65,12 @@
       ? savedOrder : NovaFlow.lampCharacters;
     for(const [id,item] of items){
       const index=order.indexOf(id);
-      item.dataset.czLit=String(index>=0&&index<stage);
-      item.dataset.czPending=String(index>=0&&machine.dataset.czBlink!==undefined&&machine.dataset.czBlink!==''&&index===stage&&stage<order.length&&machine.dataset.czRainbow!=='true');
+      setLampData(item,'czLit',index>=0&&index<stage);
+      setLampData(item,'czPending',index>=0&&machine.dataset.czBlink!==undefined&&machine.dataset.czBlink!==''&&index===stage&&stage<order.length&&machine.dataset.czRainbow!=='true');
     }
     const czRainbow=machine.dataset.czRainbow==='true'||stage>=order.length;
     const automatic=czRainbow?'cz-rainbow':stage?'cz':machine.classList.contains('active')?'rainbow':chance?.classList.contains('on')?'blink':'dim';
-    layer.dataset.lamp=!canEdit||lampMode.value==='auto'?automatic:lampMode.value;
+    setLampData(layer,'lamp',!canEdit||lampMode.value==='auto'?automatic:lampMode.value);
   }
   lampMode.addEventListener('change',syncLamp);
   const lampObserver=new MutationObserver(syncLamp);

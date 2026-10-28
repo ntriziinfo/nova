@@ -87,3 +87,18 @@ test('cabinet zoom supports 5 to 200 percent and clamps saved or slider values',
  for(const [input,expected]of [[.01,.05],[.05,.05],[.5,.5],[2,2],[3,2]]){c.pageZoom=input;c.applyPageZoom(true);assert.equal(c.pageZoom,expected);assert.equal(c.saved,String(expected));}
  assert.match(game,/PAGE_ZOOM_MIN = 0\.05/);assert.match(game,/PAGE_ZOOM_MAX = 2\.00/);
 });
+
+test('live history updates preserve completed columns and update current step and click detail',()=>{
+ const node=()=>({dataset:{},children:[],handlers:{},setAttribute(k,v){this[k]=v;},addEventListener(k,fn){this.handlers[k]=fn;},append(...items){this.children.push(...items);},replaceChildren(...items){this.children=items;this.replacements=(this.replacements||0)+1;}});
+ const bars=node(),detail=node(),root={querySelector:s=>s==='.novaHitBars'?bars:s==='[data-counter="detail"]'?detail:null};
+ const c=vm.createContext({document:{createElement:node}});vm.runInContext(js,c);
+ const view={current:100,hits:[{seq:1,kind:'BIG',games:300}]},totals={totalSpins:400};
+ c.NovaDataCounter.render(root,view,totals);const current=bars.children[0],hit=bars.children[1];
+ view.current=101;c.NovaDataCounter.render(root,view,totals);
+ assert.equal(bars.replacements,1);assert.equal(bars.children[0],current);assert.equal(bars.children[1],hit);
+ assert.equal(current.children[0].children.filter(cell=>cell.className==='lit').length,2);
+ current.handlers.click();assert.equal(detail.textContent,'現在 / 101G');
+ view.current=0;view.hits.push({seq:2,kind:'AT',games:0});c.NovaDataCounter.render(root,view,totals);
+ assert.deepEqual(bars.children.map(el=>el.dataset.kind),['CURRENT','AT','BIG']);
+ assert.equal(bars.children[1].children[0].children.filter(cell=>cell.className==='lit').length,1);
+});
