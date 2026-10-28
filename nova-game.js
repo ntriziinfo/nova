@@ -142,10 +142,8 @@
   const A_TYPE_BONUS_MAIN_RESULT = "BELL";
 
   const USER_FACE = "__USER_FACE__";
-  const ELEPHANT_SYMBOL = "🐘";
-  const PIERROT_SYMBOL = "🤡";
+  const REPLAY_SYMBOL = "REPLAY";
   const CHERRY_SYMBOL = "🍒";
-  const GRAPE_SYMBOL = "🍇";
   const BELL_SYMBOL = "🔔";
   const BLANK_SYMBOL = "__BLANK__";
   const SUICA_SYMBOL = "🍋";
@@ -156,9 +154,7 @@
   const BELL_IMAGE_SRC = (globalThis.NovaMedia?.imageSource("assets/lossless-20261027/bell.webp")||"assets/lossless-20261027/bell.webp");
   const SEVEN_IMAGE_SRC = "assets/lossless-20261027/seven-nebula-original.webp";
   const MISS_IMAGE_SRC = (globalThis.NovaMedia?.imageSource("assets/lossless-20261027/miss.webp")||"assets/lossless-20261027/miss.webp");
-  const GRAPE_IMAGE_SRC = (globalThis.NovaMedia?.imageSource("assets/lossless-20261027/bell.webp")||"assets/lossless-20261027/bell.webp");
   const BAR_IMAGE_SRC = (globalThis.NovaMedia?.imageSource("assets/lossless-20261027/nova-only-20261027.webp")||"assets/lossless-20261027/nova-only-20261027.webp");
-  const PIERROT_IMAGE_SRC = "assets/cabinet/edit_parts/piero.png";
   const USER_FACE_SRC = (globalThis.NovaMedia?.imageSource("assets/lossless-20261027/miss.webp")||"assets/lossless-20261027/miss.webp");
   const REPLAY_IMAGE_SRC = (globalThis.NovaMedia?.imageSource("assets/lossless-20261027/replay.webp")||"assets/lossless-20261027/replay.webp");
   const SYMBOL_IMAGE_SRCS = Object.freeze([
@@ -168,12 +164,19 @@
     BELL_IMAGE_SRC,
     SEVEN_IMAGE_SRC,
     MISS_IMAGE_SRC,
-    GRAPE_IMAGE_SRC,
     BAR_IMAGE_SRC,
-    PIERROT_IMAGE_SRC,
     USER_FACE_SRC,
     REPLAY_IMAGE_SRC
   ]);
+  const REEL_SYMBOL_IMAGES=Object.freeze({
+      [CHERRY_SYMBOL]:[CHERRY_IMAGE_SRC,'cherrySymImg','チェリー'],
+      [BELL_SYMBOL]:[BELL_IMAGE_SRC,'bellSymImg','ベル'],
+      [REPLAY_SYMBOL]:[REPLAY_IMAGE_SRC,'replaySymImg','リプレイ'],
+      [SUICA_SYMBOL]:[SUICA_IMAGE_SRC,'suikaSymImg','スイカ'],
+      [BLANK_SYMBOL]:['assets/lossless-20261027/blank-20261027.webp','blankSymImg','ブランク'],
+      [USER_FACE]:[USER_FACE_SRC,'missSymImg','特殊役'],
+      '⭐':[MISS_IMAGE_SRC,'missSymImg','ハズレ']
+  });
   const symbolImagePreloads = new Map();
 
   function preloadSymbolImages(){
@@ -203,12 +206,12 @@
     STRONG_NOVA:{name:"強チェリー",reel:[CHERRY_SYMBOL,CHERRY_SYMBOL,CHERRY_SYMBOL],label:"強チェリー",cls:"purple",kind:"rare"},
     SUPER_NOVA:{name:"スーパーノヴァ目",reel:["BAR","BAR","BAR"],label:"スーパーノヴァ目",cls:"gold",kind:"miss"},
     // The visible stop is selected from the approved sheet MISS patterns; payout remains 1pt.
-    ONE_COIN:{name:"1枚役",label:"1枚",reel:[BELL_SYMBOL,BLANK_SYMBOL,ELEPHANT_SYMBOL],cls:"blue",kind:"pay"},
-    MISS:{name:"ハズレ", reel:[ELEPHANT_SYMBOL,PIERROT_SYMBOL,GRAPE_SYMBOL], label:"MISS", cls:"", kind:"miss"},
-    SMALL:{name:"特殊役", reel:[PIERROT_SYMBOL,PIERROT_SYMBOL,PIERROT_SYMBOL], label:"SPECIAL", cls:"blue", kind:"payadd"},
+    ONE_COIN:{name:"1枚役",label:"1枚",reel:[BELL_SYMBOL,BLANK_SYMBOL,REPLAY_SYMBOL],cls:"blue",kind:"pay"},
+    MISS:{name:"ハズレ", reel:[REPLAY_SYMBOL,REPLAY_SYMBOL,BELL_SYMBOL], label:"MISS", cls:"", kind:"miss"},
+    SMALL:{name:"特殊役", reel:[REPLAY_SYMBOL,REPLAY_SYMBOL,REPLAY_SYMBOL], label:"SPECIAL", cls:"blue", kind:"payadd"},
     MID:{name:"RB", reel:["7","7","BAR"], label:"RB", cls:"purple", kind:"payadd"},
     MID_CHERRY:{name:"RB（チェリー同時）", reel:["7","7","BAR"], label:"RB", cls:"purple", kind:"payadd"},
-    GRAPE:{name:"ブドウ", reel:[GRAPE_SYMBOL,GRAPE_SYMBOL,GRAPE_SYMBOL], label:"ブドウ", cls:"green", kind:"pay"},
+    GRAPE:{name:"ブドウ", reel:[BELL_SYMBOL,BELL_SYMBOL,BELL_SYMBOL], label:"ブドウ", cls:"green", kind:"pay"},
     BAR3:{name:"BAR揃い", reel:["BAR","BAR","BAR"], label:"BAR", cls:"purple", kind:"add"},
     BIG:{name:"BB", reel:["7","7","7"], label:"BB", cls:"red", kind:"payadd"},
     DEVIL_ZONE:{name:"DEVIL ZONE", reel:["7","7","BAR"], label:"DZ", cls:"purple", kind:"payadd"},
@@ -216,10 +219,10 @@
     BELL:{name:"8ptベル", reel:[BELL_SYMBOL,BELL_SYMBOL,BELL_SYMBOL], label:"8pt BELL", cls:"gold", kind:"pay"},
     BELL15:{name:"15ptベル", reel:[BELL_SYMBOL,BELL_SYMBOL,BELL_SYMBOL], label:"15pt BELL", cls:"gold", kind:"pay"},
     BELL3:{name:"斜めベル", reel:[BELL_SYMBOL,BELL_SYMBOL,BELL_SYMBOL], label:"", cls:"gold", kind:"pay"},
-    REPLAY:{name:"リプレイ", reel:[ELEPHANT_SYMBOL,ELEPHANT_SYMBOL,ELEPHANT_SYMBOL], label:"REPLAY", cls:"blue", kind:"pay"},
+    REPLAY:{name:"リプレイ", reel:[REPLAY_SYMBOL,REPLAY_SYMBOL,REPLAY_SYMBOL], label:"REPLAY", cls:"blue", kind:"pay"},
     SUICA:{name:"スイカ揃い", reel:["🍋","🍋","🍋"], label:"SUICA", cls:"green", kind:"pay"},
-    CHERRY_ANY:{name:"チェリー", reel:[CHERRY_SYMBOL,PIERROT_SYMBOL,GRAPE_SYMBOL], label:"CHERRY", cls:"red", kind:"payadd"},
-    CHERRY_DOUBLE:{name:"チェリー2連", reel:[CHERRY_SYMBOL,CHERRY_SYMBOL,ELEPHANT_SYMBOL], label:"CHERRY×2", cls:"red", kind:"add"},
+    CHERRY_ANY:{name:"チェリー", reel:[CHERRY_SYMBOL,REPLAY_SYMBOL,BELL_SYMBOL], label:"CHERRY", cls:"red", kind:"payadd"},
+    CHERRY_DOUBLE:{name:"チェリー2連", reel:[CHERRY_SYMBOL,CHERRY_SYMBOL,REPLAY_SYMBOL], label:"CHERRY×2", cls:"red", kind:"add"},
     CHERRY_TRIPLE:{name:"チェリー3つ", reel:[CHERRY_SYMBOL,CHERRY_SYMBOL,CHERRY_SYMBOL], label:"CHERRY×3", cls:"red", kind:"payadd"}
   };
 
@@ -242,7 +245,7 @@
     6:{weights:[{result:"SMALL",w:4},{result:"MID",w:3},{result:"BIG",w:0.397},{result:"BELL",w:300},{result:"BELL3",w:70},{result:"REPLAY",w:366},{result:"SUICA",w:3},{result:"CHERRY_DOUBLE",w:2},{result:"CHERRY_TRIPLE",w:1}]}
   });
 
-  const symbols = ["7","BAR",ELEPHANT_SYMBOL,BELL_SYMBOL];
+  const symbols = ["7","BAR",REPLAY_SYMBOL,BELL_SYMBOL];
   const AUDIO_BALANCE_VERSION = 9;
   const ROLE_STAT_COUNTER_VERSION = 2;
   const DEFAULT_MASTER_VOLUME = 0.50;
@@ -6573,39 +6576,10 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
 
   function cellHtml(symbol, label, cls){
     if(symbol===NEBULA_SYMBOL)return fullReelSymbolMarkup(NEBULA_IMAGE_SRC,'nebulaSymImg','ネビュラ',19,0,1633,941,1672,941);
-    const tile = /^NOVA_([0-2])_([0-2])$/.exec(symbol);
-    // BAR is the visible NOVA symbol. Preserve legacy strip IDs for saved games.
-    if(tile)return cellHtml(Number(tile[2])===1?'BAR':Number(tile[2])===0?BELL_SYMBOL:ELEPHANT_SYMBOL,label,cls);
-    // Legacy saved visual states must not reintroduce retired artwork.
-    if(symbol === GRAPE_SYMBOL) symbol = BELL_SYMBOL;
-    if(symbol === PIERROT_SYMBOL) symbol = ELEPHANT_SYMBOL;
-    const inner =
-      (typeof USER_FACE !== "undefined" && symbol === USER_FACE)
-        ? `<img class="symImg" src="${USER_FACE_SRC}" alt="small hit symbol" loading="eager" decoding="sync" draggable="false">`
-        : (symbol === CHERRY_SYMBOL)
-          ? `<img class="symImg cherrySymImg" src="${CHERRY_IMAGE_SRC}" alt="cherry symbol" loading="eager" decoding="sync" draggable="false">`
-          : (symbol === BELL_SYMBOL)
-            ? `<img class="symImg bellSymImg" src="${BELL_IMAGE_SRC}" alt="bell symbol" loading="eager" decoding="sync" draggable="false">`
-            : (symbol === PIERROT_SYMBOL)
-              ? `<img class="symImg pieroSymImg" src="${PIERROT_IMAGE_SRC}" alt="piero symbol" loading="eager" decoding="sync" draggable="false">`
-              : (symbol === ELEPHANT_SYMBOL)
-                ? `<img class="symImg replaySymImg" src="${REPLAY_IMAGE_SRC}" alt="replay symbol" loading="eager" decoding="sync" draggable="false">`
-            : (symbol === BLANK_SYMBOL)
-              ? `<img class="symImg blankSymImg" src="assets/lossless-20261027/blank-20261027.webp" alt="ブランク" loading="eager" decoding="sync" draggable="false">`
-              : (symbol === "REPLAY")
-                ? `<img class="symImg replaySymImg" src="${REPLAY_IMAGE_SRC}" alt="replay symbol" loading="eager" decoding="sync" draggable="false">`
-                : (symbol === "🍋")
-                  ? `<img class="symImg suikaSymImg" src="${SUICA_IMAGE_SRC}" alt="suika symbol" loading="eager" decoding="sync" draggable="false">`
-                  : (symbol === "⭐")
-                    ? `<img class="symImg missSymImg" src="${MISS_IMAGE_SRC}" alt="miss symbol" loading="eager" decoding="sync" draggable="false">`
-                    : (symbol === GRAPE_SYMBOL)
-                      ? `<img class="symImg grapeSymImg" src="${GRAPE_IMAGE_SRC}" alt="grape symbol" loading="eager" decoding="sync" draggable="false">`
-                      : (symbol === "BAR")
-                        ? fullReelSymbolMarkup(BAR_IMAGE_SRC,'barSymImg','NOVA',0,27,2046,741,2046,768)
-                        : (symbol === "7")
-                          ? fullReelSymbolMarkup(SEVEN_IMAGE_SRC,'sevenSymImg','7',15,62,1643,865,1672,941)
-                          : `<div class="sym ${cls || ""}">${escapeHtml(symbol)}</div>`;
-    return `${inner}`;
+    if(symbol==='BAR')return fullReelSymbolMarkup(BAR_IMAGE_SRC,'barSymImg','NOVA',0,27,2046,741,2046,768);
+    if(symbol==='7')return fullReelSymbolMarkup(SEVEN_IMAGE_SRC,'sevenSymImg','7',15,62,1643,865,1672,941);
+    const [src,className,alt]=REEL_SYMBOL_IMAGES[symbol]||REEL_SYMBOL_IMAGES[BLANK_SYMBOL];
+    return `<img class="symImg ${className}" src="${src}" alt="${alt}" loading="eager" decoding="sync" draggable="false">`;
   }
 
   document.addEventListener("DOMContentLoaded", () => {
@@ -6732,28 +6706,22 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     div.innerHTML = cellHtml(symbol, label, cls);
   }
 
-  const REEL_STRIPS = (globalThis.NovaReelSheetData?.strips || [
-    [ELEPHANT_SYMBOL,BELL_SYMBOL,"7",CHERRY_SYMBOL,"7",ELEPHANT_SYMBOL,BELL_SYMBOL,SUICA_SYMBOL,CHERRY_SYMBOL,NEBULA_SYMBOL,ELEPHANT_SYMBOL,BELL_SYMBOL,BLANK_SYMBOL,CHERRY_SYMBOL,SUICA_SYMBOL,ELEPHANT_SYMBOL,BELL_SYMBOL,"BAR",CHERRY_SYMBOL,SUICA_SYMBOL],
-    [BELL_SYMBOL,ELEPHANT_SYMBOL,CHERRY_SYMBOL,"7",SUICA_SYMBOL,BELL_SYMBOL,ELEPHANT_SYMBOL,SUICA_SYMBOL,CHERRY_SYMBOL,NEBULA_SYMBOL,BELL_SYMBOL,ELEPHANT_SYMBOL,CHERRY_SYMBOL,SUICA_SYMBOL,BELL_SYMBOL,ELEPHANT_SYMBOL,"BAR",BLANK_SYMBOL,"BAR",CHERRY_SYMBOL],
-    [CHERRY_SYMBOL,BELL_SYMBOL,"7",ELEPHANT_SYMBOL,"7",SUICA_SYMBOL,BELL_SYMBOL,CHERRY_SYMBOL,ELEPHANT_SYMBOL,NEBULA_SYMBOL,SUICA_SYMBOL,BELL_SYMBOL,BLANK_SYMBOL,ELEPHANT_SYMBOL,SUICA_SYMBOL,CHERRY_SYMBOL,BELL_SYMBOL,"BAR",ELEPHANT_SYMBOL,SUICA_SYMBOL]
-  ]).map(strip=>strip.slice());
-
+  // The approved sheet is the sole current reel layout; never fall back to retired strips.
+  const REEL_STRIPS = globalThis.NovaReelSheetData.strips.map(strip=>strip.slice());
   const REEL_LAYOUT_VERSION=3;
-  const CURRENT_REEL_STRIPS=REEL_STRIPS.map(strip=>strip.slice());
-  const REEL_LAYOUT_V2_STRIPS=[
-    ["7",ELEPHANT_SYMBOL,"7",BELL_SYMBOL,ELEPHANT_SYMBOL,CHERRY_SYMBOL,BELL_SYMBOL,ELEPHANT_SYMBOL,NEBULA_SYMBOL,BELL_SYMBOL,ELEPHANT_SYMBOL,SUICA_SYMBOL,ELEPHANT_SYMBOL,BELL_SYMBOL,"BAR",CHERRY_SYMBOL,ELEPHANT_SYMBOL,SUICA_SYMBOL,ELEPHANT_SYMBOL,BELL_SYMBOL],
-    [BLANK_SYMBOL,BELL_SYMBOL,SUICA_SYMBOL,"7",SUICA_SYMBOL,ELEPHANT_SYMBOL,BELL_SYMBOL,CHERRY_SYMBOL,ELEPHANT_SYMBOL,NEBULA_SYMBOL,BELL_SYMBOL,SUICA_SYMBOL,BLANK_SYMBOL,BELL_SYMBOL,ELEPHANT_SYMBOL,"BAR",CHERRY_SYMBOL,"BAR",BELL_SYMBOL,ELEPHANT_SYMBOL],
-    ["7",BELL_SYMBOL,"7",ELEPHANT_SYMBOL,BELL_SYMBOL,SUICA_SYMBOL,ELEPHANT_SYMBOL,BELL_SYMBOL,NEBULA_SYMBOL,ELEPHANT_SYMBOL,SUICA_SYMBOL,CHERRY_SYMBOL,ELEPHANT_SYMBOL,BELL_SYMBOL,"BAR",BELL_SYMBOL,ELEPHANT_SYMBOL,CHERRY_SYMBOL,ELEPHANT_SYMBOL,SUICA_SYMBOL]
-  ];
-  function selectReelLayout(version=REEL_LAYOUT_VERSION){
-    const strips=version===1?[0,1,2].map(column=>[
-      BELL_SYMBOL,ELEPHANT_SYMBOL,'7',BELL_SYMBOL,ELEPHANT_SYMBOL,SUICA_SYMBOL,BELL_SYMBOL,ELEPHANT_SYMBOL,NEBULA_SYMBOL,BELL_SYMBOL,
-      ELEPHANT_SYMBOL,'BAR',BELL_SYMBOL,ELEPHANT_SYMBOL,novaSymbol(column,0),novaSymbol(column,1),novaSymbol(column,2),BELL_SYMBOL,ELEPHANT_SYMBOL,SUICA_SYMBOL
-    ].map(symbol=>column===1?(symbol===BELL_SYMBOL?ELEPHANT_SYMBOL:symbol===ELEPHANT_SYMBOL?BELL_SYMBOL:symbol):symbol)
-    .map((symbol,index,strip)=>column===1?(index===3?strip[5]:index===5?strip[3]:symbol):symbol)):version===2?REEL_LAYOUT_V2_STRIPS:CURRENT_REEL_STRIPS;
-    if(REEL_STRIPS.every((strip,i)=>strip.every((symbol,j)=>symbol===strips[i][j])))return;
-    globalThis.NovaLadder?.resetStops?.(REEL_STRIPS);
-    REEL_STRIPS.splice(0,3,...strips.map(strip=>strip.slice()));novaStopGridCache.clear();
+
+  function migratePendingReelLayout(spin){
+    if(Number(spin.reelLayoutVersion)>=REEL_LAYOUT_VERSION)return;
+    // Preserve the drawn result/ledger/order. Only obsolete visual windows are rebased.
+    const choices=novaSheetStopChoices(spin.result)||novaSheetStopChoices('MISS');
+    const distance=grid=>grid.reduce((sum,row,r)=>sum+row.reduce((n,symbol,c)=>n+Number(symbol!==spin.grid[r][c]),0),0);
+    const grid=choices.reduce((best,next)=>distance(next)<distance(best)?next:best);
+    spin.grid=copyNovaSheetGrid(grid,spin.result);
+    if(spin.auditGrid)spin.auditGrid=grid.map((row,r)=>row.map((symbol,c)=>spin.auditGrid[r]?.[c]?symbol:null));
+    for(const field of ['pendingStopColumns','commonStopColumns','pressStopColumns']){
+      if(Array.isArray(spin[field]))spin[field]=spin[field].map((column,c)=>column?grid.map(row=>row[c]):null);
+    }
+    spin.reelLayoutVersion=REEL_LAYOUT_VERSION;
   }
 
   function mod(n, m){
@@ -6973,35 +6941,35 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
   }
 
   const MISS_GRID_PATTERNS = [
-    [[ELEPHANT_SYMBOL,GRAPE_SYMBOL,"BAR"],["7",PIERROT_SYMBOL,GRAPE_SYMBOL],["BAR",GRAPE_SYMBOL,CHERRY_SYMBOL]],
-    [[GRAPE_SYMBOL,ELEPHANT_SYMBOL,"BAR"],[PIERROT_SYMBOL,"7",GRAPE_SYMBOL],[GRAPE_SYMBOL,"BAR",CHERRY_SYMBOL]],
-    [["BAR",GRAPE_SYMBOL,ELEPHANT_SYMBOL],[CHERRY_SYMBOL,GRAPE_SYMBOL,"7"],[GRAPE_SYMBOL,PIERROT_SYMBOL,"BAR"]],
-    [[GRAPE_SYMBOL,"BAR",GRAPE_SYMBOL],[ELEPHANT_SYMBOL,"7",PIERROT_SYMBOL],["BAR",GRAPE_SYMBOL,CHERRY_SYMBOL]],
-    [[GRAPE_SYMBOL,"BAR",PIERROT_SYMBOL],["7",ELEPHANT_SYMBOL,GRAPE_SYMBOL],[CHERRY_SYMBOL,"BAR",GRAPE_SYMBOL]],
-    [["BAR",PIERROT_SYMBOL,GRAPE_SYMBOL],[GRAPE_SYMBOL,ELEPHANT_SYMBOL,"7"],[ELEPHANT_SYMBOL,GRAPE_SYMBOL,"BAR"]],
-    [["7","7",GRAPE_SYMBOL],[ELEPHANT_SYMBOL,"BAR",PIERROT_SYMBOL],[GRAPE_SYMBOL,GRAPE_SYMBOL,CHERRY_SYMBOL]],
-    [[GRAPE_SYMBOL,"7","7"],["BAR",ELEPHANT_SYMBOL,GRAPE_SYMBOL],[PIERROT_SYMBOL,CHERRY_SYMBOL,GRAPE_SYMBOL]],
-    [[ELEPHANT_SYMBOL,"BAR",GRAPE_SYMBOL],["7","7",PIERROT_SYMBOL],[PIERROT_SYMBOL,GRAPE_SYMBOL,CHERRY_SYMBOL]],
-    [["BAR",GRAPE_SYMBOL,GRAPE_SYMBOL],[ELEPHANT_SYMBOL,"7","7"],[GRAPE_SYMBOL,PIERROT_SYMBOL,"BAR"]],
-    [[PIERROT_SYMBOL,GRAPE_SYMBOL,"7"],["BAR",GRAPE_SYMBOL,ELEPHANT_SYMBOL],["7",CHERRY_SYMBOL,"BAR"]],
-    [["BAR",ELEPHANT_SYMBOL,"7"],[GRAPE_SYMBOL,"BAR",PIERROT_SYMBOL],["7",GRAPE_SYMBOL,CHERRY_SYMBOL]],
-    [[GRAPE_SYMBOL,PIERROT_SYMBOL,"BAR"],[CHERRY_SYMBOL,"7",ELEPHANT_SYMBOL],["BAR",GRAPE_SYMBOL,GRAPE_SYMBOL]],
-    [["BAR","7",GRAPE_SYMBOL],[GRAPE_SYMBOL,ELEPHANT_SYMBOL,PIERROT_SYMBOL],[GRAPE_SYMBOL,CHERRY_SYMBOL,"7"]],
-    [["BAR",GRAPE_SYMBOL,GRAPE_SYMBOL],[PIERROT_SYMBOL,CHERRY_SYMBOL,ELEPHANT_SYMBOL],["7","BAR","7"]],
-    [[GRAPE_SYMBOL,"BAR",PIERROT_SYMBOL],["7",GRAPE_SYMBOL,CHERRY_SYMBOL],[ELEPHANT_SYMBOL,"7","BAR"]]
+    [[REPLAY_SYMBOL,BELL_SYMBOL,"BAR"],["7",REPLAY_SYMBOL,BELL_SYMBOL],["BAR",BELL_SYMBOL,CHERRY_SYMBOL]],
+    [[BELL_SYMBOL,REPLAY_SYMBOL,"BAR"],[REPLAY_SYMBOL,"7",BELL_SYMBOL],[BELL_SYMBOL,"BAR",CHERRY_SYMBOL]],
+    [["BAR",BELL_SYMBOL,REPLAY_SYMBOL],[CHERRY_SYMBOL,BELL_SYMBOL,"7"],[BELL_SYMBOL,REPLAY_SYMBOL,"BAR"]],
+    [[BELL_SYMBOL,"BAR",BELL_SYMBOL],[REPLAY_SYMBOL,"7",REPLAY_SYMBOL],["BAR",BELL_SYMBOL,CHERRY_SYMBOL]],
+    [[BELL_SYMBOL,"BAR",REPLAY_SYMBOL],["7",REPLAY_SYMBOL,BELL_SYMBOL],[CHERRY_SYMBOL,"BAR",BELL_SYMBOL]],
+    [["BAR",REPLAY_SYMBOL,BELL_SYMBOL],[BELL_SYMBOL,REPLAY_SYMBOL,"7"],[REPLAY_SYMBOL,BELL_SYMBOL,"BAR"]],
+    [["7","7",BELL_SYMBOL],[REPLAY_SYMBOL,"BAR",REPLAY_SYMBOL],[BELL_SYMBOL,BELL_SYMBOL,CHERRY_SYMBOL]],
+    [[BELL_SYMBOL,"7","7"],["BAR",REPLAY_SYMBOL,BELL_SYMBOL],[REPLAY_SYMBOL,CHERRY_SYMBOL,BELL_SYMBOL]],
+    [[REPLAY_SYMBOL,"BAR",BELL_SYMBOL],["7","7",REPLAY_SYMBOL],[REPLAY_SYMBOL,BELL_SYMBOL,CHERRY_SYMBOL]],
+    [["BAR",BELL_SYMBOL,BELL_SYMBOL],[REPLAY_SYMBOL,"7","7"],[BELL_SYMBOL,REPLAY_SYMBOL,"BAR"]],
+    [[REPLAY_SYMBOL,BELL_SYMBOL,"7"],["BAR",BELL_SYMBOL,REPLAY_SYMBOL],["7",CHERRY_SYMBOL,"BAR"]],
+    [["BAR",REPLAY_SYMBOL,"7"],[BELL_SYMBOL,"BAR",REPLAY_SYMBOL],["7",BELL_SYMBOL,CHERRY_SYMBOL]],
+    [[BELL_SYMBOL,REPLAY_SYMBOL,"BAR"],[CHERRY_SYMBOL,"7",REPLAY_SYMBOL],["BAR",BELL_SYMBOL,BELL_SYMBOL]],
+    [["BAR","7",BELL_SYMBOL],[BELL_SYMBOL,REPLAY_SYMBOL,REPLAY_SYMBOL],[BELL_SYMBOL,CHERRY_SYMBOL,"7"]],
+    [["BAR",BELL_SYMBOL,BELL_SYMBOL],[REPLAY_SYMBOL,CHERRY_SYMBOL,REPLAY_SYMBOL],["7","BAR","7"]],
+    [[BELL_SYMBOL,"BAR",REPLAY_SYMBOL],["7",BELL_SYMBOL,CHERRY_SYMBOL],[REPLAY_SYMBOL,"7","BAR"]]
   ];
 
   const REACH_ME_GRID_PATTERNS = [
-    [[GRAPE_SYMBOL,ELEPHANT_SYMBOL,PIERROT_SYMBOL],["BAR","BAR","7"],[ELEPHANT_SYMBOL,GRAPE_SYMBOL,PIERROT_SYMBOL]],
-    [[GRAPE_SYMBOL,ELEPHANT_SYMBOL,PIERROT_SYMBOL],["7","BAR","7"],[ELEPHANT_SYMBOL,GRAPE_SYMBOL,PIERROT_SYMBOL]],
-    [[GRAPE_SYMBOL,ELEPHANT_SYMBOL,PIERROT_SYMBOL],["7","BAR","BAR"],[ELEPHANT_SYMBOL,GRAPE_SYMBOL,PIERROT_SYMBOL]],
-    [[GRAPE_SYMBOL,ELEPHANT_SYMBOL,PIERROT_SYMBOL],["BAR","7","7"],[ELEPHANT_SYMBOL,GRAPE_SYMBOL,PIERROT_SYMBOL]],
-    [[GRAPE_SYMBOL,ELEPHANT_SYMBOL,PIERROT_SYMBOL],["BAR","7","BAR"],[ELEPHANT_SYMBOL,GRAPE_SYMBOL,PIERROT_SYMBOL]],
-    [[GRAPE_SYMBOL,ELEPHANT_SYMBOL,CHERRY_SYMBOL],[PIERROT_SYMBOL,"7",PIERROT_SYMBOL],[ELEPHANT_SYMBOL,GRAPE_SYMBOL,"BAR"]],
-    [[GRAPE_SYMBOL,ELEPHANT_SYMBOL,CHERRY_SYMBOL],[PIERROT_SYMBOL,"BAR",PIERROT_SYMBOL],[ELEPHANT_SYMBOL,GRAPE_SYMBOL,"7"]],
-    [[GRAPE_SYMBOL,ELEPHANT_SYMBOL,PIERROT_SYMBOL],[CHERRY_SYMBOL,GRAPE_SYMBOL,"7"],[ELEPHANT_SYMBOL,PIERROT_SYMBOL,GRAPE_SYMBOL]],
-    [[CHERRY_SYMBOL,GRAPE_SYMBOL,"7"],[ELEPHANT_SYMBOL,PIERROT_SYMBOL,GRAPE_SYMBOL],[GRAPE_SYMBOL,ELEPHANT_SYMBOL,PIERROT_SYMBOL]],
-    [[GRAPE_SYMBOL,ELEPHANT_SYMBOL,PIERROT_SYMBOL],[ELEPHANT_SYMBOL,PIERROT_SYMBOL,GRAPE_SYMBOL],[CHERRY_SYMBOL,GRAPE_SYMBOL,"BAR"]]
+    [[BELL_SYMBOL,REPLAY_SYMBOL,REPLAY_SYMBOL],["BAR","BAR","7"],[REPLAY_SYMBOL,BELL_SYMBOL,REPLAY_SYMBOL]],
+    [[BELL_SYMBOL,REPLAY_SYMBOL,REPLAY_SYMBOL],["7","BAR","7"],[REPLAY_SYMBOL,BELL_SYMBOL,REPLAY_SYMBOL]],
+    [[BELL_SYMBOL,REPLAY_SYMBOL,REPLAY_SYMBOL],["7","BAR","BAR"],[REPLAY_SYMBOL,BELL_SYMBOL,REPLAY_SYMBOL]],
+    [[BELL_SYMBOL,REPLAY_SYMBOL,REPLAY_SYMBOL],["BAR","7","7"],[REPLAY_SYMBOL,BELL_SYMBOL,REPLAY_SYMBOL]],
+    [[BELL_SYMBOL,REPLAY_SYMBOL,REPLAY_SYMBOL],["BAR","7","BAR"],[REPLAY_SYMBOL,BELL_SYMBOL,REPLAY_SYMBOL]],
+    [[BELL_SYMBOL,REPLAY_SYMBOL,CHERRY_SYMBOL],[REPLAY_SYMBOL,"7",REPLAY_SYMBOL],[REPLAY_SYMBOL,BELL_SYMBOL,"BAR"]],
+    [[BELL_SYMBOL,REPLAY_SYMBOL,CHERRY_SYMBOL],[REPLAY_SYMBOL,"BAR",REPLAY_SYMBOL],[REPLAY_SYMBOL,BELL_SYMBOL,"7"]],
+    [[BELL_SYMBOL,REPLAY_SYMBOL,REPLAY_SYMBOL],[CHERRY_SYMBOL,BELL_SYMBOL,"7"],[REPLAY_SYMBOL,REPLAY_SYMBOL,BELL_SYMBOL]],
+    [[CHERRY_SYMBOL,BELL_SYMBOL,"7"],[REPLAY_SYMBOL,REPLAY_SYMBOL,BELL_SYMBOL],[BELL_SYMBOL,REPLAY_SYMBOL,REPLAY_SYMBOL]],
+    [[BELL_SYMBOL,REPLAY_SYMBOL,REPLAY_SYMBOL],[REPLAY_SYMBOL,REPLAY_SYMBOL,BELL_SYMBOL],[CHERRY_SYMBOL,BELL_SYMBOL,"BAR"]]
   ];
 
   function buildReachMeGrid(){
@@ -7037,7 +7005,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
       if(grid?.[1]?.[1]==='7'&&[0,2].every(r=>[0,2].every(c=>grid?.[r]?.[c]==='7')))return 'BIG';
       const novaPattern=novaPatternFromGrid(grid);if(novaPattern)return novaPattern==='SUPER_NOVA'?'BAR3':novaPattern;
       const m=grid?.[1]||[],d=[grid?.[0]?.[0],m[1],grid?.[2]?.[2]],same=(a,s)=>a.length===3&&a.every(x=>x===s),nova=x=>String(x).startsWith('NOVA_');
-      if(m[0]===BELL_SYMBOL&&m[1]===BLANK_SYMBOL&&m[2]===ELEPHANT_SYMBOL)return 'ONE_COIN';
+      if(m[0]===BELL_SYMBOL&&m[1]===BLANK_SYMBOL&&m[2]===REPLAY_SYMBOL)return 'ONE_COIN';
       if(same(m,SUICA_SYMBOL))return 'STRONG_SUICA';
       if(same(d,SUICA_SYMBOL))return 'WEAK_SUICA';
       if(same(m,BELL_SYMBOL))return 'BELL15';
@@ -7056,10 +7024,10 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     if(middle[0] === "7" && middle[1] === "7" && middle[2] === "7") return "BIG";
     if(middle[0] === "7" && middle[1] === "7" && middle[2] === "BAR") return "MID";
     if(middle[0] === "BAR" && middle[1] === "BAR" && middle[2] === "BAR") return "BAR3";
-    if(rowMatches(RESULT.SMALL.reel)) return "SMALL";
+    if(!A_TYPE_MODE&&rowMatches(RESULT.SMALL.reel)) return "SMALL";
 
     if(rowMatches(RESULT.REPLAY.reel)) return "REPLAY";
-    if(rowMatches(RESULT.GRAPE.reel)) return "GRAPE";
+    if(!A_TYPE_MODE&&rowMatches(RESULT.GRAPE.reel)) return "GRAPE";
 
     if(A_TYPE_MODE)return "MISS";
     const cherryResult = cherryResultFromRows(rows);
@@ -7091,7 +7059,9 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     if(!Array.isArray(row) || row.length < 3) return "MISS";
 
     if(row.filter(x=>x==='7').length===1&&row.filter(x=>x===BELL_SYMBOL).length===2)return 'BELL15';
-    const exactResults = ["NEBULA","BIG","MID","BAR3","SMALL","ONE_COIN","BELL","REPLAY","GRAPE","SUICA","CHERRY_TRIPLE"];
+    const exactResults = A_TYPE_MODE
+      ? ["NEBULA","BIG","MID","BAR3","ONE_COIN","BELL","REPLAY","SUICA","CHERRY_TRIPLE"]
+      : ["NEBULA","BIG","MID","BAR3","SMALL","ONE_COIN","BELL","REPLAY","GRAPE","SUICA","CHERRY_TRIPLE"];
 
     for(const result of exactResults){
       const reel = RESULT[result].reel;
@@ -7109,8 +7079,8 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     ["7","BAR","BAR"],
     ["BAR","7","7"],
     ["BAR","7","BAR"],
-    [PIERROT_SYMBOL,"7",PIERROT_SYMBOL],
-    [PIERROT_SYMBOL,"BAR",PIERROT_SYMBOL]
+    [REPLAY_SYMBOL,"7",REPLAY_SYMBOL],
+    [REPLAY_SYMBOL,"BAR",REPLAY_SYMBOL]
   ];
 
   function reachMeLabelForRow(row){
@@ -7215,9 +7185,9 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
 
   function safeGridForResult(result, winRow=1){
     const grid = [
-      [GRAPE_SYMBOL,ELEPHANT_SYMBOL,PIERROT_SYMBOL],
-      [PIERROT_SYMBOL,GRAPE_SYMBOL,ELEPHANT_SYMBOL],
-      [ELEPHANT_SYMBOL,PIERROT_SYMBOL,GRAPE_SYMBOL]
+      [BELL_SYMBOL,REPLAY_SYMBOL,REPLAY_SYMBOL],
+      [REPLAY_SYMBOL,BELL_SYMBOL,REPLAY_SYMBOL],
+      [REPLAY_SYMBOL,REPLAY_SYMBOL,BELL_SYMBOL]
     ];
     const row = clamp(winRow, 0, 2);
     grid[row] = (RESULT[result] || RESULT.MISS).reel.slice();
@@ -7227,9 +7197,9 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
   function buildLeftCherryGrid(winRow=1){
     const row = clamp(winRow, 0, 2);
     const grid = [
-      [GRAPE_SYMBOL,ELEPHANT_SYMBOL,PIERROT_SYMBOL],
-      [PIERROT_SYMBOL,GRAPE_SYMBOL,ELEPHANT_SYMBOL],
-      [ELEPHANT_SYMBOL,PIERROT_SYMBOL,GRAPE_SYMBOL]
+      [BELL_SYMBOL,REPLAY_SYMBOL,REPLAY_SYMBOL],
+      [REPLAY_SYMBOL,BELL_SYMBOL,REPLAY_SYMBOL],
+      [REPLAY_SYMBOL,REPLAY_SYMBOL,BELL_SYMBOL]
     ];
     grid[row][0] = CHERRY_SYMBOL;
     grid[row][1] = randomSymbol({excludeCherry:true, reelIndex:1});
@@ -7388,8 +7358,8 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     const bell = RESULT.BELL.reel[0];
     const down = Array.isArray(winRows) ? winRows[0] === 0 : Math.random() < 0.5;
     return down
-      ? [[bell,"7",PIERROT_SYMBOL],["7",bell,"BAR"],[PIERROT_SYMBOL,"BAR",bell]]
-      : [[PIERROT_SYMBOL,"BAR",bell],["7",bell,"BAR"],[bell,"7",PIERROT_SYMBOL]];
+      ? [[bell,"7",REPLAY_SYMBOL],["7",bell,"BAR"],[REPLAY_SYMBOL,"BAR",bell]]
+      : [[REPLAY_SYMBOL,"BAR",bell],["7",bell,"BAR"],[bell,"7",REPLAY_SYMBOL]];
   }
 
     if(result === "BELL3") return buildDiagonalBellGrid(winRow);
@@ -7405,7 +7375,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
         guard++;
       }
       if(displayedResultFromGrid(picked) !== "MISS" || hasBarDiagonal(picked) || hasCrownVisible(picked) || hasReachMeShape(picked)){
-        picked = [[GRAPE_SYMBOL,ELEPHANT_SYMBOL,PIERROT_SYMBOL],[PIERROT_SYMBOL,GRAPE_SYMBOL,ELEPHANT_SYMBOL],[ELEPHANT_SYMBOL,PIERROT_SYMBOL,GRAPE_SYMBOL]];
+        picked = [[BELL_SYMBOL,REPLAY_SYMBOL,REPLAY_SYMBOL],[REPLAY_SYMBOL,BELL_SYMBOL,REPLAY_SYMBOL],[REPLAY_SYMBOL,REPLAY_SYMBOL,BELL_SYMBOL]];
       }
       return picked;
     }
@@ -7470,11 +7440,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
 
   function setMorningBarReels(){
     if(!reels || reels.length < 3) return;
-    const grid = [
-      ["7", PIERROT_SYMBOL, ELEPHANT_SYMBOL],
-      ["BAR", "BAR", "BAR"],
-      [ELEPHANT_SYMBOL, GRAPE_SYMBOL, RESULT.CHERRY_TRIPLE.reel[0]]
-    ];
+    const grid = NOVA_SHEET_STOPS.BAR3[0];
     for(let i=0;i<3;i++){
       setReelColumn(i, [grid[0][i], grid[1][i], grid[2][i]], "", "", null);
     }
@@ -7569,7 +7535,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
   function restorePendingSpin(){
     const spin=currentSpin;
     if(!spin)return false;
-    selectReelLayout(spin.reelLayoutVersion||1);
+    migratePendingReelLayout(spin);
     delete spin.resolved.sortieFreezeUntil; // Resume the paid spin; never repeat its opening hold.
     isSpinning=true;spinCanStop=true;
     NovaBellNavi.restore(spin);
@@ -7741,7 +7707,6 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
       stopAllReels();
       return;
     }
-    selectReelLayout(REEL_LAYOUT_VERSION);
     if(isCzIntroVoiceHolding())return;
     // A queued ending (including after a zone result/reload) consumes no BET or RNG.
     if(showSortieResultIfReady()){updateDisplay();scheduleNextAuto();return;}

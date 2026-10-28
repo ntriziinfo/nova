@@ -45,7 +45,7 @@ test('all six orders give the requested middle line in Sosuke, Giru and Ura Giru
   const spin=draw(c,zone,role),internal=plain(spin.resolved),internalRole=spin.result,won=internalRole!=='MISS';
   vm.runInContext('Math.random=()=>{throw Error("presentation consumed game RNG")}',c);
   for(const i of order){spin.auditPressOrder.push(i);const target=c.target(spin,i);c.setGridColumn(spin.grid,i,target.column);spin.stopped[i]=true;}
-  const expected=['🐘','🐘','🐘'];if(!won)expected[order[0]===1?1:2]='🔔';
+  const expected=['REPLAY','REPLAY','REPLAY'];if(!won)expected[order[0]===1?1:2]='🔔';
   assert.deepEqual(plain(spin.grid[1]),expected,`${zone} ${role} ${order}`);
   assert(c.gridHasOnlyAllowedPaylines(spin.grid,won?'REPLAY':'MISS'));
   assert(c.strips.every((strip,i)=>strip.some((_,top)=>spin.grid.every((row,r)=>row[i]===strip[(top+r)%strip.length]))));
@@ -72,7 +72,7 @@ test('pending landing and stop order survive reload without changing role, payou
   spin=c.NovaSpinResume.restore(c.NovaSpinResume.capture(spin),c.results);
   for(const i of order){if(!spin.auditPressOrder.includes(i))spin.auditPressOrder.push(i);const col=c.target(spin,i).column;
    if(spin.pendingStopColumns[i])assert.deepEqual(plain(col),plain(spin.pendingStopColumns[i]));c.setGridColumn(spin.grid,i,col);spin.stopped[i]=true;}
-  const expected=['🐘','🐘','🐘'];if(role==='MISS')expected[order[0]===1?1:2]='🔔';
+  const expected=['REPLAY','REPLAY','REPLAY'];if(role==='MISS')expected[order[0]===1?1:2]='🔔';
   assert.deepEqual(plain(spin.grid[1]),expected);assert.deepEqual(plain(spin.resolved),original);assert.equal(spin.result,role);
  }
 });

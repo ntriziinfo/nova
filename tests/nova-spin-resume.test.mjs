@@ -32,7 +32,7 @@ function harness(saved=null){
  c.NovaBellNavi={restore:spin=>{c.shownOrder=json(spin.bellNaviOrder);},clear:noop};
  c.SORTIE_AWARD_VOICE_SRCS=loadVoiceCatalog(c).SORTIE_AWARD_VOICE_SRCS;
  for(const name of ['reduceSlumpPoints','canUsePlayState','clearBonusPreparationState','load','runtimeStateForStorage','compactStatsForResume','updateStorageStatus','persistState','playSortieAwardVoice','restoreCzLampPresentation','restorePendingSpin','prepareManualRareOutcome'])vm.runInContext(fn(name),c);
- c.selectReelLayout=version=>{c.restoredReelLayout=version;};
+ c.migratePendingReelLayout=spin=>{c.restoredReelLayout=spin.reelLayoutVersion;};
  return {c,storage,errors,timers,$,voices};
 }
 function spin(c,overrides={}){
@@ -335,7 +335,7 @@ test('reference audio mix migrates once to all50 without changing saved play or 
  again.c.settings.voiceVolume=.7;again.c.persistState();const third=harness(JSON.parse(again.storage.get('state')));third.c.load();assert.equal(third.c.settings.voiceVolume,.7);
 });
 
-test('reel layout version survives repeat saves; v2 and legacy drawn spins remain pinned until settlement',()=>{
+test('reel layout version survives repeat saves so the game can migrate obsolete visual windows',()=>{
  const {c}=harness(),fresh=c.NovaSpinResume.capture(spin(c));
  assert.equal(fresh.reelLayoutVersion,3);
  const v2=c.NovaSpinResume.restore(c.NovaSpinResume.capture(spin(c,{reelLayoutVersion:2})),c.RESULT);
@@ -343,6 +343,18 @@ test('reel layout version survives repeat saves; v2 and legacy drawn spins remai
  delete fresh.reelLayoutVersion;
  const restored=c.NovaSpinResume.restore(fresh,c.RESULT);assert.equal(restored.reelLayoutVersion,1);
  assert.equal(c.NovaSpinResume.capture(restored).reelLayoutVersion,1);
+});
+
+test('retired symbol tokens are decoded on restore without changing the paid spin or stop order',()=>{
+ const {c}=harness();
+ const original=spin(c,{reelLayoutVersion:3,grid:[['🐘','🤡','🍇'],['7','BAR','NEBULA'],['NOVA_0_0','NOVA_1_1','NOVA_2_2']],
+  pendingStopColumns:[['🐘','🔔','🤡'],null,null],auditStopOrder:[1],stopped:[false,true,false]});
+ const saved=c.NovaSpinResume.capture(original),before=JSON.stringify(saved);
+ const restored=c.NovaSpinResume.restore(saved,c.RESULT);
+ assert.deepEqual(json(restored.grid),[['REPLAY','REPLAY','🔔'],['7','BAR','NEBULA'],['🔔','BAR','REPLAY']]);
+ assert.deepEqual(json(restored.pendingStopColumns[0]),['REPLAY','🔔','REPLAY']);
+ for(const key of ['resolved','stopped','bellNaviOrder','auditStopOrder'])assert.deepEqual(json(restored[key]),json(original[key]));
+ assert.equal(restored.result,original.result);assert.equal(restored.reelLayoutVersion,3);assert.equal(JSON.stringify(saved),before);
 });
 
 test('CZ reload hides rainbow before an all-stopped spin re-enters PUSH wait',()=>{

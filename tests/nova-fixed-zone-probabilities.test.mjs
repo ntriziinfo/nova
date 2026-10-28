@@ -8,8 +8,8 @@ test('repeat zones tune chances, never award denominations or settlement',()=>{f
  const seven=a.step({...state,zoneLeft:4,sevenHits:2},{setting},()=>.5,'BIG');assert.equal(seven.flow.award,'300');
  assert.equal(a.zoneRules({...state,zone:'sosuke',fixed50Zone:true}).success,0);
 }});
-test('checkpoint lottery restriction defaults off and reverse-freeze rates use the saved setting',()=>{
- assert.equal(a.checkpointQuietRules.enabled,false);
+test('earned checkpoint lottery restriction defaults on and reverse-freeze rates use the saved setting',()=>{
+ assert.equal(a.checkpointQuietRules.enabled,true);
  for(let setting=1;setting<=6;setting++){const s={zone:'ouma',giruSetting:setting,balanceZoneCount:2};assert(Math.abs(a.oumaFreezeRate(s,a.defaults)-.25*ks[setting-1]/(.75+.25*ks[setting-1]))<1e-12);}
 });
 test('normal first-100G lottery blocks are removed while fake CZ behavior remains',()=>{

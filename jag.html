@@ -18,9 +18,7 @@
 <link rel="preload" as="image" href="assets/mobile-20261013/suika.webp" media="(max-width:1024px)">
 <link rel="preload" as="image" href="assets/lossless-20261027/suika.webp" media="(min-width:1025px)">
 <link rel="preload" as="image" href="assets/lossless-20261027/seven-nebula-original.webp">
-<link rel="preload" as="image" href="assets/mobile-20261013/nova-bar-20261027.webp" media="(max-width:1024px)">
-<link rel="preload" as="image" href="assets/lossless-20261027/nova-bar-20261027.webp" media="(min-width:1025px)">
-<link rel="preload" as="image" href="assets/cabinet/edit_parts/piero.png" media="(min-width:1025px)">
+<link rel="preload" as="image" href="assets/lossless-20261027/nova-only-20261027.webp">
 <link rel="preload" as="image" href="assets/logo/nova_logo.svg">
 <link rel="preload" as="image" href="assets/ui/rising_chance_lamp_bg.png" media="(min-width:1025px)">
 <link rel="preload" as="image" href="assets/ui/rising_chance_lamp_text.png" media="(min-width:1025px)">
@@ -32,7 +30,7 @@
 <link rel="preload" as="image" href="assets/buttons/btn_speed_half_blue.png" media="(min-width:1025px)">
 <link rel="preload" as="image" href="assets/controls/start_lever_ball.png">
 <link rel="preload" as="image" href="assets/controls/stop_button_red_cut.png">
-<link rel="stylesheet" href="nova-game.css?v=20261027-bright-full-height">
+<link rel="stylesheet" href="nova-game.css?v=20261028-current-reels">
 <link rel="stylesheet" href="nova-data-counter.css?v=20261027-cherry-reels">
 <link rel="stylesheet" href="nova-cabinet.css?v=20261028-decisive-cue">
 <link rel="stylesheet" href="nova-remaining-counters.css?v=20261013-checkpoint-cue">
@@ -66,11 +64,11 @@
 <script src="nova-direct-award.js?v=20261013-mobile-loading"></script>
 <link rel="stylesheet" href="nova-aim-presentation.css?v=20261012-super-challenge">
 <script src="nova-aim-confidence.js?v=20261027-red90"></script>
-<script src="nova-reel-sheet-data.js?v=20261027-sheet-522"></script>
+<script src="nova-reel-sheet-data.js?v=20261028-current-reels"></script>
 <script src="nova-aim-presentation.js?v=20261028-decisive-cue"></script>
 <script src="nova-tuning.js?v=20261027-parity-v174"></script>
 <script src="nova-decrement.js?v=20261013-smartslot"></script>
-<script src="nova-art.js?v=20261027-fixed-zone-probabilities"></script>
+<script src="nova-art.js?v=20261028-checkpoint-quiet"></script>
 <script src="nova-complete.js?v=20261027-live-my"></script>
 <link rel="stylesheet" href="nova-complete-presentation.css?v=20261012-complete-screen">
 <script src="nova-complete-presentation.js?v=20261012-complete-screen"></script>
@@ -518,19 +516,19 @@
         <div class="payline"></div>
         <div class="reels">
           <div class="reel" data-reel="0"><div class="window">
-            <div class="cell"><svg class="symImg barSymImg novaFullSymbol" viewBox="11 18 2151 706" preserveAspectRatio="none" role="img" aria-label="BAR"><image href="assets/lossless-20261027/nova-bar-20261027.webp" width="2172" height="724"/></svg></div>
-            <div class="cell center"><svg class="symImg sevenSymImg novaFullSymbol" viewBox="15 62 1643 865" preserveAspectRatio="none" role="img" aria-label="7"><image href="assets/lossless-20261027/seven-nebula-original.webp" width="1672" height="941"/></svg></div>
-            <div class="cell"><picture class="novaResponsiveImage"><source media="(max-width:1024px)" srcset="assets/mobile-20261013/bell.webp"><img class="symImg grapeSymImg" src="assets/lossless-20261027/bell.webp" alt="grape symbol" loading="eager" decoding="sync" draggable="false"></picture></div>
+            <div class="cell"><picture class="novaResponsiveImage"><source media="(max-width:1024px)" srcset="assets/mobile-20261013/bell.webp"><img class="symImg bellSymImg" src="assets/lossless-20261027/bell.webp" alt="ベル" loading="eager" decoding="sync" draggable="false"></picture></div>
+            <div class="cell center"><svg class="symImg barSymImg novaFullSymbol" viewBox="0 27 2046 741" preserveAspectRatio="none" role="img" aria-label="NOVA"><image href="assets/lossless-20261027/nova-only-20261027.webp" width="2046" height="768"/></svg></div>
+            <div class="cell"><img class="symImg cherrySymImg" src="assets/lossless-20261027/cherry-20261027.webp" alt="チェリー" loading="eager" decoding="sync" draggable="false"></div>
           </div></div>
           <div class="reel" data-reel="1"><div class="window">
-            <div class="cell"><div class="sym">🐘</div></div>
-            <div class="cell center"><picture class="novaResponsiveImage"><source media="(max-width:1024px)" srcset="assets/mobile-20261013/bell.webp"><img class="symImg grapeSymImg" src="assets/lossless-20261027/bell.webp" alt="grape symbol" loading="eager" decoding="sync" draggable="false"></picture></div>
-            <div class="cell"><div class="sym">🤡</div></div>
+            <div class="cell"><picture class="novaResponsiveImage"><source media="(max-width:1024px)" srcset="assets/mobile-20261013/replay.webp"><img class="symImg replaySymImg" src="assets/lossless-20261027/replay.webp" alt="リプレイ" loading="eager" decoding="sync" draggable="false"></picture></div>
+            <div class="cell center"><svg class="symImg barSymImg novaFullSymbol" viewBox="0 27 2046 741" preserveAspectRatio="none" role="img" aria-label="NOVA"><image href="assets/lossless-20261027/nova-only-20261027.webp" width="2046" height="768"/></svg></div>
+            <div class="cell"><img class="symImg blankSymImg" src="assets/lossless-20261027/blank-20261027.webp" alt="ブランク" loading="eager" decoding="sync" draggable="false"></div>
           </div></div>
           <div class="reel" data-reel="2"><div class="window">
-            <div class="cell"><picture class="novaResponsiveImage"><source media="(max-width:1024px)" srcset="assets/mobile-20261013/replay.webp"><img class="symImg cherrySymImg" src="assets/lossless-20261027/replay.webp" alt="cherry symbol" loading="eager" decoding="sync" draggable="false"></picture></div>
-            <div class="cell center"><svg class="symImg barSymImg novaFullSymbol" viewBox="11 18 2151 706" preserveAspectRatio="none" role="img" aria-label="BAR"><image href="assets/lossless-20261027/nova-bar-20261027.webp" width="2172" height="724"/></svg></div>
-            <div class="cell"><div class="sym">🐘</div></div>
+            <div class="cell"><picture class="novaResponsiveImage"><source media="(max-width:1024px)" srcset="assets/mobile-20261013/bell.webp"><img class="symImg bellSymImg" src="assets/lossless-20261027/bell.webp" alt="ベル" loading="eager" decoding="sync" draggable="false"></picture></div>
+            <div class="cell center"><svg class="symImg barSymImg novaFullSymbol" viewBox="0 27 2046 741" preserveAspectRatio="none" role="img" aria-label="NOVA"><image href="assets/lossless-20261027/nova-only-20261027.webp" width="2046" height="768"/></svg></div>
+            <div class="cell"><picture class="novaResponsiveImage"><source media="(max-width:1024px)" srcset="assets/mobile-20261013/replay.webp"><img class="symImg replaySymImg" src="assets/lossless-20261027/replay.webp" alt="リプレイ" loading="eager" decoding="sync" draggable="false"></picture></div>
           </div></div>
         </div>
         <div class="reelCenterBandLayer" aria-hidden="true">
@@ -869,7 +867,7 @@
 <audio id="voiceSound" preload="auto"></audio>
 
 <script src="nova-store-resume.js?v=20261015-mode-history"></script>
-<script src="nova-spin-resume.js?v=20261028-decisive-cue"></script>
+<script src="nova-spin-resume.js?v=20261028-current-reels"></script>
 <script src="nova-play-access.js?v=20261001-save-recovery"></script>
 <script src="nova-history.js?v=20261001-history-performance"></script>
 <script src="nova-role-counter.js?v=20261014-role-counter-suica3-cherry2-v1"></script>
@@ -878,7 +876,7 @@
 <script src="nova-sortie-aim.js?v=20261028-lever-outcome"></script>
 <script src="nova-cz-push.js?v=20261028-cz-win-green"></script>
 <script src="nova-impurity-hint.js?v=20261028-smooth"></script>
-<script src="nova-game.js?v=20261028-decisive-cue"></script>
+<script src="nova-game.js?v=20261028-current-reels"></script>
 <button type="button" id="novaSymbolPreviewOpen">チェリー・ノヴァ（BAR）停止形を確認</button>
 <dialog id="novaSymbolPreview"><h2>チェリー・ノヴァ（BAR）停止形</h2><label>出目<select id="novaPatternSelect"><option value="WEAK_NOVA">弱チェリー：左上段・下段</option><option value="STRONG_MIDDLE">強チェリー：右下がり</option><option value="STRONG_RIGHT">強チェリー：右上がり</option><option value="SUPER_NOVA" selected>ノヴァ（BAR）揃い</option></select></label><p id="novaPatternDescription"></p><div id="novaSymbolPreviewGrid"></div><p>出目の確認用です。通常時のノヴァ（BAR）揃いはBIG・フリーズ各50%。ボーナス中は対象外。弱チェリー・強チェリーはそれぞれ既存の抽選を維持します。</p><button type="button" id="novaSymbolPreviewClose">閉じる</button></dialog>
 </body>

@@ -22,11 +22,12 @@ test('sortie-only lamp cue uses muted color videos, three movable images, and cl
 });
 test('live middle strip supports the exact sandwich and failed trigger does not show it',()=>{
  const c=vm.createContext({});vm.runInContext(fs.readFileSync('nova-stock-entry.js','utf8'),c);
- const source=fs.readFileSync('nova-game.js','utf8'),part=source.slice(source.indexOf('  const REEL_STRIPS ='),source.indexOf('  const CURRENT_REEL_STRIPS='));
- vm.runInContext('const BELL_SYMBOL="bell",ELEPHANT_SYMBOL="replay",CHERRY_SYMBOL="cherry",SUICA_SYMBOL="suika",NEBULA_SYMBOL="nebula",BLANK_SYMBOL="blank";'+part+';globalThis.strips=REEL_STRIPS;',c);
+ vm.runInContext(fs.readFileSync('nova-reel-sheet-data.js','utf8'),c);
+ const source=fs.readFileSync('nova-game.js','utf8'),part=source.slice(source.indexOf('  const REEL_STRIPS ='),source.indexOf('  const REEL_LAYOUT_VERSION='));
+ vm.runInContext(part+';globalThis.strips=REEL_STRIPS;',c);
  for(const kind of ['sortie','sortieFake']){
   const columns=c.NovaStockEntry.sortieColumns({kind},c.strips);
-  assert.equal(JSON.stringify(columns[1])==='["BAR","blank","BAR"]',kind==='sortie');
+  assert.equal(JSON.stringify(columns[1])==='["BAR","__BLANK__","BAR"]',kind==='sortie');
   if(kind==='sortieFake'){
    const upper=c.strips[1].findIndex((s,i)=>s==='BAR'&&c.strips[1][(i+2)%20]==='BAR');
    assert.equal(JSON.stringify(columns[1]),JSON.stringify([18,19,0].map(offset=>c.strips[1][(upper+offset)%20])));

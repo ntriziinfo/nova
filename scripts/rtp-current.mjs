@@ -8,7 +8,7 @@ export const EVIDENCE='docs/rtp-current-1b.json';
 export const REQUIRED_OPTIONS=Object.freeze({
  rng:'xoshiro128',exactGames:true,completeLimitPt:0,completeMyLimitPt:0,
  stopAtComplete:false,rareSortie:true,atBetRefund:true,replayRefund:true,
- checkpointQuiet:false,netGuard:true,decrement:true,recordBlocks:1_000_000
+ checkpointQuiet:true,netGuard:true,decrement:true,recordBlocks:1_000_000
 });
 const GAMES_PER_SETTING=1_000_000_000;
 const BET_PER_GAME=3;

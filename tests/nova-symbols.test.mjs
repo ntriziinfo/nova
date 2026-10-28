@@ -266,23 +266,29 @@ test('updated strips support chance roles, all supplied BIG stops and the separa
  assert.equal(run('novaSheetFingerprint(buildNovaReelGrid("SUPER_NOVA"))===novaSheetFingerprint(NOVA_SHEET_STOPS.SUPER_NOVA[0])'),true);
 });
 
-test('pending layout migration retains v1 strips for one spin and resets caches for the next v3 BET',()=>{
- run('globalThis.currentStrips=JSON.stringify(REEL_STRIPS);selectReelLayout(1);');
- assert.equal(run('REEL_STRIPS.every((s,c)=>s[14]===novaSymbol(c,0))'),true);
- run('selectReelLayout(3);');assert.equal(run('JSON.stringify(REEL_STRIPS)===currentStrips'),true);
-});
-
-test('a deployed v2 pending spin restores against its original strips before returning to v3',()=>{
+test('old pending layouts migrate their visuals without replacing the current strips or redrawing the outcome',()=>{
  run(`globalThis.currentStrips=JSON.stringify(REEL_STRIPS);
  globalThis.v2Pending=NovaSpinResume.restore({
   version:1,reelLayoutVersion:2,result:'MISS',lineRow:1,
-  grid:[['7',BLANK_SYMBOL,'7'],[ELEPHANT_SYMBOL,BELL_SYMBOL,BELL_SYMBOL],['7',SUICA_SYMBOL,'7']],
-  resolved:{flowBefore:{phase:'normal'},flowAfter:{phase:'normal'}},stopped:[false,false,false]
+  grid:[['7',BLANK_SYMBOL,'7'],[REPLAY_SYMBOL,BELL_SYMBOL,BELL_SYMBOL],['7',SUICA_SYMBOL,'7']],
+  resolved:{reward:0,flowBefore:{phase:'normal'},flowAfter:{phase:'normal'}},stopped:[false,true,false],
+  auditStopOrder:[1],bellNaviOrder:[1,2,0]
  },RESULT);
- selectReelLayout(v2Pending.reelLayoutVersion);`);
- assert.equal(run('v2Pending.reelLayoutVersion'),2);
- assert.equal(run('JSON.stringify(REEL_STRIPS)===JSON.stringify(REEL_LAYOUT_V2_STRIPS)'),true);
+ globalThis.ledgerBefore=JSON.stringify(v2Pending.resolved);
+ globalThis.randomBefore=Math.random;
+ try{Math.random=()=>{throw Error('migration must not draw');};migratePendingReelLayout(v2Pending);}finally{Math.random=randomBefore;}`);
+ assert.equal(run('v2Pending.reelLayoutVersion'),3);
+ assert.equal(run('JSON.stringify(v2Pending.resolved)===ledgerBefore'),true);
+ assert.equal(run('v2Pending.stopped[1]&&v2Pending.auditStopOrder[0]===1&&v2Pending.bellNaviOrder.join()===\'1,2,0\''),true);
+ assert.equal(run('novaSheetStopChoices("MISS").some(g=>novaSheetFingerprint(g)===novaSheetFingerprint(v2Pending.grid))'),true);
  assert.equal(run('REEL_STRIPS.every((strip,column)=>strip.some((_,top)=>[0,1,2].every(row=>v2Pending.grid[row][column]===strip[(top+row)%strip.length])))'),true);
- run('selectReelLayout(REEL_LAYOUT_VERSION);');
  assert.equal(run('JSON.stringify(REEL_STRIPS)===currentStrips'),true);
+});
+
+test('current pending windows and render assets are used directly',()=>{
+ run(`globalThis.currentPending={reelLayoutVersion:3,result:'BIG',grid:NOVA_SHEET_STOPS.BIG[0].map(row=>row.slice())};globalThis.currentBefore=JSON.stringify(currentPending);migratePendingReelLayout(currentPending);`);
+ assert.equal(run('JSON.stringify(currentPending)===currentBefore'),true);
+ assert.doesNotMatch(source,/PIERROT_SYMBOL|ELEPHANT_SYMBOL|GRAPE_SYMBOL|REEL_LAYOUT_V[12]_STRIPS|selectReelLayout/);
+ const html=fs.readFileSync('jag.html','utf8');
+ assert.doesNotMatch(html,/🐘|🤡|piero\.png|nova-bar-20261027|grapeSymImg/);
 });

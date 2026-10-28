@@ -138,7 +138,7 @@ test('browser registry exposes the approved sheet miss stop in the debug force m
   const source=fs.readFileSync('nova-game.js','utf8');
   const html=fs.readFileSync('jag.html','utf8');
   assert.match(source,/ONE_COIN:1/);
-  assert.ok(source.includes('ONE_COIN:{name:"1枚役",label:"1枚",reel:[BELL_SYMBOL,BLANK_SYMBOL,ELEPHANT_SYMBOL],cls:"blue",kind:"pay"}'));
+  assert.ok(source.includes('ONE_COIN:{name:"1枚役",label:"1枚",reel:[BELL_SYMBOL,BLANK_SYMBOL,REPLAY_SYMBOL],cls:"blue",kind:"pay"}'));
   assert.ok(source.includes("...['ONE_COIN'].map(k=>[k,RESULT[k].name+'（外れ目停止形）'])"));
   assert.ok(html.includes('<option value="NAVI_BELL">押し順ベル（8pt）</option>'));
   assert.ok(source.includes('if(result === "NAVI_BELL")return result;'));

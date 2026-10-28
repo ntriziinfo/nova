@@ -511,7 +511,7 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
   const weights=weakQualityWeights(setting,upper),total=weights.reduce((sum,value)=>sum+value,0),zoneStart=upper?2:1;
   return weakAtResponseChance(setting,upper,high)*weights.slice(zoneStart).reduce((sum,value)=>sum+value,0)/total;
  }
- const checkpointQuietRules=Object.freeze({enabled:false}); // Approved 2026-10-27: keep lotteries active after a guaranteed checkpoint.
+ const checkpointQuietRules=Object.freeze({enabled:true}); // Restored 2026-10-28: earned checkpoint countdown replaces new rewards with setting hints.
  function checkpointGuaranteed(s,net,next){
   if(s?.phase!=='art'||s.zone||s.entryStage||s.initialStage||s.atPrelude||s.researchSortieLeft||s.comebackLeft||s.comebackConfirmed||s.researchChallengeActive||s.burstPending||s.burstLeft||s.queuedZones?.length||Number(s.stock||0)>0||Number(s.sets||0)>0)return false;
   if(!Number.isFinite(Number(net))||!Number.isFinite(Number(next))||Number(next)<=0)return false;

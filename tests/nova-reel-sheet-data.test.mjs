@@ -12,9 +12,9 @@ const raw = context.NovaReelSheetData;
 const data = JSON.parse(JSON.stringify(raw));
 
 const EXPECTED_STRIPS = [
-  ['🐘', '🔔', '7', '🍒', '7', '🐘', '🔔', '🍋', '🍒', 'NEBULA', '🐘', '🔔', '__BLANK__', '🍒', '🍋', '🐘', '🔔', 'BAR', '🍒', '🍋'],
-  ['🔔', '🐘', '🍒', '7', '🍋', '🔔', '🐘', '🍋', '🍒', 'NEBULA', '🔔', '🐘', '🍒', '🍋', '🔔', '🐘', 'BAR', '__BLANK__', 'BAR', '🍒'],
-  ['🍒', '🔔', '7', '🐘', '7', '🍋', '🔔', '🍒', '🐘', 'NEBULA', '🍋', '🔔', '__BLANK__', '🐘', '🍋', '🍒', '🔔', 'BAR', '🐘', '🍋'],
+  ['REPLAY', '🔔', '7', '🍒', '7', 'REPLAY', '🔔', '🍋', '🍒', 'NEBULA', 'REPLAY', '🔔', '__BLANK__', '🍒', '🍋', 'REPLAY', '🔔', 'BAR', '🍒', '🍋'],
+  ['🔔', 'REPLAY', '🍒', '7', '🍋', '🔔', 'REPLAY', '🍋', '🍒', 'NEBULA', '🔔', 'REPLAY', '🍒', '🍋', '🔔', 'REPLAY', 'BAR', '__BLANK__', 'BAR', '🍒'],
+  ['🍒', '🔔', '7', 'REPLAY', '7', '🍋', '🔔', '🍒', 'REPLAY', 'NEBULA', '🍋', '🔔', '__BLANK__', 'REPLAY', '🍋', '🍒', '🔔', 'BAR', 'REPLAY', '🍋'],
 ];
 
 const EXPECTED_COUNTS = {
@@ -33,19 +33,19 @@ const EXPECTED_COUNTS = {
 
 const EXPECTED_SPECIAL_STOPS = {
   NEBULA: [
-    [['🍒', '🍒', '🐘'], ['NEBULA', 'NEBULA', 'NEBULA'], ['🐘', '🔔', '🍋']],
+    [['🍒', '🍒', 'REPLAY'], ['NEBULA', 'NEBULA', 'NEBULA'], ['REPLAY', '🔔', '🍋']],
   ],
   BAR3: [
-    [['🔔', '🐘', '🔔'], ['BAR', 'BAR', 'BAR'], ['🍒', '__BLANK__', '🐘']],
+    [['🔔', 'REPLAY', '🔔'], ['BAR', 'BAR', 'BAR'], ['🍒', '__BLANK__', 'REPLAY']],
   ],
   BIG: [
-    [['🍒', '🍒', '🐘'], ['7', '7', '7'], ['🐘', '🍋', '🍋']],
-    [['🍒', '🍒', '🔔'], ['7', '7', '7'], ['🐘', '🍋', '🐘']],
-    [['🔔', '🍒', '🔔'], ['7', '7', '7'], ['🍒', '🍋', '🐘']],
-    [['🔔', '🍒', '🐘'], ['7', '7', '7'], ['🍒', '🍋', '🍋']],
+    [['🍒', '🍒', 'REPLAY'], ['7', '7', '7'], ['REPLAY', '🍋', '🍋']],
+    [['🍒', '🍒', '🔔'], ['7', '7', '7'], ['REPLAY', '🍋', 'REPLAY']],
+    [['🔔', '🍒', '🔔'], ['7', '7', '7'], ['🍒', '🍋', 'REPLAY']],
+    [['🔔', '🍒', 'REPLAY'], ['7', '7', '7'], ['🍒', '🍋', '🍋']],
   ],
   SUPER_NOVA: [
-    [['🔔', 'BAR', '🔔'], ['BAR', '__BLANK__', 'BAR'], ['🍒', 'BAR', '🐘']],
+    [['🔔', 'BAR', '🔔'], ['BAR', '__BLANK__', 'BAR'], ['🍒', 'BAR', 'REPLAY']],
   ],
 };
 
@@ -118,7 +118,7 @@ test('generated sheet data is deeply immutable', () => {
   assert.throws(() => {
     raw.strips[0][0] = 'MUTATED';
   }, TypeError);
-  assert.equal(raw.strips[0][0], '🐘');
+  assert.equal(raw.strips[0][0], 'REPLAY');
   assert.throws(() => {
     raw.stops.BIG.push([]);
   }, (error) => error?.name === 'TypeError');

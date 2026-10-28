@@ -17,7 +17,7 @@ SOURCE_URL = (
     "16wF24WmveUjq2mBubo593AJC40Kx7BODwha8S2TYeNc/edit?gid=310238419"
 )
 SYMBOLS = {
-    "リプ": "🐘",
+    "リプ": "REPLAY",
     "ベル": "🔔",
     "赤７": "7",
     "チェリー": "🍒",

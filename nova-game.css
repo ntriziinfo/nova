@@ -1476,12 +1476,6 @@ body.layoutEditOpen .jagBonusDataMeters{
   object-fit:contain;
   filter:drop-shadow(0 4px 8px rgba(0,0,0,.35));
 }
-.grapeSymImg{
-  width:104%;
-  height:104%;
-  object-fit:contain;
-  filter:drop-shadow(0 4px 8px rgba(0,0,0,.30));
-}
 .cherrySymImg{
   width:106%;
   height:106%;
@@ -1491,12 +1485,6 @@ body.layoutEditOpen .jagBonusDataMeters{
 .bellSymImg{
   width:102%;
   height:102%;
-  object-fit:contain;
-  filter:drop-shadow(0 4px 8px rgba(0,0,0,.30));
-}
-.pieroSymImg{
-  width:108%;
-  height:108%;
   object-fit:contain;
   filter:drop-shadow(0 4px 8px rgba(0,0,0,.30));
 }
@@ -2515,7 +2503,7 @@ body::after{
 .reel{height:320px !important;border-radius:12px !important;background:linear-gradient(180deg,#313747,#0e1018 48%,#202430) !important;border:1px solid rgba(255,255,255,.22) !important;box-shadow:inset 0 14px 24px rgba(255,255,255,.08),inset 0 -22px 34px rgba(0,0,0,.72) !important;}
 .window{gap:8px !important;}
 .cell{border-radius:8px !important;background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(0,0,0,.12)) !important;}
-.symImg,.barSymImg,.sevenSymImg,.missSymImg,.grapeSymImg,.cherrySymImg,.bellSymImg,.pieroSymImg,.replaySymImg,.suikaSymImg{max-width:112% !important;max-height:112% !important;object-fit:contain !important;}
+.symImg,.barSymImg,.sevenSymImg,.missSymImg,.cherrySymImg,.bellSymImg,.replaySymImg,.suikaSymImg{max-width:112% !important;max-height:112% !important;object-fit:contain !important;}
 .barSymImg{width:108% !important;height:auto !important;}
 .buttonRow{position:relative;z-index:10;margin-top:20px !important;}
 .betBtn,.centerStopBtns button,.autoArea .autoInlineBtn,.autoArea .speedInlineBtn{background-size:100% 100% !important;background-repeat:no-repeat !important;background-position:center !important;color:transparent !important;text-shadow:none !important;border:none !important;box-shadow:none !important;filter:drop-shadow(0 0 12px rgba(255,255,255,.28));}
@@ -4052,19 +4040,15 @@ body{
 .barSymImg,
 .sevenSymImg,
 .missSymImg,
-.grapeSymImg,
 .cherrySymImg,
 .bellSymImg,
-.pieroSymImg,
 .replaySymImg,
 .suikaSymImg{
   filter:drop-shadow(0 2px 2px rgba(255,255,255,.72)) drop-shadow(0 3px 4px rgba(90,0,0,.24)) !important;
 }
 .missSymImg,
-.grapeSymImg,
 .cherrySymImg,
 .bellSymImg,
-.pieroSymImg,
 .replaySymImg,
 .suikaSymImg{
   width:70% !important;

@@ -24,7 +24,7 @@ test('only complete uncapped billion-game evidence matching the engine is displa
  assert.equal(data.status,'ready');assert.equal(data.settings[0].rtpPct,101);
  assert.equal(data.sourceCommit,r.sourceCommit);assert.equal(data.commit,'b'.repeat(40));
  for(const change of [
-  r=>{r.gamesPerSetting=100_000_000;},r=>{r.options.completeMyLimitPt=19000;},r=>{r.options.checkpointQuiet=true;},
+  r=>{r.gamesPerSetting=100_000_000;},r=>{r.options.completeMyLimitPt=19000;},r=>{r.options.checkpointQuiet=false;},
   r=>{r.options.completeLimitPt=10000;},r=>{r.options.stopAtComplete=true;},
   r=>{r.results[0].games=999999999;},r=>{r.results[0].totalBet=1;},
   r=>{r.results[0].net=0;},r=>{r.results[0].totalPaid=NaN;},r=>{r.results[0].ci95.blocks=999;},
