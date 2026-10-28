@@ -1,12 +1,18 @@
 /* Presentation only. Cosmetic randomness is isolated from gameplay RNG. */
 globalThis.NovaImpurityHint=(()=>{
  const presets={large:'#ff243d',medium:'#30ff64',small:'#3299ff'};
- let root=null,image=null,timer=null,level='',pending='',releaseRoot=null;
+ let root=null,image=null,timer=null,level='',pending='',releaseRoot=null,showToken=0;
  function layoutRelease(){
   if(!releaseRoot||releaseRoot.hidden)return;
   const target=document.querySelector('.reels');if(!target)return;
   const box=target.getBoundingClientRect();
   Object.assign(releaseRoot.style,{left:box.left+'px',top:box.top+'px',width:box.width+'px',height:box.height+'px'});
+ }
+ let releaseLayoutPending=false;
+ function requestReleaseLayout(){
+  if(releaseLayoutPending)return;
+  if(!globalThis.requestAnimationFrame){layoutRelease();return;}
+  releaseLayoutPending=true;requestAnimationFrame(()=>{releaseLayoutPending=false;layoutRelease();});
  }
  function syncRelease(session){
   const active=!!(session?.active&&session.phase==='a_type_bonus'&&session.impurityReleased);
@@ -17,7 +23,7 @@ globalThis.NovaImpurityHint=(()=>{
    releaseRoot.append(img);document.body.append(releaseRoot);
    addEventListener('resize',layoutRelease);addEventListener('scroll',layoutRelease,true);
   }
-  releaseRoot.hidden=false;layoutRelease();
+  releaseRoot.hidden=false;requestReleaseLayout();
  }
  function layout(){
   if(!root||root.hidden)return;
@@ -38,18 +44,23 @@ globalThis.NovaImpurityHint=(()=>{
   }
   Object.assign(root.style,{left:box.left+'px',top:box.top+'px',width:box.width+'px',height:box.height+'px'});
  }
- function hide(){clearTimeout(timer);timer=null;if(root)root.hidden=true;}
+ function hide(){showToken++;clearTimeout(timer);timer=null;if(root)root.hidden=true;}
  function show(size,{duration=3000}={}){
   if(!presets[size])return false;
   hide();level=size;
   if(!root){
    root=document.createElement('div');root.id='novaImpurityHint';root.setAttribute('aria-hidden','true');
-   image=document.createElement('img');image.src='assets/ui/impurity-head-20261028.png';image.alt='';image.draggable=false;
+   image=image||document.createElement('img');if(!image.src)image.src='assets/ui/impurity-head-20261028.png';image.alt='';image.draggable=false;
    root.append(image);document.body.append(root);
    addEventListener('resize',layout);addEventListener('scroll',layout,true);
   }
   root.dataset.level=size;root.style.setProperty('--impurity-glow',presets[size]);root.hidden=false;layout();
-  if(duration>0)timer=setTimeout(hide,duration);
+  if(duration>0){
+   const token=showToken;
+   const start=()=>{if(token===showToken&&!root.hidden)timer=setTimeout(hide,duration);};
+   if(image.complete||!image.addEventListener)start();
+   else {image.addEventListener('load',start,{once:true});image.addEventListener('error',()=>{if(token===showToken)hide();},{once:true});}
+  }
   return !root.hidden;
  }
  function mountDebug(panel){
@@ -80,5 +91,12 @@ globalThis.NovaImpurityHint=(()=>{
  }
  function arm(size){pending=presets[size]?size:'';}
  function onBet(){const size=pending;pending='';if(size)show(size);}
+ if(typeof document!=='undefined'&&globalThis.NovaPresentation){
+  NovaPresentation.warm('impurity-head',()=>new Promise(resolve=>{
+   if(image){resolve();return;}
+   image=document.createElement('img');image.decoding='async';image.fetchPriority='low';
+   image.onload=resolve;image.onerror=resolve;image.src='assets/ui/impurity-head-20261028.png';
+  }));
+ }
  return {show,hide,mountDebug,arm,onBet,select,queue,normalBet,syncRelease};
 })();

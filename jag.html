@@ -8,6 +8,7 @@
 <script src="nova-ui-access.js?v=20261013-player-pan"></script>
 <link rel="stylesheet" href="nova-ui-access.css?v=20261013-player-pan">
 <script src="nova-media.js?v=20261027-lightweight"></script>
+<script src="nova-presentation-resources.js?v=20261028"></script>
 <link rel="preload" as="image" href="assets/mobile-20261013/miss.webp" media="(max-width:1024px)">
 <link rel="preload" as="image" href="assets/lossless-20261027/miss.webp" media="(min-width:1025px)">
 <link rel="preload" as="image" href="assets/mobile-20261013/replay.webp" media="(max-width:1024px)">
@@ -39,7 +40,7 @@
 <link rel="stylesheet" href="nova-artwork.css?v=20261028-push-half">
 <script src="nova-artwork.js?v=20261027-lamp-underprint" defer></script>
 <link rel="stylesheet" href="nova-upper-at-background.css?v=20261013-checkpoint-cue">
-<script src="nova-upper-at-background.js?v=20261027-nova-bar-zone"></script>
+<script src="nova-upper-at-background.js?v=20261028-smooth"></script>
 <script src="nova-voice-catalog.js?v=20261027-countdown-one"></script>
 <script src="nova-audio-manifest.js?v=20261027-cz-push"></script>
 <script src="nova-audio-assets.js?v=20261012-normalized"></script>
@@ -51,7 +52,7 @@
 <script src="nova-super-speed-menu.js?v=20261011-super-speed-menu"></script>
 <script src="nova-reel-motion.js?v=20261028-press-slip"></script>
 <link rel="stylesheet" href="nova-results.css?v=20261015-mode-history">
-<script src="nova-results.js?v=20261024-plush-mode"></script>
+<script src="nova-results.js?v=20261028-smooth"></script>
 <link rel="stylesheet" href="nova-ladder-presentation.css?v=20260917-initial-131">
 <script src="nova-ladder-presentation.js?v=20261027-nova-bar-zone"></script>
 <link rel="stylesheet" href="nova-bell-navi.css?v=20261027-next-size">
@@ -66,7 +67,7 @@
 <link rel="stylesheet" href="nova-aim-presentation.css?v=20261012-super-challenge">
 <script src="nova-aim-confidence.js?v=20261027-red90"></script>
 <script src="nova-reel-sheet-data.js?v=20261027-sheet-522"></script>
-<script src="nova-aim-presentation.js?v=20261028-push-bell-cues"></script>
+<script src="nova-aim-presentation.js?v=20261028-smooth"></script>
 <script src="nova-tuning.js?v=20261027-parity-v174"></script>
 <script src="nova-decrement.js?v=20261013-smartslot"></script>
 <script src="nova-art.js?v=20261027-fixed-zone-probabilities"></script>
@@ -874,9 +875,9 @@
 <script src="nova-role-counter.js?v=20261014-role-counter-suica3-cherry2-v1"></script>
 <script src="nova-data-counter.js?v=20261015-mode-history"></script>
 <script src="nova-display-group.js?v=20261027-group"></script>
-<script src="nova-sortie-aim.js?v=20261027-sortie-lock"></script>
+<script src="nova-sortie-aim.js?v=20261028-smooth"></script>
 <script src="nova-cz-push.js?v=20261028-cz-win-green"></script>
-<script src="nova-impurity-hint.js?v=20261028-release"></script>
+<script src="nova-impurity-hint.js?v=20261028-smooth"></script>
 <script src="nova-game.js?v=20261028-impurity-release"></script>
 <button type="button" id="novaSymbolPreviewOpen">チェリー・ノヴァ（BAR）停止形を確認</button>
 <dialog id="novaSymbolPreview"><h2>チェリー・ノヴァ（BAR）停止形</h2><label>出目<select id="novaPatternSelect"><option value="WEAK_NOVA">弱チェリー：左上段・下段</option><option value="STRONG_MIDDLE">強チェリー：右下がり</option><option value="STRONG_RIGHT">強チェリー：右上がり</option><option value="SUPER_NOVA" selected>ノヴァ（BAR）揃い</option></select></label><p id="novaPatternDescription"></p><div id="novaSymbolPreviewGrid"></div><p>出目の確認用です。通常時のノヴァ（BAR）揃いはBIG・フリーズ各50%。ボーナス中は対象外。弱チェリー・強チェリーはそれぞれ既存の抽選を維持します。</p><button type="button" id="novaSymbolPreviewClose">閉じる</button></dialog>

@@ -29,6 +29,7 @@ globalThis.NovaUpperAtBackground=(()=>{
  }
  function play(){
   if(!video||!wanted||video.hidden||blocked()||document.hidden||!video.paused||starting)return;
+  if(globalThis.NovaPresentation){NovaPresentation.play(video,()=>wanted&&!video.hidden&&!blocked());return;}
   starting=true;
   try{
    Promise.resolve(video.play()).catch(()=>{}).finally(()=>{

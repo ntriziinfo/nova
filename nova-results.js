@@ -102,14 +102,14 @@ globalThis.NovaResults=(()=>{
  const legacyKey=()=>{const character=legacyModeLayouts[active?.character];return character?(active.kind==='bonus'?'bonus-'+character:character+'-'+active.color):'';};
  const baseLayout=()=>({...defaults,...(active?.character==='all'?{x:14,y:28,w:72,h:36,numberX:20,numberY:80,numberW:60,numberH:13,font:8}:{}),...(active?.kind==='sortie'?{numberX:4,numberW:92,font:6}:{}),...(active?.kind==='bonus'?{font:14,...positions['bonus-blue']}: {})});
  const layout=()=>({...baseLayout(),...positions[legacyKey()],...positions[key()]});
- function loadImage(character,color){
+ function loadImage(character,color,prewarm=false){
   const src='assets/illustrations/'+(characterImages[character]||characterImages.sosuke),cached=images.get(src);
   if(cached&&!cached.failed)return cached;
-  const img=new Image();img.draggable=false;img.decoding='async';
+  const img=new Image();img.draggable=false;img.decoding='async';img.fetchPriority=prewarm?'low':'high';
   const entry={img,ready:false,failed:false};images.set(src,entry);
   entry.loaded=new Promise(resolve=>{
    const finish=ready=>{entry.ready=ready;entry.failed=!ready;resolve(entry);};
-   img.onload=()=>{Promise.resolve().then(()=>img.decode?.()).then(()=>finish(true),()=>finish(img.naturalWidth>0));};
+   img.onload=()=>finish(img.naturalWidth>0); // Do not hide an already loaded portrait behind a stalled decode promise.
    img.onerror=()=>finish(false);img.src=src;
   });
   return entry;
@@ -147,11 +147,12 @@ globalThis.NovaResults=(()=>{
   root.innerHTML='<div class="novaResultCard"><div class="novaResultArt"><img draggable="false" alt=""><output class="novaResultNumber"></output><img loading="lazy" class="novaResultPartner" src="assets/illustrations/lamps-20260928/kushuri.png" alt="くしゅり" draggable="false" hidden><div class="novaResultEnsemble" hidden></div><div class="novaResultStocks" hidden></div></div><div class="novaResultFallback" role="status"><strong>RESULT</strong><span></span><output></output><small class="novaResultTotal" hidden></small><small class="novaResultNext" hidden>次のBETでスーパーノヴァチャレンジ</small></div></div>';
   machine.append(root);card=root.firstElementChild;art=card.firstElementChild;num=art.querySelector('output');fallback=card.querySelector('.novaResultFallback');
   // Both background colors share the same unmodified character image.
-  if(!globalThis.NovaMedia?.compact)for(const character of chars)for(const color of ['red','blue'])loadImage(character,color);
-  if(!globalThis.NovaMedia?.compact)for(const character of initialChars)loadImage(character,'initial');
-  if(!globalThis.NovaMedia?.compact)for(const hint of settingHints)loadImage(hint.character,hint.color);
+  // Include mode-hint plush portraits; their first appearance must not start a burst of requests.
+  if(globalThis.NovaPresentation)for(const character of Object.keys(characterImages)){
+   NovaPresentation.warm('result:'+character,()=>loadImage(character,undefined,true).loaded);
+  }
   const ensemble=art.querySelector('.novaResultEnsemble');
-  for(const character of ['kushuri','nito',...chars]){const img=document.createElement('img');img.loading=globalThis.NovaMedia?.compact?'lazy':'eager';img.src='assets/illustrations/'+characterImages[character];img.alt=names[character];img.draggable=false;ensemble.append(img);}
+  for(const character of ['kushuri','nito',...chars]){const img=document.createElement('img');img.loading='lazy';img.src='assets/illustrations/'+characterImages[character];img.alt=names[character];img.draggable=false;ensemble.append(img);}
   if(globalThis.NovaUiAccess?.canEdit === true){
   const button=document.createElement('button');button.id='novaResultAdjust';button.textContent='リザルト調整';document.body.append(button);
   panel=document.createElement('dialog');panel.className='novaResultSettings';panel.innerHTML='<h3>リザルト配置</h3><label>確認画像 <select id="novaResultSelect"></select></label><div class="novaResultFields"></div><button type="button" id="novaResultReset">この画像を初期位置へ</button> <button type="button" id="novaResultClose">閉じる</button><p>変更はこのブラウザに画像別で自動保存します。画像は縦横比を維持します。</p>';document.body.append(panel);
@@ -184,7 +185,7 @@ globalThis.NovaResults=(()=>{
   root.dataset.duo=String(value.character==='kushuri_nito');
   const ensemble=art.querySelector('.novaResultEnsemble');if(ensemble)ensemble.hidden=!all||isSortie;
   const roster=art.querySelector('.novaResultStocks');if(roster){roster.hidden=!isSortie||!value.awards?.length;if(isSortie&&value.awards?.length)renderSortieAwards(roster,value.awards);}
-  const partner=art.querySelector('.novaResultPartner');if(partner)partner.hidden=value.character!=='kushuri_nito';
+  const partner=art.querySelector('.novaResultPartner');if(partner){partner.hidden=value.character!=='kushuri_nito';if(!partner.hidden)partner.loading='eager';}
   const atLabel='AT総獲得';
   const label=isBonus?'BB獲得':isSortie?'出陣チャレンジ':all?'有利区間終了 / 累計差枚':settingHints.some(h=>h.character===value.character)?atLabel:`${names[value.character]} ${value.color==='initial'?'AT初期pt':value.kind==='at'?atLabel:value.totalPt!=null?'ゾーン / 今回':'上乗せ'}`;
   const next=fallback.querySelector('.novaResultNext');if(next){next.hidden=!all&&!isBonus&&value.color!=='mode';next.textContent=value.color==='mode'?'次回モード示唆 / 次のBETで通常へ':isBonus?'次のBETで'+(value.next==='AT'?'ATへ':'通常へ'):isSortie?'次のBETで特化ゾーン準備':'次のBETでスーパーノヴァチャレンジ';}
@@ -193,12 +194,14 @@ globalThis.NovaResults=(()=>{
   fallback.querySelector('span').textContent=label;fallback.querySelector('output').textContent=awardText(value);
   if(all){
    apply();
-   // Decode the originals before revealing the ensemble, including on a cold reload.
+   // Make the visible ensemble eager; each original can arrive independently.
    const originals=Array.from((isSortie?roster:ensemble)?.querySelectorAll?.('img')||[]);
-   Promise.allSettled(originals.map(img=>{img.loading='eager';return img.decode();})).then(()=>{if(request===imageRequest&&active===value)delete root.dataset.loading;});
+   for(const img of originals)img.loading='eager';
+   // Reveal available portraits progressively: one slow/missing image must not hide the roster.
+   delete root.dataset.loading;
    return;
   }
-  const entry=loadImage(value.character,value.color);
+  const entry=loadImage(value.character,value.color);entry.img.fetchPriority='high';
   const reveal=()=>{
    if(request!==imageRequest||active!==value)return;
    if(!entry.ready)return; // A failed/slow request keeps the readable RESULT and pt.

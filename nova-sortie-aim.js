@@ -10,13 +10,13 @@ globalThis.NovaSortieAim=(()=>{
   }
   return true;
  }
- function hide(){if(video){video.pause();video.hidden=true;video.currentTime=0;}images.forEach(img=>img.hidden=true);if(host)delete host.dataset.aimActive;previewing=false;}
+ function hide(){if(video){if(globalThis.NovaPresentation)NovaPresentation.stop(video);else video.pause();video.hidden=true;video.currentTime=0;}images.forEach(img=>img.hidden=true);if(host)delete host.dataset.aimActive;previewing=false;}
  function show(color='blue',preview=false){
   if(!init())return;
   hide();previewing=preview;video.dataset.color=color;
   const src='assets/media/nova/sortie-aim-'+(['blue','red','rainbow'].includes(color)?color:'blue')+'-20261027.mp4';
   if(video.getAttribute('src')!==src)video.src=src;
-  host.dataset.aimActive='true';video.hidden=false;images.forEach(img=>img.hidden=false);video.play().catch(()=>{});
+  host.dataset.aimActive='true';video.hidden=false;images.forEach(img=>img.hidden=false);if(globalThis.NovaPresentation)NovaPresentation.play(video,()=>!video.hidden);else video.play().catch(()=>{});
  }
  document.getElementById('sortieAimPreview')?.addEventListener('click',()=>{if(previewing)hide();else show('red',true);});
  document.getElementById('layoutEditCloseBtn')?.addEventListener('click',()=>{if(previewing)hide();});

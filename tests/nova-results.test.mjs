@@ -270,3 +270,10 @@ test('checkpoint result uses all characters and cumulative net; stale single-ima
  images[0].onload();await flush();assert.equal(shown.length,0);assert.equal(c.root.dataset.loading,undefined);
  c.show({character:'sora',color:'blue',pt:'200'});assert.equal(c.root.dataset.all,'false');assert.equal(shown.length,1);
 });
+
+test('loaded portrait is revealed even when explicit decode never resolves',async()=>{
+ const {c,images,shown,flush}=presenter();
+ c.show({kind:'bonus',character:'plush_sora',color:'mode',pt:'150',next:'通常'});
+ images[0].decode=()=>new Promise(()=>{});images[0].onload();await flush();
+ assert.equal(c.root.dataset.loading,undefined);assert.equal(shown.length,1);
+});
