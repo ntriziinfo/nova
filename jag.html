@@ -96,8 +96,19 @@
 </style>
 <style>.cell img[src*="/gang-v3/"]{width:100% !important;height:100% !important;max-width:100% !important;max-height:100% !important;object-fit:contain !important;filter:none !important;}</style>
 <link rel="stylesheet" href="nova-impurity-hint.css?v=20261028-release">
+<link rel="stylesheet" href="nova-reel-reference.css?v=20261028-left-reference">
 </head>
 <body>
+<button id="novaReelReferenceToggle" type="button" aria-controls="novaReelReference" aria-expanded="true">リール配列を隠す</button>
+<aside id="novaReelReference" aria-label="現在のリール配列">
+  <table>
+    <caption>リール配列表</caption>
+    <colgroup><col><col><col><col></colgroup>
+    <thead><tr><th scope="col">No.</th><th scope="col">左</th><th scope="col">中</th><th scope="col">右</th></tr></thead>
+    <tbody id="novaReelReferenceRows"></tbody>
+  </table>
+  <p>各20コマ・20の次は01に戻ります</p>
+</aside>
 <dialog id="novaFlowGuide" aria-labelledby="novaFlowGuideTitle">
   <header class="novaFlowGuideHead">
     <h2 id="novaFlowGuideTitle">ゲームフロー</h2>
@@ -876,7 +887,8 @@
 <script src="nova-sortie-aim.js?v=20261028-lever-outcome"></script>
 <script src="nova-cz-push.js?v=20261028-cz-win-green"></script>
 <script src="nova-impurity-hint.js?v=20261028-smooth"></script>
-<script src="nova-game.js?v=20261028-bell-navigation-progress"></script>
+<script src="nova-reel-reference.js?v=20261028-left-reference"></script>
+<script src="nova-game.js?v=20261028-left-reference"></script>
 <button type="button" id="novaSymbolPreviewOpen">チェリー・ノヴァ（BAR）停止形を確認</button>
 <dialog id="novaSymbolPreview"><h2>チェリー・ノヴァ（BAR）停止形</h2><label>出目<select id="novaPatternSelect"><option value="WEAK_NOVA">弱チェリー：左上段・下段</option><option value="STRONG_MIDDLE">強チェリー：右下がり</option><option value="STRONG_RIGHT">強チェリー：右上がり</option><option value="SUPER_NOVA" selected>ノヴァ（BAR）揃い</option></select></label><p id="novaPatternDescription"></p><div id="novaSymbolPreviewGrid"></div><p>出目の確認用です。通常時のノヴァ（BAR）揃いはBIG・フリーズ各50%。ボーナス中は対象外。弱チェリー・強チェリーはそれぞれ既存の抽選を維持します。</p><button type="button" id="novaSymbolPreviewClose">閉じる</button></dialog>
 </body>

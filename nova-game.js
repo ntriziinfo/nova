@@ -10266,6 +10266,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
   }
 
   function setup(){
+    window.NovaReelReference?.mount({strips:REEL_STRIPS, renderSymbol:cellHtml});
     // 公開情報は右上ドックへ移動し、残りの設定カードは非公開デバッグメニューへ移動。
     const cabinetData = $("slumpPanel");
     if(cabinetData){cabinetData.classList.add("novaCabinetData");($("novaCabinetStage")||$("machine")).appendChild(cabinetData);}

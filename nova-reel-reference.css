@@ -1,0 +1,26 @@
+/* Independent of cabinet zoom, pan, and effect layers. */
+#novaReelReferenceToggle {
+  position:fixed; top:12px; left:8px; z-index:10001;
+  padding:8px 12px; min-height:36px; border:1px solid #74667f;
+  border-radius:6px; background:#19131f; color:#f4edf9;
+  font:700 12px/1.4 system-ui; cursor:pointer;
+}
+#novaReelReferenceToggle:focus-visible { outline:2px solid #ffc76c; outline-offset:3px; }
+#novaReelReference {
+  position:fixed; top:58px; left:8px; z-index:0;
+  width:220px; color:#e8e3ed; background:#08070a;
+  font:11px/1.4 system-ui; pointer-events:none;
+}
+#novaReelReference[hidden] { display:none; }
+#novaReelReference table { width:100%; border-collapse:collapse; table-layout:fixed; }
+#novaReelReference caption { padding:0 0 8px; text-align:left; font-size:14px; font-weight:800; }
+#novaReelReference col:first-child { width:23px; }
+#novaReelReference th { padding:3px 0; font-weight:600; text-align:center; color:#c4b6d0; }
+#novaReelReference td { padding:0 2px; border:1px solid #bab5bd; background:#fff; text-align:center; }
+#novaReelReference .symImg {
+  display:block; width:100%; height:clamp(16px, calc((100dvh - 140px) / 20), 35px);
+  max-width:none; max-height:none; object-fit:contain; margin:0;
+  filter:none; transform:none;
+}
+#novaReelReference .blankSymImg { width:50%; margin:0 auto; }
+#novaReelReference p { margin:6px 0 0; font-size:10px; color:#a99cb5; }
