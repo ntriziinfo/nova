@@ -344,7 +344,7 @@ test('reel layout version survives repeat saves; v2 and legacy drawn spins remai
  assert.equal(c.NovaSpinResume.capture(restored).reelLayoutVersion,1);
 });
 
-test('confirmed CZ reload restores stage-8 rainbow before an all-stopped spin re-enters PUSH wait',()=>{
+test('CZ reload hides rainbow before an all-stopped spin re-enters PUSH wait',()=>{
  const {c,$}=harness();
  const saved=c.NovaSpinResume.capture(spin(c,{reelLayoutVersion:3,stopped:[true,true,true],resolved:{
   reward:0,flowBefore:{phase:'cz'},flowAfter:{phase:'normal'},czLamp:{stage:8,totalGames:15,remaining:1,timingSeed:42},czCompleted:true,bonusHit:true,czLampAtBet:8
@@ -355,5 +355,5 @@ test('confirmed CZ reload restores stage-8 rainbow before an all-stopped spin re
  c.finishSpin=(result,resolved)=>{finishCalls++;c.finishLamp={...$('machine').dataset};c.NovaCzPresentation.wait(resolved);};
  assert.equal(c.restorePendingSpin(),true);
  assert.equal(c.restoredReelLayout,3);assert.equal(finishCalls,1);assert.equal(waitCalls,1);
- assert.equal(c.finishLamp.czLamp,'8');assert.equal(c.finishLamp.czColor,'rainbow');assert.equal(c.finishLamp.czRainbow,'true');assert.match(c.finishLamp.czOrder,/^([^,]+,){7}[^,]+$/);
+ assert.equal(c.finishLamp.czLamp,'7');assert.equal(c.finishLamp.czColor,'red');assert.equal(c.finishLamp.czRainbow,'false');assert.match(c.finishLamp.czOrder,/^([^,]+,){7}[^,]+$/);
 });

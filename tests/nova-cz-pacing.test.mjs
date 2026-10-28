@@ -7,13 +7,9 @@ const rows=[];
 for(let setting=1;setting<=6;setting++){
  const win=Array(9).fill(0),loss=Array(9).fill(0);
  for(let seed=0;seed<50000;seed++)for(const won of [true,false]){const last=p.display({timingSeed:seed,totalGames:15,remaining:1},3,won,setting);(won?win:loss)[last.stage]++;}
- const prior=rates[setting-1];let greenPlus=0;
- for(const [count,confidence] of [[1,1],[2,.05],[4,.15],[6,.6],[7,.9],[8,1]]){
-  const w=prior*win[count],l=(1-prior)*loss[count];assert(Math.abs(w/(w+l)-confidence)<.02,`setting ${setting}, tier ${count}`);
-  if(count>=6)greenPlus+=(w+l)/50000;
- }
- assert(greenPlus>.32&&greenPlus<.44);assert.equal(loss[1]+loss[8],0);
- rows.push({setting,greenPlusPercent:+(greenPlus*100).toFixed(2)});
+ assert.deepEqual(win,loss,'Pre-PUSH lighting must not reveal the internal result');
+ assert.equal(win[8]+loss[8],0);
+ rows.push({setting,prePushRainbow:0});
 }
 const buckets=[0,0,0],stops=[0,0,0];let simultaneous=0;
 for(let seed=0;seed<2000;seed++)for(const totalGames of [5,15,20])for(const winAt of [0,3,totalGames,Infinity]){

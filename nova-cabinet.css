@@ -272,12 +272,12 @@ body.layoutEditOpen #novaSuperTitlePreview{display:block;outline:1px dashed #c89
 .novaBarAimTitle strong{width:39%;font-size:inherit;}
 
 /* Preserve the shared movie border and motion; cover its baked-in seven with NOVA artwork. */
-.novaAimPresentation[data-nova-cue="true"] .novaBarAimTitle{inset:14% 0 14%;gap:1%;background:linear-gradient(100deg,#071a56,#1449a5,#071a56);font-style:italic;color:white;text-shadow:-2px -2px 0 #283c68,2px 2px 0 #283c68,0 4px 5px #000;}
-.novaAimPresentation[data-nova-cue="true"][data-color="red"] .novaBarAimTitle{background:linear-gradient(100deg,#790a0e,#e31720,#790a0e);}
-.novaAimPresentation[data-nova-cue="true"][data-color="rainbow"] .novaBarAimTitle{background:linear-gradient(100deg,#a71735,#817709,#188c49,#185bb1,#83249f);}
+.novaAimPresentation:is([data-nova-cue="true"],[data-symbol-motion="true"]) .novaBarAimTitle{inset:14% 0 14%;gap:1%;background:linear-gradient(100deg,#071a56,#1449a5,#071a56);font-style:italic;color:white;text-shadow:-2px -2px 0 #283c68,2px 2px 0 #283c68,0 4px 5px #000;}
+.novaAimPresentation:is([data-nova-cue="true"],[data-symbol-motion="true"])[data-color="red"] .novaBarAimTitle{background:linear-gradient(100deg,#790a0e,#e31720,#790a0e);}
+.novaAimPresentation:is([data-nova-cue="true"],[data-symbol-motion="true"])[data-color="rainbow"] .novaBarAimTitle{background:linear-gradient(100deg,#a71735,#817709,#188c49,#185bb1,#83249f);}
 .novaBarAimTitle .novaAimArrow{width:23%;text-align:center;font-size:clamp(40px,7vw,95px);line-height:1;}
-.novaAimPresentation[data-nova-cue="true"] .novaBarAimTitle img{width:43%;height:100%;filter:drop-shadow(0 0 7px #fff);}
-.novaAimPresentation[data-nova-cue="true"] .novaBarAimTitle strong{width:31%;font-size:clamp(22px,3.5vw,48px);white-space:nowrap;}
+.novaAimPresentation:is([data-nova-cue="true"],[data-symbol-motion="true"]) .novaBarAimTitle img{width:43%;height:100%;filter:drop-shadow(0 0 7px #fff);}
+.novaAimPresentation:is([data-nova-cue="true"],[data-symbol-motion="true"]) .novaBarAimTitle strong{width:31%;font-size:clamp(22px,3.5vw,48px);white-space:nowrap;}
 
 #machine .novaAimPresentation[data-sortie="true"]{background:transparent;}
 
@@ -292,3 +292,11 @@ body.layoutEditOpen #novaSuperTitlePreview{display:block;outline:1px dashed #c89
 .novaSortieAimPart[hidden],.novaSortieAimBg[hidden]{display:none!important;}
 
 #machine .reel .cell img.symImg.blankSymImg:not(.sevenSymImg):not(.barSymImg):not(.nebulaSymImg){width:45%!important;height:45%!important;max-width:45%!important;max-height:45%!important;}
+
+/* One shared symbol motion for NOVA, seven and nebula cues. */
+.novaAimPresentation:is([data-nova-cue="true"],[data-symbol-motion="true"]) .novaBarAimTitle{inset:14% 0;overflow:hidden;}
+.novaAimPresentation:is([data-nova-cue="true"],[data-symbol-motion="true"]) .novaBarAimTitle img{width:60%;height:95%;animation:novaSharedAimPulse .8s ease-in-out infinite;}
+@keyframes novaSharedAimPulse{0%,100%{transform:scale(.92)}50%{transform:scale(1.08)}}
+.novaAimReverseNotice,#reversePushGuideLayer{display:none!important;}
+body[data-bonus-at-confirmed="true"] .reels{animation:novaBonusAtRainbow 1.4s linear infinite;}
+@keyframes novaBonusAtRainbow{0%,100%{box-shadow:inset 0 0 20px #f44,0 0 12px #f44}16%{box-shadow:inset 0 0 20px #fa0,0 0 12px #fa0}33%{box-shadow:inset 0 0 20px #ff4,0 0 12px #ff4}50%{box-shadow:inset 0 0 20px #4f4,0 0 12px #4f4}66%{box-shadow:inset 0 0 20px #4ff,0 0 12px #4ff}83%{box-shadow:inset 0 0 20px #b4f,0 0 12px #b4f}}

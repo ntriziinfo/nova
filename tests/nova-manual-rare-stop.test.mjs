@@ -89,3 +89,10 @@ test('ordinary misses and one-coin stops stay within four symbols in all orders'
  assert.equal(run(`(()=>{const spin={result:role,grid:buildNovaReelGrid(role,1),stopped:[false,false,false],resolved:{reward:role==='ONE_COIN'?1:0}};for(const i of order){const distance=col=>Math.min(...REEL_STRIPS[i].flatMap((_,top)=>col.every((v,r)=>REEL_STRIPS[i][(top+r)%20]===v)?[mod(positions[i]-top,20)]:[]));const col=nearestPressedStopColumn(i,spin,distance,false);if(distance(col)>4)throw Error('ordinary slip');spin.stopped[i]=true;}prepareManualRareOutcome(spin);return displayedResultFromGrid(spin.grid)===role&&!spin.rareRoleMissed;})()`),true);
  }
 });
+
+test('wrong bell navigation pays zero but retains the engine decrement and outcomes',()=>{
+ for(const role of ['BELL','BELL15'])for(const order of orders){context.role=role;context.order=order;
+  const result=run(`(()=>{const spin={result:role,stopped:[true,true,true],bellNaviOrder:[2,1,0],auditPressOrder:order,resolved:{reward:role==='BELL'?8:15,flowAfter:{phase:'art',pt:85,stock:3}}};const before=JSON.stringify(spin.resolved.flowAfter);prepareManualRareOutcome(spin);prepareManualRareOutcome(spin);return {paid:spin.resolved.reward,same:before===JSON.stringify(spin.resolved.flowAfter)};})()`);
+  assert.equal(result.paid,order.join()=== '2,1,0'?(role==='BELL'?8:15):0);assert.equal(result.same,true);
+ }
+});

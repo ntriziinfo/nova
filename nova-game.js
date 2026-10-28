@@ -2731,7 +2731,7 @@
     const checkpoint=atCheckpointStatus(normalState.flow,NovaProgress.snapshot(),currentProfit(),true);
     if(checkpoint?.gold)return checkpoint.text;
     if(normalState.bonusPending){
-      if(replayGatedBonusPreparation())return normalState.prepReady?"7を狙え":"ボーナス準備中 / 開始リプレイ待ち";
+      if(replayGatedBonusPreparation())return normalState.prepReady?"7を狙え":"ボーナス準備中";
       return normalState.prepLeft>0?"ボーナス準備中 残り"+normalState.prepLeft+"G":"7を狙え";
     }
     if(normalState.internal?.prelude?.presentation==='reel'&&['normal','cz','strong_cz'].includes(normalState.flow?.phase)&&!(isSpinning&&currentSpin?.resolved?.czPrelude?.announce))return 'CZ前兆';
@@ -2838,6 +2838,7 @@
   }
 
   function lightBonusAnnouncement(spin=currentSpin, timing=""){
+    if(spin?.resolved?.czLamp&&!spin.resolved.czPushConfirmed)return false;
     if(!spin || spin.bonusAnnouncementLit) return false;
     spin.bonusAnnouncementLit = true;
     jagChanceHold = true;
@@ -5482,8 +5483,7 @@
       if(won.upperBonus)log('ボーナス準備中：上位BIG昇格');
       if(won.upperAt)log('ボーナス準備中：上位AT確定');
       else if(won.atConfirmed)log('ボーナス準備中：AT確定／'+won.stockCount+'ストック');
-      const ready=replayGatedBonusPreparation()?normalState.prepReady:normalState.prepLeft===0;
-      showMessage('ボーナス準備中',ready?'開始リプレイ成立 / 次BETで7を狙え':'開始リプレイ待ち');
+      showMessage('ボーナス準備中','');
       return;
     }
     if(resolved.bonusWaitSpin){
@@ -5917,6 +5917,7 @@
       document.body.dataset.burst=session.active?'':normalState.flow?.burstWon?'won':normalState.flow?.burstLeft?'challenge':normalState.flow?.burstPending?'pending':'';
 
       document.body.dataset.bonusTier=session.active?NovaArt.bonusTier(session.bonusTier):'';
+      document.body.dataset.bonusAtConfirmed=String(!!(session.active&&(Number(session.bonusArtSets)>0||normalState.flow?.phase==='art')));
       document.body.dataset.artZone=session.active?'':presentedArtFlow()?.zone||'';
       document.body.dataset.artUra=String(!session.active&&!!presentedArtFlow()?.zone&&!!presentedArtFlow()?.ura);
       document.body.dataset.totoColor=document.body.dataset.artZone==='toto'?(normalState.flow?.color||'white'):'white';
@@ -7313,6 +7314,15 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
   }
 
   function prepareManualRareOutcome(spin){
+    // Engine flowAfter already includes the bell payout/decrement. Only cash payout changes.
+    if(spin?.stopped?.every(Boolean)&&['BELL','BELL15'].includes(spin.result)&&spin.bellNaviOrder?.length===3&&!spin.resolved.bellNaviPenaltyApplied){
+      const pressed=spin.auditPressOrder||spin.auditStopOrder;
+      if(pressed?.length===3&&pressed.some((reel,index)=>reel!==spin.bellNaviOrder[index])){
+        spin.resolved.bellNaviPenaltyApplied=true;
+        spin.resolved.internalBellReward=Number(spin.resolved.reward)||0;
+        spin.resolved.reward=0;
+      }
+    }
     if(!spin?.rareRoleMissed||spin.rareMissPaidApplied||!spin.stopped?.every(Boolean))return;
     spin.rareMissPaidApplied=true;
     spin.resolved.rareMissPayout=Number(spin.resolved.reward)||0;
@@ -7950,10 +7960,10 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     if(resolved.zoneStartFlow)updateDisplay();
     if(resolved.oumaFreeze)showOverlay(NovaArt.zoneName(normalState.flow)+'フリーズ！ 0G連');
     else if(resolved.artReverse)showOverlay('逆回転！ '+resolved.flowAfter.award+'pt');
-    else if(resolved.researchChallenge?.priorAim)showOverlay('ノヴァを狙え');
+    else if(resolved.researchChallenge?.priorAim)$('overlay').classList.remove('show');
     else if(resolved.researchChallenge)showOverlay(resolved.researchChallenge.nextAim?'HOLD':'残り'+resolved.researchChallenge.left+'G');
     else if(resolved.researchSortie)$("overlay").classList.remove("show");
-    else if(!resolved.oumaFailed&&['urapi','ouma'].includes(normalState.flow?.zone))showOverlay('ノヴァを狙え');
+    else if(!resolved.oumaFailed&&['urapi','ouma'].includes(normalState.flow?.zone))$('overlay').classList.remove('show');
     if(currentSpin.bonusConfirmWaitSpin){
       showBonusConfirmScreen("solid");
     }else if(currentSpin.bonusConfirmPrizeSpin){
@@ -8712,10 +8722,10 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
       resolved.czLampAtBet=Number(machine.dataset.czLamp)||0;
       return;
     }
-    const display=NovaCzPresentation.display(lamp,stopOrder,won,settings.setting,terminal);
+    const display=NovaCzPresentation.display(lamp,stopOrder,won,settings.setting,terminal,!!resolved.czPushConfirmed);
     if(!display)return;
     const previous=Number(machine.dataset.czLamp)||0;
-    const target=Math.max(previous,display.stage);
+    const target=resolved.czPushConfirmed?Math.max(previous,display.stage):Math.min(7,Math.max(previous,display.stage));
     machine.dataset.czLamp=String(target);
     machine.dataset.czColor=target>=8?'rainbow':target>=7?'red':target>=6?'green':target>=4?'yellow':target>=2?'blue':'white';
     machine.dataset.czRainbow=String(target>=8);
@@ -8727,7 +8737,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
   function restoreCzLampPresentation(resolved){
     if(resolved?.czLampAtBet==null)return false;
     const machine=document.getElementById('machine');
-    const stage=Math.max(0,Math.min(8,Number(resolved.czLampAtBet)||0));
+    const stage=Math.max(0,Math.min(resolved.czPushConfirmed?8:7,Number(resolved.czLampAtBet)||0));
     machine.dataset.czLamp=String(stage);
     machine.dataset.czColor=stage>=8?'rainbow':stage>=7?'red':stage>=6?'green':stage>=4?'yellow':stage>=2?'blue':stage>0?'white':'';
     machine.dataset.czRainbow=String(stage>=8);

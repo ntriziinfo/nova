@@ -31,18 +31,18 @@ function lampSchedule(seed,total){
  times.sort((a,b)=>a-b);if(timingCache.size>1000)timingCache.clear();timingCache.set(key,times);return times;
 }
 function lampStop(seed,index,total){return lampSchedule(seed,total)[index-1];}
-function display(lamp,stop,won,setting,terminal=false){
+function display(lamp,stop,won,setting,terminal=false,revealed=false){
  if(!lamp)return null;
  // Once the already-decided CZ outcome is known to be a win, presentation must
  // not keep showing a lower-confidence cue until a reel is stopped. This only
  // reads the saved outcome; it never draws gameplay RNG or changes the award.
- if(won&&terminal)return {stage:8,color:'rainbow',rainbow:true};
+ if(won&&terminal&&revealed)return {stage:8,color:'rainbow',rainbow:true};
  if(stop<1)return null;
  const p=rates[Math.max(0,Math.min(5,(Number(setting)||1)-1))],seed=lamp.timingSeed||0;
  const roll=fraction(seed,137),yes=selectTier(true,p,roll),no=selectTier(false,p,roll);
  const last=terminal||lamp.remaining===1;
- // A later win must never reduce the already-lit count. Known wins progress early.
- const target=last?(won?yes.count:no.count):won?yes.count:Math.min(yes.count,no.count);
+ // Before PUSH the same saved seed produces identical lighting for wins and losses.
+ const target=revealed?(won?yes.count:no.count):Math.min(7,yes.count,no.count);
  const total=Math.max(1,lamp.totalGames||15),elapsed=total-(lamp.remaining||1)+1;
  const current=last?(total-1)*3+stop:(elapsed-1)*3+stop;
  let count=0;
@@ -79,7 +79,7 @@ function wait(resolved,{auto=false,setting=1,valid,reveal,onFailure=()=>{}}){
  if(pendingPush===resolved)return true;
  pendingPush=resolved;
  document.documentElement.classList.remove('novaCzFailed');
- restartFadeIn(button,variant(resolved,setting));button.disabled=false;
+ restartFadeIn(button,'white');button.disabled=false;
  let accepted=false,autoQueued=false;
  const autoEnabled=()=>typeof auto==='function'?auto():auto;
  const accept=()=>{
