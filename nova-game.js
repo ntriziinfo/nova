@@ -5905,6 +5905,7 @@
       reelArea.classList.toggle("premiumBigOverlayOn", !!(isATypeBonusActive() && (session.premiumBonus || session.oneGameRenBonus)));
     }
     const internal=NovaNormal.normalize(normalState.internal);
+    if($('novaImpurityCurrent'))$('novaImpurityCurrent').textContent='現在：'+Number(internal.impurity.toFixed(2))+'pt';
     syncCzPreludeGlow(isSpinning?currentSpin?.resolved:null);
     // Per-spin blackout is cleared by BET, never restored from a previous game's progress.
     if($('novaInternalStatus'))$('novaInternalStatus').textContent='モード '+internal.mode+' / '+internal.games+'G（天井'+NovaNormal.ceiling(internal)+'G） / '+(internal.level==='high'?'高確（保証'+internal.highLeft+'G）':'低確')+ (normalState.flow?.phase==='art'?' / '+'AT '+(normalState.flow.atHigh?'高確（保証'+normalState.flow.atHighLeft+'G）':'低確'):'')+' / 穢れ'+internal.impurity+'pt / 特化予約 '+(session.active?(session.bonusZones||[]):(normalState.flow?.queuedZones||[])).map(z=>NovaArt.zoneName(z)).join('・');
@@ -6587,8 +6588,23 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
       const option=document.createElement('option');option.value='IMPURITY_HINT_'+size;option.textContent='穢れ示唆 '+label+'（表示のみ）';forceSelect.append(option);
     }
     for(const [value,label] of [...['WIN_BLUE','WIN_RED','WIN_RAINBOW','MISS_BLUE','MISS_RED'].map(key=>['SORTIE_AIM_'+key,forceResultName('SORTIE_AIM_'+key)]),['ART','AT突入'],['SORTIE','出陣チャレンジ（10G・1回予約）'],['URA_CHALLENGE','スーパーノヴァチャレンジ（10G・HOLDあり）'],['COMEBACK','引き戻しゾーン（5G）'],...['ONE_COIN'].map(k=>[k,RESULT[k].name+'（外れ目停止形）']),...Object.keys(NovaNormal.rare).filter(k=>!isNovaResult(k)).map(k=>[k,RESULT[k].name]),['RARE','ATレア役'],...NovaArt.zoneIds.map(k=>['ZONE_'+k,NovaArt.zoneName(k)+'ゾーン'])]){const option=document.createElement('option');option.value=value;option.textContent=label;forceSelect.append(option);}
+    const impurityPanel=document.createElement('fieldset');impurityPanel.id='novaImpurityDebug';
+    impurityPanel.innerHTML='<legend>穢れポイント指定</legend><output id="novaImpurityCurrent"></output><label>穢れpt（0～100）<input id="novaImpurity" type="number" min="0" max="100" step="0.1" value="0"></label><div class="row"><button type="button" id="novaApplyImpurity">穢れポイントだけ適用</button></div><p id="novaImpurityFeedback" aria-live="polite">モード・回転数・AT状態は維持。100ptで次回BB解放。</p>';
+    forceSelect.closest('.field').before(impurityPanel);
+    $('novaImpurity').value=NovaNormal.normalize(normalState.internal).impurity;
+    $('novaImpurityCurrent').textContent='現在：'+$('novaImpurity').value+'pt';
+    $('novaApplyImpurity').onclick=()=>{
+      if(!SLOT_DEBUG_ENABLED)return;
+      const feedback=$('novaImpurityFeedback'),input=$('novaImpurity');
+      if(isSpinning){feedback.textContent='回転終了後に適用してください。';return;}
+      if(input.value.trim()===''||!Number.isFinite(input.valueAsNumber)||input.valueAsNumber<0||input.valueAsNumber>100){feedback.textContent='0～100の数値を入力してください。';return;}
+      normalState.internal={...normalState.internal,impurity:input.valueAsNumber};
+      const saved=persistState();updateDisplay();
+      feedback.textContent='穢れを'+input.valueAsNumber+'ptに変更しました。'+(saved?'保存済み。':'保存に失敗しました。');
+      log('デバッグ：穢れポイント指定 '+input.valueAsNumber+'pt');
+    };
     const normalPanel=document.createElement('details');normalPanel.id='novaNormalConfig';
-    normalPanel.innerHTML='<summary>モード・規定GのCZ抽選・穢れ</summary><output id="novaInternalStatus"></output><label>モード<select id="novaNormalMode">'+NovaNormal.modes.map(mode=>'<option>'+mode+'</option>').join('')+'</select></label><label>天井カウンター<input id="novaNormalGames" type="number" min="0" max="800" value="0"></label><label>内部状態<select id="novaLevel"><option value="low">低確</option><option value="high">高確</option></select></label><label>穢れpt<input id="novaImpurity" type="number" min="0" max="100" value="0"></label><button id="novaApplyInternal" type="button">内部状態を適用</button><p>通常はA800G、B700G、C400G、天国・天国ループ200GでBIG確定。リセット・設定変更後の初回BBまではA・Bを600Gに短縮し、C・天国系は通常の天井を維持します。通常＋CZのG数を数え、ボーナスごとにリセットしてモード昇格を抽選します。AT初当たりまでは降格なし。AT終了時にモードを再抽選します。50Gは天国系でガセCZ、天国系以外でも10%。全モード100GでCZに入り、ボーナス抽選は101Gから再開します。ガセCZはレア役でも成功しません。通常の弱レア役CZ抽選は従来の10%、強チェリーは101G以降に強CZ前兆へ。レア役からの出陣抽選は別に行います。穢れ100ptは次のボーナスで消費し、AT＋特化ゾーンを予約します。</p>';
+    normalPanel.innerHTML='<summary>モード・規定GのCZ抽選・穢れ</summary><output id="novaInternalStatus"></output><label>モード<select id="novaNormalMode">'+NovaNormal.modes.map(mode=>'<option>'+mode+'</option>').join('')+'</select></label><label>天井カウンター<input id="novaNormalGames" type="number" min="0" max="800" value="0"></label><label>内部状態<select id="novaLevel"><option value="low">低確</option><option value="high">高確</option></select></label><button id="novaApplyInternal" type="button">内部状態を適用</button><p>通常はA800G、B700G、C400G、天国・天国ループ200GでBIG確定。リセット・設定変更後の初回BBまではA・Bを600Gに短縮し、C・天国系は通常の天井を維持します。通常＋CZのG数を数え、ボーナスごとにリセットしてモード昇格を抽選します。AT初当たりまでは降格なし。AT終了時にモードを再抽選します。50Gは天国系でガセCZ、天国系以外でも10%。全モード100GでCZに入り、ボーナス抽選は101Gから再開します。ガセCZはレア役でも成功しません。通常の弱レア役CZ抽選は従来の10%、強チェリーは101G以降に強CZ前兆へ。レア役からの出陣抽選は別に行います。穢れ100ptは次のボーナスで消費し、AT＋特化ゾーンを予約します。</p>';
     NovaImpurityHint.mountDebug(normalPanel);
     const impurityRulesNote=document.createElement('p');impurityRulesNote.textContent='穢れ加算：CZ連続失敗1～2回目1pt／3～4回目5pt／5回目以降10pt。BB連続AT非突入1～2回目3pt／3～4回目8pt／5回目以降15pt。400Gで2pt、600Gで3pt、天井5pt、AT駆け抜け5pt。設定4のみ各加算70%。CZ連敗はBB、BB非突入連続回数はAT突入でリセット。';normalPanel.append(impurityRulesNote);
     const resetTable=document.createElement('div');resetTable.innerHTML='<table><tr><th>設定</th>'+NovaNormal.resetImpurityPoints.map(pt=>'<th>'+pt+'pt</th>').join('')+'</tr>'+NovaNormal.resetImpurityWeights.map((row,i)=>'<tr><td>'+(i+1)+'</td>'+row.map(w=>'<td>'+w+'%</td>').join('')+'</tr>').join('')+'</table>';normalPanel.append(resetTable);
@@ -6600,7 +6616,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     normalPanel.append(balanceCzTable);
     const saveNormal=document.createElement('button');saveNormal.textContent='通常設定を保存';saveNormal.onclick=()=>{const c={};normalPanel.querySelectorAll('[data-normal-config]').forEach(x=>c[x.dataset.normalConfig]=x.valueAsNumber);settings.novaNormal=NovaNormal.config(c);renderRoleCzTable();refreshRtpViews();saveNormal.textContent=persistState()?'通常設定を保存しました':'保存に失敗しました';};normalPanel.append(saveNormal);
     document.getElementById('saveFlowConfig').closest('details').after(normalPanel);
-    document.getElementById('novaApplyInternal').onclick=()=>{if(isSpinning||session.active)return;normalState.internal=NovaNormal.normalize({mode:$('novaNormalMode').value,games:$('novaNormalGames').value,modeChecked:Math.floor(Number($('novaNormalGames').value)/100),fiftyChecked:Number($('novaNormalGames').value)>=50,level:$('novaLevel').value,highLeft:$('novaLevel').value==='high'?10:0,impurity:$('novaImpurity').value});persistState();updateDisplay();};
+    document.getElementById('novaApplyInternal').onclick=()=>{if(isSpinning||session.active)return;normalState.internal=NovaNormal.normalize({mode:$('novaNormalMode').value,games:$('novaNormalGames').value,modeChecked:Math.floor(Number($('novaNormalGames').value)/100),fiftyChecked:Number($('novaNormalGames').value)>=50,level:$('novaLevel').value,highLeft:$('novaLevel').value==='high'?10:0,impurity:NovaNormal.normalize(normalState.internal).impurity});persistState();updateDisplay();};
     const artPanel=document.createElement('details');artPanel.id='novaArtConfig';
     artPanel.innerHTML='<summary>AT・特化ゾーン設定</summary><p>初当たりは開始リプレイ成立まで準備（平均3.00G）→赤7→ルーレット→くしゅり＆にと3G。準備中の純増は平均＋1.2pt/Gです。新規ATの初期ptは全設定共通で300pt＋レア役加算です。ATレベルはありません。通常ATは8pt／15ptベルで純増4pt/G、上位AT中は15ptベルで純増4pt/G。上位の直乗せ当選時ptは通常の1.5倍。スイカ・弱チェリーは共通の上乗せ抽選と15%の高確移行、強チェリーは直乗せのみ20%／特化のみ20%／両方20%です。</p><p>出陣はスイカ・弱チェリー・強チェリー成立時の低確率抽選。当選で特化ゾーン確定、突入時はネビュラを狙え（追加BETなし）。フリーズ告知はありません。出陣は10G、ストック率10／25／40／60／80%を抽選し、最低2個を獲得。初当たりの5%はスーパーノヴァチャレンジ（突破50%）。レア役契機・累計差枚＋2,400ptごとのチャレンジは突破65%。10Gでベル・リプレイ・レア役はHOLD、次Gでノヴァを狙え。レア役は突破確定。差枚契機では残りpt・未消化ストックをリセットし、成否とも特化1個で再開します。到達点はAT終了後も引き継ぎます。</p>';
     const commonTable=document.createElement('div');
