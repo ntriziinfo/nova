@@ -27,6 +27,13 @@ globalThis.NovaUpperAtBackground=(()=>{
   const top=Math.max(0,bottom-r.width/scale*.26);
   Object.assign(video.style,{left:(r.left-base.left)/scale+'px',top:top+'px',width:r.width/scale+'px',height:Math.max(40,bottom-top)+'px'});
  }
+ // Coalesce repeated game/observer refreshes into one geometry read per frame.
+ let layoutPending=false;
+ function requestLayout(){
+  if(layoutPending)return;
+  if(!globalThis.requestAnimationFrame){layout();return;}
+  layoutPending=true;requestAnimationFrame(()=>{layoutPending=false;layout();});
+ }
  function play(){
   if(!video||!wanted||video.hidden||blocked()||document.hidden||!video.paused||starting)return;
   if(globalThis.NovaPresentation){NovaPresentation.play(video,()=>wanted&&!video.hidden&&!blocked());return;}
@@ -48,15 +55,17 @@ globalThis.NovaUpperAtBackground=(()=>{
   }
   const src=prelude?'assets/media/nova/at-prelude-background-20261013.mp4':checkpoint?'assets/media/nova/checkpoint-confirmed-background-20261013.mp4':'assets/media/nova/upper-at-background-20261012.mp4';
   if(video.getAttribute('src')!==src){video.pause();video.src=src;video.load?.();}
-  video.dataset.backgroundMovie=String(!prelude);
-  video.hidden=false;layout();play();
+  const backgroundMovie=String(!prelude);
+  if(video.dataset.backgroundMovie!==backgroundMovie)video.dataset.backgroundMovie=backgroundMovie;
+  if(video.hidden)video.hidden=false;
+  requestLayout();play();
  }
  function sync(flow,confirmed=false,atPrelude=false){
   checkpoint=!!confirmed;prelude=!!atPrelude;wanted=prelude||eligible(flow,checkpoint);
   if(init())refresh();
  }
  if(typeof document!=='undefined'){
-  window.addEventListener('resize',layout);
+  window.addEventListener('resize',requestLayout);
   document.addEventListener('visibilitychange',()=>{if(document.hidden)video?.pause();else play();});
   document.addEventListener('pointerdown',play);
  }

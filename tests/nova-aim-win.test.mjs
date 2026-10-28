@@ -515,3 +515,16 @@ test('all Nova, seven and nebula aim cues hide supplementary reverse-order instr
  const t=setup();t.aim.bet(null,{zoneSpin:true,flowBefore:{phase:'art',zone:'ouma'},aimDisplay:{color:null,guide:false}});
  assert.equal(t.elements[0].hidden,true);assert.equal(t.aim.busy,false);
 });
+
+test('NOVA seven and nebula retain the arrow and aim caption while the prose guide stays hidden',()=>{
+ for(const symbol of ['nova','seven','nebula']){
+  const t=setup();
+  if(symbol==='nova')t.aim.bet(null,{researchChallenge:{priorAim:true},aimDisplay:{color:'red'}});
+  else t.aim.bet({symbol,color:'red',result:'BIG',guide:true},{});
+  assert.equal(t.elements.find(e=>e.className==='novaBarAimTitle').hidden,false);
+  assert.equal(t.elements.find(e=>e.className==='novaAimArrow').textContent,'⬅');
+  assert.equal(t.elements.find(e=>e.tag==='strong').textContent,'を狙え！');
+  assert.equal(t.elements.find(e=>e.className==='novaAimReverseNotice').hidden,true);
+  t.aim.reset();assert.equal(t.elements.find(e=>e.className==='novaBarAimTitle').hidden,true);
+ }
+});

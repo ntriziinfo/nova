@@ -48,15 +48,17 @@
     controls.append(button);
     return {target,button,id,label};
   });
+  const setAttribute=(el,key,value)=>{if(el.getAttribute(key)!==value)el.setAttribute(key,value);};
   const sync = () => {
     for (const {target,button,id,label} of pairs) {
-      button.disabled = locked(target);
-      button.textContent = id.startsWith('stop') ? label : target?.textContent || label;
-      if (id === 'quickAutoBtn' || id === 'superSpeedBtn') button.setAttribute('aria-pressed', String(!!target?.classList.contains('on')));
+      const disabled=locked(target),text=id.startsWith('stop')?label:target?.textContent||label;
+      if(button.disabled!==disabled)button.disabled=disabled;
+      if(button.textContent!==text)button.textContent=text;
+      if (id === 'quickAutoBtn' || id === 'superSpeedBtn') setAttribute(button,'aria-pressed', String(!!target?.classList.contains('on')));
       if(id==='superSpeedBtn'){
-        button.title=target?.title || '';button.setAttribute('aria-label','超ハイスピードモード');
+        const title=target?.title||'';if(button.title!==title)button.title=title;setAttribute(button,'aria-label','超ハイスピードモード');
         for(const name of ['aria-expanded','aria-controls','aria-haspopup']){
-          const value=target?.getAttribute(name);if(value!==null&&value!==undefined)button.setAttribute(name,value);
+          const value=target?.getAttribute(name);if(value!==null&&value!==undefined)setAttribute(button,name,value);
         }
       }
     }

@@ -295,7 +295,7 @@ body.layoutEditOpen #novaSuperTitlePreview{display:block;outline:1px dashed #c89
 
 /* One shared symbol motion for NOVA, seven and nebula cues. */
 .novaAimPresentation:is([data-nova-cue="true"],[data-symbol-motion="true"]) .novaBarAimTitle{inset:14% 0;overflow:hidden;}
-.novaAimPresentation:is([data-nova-cue="true"],[data-symbol-motion="true"]) .novaBarAimTitle img{width:60%;height:95%;animation:novaSharedAimPulse .8s ease-in-out infinite;}
+.novaAimPresentation:is([data-nova-cue="true"],[data-symbol-motion="true"]) .novaBarAimTitle img{width:43%;height:95%;flex-shrink:0;animation:novaSharedAimPulse .8s ease-in-out infinite;}
 @keyframes novaSharedAimPulse{0%,100%{transform:scale(.92)}50%{transform:scale(1.08)}}
 .novaAimReverseNotice,#reversePushGuideLayer{display:none!important;}
 body[data-bonus-at-confirmed="true"] .reels{animation:novaBonusAtRainbow 1.4s linear infinite;}
