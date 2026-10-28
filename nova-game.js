@@ -7292,6 +7292,31 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     return pick.column;
   }
 
+  function bellNavigationMiss(spin){
+    return ['BELL','BELL15'].includes(spin?.result)&&spin.bellNaviOrder?.length===3&&
+      (spin.auditPressOrder||spin.auditStopOrder||[]).some((reel,n)=>reel!==spin.bellNaviOrder[n]);
+  }
+
+  function nearestNavigatedBellStop(index,spin,distance){
+    if(!['BELL','BELL15'].includes(spin?.result)||spin.bellNaviOrder?.length!==3)return null;
+    const held=[0,1,2].map(c=>c===index?null:spin.pendingStopColumns?.[c]||
+      (spin.stopped[c]?spin.grid.map(row=>row[c]):null));
+    const matches=(grid,columns)=>columns.every((col,c)=>!col||col.every((v,r)=>grid[r][c]===v));
+    const misses=novaSheetStopChoices('MISS')||[],wrong=bellNavigationMiss(spin);
+    const choices=wrong?misses:novaSheetStopChoices(spin.result)||[];
+    let best=null,bestDistance=Infinity;
+    for(const grid of choices){
+      if(!matches(grid,held))continue;
+      const column=grid.map(row=>row[index]),next=held.slice();next[index]=column;
+      // After the correct first press, a wrong second press must still be able
+      // to finish a listed miss without moving an already stopped reel.
+      if(!wrong&&(spin.auditPressOrder||[]).length===1&&!misses.some(g=>matches(g,next)))continue;
+      const d=distance(column);if(d<bestDistance){best=column;bestDistance=d;}
+    }
+    if(!best)throw new Error('No approved bell-navigation stop');
+    setGridColumn(spin.grid,index,best);return best;
+  }
+
   function prepareManualRareOutcome(spin){
     // Engine flowAfter already includes the bell payout/decrement. Only cash payout changes.
     if(spin?.stopped?.every(Boolean)&&['BELL','BELL15'].includes(spin.result)&&spin.bellNaviOrder?.length===3&&!spin.resolved.bellNaviPenaltyApplied){
@@ -8141,6 +8166,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     if(currentSpin.manualBonusStop){
       setGridColumn(grid, i, col);
     }
+    if(!options.visualReady)col=nearestNavigatedBellStop(i,currentSpin,column=>motionAt?NovaReelMotion.distance(i,column,motionAt):0)||col;
     if(!options.visualReady&&NovaReelMotion.has(i)){
       const spin=currentSpin;
       spin.visualStopping ||= [false,false,false];
@@ -8155,10 +8181,10 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
       }).catch(error=>{console.error(error);spin.visualStopping[i]=false;spin.pendingStopColumns[i]=null;stopBtns[i].disabled=false;persistState();});
       return;
     }
-    const displaySpec = ladderTarget ? RESULT[ladderTarget.result] : spec;
+    const displaySpec = bellNavigationMiss(currentSpin) ? RESULT.MISS : ladderTarget ? RESULT[ladderTarget.result] : spec;
     const label = sortieTarget || novaZoneTarget ? "" : i === 1 ? displaySpec.label : "";
 
-    stopReel(i, col, label, displaySpec.cls, ladderTarget ? (ladderTarget.won?1:null) : sortieTarget || currentSpin.manualBonusStop || result === "MISS" ? null : lineRow, stopOrder);
+    stopReel(i, col, label, displaySpec.cls, ladderTarget ? (ladderTarget.won?1:null) : bellNavigationMiss(currentSpin) || sortieTarget || currentSpin.manualBonusStop || result === "MISS" ? null : lineRow, stopOrder);
     (currentSpin.auditStopOrder ||= []).push(i);
     currentSpin.auditGrid ||= [[],[],[]];
     for(let row=0;row<3;row++)currentSpin.auditGrid[row][i]=col[row];

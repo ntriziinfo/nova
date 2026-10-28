@@ -24,7 +24,7 @@ const isNovaGrid=grid=>[0,1,2].every(r=>[0,1,2].every(c=>grid[r][c]===novaSymbol
 'hasBellDiagonal','cherryResultFromRow','cherryResultFromRows','displayedResultFromGrid',
 'displayedResultFromRow','gridPaylineRows','gridHasOnlyAllowedPaylines','buildNovaReelGrid',
 'normalRewardFor','resolveATypeBonusOutcome','isCherryResult','novaPatternFromGrid','isNovaResult','buildForcedNovaGrid',
-'setGridColumn','nearestCommonStopColumn','pressedStopCandidates','nearestPressedStopColumn','prepareManualRareOutcome','drawSuperNovaBonus','resolveNormalOutcome','decideBigPremiumEffect','drawNormalResult'
+'bellNavigationMiss','nearestNavigatedBellStop','setGridColumn','nearestCommonStopColumn','pressedStopCandidates','nearestPressedStopColumn','prepareManualRareOutcome','drawSuperNovaBonus','resolveNormalOutcome','decideBigPremiumEffect','drawNormalResult'
 ].map(fn).join('\n')+`
 const aTypeBonusRemainingNet=()=>remaining;
 let remaining=1;const session={paid:0,bonusKind:"BIG"};const isATypeBonusComplete=()=>session.paid>=NovaArt.bonusTarget(session.bonusKind);
@@ -103,4 +103,20 @@ test('wrong bell navigation pays zero but retains the engine decrement and outco
 
 test('no miss candidate displays left seven-cherry-seven',()=>{
  for(const role of ['MISS','WEAK_SUICA','WEAK_NOVA','STRONG_NOVA']){context.role=role;assert.equal(run("pressedStopCandidates(role).misses.some(g=>g[0][0]==='7'&&g[1][0]===CHERRY_SYMBOL&&g[2][0]==='7')"),false);}
+});
+
+test('all bell navigation orders land approved wins or misses without moving held reels',()=>{
+ for(const role of ['BELL','BELL15'])for(const nav of orders)for(const order of orders)for(let top=0;top<20;top++){
+  context.role=role;context.nav=nav;context.order=order;context.top=top;
+  const out=run(`(()=>{const spin={result:role,grid:buildNovaReelGrid(role,1),stopped:[false,false,false],bellNaviOrder:nav,auditPressOrder:[],resolved:{reward:role==='BELL'?8:15,flowAfter:{pt:77}}};
+   for(const i of order){const before=spin.grid.map(r=>r.slice());spin.auditPressOrder.push(i);
+    nearestNavigatedBellStop(i,spin,col=>Math.min(...REEL_STRIPS[i].flatMap((_,n)=>col.every((v,r)=>REEL_STRIPS[i][(n+r)%20]===v)?[mod(top+.5-n,20)]:[])));
+    for(let c=0;c<3;c++)if(spin.stopped[c]&&before.some((r,n)=>r[c]!==spin.grid[n][c]))throw Error('Moved stopped reel');
+    spin.stopped[i]=true;
+   }
+   const wrong=bellNavigationMiss(spin);prepareManualRareOutcome(spin);
+   return {wrong,paid:spin.resolved.reward,pt:spin.resolved.flowAfter.pt,listed:(novaSheetStopChoices(wrong?'MISS':role)||[]).some(g=>JSON.stringify(g)===JSON.stringify(spin.grid)),shown:displayedResultFromGrid(spin.grid)};
+  })()`);
+  assert.equal(out.wrong,nav.join()!==order.join());assert.equal(out.listed,true);assert.equal(out.shown,out.wrong?'MISS':role);assert.equal(out.paid,out.wrong?0:role==='BELL'?8:15);assert.equal(out.pt,77);
+ }
 });
