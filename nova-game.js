@@ -5125,6 +5125,7 @@
   }
 
   function playNormalBgm(){
+    if(globalThis.NovaCzPresentation?.failureActive){pauseNormalBgm();return;}
     if(globalThis.NovaCompletePresentation?.active)return;
     if(globalThis.NovaRushConfirm?.active)return;
     const initialDuoZone=NovaInitialDuo.eligible(presentedArtFlow());
@@ -7741,6 +7742,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     let superSpeedStartedAt = superSpeedActive ? performance.now() : null;
     if(superSpeedActive)superSpeedNextBetAt=superSpeedStartedAt+autoStopDelayMs(2)+autoScaledDelayMs(RESULT_WAIT_MS)+autoDelayMs();
 
+    if(NovaCzPresentation.failureActive){NovaCzPresentation.clearFailureOnBet();playNormalBgm();}
     fadeAimWinSoundsOnBet();
     NovaDirectAward.clear();
     NovaSortie.clear();
@@ -8601,6 +8603,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
   function playCzFailureSound(resolved){
     if(!resolved||resolved.czFailurePushPlayed)return;
     resolved.czFailurePushPlayed=true;
+    pauseNormalBgm();
     playOneShotSound('assets/media/nova/cz-failure-blackout-20261027.mp3',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
   }
 
