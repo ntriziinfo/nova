@@ -14,11 +14,22 @@ const target={bgm:-18,voice:-14,sfx:-16,payout:-18,movie:-18};
 const context=vm.createContext({});
 vm.runInContext(fs.readFileSync(path.join(root,'nova-voice-catalog.js'),'utf8'),context);
 const voices=new Set(context.NovaVoiceCatalog.CHARACTER_VOICE_SRCS.map(s=>s.split('?')[0]));
+// These sources were already mastered when they were supplied. Keep their
+// exact bytes, but measure and register them so every audible asset is covered
+// by the same report and manifest rather than silently bypassing validation.
+const preNormalizedSources=new Map([
+ ['assets/media/nova/cz_remaining_1.wav','voice'],
+ ['assets/media/nova/upper-at-bgm-1287779-20261027.mp3','bgm'],
+ ['assets/media/nova/upper-at-bgm-805028-20261027.mp3','bgm']
+]);
+const manifestDeliverySourceOverrides=new Map([
+ ['assets/media/nova/upper-at-bgm.mp3','assets/media/nova/upper-at-bgm-1287779-20261027.mp3']
+]);
 const bgm=new Set(['sosuke-bgm','toto-bgm','urapi-bgm','sora-bgm','giru-bgm','oumafreez','initial-duo-bgm','sortie-bgm','RUSH','upper-at-bgm','checkpoint-bgm','BIG','audiostock_860274','audiostock_1117081','audiostock_862200','audiostock_933855','audiostock_932814','NovaREG','rush-confirm-bgm','result-eyecatch','bonus_art_end','bonus_end','big_1','big_2','big_50g','reg_bonus','premium_big_first','premium_big_second']);
 const payout=new Set(['bell','bell_payout','replay','cherry','special_symbol','premium_piero_symbol']);
 const category=src=>voices.has(src)||/\/(?:setting_voice_|premium_.*(?:voice|bb2_bgm)|bar_wo_nerae|big_kakutei|reg_kakutei)/.test(src)?'voice':bgm.has(path.parse(src).name)?'bgm':payout.has(path.parse(src).name)?'payout':src.endsWith('.mp4')?'movie':'sfx';
 const walk=dir=>fs.readdirSync(path.join(root,dir),{withFileTypes:true}).flatMap(item=>item.isDirectory()?walk(dir+'/'+item.name):[dir+'/'+item.name]);
-const sources=walk('assets/media/nova').concat(walk('assets/media/jag')).filter(s=>/\.(wav|mp3)$/.test(s));
+const sources=walk('assets/media/nova').concat(walk('assets/media/jag')).filter(s=>/\.(wav|mp3)$/.test(s)&&!preNormalizedSources.has(s));
 // Other movie players are intentionally muted and use separate audio tracks.
 sources.push('assets/media/jag/premium_big_confirm_movie.mp4');
 const hash=file=>createHash('sha256').update(fs.readFileSync(file)).digest('hex');
@@ -28,7 +39,18 @@ function measure(file,I,speechOnly=false){const r=run('ffmpeg',['-hide_banner','
 fs.mkdirSync(path.join(root,outputRoot),{recursive:true});
 const reportFile=path.join(root,'audio-normalization.json');
 const previous=fs.existsSync(reportFile)?JSON.parse(fs.readFileSync(reportFile,'utf8')).files:[];
-const report={version:2,targetsLufs:target,truePeakCeilingDbtp:-1,measurement:'ITU loudness via FFmpeg loudnorm, dual mono, 1 second measurement-only silence padding. Voice v2 measures audible speech after measurement-only -40dB silence removal; delivery retains all original pauses and duration',processing:'Constant gain; oversampled peak limiting only where necessary. Original duration and sample rate retained. No training or external audio processing.',files:[]};
+const preNormalizedFiles=[...preNormalizedSources].map(([src,group])=>{
+ const input=path.join(root,src),format=probe(input),I=target[group];
+ if(!format)throw Error('Missing audio stream '+src);
+ const output=(group==='voice'?voiceOutputRoot:outputRoot)+'/'+src.replace('assets/media/',''),out=path.join(root,output);
+ fs.mkdirSync(path.dirname(out),{recursive:true});
+ if(!fs.existsSync(out)||hash(out)!==hash(input))fs.copyFileSync(input,out);
+ const delivered=probe(out),after=measure(out,I,group==='voice');
+ if(Math.abs(after.lufs-I)>.3||after.peakDbtp>-1)throw Error('Pre-normalized source outside tolerance: '+src+' '+JSON.stringify(after));
+ if(Math.abs(delivered.duration-format.duration)>.06)throw Error('Duration changed: '+src);
+ return {src,category:group,targetLufs:I,output,sourceSha256:hash(input),outputSha256:hash(out),...format,outputDuration:delivered.duration,after,processing:'pre-normalized source copied byte-for-byte; no second gain pass'};
+});
+const report={version:2,targetsLufs:target,truePeakCeilingDbtp:-1,measurement:'ITU loudness via FFmpeg loudnorm, dual mono, 1 second measurement-only silence padding. Voice v2 measures audible speech after measurement-only -40dB silence removal; delivery retains all original pauses and duration',processing:'Constant gain; oversampled peak limiting only where necessary. Original duration and sample rate retained. No training or external audio processing.',preNormalizedFiles,files:[]};
 for(const src of sources.sort()){
  const input=path.join(root,src),sourceSha256=hash(input),group=category(src),I=target[group];
  const old=previous.find(f=>f.src===src&&f.sourceSha256===sourceSha256&&f.targetLufs===I&&(group!=='voice'||f.measurementVersion===voiceMeasurementVersion));
@@ -57,5 +79,7 @@ for(const src of sources.sort()){
  console.log(`${report.files.length}/${sources.length} ${group} ${src}: ${before.lufs} -> ${after.lufs} LUFS, peak ${after.peakDbtp}`);
 }
 fs.writeFileSync(reportFile,JSON.stringify(report,null,2)+'\n');
-fs.writeFileSync(path.join(root,'nova-audio-manifest.js'),'// Generated by scripts/normalize-audio.mjs. Source recordings stay untouched.\n'+'globalThis.NovaAudioManifest=Object.freeze('+JSON.stringify(Object.fromEntries(report.files.map(f=>[f.src,{src:f.output,category:f.category}])) ,null,2)+');\n');
-console.log(`Verified ${report.files.length} normalized copies. Originals unchanged.`);
+const manifestFiles=[...report.files,...preNormalizedFiles];
+const manifestBySource=new Map(manifestFiles.map(f=>[f.src,f]));
+fs.writeFileSync(path.join(root,'nova-audio-manifest.js'),'// Generated by scripts/normalize-audio.mjs. Source recordings stay untouched.\n'+'globalThis.NovaAudioManifest=Object.freeze('+JSON.stringify(Object.fromEntries(manifestFiles.map(f=>{const override=manifestDeliverySourceOverrides.get(f.src);return [f.src,{src:override?manifestBySource.get(override)?.output??override:f.output,category:f.category}];})) ,null,2)+');\n');
+console.log(`Verified ${report.files.length} normalized copies and ${preNormalizedFiles.length} pre-mastered sources. Originals unchanged.`);

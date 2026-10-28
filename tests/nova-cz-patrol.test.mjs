@@ -1,9 +1,16 @@
 import {readGameSource} from '../scripts/game-source.mjs';
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
 const html=readGameSource(),calls=[],oneShots=[],machine={dataset:{czLamp:'0',czRainbow:'false'}};
-const ctx=vm.createContext({document:{getElementById:()=>machine},sfxOutputVolume:()=>.6,playOneShotSound:(...args)=>oneShots.push(args),playLockedBonusConfirmSound:(...args)=>calls.push(args)});
+const promptVoices={default:'default.wav',chance:'chance.wav',hot:'hot.wav',veryHot:'very-hot.wav'};
+const ctx=vm.createContext({document:{getElementById:()=>machine},CZ_PUSH_PROMPT_VOICE_SRCS:promptVoices,sfxOutputVolume:()=>.6,voiceOutputVolume:()=>.4,pauseNormalBgm:()=>{},playOneShotSound:(...args)=>oneShots.push(args),playLockedBonusConfirmSound:(...args)=>calls.push(args)});
 vm.runInContext(fs.readFileSync('nova-flow.js','utf8'),ctx);vm.runInContext(fs.readFileSync('nova-cz-push.js','utf8'),ctx);ctx.settings={setting:1};ctx.normalState={};
-for(const name of ['playCzConfirmedSound','playCzFailureSound','showCzLamp'])vm.runInContext(html.match(new RegExp('  function '+name+'\\([^]*?\\n  }'))[0],ctx);
+for(const name of ['playCzPushPromptVoice','playCzConfirmedSound','playCzFailureSound','showCzLamp'])vm.runInContext(html.match(new RegExp('  function '+name+'\\([^]*?\\n  }'))[0],ctx);
+test('CZ PUSH prompt voices follow the offered visual tier',()=>{
+ oneShots.length=0;
+ for(const voice of ['default','chance','hot','veryHot'])ctx.playCzPushPromptVoice({voice});
+ ctx.playCzPushPromptVoice({voice:'unknown'});
+ assert.deepEqual(JSON.parse(JSON.stringify(oneShots)),Object.values(promptVoices).map(src=>[src,.4,{allowDuringPremiumConfirm:true}]));
+});
 test('full and rainbow confirmation play exactly once despite repeated finish callbacks',()=>{
  for(const rainbow of [false,true]){
   calls.length=0;machine.dataset.czLamp='0';machine.dataset.czRainbow='false';

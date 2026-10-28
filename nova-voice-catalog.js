@@ -135,6 +135,12 @@ globalThis.NovaVoiceCatalog=(()=>{
       "hot": "assets/media/nova/rare-cue-hot-nito.wav"
     }
   };
+  const CZ_PUSH_PROMPT_VOICE_SRCS=Object.freeze({
+    default:'assets/media/nova/cz-push-default-sosuke.wav',
+    chance:'assets/media/nova/cz-push-chance-sosuke.wav',
+    hot:'assets/media/nova/cz-push-confirm-hot-sosuke.wav',
+    veryHot:'assets/media/nova/cz-push-confirm-very-hot-sosuke.wav'
+  });
   // Register new character lines here (or in the banks above). Game copies are
   // loudness-normalized offline; preserve supplied originals separately.
   const CHARACTER_VOICE_SRCS=Object.freeze([
@@ -147,6 +153,7 @@ globalThis.NovaVoiceCatalog=(()=>{
     ...Object.values(GIRU_LADDER_VOICE_SRCS).flat(),
     ...SOSUKE_LADDER_VOICE_SRCS,
     ...Object.values(RARE_CUE_VOICE_SRCS).flatMap(bank=>Object.values(bank)),
+    ...Object.values(CZ_PUSH_PROMPT_VOICE_SRCS),
     'assets/media/nova/aim/bonus-nebula-win.wav','assets/media/nova/aim/zone-roulette-confirm.wav?v=20260919-roulette-voice',
     'assets/media/nova/cz_remaining_1.wav','assets/media/jag/cz_remaining_3.wav?v=count2','assets/media/jag/cz_remaining_2.wav?v=count2','assets/media/jag/cz_last.wav?v=count2',
     ...Object.values(SORTIE_AWARD_VOICE_SRCS)
@@ -166,6 +173,7 @@ globalThis.NovaVoiceCatalog=(()=>{
     GIRU_LADDER_VOICE_SRCS,
     SOSUKE_LADDER_VOICE_SRCS,
     RARE_CUE_VOICE_SRCS,
+    CZ_PUSH_PROMPT_VOICE_SRCS,
     CHARACTER_VOICE_SRCS
   });
 })();

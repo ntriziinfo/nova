@@ -30,7 +30,7 @@
 <link rel="preload" as="image" href="assets/buttons/btn_speed_half_blue.png" media="(min-width:1025px)">
 <link rel="preload" as="image" href="assets/controls/start_lever_ball.png">
 <link rel="preload" as="image" href="assets/controls/stop_button_red_cut.png">
-<link rel="stylesheet" href="nova-game.css?v=20261028-current-reels">
+<link rel="stylesheet" href="nova-game.css?v=20261028-auto-stop-control">
 <link rel="stylesheet" href="nova-data-counter.css?v=20261027-cherry-reels">
 <link rel="stylesheet" href="nova-cabinet.css?v=20261028-sortie-aim-hot-layout">
 <link rel="stylesheet" href="nova-remaining-counters.css?v=20261013-checkpoint-cue">
@@ -39,8 +39,8 @@
 <script src="nova-artwork.js?v=20261028-render-diff" defer></script>
 <link rel="stylesheet" href="nova-upper-at-background.css?v=20261013-checkpoint-cue">
 <script src="nova-upper-at-background.js?v=20261028-aim-caption"></script>
-<script src="nova-voice-catalog.js?v=20261028-bell-fail-sortie-gap"></script>
-<script src="nova-audio-manifest.js?v=20261028-sortie-sandwich-audio-stop3"></script>
+<script src="nova-voice-catalog.js?v=20261028-cz-push-voices"></script>
+<script src="nova-audio-manifest.js?v=20261028-all-audio-normalized"></script>
 <script src="nova-audio-assets.js?v=20261012-normalized"></script>
 <script src="nova-audio.js?v=20261012-normalized"></script>
 <script src="nova-frame-clock.js?v=20261027-60fps"></script>
@@ -54,7 +54,7 @@
 <link rel="stylesheet" href="nova-ladder-presentation.css?v=20260917-initial-131">
 <script src="nova-ladder-presentation.js?v=20261028-decisive-cue"></script>
 <link rel="stylesheet" href="nova-bell-navi.css?v=20261027-next-size">
-<script src="nova-bell-navi.js?v=20261028-bell-fail-sortie-gap"></script>
+<script src="nova-bell-navi.js?v=20261028-auto-stop-control"></script>
 <script src="nova-sortie-presentation.js?v=20261028-sortie-sandwich-audio-stop3"></script>
 <script src="nova-stock-entry.js?v=20261028-decisive-cue"></script>
 <link rel="stylesheet" href="nova-initial-duo.css?v=20260928-duo-157">
@@ -124,6 +124,16 @@
     <button id="novaFlowGuideRetry" type="button" hidden>再読み込み</button>
     <img id="novaFlowGuideImage" width="1697" height="2400" decoding="async" alt="通常時からCZ、BIG、AT初当たりまでのゲームフロー">
   </div>
+</dialog>
+<dialog id="autoStopOrderDialog" class="autoStopOrderDialog" aria-labelledby="autoStopOrderTitle">
+  <h2 id="autoStopOrderTitle">AUTO停止順を選択</h2>
+  <p>通常AUTO・超スピード共通</p>
+  <div class="autoStopOrderChoices">
+    <button type="button" data-auto-stop-order="normal"><b>順押し</b><span>左 → 中 → 右</span></button>
+    <button type="button" data-auto-stop-order="middle"><b>中押し</b><span>中 → 左 → 右</span></button>
+    <button type="button" data-auto-stop-order="scissors"><b>はさみ打ち</b><span>左 → 右 → 中</span></button>
+  </div>
+  <button type="button" id="autoStopOrderCancel">キャンセル</button>
 </dialog>
 <div id="storageStatus" class="storageStatus" role="alert" hidden><span id="storageStatusMessage"></span><button id="retryStateSave" type="button">再保存</button></div>
 <div id="playAccessStatus" class="playAccessStatus" role="alertdialog" aria-modal="true" aria-labelledby="playAccessMessage" hidden><div><p id="playAccessMessage"></p><button id="reloadPlayAccess" type="button">再読み込み</button></div></div>
@@ -225,14 +235,14 @@
         </button>
         <div class="pageZoomControls" aria-label="画面倍率">
           <button class="pageZoomBtn" id="pageZoomOutBtn" type="button" title="縮小" aria-label="画面を縮小">−</button>
-          <input id="pageZoomRange" type="range" min="5" max="200" step="5" value="100" aria-label="筐体サイズ（5〜200%）" title="筐体サイズ 5〜200%" style="width:80px;min-width:0" />
-          <button class="pageZoomBtn zoomReset" id="pageZoomResetBtn" type="button" title="100%に戻す" aria-label="画面倍率を100%に戻す"><span id="pageZoomView">100%</span></button>
+          <input id="pageZoomRange" type="range" min="5" max="200" step="5" value="55" aria-label="筐体サイズ（5〜200%）" title="筐体サイズ 5〜200%" style="width:80px;min-width:0" />
+          <button class="pageZoomBtn zoomReset" id="pageZoomResetBtn" type="button" title="標準倍率に戻す" aria-label="画面倍率を標準に戻す"><span id="pageZoomView">55%</span></button>
           <button class="pageZoomBtn" id="pageZoomInBtn" type="button" title="拡大" aria-label="画面を拡大">＋</button>
         </div>
         <div class="pagePanControl" aria-label="Horizontal position">
           <span class="pagePanLabel">X</span>
-          <input class="pagePanRange" id="pagePanRange" type="range" min="-260" max="260" step="1" value="0" aria-label="Horizontal position">
-          <button class="pagePanResetBtn" id="pagePanResetBtn" type="button" title="Reset X" aria-label="Reset horizontal position"><span id="pagePanView">0</span></button>
+          <input class="pagePanRange" id="pagePanRange" type="range" min="-260" max="260" step="1" value="-260" aria-label="Horizontal position">
+          <button class="pagePanResetBtn" id="pagePanResetBtn" type="button" title="Reset X" aria-label="Reset horizontal position"><span id="pagePanView">-260</span></button>
         </div>
         <button class="layoutEditToggleBtn" id="layoutEditToggleBtn" type="button" aria-expanded="false" aria-controls="layoutEditorPanel" title="配置調整">配置</button>
         <div class="layoutEditorPanel" id="layoutEditorPanel" aria-label="配置調整">
@@ -878,17 +888,17 @@
 <audio id="voiceSound" preload="auto"></audio>
 
 <script src="nova-store-resume.js?v=20261015-mode-history"></script>
-<script src="nova-spin-resume.js?v=20261028-sortie-sandwich-audio-stop3"></script>
+<script src="nova-spin-resume.js?v=20261028-auto-stop-control"></script>
 <script src="nova-play-access.js?v=20261001-save-recovery"></script>
 <script src="nova-history.js?v=20261001-history-performance"></script>
 <script src="nova-role-counter.js?v=20261014-role-counter-suica3-cherry2-v1"></script>
 <script src="nova-data-counter.js?v=20261028-render-diff"></script>
 <script src="nova-display-group.js?v=20261027-group"></script>
 <script src="nova-sortie-aim.js?v=20261028-sortie-aim-hot-layout"></script>
-<script src="nova-cz-push.js?v=20261028-cz-win-green"></script>
+<script src="nova-cz-push.js?v=20261028-cz-push-voices"></script>
 <script src="nova-impurity-hint.js?v=20261028-smooth"></script>
 <script src="nova-reel-reference.js?v=20261028-left-reference"></script>
-<script src="nova-game.js?v=20261028-sortie-aim-hot-layout"></script>
+<script src="nova-game.js?v=20261028-auto-stop-control"></script>
 <button type="button" id="novaSymbolPreviewOpen">チェリー・ノヴァ（BAR）停止形を確認</button>
 <dialog id="novaSymbolPreview"><h2>チェリー・ノヴァ（BAR）停止形</h2><label>出目<select id="novaPatternSelect"><option value="WEAK_NOVA">弱チェリー：左上段・下段</option><option value="STRONG_MIDDLE">強チェリー：右下がり</option><option value="STRONG_RIGHT">強チェリー：右上がり</option><option value="SUPER_NOVA" selected>ノヴァ（BAR）揃い</option></select></label><p id="novaPatternDescription"></p><div id="novaSymbolPreviewGrid"></div><p>出目の確認用です。通常時のノヴァ（BAR）揃いはBIG・フリーズ各50%。ボーナス中は対象外。弱チェリー・強チェリーはそれぞれ既存の抽選を維持します。</p><button type="button" id="novaSymbolPreviewClose">閉じる</button></dialog>
 </body>

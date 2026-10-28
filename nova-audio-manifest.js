@@ -284,6 +284,22 @@ globalThis.NovaAudioManifest=Object.freeze({
     "src": "assets/media/normalized-20261012/nova/cz-failure-blackout-20261027.wav",
     "category": "sfx"
   },
+  "assets/media/nova/cz-push-chance-sosuke.wav": {
+    "src": "assets/media/normalized-voices-20261013/nova/cz-push-chance-sosuke.wav",
+    "category": "voice"
+  },
+  "assets/media/nova/cz-push-confirm-hot-sosuke.wav": {
+    "src": "assets/media/normalized-voices-20261013/nova/cz-push-confirm-hot-sosuke.wav",
+    "category": "voice"
+  },
+  "assets/media/nova/cz-push-confirm-very-hot-sosuke.wav": {
+    "src": "assets/media/normalized-voices-20261013/nova/cz-push-confirm-very-hot-sosuke.wav",
+    "category": "voice"
+  },
+  "assets/media/nova/cz-push-default-sosuke.wav": {
+    "src": "assets/media/normalized-voices-20261013/nova/cz-push-default-sosuke.wav",
+    "category": "voice"
+  },
   "assets/media/nova/cz-success-push-20261027.mp3": {
     "src": "assets/media/normalized-20261012/nova/cz-success-push-20261027.wav",
     "category": "sfx"
@@ -669,7 +685,7 @@ globalThis.NovaAudioManifest=Object.freeze({
     "category": "bgm"
   },
   "assets/media/nova/upper-at-bgm.mp3": {
-    "src": "assets/media/nova/upper-at-bgm-1287779-20261027.mp3",
+    "src": "assets/media/normalized-20261012/nova/upper-at-bgm-1287779-20261027.mp3",
     "category": "bgm"
   },
   "assets/media/nova/urapi-bgm.wav": {
@@ -711,5 +727,17 @@ globalThis.NovaAudioManifest=Object.freeze({
   "assets/media/nova/zone-start-ura-sora.wav": {
     "src": "assets/media/normalized-voices-20261013/nova/zone-start-ura-sora.wav",
     "category": "voice"
+  },
+  "assets/media/nova/cz_remaining_1.wav": {
+    "src": "assets/media/normalized-voices-20261013/nova/cz_remaining_1.wav",
+    "category": "voice"
+  },
+  "assets/media/nova/upper-at-bgm-1287779-20261027.mp3": {
+    "src": "assets/media/normalized-20261012/nova/upper-at-bgm-1287779-20261027.mp3",
+    "category": "bgm"
+  },
+  "assets/media/nova/upper-at-bgm-805028-20261027.mp3": {
+    "src": "assets/media/normalized-20261012/nova/upper-at-bgm-805028-20261027.mp3",
+    "category": "bgm"
   }
 });

@@ -363,6 +363,7 @@
     bellAdd:0,
 
     autoDelay:0.5,
+    autoStopOrderMode:"normal",
     masterVolume:DEFAULT_MASTER_VOLUME,
     bgmVolume:DEFAULT_BGM_VOLUME,
     sfxVolume:DEFAULT_SFX_VOLUME,
@@ -648,7 +649,17 @@
   const COMPLETE_TRIAL_ENABLED = true; // Live play only; simulations set their own uncapped policy.
   const SLUMP_MAX_HISTORY_POINTS = 20000;
   const SLUMP_MAX_DRAW_POINTS = 1400;
+  const AUTO_STOP_ORDERS = Object.freeze({
+    normal:Object.freeze([0,1,2]),
+    middle:Object.freeze([1,0,2]),
+    scissors:Object.freeze([0,2,1])
+  });
+  const AUTO_STOP_ORDER_LABELS = Object.freeze({normal:"順押し",middle:"中押し",scissors:"はさみ打ち"});
   let autoPlay = false;
+  let autoStopOrderMode = "normal";
+  let pendingAutoSuperSpeedMode = "";
+  function normalizeAutoStopOrderMode(mode){return Object.hasOwn(AUTO_STOP_ORDERS,mode)?mode:"normal";}
+  function autoStopOrderForMode(mode=autoStopOrderMode){return AUTO_STOP_ORDERS[normalizeAutoStopOrderMode(mode)].slice();}
   let autoTimer = null;
   let autoWatchdogTimer = null;
   let czIntroVoiceHold = null;
@@ -831,6 +842,7 @@
   const GIRU_LADDER_VOICE_SRCS=NovaVoiceCatalog.GIRU_LADDER_VOICE_SRCS;
   const SOSUKE_LADDER_VOICE_SRCS=NovaVoiceCatalog.SOSUKE_LADDER_VOICE_SRCS;
   const RARE_CUE_VOICE_SRCS=NovaVoiceCatalog.RARE_CUE_VOICE_SRCS;
+  const CZ_PUSH_PROMPT_VOICE_SRCS=NovaVoiceCatalog.CZ_PUSH_PROMPT_VOICE_SRCS;
   const CHARACTER_VOICE_SRCS=NovaVoiceCatalog.CHARACTER_VOICE_SRCS;
   const CHARACTER_VOICE_KEYS=new Set(CHARACTER_VOICE_SRCS.map(normalizedAudioSourceKey));
   // Voice loudness is now mastered in the files; the bus must stay at unity.
@@ -911,8 +923,8 @@
   }
   setAdminConnectionState("connecting");
   if(SLOT_DEBUG_ENABLED) document.body.classList.add("debugMode");
-  const PAGE_ZOOM_STORAGE_KEY = "nova_unified_page_zoom_v4";
-  const PAGE_PAN_STORAGE_KEY = "nova_unified_page_pan_x_v4";
+  const PAGE_ZOOM_STORAGE_KEY = "nova_unified_page_zoom_v5";
+  const PAGE_PAN_STORAGE_KEY = "nova_unified_page_pan_x_v5";
   const LAYOUT_EDIT_STORAGE_KEY = "nova_layout_editor_locked_20261027d";
   const LAYOUT_DEFAULT_STORAGE_KEY = "nova_layout_default_locked_20261027d";
   const LAYOUT_EDITOR_ENABLED = SLOT_DEBUG_ENABLED;
@@ -920,14 +932,14 @@
   const PAGE_ZOOM_MIN = 0.05;
   const PAGE_ZOOM_MAX = 2.00;
   const PAGE_ZOOM_STEP = 0.05;
-  const PAGE_ZOOM_DEFAULT = 1.35;
+  const PAGE_ZOOM_DEFAULT = 0.55;
   const PAGE_PAN_MIN = -260;
   const PAGE_PAN_MAX = 260;
   const PAGE_ZOOM_BASE = 1.00;
   const CABINET_X_OFFSET_AT_75 = 0;
   const CABINET_X_OFFSET_AT_100 = 0;
   const CABINET_X_OFFSET_AT_130 = 0;
-  const PAGE_PAN_DEFAULT = -125;
+  const PAGE_PAN_DEFAULT = -260;
   const SLOT_ZOOM_ANCHOR_X = 680;
   const SLOT_ZOOM_ANCHOR_Y = 500;
 
@@ -3832,6 +3844,8 @@
       if(data?.settings){
         const previousAudioBalance = data.settings.audioBalanceVersion || 0;
         settings = {...settings, ...data.settings};
+        settings.autoStopOrderMode=["normal","middle","scissors"].includes(settings.autoStopOrderMode)?settings.autoStopOrderMode:"normal";
+        autoStopOrderMode=settings.autoStopOrderMode;
         if(previousAudioBalance < AUDIO_BALANCE_VERSION){
           const savedBgmVolume = Number(settings.bgmVolume);
           const savedSfxVolume = Number(settings.sfxVolume);
@@ -4209,6 +4223,7 @@
         stSpins: settings.stSpins,
         oddsMultiplier: settings.oddsMultiplier,
         autoDelay: settings.autoDelay,
+        autoStopOrderMode: settings.autoStopOrderMode,
         masterVolume: settings.masterVolume,
         bgmVolume: settings.bgmVolume,
         sfxVolume: settings.sfxVolume,
@@ -4485,6 +4500,8 @@
 
   function readSettings(){
     settings.title = normalizeMachineTitle($("titleInput").value);
+    settings.autoStopOrderMode=["normal","middle","scissors"].includes(settings.autoStopOrderMode)?settings.autoStopOrderMode:"normal";
+    autoStopOrderMode=settings.autoStopOrderMode;
     const previousSetting = Number(settings.setting) || 1;
     settings.setting = clamp(Number($("settingSelect").value) || 1, 1, 6);
     if(settings.setting !== previousSetting){
@@ -7238,19 +7255,21 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
   }
 
   const novaStopGridCache = new Map();
-  function buildNovaReelGrid(result, winRow=1, firstReel=0){
+  function buildNovaReelGrid(result, winRow=1, firstReel=0, options={}){
     result = normalizeATypeResult(result);
     if(isNovaResult(result)) return buildForcedNovaGrid(result);
     if(result === "CZ" || result === "STRONG_CZ") result = "MISS";
     const spec = RESULT[result] || RESULT.MISS;
     if(isMiddleLineOnlyResult(result)||NovaNormal.rare[result]||result==='BELL15') winRow = 1;
-    const cacheKey = result + ":" + winRow + (result==='BELL15'?':'+firstReel:'');
+    const autoMissBarBottom=result==='MISS'&&!!options.autoMissBarBottom;
+    const cacheKey = result + ":" + winRow + (result==='BELL15'?':'+firstReel:'') + (autoMissBarBottom?':auto-left-bottom-bar':'');
     const cached = novaStopGridCache.get(cacheKey);
     if(cached){
       const selected=cached[Math.floor(Math.random()*cached.length)];
       return selected?.novaSheetRole?copyNovaSheetGrid(selected,selected.novaSheetRole):selected.map(row=>row.slice());
     }
-    const sheetChoices=novaSheetStopChoices(result);
+    const allSheetChoices=novaSheetStopChoices(result);
+    const sheetChoices=autoMissBarBottom?allSheetChoices?.filter(grid=>grid?.[2]?.[0]==='BAR'):allSheetChoices;
     if(sheetChoices?.length){
       const grids=sheetChoices.map(grid=>copyNovaSheetGrid(grid,result));
       novaStopGridCache.set(cacheKey,grids);
@@ -7296,6 +7315,22 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     const value={wins,misses};pressedStopCache.set(key,value);return value;
   }
 
+  function standardAutoMissBarBottomEligible(spin){
+    const resolved=spin?.resolved;
+    return spin?.result==='MISS'&&!spin?.zoneActiveAtStart&&!spin?.reversePushGuide&&!spin?.reachMeLine&&
+      !resolved?.aim&&!resolved?.researchSortie&&!resolved?.stockEntry&&!resolved?.sortieEntry&&!resolved?.researchChallenge?.priorAim&&
+      !resolved?.zoneSpin&&!(resolved?.bonusPendingAtStart&&resolved?.bonusReady&&!resolved?.bonusWaitSpin);
+  }
+
+  function commitAutoMissBarBottom(spin){
+    if(!standardAutoMissBarBottomEligible(spin)){if(spin)spin.autoMissBarBottom=false;return false;}
+    const held=[0,1,2].map(c=>spin.pendingStopColumns?.[c]||(spin.stopped?.[c]?spin.grid.map(row=>row[c]):null));
+    const compatible=pressedStopCandidates('MISS').misses.some(grid=>grid?.[2]?.[0]==='BAR'&&
+      held.every((column,c)=>!column||column.every((value,row)=>grid[row][c]===value)));
+    spin.autoMissBarBottom=compatible;
+    return compatible;
+  }
+
   function nearestPressedStopColumn(index,spin,distance,automatic=false){
     const rare=['WEAK_SUICA','WEAK_NOVA','STRONG_NOVA'].includes(spin.result);
     const ordinary=['MISS','ONE_COIN','CZ','STRONG_CZ'].includes(spin.result);
@@ -7303,6 +7338,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     const held=spin.pressStopColumns||[0,1,2].map(c=>spin.pendingStopColumns?.[c]||
       (spin.stopped[c]?spin.grid.map(row=>row[c]):null));
     const candidates=rare||ordinary?pressedStopCandidates(ordinary?'MISS':spin.result):{wins:novaSheetStopChoices('BELL15')||[],misses:[]};
+    const ordinaryMisses=ordinary&&spin.autoMissBarBottom?candidates.misses.filter(grid=>grid?.[2]?.[0]==='BAR'):candidates.misses;
     const choose=(grids,limit)=>{
       let best=null,bestDistance=Infinity;const seen=new Set();
       for(const grid of grids){
@@ -7314,7 +7350,20 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
       }
       return best;
     };
-    let pick=!spin.rareRoleMissed?choose(ordinary?candidates.misses:candidates.wins,ordinary||rare&&!automatic?4:Infinity):null;
+    let pick=null;
+    const firstManualMiddle=ordinary&&!automatic&&index===1&&spin.auditPressOrder?.length===1&&spin.auditPressOrder[0]===1&&
+      !spin.zoneActiveAtStart&&!spin.reversePushGuide&&!spin.resolved?.researchSortie&&!spin.resolved?.stockEntry&&!spin.resolved?.sortieEntry;
+    if(firstManualMiddle){
+      const nebulaIndex=REEL_STRIPS[1].indexOf(NEBULA_SYMBOL);
+      const nebulaColumn=nebulaIndex<0?null:reelWindowFromTopIndex(1,nebulaIndex);
+      const nebulaDistance=nebulaColumn?distance(nebulaColumn):Infinity;
+      if(nebulaDistance<4-1e-9){
+        const compatible=ordinaryMisses.find(grid=>held.every((col,c)=>!col||col.every((v,r)=>grid[r][c]===v))&&
+          nebulaColumn.every((v,r)=>grid[r][1]===v));
+        if(compatible)pick={column:nebulaColumn,grid:compatible,distance:nebulaDistance};
+      }
+    }
+    if(!pick&&!spin.rareRoleMissed)pick=choose(ordinary?ordinaryMisses:candidates.wins,ordinary||rare&&!automatic?4:Infinity);
     if(!pick&&rare){
       pick=choose(candidates.misses,Infinity);
       if(pick)spin.rareRoleMissed=true;
@@ -7324,7 +7373,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
       }
       if(!pick)throw new Error('No approved compatible stop');
     }
-    if(!pick&&ordinary)pick=choose(candidates.misses,Infinity);
+    if(!pick&&ordinary)pick=choose(ordinaryMisses,Infinity);
     if(!pick)return null;
     spin.pressStopColumns=held;spin.pressStopColumns[index]=pick.column.slice();
     (spin.pressStopDistances||=[null,null,null])[index]=pick.distance;
@@ -7390,8 +7439,8 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     // result, flowAfter, bonusHit, stocks, and all already-drawn outcomes stay intact.
   }
 
-  function buildGrid(result, winRow=1){
-    if(A_TYPE_MODE) return buildNovaReelGrid(result,winRow);
+  function buildGrid(result, winRow=1, options={}){
+    if(A_TYPE_MODE) return buildNovaReelGrid(result,winRow,0,options);
   function buildDiagonalBellGrid(winRows){
     const bell = RESULT.BELL.reel[0];
     const down = Array.isArray(winRows) ? winRows[0] === 0 : Math.random() < 0.5;
@@ -7935,16 +7984,19 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     drawRareSortie(result,resolved);
     if(resolved.zoneStartFlow&&!debugFastSpinActive)NovaLadder.bet(resolved.zoneStartFlow);
     const reversePushGuide = zoneActiveAtSpinStart ? decideReversePushGuide(result, zoneActiveAtSpinStart ? currentGoraiZoneType() : "") : "";
+    const automaticStopAtStart=autoPlay||speedModeSpinAtStart||superSpeedActive;
+    let autoMissBarBottom = automaticStopAtStart&&standardAutoMissBarBottomEligible({result,resolved,reversePushGuide,zoneActiveAtStart:zoneActiveAtSpinStart});
     let grid = zoneActiveAtSpinStart && reversePushGuide && result === "MISS"
       ? buildReversePushMissGrid()
       : (A_TYPE_MODE && normalActiveAtSpinStart && isCollectibleCherryResult(result))
         ? safeGridForResult(result, lineRow)
-        : buildGrid(result, lineRow);
+        : buildGrid(result, lineRow, {autoMissBarBottom});
     let reachMeLine = "";
     const forceReachMeDisplay = A_TYPE_MODE && pendingForceResult === "REACH_ME";
     if(A_TYPE_MODE && normalActiveAtSpinStart && result === "MISS" && resolved && resolved.bonusHit && (forceReachMeDisplay || Math.random() < A_TYPE_REACH_ME_ANNOUNCE_RATE)){
       grid = buildReachMeGrid();
       reachMeLine = reachMeLabelFromGrid(grid);
+      autoMissBarBottom = false;
     }
     const bar3LeverEffect = !A_TYPE_MODE && !speedModeSpinAtStart && result === "BAR3";
     const bigPremiumEffect = !bar3LeverEffect && decideBigPremiumEffect(result, resolved, premiumForced);
@@ -7997,6 +8049,9 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
       normalActiveAtStart:normalActiveAtSpinStart,
       speedModeAtStart:speedModeSpinAtStart,
       autoStopAtStart:autoPlay,
+      autoStopOrderMode:automaticStopAtStart?autoStopOrderMode:"",
+      autoStopOrder:automaticStopAtStart?autoStopOrderForMode(autoStopOrderMode):null,
+      autoMissBarBottom,
       autoPacingAtStart:autoPacingProfile(),
       superSpeedAtStart:superSpeedActive,
       superSpeedStartedAt,
@@ -8753,6 +8808,11 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     playLockedBonusConfirmSound('assets/media/jag/cz_patrol_confirm.wav?v=19',sfxOutputVolume(),afterPatrol);
   }
 
+  function playCzPushPromptVoice(cue){
+    const src=CZ_PUSH_PROMPT_VOICE_SRCS[cue?.voice];
+    if(src)playOneShotSound(src,voiceOutputVolume(),{allowDuringPremiumConfirm:true});
+  }
+
   function playCzConfirmedSound(resolved){
     if(resolved?.czLamp&&!resolved.czPushConfirmed)return;
     if(!(resolved?.bonusHit || resolved?.aTypeBonusReady || resolved?.flowAfter?.phase==='art') || resolved.czPatrolPlayed)return;
@@ -8982,7 +9042,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     if(resolved?.stockEntry){finishStockEntry();return;}
     if(!isSpinning || !currentSpin || currentSpin.finishing || currentSpin.resolved!==resolved || !currentSpin.stopped.every(Boolean)) return;
     prepareManualRareOutcome(currentSpin);
-    if(NovaCzPresentation.wait(resolved,{setting:settings.setting,auto:()=>!!(autoPlay||currentSpin?.speedModeAtStart||debugFastSpinActive),valid:()=>currentSpin?.resolved===resolved&&isSpinning&&canUsePlayState(),onFailure:()=>playCzFailureSound(resolved),reveal:()=>{playCzConfirmedSound(resolved);maybeLightBonusAnnouncementForStop(3,currentSpin);finishSpin(result,resolved,lineRow);}}))return;
+    if(NovaCzPresentation.wait(resolved,{setting:settings.setting,auto:()=>!!(autoPlay||currentSpin?.speedModeAtStart||debugFastSpinActive),valid:()=>currentSpin?.resolved===resolved&&isSpinning&&canUsePlayState(),onOffer:cue=>playCzPushPromptVoice(cue),onFailure:()=>playCzFailureSound(resolved),reveal:()=>{playCzConfirmedSound(resolved);maybeLightBonusAnnouncementForStop(3,currentSpin);finishSpin(result,resolved,lineRow);}}))return;
     if(typeof playZoneInternalConfirmedSound==='function'&&currentSpin?.stopped?.every(Boolean))playZoneInternalConfirmedSound(resolved);
     try{
     NovaBellNavi.clear();
@@ -9208,7 +9268,8 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     }
 
     if(autoPlay){
-      status.textContent = superSpeedPending ? `超ハイスピード予約：次のゲームから / ${NovaSuperSpeed.modes[superSpeedMode]}` : superSpeedActive ? `超ハイスピード中：8時間で約4万G / ${NovaSuperSpeed.modes[superSpeedMode]}` : superFullAuto ? "超AUTO継続中：8時間で約4万G / AT終了後に超ハイスピードへ復帰" : "通常AUTO中：8時間で約2万G（演出待ち込みの目安）";
+      const orderLabel=AUTO_STOP_ORDER_LABELS[autoStopOrderMode]||AUTO_STOP_ORDER_LABELS.normal;
+      status.textContent = (superSpeedPending ? `超ハイスピード予約：次のゲームから / ${NovaSuperSpeed.modes[superSpeedMode]}` : superSpeedActive ? `超ハイスピード中：8時間で約4万G / ${NovaSuperSpeed.modes[superSpeedMode]}` : superFullAuto ? "超AUTO継続中：8時間で約4万G / AT終了後に超ハイスピードへ復帰" : "通常AUTO中：8時間で約2万G（演出待ち込みの目安）")+` / ${orderLabel}`;
       status.style.color = "var(--green)";
     }else{
       status.textContent = "オート停止中";
@@ -9229,6 +9290,32 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     updateSpeedToBonusUi();
   }
 
+  function closeAutoStopOrderDialog(){
+    const dialog=$("autoStopOrderDialog");
+    if(!dialog)return;
+    if(dialog.open&&typeof dialog.close==='function')dialog.close();else dialog.removeAttribute('open');
+  }
+
+  function openAutoStopOrderDialog(superMode=""){
+    const dialog=$("autoStopOrderDialog");
+    if(!dialog)return false;
+    pendingAutoSuperSpeedMode=Object.hasOwn(NovaSuperSpeed.modes,superMode)?superMode:"";
+    dialog.querySelectorAll('[data-auto-stop-order]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.autoStopOrder===autoStopOrderMode)));
+    if(!dialog.open){if(typeof dialog.showModal==='function')dialog.showModal();else dialog.setAttribute('open','');}
+    dialog.querySelector(`[data-auto-stop-order="${autoStopOrderMode}"]`)?.focus({preventScroll:true});
+    return true;
+  }
+
+  function chooseAutoStopOrder(mode){
+    autoStopOrderMode=normalizeAutoStopOrderMode(mode);
+    settings.autoStopOrderMode=autoStopOrderMode;
+    const superMode=pendingAutoSuperSpeedMode;
+    pendingAutoSuperSpeedMode="";
+    closeAutoStopOrderDialog();
+    persistState();
+    if(superMode)startSuperSpeed(superMode);else startAutoPlay();
+  }
+
   function startAutoPlay(){
     if(autoPlay) return;
     if(bonusEndBgmPlaying){
@@ -9243,7 +9330,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     NovaClock.setBackgroundEnabled(true);
     startAutoWatchdog();
     updateAutoUi();
-    log("オート開始");
+    log(`オート開始 / ${AUTO_STOP_ORDER_LABELS[autoStopOrderMode]}`);
     runAutoStep();
   }
 
@@ -9336,6 +9423,9 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     if(currentSpin.autoStopTakeoverScheduled) return true;
     currentSpin.autoStopTakeoverScheduled = true;
     currentSpin.autoStopAtStart = true;
+    currentSpin.autoStopOrderMode = autoStopOrderMode;
+    currentSpin.autoStopOrder = autoStopOrderForMode(autoStopOrderMode);
+    commitAutoMissBarBottom(currentSpin);
     currentSpin.manualBonusStop = false;
     stopAllReels();
     // A stop can be rejected by a transient lock. Retry only after this whole
@@ -10583,11 +10673,11 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
         $("spinBtn").click();
       });
     }
-    onClick("autoStartBtn", startAutoPlay);
+    onClick("autoStartBtn", ()=>openAutoStopOrderDialog());
     onClick("autoStopBtn", ()=>stopAutoPlay("オート停止"));
     bindUtilityPress($("topAutoBtn"), ()=>{
         if(autoPlay) stopAutoPlay("オート停止");
-        else startAutoPlay();
+        else openAutoStopOrderDialog();
     });
     onClick("debugFastStartBtn", startDebugFastSpin);
     onClick("debugFastStopBtn", ()=>stopDebugFastSpin());
@@ -10621,7 +10711,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
         e.stopPropagation();
         e.preventDefault();
         if(autoPlay) stopAutoPlay("オート停止");
-        else startAutoPlay();
+        else openAutoStopOrderDialog();
       });
     }
     if($("speedAutoBtn")){
@@ -10631,12 +10721,15 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
       });
     }
     if($("superSpeedBtn")){
-      superSpeedMenu=NovaSuperSpeedMenu.create({button:$("superSpeedBtn"),onSelect:startSuperSpeed,onStop:()=>stopAutoPlay('超ハイスピード停止')});
+      superSpeedMenu=NovaSuperSpeedMenu.create({button:$("superSpeedBtn"),onSelect:mode=>autoPlay?startSuperSpeed(mode):openAutoStopOrderDialog(mode),onStop:()=>stopAutoPlay('超ハイスピード停止')});
       $("superSpeedBtn").addEventListener('click',e=>{e.stopPropagation();e.preventDefault();updateSuperSpeedUi();superSpeedMenu.toggle();});
     }
     if($("speedModeMenu")){
       $("speedModeMenu").addEventListener("click", e=>e.stopPropagation());
     }
+    document.querySelectorAll('[data-auto-stop-order]').forEach(button=>button.addEventListener('click',()=>chooseAutoStopOrder(button.dataset.autoStopOrder)));
+    onClick("autoStopOrderCancel", ()=>{pendingAutoSuperSpeedMode="";closeAutoStopOrderDialog();});
+    $("autoStopOrderDialog")?.addEventListener('cancel',()=>{pendingAutoSuperSpeedMode="";});
     if($("speedModeToggleBtn")){
       $("speedModeToggleBtn").addEventListener("click", e=>{
         e.stopPropagation();

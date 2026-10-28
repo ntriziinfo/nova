@@ -1,0 +1,49 @@
+{
+  "sources": [
+    {
+      "sourceName": "ぷっしゅ.wav",
+      "copy": "assets/media/nova/cz-push-default-sosuke.wav",
+      "sha256": "6DF36760040C7A455344EB9F010EDCCFEAB40D9FBD6335C731E349E869DAF4AA",
+      "bytes": 143404,
+      "durationSeconds": 1.493333,
+      "sampleRate": 48000,
+      "channels": 1,
+      "category": "voice",
+      "trigger": "CZの通常PUSH表示"
+    },
+    {
+      "sourceName": "ボタンを押せ.wav",
+      "copy": "assets/media/nova/cz-push-chance-sosuke.wav",
+      "sha256": "F9C0D4B79B07B5D5F89D5B90778F24CE660AF2ADF61FD087D4A8D891686BB06B",
+      "bytes": 225324,
+      "durationSeconds": 2.346667,
+      "sampleRate": 48000,
+      "channels": 1,
+      "category": "voice",
+      "trigger": "CZのチャンスアップPUSH表示"
+    },
+    {
+      "sourceName": "激熱！.wav",
+      "copy": "assets/media/nova/cz-push-confirm-hot-sosuke.wav",
+      "sha256": "91558AD662D7FF19870D0FDD2FE9EDBC8E7CCDA66623193F0E97AD64FBA86698",
+      "bytes": 221228,
+      "durationSeconds": 2.304,
+      "sampleRate": 48000,
+      "channels": 1,
+      "category": "voice",
+      "trigger": "CZ当選済みの特殊PUSH表示"
+    },
+    {
+      "sourceName": "あちぃぃぃ.wav",
+      "copy": "assets/media/nova/cz-push-confirm-very-hot-sosuke.wav",
+      "sha256": "A791D42285C251BFB4FCE3F2E37DA6CE871FBCA9EDB1711611C00D5A39E0E4C9",
+      "bytes": 151596,
+      "durationSeconds": 1.578667,
+      "sampleRate": 48000,
+      "channels": 1,
+      "category": "voice",
+      "trigger": "CZ当選済みの特殊PUSH表示"
+    }
+  ],
+  "originalsUnmodified": true
+}

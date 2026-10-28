@@ -63,6 +63,13 @@ function variant(resolved,setting=1){
  const p=rates[Math.max(0,Math.min(5,(Number(setting)||1)-1))];
  return roll<.05*p/(1-p)?'red':'white';
 }
+function cue(resolved,setting=1){
+ const button=variant(resolved,setting),seed=resolved?.czLamp?.timingSeed;
+ const won=!!(resolved?.bonusHit||resolved?.aTypeBonusReady||resolved?.flowAfter?.phase==='art');
+ if(button==='white')return {variant:button,voice:'default'};
+ if(!won)return {variant:button,voice:'chance'};
+ return {variant:button,voice:fraction(seed,1693)<.5?'hot':'veryHot'};
+}
 function gold(resolved){return variant(resolved)==='gold';}
 let pendingPush=null,pendingAuto=null,failureActive=false;
 function clearFailureOnBet(){failureActive=false;document.documentElement.classList.remove('novaCzFailed');}
@@ -75,14 +82,16 @@ function restartFadeIn(button,className){
  void button.offsetWidth;
  button.className=className+' novaCzEntering';
 }
-function wait(resolved,{auto=false,setting=1,valid,reveal,onFailure=()=>{}}){
+function wait(resolved,{auto=false,setting=1,valid,reveal,onOffer=()=>{},onFailure=()=>{}}){
  if(!resolved?.czLamp||resolved.czPushConfirmed||!(resolved.czCompleted||resolved.bonusHit||resolved.aTypeBonusReady))return false;
  let button=document.getElementById('novaCzPush');
  if(!button){button=document.createElement('button');button.id='novaCzPush';button.type='button';button.textContent='PUSH';document.querySelector('.reelArea').append(button);}
  if(pendingPush===resolved)return true;
  pendingPush=resolved;
  clearFailureOnBet();
- button.hidden=false;button.className='white';button.disabled=false;
+ const offer=cue(resolved,setting);
+ restartFadeIn(button,offer.variant);button.disabled=false;
+ onOffer(offer,resolved);
  let accepted=false,autoQueued=false;
  const autoEnabled=()=>typeof auto==='function'?auto():auto;
  const accept=()=>{
@@ -114,6 +123,6 @@ function wait(resolved,{auto=false,setting=1,valid,reveal,onFailure=()=>{}}){
  };
  button.onclick=accept;autoPress();return true;
 }
-return {tiers,display,wait,gold,variant,autoPress,clearFailureOnBet,get failureActive(){return failureActive;}};
+return {tiers,display,wait,gold,variant,cue,autoPress,clearFailureOnBet,get failureActive(){return failureActive;}};
 
 })();

@@ -8,6 +8,7 @@ globalThis.NovaSpinResume=(()=>{
   'sortieOutcomeSoundPlayed','sortieAwardVoicePlayed',
   'bellNaviOrder','rareNavi','bellNaviVoiceCharacter','bellNaviVoiceStage','bellNaviFailed','bellNaviFailurePlayed',
   'normalActiveAtStart','aTypeBonusActiveAtStart','zoneActiveAtStart','zoneType',
+  'autoMissBarBottom','autoStopOrder','autoStopOrderMode',
   'battleActiveAtStart','battleRound','pendingBattleOutcome','artReverse',
   'manualBonusStop','manualOutcomeApplied','bonusConfirmWaitSpin','bonusConfirmPrizeSpin',
   'bonusAnnouncementTiming','bonusAnnouncementLit','premiumBigConfirmMovieEffect',
@@ -33,6 +34,10 @@ globalThis.NovaSpinResume=(()=>{
   if(!Array.isArray(data.grid)||data.grid.length!==3||data.grid.some(row=>!Array.isArray(row)||row.length!==3||row.some(s=>typeof s!=='string')))return null;
   if(!Array.isArray(data.stopped)||data.stopped.length!==3||data.stopped.some(s=>typeof s!=='boolean'))return null;
   const spin=currentSymbols(clone(Object.fromEntries(fields.filter(f=>data[f]!==undefined).map(f=>[f,data[f]]))));
+  const allowedAutoOrders=['0,1,2','1,0,2','0,2,1'];
+  if(!Array.isArray(spin.autoStopOrder)||!allowedAutoOrders.includes(spin.autoStopOrder.join(',')))delete spin.autoStopOrder;
+  if(!['normal','middle','scissors'].includes(spin.autoStopOrderMode))delete spin.autoStopOrderMode;
+  if(spin.autoMissBarBottom!==true)delete spin.autoMissBarBottom;
   spin.reelLayoutVersion=data.reelLayoutVersion||1;
   spin.spec=results[spin.result];
   spin.pendingStopColumns=[0,1,2].map(i=>{

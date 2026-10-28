@@ -50,6 +50,15 @@ test('AUTO and takeover reuse the committed nav order without another random dra
  const order=n.stopOrder(spin);assert.deepEqual(copy(order),[1,2,0]);order[0]=0;assert.deepEqual(spin.bellNaviOrder,[1,2,0]);
  assert.deepEqual(copy(n.stopOrder({resolved:{aim:{}}})),[2,1,0]);
  assert.deepEqual(copy(n.stopOrder({})),[0,1,2]);
+ assert.deepEqual(copy(n.stopOrder({zoneActiveAtStart:true,resolved:{}})),[0,1,2]);
+ assert.deepEqual(copy(n.stopOrder({zoneActiveAtStart:true,reversePushGuide:'red',resolved:{}})),[2,1,0]);
+ for(const selected of [[0,1,2],[1,0,2],[0,2,1]]){
+  const before=selected.slice(),actual=n.stopOrder({autoStopOrder:selected,resolved:{}});assert.deepEqual(copy(actual),selected);actual.reverse();assert.deepEqual(selected,before);
+  assert.deepEqual(copy(n.stopOrder({autoStopOrder:selected,resolved:{aim:{guide:false}}})),selected);
+  assert.deepEqual(copy(n.stopOrder({autoStopOrder:selected,resolved:{zoneSpin:true,flowBefore:{zone:'ouma'},aimDisplay:{guide:false}}})),selected);
+  assert.deepEqual(copy(n.stopOrder({autoStopOrder:selected,resolved:{researchChallenge:{priorAim:'nova'},aimDisplay:{guide:false}}})),selected);
+  assert.deepEqual(copy(n.stopOrder({autoStopOrder:selected,bellNaviOrder:[2,0,1],resolved:{}})),[2,0,1]);
+ }
 });
 
 function voiceHarness(){
@@ -124,8 +133,8 @@ test('the first wrong press hides navigation, stops live voices and plays the fa
  assert.match(html,/auditPressOrder \|\|= \[\]\)\.push\(i\);\s*handleBellNavigationFailure\(currentSpin\);/);
 });
 
-test('aim AUTO prioritizes reverse order over stale bell navigation',()=>{
- for(const resolved of [{zoneSpin:true,flowBefore:{zone:'ouma'}},{zoneSpin:true,zoneStartFlow:{zone:'urapi'}},{researchChallenge:{priorAim:'nova'}},{aim:{symbol:'seven'}},{aim:{symbol:'nebula'}},{bonusPendingAtStart:true,bonusReady:true}])assert.deepEqual(copy(n.stopOrder({resolved,bellNaviOrder:[0,1,2]})),[2,1,0]);
+test('visible aim AUTO prioritizes reverse order over stale bell navigation',()=>{
+ for(const resolved of [{zoneSpin:true,flowBefore:{zone:'ouma'},aimDisplay:{guide:true}},{zoneSpin:true,zoneStartFlow:{zone:'urapi'},aimDisplay:{guide:true}},{researchChallenge:{priorAim:'nova'},aimDisplay:{guide:true}},{aim:{symbol:'seven',guide:true}},{aim:{symbol:'nebula',guide:true}},{bonusPendingAtStart:true,bonusReady:true}])assert.deepEqual(copy(n.stopOrder({resolved,bellNaviOrder:[0,1,2]})),[2,1,0]);
 });
 
 test('sortie trigger uses middle first while other aims remain reverse',()=>{assert.deepEqual(copy(n.stopOrder({resolved:{stockEntry:true,sortieEntry:true}})),[1,2,0]);assert.deepEqual(copy(n.stopOrder({resolved:{stockEntry:true}})),[2,1,0]);});

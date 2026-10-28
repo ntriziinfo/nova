@@ -4,15 +4,22 @@ import fs from 'node:fs';
 
 test('committed display defaults match the approved Chrome layout',()=>{
  const game=fs.readFileSync('nova-game.js','utf8');
+ const gameCss=fs.readFileSync('nova-game.css','utf8');
  const cabinet=fs.readFileSync('nova-cabinet.css','utf8');
  const counter=fs.readFileSync('nova-data-counter.css','utf8');
  const html=fs.readFileSync('jag.html','utf8');
- assert.match(game,/const PAGE_ZOOM_STORAGE_KEY = "nova_unified_page_zoom_v4";/);
- assert.match(game,/const PAGE_PAN_STORAGE_KEY = "nova_unified_page_pan_x_v4";/);
+ assert.match(game,/const PAGE_ZOOM_STORAGE_KEY = "nova_unified_page_zoom_v5";/);
+ assert.match(game,/const PAGE_PAN_STORAGE_KEY = "nova_unified_page_pan_x_v5";/);
  assert.match(game,/const LAYOUT_EDIT_STORAGE_KEY = "nova_layout_editor_locked_20261027d";/);
  assert.match(game,/const LAYOUT_DEFAULT_STORAGE_KEY = "nova_layout_default_locked_20261027d";/);
- assert.match(game,/const PAGE_ZOOM_DEFAULT = 1\.35;/);
- assert.match(game,/const PAGE_PAN_DEFAULT = -125;/);
+ assert.match(game,/const PAGE_ZOOM_DEFAULT = 0\.55;/);
+ assert.match(game,/const PAGE_PAN_DEFAULT = -260;/);
+ assert.match(gameCss,/--wd-page-zoom:\.55;/);
+ assert.match(gameCss,/--wd-cabinet-x-offset:-260px;/);
+ assert.match(html,/id="pageZoomRange"[^>]*value="55"/);
+ assert.match(html,/id="pageZoomView">55%/);
+ assert.match(html,/id="pagePanRange"[^>]*value="-260"/);
+ assert.match(html,/id="pagePanView">-260/);
  assert.match(game,/let pageZoom = PAGE_ZOOM_DEFAULT;/);
  assert.match(game,/let pagePanX = PAGE_PAN_DEFAULT;/);
  assert.match(game,/syncZoomAnchorToSlotTop\(\);\s*pageZoom = PAGE_ZOOM_DEFAULT;\s*applyPageZoom\(true\);/);
@@ -58,9 +65,10 @@ test('committed display defaults match the approved Chrome layout',()=>{
  assert.match(cabinet,/--layout-sortieaimsymbol-y,28%/);
  assert.match(cabinet,/--layout-sortieaimsymbol-compact,37\.6%/);
  assert.match(cabinet,/--layout-sortieaimaim-y,32\.6%/);
+ assert.match(html,/nova-game\.css\?v=20261028-auto-stop-control/);
  assert.match(html,/nova-data-counter\.css\?v=20261027-cherry-reels/);
  assert.match(html,/nova-cabinet\.css\?v=20261028-sortie-aim-hot-layout/);
- assert.match(html,/nova-game\.js\?v=20261028-sortie-aim-hot-layout/);
+ assert.match(html,/nova-game\.js\?v=20261028-auto-stop-control/);
  const navi=fs.readFileSync('nova-bell-navi.js','utf8');
  const remaining=fs.readFileSync('nova-remaining-counters.js','utf8');
  assert.match(navi,/const defaults=Object\.freeze\(\{x:\.5,y:44\.3,w:100,h:7\.9,gap:0\}\);/);

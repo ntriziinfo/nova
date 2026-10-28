@@ -47,7 +47,20 @@ globalThis.NovaBellNavi=(()=>{
   const pool=spin&&!leftFirstAllowed(spin)?orders.slice(2):orders;
   return pool[Math.min(pool.length-1,Math.max(0,Math.floor(rng()*pool.length)))].slice();
  }
- function stopOrder(spin){if(spin?.resolved?.sortieEntry)return [1,2,0];return spin?.resolved?.researchSortie||spin?.resolved?.stockEntry||spin?.resolved?.researchChallenge?.priorAim||spin?.resolved?.zoneSpin&&['ouma','urapi'].includes(String((spin.resolved.zoneStartFlow||spin.resolved.flowBefore)?.zone||'').replace(/^ura_/,''))||spin?.resolved?.aim||spin?.resolved?.bonusPendingAtStart&&spin?.resolved?.bonusReady&&!spin?.resolved?.bonusWaitSpin?[2,1,0]:spin?.bellNaviOrder?.slice()||(spin?.resolved?.aim||spin?.zoneActiveAtStart?[2,1,0]:[0,1,2]);}
+ function stopOrder(spin){
+  const resolved=spin?.resolved;
+  if(resolved?.sortieEntry)return [1,2,0];
+  const specialZoneAim=resolved?.zoneSpin&&['ouma','urapi'].includes(String((resolved.zoneStartFlow||resolved.flowBefore)?.zone||'').replace(/^ura_/,''))&&resolved.aimDisplay?.guide!==false;
+  const challengeAim=resolved?.researchChallenge?.priorAim&&resolved.aimDisplay?.guide!==false;
+  const reverseAim=resolved?.researchSortie||resolved?.stockEntry||challengeAim||specialZoneAim||
+   resolved?.aim&&resolved.aim.guide!==false||resolved?.bonusPendingAtStart&&resolved?.bonusReady&&!resolved?.bonusWaitSpin||spin?.reversePushGuide;
+  if(reverseAim)return [2,1,0];
+  // Keep an explicitly committed bell or preparation guide ahead of the
+  // player's ordinary AUTO order; ignoring it would change payout/progress.
+  if(spin?.bellNaviOrder?.length===3)return spin.bellNaviOrder.slice();
+  const selected=spin?.autoStopOrder;
+  return Array.isArray(selected)&&selected.length===3&&new Set(selected).size===3&&selected.every(i=>Number.isInteger(i)&&i>=0&&i<3)?selected.slice():[0,1,2];
+ }
  function presentationMissed(spin){
   const order=spin?.bellNaviOrder,pressed=spin?.auditPressOrder||spin?.auditStopOrder||[];
   return ['BELL','BELL15'].includes(spin?.result)&&order?.length===3&&!spin?.resolved?.researchSortie&&

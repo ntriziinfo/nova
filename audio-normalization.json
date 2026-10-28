@@ -10,6 +10,62 @@
   "truePeakCeilingDbtp": -1,
   "measurement": "ITU loudness via FFmpeg loudnorm, dual mono, 1 second measurement-only silence padding. Voice v2 measures audible speech after measurement-only -40dB silence removal; delivery retains all original pauses and duration",
   "processing": "Constant gain; oversampled peak limiting only where necessary. Original duration and sample rate retained. No training or external audio processing.",
+  "preNormalizedFiles": [
+    {
+      "src": "assets/media/nova/cz_remaining_1.wav",
+      "category": "voice",
+      "targetLufs": -14,
+      "output": "assets/media/normalized-voices-20261013/nova/cz_remaining_1.wav",
+      "sourceSha256": "2071b2c4d0c20966fe9191169724dbaae447af67083a242b827e527c97d5da7c",
+      "outputSha256": "2071b2c4d0c20966fe9191169724dbaae447af67083a242b827e527c97d5da7c",
+      "rate": 48000,
+      "channels": 1,
+      "duration": 1.322667,
+      "outputDuration": 1.322667,
+      "after": {
+        "lufs": -13.83,
+        "peakDbtp": -3.03,
+        "rangeLu": 0
+      },
+      "processing": "pre-normalized source copied byte-for-byte; no second gain pass"
+    },
+    {
+      "src": "assets/media/nova/upper-at-bgm-1287779-20261027.mp3",
+      "category": "bgm",
+      "targetLufs": -18,
+      "output": "assets/media/normalized-20261012/nova/upper-at-bgm-1287779-20261027.mp3",
+      "sourceSha256": "998040983b899a730a3f348e7a7d8df08426cb52e5e07e99513c523ec72189b5",
+      "outputSha256": "998040983b899a730a3f348e7a7d8df08426cb52e5e07e99513c523ec72189b5",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 135.857642,
+      "outputDuration": 135.857642,
+      "after": {
+        "lufs": -18.24,
+        "peakDbtp": -11.02,
+        "rangeLu": 1.9
+      },
+      "processing": "pre-normalized source copied byte-for-byte; no second gain pass"
+    },
+    {
+      "src": "assets/media/nova/upper-at-bgm-805028-20261027.mp3",
+      "category": "bgm",
+      "targetLufs": -18,
+      "output": "assets/media/normalized-20261012/nova/upper-at-bgm-805028-20261027.mp3",
+      "sourceSha256": "be5a543bf3cd94e8bab9dd7fd28337e29c65dbafbf09c30c93e2a62d77c5cb21",
+      "outputSha256": "be5a543bf3cd94e8bab9dd7fd28337e29c65dbafbf09c30c93e2a62d77c5cb21",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 120.986667,
+      "outputDuration": 120.986667,
+      "after": {
+        "lufs": -18.25,
+        "peakDbtp": -9.17,
+        "rangeLu": 2
+      },
+      "processing": "pre-normalized source copied byte-for-byte; no second gain pass"
+    }
+  ],
   "files": [
     {
       "src": "assets/media/jag/bar_wo_nerae.mp3",
@@ -1821,6 +1877,122 @@
       "after": {
         "lufs": -15.99,
         "peakDbtp": -2.86,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/cz-push-chance-sosuke.wav",
+      "category": "voice",
+      "measurementVersion": 2,
+      "fileLoudness": {
+        "lufs": -14.46,
+        "peakDbtp": -2.72,
+        "rangeLu": 0.7
+      },
+      "targetLufs": -14,
+      "output": "assets/media/normalized-voices-20261013/nova/cz-push-chance-sosuke.wav",
+      "sourceSha256": "f9c0d4b79b07b5d5f89d5b90778f24ce660af2adf61fd087d4a8d891686bb06b",
+      "outputSha256": "29c4e001aad0186dc421c7a56cca19d956e7228bf203b2ebb8970117c57f856d",
+      "rate": 48000,
+      "channels": 1,
+      "duration": 2.346667,
+      "outputDuration": 2.346667,
+      "gainDb": 8.87,
+      "before": {
+        "lufs": -22.87,
+        "peakDbtp": -11.58,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -13.96,
+        "peakDbtp": -2.72,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/cz-push-confirm-hot-sosuke.wav",
+      "category": "voice",
+      "measurementVersion": 2,
+      "fileLoudness": {
+        "lufs": -14.33,
+        "peakDbtp": -3.27,
+        "rangeLu": 1
+      },
+      "targetLufs": -14,
+      "output": "assets/media/normalized-voices-20261013/nova/cz-push-confirm-hot-sosuke.wav",
+      "sourceSha256": "91558ad662d7ff19870d0fdd2fe9edbc8e7ccda66623193f0e97ad64fba86698",
+      "outputSha256": "849f3aecd7d5b3aca3ee6eab2efee50ba0acaed159298327d98be50111ef0cd6",
+      "rate": 48000,
+      "channels": 1,
+      "duration": 2.304,
+      "outputDuration": 2.304,
+      "gainDb": 9.73,
+      "before": {
+        "lufs": -23.52,
+        "peakDbtp": -13,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -13.96,
+        "peakDbtp": -3.27,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/cz-push-confirm-very-hot-sosuke.wav",
+      "category": "voice",
+      "measurementVersion": 2,
+      "fileLoudness": {
+        "lufs": -13.88,
+        "peakDbtp": -1.99,
+        "rangeLu": 0
+      },
+      "targetLufs": -14,
+      "output": "assets/media/normalized-voices-20261013/nova/cz-push-confirm-very-hot-sosuke.wav",
+      "sourceSha256": "a791d42285c251bfb4fce3f2e37da6ce871fbca9edb1711611c00d5a39e0e4c9",
+      "outputSha256": "f28eb88541a181f2b0790b17b940da49d7d80611fcb3957c18d9cb16dc9fada0",
+      "rate": 48000,
+      "channels": 1,
+      "duration": 1.578667,
+      "outputDuration": 1.578667,
+      "gainDb": 14.96,
+      "before": {
+        "lufs": -28.73,
+        "peakDbtp": -13.41,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -14.01,
+        "peakDbtp": -2,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/cz-push-default-sosuke.wav",
+      "category": "voice",
+      "measurementVersion": 2,
+      "fileLoudness": {
+        "lufs": -13.17,
+        "peakDbtp": -2,
+        "rangeLu": 0
+      },
+      "targetLufs": -14,
+      "output": "assets/media/normalized-voices-20261013/nova/cz-push-default-sosuke.wav",
+      "sourceSha256": "6df36760040c7a455344eb9f010edccfeab40d9fbd6335c731e349e869daf4aa",
+      "outputSha256": "0d09d2a1e30263b12320c00732ff9fcf0cc8e1397af265a887952e60146cf9e7",
+      "rate": 48000,
+      "channels": 1,
+      "duration": 1.493333,
+      "outputDuration": 1.493333,
+      "gainDb": 13.89,
+      "before": {
+        "lufs": -27.89,
+        "peakDbtp": -15.05,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -13.96,
+        "peakDbtp": -2,
         "rangeLu": 0
       }
     },

@@ -94,6 +94,40 @@ test('ordinary misses and one-coin stops use the nearest compatible listed miss 
  }
 });
 
+test('middle-first NEBULA aim pulls the three symbols below it up to the top line',()=>{
+ const expected=Array.from(run('[NEBULA_SYMBOL,BELL_SYMBOL,REPLAY_SYMBOL]'));
+ for(const position of [10,11,12,12.999]){context.position=position;
+  const out=run(`(()=>{const spin={result:'MISS',grid:buildNovaReelGrid('MISS',1),stopped:[false,false,false],auditPressOrder:[1],resolved:{reward:0}};
+   const distance=col=>Math.min(...REEL_STRIPS[1].flatMap((_,top)=>col.every((v,r)=>REEL_STRIPS[1][(top+r)%20]===v)?[mod(position-top,20)]:[]));
+   const originalRandom=Math.random;Math.random=()=>{throw Error('Unexpected RNG');};try{const col=nearestPressedStopColumn(1,spin,distance,false);return {col,distance:distance(col),listed:pressedStopCandidates('MISS').misses.some(g=>col.every((v,r)=>g[r][1]===v))};}finally{Math.random=originalRandom;}})()`);
+  assert.deepEqual(Array.from(out.col),expected);
+  assert.ok(Math.abs(out.distance-(position-9))<1e-9);assert.equal(out.listed,true);
+ }
+ context.position=13;
+ const outside=run(`(()=>{const spin={result:'MISS',grid:buildNovaReelGrid('MISS',1),stopped:[false,false,false],auditPressOrder:[1],resolved:{reward:0}};
+  const distance=col=>Math.min(...REEL_STRIPS[1].flatMap((_,top)=>col.every((v,r)=>REEL_STRIPS[1][(top+r)%20]===v)?[mod(position-top,20)]:[]));return nearestPressedStopColumn(1,spin,distance,false);})()`);
+ assert.notDeepEqual(Array.from(outside),expected);
+ context.position=10;
+ for(const variant of [{automatic:true,audit:'[1]'},{automatic:false,audit:'[0,1]'},{automatic:false,audit:'[1]',zone:true}]){
+  context.variant=variant;
+  const col=run(`(()=>{const spin={result:'MISS',grid:buildNovaReelGrid('MISS',1),stopped:[false,false,false],auditPressOrder:${variant.audit},zoneActiveAtStart:${!!variant.zone},resolved:{reward:0}};
+   const distance=col=>Math.min(...REEL_STRIPS[1].flatMap((_,top)=>col.every((v,r)=>REEL_STRIPS[1][(top+r)%20]===v)?[mod(position-top,20)]:[]));return nearestPressedStopColumn(1,spin,distance,${!!variant.automatic});})()`);
+  assert.notDeepEqual(Array.from(col),expected);
+ }
+});
+
+test('AUTO and super-speed MISS layouts keep BAR at the lower-left without changing the result',()=>{
+ let draws=0;context.autoRng=()=>{draws++;return .37;};
+ const built=run(`(()=>{const originalRandom=Math.random;Math.random=autoRng;try{return buildNovaReelGrid('MISS',1,0,{autoMissBarBottom:true});}finally{Math.random=originalRandom;}})()`);
+ assert.equal(draws,1);assert.equal(built[2][0],'BAR');
+ for(const order of [[0,1,2],[1,0,2],[0,2,1]])for(let top=0;top<20;top++){context.top=top;context.order=order;
+  const out=run(`(()=>{const spin={result:'MISS',grid:buildNovaReelGrid('MISS',1,0,{autoMissBarBottom:true}),autoMissBarBottom:true,stopped:[false,false,false],auditPressOrder:[],resolved:{reward:0,flowAfter:{phase:'normal'}}};
+   const before=JSON.stringify(spin.resolved);for(const i of order){spin.auditPressOrder.push(i);const distance=col=>Math.min(...REEL_STRIPS[i].flatMap((_,n)=>col.every((v,r)=>REEL_STRIPS[i][(n+r)%20]===v)?[mod(top+.5-n,20)]:[]));nearestPressedStopColumn(i,spin,distance,true);spin.stopped[i]=true;}
+   return {bar:spin.grid[2][0],listed:pressedStopCandidates('MISS').misses.some(g=>JSON.stringify(g)===JSON.stringify(spin.grid)),same:before===JSON.stringify(spin.resolved),shown:displayedResultFromGrid(spin.grid)};})()`);
+  assert.equal(out.bar,'BAR');assert.equal(out.listed,true);assert.equal(out.same,true);assert.equal(out.shown,'MISS');
+ }
+});
+
 test('wrong bell navigation pays zero but retains the engine decrement and outcomes',()=>{
  for(const role of ['BELL','BELL15'])for(const order of orders){context.role=role;context.order=order;
   const result=run(`(()=>{const spin={result:role,stopped:[true,true,true],bellNaviOrder:[2,1,0],auditPressOrder:order,resolved:{reward:role==='BELL'?8:15,flowAfter:{phase:'art',pt:85,stock:3}}};const before=JSON.stringify(spin.resolved.flowAfter);prepareManualRareOutcome(spin);prepareManualRareOutcome(spin);return {paid:spin.resolved.reward,same:before===JSON.stringify(spin.resolved.flowAfter)};})()`);

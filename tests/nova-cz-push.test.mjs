@@ -5,10 +5,23 @@ assert.deepEqual(JSON.parse(JSON.stringify(p.display({remaining:15,totalGames:15
 assert.deepEqual(JSON.parse(JSON.stringify(p.display({remaining:15,totalGames:15,timingSeed:42},1,true,1,true,true))),{stage:8,color:'rainbow',rainbow:true});
 assert.equal(p.display({remaining:15,totalGames:15,timingSeed:42},0,true,1,false),null);
 assert.equal(p.display({remaining:15,totalGames:15,timingSeed:42},0,false,1),null);
-let count=0;const r={czLamp:{},czCompleted:true,bonusHit:true};const hooks={auto:true,valid:()=>true,reveal:()=>count++};assert.equal(p.wait(r,hooks),true);assert.equal(p.wait(r,hooks),true);assert.equal(timers.length,1);assert.equal(timerDelays[0],1000);assert.equal(count,0);timers[0]();elements.get('novaCzPush').onclick();assert.equal(count,1);assert.equal(p.wait(r,hooks),false);assert.equal(elements.get('novaCzPush').hidden,true);assert.equal(p.wait({},hooks),false);
+assert.deepEqual(JSON.parse(JSON.stringify(p.cue({czLamp:{timingSeed:0},bonusHit:true},1))),{variant:'white',voice:'default'});
+assert.deepEqual(JSON.parse(JSON.stringify(p.cue({czLamp:{timingSeed:83},czCompleted:true},1))),{variant:'red',voice:'chance'});
+for(const seed of [1,2,83]){
+ const offer=p.cue({czLamp:{timingSeed:seed},bonusHit:true},1);
+ assert.notEqual(offer.variant,'white');assert.match(offer.voice,/^(hot|veryHot)$/);
+}
+let hot=0,veryHot=0;
+for(let seed=0;seed<10000;seed++){
+ const resolved={czLamp:{timingSeed:seed},bonusHit:true},before=JSON.stringify(resolved),offer=p.cue(resolved,1);
+ assert.equal(JSON.stringify(resolved),before);assert.deepEqual(p.cue(JSON.parse(before),1),offer);
+ if(offer.voice==='hot')hot++;if(offer.voice==='veryHot')veryHot++;
+}
+assert(hot>1000&&veryHot>1000,'Both confirmed PUSH voices must be reachable without gameplay RNG');
+let count=0;const offers=[];const r={czLamp:{},czCompleted:true,bonusHit:true};const hooks={auto:true,valid:()=>true,reveal:()=>count++,onOffer:(offer,resolved)=>offers.push({offer,resolved})};assert.equal(p.wait(r,hooks),true);assert.equal(p.wait(r,hooks),true);assert.equal(offers.length,1);assert.equal(offers[0].resolved,r);assert.deepEqual(JSON.parse(JSON.stringify(offers[0].offer)),{variant:'white',voice:'default'});assert.equal(elements.get('novaCzPush').className,'white novaCzEntering');assert.equal(fadeRestarts,1);assert.equal(timers.length,1);assert.equal(timerDelays[0],1000);assert.equal(count,0);timers[0]();elements.get('novaCzPush').onclick();assert.equal(count,1);assert.equal(p.wait(r,hooks),false);assert.equal(elements.get('novaCzPush').hidden,true);assert.equal(p.wait({},hooks),false);
 console.log('Candidate checks passed: 12,000 CZ schedules, final guarantees, monotonic display, PUSH wait/auto/repeated clicks.');
 
-const resumed={czLamp:{},czCompleted:true,czPushWaiting:true,bonusHit:true};p.wait(resumed,{auto:false,valid:()=>true,reveal:()=>count++});assert.equal(elements.get('novaCzPush').hidden,false);assert.equal(elements.get('novaCzPush').className,'white');assert.equal(fadeRestarts,0);elements.get('novaCzPush').onclick();assert.equal(count,2);
+const resumed={czLamp:{},czCompleted:true,czPushWaiting:true,bonusHit:true};p.wait(resumed,{auto:false,valid:()=>true,reveal:()=>count++});assert.equal(elements.get('novaCzPush').hidden,false);assert.equal(elements.get('novaCzPush').className,'white novaCzEntering');assert.equal(fadeRestarts,2);elements.get('novaCzPush').onclick();assert.equal(count,2);
 
 let goldCount=0;
 for(let seed=0;seed<100000;seed++){
@@ -85,3 +98,4 @@ assert.match(game,/resolved.czFailurePushPlayed=true;\s*pauseNormalBgm\(\);/);
 assert.match(game,/if\(NovaCzPresentation.failureActive\)\{NovaCzPresentation.clearFailureOnBet\(\);playNormalBgm\(\);\}/);
 
 assert.match(game,/const resultWaitMs = \(czPushReady \|\|/);
+assert.match(game,/onOffer:cue=>playCzPushPromptVoice\(cue\)/);
