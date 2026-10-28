@@ -83,3 +83,14 @@ const game=fs.readFileSync('nova-game.js','utf8');
 assert.match(game,/function playNormalBgm\(\)\{\s*if\(globalThis.NovaCzPresentation\?\.failureActive\)\{pauseNormalBgm\(\);return;\}/);
 assert.match(game,/resolved.czFailurePushPlayed=true;\s*pauseNormalBgm\(\);/);
 assert.match(game,/if\(NovaCzPresentation.failureActive\)\{NovaCzPresentation.clearFailureOnBet\(\);playNormalBgm\(\);\}/);
+
+const atBet={czLamp:{remaining:1},czCompleted:true,bonusHit:true};
+const entranceCount=fadeRestarts;
+assert.equal(p.showAtBet({czLamp:{remaining:2}}),false);
+assert.equal(p.showAtBet(atBet),true);
+assert.equal(b.hidden,false);assert.equal(b.disabled,true);assert.equal(b.onclick,null);assert.equal(b.className,'white');
+assert.equal(atBet.czPushConfirmed,undefined);
+p.wait(atBet,{valid:()=>true,reveal:()=>{}});
+assert.equal(b.disabled,false);assert.equal(fadeRestarts,entranceCount);
+b.onclick();assert.equal(atBet.czPushConfirmed,true);
+console.log('Final BET shows PUSH immediately; final stop enables it without another fade.');

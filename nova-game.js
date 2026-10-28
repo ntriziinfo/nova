@@ -7921,6 +7921,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     }
     playZoneRouletteBetVoice(resolved);
     playAimBetPresentation(resolved);
+    NovaCzPresentation.showAtBet(resolved);
     playCzIntroBetVoice(resolved);
     playRareNaviSound(currentSpin);
     playRareCueVoice(currentSpin);
