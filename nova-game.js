@@ -8156,7 +8156,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
       $("resultText").textContent = options.keyboardTurbo ? `十字キー高速停止待機... ${waitSeconds}後に停止可能` : `ウェイト中... ${waitSeconds}後に停止可能`;
       return;
     }
-    const motionAt=!options.visualReady?NovaReelMotion.capture(i):null;
+    const motionAt=!options.visualReady?NovaReelMotion.capture(i,{aimSnap:currentSpin.resolved?.aim?.symbol==='seven'&&NovaAim.hasGuide(currentSpin.resolved.aim)}):null;
     hideBattleIntro();
     if(isRogiHighZoneSpin(currentSpin)) stopRogiStopEffect(true);
 
@@ -8170,7 +8170,20 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
       if(!currentSpin.aimStopOrder.includes(i))currentSpin.aimStopOrder.push(i);
       const target=NovaAim.stopTarget(currentSpin.resolved.aim,currentSpin.result,currentSpin.aimStopOrder,i);
       const symbol=currentSpin.resolved.aim.symbol==='seven'?'7':NEBULA_SYMBOL;
-      const column=getReelWindowFromStrip(i,symbol,target.onLine?1:0);
+      let column=getReelWindowFromStrip(i,symbol,target.onLine?1:0);
+      // Retain the existing random draw, then choose only compatible approved
+      // seven windows by physical distance. Outcome/stop-order rules are unchanged.
+      if(symbol==='7'&&target.onLine&&motionAt){
+        const held=currentSpin.pendingStopColumns||[];
+        let bestDistance=Infinity;
+        for(const candidate of novaSheetStopChoices('BIG')||[]){
+          if(candidate[1][i]!=='7')continue;
+          if(![0,1,2].every(c=>c===i||!(held[c]||currentSpin.stopped[c])||
+            (held[c]||currentSpin.grid.map(row=>row[c])).every((v,r)=>candidate[r][c]===v)))continue;
+          const next=candidate.map(row=>row[i]),distance=NovaReelMotion.distance(i,next,motionAt);
+          if(distance<bestDistance){bestDistance=distance;column=next;}
+        }
+      }
       setGridColumn(currentSpin.grid,i,column);
       currentSpin.lineRow=1;currentSpin.aimAligned=target.aligned;
     }

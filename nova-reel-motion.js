@@ -50,9 +50,13 @@ globalThis.NovaReelMotion=(()=>{
   const steps=distance+Math.max(0,Math.round((duration/(syncedRotationMs/strip.length)-distance)/strip.length))*strip.length;
   start(i,reel,strip,top,reverse,html,{clock,duration,done,steps});
  }
- function capture(i){
+ function capture(i,options={}){
   const s=active.get(i);if(!s)return null;
-  return {pos:s.pos+s.direction*(performance.now()-s.last)/s.stepMs,direction:s.direction};
+  let pos=s.pos+s.direction*(performance.now()-s.last)/s.stepMs;
+  // Aim cues may settle within a quarter cell (10ms on a 20-symbol strip).
+  // Ordinary/rare-role pull-in retains its exact physical position.
+  if(options.aimSnap&&Math.abs(pos-Math.round(pos))<=.25)pos=Math.round(pos);
+  return {pos,direction:s.direction};
  }
  function distance(i,column,at=capture(i)){
   const s=active.get(i);if(!s)return Infinity;

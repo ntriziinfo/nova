@@ -73,3 +73,32 @@ test('hidden reverse uses the audio clock and cancels pending callbacks on reset
  t.a.startSynced(0,t.reel,strip,['B','C','A'],true,s=>s,()=>audio,4400,()=>landed++);
  t.a.clearAll();t.tick(10000,false);assert.equal(landed,3);assert.equal(t.timers.size,0);
 });
+
+
+test('seven aim settles a just-passed aligned window without another revolution',async()=>{
+ for(const reverse of [false,true]){
+  const t=setup(),strip=Array.from({length:20},(_,i)=>String(i));
+  t.a.start(0,t.reel,strip,5,reverse,s=>s);t.tick(8);
+  const exact=t.a.capture(0),at=t.a.capture(0,{aimSnap:true});
+  assert.notEqual(exact.pos,at.pos);assert.equal(at.pos,25);
+  assert.equal(t.a.distance(0,['5','6','7'],at),0);
+  assert.equal(await t.a.stop(0,['5','6','7'],{at}),true);
+  assert.equal(t.a.top(0),5);assert.equal(t.timers.size,0);t.a.clearAll();
+ }
+});
+test('seven aim tolerance does not snap an unaligned press or change ordinary capture',()=>{
+ const t=setup(),strip=Array.from({length:20},(_,i)=>String(i));
+ t.a.start(0,t.reel,strip,5,false,s=>s);t.tick(15);
+ assert.equal(t.a.capture(0).pos,24.625);
+ assert.equal(t.a.capture(0,{aimSnap:true}).pos,24.625);t.a.clearAll();
+});
+
+test('seven aim chooses the closest approved window and retains its random draw',()=>{
+ const source=readGameSource(),start=source.indexOf('let column=getReelWindowFromStrip(i,symbol,target.onLine?1:0);'),end=source.indexOf('setGridColumn(currentSpin.grid,i,column);',start);
+ assert.ok(start>0&&end>start);
+ const a=[['A','M','R'],['7','7','7'],['B','N','S']],b=[['C','M','R'],['7','7','7'],['D','N','S']];
+ let draws=0;
+ const context=vm.createContext({i:0,symbol:'7',target:{onLine:true},motionAt:{pos:0},currentSpin:{stopped:[false,false,false]},getReelWindowFromStrip:()=>{draws++;return ['A','7','B'];},novaSheetStopChoices:()=>[a,b],NovaReelMotion:{distance:(_,col)=>col[0]==='C'?0:18}});
+ const result=vm.runInContext(source.slice(start,end)+'column;',context);
+ assert.deepEqual(Array.from(result),['C','7','D']);assert.equal(draws,1);
+});
