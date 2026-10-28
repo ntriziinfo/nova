@@ -280,6 +280,14 @@ globalThis.NovaAudioManifest=Object.freeze({
     "src": "assets/media/normalized-voices-20261013/nova/cz-entry-voice.wav",
     "category": "voice"
   },
+  "assets/media/nova/cz-failure-blackout-20261027.mp3": {
+    "src": "assets/media/normalized-20261012/nova/cz-failure-blackout-20261027.wav",
+    "category": "sfx"
+  },
+  "assets/media/nova/cz-success-push-20261027.mp3": {
+    "src": "assets/media/normalized-20261012/nova/cz-success-push-20261027.wav",
+    "category": "sfx"
+  },
   "assets/media/nova/cz_stop_12.wav": {
     "src": "assets/media/normalized-20261012/nova/cz_stop_12.wav",
     "category": "sfx"

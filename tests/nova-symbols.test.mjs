@@ -6,13 +6,15 @@ import vm from 'node:vm';
 const source=readGameSource();
 const fn=name=>source.match(new RegExp('  function '+name+'\\([^]*?\\n  }'))[0];
 const context=vm.createContext({});
+vm.runInContext(fs.readFileSync('nova-reel-sheet-data.js','utf8'),context);
 vm.runInContext(fs.readFileSync('nova-tuning.js','utf8')+'\n'+fs.readFileSync('nova-art.js','utf8'),context);
 vm.runInContext(fs.readFileSync('nova-flow.js','utf8'),context);
 vm.runInContext(fs.readFileSync('nova-tuning.js','utf8')+'\n'+fs.readFileSync('nova-normal.js','utf8'),context);
 const constants=source.slice(source.indexOf('  const A_TYPE_PAYOUTS'),source.indexOf('  const symbolImagePreloads'));
 const result=source.slice(source.indexOf('  const RESULT ='),source.indexOf('  const SETTING_PROFILE'));
+const sheetHelpers=source.slice(source.indexOf('  const NOVA_SHEET_DATA'),source.indexOf('  function novaSymbol'));
 const strips=source.slice(source.indexOf('  const REEL_STRIPS ='),source.indexOf('  function mod('));
-vm.runInContext('const A_TYPE_PREMIUM_BIG_PAYOUT=500;'+constants+result+`
+vm.runInContext('const A_TYPE_PREMIUM_BIG_PAYOUT=500;'+constants+result+sheetHelpers+`
 const A_TYPE_MODE=true;
 const novaStopGridCache=new Map();
 const novaSymbol=(column,row)=>'NOVA_'+column+'_'+row;
@@ -38,23 +40,24 @@ const normalizeNovaRisingRemain=value=>Number(value)||0;
 const isNovaRisingMode=()=>false;
 const nextBonusAfterGames=value=>value+1;
 `,context);
+vm.runInContext(fs.readFileSync('nova-spin-resume.js','utf8'),context);
 const run=code=>vm.runInContext(code,context);
 test('specified twenty-cell strips contain cherry and middle blanks with no legacy NOVA tiles',()=>{
  assert.equal(run('REEL_STRIPS.every(s=>s.length===20&&!s.some(x=>x.startsWith("NOVA_")))'),true);
- assert.equal(run('REEL_STRIPS[1][0]===BLANK_SYMBOL&&REEL_STRIPS[1][12]===BLANK_SYMBOL'),true);
- assert.equal(run('[[5,15],[7,16],[11,17]].every((positions,c)=>positions.every(i=>REEL_STRIPS[c][i]===CHERRY_SYMBOL))'),true);
+ assert.equal(run('REEL_STRIPS[0][12]===BLANK_SYMBOL&&REEL_STRIPS[1][17]===BLANK_SYMBOL&&REEL_STRIPS[2][12]===BLANK_SYMBOL'),true);
+ assert.equal(run('[[3,8,13,18],[2,8,12,19],[0,7,15]].every((positions,c)=>positions.every(i=>REEL_STRIPS[c][i]===CHERRY_SYMBOL))'),true);
 });
 
 test('actual stop grids match every supported outcome using real consecutive strip cells',()=>{
  for(const result of ['NEBULA','MISS','ONE_COIN','BELL','BELL15','WEAK_SUICA','REPLAY','BIG','BAR3']) for(const row of [0,1,2]){
   run(`globalThis.grid=buildNovaReelGrid(${JSON.stringify(result)},${row});`);
   assert.equal(run('displayedResultFromGrid(grid)'),result);
-  assert.equal(run('gridHasOnlyAllowedPaylines(grid,'+JSON.stringify(result)+')'),true);
+  assert.equal(run('NOVA_SHEET_STOPS[novaSheetStopRole('+JSON.stringify(result)+')].some(pattern=>novaSheetFingerprint(pattern)===novaSheetFingerprint(grid))'),true);
   assert.equal(run('REEL_STRIPS.every((s,c)=>s.some((_,i)=>[0,1,2].every(r=>grid[r][c]===s[(i+r)%20])))'),true);
  }
 });
 
-test('left upper or middle watermelon is reserved for a drawn watermelon on every stop candidate',()=>{
+test('every cached stop candidate comes from the approved sheet category',()=>{
  const violations=run(`(()=>{
   const violations=[];
   for(const role of ['MISS','CZ','STRONG_CZ','ONE_COIN','BELL','BELL15','REPLAY','NEBULA','BIG','BAR3','WEAK_SUICA']){
@@ -63,11 +66,8 @@ test('left upper or middle watermelon is reserved for a drawn watermelon on ever
   for(const [key,grids]of novaStopGridCache){
    if(key.startsWith('cherry:'))continue;const role=key.split(':')[0];
    for(const grid of grids){
-    const leftCue=grid[0][0]===SUICA_SYMBOL||grid[1][0]===SUICA_SYMBOL;
-    if(leftCue!==(role==='WEAK_SUICA')||displayedResultFromGrid(grid)!==role){
-     violations.push({key,grid});break;
-    }
-    if(role!=='WEAK_SUICA'&&gridPaylineRows(grid).some(line=>line.every(symbol=>symbol===SUICA_SYMBOL))){
+    const sheetRole=novaSheetStopRole(role),patterns=NOVA_SHEET_STOPS[sheetRole]||[];
+    if(displayedResultFromGrid(grid)!==role||!patterns.some(pattern=>novaSheetFingerprint(pattern)===novaSheetFingerprint(grid))){
      violations.push({key,grid});break;
     }
    }
@@ -93,18 +93,31 @@ test('stop-grid filtering preserves the visual RNG draw count on cold and cached
  })()`);
  assert.deepEqual(Array.from(draws),Array(18).fill(1));
 });
-test('provisional one-coin stop uses one bell on the middle line and exact payout',()=>{
- for(const [role,line,payout] of [
-  ['ONE_COIN',['🔔','__BLANK__','🐘'],1]
- ]){
-  run(`globalThis.grid=buildNovaReelGrid(${JSON.stringify(role)},0);`);
-  assert.deepEqual(Array.from(run('grid[1]')),line);
-  assert.equal(run('displayedResultFromGrid(grid)'),role);
-  assert.equal(run(`gridHasOnlyAllowedPaylines(grid,${JSON.stringify(role)})`),true);
-  assert.equal(run('REEL_STRIPS.every((s,c)=>s.some((_,i)=>[0,1,2].every(r=>grid[r][c]===s[(i+r)%20])))'),true);
-  assert.equal(run(`normalizeATypeResult(${JSON.stringify(role)})`),role);
-  assert.equal(run(`normalRewardFor(${JSON.stringify(role)})`),payout);
+test('one-coin uses an approved miss stop without changing its exact payout',()=>{
+ const audit=run(`(()=>{
+  const choices=novaSheetStopChoices('ONE_COIN'),original=Math.random,results=[];
+  try{
+   novaStopGridCache.delete('ONE_COIN:0');
+   for(let index=0;index<choices.length;index++){
+    let draws=0;Math.random=()=>{draws++;return (index+.25)/choices.length;};
+    const grid=buildNovaReelGrid('ONE_COIN',0),fingerprint=novaSheetFingerprint(grid);
+    results.push({draws,fingerprint,expected:novaSheetFingerprint(choices[index]),
+     approved:NOVA_SHEET_STOPS.MISS.some(pattern=>novaSheetFingerprint(pattern)===fingerprint),
+     displayed:displayedResultFromGrid(grid),safe:gridHasOnlyAllowedPaylines(grid,'ONE_COIN'),
+     contiguous:REEL_STRIPS.every((s,c)=>s.some((_,i)=>[0,1,2].every(r=>grid[r][c]===s[(i+r)%20])))});
+   }
+  }finally{Math.random=original;}
+  return {choiceCount:choices.length,results};
+ })()`);
+ assert(audit.choiceCount>0);
+ assert.equal(audit.results.length,audit.choiceCount);
+ for(const item of audit.results){
+  assert.equal(item.draws,1);assert.equal(item.fingerprint,item.expected);
+  assert.equal(item.approved,true);assert.equal(item.displayed,'ONE_COIN');
+  assert.equal(item.safe,true);assert.equal(item.contiguous,true);
  }
+ assert.equal(run('normalizeATypeResult("ONE_COIN")'),'ONE_COIN');
+ assert.equal(run('normalRewardFor("ONE_COIN")'),1);
 });
 test('active rare labels and browser settlement keep the approved 3pt and 2pt payouts',()=>{
  for(const [role,name,label,payout]of [
@@ -230,7 +243,7 @@ test('nearest common stops preserve the role for every reel position and stop or
    for(const i of order){const distances=new Map();for(let top=0;top<20;top++){const key=reelWindowFromTopIndex(i,top).join('|'),d=mod(direction*(top-positions[i]),20);distances.set(key,Math.min(distances.get(key)??Infinity,d));}const distance=column=>distances.get(column.join('|'));
     const column=nearestCommonStopColumn(i,spin,distance),d=distance(column);max=Math.max(max,d);total+=d;count++;
    }
-   if(displayedResultFromGrid(spin.grid)!==role||!gridHasOnlyAllowedPaylines(spin.grid,role))throw Error('role mismatch '+role);
+   if(displayedResultFromGrid(spin.grid)!==role||!NOVA_SHEET_STOPS[role].some(pattern=>novaSheetFingerprint(pattern)===novaSheetFingerprint(spin.grid)))throw Error('role mismatch '+role);
   }stats[role]={max,average:total/count,count};
  }return stats;})()`);
  console.log('nearest-stop exhaustive statistics',JSON.stringify(stats));assert.ok(stats.BELL.max<20);assert.ok(stats.REPLAY.max<20);
@@ -243,18 +256,33 @@ test('cherry substitution retains exactly two visual RNG draws, BAR NOVA retains
  assert.deepEqual(Array.from(counts),[2,2,2,2,0,0]);
 });
 
-test('updated strips support both chance roles and the supplied double diagonal seven and BAR diamond',()=>{
+test('updated strips support chance roles, all supplied BIG stops and the separate BAR diamond',()=>{
  for(const role of ['CHANCE_A','CHANCE_B','STRONG_SUICA']){
   run('globalThis.grid=buildNovaReelGrid('+JSON.stringify(role)+')');
   assert.equal(run('displayedResultFromGrid(grid)'),run('normalizeATypeResult('+JSON.stringify(role)+')'));
  }
  run('buildNovaReelGrid("BIG");buildNovaReelGrid("BAR3");');
- assert.equal(run('novaStopGridCache.get("BIG:1").some(g=>g[0][0]==="7"&&g[2][0]==="7"&&g[0][2]==="7"&&g[2][2]==="7")'),true);
- assert.equal(run('novaStopGridCache.get("BAR3:1").some(g=>g[0][1]==="BAR"&&g[2][1]==="BAR")'),true);
+ assert.equal(run('novaStopGridCache.get("BIG:1").length'),4);
+ assert.equal(run('novaSheetFingerprint(buildNovaReelGrid("SUPER_NOVA"))===novaSheetFingerprint(NOVA_SHEET_STOPS.SUPER_NOVA[0])'),true);
 });
 
-test('pending layout migration retains the old strips for one spin and resets caches for the next BET',()=>{
- run('globalThis.originalStrips=JSON.stringify(REEL_STRIPS);selectReelLayout(1);');
+test('pending layout migration retains v1 strips for one spin and resets caches for the next v3 BET',()=>{
+ run('globalThis.currentStrips=JSON.stringify(REEL_STRIPS);selectReelLayout(1);');
  assert.equal(run('REEL_STRIPS.every((s,c)=>s[14]===novaSymbol(c,0))'),true);
- run('selectReelLayout(2);');assert.equal(run('JSON.stringify(REEL_STRIPS)===originalStrips'),true);
+ run('selectReelLayout(3);');assert.equal(run('JSON.stringify(REEL_STRIPS)===currentStrips'),true);
+});
+
+test('a deployed v2 pending spin restores against its original strips before returning to v3',()=>{
+ run(`globalThis.currentStrips=JSON.stringify(REEL_STRIPS);
+ globalThis.v2Pending=NovaSpinResume.restore({
+  version:1,reelLayoutVersion:2,result:'MISS',lineRow:1,
+  grid:[['7',BLANK_SYMBOL,'7'],[ELEPHANT_SYMBOL,BELL_SYMBOL,BELL_SYMBOL],['7',SUICA_SYMBOL,'7']],
+  resolved:{flowBefore:{phase:'normal'},flowAfter:{phase:'normal'}},stopped:[false,false,false]
+ },RESULT);
+ selectReelLayout(v2Pending.reelLayoutVersion);`);
+ assert.equal(run('v2Pending.reelLayoutVersion'),2);
+ assert.equal(run('JSON.stringify(REEL_STRIPS)===JSON.stringify(REEL_LAYOUT_V2_STRIPS)'),true);
+ assert.equal(run('REEL_STRIPS.every((strip,column)=>strip.some((_,top)=>[0,1,2].every(row=>v2Pending.grid[row][column]===strip[(top+row)%strip.length])))'),true);
+ run('selectReelLayout(REEL_LAYOUT_VERSION);');
+ assert.equal(run('JSON.stringify(REEL_STRIPS)===currentStrips'),true);
 });

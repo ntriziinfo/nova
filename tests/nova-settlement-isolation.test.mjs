@@ -14,7 +14,8 @@ function scheduled(){
   normalState:{},NovaLadder:{eligible:()=>false},isPremiumBigFinalBonusSpin:()=>false,$:()=>({}),
   autoScaledDelayMs:x=>x,setTimeout:f=>callbacks.push(f),finishSpin:(...args)=>paid.push(args)});
  const begin=source.indexOf('    if(currentSpin.stopped.every(Boolean) && !currentSpin.finishScheduled){');
- const end=source.indexOf('\n    persistState();\n  }',begin);
+ const endMatch=/\r?\n    persistState\(\);\r?\n  }/g;endMatch.lastIndex=begin;const end=endMatch.exec(source)?.index??-1;
+ assert(end>begin,'settlement scheduling block was not found');
  vm.runInContext(source.slice(begin,end),c);
  return {c,old,callbacks,paid};
 }

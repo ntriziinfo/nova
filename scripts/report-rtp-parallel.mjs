@@ -15,7 +15,7 @@ const SIMULATION_OPTIONS=Object.freeze({
  rareSortie:true,
  atBetRefund:true,
  replayRefund:true,
- checkpointQuiet:true,
+ checkpointQuiet:false,
  netGuard:true,
  decrement:true,
  recordBlocks:BLOCK_GAMES

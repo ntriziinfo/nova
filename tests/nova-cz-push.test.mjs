@@ -1,10 +1,14 @@
 import fs from 'node:fs';import vm from 'node:vm';import assert from 'node:assert/strict';
-const classes=new Set();const elements=new Map(),timers=[];const c=vm.createContext({document:{documentElement:{classList:{add:x=>classes.add(x),remove:x=>classes.delete(x)}},getElementById:id=>elements.get(id),createElement:()=>({}),querySelector:()=>({append:b=>elements.set(b.id,b)})},setTimeout:fn=>timers.push(fn)});vm.runInContext(fs.readFileSync('nova-cz-push.js','utf8'),c);const p=c.NovaCzPresentation;
+const classes=new Set();const elements=new Map(),timers=[];let fadeRestarts=0;const c=vm.createContext({document:{documentElement:{classList:{add:x=>classes.add(x),remove:x=>classes.delete(x)}},getElementById:id=>elements.get(id),createElement:()=>Object.defineProperty({},'offsetWidth',{get(){fadeRestarts++;return 0;}}),querySelector:()=>({append:b=>elements.set(b.id,b)})},setTimeout:fn=>timers.push(fn)});vm.runInContext(fs.readFileSync('nova-cz-push.js','utf8'),c);const p=c.NovaCzPresentation;
 for(let setting=1;setting<=6;setting++)for(let seed=0;seed<1000;seed++){for(const success of [false,true]){let previous=0;for(let remaining=15;remaining>=1;remaining--)for(let stop=1;stop<=3;stop++){const shown=p.display({remaining,totalGames:15,timingSeed:seed},stop,success,setting);const stage=Math.max(previous,shown.stage);assert(stage>=previous);previous=stage;if(remaining===1&&stop===3){assert(stage>=1&&stage<=8);if(!success)assert(![1,8].includes(stage));}}}}
+assert.deepEqual(JSON.parse(JSON.stringify(p.display({remaining:15,totalGames:15,timingSeed:42},0,true,1,true))),{stage:8,color:'rainbow',rainbow:true});
+assert.deepEqual(JSON.parse(JSON.stringify(p.display({remaining:15,totalGames:15,timingSeed:42},1,true,1,true))),{stage:8,color:'rainbow',rainbow:true});
+assert.equal(p.display({remaining:15,totalGames:15,timingSeed:42},0,true,1,false),null);
+assert.equal(p.display({remaining:15,totalGames:15,timingSeed:42},0,false,1),null);
 let count=0;const r={czLamp:{},czCompleted:true,bonusHit:true};const hooks={auto:true,valid:()=>true,reveal:()=>count++};assert.equal(p.wait(r,hooks),true);assert.equal(p.wait(r,hooks),true);assert.equal(timers.length,1);assert.equal(count,0);timers[0]();elements.get('novaCzPush').onclick();assert.equal(count,1);assert.equal(p.wait(r,hooks),false);assert.equal(elements.get('novaCzPush').hidden,true);assert.equal(p.wait({},hooks),false);
 console.log('Candidate checks passed: 12,000 CZ schedules, final guarantees, monotonic display, PUSH wait/auto/repeated clicks.');
 
-const resumed={czLamp:{},czCompleted:true,czPushWaiting:true,bonusHit:true};p.wait(resumed,{auto:false,valid:()=>true,reveal:()=>count++});assert.equal(elements.get('novaCzPush').hidden,false);elements.get('novaCzPush').onclick();assert.equal(count,2);
+const resumed={czLamp:{},czCompleted:true,czPushWaiting:true,bonusHit:true};p.wait(resumed,{auto:false,valid:()=>true,reveal:()=>count++});assert.equal(elements.get('novaCzPush').hidden,false);assert.match(elements.get('novaCzPush').className,/novaCzEntering/);assert.equal(fadeRestarts,2);elements.get('novaCzPush').onclick();assert.equal(count,2);
 
 let goldCount=0;
 for(let seed=0;seed<100000;seed++){
@@ -36,12 +40,20 @@ for(let setting=1;setting<=6;setting++){
 }
 const css=fs.readFileSync('nova-artwork.css','utf8');
 assert.match(css,/#novaCzPush\.big,#novaCzPush\.gold\{left:0%;top:12\.5%;width:100%;height:70%\}/);
+assert.match(css,/#novaCzPush\.novaCzEntering\{animation:novaPushFadeIn/);
+assert.match(css,/data-lamp=cz-rainbow[^}]+novaCzRainbowFlash \.14s/);
+assert.match(css,/data-cz-color=rainbow[^}]+novaCzReelRainbowFlash \.14s/);
+assert.match(css,/\.novaCzFailed #machine :is\([^}]+filter:brightness\(0\)!important/);
+for(const selector of ['.lamps','.lamp','#stLamp','.jagStatusLamps'])assert.match(css,new RegExp('\\.novaCzFailed #machine :is\\([^}]*'+selector.replace('.','\\.')+'[^}]*\\)'));
+assert.doesNotMatch(css,/\.novaCzFailed #machine :is\([^}]*#novaCzPush/);
+assert.match(css,/prefers-reduced-motion:reduce[^}]+#novaCzPush\.failed\{animation:none;opacity:0/);
 assert(!fs.readFileSync('nova-cz-push.js','utf8').includes('Math.random'));
 
-const failed={czLamp:{},czCompleted:true};
-p.wait(failed,{valid:()=>true,reveal:()=>count++});
+const failed={czLamp:{},czCompleted:true};let failedCallbacks=0,failedResolved=null;
+p.wait(failed,{valid:()=>true,reveal:()=>count++,onFailure:value=>{failedCallbacks++;failedResolved=value;}});
 const b=elements.get('novaCzPush');b.onclick();b.onclick();
 assert.equal(count,2);assert.equal(failed.czPushConfirmed,undefined);
+assert.equal(failedCallbacks,1);assert.equal(failedResolved,failed);
 assert.equal(b.hidden,false);assert.equal(b.disabled,true);assert(classes.has('novaCzFailed'));
 assert(b.className.endsWith(' failed'));timers.at(-1)();
 assert.equal(count,3);assert.equal(failed.czPushConfirmed,true);assert.equal(b.hidden,true);assert(!classes.has('novaCzFailed'));

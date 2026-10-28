@@ -6,7 +6,7 @@ import vm from 'node:vm';
 
 const source=fs.readFileSync('nova-game.js','utf8');
 const fn=name=>source.match(new RegExp('  function '+name+'\\([^]*?\\n  }'))[0];
-const patrol='assets/media/jag/cz_patrol_confirm.wav?v=19',voice='assets/media/nova/sosuke-zone-get.wav';
+const patrol='assets/media/jag/cz_patrol_confirm.wav?v=19',czSuccess='assets/media/nova/cz-success-push-20261027.mp3',voice='assets/media/nova/sosuke-zone-get.wav';
 const won=()=>({flowBefore:{phase:'art',atPrelude:{left:1}},flowAfter:{phase:'art',entryStage:'seven'}});
 function setup(){
  const played=[],timers=[],watches=[];
@@ -58,7 +58,7 @@ test('CZ, fixed initial points, fake preludes and lineup games do not add the AT
  c.playZoneInternalConfirmedSound({flowBefore:{phase:'art',initialStage:'wait'},flowAfter:{phase:'art',entryStage:'seven'}});
  c.bonusConfirmSoundAudio.onended();
  for(const r of [{flowBefore:{phase:'normal'},flowAfter:{entryStage:'seven'}},{flowBefore:{phase:'art'},flowAfter:{phase:'art'}},{flowBefore:{phase:'art',entryStage:'seven'},flowAfter:{entryStage:'roulette'}}])c.playZoneInternalConfirmedSound(r);
- assert.deepEqual(played.map(x=>x.src),[patrol,patrol]);
+ assert.deepEqual(played.map(x=>x.src),[czSuccess,patrol]);
 });
 
 test('debug simulation and speed-to-bonus remain silent',()=>{

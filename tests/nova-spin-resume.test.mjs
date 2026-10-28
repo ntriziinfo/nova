@@ -30,7 +30,7 @@ function harness(saved=null){
  // Navigation renderer is tested separately with DOM stubs; restore must not draw an order.
  c.NovaBellNavi={restore:spin=>{c.shownOrder=json(spin.bellNaviOrder);},clear:noop};
  c.SORTIE_AWARD_VOICE_SRCS=loadVoiceCatalog(c).SORTIE_AWARD_VOICE_SRCS;
- for(const name of ['reduceSlumpPoints','canUsePlayState','clearBonusPreparationState','load','runtimeStateForStorage','compactStatsForResume','updateStorageStatus','persistState','playSortieAwardVoice','restorePendingSpin'])vm.runInContext(fn(name),c);
+ for(const name of ['reduceSlumpPoints','canUsePlayState','clearBonusPreparationState','load','runtimeStateForStorage','compactStatsForResume','updateStorageStatus','persistState','playSortieAwardVoice','restoreCzLampPresentation','restorePendingSpin'])vm.runInContext(fn(name),c);
  c.selectReelLayout=version=>{c.restoredReelLayout=version;};
  return {c,storage,errors,timers,$,voices};
 }
@@ -245,9 +245,9 @@ test('replay entitlement and zero-game cost exemptions survive pending saves',()
 
 test('displayed RTP identifies the uncapped verification profile; BIG fields still use the engine target',()=>{
  const {c}=harness();vm.runInContext(fn('targetRtpText'),c);
- c.NovaRtpCurrent={status:'ready',gamesPerSetting:1000000000,settings:[1,2,3,4,5,6].map(setting=>({setting,rtpPct:94+setting}))};
+ c.NovaRtpCurrent={status:'ready',gamesPerSetting:1000000000,conditions:'2.5億G×4系列合算・MY／差枚停止なし',settings:[1,2,3,4,5,6].map(setting=>({setting,rtpPct:94+setting}))};
  for(let setting=1;setting<=6;setting++){
-   assert.equal(c.targetRtpText(setting),`${(94+setting).toFixed(2)}%（10億G連続・MY／差枚停止なし）`);
+   assert.equal(c.targetRtpText(setting),`${(94+setting).toFixed(2)}%（2.5億G×4系列合算・MY／差枚停止なし）`);
  }
  c.NovaRtpCurrent.status='pending';assert.match(c.targetRtpText(6),/試算待ち/);
  delete c.NovaRtpCurrent;assert.match(c.targetRtpText(6),/試算待ち/);
@@ -299,9 +299,9 @@ test('custom lottery suppresses reference RTP; live COMPLETE and presentation pr
   c.settings={...standard,...change};
   for(let n=1;n<=6;n++)assert.equal(c.targetRtpText(n),'未試算（独自設定）');
  }
- c.NovaRtpCurrent={status:'ready',gamesPerSetting:1000000000,settings:[{setting:6,rtpPct:114.123}]};
+ c.NovaRtpCurrent={status:'ready',gamesPerSetting:1000000000,conditions:'2.5億G×4系列合算・MY／差枚停止なし',settings:[{setting:6,rtpPct:114.123}]};
  c.settings={...standard,audioMuted:true,voiceVolume:.1,autoDelay:2,title:'表示変更',completeEnabled:true,completeBasis:'my',completeMyLimitPt:19000,completeLimitPt:10000};
- assert.equal(c.targetRtpText(6),'114.12%（10億G連続・MY／差枚停止なし）');
+ assert.equal(c.targetRtpText(6),'114.12%（2.5億G×4系列合算・MY／差枚停止なし）');
  c.settings={...standard,novaFlow:{...standard.novaFlow,czChance:String(c.NovaFlow.defaults.czChance)}};
  assert(c.NovaBalance.usesStandardSettings(c.settings));
 });
@@ -334,9 +334,26 @@ test('reference audio mix migrates once to all50 without changing saved play or 
  again.c.settings.voiceVolume=.7;again.c.persistState();const third=harness(JSON.parse(again.storage.get('state')));third.c.load();assert.equal(third.c.settings.voiceVolume,.7);
 });
 
-test('reel layout version survives repeat saves; legacy drawn spins remain legacy until settlement',()=>{
- const {c}=harness(),old=c.NovaSpinResume.capture(spin(c));
- assert.equal(old.reelLayoutVersion,2);delete old.reelLayoutVersion;
- const restored=c.NovaSpinResume.restore(old,c.RESULT);assert.equal(restored.reelLayoutVersion,1);
+test('reel layout version survives repeat saves; v2 and legacy drawn spins remain pinned until settlement',()=>{
+ const {c}=harness(),fresh=c.NovaSpinResume.capture(spin(c));
+ assert.equal(fresh.reelLayoutVersion,3);
+ const v2=c.NovaSpinResume.restore(c.NovaSpinResume.capture(spin(c,{reelLayoutVersion:2})),c.RESULT);
+ assert.equal(v2.reelLayoutVersion,2);assert.equal(c.NovaSpinResume.capture(v2).reelLayoutVersion,2);
+ delete fresh.reelLayoutVersion;
+ const restored=c.NovaSpinResume.restore(fresh,c.RESULT);assert.equal(restored.reelLayoutVersion,1);
  assert.equal(c.NovaSpinResume.capture(restored).reelLayoutVersion,1);
+});
+
+test('confirmed CZ reload restores stage-8 rainbow before an all-stopped spin re-enters PUSH wait',()=>{
+ const {c,$}=harness();
+ const saved=c.NovaSpinResume.capture(spin(c,{reelLayoutVersion:3,stopped:[true,true,true],resolved:{
+  reward:0,flowBefore:{phase:'cz'},flowAfter:{phase:'normal'},czLamp:{stage:8,totalGames:15,remaining:1,timingSeed:42},czCompleted:true,bonusHit:true,czLampAtBet:8
+ }}));
+ c.currentSpin=c.NovaSpinResume.restore(saved,c.RESULT);
+ let waitCalls=0,finishCalls=0;
+ c.NovaCzPresentation.wait=resolved=>{waitCalls++;assert.equal(resolved,c.currentSpin.resolved);return true;};
+ c.finishSpin=(result,resolved)=>{finishCalls++;c.finishLamp={...$('machine').dataset};c.NovaCzPresentation.wait(resolved);};
+ assert.equal(c.restorePendingSpin(),true);
+ assert.equal(c.restoredReelLayout,3);assert.equal(finishCalls,1);assert.equal(waitCalls,1);
+ assert.equal(c.finishLamp.czLamp,'8');assert.equal(c.finishLamp.czColor,'rainbow');assert.equal(c.finishLamp.czRainbow,'true');assert.match(c.finishLamp.czOrder,/^([^,]+,){7}[^,]+$/);
 });

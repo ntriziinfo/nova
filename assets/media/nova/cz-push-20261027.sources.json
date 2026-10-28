@@ -1,0 +1,31 @@
+{
+  "sounds": [
+    {
+      "originalFile": "audiostock_2255.mp3",
+      "source": "cz-failure-blackout-20261027.mp3",
+      "originalUnmodified": true,
+      "bytes": 23195,
+      "sha256": "546faecd525a9f70b92345a5358962402123895aa17afebfc0bcdf33005bfcf4",
+      "durationSeconds": 0.875533,
+      "sampleRate": 44100,
+      "channels": 2,
+      "category": "sfx",
+      "trigger": "CZ losing PUSH: fade the button out and black out reels and lamps",
+      "loop": false
+    },
+    {
+      "originalFile": "audiostock_1603124.mp3",
+      "source": "cz-success-push-20261027.mp3",
+      "originalUnmodified": true,
+      "bytes": 277942,
+      "sha256": "1b87d4d191551807cfa9c00d0e31b17f48919a276c92c1b8fa04575f98af243b",
+      "durationSeconds": 6.873537,
+      "sampleRate": 44100,
+      "channels": 2,
+      "category": "sfx",
+      "trigger": "CZ winning PUSH",
+      "loop": false
+    }
+  ],
+  "usage": "User-provided copyrighted audio for the requested NOVA CZ effects only. Original files stay untouched. No training use."
+}

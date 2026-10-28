@@ -1802,6 +1802,52 @@
       }
     },
     {
+      "src": "assets/media/nova/cz-failure-blackout-20261027.mp3",
+      "category": "sfx",
+      "targetLufs": -16,
+      "output": "assets/media/normalized-20261012/nova/cz-failure-blackout-20261027.wav",
+      "sourceSha256": "546faecd525a9f70b92345a5358962402123895aa17afebfc0bcdf33005bfcf4",
+      "outputSha256": "bca15592c1dfad718e990a9c19c2e91f874d30ea228979780d2688dde1465e83",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 0.875533,
+      "outputDuration": 0.875533,
+      "gainDb": -1.71,
+      "before": {
+        "lufs": -14.29,
+        "peakDbtp": -1.15,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -15.99,
+        "peakDbtp": -2.86,
+        "rangeLu": 0
+      }
+    },
+    {
+      "src": "assets/media/nova/cz-success-push-20261027.mp3",
+      "category": "sfx",
+      "targetLufs": -16,
+      "output": "assets/media/normalized-20261012/nova/cz-success-push-20261027.wav",
+      "sourceSha256": "1b87d4d191551807cfa9c00d0e31b17f48919a276c92c1b8fa04575f98af243b",
+      "outputSha256": "a790f470e6b166568030df8954777ff9c9a015681c40de843a16fbce73ca0381",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 6.873537,
+      "outputDuration": 6.873537,
+      "gainDb": -11.65,
+      "before": {
+        "lufs": -4.35,
+        "peakDbtp": -0.89,
+        "rangeLu": 14
+      },
+      "after": {
+        "lufs": -16,
+        "peakDbtp": -12.57,
+        "rangeLu": 14
+      }
+    },
+    {
       "src": "assets/media/nova/cz_stop_12.wav",
       "category": "sfx",
       "targetLufs": -16,

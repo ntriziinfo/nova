@@ -45,9 +45,10 @@ body.debugOpen #novaArtToggle{display:none}
 @keyframes novaCzAnticipation{0%,100%{filter:brightness(.24) saturate(.7)}50%{filter:brightness(1.3) saturate(1.2) drop-shadow(0 0 8px #fff4ac)}}
 @media(prefers-reduced-motion:reduce){#machine[data-cz-blink] .novaArtItem[data-cz-pending="true"] img{animation:none;filter:brightness(.8) drop-shadow(0 0 5px #fff4ac)}}
 
-/* Ouma completes CZ: all eight lamps share the fast color and flash phases. */
-#machine .novaArtLayer[data-lamp=cz-rainbow] img{animation:novaIllustrationRainbow .7s linear infinite,novaCzRainbowFlash .24s steps(1,end) infinite}
-@keyframes novaCzRainbowFlash{0%,100%{opacity:1}50%{opacity:.35}}
+/* A confirmed CZ win: every character lamp and the reel border share the same
+ * rapid rainbow/black flash cadence. */
+#machine .novaArtLayer[data-lamp=cz-rainbow] img{animation:novaIllustrationRainbow .56s linear infinite,novaCzRainbowFlash .14s steps(1,end) infinite}
+@keyframes novaCzRainbowFlash{0%,100%{opacity:1}50%{opacity:.12}}
 @media(prefers-reduced-motion:reduce){#machine .novaArtLayer[data-lamp=cz-rainbow] img{animation:none;opacity:1;filter:brightness(1.3) saturate(1.3) drop-shadow(0 0 8px #e6bdff)}}
 
 /* BGM beat changes brightness without modifying licensed artwork or lamp hue. */
@@ -93,29 +94,35 @@ body[data-game-phase=bonus][data-bonus-tier=upper] .novaArtLayer .novaArtItem im
 #novaCzPush.gold{background-image:url('assets/ui/nova-push-gold-20261027.png')}
 #novaCzPush:focus-visible{outline:3px solid #fff;outline-offset:4px}
 
-/* Pulse the alpha-edged PUSH artwork without changing the reveal timing. */
+/* Fade in every newly offered PUSH, then pulse the alpha-edged artwork. */
 #novaCzPush{
  --push-glow:#fff;
  transform-origin:center;
  animation:novaPushPulse .8s ease-in-out infinite;
 }
+#novaCzPush.novaCzEntering{animation:novaPushFadeIn .32s ease-out both,novaPushPulse .8s ease-in-out .32s infinite}
 #novaCzPush.red{--push-glow:#ff263c}
 #novaCzPush.gold{--push-glow:#ffd34d}
+@keyframes novaPushFadeIn{from{opacity:0}to{opacity:1}}
 @keyframes novaPushPulse{
  0%,100%{transform:scale(.88);filter:drop-shadow(0 0 3px var(--push-glow)) drop-shadow(0 0 5px var(--push-glow))}
  50%{transform:scale(1);filter:drop-shadow(0 0 5px var(--push-glow)) drop-shadow(0 0 12px var(--push-glow))}
 }
 @media(prefers-reduced-motion:reduce){
- #novaCzPush{animation:none;transform:none;filter:drop-shadow(0 0 6px var(--push-glow))}
+ #novaCzPush,#novaCzPush.novaCzEntering{animation:none;opacity:1;transform:none;filter:drop-shadow(0 0 6px var(--push-glow))}
 }
 /* Presentation only: follow the existing CZ lamp color without drawing across symbols. */
 #machine[data-cz-color]:not([data-cz-color=""]) .reels::after{content:"";position:absolute;inset:0;box-sizing:border-box;border:3px solid var(--cz-color,#fff);border-radius:7px;box-shadow:0 0 8px var(--cz-color,#fff),0 0 18px var(--cz-color,#fff),inset 0 0 6px var(--cz-color,#fff);pointer-events:none;z-index:30}
-#machine[data-cz-color=rainbow] .reels::after{animation:novaCzReelRainbow 1.4s linear infinite}
+#machine[data-cz-color=rainbow] .reels::after{animation:novaCzReelRainbow .56s linear infinite,novaCzReelRainbowFlash .14s steps(1,end) infinite}
 @keyframes novaCzReelRainbow{0%,100%{--cz-color:#ff3450}16%{--cz-color:#ffad36}33%{--cz-color:#ffe544}50%{--cz-color:#45f478}66%{--cz-color:#458aff}83%{--cz-color:#d56dff}}
+@keyframes novaCzReelRainbowFlash{0%,100%{opacity:1}50%{opacity:.12}}
 @media(prefers-reduced-motion:reduce){#machine[data-cz-color=rainbow] .reels::after{animation:none;--cz-color:#d56dff}}
-/* CZ failure: dim the entire viewport, then restore it before the next BET. */
-.novaCzFailed body::after{content:"";position:fixed;inset:0;z-index:2147483647;pointer-events:none;background:#000;animation:novaCzFailureDim .9s ease-in-out both}
+/* CZ failure: the physical reel window, its trim, and every lamp are truly off
+ * for the existing 900ms result hold. The PUSH remains above them to fade out. */
+.novaCzFailed #machine :is(.reels,.risingReelBackplate,.reelFrameOnOverlay,.reelCenterBandLayer,.cabinetFrontParts,.cabinetPartReelBack,.jagFrameLamps,.jagSideRail,.jagTopBeacon,.cabinetTopSevenOverlay,.novaArtLayer,.lamps,.lamp,#stLamp,.jagStatusLamps){animation:none!important;filter:brightness(0)!important;box-shadow:none!important}
+.novaCzFailed #machine .reelArea::before,.novaCzFailed #machine .reelArea::after{animation:none!important;filter:brightness(0)!important;box-shadow:none!important}
+.novaCzFailed #machine .novaArtItem::before,.novaCzFailed #machine .novaArtItem img{animation:none!important;filter:brightness(0)!important;box-shadow:none!important}
+.novaCzFailed #machine .reels::after{animation:none!important;opacity:0!important;box-shadow:none!important}
 #novaCzPush.failed{pointer-events:none;animation:novaCzPushFade .6s ease-out both}
 @keyframes novaCzPushFade{from{opacity:1;transform:scale(.94)}to{opacity:0;transform:scale(.88);filter:none}}
-@keyframes novaCzFailureDim{0%,100%{opacity:0}25%,75%{opacity:.65}}
-@media(prefers-reduced-motion:reduce){#novaCzPush.failed{animation:novaCzPushFade .6s linear both}}
+@media(prefers-reduced-motion:reduce){#novaCzPush.failed{animation:none;opacity:0;transform:none;filter:none}}

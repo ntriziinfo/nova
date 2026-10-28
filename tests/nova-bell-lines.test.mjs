@@ -12,11 +12,13 @@ function setup(){
  const played=[],c=vm.createContext({setTimeout:()=>0,clearTimeout(){},debugFastSpinActive:false,speedToBonusActive:false,
   sfxOutputVolume:()=>1,voiceOutputVolume:()=>1,playOneShotSound:src=>played.push(src),playWinSound:()=>played.push('chance'),
   REPLAY_SOUND_SRC:'replay',PAYOUT_3PT_BELL_SOUND_SRC:'bell',PAYOUT_SOUND_SRC:'payout',STOP_SOUND_SRC:'stop',oneShotSoundCache:new Map()});
+ vm.runInContext(fs.readFileSync('nova-reel-sheet-data.js','utf8'),c);
  for(const file of ['nova-tuning.js','nova-art.js','nova-normal.js','nova-ladder-presentation.js','nova-spin-resume.js'])vm.runInContext(fs.readFileSync(file,'utf8'),c);
  const constants=source.slice(source.indexOf('  const A_TYPE_PAYOUTS'),source.indexOf('  const symbolImagePreloads'));
  const results=source.slice(source.indexOf('  const RESULT ='),source.indexOf('  const SETTING_PROFILE'));
+ const sheetHelpers=source.slice(source.indexOf('  const NOVA_SHEET_DATA'),source.indexOf('  function novaSymbol'));
  const strips=source.slice(source.indexOf('  const REEL_STRIPS ='),source.indexOf('  function mod('));
- vm.runInContext('const A_TYPE_PREMIUM_BIG_PAYOUT=500;const A_TYPE_MODE=true;'+constants+results+
+ vm.runInContext('const A_TYPE_PREMIUM_BIG_PAYOUT=500;const A_TYPE_MODE=true;'+constants+results+sheetHelpers+
   'const novaStopGridCache=new Map();const novaSymbol=(c,r)=>`NOVA_${c}_${r}`;const isNovaGrid=grid=>[0,1,2].every(r=>[0,1,2].every(c=>grid[r][c]===novaSymbol(c,r)));'+strips+
   ['mod','reelWindowFromTopIndex','normalizeATypeResult','displayResultFor','isMiddleLineOnlyResult','hasBellDiagonal',
    'cherryResultFromRow','cherryResultFromRows','displayedResultFromGrid','displayedResultFromRow','gridPaylineRows',
@@ -30,7 +32,7 @@ function setup(){
  return {c,played};
 }
 
-test('15pt bells are horizontal, 8pt bells are diagonal for all orders and resume points',()=>{
+test('8pt and 15pt bells retain their approved sheet stops for all orders and resume points',()=>{
  const {c}=setup();
  for(const role of ['BELL','BELL15'])for(const order of orders)for(let pos=0;pos<20;pos++){
   const spin={result:role,lineRow:1,resolved:{reward:role==='BELL15'?15:8},stopped:[false,false,false],grid:c.buildNovaReelGrid(role,1,order[0])};
@@ -41,9 +43,7 @@ test('15pt bells are horizontal, 8pt bells are diagonal for all orders and resum
    assert.deepEqual(plain(resumed.grid),plain(spin.grid));assert.equal(resumed.resolved.reward,role==='BELL15'?15:8);
   }
   assert.equal(c.displayedResultFromGrid(spin.grid),role);
-  const bell=c.results.BELL.reel[0];
-  assert.equal(spin.grid[1].every(v=>v===bell),role==='BELL15');
-  if(role==='BELL')assert([0,1,2].every(i=>spin.grid[i][i]===bell));
+  assert(c.NovaReelSheetData.stops[role].some(pattern=>JSON.stringify(pattern)===JSON.stringify(spin.grid)));
  }
 });
 test('new line selection keeps one visual random draw, original payout and legacy pending 15pt recognition',()=>{

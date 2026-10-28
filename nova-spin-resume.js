@@ -1,5 +1,6 @@
 /* Persist a drawn, unpaid spin. Presentation timers and media objects are not saved. */
 globalThis.NovaSpinResume=(()=>{
+ const currentReelLayoutVersion=3;
  const fields=['reelLayoutVersion','result','lineRow','grid','resolved','stopped','pendingStopColumns','commonStopColumns',
   'auditGrid','auditPressOrder','auditStopOrder','aimStopOrder','aimAligned','aimWinPlayed',
   'bellNaviOrder','rareNavi','bellNaviVoiceCharacter','bellNaviVoiceStage',
@@ -11,7 +12,7 @@ globalThis.NovaSpinResume=(()=>{
  const clone=value=>JSON.parse(JSON.stringify(value));
  function capture(spin){
   if(!spin||spin.finishing)return null;
-  const data={version:1,reelLayoutVersion:spin.reelLayoutVersion||2};
+  const data={version:1,reelLayoutVersion:spin.reelLayoutVersion||currentReelLayoutVersion};
   for(const field of fields)if(spin[field]!==undefined)data[field]=spin[field];
   return clone(data);
  }

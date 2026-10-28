@@ -97,5 +97,10 @@ assets/ui/nova-push-gold-20261027.png -filter -diff -merge -text
 assets/ui/nova-push-white-20261027.png -filter -diff -merge -text
 assets/ui/nova-push-red-20261027.png -filter -diff -merge -text
 
+# User-supplied CZ decision sounds; originals remain byte-for-byte intact.
+assets/media/nova/cz-failure-blackout-20261027.mp3 -filter -diff -merge -text
+assets/media/nova/cz-success-push-20261027.mp3 -filter -diff -merge -text
+assets/media/nova/cz-push-20261027.sources.json -filter -diff -merge text
+
 # Lossless delivery copies; original licensed assets remain untouched.
 assets/lossless-20261027/** -filter -diff -merge -text

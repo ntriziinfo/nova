@@ -32,7 +32,12 @@ function lampSchedule(seed,total){
 }
 function lampStop(seed,index,total){return lampSchedule(seed,total)[index-1];}
 function display(lamp,stop,won,setting,terminal=false){
- if(!lamp||stop<1)return null;
+ if(!lamp)return null;
+ // Once the already-decided CZ outcome is known to be a win, presentation must
+ // not keep showing a lower-confidence cue until a reel is stopped. This only
+ // reads the saved outcome; it never draws gameplay RNG or changes the award.
+ if(won&&terminal)return {stage:8,color:'rainbow',rainbow:true};
+ if(stop<1)return null;
  const p=rates[Math.max(0,Math.min(5,(Number(setting)||1)-1))],seed=lamp.timingSeed||0;
  const roll=fraction(seed,137),yes=selectTier(true,p,roll),no=selectTier(false,p,roll);
  const last=terminal||lamp.remaining===1;
@@ -59,14 +64,22 @@ function variant(resolved,setting=1){
 function gold(resolved){return variant(resolved)==='gold';}
 let pendingPush=null,pendingAuto=null;
 function autoPress(){return pendingAuto?.()||false;}
-function wait(resolved,{auto=false,setting=1,valid,reveal}){
+function restartFadeIn(button,className){
+ button.hidden=false;
+ button.className=className;
+ // A layout read between removing and restoring the class makes the entrance
+ // animation deterministic when the same button element is reused.
+ void button.offsetWidth;
+ button.className=className+' novaCzEntering';
+}
+function wait(resolved,{auto=false,setting=1,valid,reveal,onFailure=()=>{}}){
  if(!resolved?.czLamp||resolved.czPushConfirmed||!(resolved.czCompleted||resolved.bonusHit||resolved.aTypeBonusReady))return false;
  let button=document.getElementById('novaCzPush');
  if(!button){button=document.createElement('button');button.id='novaCzPush';button.type='button';button.textContent='PUSH';document.querySelector('.reelArea').append(button);}
  if(pendingPush===resolved)return true;
  pendingPush=resolved;
  document.documentElement.classList.remove('novaCzFailed');
- button.className=variant(resolved,setting);button.hidden=false;button.disabled=false;
+ restartFadeIn(button,variant(resolved,setting));button.disabled=false;
  let accepted=false,autoQueued=false;
  const autoEnabled=()=>typeof auto==='function'?auto():auto;
  const accept=()=>{
@@ -84,6 +97,7 @@ function wait(resolved,{auto=false,setting=1,valid,reveal}){
   if(won){complete();return;}
   document.documentElement.classList.add('novaCzFailed');
   button.className+=' failed';
+  onFailure(resolved);
   // Keep the completed spin pending while the failure presentation fades out.
   setTimeout(complete,900);
  };

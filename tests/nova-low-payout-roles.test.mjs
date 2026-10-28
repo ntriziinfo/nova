@@ -134,12 +134,12 @@ test('one-coin role near zero extends the AT instead of entering comeback early'
   }
 });
 
-test('browser registry exposes the provisional middle-line stop in the debug force menu',()=>{
+test('browser registry exposes the approved sheet miss stop in the debug force menu',()=>{
   const source=fs.readFileSync('nova-game.js','utf8');
   const html=fs.readFileSync('jag.html','utf8');
   assert.match(source,/ONE_COIN:1/);
-  assert.ok(source.includes('ONE_COIN:{name:"1枚役",label:"1枚",reel:[BELL_SYMBOL,BLANK_SYMBOL,ELEPHANT_SYMBOL],cls:"blue",kind:"pay",provisionalStop:true}'));
-  assert.ok(source.includes("...['ONE_COIN'].map(k=>[k,RESULT[k].name+'（暫定停止形）'])"));
+  assert.ok(source.includes('ONE_COIN:{name:"1枚役",label:"1枚",reel:[BELL_SYMBOL,BLANK_SYMBOL,ELEPHANT_SYMBOL],cls:"blue",kind:"pay"}'));
+  assert.ok(source.includes("...['ONE_COIN'].map(k=>[k,RESULT[k].name+'（外れ目停止形）'])"));
   assert.ok(html.includes('<option value="NAVI_BELL">押し順ベル（8pt）</option>'));
   assert.ok(source.includes('if(result === "NAVI_BELL")return result;'));
   assert.ok(source.includes("['ONE_COIN','NAVI_BELL','BELL','REPLAY','MISS','FREEZE']"));

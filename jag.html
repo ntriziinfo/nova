@@ -36,12 +36,12 @@
 <link rel="stylesheet" href="nova-cabinet.css?v=20261027-blank-half2">
 <link rel="stylesheet" href="nova-remaining-counters.css?v=20261013-checkpoint-cue">
 <script src="nova-remaining-counters.js?v=20261027-bb-counter"></script>
-<link rel="stylesheet" href="nova-artwork.css?v=20261027-cz-reel-color">
+<link rel="stylesheet" href="nova-artwork.css?v=20261027-cz-rainbow-push">
 <script src="nova-artwork.js?v=20261027-lamp-underprint" defer></script>
 <link rel="stylesheet" href="nova-upper-at-background.css?v=20261013-checkpoint-cue">
 <script src="nova-upper-at-background.js?v=20261027-nova-bar-zone"></script>
 <script src="nova-voice-catalog.js?v=20261027-countdown-one"></script>
-<script src="nova-audio-manifest.js?v=20261027-upper-bgm-1287779"></script>
+<script src="nova-audio-manifest.js?v=20261027-cz-push"></script>
 <script src="nova-audio-assets.js?v=20261012-normalized"></script>
 <script src="nova-audio.js?v=20261012-normalized"></script>
 <script src="nova-frame-clock.js?v=20261027-60fps"></script>
@@ -65,7 +65,8 @@
 <script src="nova-direct-award.js?v=20261013-mobile-loading"></script>
 <link rel="stylesheet" href="nova-aim-presentation.css?v=20261012-super-challenge">
 <script src="nova-aim-confidence.js?v=20261027-red90"></script>
-<script src="nova-aim-presentation.js?v=20261027-lightweight"></script>
+<script src="nova-reel-sheet-data.js?v=20261027-sheet-522"></script>
+<script src="nova-aim-presentation.js?v=20261027-sheet-stops"></script>
 <script src="nova-tuning.js?v=20261027-parity-v174"></script>
 <script src="nova-decrement.js?v=20261013-smartslot"></script>
 <script src="nova-art.js?v=20261027-fixed-zone-probabilities"></script>
@@ -73,7 +74,7 @@
 <link rel="stylesheet" href="nova-complete-presentation.css?v=20261012-complete-screen">
 <script src="nova-complete-presentation.js?v=20261012-complete-screen"></script>
 <script src="nova-balance.js?v=20261027-parity-v174-100m-at-onecoin-v1"></script>
-<script src="nova-rtp-current.js?v=20261027-billion"></script>
+<script src="nova-rtp-current.js?v=20261027-billion-ready"></script>
 <script src="nova-normal.js?v=20261027-fixed-zone-probabilities"></script>
 <script src="nova-flow.js?v=20261027-cz-prep-v2-parity-v174"></script>
 <link rel="stylesheet" href="nova-checkpoint-hint.css?v=20261013">
@@ -755,7 +756,7 @@
         <label>CZ 突入率 1/<input type="number" min="2" max="100000" data-flow-config="czDenom"></label>
         <label>強CZ 突入率 1/<input type="number" min="2" max="100000" data-flow-config="strongDenom"></label>
         <button type="button" id="saveFlowConfig">CZ設定を保存</button><output id="flowConfigStatus"></output>
-        <p>AT残ptは手取りで管理します。通常AT・上位ATの残pt消化中は、BET3ptを残ptへ戻し、払い出し分を減らします（8ptベルなら残ptは5pt減少）。リプレイは3ptを払い戻し、次のBETも3ptです。リプレイによる手取りと残ptの増減はありません。通常時のベースは全設定約30G/50pt。通常AT・上位AT中は純増4pt/G、BIGは50pt。リプレイの戻しはBIGの50pt消化に含めません。ライブ遊技はMY19,000ptを基準にコンプリート停止します。機械割は最新コミットの抽選仕様と照合した、各設定10億G連続・MY／差枚停止なしの試算値です。仕様変更後の再試算中は「試算待ち」と表示します。ライブ遊技のコンプリートは従来どおり適用します。有限試行の実測値であり、目標値そのものではありません。CZ・通常・ATの抽選設定を個別変更した場合は「未試算（独自設定）」と表示します。</p></details>
+        <p>AT残ptは手取りで管理します。通常AT・上位ATの残pt消化中は、BET3ptを残ptへ戻し、払い出し分を減らします（8ptベルなら残ptは5pt減少）。リプレイは3ptを払い戻し、次のBETも3ptです。リプレイによる手取りと残ptの増減はありません。通常時のベースは全設定約30G/50pt。通常AT・上位AT中は純増4pt/G、BIGは50pt。リプレイの戻しはBIGの50pt消化に含めません。ライブ遊技はMY19,000ptを基準にコンプリート停止します。機械割は最新コミットの抽選仕様と照合した、各設定2.5億G×4系列（合計10億G）・MY／差枚停止なしの試算値です。仕様変更後の再試算中は「試算待ち」と表示します。ライブ遊技のコンプリートは従来どおり適用します。有限試行の実測値であり、目標値そのものではありません。CZ・通常・ATの抽選設定を個別変更した場合は「未試算（独自設定）」と表示します。</p></details>
         <button class="subBtn" id="debugNovaPatternsBtn" type="button">チェリー・ノヴァ（BAR）停止形を確認</button>
         <div class="field">
           <label>次回転の出目指定</label>
@@ -873,8 +874,8 @@
 <script src="nova-data-counter.js?v=20261015-mode-history"></script>
 <script src="nova-display-group.js?v=20261027-group"></script>
 <script src="nova-sortie-aim.js?v=20261027-sortie-lock"></script>
-<script src="nova-cz-push.js?v=20261027-fixed-zone-probabilities"></script>
-<script src="nova-game.js?v=20261027-parity-v174-current-billion"></script>
+<script src="nova-cz-push.js?v=20261027-rainbow-blackout"></script>
+<script src="nova-game.js?v=20261027-parity-v174-sheet-522-cz-push"></script>
 <button type="button" id="novaSymbolPreviewOpen">チェリー・ノヴァ（BAR）停止形を確認</button>
 <dialog id="novaSymbolPreview"><h2>チェリー・ノヴァ（BAR）停止形</h2><label>出目<select id="novaPatternSelect"><option value="WEAK_NOVA">弱チェリー：左上段・下段</option><option value="STRONG_MIDDLE">強チェリー：右下がり</option><option value="STRONG_RIGHT">強チェリー：右上がり</option><option value="SUPER_NOVA" selected>ノヴァ（BAR）揃い</option></select></label><p id="novaPatternDescription"></p><div id="novaSymbolPreviewGrid"></div><p>出目の確認用です。通常時のノヴァ（BAR）揃いはBIG・フリーズ各50%。ボーナス中は対象外。弱チェリー・強チェリーはそれぞれ既存の抽選を維持します。</p><button type="button" id="novaSymbolPreviewClose">閉じる</button></dialog>
 </body>

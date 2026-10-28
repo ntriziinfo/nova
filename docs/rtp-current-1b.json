@@ -1,0 +1,455 @@
+{
+  "schema": "nova-current-uncapped-1b/v1",
+  "commit": "e9348409bae5f24511f7cf18c2cf19e7db87bff7",
+  "baseSeed": "nova-current-e934840-uncapped-1b-20261027-v1",
+  "totalGamesPerSetting": 1000000000,
+  "chunksPerSetting": 4,
+  "gamesPerChunk": 250000000,
+  "concurrency": 16,
+  "options": {
+    "rng": "xoshiro128",
+    "exactGames": true,
+    "completeLimitPt": 0,
+    "completeMyLimitPt": 0,
+    "stopAtComplete": false,
+    "rareSortie": true,
+    "atBetRefund": true,
+    "replayRefund": true,
+    "checkpointQuiet": false,
+    "netGuard": true,
+    "decrement": true,
+    "recordBlocks": 1000000
+  },
+  "sourceHashes": {
+    "nova-complete.js": "02e400ed22e424827fd05038bc574f21282ecb723c8f2fffc1516d16d7cbb69d",
+    "nova-decrement.js": "0717d5e964fdfdddbaedf5226f5abce28d87dd7f593b597d5ac89cf74b292514",
+    "nova-tuning.js": "ff67736a75422b0628e9acc1dcd2580a5a5f23ca244e791c05c57d156503e219",
+    "nova-art.js": "cbda6589dcd39a6984793f446bd85e41fc592d6acce7814159a6b5820da2ddc3",
+    "nova-balance.js": "4b09c355d3da35d0a3ec09a0e5125ed06fbe57b40f70a892c04ee63a1f878d8b",
+    "nova-flow.js": "7b0333fd34492b3f3e33e1f64375f69ac992d0633528a992932d713aa26b456c",
+    "nova-normal.js": "e34a0ad07484f9c386f416306c61299f7f97d026ff0cc8112356627eb3d8dde2",
+    "nova-progress.js": "533808b030882b0238b085307f90aea0dace177aa4dcba782e513fa378850bbe",
+    "scripts/zone-v2-model.mjs": "240bec44ec5e1f87a233256608d6e3710c54bc4715cbc2e515bc23a67136f814",
+    "scripts/zone-v2-rng.mjs": "0e5424d7a743850591b4029b730d93267c986633a0be83942a69a19b18c8fcce"
+  },
+  "settings": [
+    {
+      "setting": 1,
+      "games": 1000000000,
+      "totalBet": 3000000000,
+      "totalPaid": 2820980364,
+      "net": -179019636,
+      "rtp": 0.940326788,
+      "rtpPct": 94.032679,
+      "ci95": {
+        "blocks": 1000,
+        "blockGames": 1000000,
+        "meanPct": 94.032679,
+        "lowPct": 93.94942,
+        "highPct": 94.115938,
+        "halfWidthPct": 0.083259
+      },
+      "seeds": [
+        "nova-current-e934840-uncapped-1b-20261027-v1|setting=1|chunk=1-of-4",
+        "nova-current-e934840-uncapped-1b-20261027-v1|setting=1|chunk=2-of-4",
+        "nova-current-e934840-uncapped-1b-20261027-v1|setting=1|chunk=3-of-4",
+        "nova-current-e934840-uncapped-1b-20261027-v1|setting=1|chunk=4-of-4"
+      ],
+      "chunkResults": [
+        {
+          "chunk": 1,
+          "seed": "nova-current-e934840-uncapped-1b-20261027-v1|setting=1|chunk=1-of-4",
+          "games": 250000000,
+          "totalBet": 750000000,
+          "totalPaid": 704825714,
+          "net": -45174286,
+          "rtp": 0.939767619,
+          "rtpPct": 93.976762,
+          "elapsedSeconds": 1373.345
+        },
+        {
+          "chunk": 2,
+          "seed": "nova-current-e934840-uncapped-1b-20261027-v1|setting=1|chunk=2-of-4",
+          "games": 250000000,
+          "totalBet": 750000000,
+          "totalPaid": 704723741,
+          "net": -45276259,
+          "rtp": 0.939631655,
+          "rtpPct": 93.963165,
+          "elapsedSeconds": 1363.964
+        },
+        {
+          "chunk": 3,
+          "seed": "nova-current-e934840-uncapped-1b-20261027-v1|setting=1|chunk=3-of-4",
+          "games": 250000000,
+          "totalBet": 750000000,
+          "totalPaid": 705849154,
+          "net": -44150846,
+          "rtp": 0.941132205,
+          "rtpPct": 94.113221,
+          "elapsedSeconds": 1321.322
+        },
+        {
+          "chunk": 4,
+          "seed": "nova-current-e934840-uncapped-1b-20261027-v1|setting=1|chunk=4-of-4",
+          "games": 250000000,
+          "totalBet": 750000000,
+          "totalPaid": 705581755,
+          "net": -44418245,
+          "rtp": 0.940775673,
+          "rtpPct": 94.077567,
+          "elapsedSeconds": 1362.093
+        }
+      ]
+    },
+    {
+      "setting": 2,
+      "games": 1000000000,
+      "totalBet": 3000000000,
+      "totalPaid": 2870833429,
+      "net": -129166571,
+      "rtp": 0.9569444763333333,
+      "rtpPct": 95.694448,
+      "ci95": {
+        "blocks": 1000,
+        "blockGames": 1000000,
+        "meanPct": 95.694448,
+        "lowPct": 95.612134,
+        "highPct": 95.776761,
+        "halfWidthPct": 0.082314
+      },
+      "seeds": [
+        "nova-current-e934840-uncapped-1b-20261027-v1|setting=2|chunk=1-of-4",
+        "nova-current-e934840-uncapped-1b-20261027-v1|setting=2|chunk=2-of-4",
+        "nova-current-e934840-uncapped-1b-20261027-v1|setting=2|chunk=3-of-4",
+        "nova-current-e934840-uncapped-1b-20261027-v1|setting=2|chunk=4-of-4"
+      ],
+      "chunkResults": [
+        {
+          "chunk": 1,
+          "seed": "nova-current-e934840-uncapped-1b-20261027-v1|setting=2|chunk=1-of-4",
+          "games": 250000000,
+          "totalBet": 750000000,
+          "totalPaid": 717629962,
+          "net": -32370038,
+          "rtp": 0.956839949,
+          "rtpPct": 95.683995,
+          "elapsedSeconds": 1403.491
+        },
+        {
+          "chunk": 2,
+          "seed": "nova-current-e934840-uncapped-1b-20261027-v1|setting=2|chunk=2-of-4",
+          "games": 250000000,
+          "totalBet": 750000000,
+          "totalPaid": 717916270,
+          "net": -32083730,
+          "rtp": 0.957221693,
+          "rtpPct": 95.722169,
+          "elapsedSeconds": 1384.358
+        },
+        {
+          "chunk": 3,
+          "seed": "nova-current-e934840-uncapped-1b-20261027-v1|setting=2|chunk=3-of-4",
+          "games": 250000000,
+          "totalBet": 750000000,
+          "totalPaid": 716992246,
+          "net": -33007754,
+          "rtp": 0.955989661,
+          "rtpPct": 95.598966,
+          "elapsedSeconds": 1403.518
+        },
+        {
+          "chunk": 4,
+          "seed": "nova-current-e934840-uncapped-1b-20261027-v1|setting=2|chunk=4-of-4",
+          "games": 250000000,
+          "totalBet": 750000000,
+          "totalPaid": 718294951,
+          "net": -31705049,
+          "rtp": 0.957726601,
+          "rtpPct": 95.77266,
+          "elapsedSeconds": 1412.843
+        }
+      ]
+    },
+    {
+      "setting": 3,
+      "games": 1000000000,
+      "totalBet": 3000000000,
+      "totalPaid": 2944892072,
+      "net": -55107928,
+      "rtp": 0.9816306906666666,
+      "rtpPct": 98.163069,
+      "ci95": {
+        "blocks": 1000,
+        "blockGames": 1000000,
+        "meanPct": 98.163069,
+        "lowPct": 98.073956,
+        "highPct": 98.252182,
+        "halfWidthPct": 0.089113
+      },
+      "seeds": [
+        "nova-current-e934840-uncapped-1b-20261027-v1|setting=3|chunk=1-of-4",
+        "nova-current-e934840-uncapped-1b-20261027-v1|setting=3|chunk=2-of-4",
+        "nova-current-e934840-uncapped-1b-20261027-v1|setting=3|chunk=3-of-4",
+        "nova-current-e934840-uncapped-1b-20261027-v1|setting=3|chunk=4-of-4"
+      ],
+      "chunkResults": [
+        {
+          "chunk": 1,
+          "seed": "nova-current-e934840-uncapped-1b-20261027-v1|setting=3|chunk=1-of-4",
+          "games": 250000000,
+          "totalBet": 750000000,
+          "totalPaid": 735621047,
+          "net": -14378953,
+          "rtp": 0.980828063,
+          "rtpPct": 98.082806,
+          "elapsedSeconds": 1406.393
+        },
+        {
+          "chunk": 2,
+          "seed": "nova-current-e934840-uncapped-1b-20261027-v1|setting=3|chunk=2-of-4",
+          "games": 250000000,
+          "totalBet": 750000000,
+          "totalPaid": 736438482,
+          "net": -13561518,
+          "rtp": 0.981917976,
+          "rtpPct": 98.191798,
+          "elapsedSeconds": 1448.26
+        },
+        {
+          "chunk": 3,
+          "seed": "nova-current-e934840-uncapped-1b-20261027-v1|setting=3|chunk=3-of-4",
+          "games": 250000000,
+          "totalBet": 750000000,
+          "totalPaid": 736158550,
+          "net": -13841450,
+          "rtp": 0.981544733,
+          "rtpPct": 98.154473,
+          "elapsedSeconds": 1407.71
+        },
+        {
+          "chunk": 4,
+          "seed": "nova-current-e934840-uncapped-1b-20261027-v1|setting=3|chunk=4-of-4",
+          "games": 250000000,
+          "totalBet": 750000000,
+          "totalPaid": 736673993,
+          "net": -13326007,
+          "rtp": 0.982231991,
+          "rtpPct": 98.223199,
+          "elapsedSeconds": 1390.807
+        }
+      ]
+    },
+    {
+      "setting": 4,
+      "games": 1000000000,
+      "totalBet": 3000000000,
+      "totalPaid": 3091206930,
+      "net": 91206930,
+      "rtp": 1.03040231,
+      "rtpPct": 103.040231,
+      "ci95": {
+        "blocks": 1000,
+        "blockGames": 1000000,
+        "meanPct": 103.040231,
+        "lowPct": 102.965806,
+        "highPct": 103.114656,
+        "halfWidthPct": 0.074425
+      },
+      "seeds": [
+        "nova-current-e934840-uncapped-1b-20261027-v1|setting=4|chunk=1-of-4",
+        "nova-current-e934840-uncapped-1b-20261027-v1|setting=4|chunk=2-of-4",
+        "nova-current-e934840-uncapped-1b-20261027-v1|setting=4|chunk=3-of-4",
+        "nova-current-e934840-uncapped-1b-20261027-v1|setting=4|chunk=4-of-4"
+      ],
+      "chunkResults": [
+        {
+          "chunk": 1,
+          "seed": "nova-current-e934840-uncapped-1b-20261027-v1|setting=4|chunk=1-of-4",
+          "games": 250000000,
+          "totalBet": 750000000,
+          "totalPaid": 772482232,
+          "net": 22482232,
+          "rtp": 1.029976309,
+          "rtpPct": 102.997631,
+          "elapsedSeconds": 1440.66
+        },
+        {
+          "chunk": 2,
+          "seed": "nova-current-e934840-uncapped-1b-20261027-v1|setting=4|chunk=2-of-4",
+          "games": 250000000,
+          "totalBet": 750000000,
+          "totalPaid": 773299540,
+          "net": 23299540,
+          "rtp": 1.031066053,
+          "rtpPct": 103.106605,
+          "elapsedSeconds": 1435.133
+        },
+        {
+          "chunk": 3,
+          "seed": "nova-current-e934840-uncapped-1b-20261027-v1|setting=4|chunk=3-of-4",
+          "games": 250000000,
+          "totalBet": 750000000,
+          "totalPaid": 772684863,
+          "net": 22684863,
+          "rtp": 1.030246484,
+          "rtpPct": 103.024648,
+          "elapsedSeconds": 1413.296
+        },
+        {
+          "chunk": 4,
+          "seed": "nova-current-e934840-uncapped-1b-20261027-v1|setting=4|chunk=4-of-4",
+          "games": 250000000,
+          "totalBet": 750000000,
+          "totalPaid": 772740295,
+          "net": 22740295,
+          "rtp": 1.030320393,
+          "rtpPct": 103.032039,
+          "elapsedSeconds": 1466.144
+        }
+      ]
+    },
+    {
+      "setting": 5,
+      "games": 1000000000,
+      "totalBet": 3000000000,
+      "totalPaid": 3283757880,
+      "net": 283757880,
+      "rtp": 1.09458596,
+      "rtpPct": 109.458596,
+      "ci95": {
+        "blocks": 1000,
+        "blockGames": 1000000,
+        "meanPct": 109.458596,
+        "lowPct": 109.371485,
+        "highPct": 109.545707,
+        "halfWidthPct": 0.087111
+      },
+      "seeds": [
+        "nova-current-e934840-uncapped-1b-20261027-v1|setting=5|chunk=1-of-4",
+        "nova-current-e934840-uncapped-1b-20261027-v1|setting=5|chunk=2-of-4",
+        "nova-current-e934840-uncapped-1b-20261027-v1|setting=5|chunk=3-of-4",
+        "nova-current-e934840-uncapped-1b-20261027-v1|setting=5|chunk=4-of-4"
+      ],
+      "chunkResults": [
+        {
+          "chunk": 1,
+          "seed": "nova-current-e934840-uncapped-1b-20261027-v1|setting=5|chunk=1-of-4",
+          "games": 250000000,
+          "totalBet": 750000000,
+          "totalPaid": 821047783,
+          "net": 71047783,
+          "rtp": 1.094730377,
+          "rtpPct": 109.473038,
+          "elapsedSeconds": 1187.956
+        },
+        {
+          "chunk": 2,
+          "seed": "nova-current-e934840-uncapped-1b-20261027-v1|setting=5|chunk=2-of-4",
+          "games": 250000000,
+          "totalBet": 750000000,
+          "totalPaid": 821445742,
+          "net": 71445742,
+          "rtp": 1.095260989,
+          "rtpPct": 109.526099,
+          "elapsedSeconds": 1173.734
+        },
+        {
+          "chunk": 3,
+          "seed": "nova-current-e934840-uncapped-1b-20261027-v1|setting=5|chunk=3-of-4",
+          "games": 250000000,
+          "totalBet": 750000000,
+          "totalPaid": 820767294,
+          "net": 70767294,
+          "rtp": 1.094356392,
+          "rtpPct": 109.435639,
+          "elapsedSeconds": 1182.14
+        },
+        {
+          "chunk": 4,
+          "seed": "nova-current-e934840-uncapped-1b-20261027-v1|setting=5|chunk=4-of-4",
+          "games": 250000000,
+          "totalBet": 750000000,
+          "totalPaid": 820497061,
+          "net": 70497061,
+          "rtp": 1.093996081,
+          "rtpPct": 109.399608,
+          "elapsedSeconds": 1167.11
+        }
+      ]
+    },
+    {
+      "setting": 6,
+      "games": 1000000000,
+      "totalBet": 3000000000,
+      "totalPaid": 3450714916,
+      "net": 450714916,
+      "rtp": 1.1502383053333334,
+      "rtpPct": 115.023831,
+      "ci95": {
+        "blocks": 1000,
+        "blockGames": 1000000,
+        "meanPct": 115.023831,
+        "lowPct": 114.920252,
+        "highPct": 115.127409,
+        "halfWidthPct": 0.103578
+      },
+      "seeds": [
+        "nova-current-e934840-uncapped-1b-20261027-v1|setting=6|chunk=1-of-4",
+        "nova-current-e934840-uncapped-1b-20261027-v1|setting=6|chunk=2-of-4",
+        "nova-current-e934840-uncapped-1b-20261027-v1|setting=6|chunk=3-of-4",
+        "nova-current-e934840-uncapped-1b-20261027-v1|setting=6|chunk=4-of-4"
+      ],
+      "chunkResults": [
+        {
+          "chunk": 1,
+          "seed": "nova-current-e934840-uncapped-1b-20261027-v1|setting=6|chunk=1-of-4",
+          "games": 250000000,
+          "totalBet": 750000000,
+          "totalPaid": 863186370,
+          "net": 113186370,
+          "rtp": 1.15091516,
+          "rtpPct": 115.091516,
+          "elapsedSeconds": 1230.721
+        },
+        {
+          "chunk": 2,
+          "seed": "nova-current-e934840-uncapped-1b-20261027-v1|setting=6|chunk=2-of-4",
+          "games": 250000000,
+          "totalBet": 750000000,
+          "totalPaid": 861764032,
+          "net": 111764032,
+          "rtp": 1.149018709,
+          "rtpPct": 114.901871,
+          "elapsedSeconds": 1222.779
+        },
+        {
+          "chunk": 3,
+          "seed": "nova-current-e934840-uncapped-1b-20261027-v1|setting=6|chunk=3-of-4",
+          "games": 250000000,
+          "totalBet": 750000000,
+          "totalPaid": 862488096,
+          "net": 112488096,
+          "rtp": 1.149984128,
+          "rtpPct": 114.998413,
+          "elapsedSeconds": 1223.015
+        },
+        {
+          "chunk": 4,
+          "seed": "nova-current-e934840-uncapped-1b-20261027-v1|setting=6|chunk=4-of-4",
+          "games": 250000000,
+          "totalBet": 750000000,
+          "totalPaid": 863276418,
+          "net": 113276418,
+          "rtp": 1.151035224,
+          "rtpPct": 115.103522,
+          "elapsedSeconds": 1261.57
+        }
+      ]
+    }
+  ],
+  "elapsedSeconds": 2665.325,
+  "sourceReportSha256": "70bcd75bbf3a184e81b36039973a0bef21f8eabb3a8769cdb45d5b446a0baa5e",
+  "sourceCommit": "e9348409bae5f24511f7cf18c2cf19e7db87bff7",
+  "generatedAt": "2026-10-27T10:12:31.648Z"
+}

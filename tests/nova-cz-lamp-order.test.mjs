@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
-const source=fs.readFileSync('nova-flow.js','utf8'),c=vm.createContext({});vm.runInContext(source,c);const f=c.NovaFlow;
+const source=fs.readFileSync('nova-flow.js','utf8'),c=vm.createContext({});vm.runInContext(source,c);vm.runInContext(fs.readFileSync('nova-cz-push.js','utf8'),c);const f=c.NovaFlow;
 const plain=v=>JSON.parse(JSON.stringify(v));
 test('each CZ seed produces an eight-character permutation with every character able to light first or last',()=>{
  const counts=Array.from({length:8},()=>new Map(f.lampCharacters.map(id=>[id,0]))),orders=new Set();
@@ -36,15 +36,15 @@ test('renderer uses the shuffled prefix, keeps positions, and reserves rainbow f
  c.machine.dataset={czLamp:'0',czOrder:''};c.syncLamp();assert.equal(c.layer.dataset.lamp,'dim');
 });
 test('live stop handler applies the same shuffled prefix throughout one CZ and clears it afterward',()=>{
- const machine={dataset:{}},sounds=[],ctx=vm.createContext({settings:{setting:1},normalState:{},document:{getElementById:()=>machine},NovaFlow:f,sfxOutputVolume:()=>.5,playOneShotSound:()=>sounds.push('light'),playCzConfirmedSound:()=>sounds.push('confirm')});
+ const machine={dataset:{}},sounds=[],ctx=vm.createContext({settings:{setting:1},normalState:{},document:{getElementById:()=>machine},NovaFlow:f,NovaCzPresentation:c.NovaCzPresentation,sfxOutputVolume:()=>.5,playOneShotSound:()=>sounds.push('light'),playCzConfirmedSound:()=>sounds.push('confirm')});
  vm.runInContext(fs.readFileSync('nova-game.js','utf8').match(/  function showCzLamp\([^]*?\n  }/)[0],ctx);
  let previous=0;const expected=f.lampOrder({timingSeed:42}).join(',');
  for(let remaining=20;remaining>=1;remaining--){
   const resolved={czLamp:{stage:4,totalGames:20,remaining,timingSeed:42}};
   for(let stop=0;stop<=3;stop++){
    const count=sounds.length;ctx.showCzLamp(stop,resolved);assert.equal(machine.dataset.czOrder,expected);
-   if(stop<3||remaining===20){assert.equal(Number(machine.dataset.czLamp),previous);assert.equal(sounds.length,count);}
-   previous=Number(machine.dataset.czLamp)||0;
+   const stage=Number(machine.dataset.czLamp)||0;assert(stage>=previous);
+   assert.equal(sounds.length-count,stage>previous?1:0);previous=stage;
   }
  }
  assert.equal(previous,6);assert.equal(machine.dataset.czRainbow,'false');
@@ -66,9 +66,16 @@ test('confirmed prefixes cannot occur below their minimum, and ordinary shuffle 
   if(expected===0)assert.equal(frequency,0);else{assert(frequency>0);assert(Math.abs(frequency-expected)<.006,`${setting} ${h.id}: ${frequency}`);}
  }
 });
+test('a confirmed CZ stores its stage-8 rainbow presentation on the paid spin',()=>{
+ const machine={dataset:{czLamp:'0',czRainbow:'false'}},ctx=vm.createContext({settings:{setting:1},normalState:{},document:{getElementById:()=>machine},NovaFlow:f,NovaCzPresentation:c.NovaCzPresentation,sfxOutputVolume:()=>.5,playOneShotSound(){}});
+ vm.runInContext(fs.readFileSync('nova-game.js','utf8').match(/  function showCzLamp\([^]*?\n  }/)[0],ctx);
+ const resolved={bonusHit:true,czLamp:{stage:4,totalGames:15,remaining:1,timingSeed:42}};
+ ctx.showCzLamp(0,resolved);
+ assert.equal(resolved.czLampAtBet,8);assert.equal(machine.dataset.czLamp,'8');assert.equal(machine.dataset.czColor,'rainbow');assert.equal(machine.dataset.czRainbow,'true');
+});
 test('CZ setting hints survive reload without reselecting or changing awards and timing',()=>{
  const seed=Array.from({length:5000},(_,i)=>i).find(timingSeed=>f.lampPresentation({timingSeed},6).hint==='min6');assert.notEqual(seed,undefined);
- const machine={dataset:{}},ctx=vm.createContext({settings:{setting:6},normalState:{},document:{getElementById:()=>machine},NovaFlow:f,sfxOutputVolume:()=>.5,playOneShotSound(){},playCzConfirmedSound(){}});
+ const machine={dataset:{}},ctx=vm.createContext({settings:{setting:6},normalState:{},document:{getElementById:()=>machine},NovaFlow:f,NovaCzPresentation:c.NovaCzPresentation,sfxOutputVolume:()=>.5,playOneShotSound(){},playCzConfirmedSound(){}});
  vm.runInContext(fs.readFileSync('nova-game.js','utf8').match(/  function showCzLamp\([^]*?\n  }/)[0],ctx);
  const first={czLamp:{stage:4,totalGames:20,remaining:20,timingSeed:seed},reward:15,bonusHit:false};ctx.showCzLamp(0,first);
  const expected=machine.dataset.czOrder;assert.equal(first.czLampPresentation.minimumSetting,6);assert.equal(first.reward,15);assert.equal(first.bonusHit,false);assert.equal(machine.dataset.czLamp,'0');

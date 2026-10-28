@@ -23,7 +23,7 @@ test('live middle strip supports the exact sandwich and failed trigger does not 
  vm.runInContext('const BELL_SYMBOL="bell",ELEPHANT_SYMBOL="replay",CHERRY_SYMBOL="cherry",SUICA_SYMBOL="suika",NEBULA_SYMBOL="nebula",BLANK_SYMBOL="blank";'+part+';globalThis.strips=REEL_STRIPS;',c);
  for(const kind of ['sortie','sortieFake']){
   const columns=c.NovaStockEntry.sortieColumns({kind},c.strips);
-  assert.equal(JSON.stringify(columns[1])==='["BAR","cherry","BAR"]',kind==='sortie');
+  assert.equal(JSON.stringify(columns[1])==='["BAR","blank","BAR"]',kind==='sortie');
   columns.forEach((col,i)=>assert(c.strips[i].some((_,j)=>col.every((s,r)=>s===c.strips[i][(j+r)%20]))));
  }
 });

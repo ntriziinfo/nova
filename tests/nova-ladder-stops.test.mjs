@@ -12,11 +12,13 @@ function setup(){
  const played=[],c=vm.createContext({setTimeout:()=>0,clearTimeout(){},debugFastSpinActive:false,speedToBonusActive:false,
   sfxOutputVolume:()=>1,voiceOutputVolume:()=>1,playOneShotSound:src=>played.push(src),playWinSound:()=>played.push('chance'),
   REPLAY_SOUND_SRC:'replay',PAYOUT_3PT_BELL_SOUND_SRC:'bell',PAYOUT_SOUND_SRC:'payout',STOP_SOUND_SRC:'stop',oneShotSoundCache:new Map()});
+ vm.runInContext(fs.readFileSync('nova-reel-sheet-data.js','utf8'),c);
  for(const file of ['nova-tuning.js','nova-art.js','nova-normal.js','nova-ladder-presentation.js','nova-spin-resume.js'])vm.runInContext(fs.readFileSync(file,'utf8'),c);
  const constants=source.slice(source.indexOf('  const A_TYPE_PAYOUTS'),source.indexOf('  const symbolImagePreloads'));
  const results=source.slice(source.indexOf('  const RESULT ='),source.indexOf('  const SETTING_PROFILE'));
+ const sheetHelpers=source.slice(source.indexOf('  const NOVA_SHEET_DATA'),source.indexOf('  function novaSymbol'));
  const strips=source.slice(source.indexOf('  const REEL_STRIPS ='),source.indexOf('  function mod('));
- vm.runInContext('const A_TYPE_PREMIUM_BIG_PAYOUT=500;const A_TYPE_MODE=true;'+constants+results+
+ vm.runInContext('const A_TYPE_PREMIUM_BIG_PAYOUT=500;const A_TYPE_MODE=true;'+constants+results+sheetHelpers+
   'const novaStopGridCache=new Map();const novaSymbol=(c,r)=>`NOVA_${c}_${r}`;const isNovaGrid=grid=>[0,1,2].every(r=>[0,1,2].every(c=>grid[r][c]===novaSymbol(c,r)));'+strips+
   ['novaGrid','mod','reelWindowFromTopIndex','normalizeATypeResult','displayResultFor','isMiddleLineOnlyResult','hasBellDiagonal',
    'cherryResultFromRow','cherryResultFromRows','displayedResultFromGrid','displayedResultFromRow','gridPaylineRows',
