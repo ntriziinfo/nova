@@ -33,6 +33,7 @@ globalThis.NovaNormal=(()=>{
  // Legacy weights are retained only to derive the approved merged lottery budget.
  const legacyRare={WEAK_SUICA:{p:0.011,up:.05,cz:.06,gain:1,pay:3},STRONG_SUICA:{p:0.0026,up:.5,cz:.6,gain:3,pay:3},CHANCE_A:{p:1/312.5,up:9/28,cz:3/14,gain:1,pay:0},CHANCE_B:{p:1/125,up:9/28,cz:3/14,gain:1,pay:0},WEAK_NOVA:{p:1/128,up:.35,cz:.3,gain:2,pay:2},STRONG_NOVA:{p:1/2500,up:.75,cz:1,gain:4,pay:2}};
  const rare={WEAK_SUICA:{...legacyRare.WEAK_SUICA,p:0.0248},WEAK_NOVA:{...legacyRare.WEAK_NOVA},STRONG_NOVA:{...legacyRare.STRONG_NOVA}};
+ // Approved 2026-10-28: streak-based rescue; setting 4 gains are 70%.
  const defaults={highMultiplier:2,bandMultiplier:2,downMiss:.08,downReplay:.05,czFailureGain:1,bonusFailureGain:2,atDryGain:2,ceilingGain:10,regChainGain:2,superDenom:32768};
  function config(v={}){const c={...defaults};for(const k in c)if(Number.isFinite(Number(v[k])))c[k]=Math.max(0,Math.min(k==='superDenom'?1e9:100,Number(v[k])));c.superDenom=Math.max(2,c.superDenom);return c;}
  const normalLowPayoutRules=Object.freeze({version:2,oneCoinChance:.1,addedNaviBellChance:1/16,missShare:2/3,replayShare:1/3});
@@ -42,7 +43,7 @@ globalThis.NovaNormal=(()=>{
  function resetDistribution(setting=1){const row=resetImpurityWeights[Math.max(0,Math.min(5,Math.round(Number(setting)||1)-1))];return resetImpurityPoints.map((pt,i)=>({pt,weight:row[i]}));}
  function reset(rng=Math.random,setting=1){const row=resetDistribution(setting);return normalize({morningCeiling:true,impurity:row[weighted(row.map(x=>x.weight),rng)].pt,mode:modes[weighted(modeWeights(setting),rng)]});}
  // Preserve mode/CZ progress across saves. Old single-mode saves migrate to A without losing elapsed games.
- function normalize(v){return {normalVersion:153,modeChecked:Math.max(0,Math.floor(Number(v?.modeChecked)||0)),fiftyChecked:!!v?.fiftyChecked,prelude:normalizePrelude(v?.prelude),ceilingHandled:!!v?.ceilingHandled,regStreak:0,morningCeiling:!!v?.morningCeiling,mode:modes.includes(v?.mode)?v.mode:'A',games:Math.max(0,Math.floor(Number(v?.games)||0)),level:v?.level==='high'?'high':'low',highLeft:v?.level==='high'?Math.max(0,Math.floor(Number(v?.highLeft)||0)):0,impurity:Math.min(100,Math.max(0,Number(v?.impurity)||0))};}
+ function normalize(v){return {normalVersion:153,impurityCzFailures:Math.max(0,Number(v?.impurityCzFailures)||0),impurityBbFailures:Math.max(0,Number(v?.impurityBbFailures)||0),modeChecked:Math.max(0,Math.floor(Number(v?.modeChecked)||0)),fiftyChecked:!!v?.fiftyChecked,prelude:normalizePrelude(v?.prelude),ceilingHandled:!!v?.ceilingHandled,regStreak:0,morningCeiling:!!v?.morningCeiling,mode:modes.includes(v?.mode)?v.mode:'A',games:Math.max(0,Math.floor(Number(v?.games)||0)),level:v?.level==='high'?'high':'low',highLeft:v?.level==='high'?Math.max(0,Math.floor(Number(v?.highLeft)||0)):0,impurity:Math.min(100,Math.max(0,Number(v?.impurity)||0))};}
  function modeWeights(setting=1,previous=''){const i=Math.max(0,Math.min(5,Math.round(Number(setting)||1)-1)),key=previous==='天国ループ'?'afterLoop':previous==='天国'?'afterHeaven':'initial';return modeSelection[key][i];}
  function weighted(weights,rng){let n=rng()*weights.reduce((a,b)=>a+b,0);return Math.max(0,weights.findIndex(w=>(n-=w)<0));}
  function ceiling(v){const s=normalize(v);return Math.min(ceilings[modes.indexOf(s.mode)],s.morningCeiling?600:Infinity);}
@@ -94,7 +95,7 @@ globalThis.NovaNormal=(()=>{
  }
  function advance(value,role,flow,options={},rng=Math.random){
   const s=normalize(value),c=config(options),held=s.level==='high'&&s.highLeft>0;
-  s.games++;if(held)s.highLeft--;
+  s.games++;if(s.games===400)s.impurity=Math.min(100,s.impurity+2*(Number(options.setting)===4?0.7:1));if(s.games===600)s.impurity=Math.min(100,s.impurity+3*(Number(options.setting)===4?0.7:1));if(held)s.highLeft--;
   if(rare[role]){
 
    if(stateRoles.includes(role)){
@@ -108,7 +109,7 @@ globalThis.NovaNormal=(()=>{
    if(rng()<down){s.level='low';s.highLeft=0;}
   }
 
-  if(['cz','strong_cz'].includes(flow?.phase)&&flow.remaining===1&&!flow.success){const p=NovaTuning.balanceProfile?.(options.setting)||{failureRecovery:1};s.impurity=Math.min(100,s.impurity+c.czFailureGain*p.failureRecovery);}
+  if(['cz','strong_cz'].includes(flow?.phase)&&flow.remaining===1&&!flow.success){const p=NovaTuning.balanceProfile?.(options.setting)||{failureRecovery:1};s.impurityCzFailures++;s.impurity=Math.min(100,s.impurity+(s.impurityCzFailures>=5?10:s.impurityCzFailures>=3?5:1)*(Number(options.setting)===4?0.7:1));}
   return s;
  }
  function spin(value,flow,setting=1,options={},rng=Math.random,forced=''){
@@ -131,7 +132,7 @@ globalThis.NovaNormal=(()=>{
   const bonus=source=>({kind:'BIG',source,internalResult:'BIG'});
   
   if(state.games>=ceiling(state)){
-   state.ceilingHandled=true;state.prelude=null;if(!before.ceilingHandled)state.impurity=Math.min(100,state.impurity+c.ceilingGain);
+   state.ceilingHandled=true;state.prelude=null;if(!before.ceilingHandled)state.impurity=Math.min(100,state.impurity+5*(Number(setting)===4?0.7:1));
    if(['cz','strong_cz'].includes(flow.phase)&&flow.remaining>1){flow={...flow,success:true,winProbability:1};token.czFlow=flow;}
    else{token.internalBonus=bonus(state.mode+'天井'+ceiling(state)+'G');token.modeEvent={type:'ceiling',mode:state.mode,g:state.games};return token;}
   }
@@ -218,9 +219,9 @@ globalThis.NovaNormal=(()=>{
   return token;
  }
  function claim(value,freeze=false,rng=Math.random){const state=normalize(value),zones=[];if(state.impurity>=100){state.impurity=0;zones.push(['urapi','giru','sora','ouma'][Math.min(3,Math.floor(rng()*4))]);}if(freeze)zones.push(['giru','sora','ouma'][Math.min(2,Math.floor(rng()*3))]);return {state,zones:zones.map(z=>NovaArt.upgradeGuaranteedZone(z,rng)),sets:zones.length?1:0};}
- function afterArt(value,before,after,options={},rng=Math.random){const s=normalize(value);if(before?.phase==='art'&&after?.phase==='normal'){const p=NovaTuning.balanceProfile?.(options.setting)||{failureRecovery:1};s.morningCeiling=false;s.games=0;s.modeChecked=0;s.fiftyChecked=false;s.mode=modes[weighted(modeWeights(options.setting,s.mode),rng)];s.prelude=null;s.ceilingHandled=false;s.level='low';s.highLeft=0;if(after.dryAtEnd===true)s.impurity=Math.min(100,s.impurity+config(options).atDryGain*p.failureRecovery);}return s;}
- function bonusEnd(value,kind,after,options={}){const s=normalize(value),c=config(options),p=NovaTuning.balanceProfile?.(options.setting)||{failureRecovery:1};s.regStreak=0;s.impurity=Math.min(100,s.impurity+(after?.phase!=='art'?c.bonusFailureGain*p.failureRecovery:0));return s;}
- function afterBonus(value,rng=Math.random,setting){const s=normalize(value);return {...s,prelude:null,ceilingHandled:false,morningCeiling:false,games:0,modeChecked:0,fiftyChecked:false,mode:modes[weighted(transitions[modes.indexOf(s.mode)],rng)],level:'low',highLeft:0};}
+ function afterArt(value,before,after,options={},rng=Math.random){const s=normalize(value);if(before?.phase==='art'&&after?.phase==='normal'){s.impurityBbFailures=0;s.impurityCzFailures=0;const p=NovaTuning.balanceProfile?.(options.setting)||{failureRecovery:1};s.morningCeiling=false;s.games=0;s.modeChecked=0;s.fiftyChecked=false;s.mode=modes[weighted(modeWeights(options.setting,s.mode),rng)];s.prelude=null;s.ceilingHandled=false;s.level='low';s.highLeft=0;if(after.dryAtEnd===true)s.impurity=Math.min(100,s.impurity+5*(Number(options.setting)===4?0.7:1));}return s;}
+ function bonusEnd(value,kind,after,options={}){const s=normalize(value),c=config(options),p=NovaTuning.balanceProfile?.(options.setting)||{failureRecovery:1};s.regStreak=0;if(after?.phase!=='art'){s.impurityBbFailures++;s.impurity=Math.min(100,s.impurity+(s.impurityBbFailures>=5?15:s.impurityBbFailures>=3?8:3)*(Number(options.setting)===4?0.7:1));}else{s.impurityBbFailures=0;}return s;}
+ function afterBonus(value,rng=Math.random,setting){const s=normalize(value);return {...s,impurityCzFailures:0,prelude:null,ceilingHandled:false,morningCeiling:false,games:0,modeChecked:0,fiftyChecked:false,mode:modes[weighted(transitions[modes.indexOf(s.mode)],rng)],level:'low',highLeft:0};}
  function drawRare(rng=Math.random){const keys=Object.keys(rare);return keys[weighted(keys.map(k=>rare[k].p),rng)];}
  const rareMean=Object.values(rare).reduce((s,r)=>s+r.p*r.pay,0)/Object.values(rare).reduce((s,r)=>s+r.p,0);
  return {modeSelection,modeRules,normalLowPayoutRules,oneCoinDownChance,normalRoleProbabilities,drawNormalRole,lotteryRules,czPreludeRules,czPreludeStage,roleCzRate,czEntryFactors,modeWeights,gameZoneRates,gameZoneConfig,atEndModeWeights,zonePoint,preludePresentation,zoneRate,normalLabel,resetImpurityPoints,resetImpurityWeights,resetDistribution,reset,modes,ceilings,transitions,rare,rareMean,rareFactor,roleProbabilities,drawRare,defaults,config,normalize,ceiling,favored,multiplier,pay,drawRole,advance,spin,claim,afterArt,bonusEnd,afterBonus};

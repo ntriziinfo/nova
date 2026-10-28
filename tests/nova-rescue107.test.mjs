@@ -5,19 +5,19 @@ test('rare roles and hundred boundary never add impurity',()=>{
  for(const role of [...Object.keys(n.rare),'MISS'])assert.equal(n.advance({games:99,impurity:25},role,{phase:'normal'},{hundredGain:99},()=>0).impurity,25);
 });
 test('ceiling rescue reaches cap before bonus claim',()=>{
- for(const mode of ['特殊','天国','天国準備','通常A'])assert.equal(n.spin({mode,games:799},{phase:'normal'},1,{},()=>.99,'MISS').state.impurity,10);
+ for(const mode of ['特殊','天国','天国準備','通常A'])assert.equal(n.spin({mode,games:799},{phase:'normal'},1,{},()=>.99,'MISS').state.impurity,5);
  const t=n.spin({games:799,impurity:95},{phase:'normal'},1,{},()=>.99,'MISS');
  assert.equal(t.state.impurity,100);assert.equal(n.claim(t.state,false,()=>.5).sets,1);
 });
 test('bonus failure rescue remains; retired REG streaks no longer add points',()=>{
- const gain=n.config({}).bonusFailureGain*NovaTuning.balanceProfile(3).failureRecovery;
+ const gain=3;
  let s=n.bonusEnd({regStreak:4},'MID',{phase:'normal'});assert.equal(s.impurity,gain);assert.equal(s.regStreak,0);
  s=n.bonusEnd(n.normalize(JSON.parse(JSON.stringify(s))),'BIG',{phase:'normal'});assert.equal(s.impurity,2*gain);
  s=n.bonusEnd(s,'BIG',{phase:'art'});assert.equal(s.impurity,2*gain);assert.equal(s.regStreak,0);
 });
 test('only single initial AT without rewards gains dry rescue',()=>{
  const end=s=>{let before,g=0;while(s.phase==='art'&&g++<10000){before=s;s=a.step(s,{},()=>.99,s.initialStage==='wait'?'START_REPLAY_RIGHT':s.burstPending||s.researchChallengeActive?'MISS':'BELL').flow;}assert.notEqual(s.phase,'art','rescue fixture must finish even with challenge HOLD');return n.afterArt({},before,s).impurity;};
- const gain=n.config({}).atDryGain*NovaTuning.balanceProfile(3).failureRecovery;
+ const gain=5;
  assert.equal(end(a.afterBonus(null,{},1,()=>.5)),gain);
  assert.equal(end(a.afterBonus(null,{},2,()=>.5)),0);
  let s=a.step(a.enter(),{},()=>0,'WEAK_SUICA').flow;assert.equal(end(s),0);

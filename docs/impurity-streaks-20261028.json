@@ -1,0 +1,2655 @@
+{
+  "approved": "User requested adjustment after comparison of 70/80/90 percent setting-4 gains",
+  "selected": "s4-70",
+  "gamesPerVariant": 5000000,
+  "completeNetLimit": 0,
+  "completeMyLimit": 0,
+  "notes": "Exploratory estimate, not billion-game display evidence. Other settings use candidate gains. Initial distribution and release rewards unchanged.",
+  "comparisons": [
+    {
+      "variant": "baseline",
+      "setting": 4,
+      "games": 1000000,
+      "chunks": 5,
+      "elapsedMs": 101632,
+      "results": [
+        {
+          "setting": 4,
+          "games": 1000000,
+          "totalBet": 3000000,
+          "totalPaid": 3075756,
+          "rtp": 1.025252,
+          "net": 75756,
+          "release": 122,
+          "counts": {
+            "normal": 579458,
+            "cz": 61095,
+            "prep": 6265,
+            "align": 2088,
+            "bonus": 38611,
+            "at": 297772,
+            "zone": 14711,
+            "zero": 904,
+            "BIG": 2088,
+            "REG": 0,
+            "czEntries": 3849,
+            "strongEntries": 224,
+            "czWins": 1336,
+            "artEntries": 1304,
+            "zoneEntries": 3572,
+            "gameCzEntries": 3513,
+            "ceilingCzEntries": 0,
+            "rareCzEntries": 560,
+            "backgroundCzEntries": 0,
+            "highNormalG": 66102,
+            "favoredNormalG": 307970
+          },
+          "blocks": [
+            {
+              "endGame": 100000,
+              "totalBet": 300000,
+              "totalPaid": 306023,
+              "net": 6023,
+              "peak": 15156
+            },
+            {
+              "endGame": 200000,
+              "totalBet": 300000,
+              "totalPaid": 322414,
+              "net": 22414,
+              "peak": 23421
+            },
+            {
+              "endGame": 300000,
+              "totalBet": 300000,
+              "totalPaid": 297258,
+              "net": -2742,
+              "peak": 4532
+            },
+            {
+              "endGame": 400000,
+              "totalBet": 300000,
+              "totalPaid": 326238,
+              "net": 26238,
+              "peak": 26538
+            },
+            {
+              "endGame": 500000,
+              "totalBet": 300000,
+              "totalPaid": 296867,
+              "net": -3133,
+              "peak": 11242
+            },
+            {
+              "endGame": 600000,
+              "totalBet": 300000,
+              "totalPaid": 292267,
+              "net": -7733,
+              "peak": 8344
+            },
+            {
+              "endGame": 700000,
+              "totalBet": 300000,
+              "totalPaid": 317116,
+              "net": 17116,
+              "peak": 29730
+            },
+            {
+              "endGame": 800000,
+              "totalBet": 300000,
+              "totalPaid": 324060,
+              "net": 24060,
+              "peak": 24667
+            },
+            {
+              "endGame": 900000,
+              "totalBet": 300000,
+              "totalPaid": 298498,
+              "net": -1502,
+              "peak": 4246
+            },
+            {
+              "endGame": 1000000,
+              "totalBet": 300000,
+              "totalPaid": 295015,
+              "net": -4985,
+              "peak": 2123
+            }
+          ]
+        },
+        {
+          "setting": 4,
+          "games": 1000000,
+          "totalBet": 3000000,
+          "totalPaid": 3094449,
+          "rtp": 1.031483,
+          "net": 94449,
+          "release": 114,
+          "counts": {
+            "normal": 577392,
+            "cz": 60285,
+            "prep": 6098,
+            "align": 2016,
+            "bonus": 37499,
+            "at": 301829,
+            "zone": 14881,
+            "zero": 826,
+            "BIG": 2016,
+            "REG": 0,
+            "czEntries": 3812,
+            "strongEntries": 207,
+            "czWins": 1331,
+            "artEntries": 1271,
+            "zoneEntries": 3613,
+            "gameCzEntries": 3429,
+            "ceilingCzEntries": 0,
+            "rareCzEntries": 590,
+            "backgroundCzEntries": 0,
+            "highNormalG": 64031,
+            "favoredNormalG": 306695
+          },
+          "blocks": [
+            {
+              "endGame": 100000,
+              "totalBet": 300000,
+              "totalPaid": 307876,
+              "net": 7876,
+              "peak": 10154
+            },
+            {
+              "endGame": 200000,
+              "totalBet": 300000,
+              "totalPaid": 332284,
+              "net": 32284,
+              "peak": 36758
+            },
+            {
+              "endGame": 300000,
+              "totalBet": 300000,
+              "totalPaid": 277133,
+              "net": -22867,
+              "peak": 1988
+            },
+            {
+              "endGame": 400000,
+              "totalBet": 300000,
+              "totalPaid": 316837,
+              "net": 16837,
+              "peak": 17681
+            },
+            {
+              "endGame": 500000,
+              "totalBet": 300000,
+              "totalPaid": 304276,
+              "net": 4276,
+              "peak": 5204
+            },
+            {
+              "endGame": 600000,
+              "totalBet": 300000,
+              "totalPaid": 301963,
+              "net": 1963,
+              "peak": 9826
+            },
+            {
+              "endGame": 700000,
+              "totalBet": 300000,
+              "totalPaid": 328507,
+              "net": 28507,
+              "peak": 31784
+            },
+            {
+              "endGame": 800000,
+              "totalBet": 300000,
+              "totalPaid": 318764,
+              "net": 18764,
+              "peak": 22761
+            },
+            {
+              "endGame": 900000,
+              "totalBet": 300000,
+              "totalPaid": 316293,
+              "net": 16293,
+              "peak": 18427
+            },
+            {
+              "endGame": 1000000,
+              "totalBet": 300000,
+              "totalPaid": 290516,
+              "net": -9484,
+              "peak": 0
+            }
+          ]
+        },
+        {
+          "setting": 4,
+          "games": 1000000,
+          "totalBet": 3000000,
+          "totalPaid": 3088055,
+          "rtp": 1.0293516666666667,
+          "net": 88055,
+          "release": 113,
+          "counts": {
+            "normal": 578327,
+            "cz": 59895,
+            "prep": 6197,
+            "align": 2036,
+            "bonus": 37838,
+            "at": 301446,
+            "zone": 14261,
+            "zero": 873,
+            "BIG": 2036,
+            "REG": 0,
+            "czEntries": 3773,
+            "strongEntries": 220,
+            "czWins": 1356,
+            "artEntries": 1273,
+            "zoneEntries": 3500,
+            "gameCzEntries": 3428,
+            "ceilingCzEntries": 0,
+            "rareCzEntries": 565,
+            "backgroundCzEntries": 0,
+            "highNormalG": 66801,
+            "favoredNormalG": 305755
+          },
+          "blocks": [
+            {
+              "endGame": 100000,
+              "totalBet": 300000,
+              "totalPaid": 315191,
+              "net": 15191,
+              "peak": 17109
+            },
+            {
+              "endGame": 200000,
+              "totalBet": 300000,
+              "totalPaid": 298284,
+              "net": -1716,
+              "peak": 16023
+            },
+            {
+              "endGame": 300000,
+              "totalBet": 300000,
+              "totalPaid": 315144,
+              "net": 15144,
+              "peak": 17187
+            },
+            {
+              "endGame": 400000,
+              "totalBet": 300000,
+              "totalPaid": 314963,
+              "net": 14963,
+              "peak": 15330
+            },
+            {
+              "endGame": 500000,
+              "totalBet": 300000,
+              "totalPaid": 302880,
+              "net": 2880,
+              "peak": 6408
+            },
+            {
+              "endGame": 600000,
+              "totalBet": 300000,
+              "totalPaid": 311531,
+              "net": 11531,
+              "peak": 12171
+            },
+            {
+              "endGame": 700000,
+              "totalBet": 300000,
+              "totalPaid": 321885,
+              "net": 21885,
+              "peak": 23781
+            },
+            {
+              "endGame": 800000,
+              "totalBet": 300000,
+              "totalPaid": 293061,
+              "net": -6939,
+              "peak": 8512
+            },
+            {
+              "endGame": 900000,
+              "totalBet": 300000,
+              "totalPaid": 308546,
+              "net": 8546,
+              "peak": 12271
+            },
+            {
+              "endGame": 1000000,
+              "totalBet": 300000,
+              "totalPaid": 306570,
+              "net": 6570,
+              "peak": 9170
+            }
+          ]
+        },
+        {
+          "setting": 4,
+          "games": 1000000,
+          "totalBet": 3000000,
+          "totalPaid": 3116451,
+          "rtp": 1.038817,
+          "net": 116451,
+          "release": 113,
+          "counts": {
+            "normal": 570713,
+            "cz": 61140,
+            "prep": 6060,
+            "align": 2049,
+            "bonus": 37840,
+            "at": 306655,
+            "zone": 15543,
+            "zero": 865,
+            "BIG": 2049,
+            "REG": 0,
+            "czEntries": 3867,
+            "strongEntries": 209,
+            "czWins": 1373,
+            "artEntries": 1303,
+            "zoneEntries": 3731,
+            "gameCzEntries": 3526,
+            "ceilingCzEntries": 0,
+            "rareCzEntries": 550,
+            "backgroundCzEntries": 0,
+            "highNormalG": 63401,
+            "favoredNormalG": 308458
+          },
+          "blocks": [
+            {
+              "endGame": 100000,
+              "totalBet": 300000,
+              "totalPaid": 312920,
+              "net": 12920,
+              "peak": 13927
+            },
+            {
+              "endGame": 200000,
+              "totalBet": 300000,
+              "totalPaid": 331359,
+              "net": 31359,
+              "peak": 31577
+            },
+            {
+              "endGame": 300000,
+              "totalBet": 300000,
+              "totalPaid": 300518,
+              "net": 518,
+              "peak": 13959
+            },
+            {
+              "endGame": 400000,
+              "totalBet": 300000,
+              "totalPaid": 304445,
+              "net": 4445,
+              "peak": 5523
+            },
+            {
+              "endGame": 500000,
+              "totalBet": 300000,
+              "totalPaid": 312119,
+              "net": 12119,
+              "peak": 12564
+            },
+            {
+              "endGame": 600000,
+              "totalBet": 300000,
+              "totalPaid": 326431,
+              "net": 26431,
+              "peak": 26431
+            },
+            {
+              "endGame": 700000,
+              "totalBet": 300000,
+              "totalPaid": 305233,
+              "net": 5233,
+              "peak": 16312
+            },
+            {
+              "endGame": 800000,
+              "totalBet": 300000,
+              "totalPaid": 302256,
+              "net": 2256,
+              "peak": 2338
+            },
+            {
+              "endGame": 900000,
+              "totalBet": 300000,
+              "totalPaid": 314878,
+              "net": 14878,
+              "peak": 23497
+            },
+            {
+              "endGame": 1000000,
+              "totalBet": 300000,
+              "totalPaid": 306292,
+              "net": 6292,
+              "peak": 17682
+            }
+          ]
+        },
+        {
+          "setting": 4,
+          "games": 1000000,
+          "totalBet": 3000000,
+          "totalPaid": 3068457,
+          "rtp": 1.022819,
+          "net": 68457,
+          "release": 111,
+          "counts": {
+            "normal": 582689,
+            "cz": 59685,
+            "prep": 6001,
+            "align": 2010,
+            "bonus": 37431,
+            "at": 297626,
+            "zone": 14558,
+            "zero": 754,
+            "BIG": 2010,
+            "REG": 0,
+            "czEntries": 3780,
+            "strongEntries": 199,
+            "czWins": 1338,
+            "artEntries": 1277,
+            "zoneEntries": 3548,
+            "gameCzEntries": 3453,
+            "ceilingCzEntries": 0,
+            "rareCzEntries": 526,
+            "backgroundCzEntries": 0,
+            "highNormalG": 63787,
+            "favoredNormalG": 305852
+          },
+          "blocks": [
+            {
+              "endGame": 100000,
+              "totalBet": 300000,
+              "totalPaid": 329111,
+              "net": 29111,
+              "peak": 29779
+            },
+            {
+              "endGame": 200000,
+              "totalBet": 300000,
+              "totalPaid": 309198,
+              "net": 9198,
+              "peak": 11992
+            },
+            {
+              "endGame": 300000,
+              "totalBet": 300000,
+              "totalPaid": 309623,
+              "net": 9623,
+              "peak": 14757
+            },
+            {
+              "endGame": 400000,
+              "totalBet": 300000,
+              "totalPaid": 309986,
+              "net": 9986,
+              "peak": 9986
+            },
+            {
+              "endGame": 500000,
+              "totalBet": 300000,
+              "totalPaid": 304990,
+              "net": 4990,
+              "peak": 6551
+            },
+            {
+              "endGame": 600000,
+              "totalBet": 300000,
+              "totalPaid": 291512,
+              "net": -8488,
+              "peak": 1762
+            },
+            {
+              "endGame": 700000,
+              "totalBet": 300000,
+              "totalPaid": 304220,
+              "net": 4220,
+              "peak": 6926
+            },
+            {
+              "endGame": 800000,
+              "totalBet": 300000,
+              "totalPaid": 294877,
+              "net": -5123,
+              "peak": 2051
+            },
+            {
+              "endGame": 900000,
+              "totalBet": 300000,
+              "totalPaid": 296244,
+              "net": -3756,
+              "peak": 11975
+            },
+            {
+              "endGame": 1000000,
+              "totalBet": 300000,
+              "totalPaid": 318696,
+              "net": 18696,
+              "peak": 22647
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "variant": "candidate",
+      "setting": 4,
+      "games": 1000000,
+      "chunks": 5,
+      "elapsedMs": 95124,
+      "results": [
+        {
+          "setting": 4,
+          "games": 1000000,
+          "totalBet": 3000000,
+          "totalPaid": 3073437,
+          "rtp": 1.024479,
+          "net": 73437,
+          "release": 137,
+          "counts": {
+            "normal": 575976,
+            "cz": 63030,
+            "prep": 6379,
+            "align": 2151,
+            "bonus": 40029,
+            "at": 297750,
+            "zone": 14685,
+            "zero": 839,
+            "BIG": 2151,
+            "REG": 0,
+            "czEntries": 3978,
+            "strongEntries": 224,
+            "czWins": 1408,
+            "artEntries": 1347,
+            "zoneEntries": 3658,
+            "gameCzEntries": 3652,
+            "ceilingCzEntries": 0,
+            "rareCzEntries": 550,
+            "backgroundCzEntries": 0,
+            "highNormalG": 67552,
+            "favoredNormalG": 307416
+          },
+          "blocks": [
+            {
+              "endGame": 100000,
+              "totalBet": 300000,
+              "totalPaid": 296758,
+              "net": -3242,
+              "peak": 7292
+            },
+            {
+              "endGame": 200000,
+              "totalBet": 300000,
+              "totalPaid": 322255,
+              "net": 22255,
+              "peak": 24908
+            },
+            {
+              "endGame": 300000,
+              "totalBet": 300000,
+              "totalPaid": 295236,
+              "net": -4764,
+              "peak": 13248
+            },
+            {
+              "endGame": 400000,
+              "totalBet": 300000,
+              "totalPaid": 320786,
+              "net": 20786,
+              "peak": 21260
+            },
+            {
+              "endGame": 500000,
+              "totalBet": 300000,
+              "totalPaid": 310206,
+              "net": 10206,
+              "peak": 15907
+            },
+            {
+              "endGame": 600000,
+              "totalBet": 300000,
+              "totalPaid": 299034,
+              "net": -966,
+              "peak": 7174
+            },
+            {
+              "endGame": 700000,
+              "totalBet": 300000,
+              "totalPaid": 307895,
+              "net": 7895,
+              "peak": 17922
+            },
+            {
+              "endGame": 800000,
+              "totalBet": 300000,
+              "totalPaid": 328347,
+              "net": 28347,
+              "peak": 29745
+            },
+            {
+              "endGame": 900000,
+              "totalBet": 300000,
+              "totalPaid": 312972,
+              "net": 12972,
+              "peak": 14376
+            },
+            {
+              "endGame": 1000000,
+              "totalBet": 300000,
+              "totalPaid": 279948,
+              "net": -20052,
+              "peak": 3399
+            }
+          ]
+        },
+        {
+          "setting": 4,
+          "games": 1000000,
+          "totalBet": 3000000,
+          "totalPaid": 3140539,
+          "rtp": 1.0468463333333333,
+          "net": 140539,
+          "release": 129,
+          "counts": {
+            "normal": 568602,
+            "cz": 59535,
+            "prep": 6166,
+            "align": 2004,
+            "bonus": 37319,
+            "at": 311301,
+            "zone": 15073,
+            "zero": 960,
+            "BIG": 2004,
+            "REG": 0,
+            "czEntries": 3767,
+            "strongEntries": 202,
+            "czWins": 1351,
+            "artEntries": 1272,
+            "zoneEntries": 3699,
+            "gameCzEntries": 3405,
+            "ceilingCzEntries": 0,
+            "rareCzEntries": 564,
+            "backgroundCzEntries": 0,
+            "highNormalG": 63155,
+            "favoredNormalG": 305173
+          },
+          "blocks": [
+            {
+              "endGame": 100000,
+              "totalBet": 300000,
+              "totalPaid": 322374,
+              "net": 22374,
+              "peak": 25012
+            },
+            {
+              "endGame": 200000,
+              "totalBet": 300000,
+              "totalPaid": 317981,
+              "net": 17981,
+              "peak": 21335
+            },
+            {
+              "endGame": 300000,
+              "totalBet": 300000,
+              "totalPaid": 308811,
+              "net": 8811,
+              "peak": 12286
+            },
+            {
+              "endGame": 400000,
+              "totalBet": 300000,
+              "totalPaid": 308697,
+              "net": 8697,
+              "peak": 11113
+            },
+            {
+              "endGame": 500000,
+              "totalBet": 300000,
+              "totalPaid": 290193,
+              "net": -9807,
+              "peak": 726
+            },
+            {
+              "endGame": 600000,
+              "totalBet": 300000,
+              "totalPaid": 313179,
+              "net": 13179,
+              "peak": 18063
+            },
+            {
+              "endGame": 700000,
+              "totalBet": 300000,
+              "totalPaid": 330270,
+              "net": 30270,
+              "peak": 32161
+            },
+            {
+              "endGame": 800000,
+              "totalBet": 300000,
+              "totalPaid": 321750,
+              "net": 21750,
+              "peak": 27409
+            },
+            {
+              "endGame": 900000,
+              "totalBet": 300000,
+              "totalPaid": 315586,
+              "net": 15586,
+              "peak": 16709
+            },
+            {
+              "endGame": 1000000,
+              "totalBet": 300000,
+              "totalPaid": 311698,
+              "net": 11698,
+              "peak": 17717
+            }
+          ]
+        },
+        {
+          "setting": 4,
+          "games": 1000000,
+          "totalBet": 3000000,
+          "totalPaid": 3132903,
+          "rtp": 1.044301,
+          "net": 132903,
+          "release": 131,
+          "counts": {
+            "normal": 569486,
+            "cz": 60060,
+            "prep": 6186,
+            "align": 2012,
+            "bonus": 37469,
+            "at": 309782,
+            "zone": 15005,
+            "zero": 910,
+            "BIG": 2012,
+            "REG": 0,
+            "czEntries": 3793,
+            "strongEntries": 211,
+            "czWins": 1314,
+            "artEntries": 1307,
+            "zoneEntries": 3698,
+            "gameCzEntries": 3457,
+            "ceilingCzEntries": 0,
+            "rareCzEntries": 547,
+            "backgroundCzEntries": 0,
+            "highNormalG": 65868,
+            "favoredNormalG": 301156
+          },
+          "blocks": [
+            {
+              "endGame": 100000,
+              "totalBet": 300000,
+              "totalPaid": 324241,
+              "net": 24241,
+              "peak": 25979
+            },
+            {
+              "endGame": 200000,
+              "totalBet": 300000,
+              "totalPaid": 326448,
+              "net": 26448,
+              "peak": 31402
+            },
+            {
+              "endGame": 300000,
+              "totalBet": 300000,
+              "totalPaid": 306010,
+              "net": 6010,
+              "peak": 10238
+            },
+            {
+              "endGame": 400000,
+              "totalBet": 300000,
+              "totalPaid": 301169,
+              "net": 1169,
+              "peak": 4958
+            },
+            {
+              "endGame": 500000,
+              "totalBet": 300000,
+              "totalPaid": 330649,
+              "net": 30649,
+              "peak": 30890
+            },
+            {
+              "endGame": 600000,
+              "totalBet": 300000,
+              "totalPaid": 315408,
+              "net": 15408,
+              "peak": 25159
+            },
+            {
+              "endGame": 700000,
+              "totalBet": 300000,
+              "totalPaid": 316223,
+              "net": 16223,
+              "peak": 19002
+            },
+            {
+              "endGame": 800000,
+              "totalBet": 300000,
+              "totalPaid": 306241,
+              "net": 6241,
+              "peak": 17659
+            },
+            {
+              "endGame": 900000,
+              "totalBet": 300000,
+              "totalPaid": 316705,
+              "net": 16705,
+              "peak": 19484
+            },
+            {
+              "endGame": 1000000,
+              "totalBet": 300000,
+              "totalPaid": 289809,
+              "net": -10191,
+              "peak": 3237
+            }
+          ]
+        },
+        {
+          "setting": 4,
+          "games": 1000000,
+          "totalBet": 3000000,
+          "totalPaid": 3159794,
+          "rtp": 1.0532646666666667,
+          "net": 159794,
+          "release": 126,
+          "counts": {
+            "normal": 564087,
+            "cz": 59400,
+            "prep": 5962,
+            "align": 2008,
+            "bonus": 37371,
+            "at": 315257,
+            "zone": 15915,
+            "zero": 936,
+            "BIG": 2008,
+            "REG": 0,
+            "czEntries": 3733,
+            "strongEntries": 227,
+            "czWins": 1379,
+            "artEntries": 1312,
+            "zoneEntries": 3779,
+            "gameCzEntries": 3400,
+            "ceilingCzEntries": 0,
+            "rareCzEntries": 560,
+            "backgroundCzEntries": 0,
+            "highNormalG": 63029,
+            "favoredNormalG": 304435
+          },
+          "blocks": [
+            {
+              "endGame": 100000,
+              "totalBet": 300000,
+              "totalPaid": 312415,
+              "net": 12415,
+              "peak": 12601
+            },
+            {
+              "endGame": 200000,
+              "totalBet": 300000,
+              "totalPaid": 301846,
+              "net": 1846,
+              "peak": 3136
+            },
+            {
+              "endGame": 300000,
+              "totalBet": 300000,
+              "totalPaid": 309802,
+              "net": 9802,
+              "peak": 26375
+            },
+            {
+              "endGame": 400000,
+              "totalBet": 300000,
+              "totalPaid": 305142,
+              "net": 5142,
+              "peak": 13408
+            },
+            {
+              "endGame": 500000,
+              "totalBet": 300000,
+              "totalPaid": 339492,
+              "net": 39492,
+              "peak": 39822
+            },
+            {
+              "endGame": 600000,
+              "totalBet": 300000,
+              "totalPaid": 301550,
+              "net": 1550,
+              "peak": 2350
+            },
+            {
+              "endGame": 700000,
+              "totalBet": 300000,
+              "totalPaid": 325272,
+              "net": 25272,
+              "peak": 30730
+            },
+            {
+              "endGame": 800000,
+              "totalBet": 300000,
+              "totalPaid": 315787,
+              "net": 15787,
+              "peak": 20214
+            },
+            {
+              "endGame": 900000,
+              "totalBet": 300000,
+              "totalPaid": 338116,
+              "net": 38116,
+              "peak": 39748
+            },
+            {
+              "endGame": 1000000,
+              "totalBet": 300000,
+              "totalPaid": 310372,
+              "net": 10372,
+              "peak": 11938
+            }
+          ]
+        },
+        {
+          "setting": 4,
+          "games": 1000000,
+          "totalBet": 3000000,
+          "totalPaid": 3109840,
+          "rtp": 1.0366133333333334,
+          "net": 109840,
+          "release": 131,
+          "counts": {
+            "normal": 571214,
+            "cz": 61020,
+            "prep": 6222,
+            "align": 2061,
+            "bonus": 38210,
+            "at": 306045,
+            "zone": 15228,
+            "zero": 919,
+            "BIG": 2061,
+            "REG": 0,
+            "czEntries": 3889,
+            "strongEntries": 179,
+            "czWins": 1345,
+            "artEntries": 1322,
+            "zoneEntries": 3723,
+            "gameCzEntries": 3551,
+            "ceilingCzEntries": 0,
+            "rareCzEntries": 517,
+            "backgroundCzEntries": 0,
+            "highNormalG": 60802,
+            "favoredNormalG": 307629
+          },
+          "blocks": [
+            {
+              "endGame": 100000,
+              "totalBet": 300000,
+              "totalPaid": 321834,
+              "net": 21834,
+              "peak": 24648
+            },
+            {
+              "endGame": 200000,
+              "totalBet": 300000,
+              "totalPaid": 318786,
+              "net": 18786,
+              "peak": 24259
+            },
+            {
+              "endGame": 300000,
+              "totalBet": 300000,
+              "totalPaid": 323625,
+              "net": 23625,
+              "peak": 27419
+            },
+            {
+              "endGame": 400000,
+              "totalBet": 300000,
+              "totalPaid": 333629,
+              "net": 33629,
+              "peak": 34930
+            },
+            {
+              "endGame": 500000,
+              "totalBet": 300000,
+              "totalPaid": 277408,
+              "net": -22592,
+              "peak": 802
+            },
+            {
+              "endGame": 600000,
+              "totalBet": 300000,
+              "totalPaid": 303376,
+              "net": 3376,
+              "peak": 6059
+            },
+            {
+              "endGame": 700000,
+              "totalBet": 300000,
+              "totalPaid": 313565,
+              "net": 13565,
+              "peak": 16908
+            },
+            {
+              "endGame": 800000,
+              "totalBet": 300000,
+              "totalPaid": 298324,
+              "net": -1676,
+              "peak": 6670
+            },
+            {
+              "endGame": 900000,
+              "totalBet": 300000,
+              "totalPaid": 309547,
+              "net": 9547,
+              "peak": 14964
+            },
+            {
+              "endGame": 1000000,
+              "totalBet": 300000,
+              "totalPaid": 309746,
+              "net": 9746,
+              "peak": 16667
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "variant": "s4-70",
+      "setting": 4,
+      "games": 1000000,
+      "chunks": 5,
+      "elapsedMs": 74943,
+      "results": [
+        {
+          "setting": 4,
+          "games": 1000000,
+          "totalBet": 3000000,
+          "totalPaid": 3111187,
+          "rtp": 1.0370623333333333,
+          "net": 111187,
+          "release": 94,
+          "counts": {
+            "normal": 570753,
+            "cz": 61275,
+            "prep": 6111,
+            "align": 2073,
+            "bonus": 38398,
+            "at": 306126,
+            "zone": 15264,
+            "zero": 794,
+            "BIG": 2073,
+            "REG": 0,
+            "czEntries": 3856,
+            "strongEntries": 229,
+            "czWins": 1406,
+            "artEntries": 1323,
+            "zoneEntries": 3690,
+            "gameCzEntries": 3499,
+            "ceilingCzEntries": 0,
+            "rareCzEntries": 586,
+            "backgroundCzEntries": 0,
+            "highNormalG": 65444,
+            "favoredNormalG": 304989
+          },
+          "blocks": [
+            {
+              "endGame": 100000,
+              "totalBet": 300000,
+              "totalPaid": 298008,
+              "net": -1992,
+              "peak": 3413
+            },
+            {
+              "endGame": 200000,
+              "totalBet": 300000,
+              "totalPaid": 316739,
+              "net": 16739,
+              "peak": 20728
+            },
+            {
+              "endGame": 300000,
+              "totalBet": 300000,
+              "totalPaid": 299910,
+              "net": -90,
+              "peak": 15586
+            },
+            {
+              "endGame": 400000,
+              "totalBet": 300000,
+              "totalPaid": 326252,
+              "net": 26252,
+              "peak": 26765
+            },
+            {
+              "endGame": 500000,
+              "totalBet": 300000,
+              "totalPaid": 301221,
+              "net": 1221,
+              "peak": 13918
+            },
+            {
+              "endGame": 600000,
+              "totalBet": 300000,
+              "totalPaid": 291130,
+              "net": -8870,
+              "peak": 7146
+            },
+            {
+              "endGame": 700000,
+              "totalBet": 300000,
+              "totalPaid": 328257,
+              "net": 28257,
+              "peak": 29721
+            },
+            {
+              "endGame": 800000,
+              "totalBet": 300000,
+              "totalPaid": 325931,
+              "net": 25931,
+              "peak": 26129
+            },
+            {
+              "endGame": 900000,
+              "totalBet": 300000,
+              "totalPaid": 316814,
+              "net": 16814,
+              "peak": 17752
+            },
+            {
+              "endGame": 1000000,
+              "totalBet": 300000,
+              "totalPaid": 306925,
+              "net": 6925,
+              "peak": 15751
+            }
+          ]
+        },
+        {
+          "setting": 4,
+          "games": 1000000,
+          "totalBet": 3000000,
+          "totalPaid": 3061124,
+          "rtp": 1.0203746666666667,
+          "net": 61124,
+          "release": 91,
+          "counts": {
+            "normal": 585432,
+            "cz": 59550,
+            "prep": 6074,
+            "align": 2001,
+            "bonus": 37240,
+            "at": 295520,
+            "zone": 14183,
+            "zero": 875,
+            "BIG": 2001,
+            "REG": 0,
+            "czEntries": 3744,
+            "strongEntries": 226,
+            "czWins": 1365,
+            "artEntries": 1257,
+            "zoneEntries": 3481,
+            "gameCzEntries": 3379,
+            "ceilingCzEntries": 0,
+            "rareCzEntries": 591,
+            "backgroundCzEntries": 0,
+            "highNormalG": 64460,
+            "favoredNormalG": 311539
+          },
+          "blocks": [
+            {
+              "endGame": 100000,
+              "totalBet": 300000,
+              "totalPaid": 305811,
+              "net": 5811,
+              "peak": 7701
+            },
+            {
+              "endGame": 200000,
+              "totalBet": 300000,
+              "totalPaid": 304224,
+              "net": 4224,
+              "peak": 6332
+            },
+            {
+              "endGame": 300000,
+              "totalBet": 300000,
+              "totalPaid": 296293,
+              "net": -3707,
+              "peak": 10208
+            },
+            {
+              "endGame": 400000,
+              "totalBet": 300000,
+              "totalPaid": 313432,
+              "net": 13432,
+              "peak": 15545
+            },
+            {
+              "endGame": 500000,
+              "totalBet": 300000,
+              "totalPaid": 285549,
+              "net": -14451,
+              "peak": 1223
+            },
+            {
+              "endGame": 600000,
+              "totalBet": 300000,
+              "totalPaid": 287643,
+              "net": -12357,
+              "peak": 11300
+            },
+            {
+              "endGame": 700000,
+              "totalBet": 300000,
+              "totalPaid": 336205,
+              "net": 36205,
+              "peak": 36207
+            },
+            {
+              "endGame": 800000,
+              "totalBet": 300000,
+              "totalPaid": 324000,
+              "net": 24000,
+              "peak": 31624
+            },
+            {
+              "endGame": 900000,
+              "totalBet": 300000,
+              "totalPaid": 307532,
+              "net": 7532,
+              "peak": 13845
+            },
+            {
+              "endGame": 1000000,
+              "totalBet": 300000,
+              "totalPaid": 300435,
+              "net": 435,
+              "peak": 5017
+            }
+          ]
+        },
+        {
+          "setting": 4,
+          "games": 1000000,
+          "totalBet": 3000000,
+          "totalPaid": 3139137,
+          "rtp": 1.046379,
+          "net": 139137,
+          "release": 95,
+          "counts": {
+            "normal": 565656,
+            "cz": 61590,
+            "prep": 6129,
+            "align": 2057,
+            "bonus": 38373,
+            "at": 310892,
+            "zone": 15303,
+            "zero": 991,
+            "BIG": 2057,
+            "REG": 0,
+            "czEntries": 3889,
+            "strongEntries": 217,
+            "czWins": 1367,
+            "artEntries": 1310,
+            "zoneEntries": 3669,
+            "gameCzEntries": 3548,
+            "ceilingCzEntries": 0,
+            "rareCzEntries": 558,
+            "backgroundCzEntries": 0,
+            "highNormalG": 64752,
+            "favoredNormalG": 305078
+          },
+          "blocks": [
+            {
+              "endGame": 100000,
+              "totalBet": 300000,
+              "totalPaid": 332004,
+              "net": 32004,
+              "peak": 35125
+            },
+            {
+              "endGame": 200000,
+              "totalBet": 300000,
+              "totalPaid": 318847,
+              "net": 18847,
+              "peak": 18847
+            },
+            {
+              "endGame": 300000,
+              "totalBet": 300000,
+              "totalPaid": 332622,
+              "net": 32622,
+              "peak": 34043
+            },
+            {
+              "endGame": 400000,
+              "totalBet": 300000,
+              "totalPaid": 297543,
+              "net": -2457,
+              "peak": 10429
+            },
+            {
+              "endGame": 500000,
+              "totalBet": 300000,
+              "totalPaid": 309036,
+              "net": 9036,
+              "peak": 17053
+            },
+            {
+              "endGame": 600000,
+              "totalBet": 300000,
+              "totalPaid": 303271,
+              "net": 3271,
+              "peak": 7940
+            },
+            {
+              "endGame": 700000,
+              "totalBet": 300000,
+              "totalPaid": 320073,
+              "net": 20073,
+              "peak": 20925
+            },
+            {
+              "endGame": 800000,
+              "totalBet": 300000,
+              "totalPaid": 292035,
+              "net": -7965,
+              "peak": 4150
+            },
+            {
+              "endGame": 900000,
+              "totalBet": 300000,
+              "totalPaid": 322045,
+              "net": 22045,
+              "peak": 24972
+            },
+            {
+              "endGame": 1000000,
+              "totalBet": 300000,
+              "totalPaid": 311661,
+              "net": 11661,
+              "peak": 13420
+            }
+          ]
+        },
+        {
+          "setting": 4,
+          "games": 1000000,
+          "totalBet": 3000000,
+          "totalPaid": 3136084,
+          "rtp": 1.0453613333333334,
+          "net": 136084,
+          "release": 94,
+          "counts": {
+            "normal": 566701,
+            "cz": 61305,
+            "prep": 6291,
+            "align": 2064,
+            "bonus": 38252,
+            "at": 309996,
+            "zone": 15391,
+            "zero": 860,
+            "BIG": 2064,
+            "REG": 0,
+            "czEntries": 3878,
+            "strongEntries": 209,
+            "czWins": 1380,
+            "artEntries": 1290,
+            "zoneEntries": 3642,
+            "gameCzEntries": 3512,
+            "ceilingCzEntries": 0,
+            "rareCzEntries": 575,
+            "backgroundCzEntries": 0,
+            "highNormalG": 64215,
+            "favoredNormalG": 306540
+          },
+          "blocks": [
+            {
+              "endGame": 100000,
+              "totalBet": 300000,
+              "totalPaid": 284634,
+              "net": -15366,
+              "peak": 244
+            },
+            {
+              "endGame": 200000,
+              "totalBet": 300000,
+              "totalPaid": 320519,
+              "net": 20519,
+              "peak": 20791
+            },
+            {
+              "endGame": 300000,
+              "totalBet": 300000,
+              "totalPaid": 310357,
+              "net": 10357,
+              "peak": 17028
+            },
+            {
+              "endGame": 400000,
+              "totalBet": 300000,
+              "totalPaid": 324870,
+              "net": 24870,
+              "peak": 28926
+            },
+            {
+              "endGame": 500000,
+              "totalBet": 300000,
+              "totalPaid": 301081,
+              "net": 1081,
+              "peak": 8263
+            },
+            {
+              "endGame": 600000,
+              "totalBet": 300000,
+              "totalPaid": 316821,
+              "net": 16821,
+              "peak": 19089
+            },
+            {
+              "endGame": 700000,
+              "totalBet": 300000,
+              "totalPaid": 327690,
+              "net": 27690,
+              "peak": 30078
+            },
+            {
+              "endGame": 800000,
+              "totalBet": 300000,
+              "totalPaid": 309219,
+              "net": 9219,
+              "peak": 9432
+            },
+            {
+              "endGame": 900000,
+              "totalBet": 300000,
+              "totalPaid": 333482,
+              "net": 33482,
+              "peak": 39020
+            },
+            {
+              "endGame": 1000000,
+              "totalBet": 300000,
+              "totalPaid": 307411,
+              "net": 7411,
+              "peak": 8944
+            }
+          ]
+        },
+        {
+          "setting": 4,
+          "games": 1000000,
+          "totalBet": 3000000,
+          "totalPaid": 3058513,
+          "rtp": 1.0195043333333333,
+          "net": 58513,
+          "release": 90,
+          "counts": {
+            "normal": 584852,
+            "cz": 58710,
+            "prep": 5948,
+            "align": 1987,
+            "bonus": 37253,
+            "at": 296765,
+            "zone": 14485,
+            "zero": 786,
+            "BIG": 1987,
+            "REG": 0,
+            "czEntries": 3719,
+            "strongEntries": 195,
+            "czWins": 1334,
+            "artEntries": 1280,
+            "zoneEntries": 3556,
+            "gameCzEntries": 3371,
+            "ceilingCzEntries": 0,
+            "rareCzEntries": 543,
+            "backgroundCzEntries": 0,
+            "highNormalG": 63783,
+            "favoredNormalG": 310649
+          },
+          "blocks": [
+            {
+              "endGame": 100000,
+              "totalBet": 300000,
+              "totalPaid": 331490,
+              "net": 31490,
+              "peak": 32495
+            },
+            {
+              "endGame": 200000,
+              "totalBet": 300000,
+              "totalPaid": 309655,
+              "net": 9655,
+              "peak": 14469
+            },
+            {
+              "endGame": 300000,
+              "totalBet": 300000,
+              "totalPaid": 295407,
+              "net": -4593,
+              "peak": 5733
+            },
+            {
+              "endGame": 400000,
+              "totalBet": 300000,
+              "totalPaid": 327212,
+              "net": 27212,
+              "peak": 28726
+            },
+            {
+              "endGame": 500000,
+              "totalBet": 300000,
+              "totalPaid": 296413,
+              "net": -3587,
+              "peak": 9997
+            },
+            {
+              "endGame": 600000,
+              "totalBet": 300000,
+              "totalPaid": 300403,
+              "net": 403,
+              "peak": 5459
+            },
+            {
+              "endGame": 700000,
+              "totalBet": 300000,
+              "totalPaid": 280683,
+              "net": -19317,
+              "peak": 1825
+            },
+            {
+              "endGame": 800000,
+              "totalBet": 300000,
+              "totalPaid": 305938,
+              "net": 5938,
+              "peak": 14881
+            },
+            {
+              "endGame": 900000,
+              "totalBet": 300000,
+              "totalPaid": 301068,
+              "net": 1068,
+              "peak": 13504
+            },
+            {
+              "endGame": 1000000,
+              "totalBet": 300000,
+              "totalPaid": 310244,
+              "net": 10244,
+              "peak": 14337
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "variant": "s4-80",
+      "setting": 4,
+      "games": 1000000,
+      "chunks": 5,
+      "elapsedMs": 75011,
+      "results": [
+        {
+          "setting": 4,
+          "games": 1000000,
+          "totalBet": 3000000,
+          "totalPaid": 3053592,
+          "rtp": 1.017864,
+          "net": 53592,
+          "release": 112,
+          "counts": {
+            "normal": 581619,
+            "cz": 62775,
+            "prep": 6374,
+            "align": 2121,
+            "bonus": 38839,
+            "at": 294003,
+            "zone": 14269,
+            "zero": 718,
+            "BIG": 2121,
+            "REG": 0,
+            "czEntries": 3944,
+            "strongEntries": 241,
+            "czWins": 1405,
+            "artEntries": 1295,
+            "zoneEntries": 3525,
+            "gameCzEntries": 3598,
+            "ceilingCzEntries": 0,
+            "rareCzEntries": 587,
+            "backgroundCzEntries": 0,
+            "highNormalG": 66192,
+            "favoredNormalG": 311518
+          },
+          "blocks": [
+            {
+              "endGame": 100000,
+              "totalBet": 300000,
+              "totalPaid": 286122,
+              "net": -13878,
+              "peak": 2890
+            },
+            {
+              "endGame": 200000,
+              "totalBet": 300000,
+              "totalPaid": 318910,
+              "net": 18910,
+              "peak": 21749
+            },
+            {
+              "endGame": 300000,
+              "totalBet": 300000,
+              "totalPaid": 305284,
+              "net": 5284,
+              "peak": 17328
+            },
+            {
+              "endGame": 400000,
+              "totalBet": 300000,
+              "totalPaid": 307413,
+              "net": 7413,
+              "peak": 18863
+            },
+            {
+              "endGame": 500000,
+              "totalBet": 300000,
+              "totalPaid": 308141,
+              "net": 8141,
+              "peak": 16657
+            },
+            {
+              "endGame": 600000,
+              "totalBet": 300000,
+              "totalPaid": 297906,
+              "net": -2094,
+              "peak": 7660
+            },
+            {
+              "endGame": 700000,
+              "totalBet": 300000,
+              "totalPaid": 301439,
+              "net": 1439,
+              "peak": 12080
+            },
+            {
+              "endGame": 800000,
+              "totalBet": 300000,
+              "totalPaid": 315193,
+              "net": 15193,
+              "peak": 21112
+            },
+            {
+              "endGame": 900000,
+              "totalBet": 300000,
+              "totalPaid": 308441,
+              "net": 8441,
+              "peak": 8555
+            },
+            {
+              "endGame": 1000000,
+              "totalBet": 300000,
+              "totalPaid": 304743,
+              "net": 4743,
+              "peak": 12406
+            }
+          ]
+        },
+        {
+          "setting": 4,
+          "games": 1000000,
+          "totalBet": 3000000,
+          "totalPaid": 3085405,
+          "rtp": 1.0284683333333333,
+          "net": 85405,
+          "release": 104,
+          "counts": {
+            "normal": 581691,
+            "cz": 58275,
+            "prep": 6027,
+            "align": 1993,
+            "bonus": 36831,
+            "at": 300704,
+            "zone": 14479,
+            "zero": 851,
+            "BIG": 1993,
+            "REG": 0,
+            "czEntries": 3676,
+            "strongEntries": 209,
+            "czWins": 1354,
+            "artEntries": 1253,
+            "zoneEntries": 3481,
+            "gameCzEntries": 3296,
+            "ceilingCzEntries": 0,
+            "rareCzEntries": 589,
+            "backgroundCzEntries": 0,
+            "highNormalG": 64280,
+            "favoredNormalG": 305284
+          },
+          "blocks": [
+            {
+              "endGame": 100000,
+              "totalBet": 300000,
+              "totalPaid": 311008,
+              "net": 11008,
+              "peak": 11011
+            },
+            {
+              "endGame": 200000,
+              "totalBet": 300000,
+              "totalPaid": 308093,
+              "net": 8093,
+              "peak": 10320
+            },
+            {
+              "endGame": 300000,
+              "totalBet": 300000,
+              "totalPaid": 292161,
+              "net": -7839,
+              "peak": 3196
+            },
+            {
+              "endGame": 400000,
+              "totalBet": 300000,
+              "totalPaid": 324388,
+              "net": 24388,
+              "peak": 25720
+            },
+            {
+              "endGame": 500000,
+              "totalBet": 300000,
+              "totalPaid": 304308,
+              "net": 4308,
+              "peak": 4922
+            },
+            {
+              "endGame": 600000,
+              "totalBet": 300000,
+              "totalPaid": 304211,
+              "net": 4211,
+              "peak": 11531
+            },
+            {
+              "endGame": 700000,
+              "totalBet": 300000,
+              "totalPaid": 310338,
+              "net": 10338,
+              "peak": 21711
+            },
+            {
+              "endGame": 800000,
+              "totalBet": 300000,
+              "totalPaid": 325275,
+              "net": 25275,
+              "peak": 29118
+            },
+            {
+              "endGame": 900000,
+              "totalBet": 300000,
+              "totalPaid": 292953,
+              "net": -7047,
+              "peak": 9578
+            },
+            {
+              "endGame": 1000000,
+              "totalBet": 300000,
+              "totalPaid": 312670,
+              "net": 12670,
+              "peak": 13319
+            }
+          ]
+        },
+        {
+          "setting": 4,
+          "games": 1000000,
+          "totalBet": 3000000,
+          "totalPaid": 3190035,
+          "rtp": 1.063345,
+          "net": 190035,
+          "release": 109,
+          "counts": {
+            "normal": 552738,
+            "cz": 63885,
+            "prep": 6605,
+            "align": 2142,
+            "bonus": 39698,
+            "at": 319179,
+            "zone": 15753,
+            "zero": 985,
+            "BIG": 2142,
+            "REG": 0,
+            "czEntries": 4052,
+            "strongEntries": 207,
+            "czWins": 1437,
+            "artEntries": 1323,
+            "zoneEntries": 3746,
+            "gameCzEntries": 3723,
+            "ceilingCzEntries": 0,
+            "rareCzEntries": 536,
+            "backgroundCzEntries": 0,
+            "highNormalG": 63499,
+            "favoredNormalG": 305348
+          },
+          "blocks": [
+            {
+              "endGame": 100000,
+              "totalBet": 300000,
+              "totalPaid": 329580,
+              "net": 29580,
+              "peak": 30365
+            },
+            {
+              "endGame": 200000,
+              "totalBet": 300000,
+              "totalPaid": 311686,
+              "net": 11686,
+              "peak": 16467
+            },
+            {
+              "endGame": 300000,
+              "totalBet": 300000,
+              "totalPaid": 311213,
+              "net": 11213,
+              "peak": 15737
+            },
+            {
+              "endGame": 400000,
+              "totalBet": 300000,
+              "totalPaid": 319458,
+              "net": 19458,
+              "peak": 23341
+            },
+            {
+              "endGame": 500000,
+              "totalBet": 300000,
+              "totalPaid": 322871,
+              "net": 22871,
+              "peak": 24778
+            },
+            {
+              "endGame": 600000,
+              "totalBet": 300000,
+              "totalPaid": 317336,
+              "net": 17336,
+              "peak": 17336
+            },
+            {
+              "endGame": 700000,
+              "totalBet": 300000,
+              "totalPaid": 325428,
+              "net": 25428,
+              "peak": 28454
+            },
+            {
+              "endGame": 800000,
+              "totalBet": 300000,
+              "totalPaid": 301434,
+              "net": 1434,
+              "peak": 10887
+            },
+            {
+              "endGame": 900000,
+              "totalBet": 300000,
+              "totalPaid": 321269,
+              "net": 21269,
+              "peak": 22988
+            },
+            {
+              "endGame": 1000000,
+              "totalBet": 300000,
+              "totalPaid": 329760,
+              "net": 29760,
+              "peak": 30562
+            }
+          ]
+        },
+        {
+          "setting": 4,
+          "games": 1000000,
+          "totalBet": 3000000,
+          "totalPaid": 3113749,
+          "rtp": 1.0379163333333334,
+          "net": 113749,
+          "release": 105,
+          "counts": {
+            "normal": 573827,
+            "cz": 59040,
+            "prep": 5927,
+            "align": 2005,
+            "bonus": 37134,
+            "at": 306640,
+            "zone": 15427,
+            "zero": 882,
+            "BIG": 2005,
+            "REG": 0,
+            "czEntries": 3724,
+            "strongEntries": 212,
+            "czWins": 1313,
+            "artEntries": 1290,
+            "zoneEntries": 3688,
+            "gameCzEntries": 3392,
+            "ceilingCzEntries": 0,
+            "rareCzEntries": 544,
+            "backgroundCzEntries": 0,
+            "highNormalG": 63403,
+            "favoredNormalG": 303298
+          },
+          "blocks": [
+            {
+              "endGame": 100000,
+              "totalBet": 300000,
+              "totalPaid": 308155,
+              "net": 8155,
+              "peak": 8865
+            },
+            {
+              "endGame": 200000,
+              "totalBet": 300000,
+              "totalPaid": 311295,
+              "net": 11295,
+              "peak": 16428
+            },
+            {
+              "endGame": 300000,
+              "totalBet": 300000,
+              "totalPaid": 321341,
+              "net": 21341,
+              "peak": 34006
+            },
+            {
+              "endGame": 400000,
+              "totalBet": 300000,
+              "totalPaid": 299734,
+              "net": -266,
+              "peak": 10470
+            },
+            {
+              "endGame": 500000,
+              "totalBet": 300000,
+              "totalPaid": 320946,
+              "net": 20946,
+              "peak": 20946
+            },
+            {
+              "endGame": 600000,
+              "totalBet": 300000,
+              "totalPaid": 305992,
+              "net": 5992,
+              "peak": 15948
+            },
+            {
+              "endGame": 700000,
+              "totalBet": 300000,
+              "totalPaid": 310184,
+              "net": 10184,
+              "peak": 19220
+            },
+            {
+              "endGame": 800000,
+              "totalBet": 300000,
+              "totalPaid": 312627,
+              "net": 12627,
+              "peak": 15679
+            },
+            {
+              "endGame": 900000,
+              "totalBet": 300000,
+              "totalPaid": 304521,
+              "net": 4521,
+              "peak": 12246
+            },
+            {
+              "endGame": 1000000,
+              "totalBet": 300000,
+              "totalPaid": 318954,
+              "net": 18954,
+              "peak": 21546
+            }
+          ]
+        },
+        {
+          "setting": 4,
+          "games": 1000000,
+          "totalBet": 3000000,
+          "totalPaid": 3092116,
+          "rtp": 1.0307053333333334,
+          "net": 92116,
+          "release": 105,
+          "counts": {
+            "normal": 577982,
+            "cz": 58725,
+            "prep": 5988,
+            "align": 1972,
+            "bonus": 36708,
+            "at": 303853,
+            "zone": 14772,
+            "zero": 907,
+            "BIG": 1972,
+            "REG": 0,
+            "czEntries": 3725,
+            "strongEntries": 190,
+            "czWins": 1286,
+            "artEntries": 1260,
+            "zoneEntries": 3610,
+            "gameCzEntries": 3381,
+            "ceilingCzEntries": 0,
+            "rareCzEntries": 534,
+            "backgroundCzEntries": 0,
+            "highNormalG": 62542,
+            "favoredNormalG": 304240
+          },
+          "blocks": [
+            {
+              "endGame": 100000,
+              "totalBet": 300000,
+              "totalPaid": 317637,
+              "net": 17637,
+              "peak": 17803
+            },
+            {
+              "endGame": 200000,
+              "totalBet": 300000,
+              "totalPaid": 332808,
+              "net": 32808,
+              "peak": 32975
+            },
+            {
+              "endGame": 300000,
+              "totalBet": 300000,
+              "totalPaid": 297989,
+              "net": -2011,
+              "peak": 5184
+            },
+            {
+              "endGame": 400000,
+              "totalBet": 300000,
+              "totalPaid": 324750,
+              "net": 24750,
+              "peak": 26672
+            },
+            {
+              "endGame": 500000,
+              "totalBet": 300000,
+              "totalPaid": 300027,
+              "net": 27,
+              "peak": 11018
+            },
+            {
+              "endGame": 600000,
+              "totalBet": 300000,
+              "totalPaid": 315166,
+              "net": 15166,
+              "peak": 15407
+            },
+            {
+              "endGame": 700000,
+              "totalBet": 300000,
+              "totalPaid": 303331,
+              "net": 3331,
+              "peak": 5918
+            },
+            {
+              "endGame": 800000,
+              "totalBet": 300000,
+              "totalPaid": 293451,
+              "net": -6549,
+              "peak": 11510
+            },
+            {
+              "endGame": 900000,
+              "totalBet": 300000,
+              "totalPaid": 290302,
+              "net": -9698,
+              "peak": 5175
+            },
+            {
+              "endGame": 1000000,
+              "totalBet": 300000,
+              "totalPaid": 316655,
+              "net": 16655,
+              "peak": 16721
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "variant": "s4-90",
+      "setting": 4,
+      "games": 1000000,
+      "chunks": 5,
+      "elapsedMs": 75566,
+      "results": [
+        {
+          "setting": 4,
+          "games": 1000000,
+          "totalBet": 3000000,
+          "totalPaid": 3063939,
+          "rtp": 1.021313,
+          "net": 63939,
+          "release": 122,
+          "counts": {
+            "normal": 580025,
+            "cz": 61290,
+            "prep": 6384,
+            "align": 2096,
+            "bonus": 38757,
+            "at": 296765,
+            "zone": 14683,
+            "zero": 833,
+            "BIG": 2096,
+            "REG": 0,
+            "czEntries": 3841,
+            "strongEntries": 245,
+            "czWins": 1344,
+            "artEntries": 1319,
+            "zoneEntries": 3586,
+            "gameCzEntries": 3530,
+            "ceilingCzEntries": 0,
+            "rareCzEntries": 556,
+            "backgroundCzEntries": 0,
+            "highNormalG": 66938,
+            "favoredNormalG": 308251
+          },
+          "blocks": [
+            {
+              "endGame": 100000,
+              "totalBet": 300000,
+              "totalPaid": 309821,
+              "net": 9821,
+              "peak": 15525
+            },
+            {
+              "endGame": 200000,
+              "totalBet": 300000,
+              "totalPaid": 308413,
+              "net": 8413,
+              "peak": 12242
+            },
+            {
+              "endGame": 300000,
+              "totalBet": 300000,
+              "totalPaid": 307963,
+              "net": 7963,
+              "peak": 9943
+            },
+            {
+              "endGame": 400000,
+              "totalBet": 300000,
+              "totalPaid": 321282,
+              "net": 21282,
+              "peak": 21282
+            },
+            {
+              "endGame": 500000,
+              "totalBet": 300000,
+              "totalPaid": 292608,
+              "net": -7392,
+              "peak": 10092
+            },
+            {
+              "endGame": 600000,
+              "totalBet": 300000,
+              "totalPaid": 314873,
+              "net": 14873,
+              "peak": 20289
+            },
+            {
+              "endGame": 700000,
+              "totalBet": 300000,
+              "totalPaid": 309778,
+              "net": 9778,
+              "peak": 11568
+            },
+            {
+              "endGame": 800000,
+              "totalBet": 300000,
+              "totalPaid": 307791,
+              "net": 7791,
+              "peak": 10854
+            },
+            {
+              "endGame": 900000,
+              "totalBet": 300000,
+              "totalPaid": 304175,
+              "net": 4175,
+              "peak": 17609
+            },
+            {
+              "endGame": 1000000,
+              "totalBet": 300000,
+              "totalPaid": 287235,
+              "net": -12765,
+              "peak": 4401
+            }
+          ]
+        },
+        {
+          "setting": 4,
+          "games": 1000000,
+          "totalBet": 3000000,
+          "totalPaid": 3105452,
+          "rtp": 1.0351506666666668,
+          "net": 105452,
+          "release": 116,
+          "counts": {
+            "normal": 575544,
+            "cz": 60090,
+            "prep": 6040,
+            "align": 2024,
+            "bonus": 37605,
+            "at": 303459,
+            "zone": 15238,
+            "zero": 944,
+            "BIG": 2024,
+            "REG": 0,
+            "czEntries": 3807,
+            "strongEntries": 199,
+            "czWins": 1349,
+            "artEntries": 1282,
+            "zoneEntries": 3635,
+            "gameCzEntries": 3440,
+            "ceilingCzEntries": 0,
+            "rareCzEntries": 566,
+            "backgroundCzEntries": 0,
+            "highNormalG": 64741,
+            "favoredNormalG": 306100
+          },
+          "blocks": [
+            {
+              "endGame": 100000,
+              "totalBet": 300000,
+              "totalPaid": 303466,
+              "net": 3466,
+              "peak": 5784
+            },
+            {
+              "endGame": 200000,
+              "totalBet": 300000,
+              "totalPaid": 311659,
+              "net": 11659,
+              "peak": 13805
+            },
+            {
+              "endGame": 300000,
+              "totalBet": 300000,
+              "totalPaid": 297658,
+              "net": -2342,
+              "peak": 15780
+            },
+            {
+              "endGame": 400000,
+              "totalBet": 300000,
+              "totalPaid": 339462,
+              "net": 39462,
+              "peak": 40808
+            },
+            {
+              "endGame": 500000,
+              "totalBet": 300000,
+              "totalPaid": 287318,
+              "net": -12682,
+              "peak": 4819
+            },
+            {
+              "endGame": 600000,
+              "totalBet": 300000,
+              "totalPaid": 299362,
+              "net": -638,
+              "peak": 10694
+            },
+            {
+              "endGame": 700000,
+              "totalBet": 300000,
+              "totalPaid": 329670,
+              "net": 29670,
+              "peak": 34758
+            },
+            {
+              "endGame": 800000,
+              "totalBet": 300000,
+              "totalPaid": 318957,
+              "net": 18957,
+              "peak": 19609
+            },
+            {
+              "endGame": 900000,
+              "totalBet": 300000,
+              "totalPaid": 303533,
+              "net": 3533,
+              "peak": 11607
+            },
+            {
+              "endGame": 1000000,
+              "totalBet": 300000,
+              "totalPaid": 314367,
+              "net": 14367,
+              "peak": 18512
+            }
+          ]
+        },
+        {
+          "setting": 4,
+          "games": 1000000,
+          "totalBet": 3000000,
+          "totalPaid": 3123901,
+          "rtp": 1.0413003333333333,
+          "net": 123901,
+          "release": 117,
+          "counts": {
+            "normal": 569335,
+            "cz": 60930,
+            "prep": 6263,
+            "align": 2022,
+            "bonus": 37390,
+            "at": 309026,
+            "zone": 15034,
+            "zero": 890,
+            "BIG": 2022,
+            "REG": 0,
+            "czEntries": 3843,
+            "strongEntries": 219,
+            "czWins": 1335,
+            "artEntries": 1260,
+            "zoneEntries": 3617,
+            "gameCzEntries": 3503,
+            "ceilingCzEntries": 0,
+            "rareCzEntries": 559,
+            "backgroundCzEntries": 0,
+            "highNormalG": 66096,
+            "favoredNormalG": 304183
+          },
+          "blocks": [
+            {
+              "endGame": 100000,
+              "totalBet": 300000,
+              "totalPaid": 316045,
+              "net": 16045,
+              "peak": 16047
+            },
+            {
+              "endGame": 200000,
+              "totalBet": 300000,
+              "totalPaid": 313933,
+              "net": 13933,
+              "peak": 14301
+            },
+            {
+              "endGame": 300000,
+              "totalBet": 300000,
+              "totalPaid": 319339,
+              "net": 19339,
+              "peak": 19406
+            },
+            {
+              "endGame": 400000,
+              "totalBet": 300000,
+              "totalPaid": 299734,
+              "net": -266,
+              "peak": 2075
+            },
+            {
+              "endGame": 500000,
+              "totalBet": 300000,
+              "totalPaid": 321871,
+              "net": 21871,
+              "peak": 25523
+            },
+            {
+              "endGame": 600000,
+              "totalBet": 300000,
+              "totalPaid": 304810,
+              "net": 4810,
+              "peak": 14021
+            },
+            {
+              "endGame": 700000,
+              "totalBet": 300000,
+              "totalPaid": 310520,
+              "net": 10520,
+              "peak": 11828
+            },
+            {
+              "endGame": 800000,
+              "totalBet": 300000,
+              "totalPaid": 297420,
+              "net": -2580,
+              "peak": 3013
+            },
+            {
+              "endGame": 900000,
+              "totalBet": 300000,
+              "totalPaid": 326960,
+              "net": 26960,
+              "peak": 28699
+            },
+            {
+              "endGame": 1000000,
+              "totalBet": 300000,
+              "totalPaid": 313269,
+              "net": 13269,
+              "peak": 14462
+            }
+          ]
+        },
+        {
+          "setting": 4,
+          "games": 1000000,
+          "totalBet": 3000000,
+          "totalPaid": 3139914,
+          "rtp": 1.046638,
+          "net": 139914,
+          "release": 115,
+          "counts": {
+            "normal": 567474,
+            "cz": 59820,
+            "prep": 6140,
+            "align": 2031,
+            "bonus": 37714,
+            "at": 311121,
+            "zone": 15700,
+            "zero": 903,
+            "BIG": 2031,
+            "REG": 0,
+            "czEntries": 3775,
+            "strongEntries": 213,
+            "czWins": 1383,
+            "artEntries": 1319,
+            "zoneEntries": 3794,
+            "gameCzEntries": 3431,
+            "ceilingCzEntries": 0,
+            "rareCzEntries": 557,
+            "backgroundCzEntries": 0,
+            "highNormalG": 62749,
+            "favoredNormalG": 303435
+          },
+          "blocks": [
+            {
+              "endGame": 100000,
+              "totalBet": 300000,
+              "totalPaid": 304786,
+              "net": 4786,
+              "peak": 5283
+            },
+            {
+              "endGame": 200000,
+              "totalBet": 300000,
+              "totalPaid": 329368,
+              "net": 29368,
+              "peak": 30714
+            },
+            {
+              "endGame": 300000,
+              "totalBet": 300000,
+              "totalPaid": 295307,
+              "net": -4693,
+              "peak": 14516
+            },
+            {
+              "endGame": 400000,
+              "totalBet": 300000,
+              "totalPaid": 324527,
+              "net": 24527,
+              "peak": 26385
+            },
+            {
+              "endGame": 500000,
+              "totalBet": 300000,
+              "totalPaid": 318183,
+              "net": 18183,
+              "peak": 19632
+            },
+            {
+              "endGame": 600000,
+              "totalBet": 300000,
+              "totalPaid": 309996,
+              "net": 9996,
+              "peak": 11546
+            },
+            {
+              "endGame": 700000,
+              "totalBet": 300000,
+              "totalPaid": 319180,
+              "net": 19180,
+              "peak": 24007
+            },
+            {
+              "endGame": 800000,
+              "totalBet": 300000,
+              "totalPaid": 311141,
+              "net": 11141,
+              "peak": 13824
+            },
+            {
+              "endGame": 900000,
+              "totalBet": 300000,
+              "totalPaid": 306321,
+              "net": 6321,
+              "peak": 14979
+            },
+            {
+              "endGame": 1000000,
+              "totalBet": 300000,
+              "totalPaid": 321105,
+              "net": 21105,
+              "peak": 27992
+            }
+          ]
+        },
+        {
+          "setting": 4,
+          "games": 1000000,
+          "totalBet": 3000000,
+          "totalPaid": 3101300,
+          "rtp": 1.0337666666666667,
+          "net": 101300,
+          "release": 116,
+          "counts": {
+            "normal": 574565,
+            "cz": 60105,
+            "prep": 6054,
+            "align": 2004,
+            "bonus": 37212,
+            "at": 304733,
+            "zone": 15327,
+            "zero": 900,
+            "BIG": 2004,
+            "REG": 0,
+            "czEntries": 3810,
+            "strongEntries": 197,
+            "czWins": 1326,
+            "artEntries": 1294,
+            "zoneEntries": 3724,
+            "gameCzEntries": 3469,
+            "ceilingCzEntries": 0,
+            "rareCzEntries": 538,
+            "backgroundCzEntries": 0,
+            "highNormalG": 62893,
+            "favoredNormalG": 303548
+          },
+          "blocks": [
+            {
+              "endGame": 100000,
+              "totalBet": 300000,
+              "totalPaid": 326040,
+              "net": 26040,
+              "peak": 26040
+            },
+            {
+              "endGame": 200000,
+              "totalBet": 300000,
+              "totalPaid": 315673,
+              "net": 15673,
+              "peak": 17719
+            },
+            {
+              "endGame": 300000,
+              "totalBet": 300000,
+              "totalPaid": 311033,
+              "net": 11033,
+              "peak": 17261
+            },
+            {
+              "endGame": 400000,
+              "totalBet": 300000,
+              "totalPaid": 313639,
+              "net": 13639,
+              "peak": 15488
+            },
+            {
+              "endGame": 500000,
+              "totalBet": 300000,
+              "totalPaid": 320367,
+              "net": 20367,
+              "peak": 23210
+            },
+            {
+              "endGame": 600000,
+              "totalBet": 300000,
+              "totalPaid": 310488,
+              "net": 10488,
+              "peak": 17847
+            },
+            {
+              "endGame": 700000,
+              "totalBet": 300000,
+              "totalPaid": 298134,
+              "net": -1866,
+              "peak": 5587
+            },
+            {
+              "endGame": 800000,
+              "totalBet": 300000,
+              "totalPaid": 302144,
+              "net": 2144,
+              "peak": 13529
+            },
+            {
+              "endGame": 900000,
+              "totalBet": 300000,
+              "totalPaid": 303887,
+              "net": 3887,
+              "peak": 9587
+            },
+            {
+              "endGame": 1000000,
+              "totalBet": 300000,
+              "totalPaid": 299895,
+              "net": -105,
+              "peak": 9234
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
