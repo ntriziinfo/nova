@@ -27,6 +27,12 @@ test('committed display defaults match the approved Chrome layout',()=>{
  assert.match(game,/lampmovie:\{x:20\.4,y:29\.6,w:59\.1,h:10\.7\}/);
  assert.match(game,/backgroundmovie:\{x:20\.4,y:29\.4,w:58\.9,h:25\.7\}/);
  assert.match(game,/zonepresentation:\{x:22\.3,y:31\.8,w:55\.7,h:8\.3\}/);
+ assert.match(game,/sortieaimbg:\{"x":20\.3,"y":29\.4,"w":59\.1,"h":25\.4\}/);
+ assert.match(game,/sortieaimmiddle:\{"x":21\.5,"y":32\.7,"w":19\.4,"h":5\.8\}/);
+ assert.match(game,/sortieaimsymbol:\{"x":41\.5,"y":28,"w":16\.7,"h":14\.4,"compact":37\.6\}/);
+ assert.match(game,/sortieaimaim:\{"x":58\.7,"y":32\.6,"w":20,"h":5\.5\}/);
+ assert.match(game,/const key='nova_sortie_aim_layout_20261028b';/);
+ assert.match(game,/for\(const target of \['sortieaimbg','sortieaimmiddle','sortieaimsymbol','sortieaimaim'\]\)state\[target\]=\{\.\.\.LAYOUT_DEFAULTS\[target\]\};/);
  assert.match(game,/supertitle:\{x:21\.5,y:29\.6,w:56\.7,h:10\.7\}/);
  assert.match(game,/displaygroup:\{x:0\.1,y:-0\.5,s:122\.4\}/);
  assert.match(counter,/--layout-playdata-x,19\.8%/);
@@ -49,9 +55,12 @@ test('committed display defaults match the approved Chrome layout',()=>{
  assert.match(cabinet,/--layout-zonepresentation-y,31\.8%/);
  assert.match(cabinet,/--layout-zonepresentation-w,55\.7%/);
  assert.match(cabinet,/--layout-zonepresentation-h,8\.3%/);
- assert.match(html,/nova-data-counter\.css\?v=20261027-current-standard/);
- assert.match(html,/nova-cabinet\.css\?v=20261027-current-standard/);
- assert.match(html,/nova-game\.js\?v=20261027-current-standard/);
+ assert.match(cabinet,/--layout-sortieaimsymbol-y,28%/);
+ assert.match(cabinet,/--layout-sortieaimsymbol-compact,37\.6%/);
+ assert.match(cabinet,/--layout-sortieaimaim-y,32\.6%/);
+ assert.match(html,/nova-data-counter\.css\?v=20261027-cherry-reels/);
+ assert.match(html,/nova-cabinet\.css\?v=20261028-sortie-aim-hot-layout/);
+ assert.match(html,/nova-game\.js\?v=20261028-sortie-aim-hot-layout/);
  const navi=fs.readFileSync('nova-bell-navi.js','utf8');
  const remaining=fs.readFileSync('nova-remaining-counters.js','utf8');
  assert.match(navi,/const defaults=Object\.freeze\(\{x:\.5,y:44\.3,w:100,h:7\.9,gap:0\}\);/);

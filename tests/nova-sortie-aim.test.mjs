@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 test('sortie-only lamp cue uses muted color videos, three movable images, and clears on completion',()=>{
  const elements=[],host={dataset:{},append(){}};
- const c=vm.createContext({document:{getElementById:id=>id==='machine'?host:null,addEventListener(){},createElement(tag){const e={tag,dataset:{},style:{},currentTime:0,append(){},setAttribute(){},getAttribute(key){return this[key];},play(){this.paused=false;return Promise.resolve();},pause(){this.paused=true;}};elements.push(e);return e;}},setTimeout(){},clearTimeout(){},window:{addEventListener(){}}});
+ const c=vm.createContext({document:{getElementById:id=>id==='machine'?host:null,addEventListener(){},createElement(tag){const e={tag,dataset:{},style:{},children:[],currentTime:0,append(...children){this.children.push(...children);},setAttribute(){},getAttribute(key){return this[key];},play(){this.paused=false;return Promise.resolve();},pause(){this.paused=true;}};elements.push(e);return e;}},setTimeout(){},clearTimeout(){},window:{addEventListener(){}}});
  for(const file of ['nova-sortie-aim.js','nova-aim-presentation.js'])vm.runInContext(fs.readFileSync(file,'utf8'),c);
  vm.runInContext('Math.random=()=>{throw Error("presentation consumed lottery RNG")}',c);
  for(const color of ['blue','red','rainbow']){
@@ -16,9 +16,29 @@ test('sortie-only lamp cue uses muted color videos, three movable images, and cl
   assert.equal(elements.filter(e=>e.src?.endsWith('nova-only-20261027.webp')).length,2);
   assert.equal(elements.filter(e=>e.src?.endsWith('blank-supernova-20261028-v1.webp')).length,1);
   assert.equal(elements.some(e=>e.src?.includes('center-symbol')),false);
-  assert.equal(host.dataset.aimActive,'true');assert.equal(JSON.stringify(spin),before);
-  c.NovaAim.stop(spin);assert.equal(video.hidden,true);assert.equal(video.paused,true);assert.equal(host.dataset.aimActive,undefined);
+  const effects=elements.find(e=>e.className==='novaSortieAimEffects');
+  assert(effects,'A dedicated effects container surrounds the three movable parts');
+  assert.equal(effects.hidden,false);assert.equal(effects.dataset.color,color);
+  assert.deepEqual(effects.children.map(e=>e.className),[
+   'novaSortieAimFx novaSortieAimFx-middle',
+   'novaSortieAimFx novaSortieAimFx-symbol',
+   'novaSortieAimFx novaSortieAimFx-aim'
+  ]);
+  assert.equal(elements.filter(e=>e.className?.startsWith('novaSortieAimPart')).length,3,'Effects must not become extra movable layout parts');
+  assert.equal(host.dataset.aimActive,'true');assert.equal(host.dataset.sortieAimColor,color);assert.equal(JSON.stringify(spin),before);
+  c.NovaSortieAim.fail();assert.equal(host.dataset.sortieAimFailed,'true');assert.equal(effects.hidden,false);assert.equal(effects.dataset.color,color);assert.equal(host.dataset.sortieAimColor,color);
+  c.NovaAim.stop(spin);assert.equal(video.hidden,true);assert.equal(video.paused,true);assert.equal(effects.hidden,true);assert.equal(effects.dataset.color,undefined);assert.equal(host.dataset.sortieAimColor,undefined);assert.equal(host.dataset.aimActive,undefined);
  }
+});
+
+test('sortie aim heat effects are color-aware, non-interactive, dim on failure, and respect reduced motion',()=>{
+ const css=fs.readFileSync('nova-cabinet.css','utf8');
+ assert.match(css,/\.novaSortieAimEffects\{[^}]*pointer-events:none/);
+ for(const color of ['blue','red','rainbow'])assert.match(css,new RegExp('\\.novaSortieAimEffects\\[data-color=["\\\']?'+color+'["\\\']?\\]'));
+ for(const name of ['Heat','RainbowHeat','Ring','Sparks'])assert.match(css,new RegExp('@keyframes novaSortieAim'+name+'\\{'));
+ assert.match(css,/#machine\[data-sortie-aim-failed="true"\]>\.novaSortieAimPart[^}]*filter:brightness\(\.25\)!important/);
+ assert.match(css,/#machine\[data-sortie-aim-failed="true"\]>\.novaSortieAimEffects\{[^}]*filter:brightness\(\.25\)[^}]*opacity:0/);
+ assert.match(css,/@media\(prefers-reduced-motion:reduce\)\{[^]*?\.novaSortieAimFx[^}]*animation:none/);
 });
 test('live middle strip supports the exact sandwich and failed trigger does not show it',()=>{
  const c=vm.createContext({});vm.runInContext(fs.readFileSync('nova-stock-entry.js','utf8'),c);

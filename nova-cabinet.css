@@ -276,9 +276,52 @@ body.layoutEditOpen #novaSuperTitlePreview{display:block;outline:1px dashed #c89
 /* Independently positioned sortie trigger art; background stays behind reels. */
 #machine>.novaSortieAimBg{position:absolute;pointer-events:none;left:var(--layout-sortieaimbg-x,20.3%);top:var(--layout-sortieaimbg-y,29.4%);width:var(--layout-sortieaimbg-w,59.1%);height:var(--layout-sortieaimbg-h,25.4%);z-index:20;object-fit:cover;}
 #machine>.novaSortieAim-middle{position:absolute;pointer-events:none;left:var(--layout-sortieaimmiddle-x,21.5%);top:var(--layout-sortieaimmiddle-y,32.7%);width:var(--layout-sortieaimmiddle-w,19.4%);height:var(--layout-sortieaimmiddle-h,5.8%);z-index:49;object-fit:contain;}
-#machine>.novaSortieAim-symbol{position:absolute;pointer-events:none;left:var(--layout-sortieaimsymbol-x,41.5%);top:var(--layout-sortieaimsymbol-y,27.9%);width:var(--layout-sortieaimsymbol-w,16.7%);height:var(--layout-sortieaimsymbol-h,14.4%);z-index:49;object-fit:contain;}
-#machine>.novaSortieAim-aim{position:absolute;pointer-events:none;left:var(--layout-sortieaimaim-x,58.7%);top:var(--layout-sortieaimaim-y,32.7%);width:var(--layout-sortieaimaim-w,20%);height:var(--layout-sortieaimaim-h,5.5%);z-index:49;object-fit:contain;}
-.novaSortieAimPart[hidden],.novaSortieAimBg[hidden]{display:none!important;}
+#machine>.novaSortieAim-symbol{position:absolute;pointer-events:none;left:var(--layout-sortieaimsymbol-x,41.5%);top:var(--layout-sortieaimsymbol-y,28%);width:var(--layout-sortieaimsymbol-w,16.7%);height:var(--layout-sortieaimsymbol-h,14.4%);z-index:49;object-fit:contain;}
+#machine>.novaSortieAim-aim{position:absolute;pointer-events:none;left:var(--layout-sortieaimaim-x,58.7%);top:var(--layout-sortieaimaim-y,32.6%);width:var(--layout-sortieaimaim-w,20%);height:var(--layout-sortieaimaim-h,5.5%);z-index:49;object-fit:contain;}
+.novaSortieAimPart[hidden],.novaSortieAimBg[hidden],.novaSortieAimEffects[hidden]{display:none!important;}
+
+/* Transparent heat effects sit behind the three trigger parts, never over the
+   full reel window. The alpha-following art glow keeps the lettering readable
+   while the thin rings and small sparks leave the reel symbols visible. */
+#machine{
+ --sortie-aim-primary:#53e8ff;
+ --sortie-aim-secondary:#557cff;
+ --sortie-aim-soft:#53e8ff70;
+ --sortie-aim-faint:#53e8ff00;
+}
+.novaSortieAimEffects[data-color="blue"]{--sortie-aim-primary:#53e8ff;--sortie-aim-secondary:#557cff;--sortie-aim-soft:#53e8ff70;--sortie-aim-faint:#53e8ff00;}
+#machine[data-sortie-aim-color="red"]{
+ --sortie-aim-primary:#ff3658;
+ --sortie-aim-secondary:#ffb23e;
+ --sortie-aim-soft:#ff365878;
+ --sortie-aim-faint:#ff365800;
+}
+.novaSortieAimEffects[data-color="red"]{--sortie-aim-primary:#ff3658;--sortie-aim-secondary:#ffb23e;--sortie-aim-soft:#ff365878;--sortie-aim-faint:#ff365800;}
+#machine[data-sortie-aim-color="rainbow"]{
+ --sortie-aim-primary:#ff4ca8;
+ --sortie-aim-secondary:#65efff;
+ --sortie-aim-soft:#d35cff78;
+ --sortie-aim-faint:#d35cff00;
+}
+.novaSortieAimEffects[data-color="rainbow"]{--sortie-aim-primary:#ff4ca8;--sortie-aim-secondary:#65efff;--sortie-aim-soft:#d35cff78;--sortie-aim-faint:#d35cff00;}
+#machine>.novaSortieAimEffects{position:absolute;inset:0;z-index:48;pointer-events:none;overflow:visible;isolation:isolate;mix-blend-mode:screen;}
+#machine>.novaSortieAimEffects>.novaSortieAimFx{position:absolute;pointer-events:none;overflow:visible;}
+#machine>.novaSortieAimEffects>.novaSortieAimFx-middle{left:var(--layout-sortieaimmiddle-x,21.5%);top:var(--layout-sortieaimmiddle-y,32.7%);width:var(--layout-sortieaimmiddle-w,19.4%);height:var(--layout-sortieaimmiddle-h,5.8%);}
+#machine>.novaSortieAimEffects>.novaSortieAimFx-symbol{left:var(--layout-sortieaimsymbol-x,41.5%);top:var(--layout-sortieaimsymbol-y,28%);width:var(--layout-sortieaimsymbol-w,16.7%);height:var(--layout-sortieaimsymbol-h,14.4%);}
+#machine>.novaSortieAimEffects>.novaSortieAimFx-aim{left:var(--layout-sortieaimaim-x,58.7%);top:var(--layout-sortieaimaim-y,32.6%);width:var(--layout-sortieaimaim-w,20%);height:var(--layout-sortieaimaim-h,5.5%);}
+#machine>.novaSortieAimEffects>.novaSortieAimFx::before{content:"";position:absolute;inset:-42% -7%;border:1px solid var(--sortie-aim-primary);border-radius:50%;background:radial-gradient(ellipse at center,transparent 42%,var(--sortie-aim-soft) 72%,var(--sortie-aim-faint) 100%);box-shadow:0 0 6px var(--sortie-aim-primary),0 0 15px var(--sortie-aim-soft),inset 0 0 8px var(--sortie-aim-soft);opacity:.48;animation:novaSortieAimRing .72s ease-in-out infinite alternate;}
+#machine>.novaSortieAimEffects>.novaSortieAimFx-symbol::before{inset:-8% -22%;border-width:2px;opacity:.58;}
+#machine>.novaSortieAimEffects>.novaSortieAimFx::after{content:"";position:absolute;inset:-75% -12%;border-radius:48%;background:radial-gradient(circle at 4% 48%,#fff 0 1px,transparent 2px),radial-gradient(circle at 19% 14%,var(--sortie-aim-primary) 0 1px,transparent 2px),radial-gradient(circle at 35% 86%,var(--sortie-aim-secondary) 0 1.5px,transparent 2.5px),radial-gradient(circle at 54% 5%,#fff 0 1px,transparent 2px),radial-gradient(circle at 72% 91%,var(--sortie-aim-primary) 0 1px,transparent 2px),radial-gradient(circle at 88% 24%,var(--sortie-aim-secondary) 0 1.5px,transparent 2.5px),radial-gradient(circle at 98% 62%,#fff 0 1px,transparent 2px);filter:drop-shadow(0 0 3px var(--sortie-aim-primary));opacity:.58;animation:novaSortieAimSparks 1.05s linear infinite;}
+#machine>.novaSortieAimEffects[data-color="rainbow"]>.novaSortieAimFx::before{background:radial-gradient(ellipse at center,transparent 44%,#ff4d9d33 58%,#ffe45a2b 68%,#58efff30 78%,transparent 100%);border-color:#fff4c8;box-shadow:0 0 7px #ff4d9d,0 0 14px #ffe45a99,0 0 20px #58efff70,inset 0 0 8px #d66cff88;}
+#machine[data-aim-active="true"]>.novaSortieAimPart:not([hidden]){transform-origin:50% 50%;animation:novaSortieAimHeat .72s ease-in-out infinite alternate;}
+#machine[data-aim-active="true"]>.novaSortieAim-middle{animation-delay:-.12s;}
+#machine[data-aim-active="true"]>.novaSortieAim-symbol{animation-delay:-.36s;}
+#machine[data-aim-active="true"]>.novaSortieAim-aim{animation-delay:-.58s;}
+#machine[data-sortie-aim-color="rainbow"]>.novaSortieAimPart:not([hidden]){animation-name:novaSortieAimRainbowHeat;animation-duration:.9s;}
+@keyframes novaSortieAimHeat{from{transform:scale(.985);filter:brightness(1.02) drop-shadow(0 0 2px #fff) drop-shadow(0 0 5px var(--sortie-aim-primary)) drop-shadow(0 0 9px var(--sortie-aim-secondary));}to{transform:scale(1.025);filter:brightness(1.2) drop-shadow(0 0 3px #fff) drop-shadow(0 0 9px var(--sortie-aim-primary)) drop-shadow(0 0 16px var(--sortie-aim-secondary));}}
+@keyframes novaSortieAimRainbowHeat{0%,100%{transform:scale(.99);filter:brightness(1.08) drop-shadow(0 0 3px #fff) drop-shadow(0 0 8px #ff4d9d) drop-shadow(0 0 13px #b15cff);}33%{transform:scale(1.02);filter:brightness(1.18) drop-shadow(0 0 3px #fff) drop-shadow(0 0 9px #ffe45a) drop-shadow(0 0 15px #ff8a3d);}66%{transform:scale(1.005);filter:brightness(1.14) drop-shadow(0 0 3px #fff) drop-shadow(0 0 9px #58efff) drop-shadow(0 0 15px #557cff);}}
+@keyframes novaSortieAimRing{from{transform:scale(.94);opacity:.28;}to{transform:scale(1.04);opacity:.66;}}
+@keyframes novaSortieAimSparks{0%{transform:rotate(-2deg) scale(.96);opacity:.3;}45%{opacity:.68;}100%{transform:rotate(2deg) scale(1.04);opacity:.38;}}
 
 /* Match the visible supernova disc to the replay artwork's blue circular core. */
 #machine .reel .cell img.symImg.blankSymImg:not(.sevenSymImg):not(.barSymImg):not(.nebulaSymImg){width:75%!important;height:75%!important;max-width:75%!important;max-height:75%!important;}
@@ -293,11 +336,18 @@ body[data-bonus-at-confirmed="true"] .reels{animation:novaBonusAtRainbow 1.4s li
 #machine>.novaSortieAim-symbol{display:flex;align-items:center;justify-content:center;}
 .novaSortieAimStack{width:100%;height:100%;display:grid;grid-template-rows:1fr 1fr 1fr;justify-items:center;align-items:center;}
 .novaSortieAimStack>img{display:block;width:100%;height:100%;min-height:0;object-fit:contain;}
-.novaSortieAimStack>.sortieNova:first-child{transform:translateY(var(--layout-sortieaimsymbol-compact,28%));}
-.novaSortieAimStack>.sortieNova:last-child{transform:translateY(calc(0% - var(--layout-sortieaimsymbol-compact,28%)));}
+.novaSortieAimStack>.sortieNova:first-child{transform:translateY(var(--layout-sortieaimsymbol-compact,37.6%));}
+.novaSortieAimStack>.sortieNova:last-child{transform:translateY(calc(0% - var(--layout-sortieaimsymbol-compact,37.6%)));}
 .novaSortieAimStack>.sortieBlank{width:83%;height:83%;}
 
-#machine[data-sortie-aim-failed="true"]>.novaSortieAimPart,#machine[data-sortie-aim-failed="true"]>.novaSortieAimBg{filter:brightness(.25);transition:filter .2s;}
+#machine[data-sortie-aim-failed="true"]>.novaSortieAimPart,#machine[data-sortie-aim-failed="true"]>.novaSortieAimBg{animation:none!important;transform:none;filter:brightness(.25)!important;transition:filter .2s;}
+#machine[data-sortie-aim-failed="true"]>.novaSortieAimEffects{animation:none!important;filter:brightness(.25);opacity:0;transition:filter .2s,opacity .16s;}
+@media(prefers-reduced-motion:reduce){
+ .novaSortieAimFx,.novaSortieAimFx::before,.novaSortieAimFx::after{animation:none!important;}
+ #machine[data-aim-active="true"]>.novaSortieAimPart:not([hidden]){animation:none;transform:none;filter:brightness(1.12) drop-shadow(0 0 3px #fff) drop-shadow(0 0 8px var(--sortie-aim-primary));}
+ #machine>.novaSortieAimEffects>.novaSortieAimFx::before{opacity:.46;}
+ #machine>.novaSortieAimEffects>.novaSortieAimFx::after{opacity:.34;}
+}
 
 /* Approved 1200x260 composition. The central image is the live reel asset. */
 .novaBarAimTitle{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;background:transparent;}

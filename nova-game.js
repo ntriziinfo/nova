@@ -947,8 +947,8 @@
     zonepresentation:{x:22.3,y:31.8,w:55.7,h:8.3},
     sortieaimbg:{"x":20.3,"y":29.4,"w":59.1,"h":25.4},
     sortieaimmiddle:{"x":21.5,"y":32.7,"w":19.4,"h":5.8},
-    sortieaimsymbol:{"x":41.5,"y":27.9,"w":16.7,"h":14.4,"compact":28},
-    sortieaimaim:{"x":58.7,"y":32.7,"w":20,"h":5.5},
+    sortieaimsymbol:{"x":41.5,"y":28,"w":16.7,"h":14.4,"compact":37.6},
+    sortieaimaim:{"x":58.7,"y":32.6,"w":20,"h":5.5},
     supertitle:{x:21.5,y:29.6,w:56.7,h:10.7},
     displaygroup:{x:0.1,y:-0.5,s:122.4}
   });
@@ -1207,7 +1207,7 @@
   }
 
   function migrateSortieAimLayout(){
-    const key='nova_sortie_aim_layout_20261028';
+    const key='nova_sortie_aim_layout_20261028b';
     if(safeStorageGet(key)==='1')return;
     for(const storageKey of [LAYOUT_DEFAULT_STORAGE_KEY,LAYOUT_EDIT_STORAGE_KEY]){
       try{
