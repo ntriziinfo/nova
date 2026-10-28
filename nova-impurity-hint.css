@@ -7,3 +7,8 @@
 .novaImpurityPreview{display:flex;flex-wrap:wrap;gap:6px}.novaImpurityPreview p{flex-basis:100%}
 
 #novaImpurityHint[data-level="large"] img{object-fit:contain}
+
+/* Release bonus portrait: same bounds as medium hint, static 60% transparency. */
+#novaImpurityRelease{position:fixed;z-index:2147482999;pointer-events:none;display:flex;align-items:center;justify-content:center}
+#novaImpurityRelease[hidden]{display:none}
+#novaImpurityRelease img{width:100%;height:100%;object-fit:contain;opacity:.4;animation:none}

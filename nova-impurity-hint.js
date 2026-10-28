@@ -1,7 +1,24 @@
 /* Presentation only. Cosmetic randomness is isolated from gameplay RNG. */
 globalThis.NovaImpurityHint=(()=>{
  const presets={large:'#ff243d',medium:'#30ff64',small:'#3299ff'};
- let root=null,image=null,timer=null,level='',pending='';
+ let root=null,image=null,timer=null,level='',pending='',releaseRoot=null;
+ function layoutRelease(){
+  if(!releaseRoot||releaseRoot.hidden)return;
+  const target=document.querySelector('.reels');if(!target)return;
+  const box=target.getBoundingClientRect();
+  Object.assign(releaseRoot.style,{left:box.left+'px',top:box.top+'px',width:box.width+'px',height:box.height+'px'});
+ }
+ function syncRelease(session){
+  const active=!!(session?.active&&session.phase==='a_type_bonus'&&session.impurityReleased);
+  if(!active){if(releaseRoot)releaseRoot.hidden=true;return;}
+  if(!releaseRoot){
+   releaseRoot=document.createElement('div');releaseRoot.id='novaImpurityRelease';releaseRoot.setAttribute('aria-hidden','true');
+   const img=document.createElement('img');img.src='assets/ui/impurity-head-20261028.png';img.alt='';img.draggable=false;
+   releaseRoot.append(img);document.body.append(releaseRoot);
+   addEventListener('resize',layoutRelease);addEventListener('scroll',layoutRelease,true);
+  }
+  releaseRoot.hidden=false;layoutRelease();
+ }
  function layout(){
   if(!root||root.hidden)return;
   let box;
@@ -63,5 +80,5 @@ globalThis.NovaImpurityHint=(()=>{
  }
  function arm(size){pending=presets[size]?size:'';}
  function onBet(){const size=pending;pending='';if(size)show(size);}
- return {show,hide,mountDebug,arm,onBet,select,queue,normalBet};
+ return {show,hide,mountDebug,arm,onBet,select,queue,normalBet,syncRelease};
 })();

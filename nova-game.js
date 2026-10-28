@@ -4643,6 +4643,7 @@
           bonusPointsRemaining:NovaArt.bonusTarget(bonusKind),
           bonusArtSets:bonusGuarantee.sets,
           bonusZones:bonusGuarantee.zones,
+          impurityReleased,
           bonusStartGames:gamesSinceLastBonus,
           risingResumeRemain,
           risingBonusOrigin,
@@ -5880,6 +5881,7 @@
   }
 
   function updateDisplay(){
+    NovaImpurityHint.syncRelease(session);
     reconcilePlaySessionBaseline();
     syncCompletePresentation();
     showSortieResultIfReady();
