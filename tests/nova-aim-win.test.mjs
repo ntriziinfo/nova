@@ -108,7 +108,7 @@ test('CZ intro can resume after reload, resets cleanly, and never replaces prelu
  assert(t.elements.filter(e=>e.tag==='video'&&!e.hidden).length===0);
  t.aim.bet({symbol:'seven',color:'red',guide:true},{flowBefore:{phase:'art'}});
  assert.equal(t.elements.find(e=>e.src==='assets/ui/nova-shuketsu-zone.png').hidden,true);
- assert.equal(t.elements.find(e=>e.src==='assets/media/nova/aim/nebula-red.mp4').hidden,false);
+ assert.equal(t.elements.find(e=>e.src==='assets/media/nova/aim/seven-red.mp4').hidden,false);
 });
 test('comeback fire and title loop across BETs and stops without touching the draw or locking AUTO',()=>{
  const t=setup();t.aim.stop({comebackEvent:'entry',flowBefore:{phase:'art'}});
@@ -414,7 +414,7 @@ test('colored zone seven/nebula guides retain their own movie after the entry re
  const {aim,elements}=setup();
  for(const symbol of ['seven','nebula'])for(const color of ['blue','red','rainbow']){
   aim.bet({symbol,color,result:'MISS',guide:true});
-  assert.equal(elements.find(e=>e.src===`assets/media/nova/aim/nebula-${color}.mp4`).hidden,false);
+  assert.equal(elements.find(e=>e.src===`assets/media/nova/aim/${symbol}-${color}.mp4`).hidden,false);
   assert.equal(elements.filter(e=>e.src==='assets/media/nova/aim/seven-flash-20261027.mp4')[3].hidden,true);
  }
 });
@@ -486,12 +486,12 @@ test('All seven zones use shared colors without changing the draw',()=>{
  for(const zone of ['sora','ura_sora'])for(const color of ['blue','red','rainbow']){
   const t=setup(),aim={symbol:'seven',color,guide:true},r={aim,flowBefore:{phase:'art',zone}},before=JSON.stringify(r);
   t.aim.bet(aim,r);
-  const video=t.elements.find(e=>e.src===`assets/media/nova/aim/nebula-${color}.mp4`);
+  const video=t.elements.find(e=>e.src===`assets/media/nova/aim/seven-${color}.mp4`);
   assert.equal(video.hidden,false);assert.equal(video.paused,false);assert.equal(JSON.stringify(r),before);
   t.aim.hide();assert.equal(video.hidden,true);assert.equal(video.paused,true);
  }
  const t=setup(),aim={symbol:'seven',color:'blue',guide:true};t.aim.bet(aim,{flowBefore:{phase:'art',zone:'toto'}});
- assert.equal(t.elements.find(e=>e.src==='assets/media/nova/aim/nebula-blue.mp4').hidden,false);
+ assert.equal(t.elements.find(e=>e.src==='assets/media/nova/aim/seven-blue.mp4').hidden,false);
  assert.equal(t.elements.some(e=>e.src==='assets/media/nova/aim/seven-flash-20261027.mp4'&&!e.hidden),false);
 });
 
@@ -516,14 +516,15 @@ test('all Nova, seven and nebula aim cues hide supplementary reverse-order instr
  assert.equal(t.elements[0].hidden,true);assert.equal(t.aim.busy,false);
 });
 
-test('NOVA seven and nebula retain the arrow and aim caption while the prose guide stays hidden',()=>{
+test('original generated captions remain in the movies; only NOVA has a center overlay',()=>{
  for(const symbol of ['nova','seven','nebula']){
   const t=setup();
   if(symbol==='nova')t.aim.bet(null,{researchChallenge:{priorAim:true},aimDisplay:{color:'red'}});
   else t.aim.bet({symbol,color:'red',result:'BIG',guide:true},{});
-  assert.equal(t.elements.find(e=>e.className==='novaBarAimTitle').hidden,false);
-  assert.equal(t.elements.find(e=>e.className==='novaAimArrow').textContent,'⬅');
-  assert.equal(t.elements.find(e=>e.tag==='strong').textContent,'を狙え！');
+  assert.equal(t.elements.find(e=>e.className==='novaBarAimTitle').hidden,symbol!=='nova');
+  assert.equal(t.elements.some(e=>e.className==='novaAimArrow'||e.tag==='strong'),false);
+  const source=symbol==='seven'?'seven':'nebula';
+  assert.equal(t.elements.find(e=>e.src==='assets/media/nova/aim/'+source+'-red.mp4').hidden,false);
   assert.equal(t.elements.find(e=>e.className==='novaAimReverseNotice').hidden,true);
   t.aim.reset();assert.equal(t.elements.find(e=>e.className==='novaBarAimTitle').hidden,true);
  }

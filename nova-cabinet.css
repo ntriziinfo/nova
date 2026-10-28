@@ -300,3 +300,8 @@ body.layoutEditOpen #novaSuperTitlePreview{display:block;outline:1px dashed #c89
 .novaAimReverseNotice,#reversePushGuideLayer{display:none!important;}
 body[data-bonus-at-confirmed="true"] .reels{animation:novaBonusAtRainbow 1.4s linear infinite;}
 @keyframes novaBonusAtRainbow{0%,100%{box-shadow:inset 0 0 20px #f44,0 0 12px #f44}16%{box-shadow:inset 0 0 20px #fa0,0 0 12px #fa0}33%{box-shadow:inset 0 0 20px #ff4,0 0 12px #ff4}50%{box-shadow:inset 0 0 20px #4f4,0 0 12px #4f4}66%{box-shadow:inset 0 0 20px #4ff,0 0 12px #4ff}83%{box-shadow:inset 0 0 20px #b4f,0 0 12px #b4f}}
+
+/* Keep the original generated arrow/caption in the movie visible. NOVA only
+   replaces its central symbol; no font or emoji substitutes. */
+.novaAimPresentation[data-nova-cue="true"] .novaBarAimTitle{inset:14% 36% 14% 21%;gap:0;}
+.novaAimPresentation[data-nova-cue="true"] .novaBarAimTitle img{width:100%;height:95%;}

@@ -38,9 +38,7 @@ globalThis.NovaAim=(()=>{
   const superChallenge=document.createElement('video');superChallenge.muted=true;superChallenge.loop=true;superChallenge.playsInline=true;superChallenge.preload=globalThis.NovaMedia?.compact?'none':'metadata';superChallenge.hidden=true;superChallenge.src='assets/media/nova/super-nova-challenge-tunnel-20261012.mp4';superChallenge.id='novaSuperChallengeBackground';host.append(superChallenge);videos.set('super-challenge',superChallenge);
   superChallengeTitle=document.createElement('img');superChallengeTitle.className='novaSuperChallengeTitle';superChallengeTitle.hidden=true;superChallengeTitle.loading=globalThis.NovaMedia?.compact?'lazy':'eager';superChallengeTitle.src='assets/ui/super-nova-challenge-title-20261012.png';superChallengeTitle.alt='スーパーノヴァチャレンジ';host.append(superChallengeTitle);
   const novaCue=document.createElement('video');novaCue.muted=true;novaCue.loop=true;novaCue.playsInline=true;novaCue.preload=globalThis.NovaMedia?.compact?'none':'metadata';novaCue.hidden=true;novaCue.src='assets/media/nova/aim/seven-flash-20261027.mp4';root.append(novaCue);videos.set('nova',novaCue);
-  novaBarTitle=document.createElement('div');novaBarTitle.className='novaBarAimTitle';novaBarTitle.hidden=true;aimSymbol=document.createElement('img');aimSymbol.src='assets/lossless-20261027/nova-only-20261027.webp';aimSymbol.alt='NOVA図柄';const arrow=document.createElement('span');arrow.className='novaAimArrow';arrow.textContent='⬅';
-  const caption=document.createElement('strong');caption.textContent='を狙え！';
-  novaBarTitle.append(arrow,aimSymbol,caption);root.append(novaBarTitle);
+  novaBarTitle=document.createElement('div');novaBarTitle.className='novaBarAimTitle';novaBarTitle.hidden=true;aimSymbol=document.createElement('img');aimSymbol.src='assets/lossless-20261027/nova-only-20261027.webp';aimSymbol.alt='NOVA図柄';novaBarTitle.append(aimSymbol);root.append(novaBarTitle);
   reverseNotice=document.createElement('div');reverseNotice.className='novaAimReverseNotice';reverseNotice.hidden=true;reverseNotice.textContent='逆押し　右 → 中 → 左';root.append(reverseNotice);
   const win=document.createElement('video');win.muted=true;win.loop=false;win.playsInline=true;win.preload=globalThis.NovaMedia?.compact?'none':'metadata';win.hidden=true;win.src='assets/media/nova/aim/seven-win.mp4?v=20260918-rainbow-144';root.append(win);videos.set('win',win);
   return true;
@@ -172,11 +170,12 @@ globalThis.NovaAim=(()=>{
   const sortieEntry=!!resolved.sortieEntry,sortieColor=resolved.sortieCueColor||'rainbow';
   if(aim&&resolved.aimDisplay)aim={...aim,color:resolved.aimDisplay.color||aim.color};
   const soraSeven=!entry&&!sortieEntry&&aim?.symbol==='seven';
-  const video=videos.get(soraSeven?'nebula:'+aim.color:sortieEntry?'nebula:'+sortieColor:entry?'zone-entry-seven':aim.symbol+':'+aim.color);if(!video)return false;
+  const video=videos.get(soraSeven?'sora-seven:'+aim.color:sortieEntry?'nebula:'+sortieColor:entry?'zone-entry-seven':aim.symbol+':'+aim.color);if(!video)return false;
   root.dataset.specialZone=String(!!resolved.flowBefore?.zone);
   reverseNotice.hidden=true;
   active=video;root.dataset.color=sortieEntry?sortieColor:entry?'entry':aim.color;root.dataset.symbol=sortieEntry?'nebula':entry?'seven':aim.symbol;root.dataset.zoneEntry=String(entry);root.hidden=false;
-  if(!entry)showSymbol(aim.symbol);
+  // Existing seven/nebula movies already contain the generated arrow, title and symbol.
+  // Only NOVA needs a replacement symbol; never cover the original lettering.
   // Rewind on dismissal, while hidden; seeking again on BET discards ready frames.
   host.dataset.aimActive='true';video.hidden=false;if(video.currentTime>0)video.currentTime=0;layout();
   playLoop(video);
