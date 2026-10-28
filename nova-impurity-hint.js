@@ -5,7 +5,14 @@ globalThis.NovaImpurityHint=(()=>{
  function layout(){
   if(!root||root.hidden)return;
   let box;
-  if(level==='large')box={left:0,top:0,width:innerWidth,height:innerHeight};
+  if(level==='large'){
+   // Cabinet display interior: character lamps + reels, excluding lower counters.
+   // The transformed machine rectangle also follows display-group scale/position.
+   const machine=document.querySelector('#machine');
+   if(!machine){hide();return;}
+   const rect=machine.getBoundingClientRect();
+   box={left:rect.left+rect.width*.198,top:rect.top+rect.height*.298,width:rect.width*.604,height:rect.height*.264};
+  }
   else {
    const target=document.querySelector(level==='medium'?'.reels':'.reel[data-reel="1"] .window');
    if(!target){hide();return;}

@@ -5,3 +5,5 @@
 @keyframes novaImpurityFlicker{0%,100%{opacity:.4}50%{opacity:.1}}
 @media(prefers-reduced-motion:reduce){#novaImpurityHint img{animation:none;opacity:.4}}
 .novaImpurityPreview{display:flex;flex-wrap:wrap;gap:6px}.novaImpurityPreview p{flex-basis:100%}
+
+#novaImpurityHint[data-level="large"] img{object-fit:fill}
