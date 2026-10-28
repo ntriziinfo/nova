@@ -61,11 +61,11 @@ test('manual rare stops stay within four symbols for every order without redrawi
      spin.stopped[i]=true;previous.push([i,col.slice()]);
     }
     const unchanged=before===JSON.stringify(spin.resolved);prepareManualRareOutcome(spin);prepareManualRareOutcome(spin);
-    return {missed:!!spin.rareRoleMissed,reward:spin.resolved.reward,result:spin.result,unchanged,flow:spin.resolved.flowAfter,bonusHit:spin.resolved.bonusHit,shown:displayedResultFromGrid(spin.grid)};
+    return {missed:!!spin.rareRoleMissed,reward:spin.resolved.reward,result:spin.result,unchanged,flow:spin.resolved.flowAfter,bonusHit:spin.resolved.bonusHit,shown:displayedResultFromGrid(spin.grid),approved:(novaSheetStopChoices(role)||[]).some(g=>JSON.stringify(g)===JSON.stringify(spin.grid))};
     }finally{Math.random=originalRandom;}
    })()`);
    assert.equal(out.unchanged,true);assert.equal(out.result,role);assert.equal(out.bonusHit,true);assert.equal(out.flow.stock,2);assert.equal(out.reward,out.missed?0:3);
-   if(out.missed)missed++;else {caught++;assert.equal(out.shown,role);}
+   if(out.missed)missed++;else {caught++;assert.equal(out.shown,role);assert.equal(out.approved,true);}
   }
   assert.ok(caught>0);console.log(role,{caught,missed});
  }
@@ -74,7 +74,7 @@ test('AUTO retains all rare payouts at any press position',()=>{
  for(const role of ['WEAK_SUICA','WEAK_NOVA','STRONG_NOVA','BELL15'])for(const order of orders){context.role=role;context.order=order;
   assert.equal(run(`(()=>{const spin={result:role,grid:buildNovaReelGrid(role,1),stopped:[false,false,false],resolved:{reward:3}};
    for(const i of order){nearestPressedStopColumn(i,spin,col=>Math.min(...REEL_STRIPS[i].flatMap((_,top)=>col.every((v,r)=>REEL_STRIPS[i][(top+r)%20]===v)?[mod(8.5-top,20)]:[])),true);spin.stopped[i]=true;}
-   prepareManualRareOutcome(spin);return spin.resolved.reward===3&&!spin.rareRoleMissed&&displayedResultFromGrid(spin.grid)===role;})()`),true);
+   prepareManualRareOutcome(spin);return spin.resolved.reward===3&&!spin.rareRoleMissed&&displayedResultFromGrid(spin.grid)===role&&(novaSheetStopChoices(role)||[]).some(g=>JSON.stringify(g)===JSON.stringify(spin.grid));})()`),true);
  }
 });
 test('reload retains a committed miss and never removes internal bonus or stock',()=>{
@@ -84,9 +84,9 @@ test('reload retains a committed miss and never removes internal bonus or stock'
  assert.equal(out.resolved.reward,0);assert.equal(out.resolved.rareMissPayout,2);assert.equal(out.resolved.bonusHit,true);assert.equal(out.resolved.flowAfter.stock,3);assert.equal(out.pressStopColumns[0][0],'a');
 });
 
-test('ordinary misses and one-coin stops stay within four symbols in all orders',()=>{
+test('ordinary misses and one-coin stops use the nearest compatible physical miss in all orders',()=>{
  for(const role of ['MISS','ONE_COIN'])for(const order of orders)for(let trial=0;trial<20;trial++){context.role=role;context.order=order;context.positions=[trial+.5,(trial*3)%20+.5,(trial*7)%20+.5];
- assert.equal(run(`(()=>{const spin={result:role,grid:buildNovaReelGrid(role,1),stopped:[false,false,false],resolved:{reward:role==='ONE_COIN'?1:0}};for(const i of order){const distance=col=>Math.min(...REEL_STRIPS[i].flatMap((_,top)=>col.every((v,r)=>REEL_STRIPS[i][(top+r)%20]===v)?[mod(positions[i]-top,20)]:[]));const col=nearestPressedStopColumn(i,spin,distance,false);if(distance(col)>4)throw Error('ordinary slip');spin.stopped[i]=true;}prepareManualRareOutcome(spin);return displayedResultFromGrid(spin.grid)===role&&!spin.rareRoleMissed;})()`),true);
+ assert.equal(run(`(()=>{const spin={result:role,grid:buildNovaReelGrid(role,1),stopped:[false,false,false],resolved:{reward:role==='ONE_COIN'?1:0}};for(const i of order){const distance=col=>Math.min(...REEL_STRIPS[i].flatMap((_,top)=>col.every((v,r)=>REEL_STRIPS[i][(top+r)%20]===v)?[mod(positions[i]-top,20)]:[]));const col=nearestPressedStopColumn(i,spin,distance,false);const held=spin.pressStopColumns;const pool=pressedStopCandidates('MISS').misses.filter(g=>held.every((h,c)=>c===i||!h||h.every((v,r)=>g[r][c]===v)));const nearest=Math.min(...pool.map(g=>distance(g.map(row=>row[i]))));if(Math.abs(distance(col)-nearest)>1e-9)throw Error('not nearest physical miss');spin.stopped[i]=true;}prepareManualRareOutcome(spin);return displayedResultFromGrid(spin.grid)===role&&!spin.rareRoleMissed;})()`),true);
  }
 });
 

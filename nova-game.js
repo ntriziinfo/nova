@@ -7249,11 +7249,11 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
   function pressedStopCandidates(result){
     const key=JSON.stringify(REEL_STRIPS)+':'+result;
     if(pressedStopCache.has(key))return pressedStopCache.get(key);
-    const wins=[],misses=[],windows=REEL_STRIPS.map((strip,c)=>strip.map((_,top)=>reelWindowFromTopIndex(c,top)));
+    const wins=(novaSheetStopChoices(result)||[]).map(grid=>grid.map(row=>row.slice())),misses=[],windows=REEL_STRIPS.map((strip,c)=>strip.map((_,top)=>reelWindowFromTopIndex(c,top)));
     for(const left of windows[0])for(const middle of windows[1])for(const right of windows[2]){
       const grid=[0,1,2].map(row=>[left[row],middle[row],right[row]]);
       const shown=displayedResultFromGrid(grid);
-      if(shown===result&&gridHasOnlyAllowedPaylines(grid,result))wins.push(grid);
+      // Wins come only from the approved stop list; misses may use any physical window.
       // A missed strong cherry may still leave the already-stopped left cherry.
       // Never substitute an unrelated bell, replay, watermelon or bonus win.
       if((shown==='MISS'||result==='STRONG_NOVA'&&shown==='WEAK_NOVA')&&
@@ -7270,7 +7270,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
       (spin.stopped[c]?spin.grid.map(row=>row[c]):null));
     const candidates=rare||ordinary?pressedStopCandidates(ordinary?'MISS':spin.result):{wins:novaSheetStopChoices('BELL15')||[],misses:[]};
     const canFinish=(nextHeld)=>{
-      if(!rare&&!ordinary)return true;
+      if(!rare||automatic)return true;
       const key=JSON.stringify(nextHeld),cached=candidates.safe.get(key);
       if(cached!==undefined)return cached;
       const pool=[...candidates.wins,...candidates.misses].filter(grid=>nextHeld.every((col,c)=>!col||col.every((v,r)=>grid[r][c]===v)));
@@ -7305,7 +7305,8 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
       if(!pick)throw new Error('No safe rare-role miss within four symbols');
       spin.rareRoleMissed=true;
     }
-    if(!pick){if(ordinary)throw new Error('No safe ordinary stop within four symbols');return null;}
+    if(!pick&&ordinary)pick=choose(candidates.misses,Infinity);
+    if(!pick)return null;
     spin.pressStopColumns=held;spin.pressStopColumns[index]=pick.column.slice();
     (spin.pressStopDistances||=[null,null,null])[index]=pick.distance;
     setGridColumn(spin.grid,index,pick.column);
