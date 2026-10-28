@@ -12,7 +12,10 @@ test('sortie-only lamp cue uses muted color videos, three movable images, and cl
   assert.equal(c.NovaAim.bet(null,spin),false);
   const video=elements.find(e=>e.tag==='video');assert.equal(video.muted,true);assert.equal(video.loop,true);assert.equal(video.hidden,false);
   assert.match(video.src,new RegExp(color));assert.equal(video.dataset.color,color);
-  assert.equal(elements.filter(e=>e.tag==='img'&&!e.hidden).length,3);
+  assert.equal(elements.filter(e=>e.className?.startsWith('novaSortieAimPart')&&!e.hidden).length,3);
+  assert.equal(elements.filter(e=>e.src?.endsWith('nova-only-20261027.webp')).length,2);
+  assert.equal(elements.filter(e=>e.src?.endsWith('blank-20261027.webp')).length,1);
+  assert.equal(elements.some(e=>e.src?.includes('center-symbol')),false);
   assert.equal(host.dataset.aimActive,'true');assert.equal(JSON.stringify(spin),before);
   c.NovaAim.stop(spin);assert.equal(video.hidden,true);assert.equal(video.paused,true);assert.equal(host.dataset.aimActive,undefined);
  }
