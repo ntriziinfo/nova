@@ -22,5 +22,5 @@
   max-width:none; max-height:none; object-fit:contain; margin:0;
   filter:none; transform:none;
 }
-#novaReelReference .blankSymImg { width:50%; margin:0 auto; }
+#novaReelReference .blankSymImg { width:83%; height:83%; margin:auto; }
 #novaReelReference p { margin:6px 0 0; font-size:10px; color:#a99cb5; }

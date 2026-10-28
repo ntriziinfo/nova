@@ -280,7 +280,9 @@ body.layoutEditOpen #novaSuperTitlePreview{display:block;outline:1px dashed #c89
 #machine>.novaSortieAim-aim{position:absolute;pointer-events:none;left:var(--layout-sortieaimaim-x,58.7%);top:var(--layout-sortieaimaim-y,32.7%);width:var(--layout-sortieaimaim-w,20%);height:var(--layout-sortieaimaim-h,5.5%);z-index:49;object-fit:contain;}
 .novaSortieAimPart[hidden],.novaSortieAimBg[hidden]{display:none!important;}
 
-#machine .reel .cell img.symImg.blankSymImg:not(.sevenSymImg):not(.barSymImg):not(.nebulaSymImg){width:45%!important;height:45%!important;max-width:45%!important;max-height:45%!important;}
+/* Match the visible supernova disc to the replay artwork's blue circular core. */
+#machine .reel .cell img.symImg.blankSymImg:not(.sevenSymImg):not(.barSymImg):not(.nebulaSymImg){width:75%!important;height:75%!important;max-width:75%!important;max-height:75%!important;}
+#novaSymbolPreviewGrid img.blankSymImg{width:59%!important;height:59%!important;max-width:59%!important;max-height:59%!important;}
 
 .novaAimReverseNotice,#reversePushGuideLayer{display:none!important;}
 body[data-bonus-at-confirmed="true"] .reels{animation:novaBonusAtRainbow 1.4s linear infinite;}
@@ -291,7 +293,7 @@ body[data-bonus-at-confirmed="true"] .reels{animation:novaBonusAtRainbow 1.4s li
 #machine>.novaSortieAim-symbol{display:flex;align-items:center;justify-content:center;}
 .novaSortieAimStack{width:100%;height:100%;display:grid;grid-template-rows:1fr 1fr 1fr;justify-items:center;align-items:center;}
 .novaSortieAimStack>img{display:block;width:100%;height:100%;min-height:0;object-fit:contain;}
-.novaSortieAimStack>.sortieBlank{width:50%;height:50%;}
+.novaSortieAimStack>.sortieBlank{width:83%;height:83%;}
 
 #machine[data-sortie-aim-failed="true"]>.novaSortieAimPart,#machine[data-sortie-aim-failed="true"]>.novaSortieAimBg{filter:brightness(.25);transition:filter .2s;}
 
