@@ -46,6 +46,8 @@
   const OUMA_ZONE_BGM_SRC = "assets/media/nova/oumafreez.wav";
   const INITIAL_DUO_ZONE_BGM_SRC = "assets/media/nova/initial-duo-bgm.mp3";
   const SORTIE_ZONE_BGM_SRC = "assets/media/nova/sortie-bgm.mp3";
+  const SORTIE_SANDWICH_AIM_SOUND_SRC = "assets/media/nova/sortie-sandwich-aim.wav";
+  const SORTIE_SANDWICH_HIT_SOUND_SRC = "assets/media/nova/sortie-sandwich-hit.wav";
   const NOVA_ART_BGM_SRC = "assets/media/nova/RUSH.wav";
   const NOVA_UPPER_ART_BGM_SRC = "assets/media/nova/upper-at-bgm.mp3";
   const NOVA_CHECKPOINT_BGM_SRC = "assets/media/nova/checkpoint-bgm.mp3";
@@ -813,6 +815,8 @@
   preloadOneShotSound('assets/media/nova/sortie-award.mp3');
   preloadOneShotSound('assets/media/nova/sortie-award-duo.wav');
   preloadOneShotSound('assets/media/nova/sortie-nebula-cue.mp3');
+  preloadOneShotSound(SORTIE_SANDWICH_AIM_SOUND_SRC);
+  preloadOneShotSound(SORTIE_SANDWICH_HIT_SOUND_SRC);
   const BELL_NAVI_VOICE_SRCS=NovaVoiceCatalog.BELL_NAVI_VOICE_SRCS;
   const BELL_NAVI_COMPLETE_VOICE_SRCS=NovaVoiceCatalog.BELL_NAVI_COMPLETE_VOICE_SRCS;
   const BELL_NAVI_FAILURE_VOICE_SRC=NovaVoiceCatalog.BELL_NAVI_FAILURE_VOICE_SRC;
@@ -7566,6 +7570,36 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     return true;
   }
 
+  function stopSortieSandwichAimSound(spin){
+    const audio=spin?.sortieSandwichAimAudio;
+    if(audio){
+      try{audio.pause();audio.currentTime=0;}catch(e){}
+    }
+    if(spin)spin.sortieSandwichAimAudio=null;
+  }
+
+  function playSortieSandwichAimSound(spin){
+    if(!spin?.resolved?.sortieEntry||spin.sortieSandwichAimSoundPlayed)return false;
+    // Saves created before this cue existed have no one-shot flag. Do not restart
+    // the instruction after the mandatory middle reel has already resolved it.
+    if(spin.stopped?.[1]||spin.stopOutcomeRevealed?.kind==='sortie'||spin.sortieConfirmSoundPlayed){
+      spin.sortieSandwichAimSoundPlayed=true;
+      return false;
+    }
+    spin.sortieSandwichAimSoundPlayed=true;
+    const playback=playOneShotSound(SORTIE_SANDWICH_AIM_SOUND_SRC,sfxOutputVolume(),{allowDuringPremiumConfirm:true});
+    if(playback?.audio)spin.sortieSandwichAimAudio=playback.audio;
+    return true;
+  }
+
+  function playSortieSandwichHitSound(spin){
+    if(!spin?.resolved?.sortieEntry||spin.resolved.sortieFake||spin.sortieConfirmSoundPlayed)return false;
+    stopSortieSandwichAimSound(spin);
+    spin.sortieConfirmSoundPlayed=true;
+    playOneShotSound(SORTIE_SANDWICH_HIT_SOUND_SRC,sfxOutputVolume(),{allowDuringPremiumConfirm:true});
+    return true;
+  }
+
   function restorePendingSpin(){
     const spin=currentSpin;
     if(!spin)return false;
@@ -7578,6 +7612,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     playSortieAwardVoice(spin);
     globalThis.NovaAimConfidence?.prepare(spin.resolved,{...settings.novaArt,setting:settings.setting});
     NovaAim.bet(spin.resolved.aim,spin.resolved);
+    playSortieSandwichAimSound(spin);
     NovaInitialDuo.begin(spin.resolved);
     NovaInitialDuo.stop(spin.stopped.filter(Boolean).length);
     NovaLadder.bet(spin.resolved.zoneStartFlow||spin.resolved.flowBefore);
@@ -7655,6 +7690,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     isSpinning=true;spinCanStop=false;
     reels.forEach((reel,i)=>{reel.classList.add('spinning');NovaReelMotion.start(i,reel,REEL_STRIPS[i],currentReelTopIndex(i),false,cellHtml);});
     NovaAim.bet(null,currentSpin.resolved);
+    playSortieSandwichAimSound(currentSpin);
     // A separate visual draw must not advance the game lottery.
     const visualRng=()=>crypto.getRandomValues(new Uint32Array(1))[0]/4294967296;
     if(['sortie','sortieFake'].includes(entry.kind)){
@@ -7682,6 +7718,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
   function finishStockEntry(){
     const spin=currentSpin;if(!spin?.resolved?.stockEntry)return;
     if(spinWaitTimer){clearTimeout(spinWaitTimer);spinWaitTimer=null;}
+    stopSortieSandwichAimSound(spin);
     spin.finishing=true;isSpinning=false;spinCanStop=false;currentSpin=null;
     if(spin.resolved.sortieFake){
       normalState.pendingFakeSortie=Math.max(0,(Number(normalState.pendingFakeSortie)||0)-1);delete normalState.stockEntry;
@@ -7693,7 +7730,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     $('resultText').textContent=NovaStockEntry.message(normalState.stockEntry);
     // Announce the free entry reveal once; retain its stock until the next real BET.
     if(spin.resolved.sortieEntry){
-      if(!spin.sortieConfirmSoundPlayed)playOneShotSound('assets/media/nova/sortie-nebula-cue.mp3',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
+      playSortieSandwichHitSound(spin);
       playLockedBonusConfirmSound(MODE_EVENT_VOICE_SRCS.sortie,voiceOutputVolume());
     }
     persistState();updateDisplay();syncCabinetControlState();scheduleNextAuto();
@@ -8177,8 +8214,8 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
       spin.ladderOutcomeSoundPlayed=true;
       if(verdict.won)NovaLadder.confirm?.(spin.resolved);else NovaLadder.fail?.();
     }else if(verdict.kind==='sortie'){
-      if(verdict.won){sound('assets/media/nova/sortie-nebula-cue.mp3');spin.sortieConfirmSoundPlayed=true;}
-      else {NovaSortieAim.fail?.();sound('assets/media/nova/ouma-fail.wav');}
+      if(verdict.won)playSortieSandwichHitSound(spin);
+      else {stopSortieSandwichAimSound(spin);NovaSortieAim.fail?.();sound('assets/media/nova/ouma-fail.wav');}
     }
   }
 

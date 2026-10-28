@@ -59,8 +59,10 @@ test('misses tease with separate visual randomness but never show a third-stop c
 
 test('wrong stop order still reveals an internally awarded zone; replay resumes the current stage',()=>{
  const t=setup(),s=spin(true,'ura_giru',true);s.stopped=[true,false,true];s.auditPressOrder=[0,2];t.api.begin(s);
- assert.equal(t.view().dataset.stage,'2');assert.deepEqual(visible(t),['giru']);
+ assert.equal(t.view().dataset.stage,'2');assert.equal(t.view().dataset.confirmed,'false');assert.deepEqual(visible(t),['giru']);
+ assert(t.lamps.every(l=>l.dataset.sortieWon==='false'));
  s.stopped[1]=true;t.api.stop(s);assert.equal(t.view().dataset.confirmed,'true');
+ assert.deepEqual(t.lamps.filter(l=>l.dataset.sortieWon==='true').map(l=>l.dataset.artwork),['giru1']);
  t.api.begin(JSON.parse(JSON.stringify(s)));assert.equal(t.view().dataset.stage,'3');assert.equal(t.view().dataset.confirmed,'true');
 });
 
@@ -154,18 +156,19 @@ test('duo third stop layers 1012 with the common win SE once; neither playback e
  t.api.clear();assert(sounds.every(s=>s.paused));assert.equal(played.length,2);
 });
 
-test('all six stop orders reveal the character, sound and failure only once at the decisive landing',()=>{
+test('all six stop orders delay winning portrait, lamp and award SE until third stop while losses stay decisive',()=>{
  for(const order of [[0,1,2],[0,2,1],[1,0,2],[1,2,0],[2,0,1],[2,1,0]])for(const won of [false,true]){
   const t=setup(),s=spin(won,'kushuri_nito'),played=[];s.auditPressOrder=[];s.auditStopOrder=[];
   t.api.setSoundPlayer(src=>{played.push(src);return {audio:sound(),promise:Promise.resolve()};});
   t.api.begin(s);const original=JSON.stringify(s.resolved),decisive=order[0]===1?1:2-order[0];
   for(const i of order){
    s.auditPressOrder.push(i);t.api.stop(s); // A pending animation must not reveal the result.
-   const before=s.auditStopOrder.includes(decisive);assert.equal(played.length,before?(won?2:1):0);
+   const before=won?s.auditStopOrder.length===3:s.auditStopOrder.includes(decisive);assert.equal(played.length,before?(won?2:1):0);
    s.auditStopOrder.push(i);s.stopped[i]=true;t.api.stop(s);
-   const revealed=s.auditStopOrder.includes(decisive);
+   const revealed=won?s.auditStopOrder.length===3:s.auditStopOrder.includes(decisive);
    assert.equal(played.length,revealed?(won?2:1):0);
    if(revealed){assert.equal(t.view().hidden,!won);if(won)assert.equal(t.view().dataset.confirmed,'true');}
+   assert.equal(t.lamps.filter(l=>l.dataset.sortieWon==='true').length,won&&s.auditStopOrder.length===3?2:0);
    t.api.stop(s);assert.equal(played.length,revealed?(won?2:1):0);
   }
   assert.equal(JSON.stringify(s.resolved),original);assert.equal(t.api.busy,won);

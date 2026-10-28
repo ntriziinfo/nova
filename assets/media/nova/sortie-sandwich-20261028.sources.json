@@ -1,0 +1,28 @@
+{
+  "sources": [
+    {
+      "sourceName": "サンド目.wav",
+      "copy": "assets/media/nova/sortie-sandwich-aim.wav",
+      "sha256": "0D60D636DD6636986FE373C5AB0EC69FB55D8E51D5BF49A78EC40797E1E7C57C",
+      "bytes": 1245910,
+      "durationSeconds": 7.058821,
+      "sampleRate": 44100,
+      "channels": 2,
+      "category": "sfx",
+      "trigger": "出陣サンド目狙え演出の開始",
+      "originalUnmodified": true
+    },
+    {
+      "sourceName": "サンド目成立.wav",
+      "copy": "assets/media/nova/sortie-sandwich-hit.wav",
+      "sha256": "E04FF775250F8CA6207EDAAB8293AE94AAE255B72FF5C04D7908DB4507F05BFB",
+      "bytes": 1410354,
+      "durationSeconds": 7.991043,
+      "sampleRate": 44100,
+      "channels": 2,
+      "category": "sfx",
+      "trigger": "出陣サンド目の成立",
+      "originalUnmodified": true
+    }
+  ]
+}

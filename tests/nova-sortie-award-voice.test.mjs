@@ -69,15 +69,15 @@ test('third-stop and resume paths share routing; manual and AUTO both retain the
  for(const name of ['spin','runAutoStep','scheduleNextAuto'])assert.match(fn(name),/bonusConfirmSoundPlaying/);
 });
 
-test('middle first and scissors announce at the decisive landed reel, once through the last stop',()=>{
+test('all six stop orders keep the winning character voice silent until the third landed stop',()=>{
  for(const order of [[0,1,2],[0,2,1],[1,0,2],[1,2,0],[2,0,1],[2,1,0]]){
   const {c,played}=setup(),s=spin('sosuke');s.stopped=[false,false,false];s.auditPressOrder=[];s.auditStopOrder=[];
-  const decisive=order[0]===1?1:2-order[0],original=JSON.stringify(s.resolved);
+  const original=JSON.stringify(s.resolved);
   for(const i of order){
    s.auditPressOrder.push(i);c.playSortieAwardVoice(s);
-   assert.equal(played.length,s.auditStopOrder.includes(decisive)?1:0);
+   assert.equal(played.length,0,'button acceptance must not announce the award');
    s.stopped[i]=true;s.auditStopOrder.push(i);c.playSortieAwardVoice(s);c.playSortieAwardVoice(s);
-   assert.equal(played.length,s.auditStopOrder.includes(decisive)?1:0);
+   assert.equal(played.length,s.auditStopOrder.length===3?1:0);
   }
   assert.equal(played.length,1);assert.equal(JSON.stringify(s.resolved),original);
  }

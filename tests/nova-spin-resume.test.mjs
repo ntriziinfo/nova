@@ -10,7 +10,7 @@ const json=value=>JSON.parse(JSON.stringify(value));
 const noop=()=>{};
 const sortieVerdict=vm.runInNewContext(fs.readFileSync('nova-sortie-presentation.js','utf8')+';NovaSortie.stopVerdict;');
 function harness(saved=null){
- const storage=new Map(saved?[['state',JSON.stringify(saved)]]:[]),errors=[],timers=[],elements=new Map(),voices=[];
+ const storage=new Map(saved?[['state',JSON.stringify(saved)]]:[]),errors=[],timers=[],elements=new Map(),voices=[],sortieCues=[],sortieAudios=[];
  const $=id=>{if(!elements.has(id))elements.set(id,{dataset:{},classList:{toggle:noop},disabled:false,textContent:''});return elements.get(id);};
  const c=vm.createContext({console:{warn:(...args)=>errors.push(args)},settings:{setting:1,title:'NOVA',audioBalanceVersion:12,masterVolume:.7,completeEnabled:false,completeBasis:'none',completeLimitPt:0,completeMyLimitPt:0},stats:{roleStatVersion:1,totalSpins:0,normalSpins:0,highSpins:0,totalFee:0,totalPaid:0,slumpHistory:[]},normalState:{},session:{active:false},completeTrialState:{},
   safeStorageGet:key=>storage.has(key)?storage.get(key):null,safeStorageSet:(key,value)=>{storage.set(key,value);return true;},
@@ -20,7 +20,9 @@ function harness(saved=null){
   SETTING:{1:{},2:{},3:{},4:{},5:{},6:{}},RESULT:Object.fromEntries(['BELL','REPLAY','NEBULA','MISS','BIG','STRONG_NOVA'].map(k=>[k,{name:k,label:k,cls:k}])),
   clamp:(v,a,b)=>Math.max(a,Math.min(b,v)),normalizeMachineTitle:v=>v,normalizeBonusAfterGames:v=>Number(v)||0,normalizeNovaRisingRemain:v=>Number(v)||0,normalizeForceResult:v=>v,isCompleteLockEnabled:()=>false,pickATypeBonusBgm:()=>({src:'bonus.wav'}),
   currentSpin:null,isSpinning:false,spinCanStop:false,spinWaitTimer:null,autoPlay:false,speedToBonusActive:false,
-  debugFastSpinActive:false,voiceOutputVolume:()=>1,playLockedBonusConfirmSound:src=>voices.push(src),
+  debugFastSpinActive:false,voiceOutputVolume:()=>1,sfxOutputVolume:()=>.5,playLockedBonusConfirmSound:src=>voices.push(src),
+  SORTIE_SANDWICH_AIM_SOUND_SRC:'assets/media/nova/sortie-sandwich-aim.wav',SORTIE_SANDWICH_HIT_SOUND_SRC:'assets/media/nova/sortie-sandwich-hit.wav',
+  playOneShotSound:(src,volume)=>{const audio={src,currentTime:2,paused:false,pause(){this.paused=true;}};sortieCues.push({src,volume});sortieAudios.push(audio);return {audio,promise:Promise.resolve()};},
   jagChainCount:null,jagLastGamePayout:0,jagLastBonusPayout:0,jagChanceHold:false,forceResult:'',forcePremiumEffect:false,pendingForceResult:'',pendingBonusStartOptions:null,devilZoneConfirmIntroPending:false,pendingDevilRushEntryEffect:'',speedFrameOffHold:false,barBgmActive:false,barBgmMode:'',battleBgmActive:false,rogiBgmMuted:false,
   syncNovaProgress:noop,auditCapture:noop,$,document:{getElementById:$},reels:[0,1,2].map(i=>$('reel'+i)),stopBtns:[0,1,2].map(i=>$('stop'+i)),
   setTimeout:f=>{timers.push(f);return timers.length;},clearTimeout:noop,REEL_STRIPS:[[],[],[]],currentReelTopIndex:()=>0,cellHtml:noop,
@@ -31,9 +33,9 @@ function harness(saved=null){
  // Navigation renderer is tested separately with DOM stubs; restore must not draw an order.
  c.NovaBellNavi={restore:spin=>{c.shownOrder=json(spin.bellNaviOrder);},clear:noop};
  c.SORTIE_AWARD_VOICE_SRCS=loadVoiceCatalog(c).SORTIE_AWARD_VOICE_SRCS;
- for(const name of ['reduceSlumpPoints','canUsePlayState','clearBonusPreparationState','load','runtimeStateForStorage','compactStatsForResume','updateStorageStatus','persistState','playSortieAwardVoice','restoreCzLampPresentation','restorePendingSpin','prepareManualRareOutcome'])vm.runInContext(fn(name),c);
+ for(const name of ['reduceSlumpPoints','canUsePlayState','clearBonusPreparationState','load','runtimeStateForStorage','compactStatsForResume','updateStorageStatus','persistState','playSortieSandwichAimSound','playSortieSandwichHitSound','playSortieAwardVoice','restoreCzLampPresentation','restorePendingSpin','prepareManualRareOutcome'])vm.runInContext(fn(name),c);
  c.migratePendingReelLayout=spin=>{c.restoredReelLayout=spin.reelLayoutVersion;};
- return {c,storage,errors,timers,$,voices};
+ return {c,storage,errors,timers,$,voices,sortieCues,sortieAudios};
 }
 function spin(c,overrides={}){
  return {result:'BELL',spec:c.RESULT.BELL,lineRow:1,grid:[['7','R','B'],['B','B','B'],['R','7','R']],resolved:{reward:15,flowBefore:{phase:'normal'},flowAfter:{phase:'normal'}},stopped:[false,false,false],normalActiveAtStart:true,bellNaviOrder:[2,0,1],...overrides};
@@ -189,6 +191,30 @@ test('resume preserves a bell navigation failure without serializing live audio 
  assert.equal(saved.bellNaviFailed,true);assert.equal(saved.bellNaviFailurePlayed,true);
  assert.equal(restored.bellNaviFailed,true);assert.equal(restored.bellNaviFailurePlayed,true);
  assert.equal(saved.bellNaviVoiceAudios,undefined);assert.equal(restored.bellNaviVoiceAudios,undefined);
+});
+
+test('resume preserves the sandwich aim one-shot gate but excludes its live audio handle',()=>{
+ const {c}=harness(),liveAudio={pause:noop,currentTime:3};
+ const original=spin(c,{sortieSandwichAimSoundPlayed:true,sortieSandwichAimAudio:liveAudio});
+ const saved=c.NovaSpinResume.capture(original),restored=c.NovaSpinResume.restore(saved,c.RESULT);
+ assert.equal(saved.sortieSandwichAimSoundPlayed,true);assert.equal(restored.sortieSandwichAimSoundPlayed,true);
+ assert.equal(saved.sortieSandwichAimAudio,undefined);assert.equal(restored.sortieSandwichAimAudio,undefined);
+});
+
+test('restoring an unplayed sortie stock-entry spin starts its aim cue once without another BET',()=>{
+ const h=harness(),c=h.c;c.load();
+ c.currentSpin=c.NovaSpinResume.restore(c.NovaSpinResume.capture(spin(c,{result:'NEBULA',resolved:{stockEntry:true,sortieEntry:true,sortieFake:false,reward:0,flowBefore:{phase:'art'},flowAfter:{phase:'art'}},stopped:[false,false,false]})),c.RESULT);
+ assert(c.restorePendingSpin());assert.deepEqual(h.sortieCues,[{src:'assets/media/nova/sortie-sandwich-aim.wav',volume:.5}]);
+ assert.equal(c.currentSpin.sortieSandwichAimSoundPlayed,true);assert.equal(c.currentSpin.sortieSandwichAimAudio,h.sortieAudios[0]);
+ assert(c.restorePendingSpin());assert.equal(h.sortieCues.length,1,'resume retry must not replay the long cue');
+});
+
+test('a legacy sortie save with the middle reel already landed does not restart the aim cue',()=>{
+ const h=harness(),c=h.c;c.load();
+ c.currentSpin=c.NovaSpinResume.restore(c.NovaSpinResume.capture(spin(c,{result:'NEBULA',resolved:{stockEntry:true,sortieEntry:true,sortieFake:false,reward:0,flowBefore:{phase:'art'},flowAfter:{phase:'art'}},stopped:[false,true,false],auditPressOrder:[1],auditStopOrder:[1]})),c.RESULT);
+ delete c.currentSpin.sortieSandwichAimSoundPlayed;
+ assert(c.restorePendingSpin());assert.equal(h.sortieCues.length,0);
+ assert.equal(c.currentSpin.sortieSandwichAimSoundPlayed,true,'legacy save is marked consumed without playback');
 });
 
 test('UI resume does not BET or redraw and lands already-pressed reels in the original order',()=>{

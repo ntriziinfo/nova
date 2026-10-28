@@ -105,8 +105,12 @@ globalThis.NovaSortie=(()=>{
   if(!eligible(spin))return null;
   const stopped=spin.auditStopOrder||[];
   if(!stopped.length)return spin.stopped?.length===3&&spin.stopped.every(Boolean)?{won:!!spin.resolved.researchSortie.won}:null;
+  const won=!!spin.resolved.researchSortie.won;
+  // Keep the confirmed-character scene off the reels until the third stop.
+  // A miss can still be disclosed on its existing decisive stop.
+  if(won)return stopped.length===3?{won:true}:null;
   const first=(spin.auditPressOrder||stopped)[0],decisive=first===1?1:2-first;
-  return stopped.includes(decisive)?{won:!!spin.resolved.researchSortie.won}:null;
+  return stopped.includes(decisive)?{won:false}:null;
  }
  function init(){
   if(root)return true;
@@ -132,7 +136,7 @@ globalThis.NovaSortie=(()=>{
  }
  function revealCharacter(spin,stage){
   const verdict=stopVerdict(spin),confirmed=verdict?.won===true;
-  // The confirmation is the same persistent scene from the decisive stop onward.
+  // The confirmation is the same persistent scene from the third stop onward.
   const scene=verdict?(confirmed?'won':'lost'):stage;
   if(revealSpin===spin&&revealStage===scene)return;
   stopAward();

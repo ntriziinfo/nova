@@ -3844,6 +3844,52 @@
       }
     },
     {
+      "src": "assets/media/nova/sortie-sandwich-aim.wav",
+      "category": "sfx",
+      "targetLufs": -16,
+      "output": "assets/media/normalized-20261012/nova/sortie-sandwich-aim.wav",
+      "sourceSha256": "0d60d636dd6636986fe373c5ab0ec69fb55d8e51d5bf49a78ec40797e1e7c57c",
+      "outputSha256": "fa18f6743163be41af90c9d3fb3038f2d568d6f28d4384a1c0497acdca341c5b",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 7.058821,
+      "outputDuration": 7.058821,
+      "gainDb": 6.07,
+      "before": {
+        "lufs": -22.07,
+        "peakDbtp": -10.87,
+        "rangeLu": 24.9
+      },
+      "after": {
+        "lufs": -16.11,
+        "peakDbtp": -4.8,
+        "rangeLu": 24.9
+      }
+    },
+    {
+      "src": "assets/media/nova/sortie-sandwich-hit.wav",
+      "category": "sfx",
+      "targetLufs": -16,
+      "output": "assets/media/normalized-20261012/nova/sortie-sandwich-hit.wav",
+      "sourceSha256": "e04ff775250f8ca6207edaab8293ae94aae255b72ff5c04d7908db4507f05bfb",
+      "outputSha256": "a58297639887fc91a4d0f86570f5a686e68fc4c23fc55e1aa8b8d53e457d7af6",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 7.991043,
+      "outputDuration": 7.991043,
+      "gainDb": -3.91,
+      "before": {
+        "lufs": -12.09,
+        "peakDbtp": -2.67,
+        "rangeLu": 4.9
+      },
+      "after": {
+        "lufs": -16.02,
+        "peakDbtp": -6.58,
+        "rangeLu": 4.9
+      }
+    },
+    {
       "src": "assets/media/nova/sortie-stop-1.mp3",
       "category": "sfx",
       "targetLufs": -16,

@@ -584,6 +584,14 @@ globalThis.NovaAudioManifest=Object.freeze({
     "src": "assets/media/normalized-20261012/nova/sortie-nebula-cue.wav",
     "category": "sfx"
   },
+  "assets/media/nova/sortie-sandwich-aim.wav": {
+    "src": "assets/media/normalized-20261012/nova/sortie-sandwich-aim.wav",
+    "category": "sfx"
+  },
+  "assets/media/nova/sortie-sandwich-hit.wav": {
+    "src": "assets/media/normalized-20261012/nova/sortie-sandwich-hit.wav",
+    "category": "sfx"
+  },
   "assets/media/nova/sortie-stop-1.mp3": {
     "src": "assets/media/normalized-20261012/nova/sortie-stop-1.wav",
     "category": "sfx"
