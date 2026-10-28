@@ -7249,19 +7249,9 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
   function pressedStopCandidates(result){
     const key=JSON.stringify(REEL_STRIPS)+':'+result;
     if(pressedStopCache.has(key))return pressedStopCache.get(key);
-    const wins=(novaSheetStopChoices(result)||[]).map(grid=>grid.map(row=>row.slice())),misses=[],windows=REEL_STRIPS.map((strip,c)=>strip.map((_,top)=>reelWindowFromTopIndex(c,top)));
-    for(const left of windows[0])for(const middle of windows[1])for(const right of windows[2]){
-      // This physical window is intentionally excluded from ordinary/missed stops.
-      if(left[0]==='7'&&left[1]===CHERRY_SYMBOL&&left[2]==='7')continue;
-      const grid=[0,1,2].map(row=>[left[row],middle[row],right[row]]);
-      const shown=displayedResultFromGrid(grid);
-      // Wins come only from the approved stop list; misses may use any physical window.
-      // A missed strong cherry may still leave the already-stopped left cherry.
-      // Never substitute an unrelated bell, replay, watermelon or bonus win.
-      if((shown==='MISS'||result==='STRONG_NOVA'&&shown==='WEAK_NOVA')&&
-        gridPaylineRows(grid).every(row=>displayedResultFromRow(row)==='MISS'))misses.push(grid);
-    }
-    const value={wins,misses,safe:new Map()};pressedStopCache.set(key,value);return value;
+    const wins=(novaSheetStopChoices(result)||[]).map(grid=>grid.map(row=>row.slice()));
+    const misses=(novaSheetStopChoices('MISS')||[]).map(grid=>grid.map(row=>row.slice()));
+    const value={wins,misses};pressedStopCache.set(key,value);return value;
   }
 
   function nearestPressedStopColumn(index,spin,distance,automatic=false){
@@ -7271,25 +7261,6 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     const held=spin.pressStopColumns||[0,1,2].map(c=>spin.pendingStopColumns?.[c]||
       (spin.stopped[c]?spin.grid.map(row=>row[c]):null));
     const candidates=rare||ordinary?pressedStopCandidates(ordinary?'MISS':spin.result):{wins:novaSheetStopChoices('BELL15')||[],misses:[]};
-    const canFinish=(nextHeld)=>{
-      if(!rare||automatic)return true;
-      const key=JSON.stringify(nextHeld),cached=candidates.safe.get(key);
-      if(cached!==undefined)return cached;
-      const pool=[...candidates.wins,...candidates.misses].filter(grid=>nextHeld.every((col,c)=>!col||col.every((v,r)=>grid[r][c]===v)));
-      if(!pool.length){candidates.safe.set(key,false);return false;}
-      for(let c=0;c<3;c++)if(!nextHeld[c]){
-        const tops=[];
-        for(let top=0;top<REEL_STRIPS[c].length;top++){
-          const col=reelWindowFromTopIndex(c,top);
-          if(!pool.some(grid=>col.every((v,r)=>grid[r][c]===v)))continue;
-          const heldAfter=nextHeld.slice();heldAfter[c]=col;
-          if(canFinish(heldAfter))tops.push(top);
-        }
-        const maxGap=tops.length?Math.max(...tops.map((top,j)=>(tops[(j+1)%tops.length]-top+REEL_STRIPS[c].length)%REEL_STRIPS[c].length||REEL_STRIPS[c].length)):Infinity;
-        if(maxGap>4){candidates.safe.set(key,false);return false;}
-      }
-      candidates.safe.set(key,true);return true;
-    };
     const choose=(grids,limit)=>{
       let best=null,bestDistance=Infinity;const seen=new Set();
       for(const grid of grids){
@@ -7297,15 +7268,19 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
         const column=grid.map(row=>row[index]),key=column.join('\u001f');
         if(seen.has(key))continue;seen.add(key);
         const d=distance(column);
-        if(d<=limit+1e-9&&d<bestDistance){const nextHeld=held.slice();nextHeld[index]=column;if(!canFinish(nextHeld))continue;best={column,grid,distance:d};bestDistance=d;}
+        if(d<=limit+1e-9&&d<bestDistance){best={column,grid,distance:d};bestDistance=d;}
       }
       return best;
     };
     let pick=!spin.rareRoleMissed?choose(ordinary?candidates.misses:candidates.wins,ordinary||rare&&!automatic?4:Infinity):null;
     if(!pick&&rare){
-      pick=choose(candidates.misses,4);
-      if(!pick)throw new Error('No safe rare-role miss within four symbols');
-      spin.rareRoleMissed=true;
+      pick=choose(candidates.misses,Infinity);
+      if(pick)spin.rareRoleMissed=true;
+      if(!pick){
+        // Earlier reels can lock an approved win; never invent a missing layout.
+        pick=choose(candidates.wins,Infinity);
+      }
+      if(!pick)throw new Error('No approved compatible stop');
     }
     if(!pick&&ordinary)pick=choose(candidates.misses,Infinity);
     if(!pick)return null;
