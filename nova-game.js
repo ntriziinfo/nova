@@ -10007,6 +10007,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
   }
 
   function shouldSuppressPayoutSound(result="", reward=0, spin=currentSpin){
+    if(result === "ONE_COIN")return true;
     if(globalThis.NovaLadder?.outcome?.(spin?.resolved)&&['WEAK_SUICA','STRONG_SUICA','CHANCE_A','CHANCE_B','WEAK_NOVA','STRONG_NOVA','SUPER_NOVA'].includes(result))return true;
     if(spin && spin.zoneActiveAtStart && result === "MISS" && Number(reward) > 0) return true;
     return false;
