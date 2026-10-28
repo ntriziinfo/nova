@@ -36,7 +36,7 @@ test('rare draw uses current post-BET net, one RNG draw, and retains awarded sor
   p.observeNet(15000);assert.equal(p.snapshot().sorties,1);
  }
  const source=fs.readFileSync(gameFile,'utf8');let count=0;
- const c=vm.createContext({A_TYPE_MODE:true,settings:{setting:1},currentProfit:()=>1497,NovaProgress:{drawSortie:(s,r,out,rng,net)=>{assert.equal(net,1497);assert.equal(typeof rng,'function');count++;return true;}}});
+ const c=vm.createContext({A_TYPE_MODE:true,settings:{setting:1},currentGameProfit:()=>1497,NovaProgress:{drawSortie:(s,r,out,rng,net)=>{assert.equal(net,1497);assert.equal(typeof rng,'function');count++;return true;}}});
  vm.runInContext(source.match(/  function drawRareSortie\([^]*?\n  }/)[0],c);const out={};c.drawRareSortie('WEAK_NOVA',out);assert.equal(count,1);assert.equal(out.sortieWon,true);
 });
 

@@ -7,7 +7,7 @@ const html=readGameSource();
 const fn=html.match(/^  function presentedArtFlow\(.*$/m)[0]+'\n'+html.match(/  function normalBgmSrc\([^]*?\n  }/)[0];
 const constants=[...html.matchAll(/  const \w+_ZONE_BGM_SRC = "[^"]+";/g)].map(m=>m[0]).join('\n');
 function context(){
-  const c=vm.createContext({atCheckpointStatus:()=>null,NovaProgress:{snapshot:()=>({})},currentProfit:()=>0,isSpinning:false,currentSpin:null,session:{active:false},normalState:{flow:{phase:'art',zone:''}},NOVA_ART_BGM_SRC:'at',CZ_BGM_SRC:'cz',DEFAULT_NORMAL_BGM_SRC:'normal',speedToBonusActive:false,isHighMode:()=>false});
+  const c=vm.createContext({atCheckpointStatus:()=>null,NovaProgress:{snapshot:()=>({})},currentGameProfit:()=>0,isSpinning:false,currentSpin:null,session:{active:false},normalState:{flow:{phase:'art',zone:''}},NOVA_ART_BGM_SRC:'at',CZ_BGM_SRC:'cz',DEFAULT_NORMAL_BGM_SRC:'normal',speedToBonusActive:false,isHighMode:()=>false});
   vm.runInContext(constants+'\n'+fn,c);return c;
 }
 test('all nine zones select their corresponding audio and return to AT on exit',()=>{

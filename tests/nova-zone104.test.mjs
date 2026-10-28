@@ -20,9 +20,15 @@ test('sora guarantees two sevens, ura sora reaches 500 in fixed 100pt wins',()=>
  }
  const reset=a.step({...a.startZone(a.enter(),'ura_sora'),zoneLeft:1},{},()=>.1,'NEBULA');assert.equal(reset.result,'NEBULA');assert.equal(reset.flow.zoneLeft,5);
 });
-test('urapi has 50 guarantee and zero-game freeze; ura ouma has 500 guarantee',()=>{
- for(const [id,min]of [['urapi',50],['ura_ouma',500]]){
-  const out=a.step({...a.startZone(a.enter(),id),zoneLeft:1}, {},()=>.9,'MISS');assert.equal(out.result,'SUPER_NOVA');assert.ok(Number(out.flow.award)>=min);assert.equal(out.flow.oumaPending,true);
+test('urapi and ura ouma satisfy their floors through fixed-denomination wins',()=>{
+ for(const [id,min,denomination]of [['urapi',50,50],['ura_ouma',500,100]]){
+  const base=a.enter(),start=a.startZone(base,id);let state={...start,zoneLeft:1},games=0,total=0;
+  while(state.zone&&games++<10){
+   const before=Number(state.award),out=a.step(state,{},()=>.9,'MISS');
+   assert.equal(out.result,'SUPER_NOVA');assert.equal(Number(out.flow.award)-before,denomination);assert.equal(out.zoneAward,denomination);
+   total+=denomination;state=out.flow;if(state.oumaPending)state=a.prepareBet(state,{},()=>.999);
+  }
+  assert.equal(state.zone,'');assert.equal(total,min);assert.equal(Number(state.remaining)-Number(base.remaining),min);
  }
  const s={...a.startZone(a.enter(),'urapi'),zoneLeft:3,award:'50',oumaPending:true};const p=a.prepareBet(s,{},()=>.099);assert.equal(p.zero,true);const out=a.step(p,{},()=>.5);assert.equal(out.oumaFreeze,true);assert.equal(out.flow.zoneLeft,3);
  assert.equal(a.prepareBet(s,{},()=>.1).zero,false);

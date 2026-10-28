@@ -9,7 +9,7 @@ test('reset lottery exhaustively matches impurity and initial mode allocation',(
    assert.equal(state.games,0);assert.equal(state.level,'low');
   }
   for(const {pt,weight} of n.resetDistribution(setting))assert.equal(counts[pt],weight*100);
-  const approved=JSON.parse(fs.readFileSync('docs/mode-selection-20261014.json')).rows.initial[setting-1];
+  const approved=JSON.parse(fs.readFileSync('docs/at4-mode-cz-20261025.json')).rows.initial[setting-1];
   assert.deepEqual(modes,Object.fromEntries(n.modes.map((mode,i)=>[mode,Math.round(approved[i]*100)])));
  }
 });

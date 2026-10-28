@@ -16,7 +16,7 @@ test('initial character weights exclude all three ladders only for unsupported q
    if(weights[i])assert.equal(a.pickInitialZone(setting,quota,()=>(edge+weights[i]/2)/total,131),a.zoneIds[i]);
    edge+=weights[i];
   }
-  const state={...a.enterInitial({setting},()=>.5),initialRuleVersion:0,initialVersion:131,initialWait:1,entryQuota:String(quota)};
+  const state={...a.enterInitial({setting},()=>.5),initialRuleVersion:0,initialVersion:131,initialPreparationVersion:0,initialWait:1,entryQuota:String(quota)};
   for(const roll of [0,.1,.3,.5,.7,.9,.999999]){
    const next=a.step(state,{setting},()=>roll).flow;
    assert.equal(next.entryQuota,String(quota));assert.ok(a.initialZoneAllowed(next.pendingZone,quota,131));

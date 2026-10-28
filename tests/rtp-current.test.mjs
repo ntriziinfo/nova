@@ -47,16 +47,20 @@ test('verified four-series pooled evidence publishes the same six current values
   r=>{r.settings[0].chunkResults[0].totalPaid--;},r=>{r.settings[0].seeds[0]='wrong';}
  ]){const bad=pooledEvidence();change(bad);assert.equal(valid(bad,hashes),false);}
 });
-test('published JSON, generated browser data and current specification surfaces share the accepted values',()=>{
+test('published JSON, browser data and specification surfaces share one verified or pending state',()=>{
  const json=JSON.parse(fs.readFileSync('nova-rtp-current.json','utf8'));
  const browserSource=fs.readFileSync('nova-rtp-current.js','utf8').trim();
  const browser=JSON.parse(browserSource.replace(/^globalThis\.NovaRtpCurrent=/,'').replace(/;$/,''));
  const expected=[94.032679,95.694448,98.163069,103.040231,109.458596,115.023831];
- assert.equal(json.status,'ready');assert.equal(json.gamesPerSetting,1_000_000_000);
- assert.equal(json.conditions,'2.5億G×4系列合算・MY／差枚停止なし');assert.deepEqual(browser,json);
- assert.deepEqual(json.settings.map(row=>Number(row.rtpPct.toFixed(6))),expected);
+ assert.equal(json.gamesPerSetting,1_000_000_000);assert.deepEqual(browser,json);
  const current=fs.readFileSync('docs/current-rtp.md','utf8');
  const art=fs.readFileSync('ART-SPEC.md','utf8'),normal=fs.readFileSync('NORMAL-SPEC.md','utf8');
- for(const value of expected){assert.match(current,new RegExp(`${value.toFixed(6)}%`));assert.match(art,new RegExp(`${value.toFixed(6)}%`));assert.match(normal,new RegExp(`${value.toFixed(6)}%`));}
+ if(json.status==='ready'){
+  assert.equal(json.conditions,'2.5億G×4系列合算・MY／差枚停止なし');assert.deepEqual(json.settings.map(row=>Number(row.rtpPct.toFixed(6))),expected);
+  for(const value of expected){assert.match(current,new RegExp(`${value.toFixed(6)}%`));assert.match(art,new RegExp(`${value.toFixed(6)}%`));assert.match(normal,new RegExp(`${value.toFixed(6)}%`));}
+ }else{
+  assert.equal(json.status,'pending');assert.deepEqual(json.settings,[]);assert.equal(json.sourceCommit,null);assert.equal(json.generatedAt,null);
+  for(const surface of [current,art,normal]){assert.match(surface,/試算待ち/);for(const value of expected)assert.doesNotMatch(surface,new RegExp(`${value.toFixed(6)}%`));}
+ }
  assert.match(fs.readFileSync('README.md','utf8'),/docs\/current-rtp\.md/);
 });

@@ -39,8 +39,8 @@ test('additional roles cannot restart a won prelude, and strong NOVA promotion r
 
 test('ceiling and premium outcomes do not duplicate or leave a stale CZ reservation',()=>{
  const t=spin({games:799},'BELL',()=>.9);assert.equal(t.internalBonus.kind,'BIG');assert.equal(t.state.prelude,null);
- assert.equal(t.modeEvent.type,'ceiling');assert.equal(t.state.impurity,10);
- const next=spin(n.afterBonus(t.state,()=>0));assert.equal(next.internalBonus,null);assert.equal(next.state.impurity,10);
+ assert.equal(t.modeEvent.type,'ceiling');assert.equal(t.state.impurity,5);
+ const next=spin(n.afterBonus(t.state,()=>0));assert.equal(next.internalBonus,null);assert.equal(next.state.impurity,5);
  const won=spin({},'STRONG_NOVA');
  const frozen=spin(won.state,'FREEZE');assert(frozen.internalBonus.premiumBonus);assert.equal(frozen.state.prelude,null);
  const premium=spin(won.state,'',()=>0);assert.equal(premium.result,'SUPER_NOVA');assert.equal(premium.state.prelude,null);

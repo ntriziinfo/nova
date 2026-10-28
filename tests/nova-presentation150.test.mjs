@@ -53,7 +53,7 @@ test('cold rare sprites cannot paint the previous bell bitmap, even with stale d
  h.imgs().forEach(i=>i.load());const stale=h.decodes.splice(0);
  h.n.begin(spin('CHANCE_B'),()=>0);stale.forEach(r=>r());await Promise.resolve();assert(h.imgs().every(i=>i.hidden));
  h.imgs().forEach(i=>i.load());h.decodes.splice(0).forEach(r=>r());await Promise.resolve();
- assert(h.imgs().every(i=>!i.hidden&&i.src.endsWith('navi-purple-double.png')));
+ assert(h.imgs().every(i=>!i.hidden&&i.src.endsWith('navi-purple-single.png')));
  h.n.begin(spin('SUPER_NOVA'));h.imgs().forEach(i=>i.onerror());assert(h.imgs().every(i=>i.hidden));
 });
 
@@ -64,7 +64,7 @@ test('layout preview does not inject a bell order into a non-navigation spin',()
 
 test('initial-zone music stays within the shared three-game zone and uses the BGM mixer',()=>{
  const html=readGameSource(),constants=[...html.matchAll(/  const \w+_ZONE_BGM_SRC = "[^"]+";/g)].map(m=>m[0]).join('\n');
- const c=vm.createContext({atCheckpointStatus:()=>null,NovaProgress:{snapshot:()=>({})},currentProfit:()=>0,isSpinning:false,currentSpin:null,session:{active:false},normalState:{flow:{}},NOVA_ART_BGM_SRC:'at',CZ_BGM_SRC:'cz',DEFAULT_NORMAL_BGM_SRC:'normal',speedToBonusActive:false,isHighMode:()=>false});
+ const c=vm.createContext({atCheckpointStatus:()=>null,NovaProgress:{snapshot:()=>({})},currentGameProfit:()=>0,isSpinning:false,currentSpin:null,session:{active:false},normalState:{flow:{}},NOVA_ART_BGM_SRC:'at',CZ_BGM_SRC:'cz',DEFAULT_NORMAL_BGM_SRC:'normal',speedToBonusActive:false,isHighMode:()=>false});
  vm.runInContext(constants+'\n'+html.match(/^  function presentedArtFlow\(.*$/m)[0]+'\n'+html.match(/  function normalBgmSrc\([^]*?\n  }/)[0],c);
  for(const zone of ['kushuri_nito','kushuri','nito']){
   c.normalState.flow={phase:'art',zone,initialStage:'zone'};assert.equal(c.normalBgmSrc(),'assets/media/nova/initial-duo-bgm.mp3');

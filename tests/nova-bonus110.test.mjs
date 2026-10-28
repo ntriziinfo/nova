@@ -27,6 +27,7 @@ test('tier role probabilities yield 52% and 80% AT chance over a complete BIG fo
  assert.equal(a.drawBonusTier(()=>.09999),'upper');assert.equal(a.drawBonusTier(()=>.1),'normal');
 });
 test('100000 actual BIGs per tier reproduce AT expectations; shown cue colors retain their confidence',()=>{
+ const bonusAimConfidence={blue:.2,red:.9,rainbow:1};
  for(const tier of ['normal','upper']){
   let won=0;const colors={blue:[0,0],red:[0,0],rainbow:[0,0]};
   for(let i=0;i<100000;i++){
@@ -35,7 +36,7 @@ test('100000 actual BIGs per tier reproduce AT expectations; shown cue colors re
    assert.equal(paid,50);won+=hit;
   }
   assert.ok(Math.abs(won/100000-a.bonusRules[tier].atChance)<.006,`${tier}: ${won/100000}`);
-  for(const row of a.aimColors){const [total,hits]=colors[row.color];assert.ok(Math.abs(hits/total-row.hit)<.012,`${tier} ${row.color}`);}
+  for(const [color,confidence] of Object.entries(bonusAimConfidence)){const [total,hits]=colors[color];assert.ok(total>0,`${tier} ${color} shown`);assert.ok(Math.abs(hits/total-confidence)<.012,`${tier} ${color}: ${hits/total}`);}
  }
 });
 test('live bonus resolver uses the same payout cap, NEBULA guide and AT award',()=>{

@@ -67,9 +67,9 @@ test('fake hints do not count as a guaranteed win or postpone the ceiling',()=>{
  assert.equal(spin(s,'WEAK_NOVA').czChance,n.roleCzRate(s,'WEAK_NOVA',3));
  for(const roll of [.01,.99]){
   let t=spin({...saved(s),games:799},'BELL',()=>roll);
-  assert(t.state.ceilingHandled);assert.equal(t.state.impurity,n.defaults.ceilingGain);
+  assert(t.state.ceilingHandled);assert.equal(t.state.impurity,5);
   assert.equal(t.state.prelude,null);assert.equal(t.internalBonus.kind,'BIG');
-  assert.equal(t.modeEvent.type,'ceiling');assert.equal(t.state.impurity,n.defaults.ceilingGain);
+  assert.equal(t.modeEvent.type,'ceiling');assert.equal(t.state.impurity,5);
  }
 });
 

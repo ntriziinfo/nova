@@ -50,5 +50,5 @@ test('reload keeps pressed order, pending miss column, and the internal award',(
  const restored=c.NovaSpinResume.restore(c.NovaSpinResume.capture(spin),{BELL:{}});
  assert.equal(c.NovaSortie.target(restored,0,strips).aligned,true);assert.equal(restored.resolved.reward,8);assert.deepEqual(plain(restored.resolved.flowAfter.queuedZones),['sora']);
  spin.resolved.researchSortie.won=false;spin.auditPressOrder=[0,2,1];spin.pendingStopColumns=[c.NovaSortie.target(spin,0,strips).column,null,null];
- const missed=c.NovaSpinResume.restore(c.NovaSpinResume.capture(spin),{BELL:{}});assert.equal(c.NovaSortie.target(missed,0,strips).aligned,false);assert.deepEqual(plain(missed.pendingStopColumns[0]),strips[0].slice(1,4));
+ const missed=c.NovaSpinResume.restore(c.NovaSpinResume.capture(spin),{BELL:{}});assert.equal(c.NovaSortie.target(missed,0,strips).aligned,false);assert.deepEqual(plain(missed.pendingStopColumns[0]),['🔔','BAR','REPLAY']);
 });

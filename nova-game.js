@@ -5463,6 +5463,7 @@
     normalState.sinceBonus = normalizeBonusAfterGames(resolved.ceilingAfter);
     if(A_TYPE_MODE){
       normalState.flow = NovaFlow.normalize(resolved.flowAfter);
+      if(typeof resetOrdinaryAutoPacingAfterNormalReturn==='function')resetOrdinaryAutoPacingAfterNormalReturn(resolved.flowBefore,normalState.flow);
       if(resolved.czCompleted&&!resolved.bonusHit&&!resolved.aTypeBonusReady&&normalState.flow.phase==='normal')NovaImpurityHint.queue(normalState,'cz-failed');
       if(resolved.sortieFakeWon&&!debugFastSpinActive)normalState.pendingFakeSortie=(Number(normalState.pendingFakeSortie)||0)+1;
       if(!debugFastSpinActive){const sortieCard=NovaResults.sortie(resolved.researchSortie,normalState.flow);if(sortieCard)normalState.pendingSortieResult=sortieCard;}
@@ -6588,9 +6589,10 @@
       source:premium?"スーパーノヴァ目 → プレミアムBIG":"スーパーノヴァ目 → BIG",
       internalResult:"SUPER_NOVA",gamesSinceLastBonusAtStart:normalizeBonusAfterGames(normalState.sinceBonus)};
   }
-  function buildForcedNovaGrid(result){
+  function buildForcedNovaGrid(result,options={}){
     // Preserve the former presentation draw count: weak/strong two, super zero.
-    const sheetChoices=novaSheetStopChoices(result);
+    const allSheetChoices=novaSheetStopChoices(result),left=options.autoMissBarBottom?autoReferenceLeftColumn(result):null;
+    const sheetChoices=left?allSheetChoices?.filter(grid=>left.every((symbol,row)=>grid?.[row]?.[0]===symbol)):allSheetChoices;
     if(result==='SUPER_NOVA')return sheetChoices?.length?copyNovaSheetGrid(sheetChoices[0],result):novaGrid();
     const first=Math.random(),second=Math.random(),key='cherry:'+result;
     if(sheetChoices?.length)return copyNovaSheetGrid(sheetChoices[Math.floor(((first+second)%1)*sheetChoices.length)],result);
@@ -6850,6 +6852,22 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
       if(!Array.isArray(grid[row])) grid[row] = [];
       grid[row][reelIndex] = columnSymbols[row];
     }
+  }
+
+  function normalizeNebulaMiddleFirstColumn(spin,index,column=null){
+    const aim=spin?.resolved?.aim,order=spin?.aimStopOrder?.length?spin.aimStopOrder:spin?.auditPressOrder||[];
+    if(index!==1||aim?.symbol!=='nebula'||!NovaAim.hasGuide(aim)||order[0]!==1)return column;
+    const nebulaIndex=REEL_STRIPS[1].indexOf(NEBULA_SYMBOL);
+    if(nebulaIndex<0)return column;
+    const hit=spin.result==='NEBULA';
+    // Middle-first is decisive: an internal hit stops NEBULA on the middle
+    // line, while a miss uses the adjacent same-strip top-NEBULA window.
+    // Rebuild this deterministically so an old pending visual column cannot
+    // display a confirmed lineup without the already drawn award.
+    const normalized=reelWindowFromTopIndex(1,nebulaIndex-(hit?1:0));
+    spin.aimAligned=hit;
+    if(spin.grid)setGridColumn(spin.grid,1,normalized);
+    return normalized;
   }
 
   function gridPaylineRows(grid){
@@ -7257,19 +7275,19 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
   const novaStopGridCache = new Map();
   function buildNovaReelGrid(result, winRow=1, firstReel=0, options={}){
     result = normalizeATypeResult(result);
-    if(isNovaResult(result)) return buildForcedNovaGrid(result);
+    if(isNovaResult(result)) return buildForcedNovaGrid(result,options);
     if(result === "CZ" || result === "STRONG_CZ") result = "MISS";
     const spec = RESULT[result] || RESULT.MISS;
     if(isMiddleLineOnlyResult(result)||NovaNormal.rare[result]||result==='BELL15') winRow = 1;
-    const autoMissBarBottom=result==='MISS'&&!!options.autoMissBarBottom;
-    const cacheKey = result + ":" + winRow + (result==='BELL15'?':'+firstReel:'') + (autoMissBarBottom?':auto-left-bottom-bar':'');
+    const autoReferenceLeft=options.autoMissBarBottom?autoReferenceLeftColumn(result):null;
+    const cacheKey = result + ":" + winRow + (result==='BELL15'?':'+firstReel:'') + (autoReferenceLeft?':auto-reference-'+autoReferenceLeft.join('-'):'');
     const cached = novaStopGridCache.get(cacheKey);
     if(cached){
       const selected=cached[Math.floor(Math.random()*cached.length)];
       return selected?.novaSheetRole?copyNovaSheetGrid(selected,selected.novaSheetRole):selected.map(row=>row.slice());
     }
     const allSheetChoices=novaSheetStopChoices(result);
-    const sheetChoices=autoMissBarBottom?allSheetChoices?.filter(grid=>grid?.[2]?.[0]==='BAR'):allSheetChoices;
+    const sheetChoices=autoReferenceLeft?allSheetChoices?.filter(grid=>autoReferenceLeft.every((symbol,row)=>grid?.[row]?.[0]===symbol)):allSheetChoices;
     if(sheetChoices?.length){
       const grids=sheetChoices.map(grid=>copyNovaSheetGrid(grid,result));
       novaStopGridCache.set(cacheKey,grids);
@@ -7289,6 +7307,12 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
 
   function nearestCommonStopColumn(index,spin,distance){
     if(!['BELL','REPLAY'].includes(spin.result))return null;
+    const committed=committedAutoReferenceColumn(index,spin);
+    if(committed){
+      spin.commonStopColumns ||= [];
+      spin.commonStopColumns[index]=committed.slice();
+      return committed;
+    }
     buildNovaReelGrid(spin.result,spin.lineRow);
     const candidates=novaStopGridCache.get(spin.result+':'+spin.lineRow)||[];
     const held=spin.commonStopColumns||[];
@@ -7315,9 +7339,40 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     const value={wins,misses};pressedStopCache.set(key,value);return value;
   }
 
+  // AUTO presses the left reel at the same BAR / cherry / watermelon timing on
+  // every ordinary spin. The visible result must therefore be one of the
+  // approved sheet windows reachable from that single timing, regardless of
+  // which reel the selected AUTO order stops first.
+  const AUTO_REFERENCE_LEFT_COLUMNS=Object.freeze({
+    MISS:Object.freeze([REPLAY_SYMBOL,BELL_SYMBOL,'BAR']),
+    ONE_COIN:Object.freeze([REPLAY_SYMBOL,BELL_SYMBOL,'BAR']),
+    CZ:Object.freeze([REPLAY_SYMBOL,BELL_SYMBOL,'BAR']),
+    STRONG_CZ:Object.freeze([REPLAY_SYMBOL,BELL_SYMBOL,'BAR']),
+    REPLAY:Object.freeze([REPLAY_SYMBOL,BELL_SYMBOL,'BAR']),
+    BELL15:Object.freeze([REPLAY_SYMBOL,BELL_SYMBOL,'BAR']),
+    BELL:Object.freeze([SUICA_SYMBOL,REPLAY_SYMBOL,BELL_SYMBOL]),
+    WEAK_SUICA:Object.freeze([SUICA_SYMBOL,REPLAY_SYMBOL,BELL_SYMBOL]),
+    WEAK_NOVA:Object.freeze([BELL_SYMBOL,'BAR',CHERRY_SYMBOL]),
+    STRONG_NOVA:Object.freeze([BELL_SYMBOL,'BAR',CHERRY_SYMBOL])
+  });
+  function autoReferenceLeftColumn(result){
+    return AUTO_REFERENCE_LEFT_COLUMNS[result]||null;
+  }
+  function autoReferenceStopChoices(result){
+    const left=autoReferenceLeftColumn(result);if(!left)return [];
+    const source=['CZ','STRONG_CZ'].includes(result)?'MISS':result;
+    return (novaSheetStopChoices(source)||[]).filter(grid=>left.every((symbol,row)=>grid?.[row]?.[0]===symbol));
+  }
+  function committedAutoReferenceColumn(index,spin){
+    if(!spin?.autoMissBarBottom||!autoReferenceLeftColumn(spin.result))return null;
+    const choices=autoReferenceStopChoices(spin.result);
+    const valid=choices.some(candidate=>[0,1,2].every(column=>candidate.every((row,r)=>row[column]===spin.grid?.[r]?.[column])));
+    return valid?spin.grid.map(row=>row[index]):null;
+  }
+
   function standardAutoMissBarBottomEligible(spin){
     const resolved=spin?.resolved;
-    return spin?.result==='MISS'&&!spin?.zoneActiveAtStart&&!spin?.reversePushGuide&&!spin?.reachMeLine&&
+    return !!autoReferenceLeftColumn(spin?.result)&&!spin?.zoneActiveAtStart&&!spin?.reversePushGuide&&!spin?.reachMeLine&&
       !resolved?.aim&&!resolved?.researchSortie&&!resolved?.stockEntry&&!resolved?.sortieEntry&&!resolved?.researchChallenge?.priorAim&&
       !resolved?.zoneSpin&&!(resolved?.bonusPendingAtStart&&resolved?.bonusReady&&!resolved?.bonusWaitSpin);
   }
@@ -7325,10 +7380,13 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
   function commitAutoMissBarBottom(spin){
     if(!standardAutoMissBarBottomEligible(spin)){if(spin)spin.autoMissBarBottom=false;return false;}
     const held=[0,1,2].map(c=>spin.pendingStopColumns?.[c]||(spin.stopped?.[c]?spin.grid.map(row=>row[c]):null));
-    const compatible=pressedStopCandidates('MISS').misses.some(grid=>grid?.[2]?.[0]==='BAR'&&
+    const compatible=autoReferenceStopChoices(spin.result).find(grid=>
       held.every((column,c)=>!column||column.every((value,row)=>grid[row][c]===value)));
-    spin.autoMissBarBottom=compatible;
-    return compatible;
+    spin.autoMissBarBottom=!!compatible;
+    if(!compatible)return false;
+    for(let c=0;c<3;c++)if(!held[c])setGridColumn(spin.grid,c,compatible.map(row=>row[c]));
+    if(spin.result==='ONE_COIN')tagNovaSheetGrid(spin.grid,'ONE_COIN');
+    return true;
   }
 
   function nearestPressedStopColumn(index,spin,distance,automatic=false){
@@ -7339,6 +7397,13 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
       (spin.stopped[c]?spin.grid.map(row=>row[c]):null));
     const candidates=rare||ordinary?pressedStopCandidates(ordinary?'MISS':spin.result):{wins:novaSheetStopChoices('BELL15')||[],misses:[]};
     const ordinaryMisses=ordinary&&spin.autoMissBarBottom?candidates.misses.filter(grid=>grid?.[2]?.[0]==='BAR'):candidates.misses;
+    const committed=automatic?committedAutoReferenceColumn(index,spin):null;
+    if(committed){
+      const held=spin.pressStopColumns||[0,1,2].map(c=>spin.pendingStopColumns?.[c]||(spin.stopped[c]?spin.grid.map(row=>row[c]):null));
+      spin.pressStopColumns=held;spin.pressStopColumns[index]=committed.slice();
+      (spin.pressStopDistances||=[null,null,null])[index]=distance(committed);
+      return committed;
+    }
     const choose=(grids,limit)=>{
       let best=null,bestDistance=Infinity;const seen=new Set();
       for(const grid of grids){
@@ -7408,6 +7473,8 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
       (spin.stopped[c]?spin.grid.map(row=>row[c]):null));
     const matches=(grid,columns)=>columns.every((col,c)=>!col||col.every((v,r)=>grid[r][c]===v));
     const misses=novaSheetStopChoices('MISS')||[],wrong=bellNavigationMiss(spin);
+    const committed=!wrong?committedAutoReferenceColumn(index,spin):null;
+    if(committed)return committed;
     const choices=wrong?misses:novaSheetStopChoices(spin.result)||[];
     let best=null,bestDistance=Infinity;
     for(const grid of choices){
@@ -8082,7 +8149,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     playCzCountdownOnLever(resolved);
     currentSpin.manualBonusStop = false; // Fixed-G prototype: bonus starts on the next confirmed spin.
     if(!debugFastSpinActive&&NovaBellNavi.begin(currentSpin)){
-      if(result==='BELL15')currentSpin.grid=buildNovaReelGrid(result,1,currentSpin.bellNaviOrder[0]);
+      if(result==='BELL15')currentSpin.grid=buildNovaReelGrid(result,1,currentSpin.bellNaviOrder[0],{autoMissBarBottom:currentSpin.autoMissBarBottom});
       if(!resolved.researchSortie)playOneShotSound('assets/media/nova/bell-navi.wav',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
       playBellNaviVoice(currentSpin);
     }
@@ -8234,7 +8301,10 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
 
   function stopAutoReelInOrder(spin,i,options={}){
     if(currentSpin!==spin||!isSpinning||spin.stopped[i]||spin.visualStopping?.[i])return;
-    const next=NovaBellNavi.stopOrder(spin).find(index=>!spin.stopped[index]&&!spin.visualStopping?.[index]);
+    // A reel is not finished until its landing animation has completed. Keeping
+    // an in-flight reel at the head prevents a later reel from visibly landing
+    // first when the animation distances differ.
+    const next=NovaBellNavi.stopOrder(spin).find(index=>!spin.stopped[index]);
     // Worker/native deadlines can arrive before the stop unlock or out of order.
     // Retry the same drawn spin; never let a later reel become the first press.
     if(!spinCanStop||isPremiumBigConfirmStopLocked()||next!==i){
@@ -8307,7 +8377,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
       if(!currentSpin.aimStopOrder.includes(i))currentSpin.aimStopOrder.push(i);
       const target=NovaAim.stopTarget(currentSpin.resolved.aim,currentSpin.result,currentSpin.aimStopOrder,i);
       const symbol=currentSpin.resolved.aim.symbol==='seven'?'7':NEBULA_SYMBOL;
-      let column=getReelWindowFromStrip(i,symbol,target.onLine?1:0);
+      let column=normalizeNebulaMiddleFirstColumn(currentSpin,i)||getReelWindowFromStrip(i,symbol,target.onLine?1:0);
       // Retain the existing random draw, then choose only compatible approved
       // seven windows by physical distance. Outcome/stop-order rules are unchanged.
       if(symbol==='7'&&target.onLine&&motionAt){
@@ -8339,6 +8409,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     if(ladderTarget){col=options.visualColumn||ladderTarget.column;setGridColumn(grid,i,col);}
     const novaZoneTarget=NovaAim.novaZoneStopTarget?.(currentSpin,i,REEL_STRIPS,RESULT);
     if(novaZoneTarget){col=options.visualColumn||novaZoneTarget.column;setGridColumn(grid,i,col);}
+    col=normalizeNebulaMiddleFirstColumn(currentSpin,i,col)||col;
     if(currentSpin.stopControlVersion===1&&!options.visualReady&&motionAt&&!sortieTarget&&!ladderTarget&&!novaZoneTarget&&!NovaAim.hasGuide(currentSpin.resolved?.aim)&&!currentSpin.resolved?.artReverse){
       col=nearestPressedStopColumn(i,currentSpin,column=>NovaReelMotion.distance(i,column,motionAt),!!(options.automatic||autoPlay||currentSpin.speedModeAtStart||debugFastSpinActive))||col;
     }
@@ -9017,6 +9088,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     presentation.stage='lift';$('spinBtn').disabled=true;
     const machine=document.getElementById('machine');machine.dataset.oumaFreeze='lift';
     normalState.flow=NovaArt.prepareBet(previous,{...settings.novaArt,setting:settings.setting},Math.random);
+    const oumaFailed=!normalState.flow.zero;
     normalState.pendingZoneResult=trackZoneResult(NovaResults.transition(previous,normalState.flow,settings.setting),previous,normalState.flow);
     persistState();
 
@@ -9024,14 +9096,16 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     audio.volume=sfxOutputVolumeForSource(SFX_OUTPUT_SCALE,'assets/media/nova/uuufa.wav');
     audio.play()?.then(()=>{if(oumaIntroAudio!==audio)audio.pause();}).catch(()=>{});
     const started=performance.now(),tops=oumaStoppedTops.map(top=>Math.max(0,top));
-    reels.forEach((reel,i)=>NovaReelMotion.start(i,reel,REEL_STRIPS[i],tops[i],true,cellHtml,{
-      clock:()=>Math.min(500,Math.max(0,performance.now()-started-[0,65,120][i]))/1000,
-      duration:500,steps:1,done:()=>{}
-    }));
+    // A failed continuation keeps the existing one-cell lift before blackout.
+    // On success, retain the stopped NOVA lineup so the full reverse motion can
+    // begin from that exact position without a lift-stop-restart visual seam.
+    if(oumaFailed)reels.forEach((reel,i)=>NovaReelMotion.start(i,reel,REEL_STRIPS[i],tops[i],true,cellHtml,{
+       clock:()=>Math.min(500,Math.max(0,performance.now()-started-[0,65,120][i]))/1000,
+       duration:500,steps:1,done:()=>{}
+     }));
     oumaChainTimer=setTimeout(()=>{
       if(oumaPresentation!==presentation)return;
-      reels.forEach((_,i)=>{NovaReelMotion.clear(i);setReelColumn(i,reelWindowFromTopIndex(i,tops[i]+1),'','',null);});
-      const oumaFailed=!normalState.flow.zero;
+      if(oumaFailed)reels.forEach((_,i)=>{NovaReelMotion.clear(i);setReelColumn(i,reelWindowFromTopIndex(i,tops[i]+1),'','',null);});
       clearOumaPresentation();spin({oumaFailed});
     },4000);
   }
@@ -9346,6 +9420,15 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
   function autoPacingWaitMs(){
     const now=performance.now(),profile=autoPacingProfile();
     return Math.max(NovaSuperSpeed.remainingWait(autoLastBetAt,now,profile),NovaSuperSpeed.budgetWait(autoPacingBudget,now,profile));
+  }
+
+  function resetOrdinaryAutoPacingAfterNormalReturn(before,after){
+    if(!autoPlay||superFullAuto||!['cz','strong_cz','art'].includes(before?.phase)||after?.phase!=='normal')return false;
+    // CZ/AT presentation holds are intentional. Do not repay that elapsed time
+    // by accelerating the first few ordinary AUTO games after normal resumes.
+    autoLastBetAt=performance.now();
+    autoPacingBudget=null;
+    return true;
   }
 
   function autoDelayMs(){

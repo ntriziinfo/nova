@@ -22,8 +22,7 @@ test('AT exit redraws heaven without changing impurity, and bonus cannot demote 
  assert.equal(n.reset(()=>.6,6).mode,'B');assert.equal(n.ceiling(n.reset(()=>.6,6)),600);
  for(const dryAtEnd of [false,true]){
   const ended=n.afterArt({mode:'天国',games:100,impurity:20,level:'high',highLeft:10},{phase:'art'},{phase:'normal',dryAtEnd},{},()=>0);
-  const gain=n.config({}).atDryGain*NovaTuning.balanceProfile(3).failureRecovery;
-  assert.equal(ended.games,0);assert.equal(ended.mode,'A');assert.equal(ended.impurity,dryAtEnd?20+gain:20);assert.equal(ended.level,'low');
+  assert.equal(ended.games,0);assert.equal(ended.mode,'A');assert.equal(ended.impurity,dryAtEnd?25:20);assert.equal(ended.level,'low');
  }
  const after=n.afterBonus({mode:'天国',impurity:55},()=>0);
  assert.equal(after.mode,'天国');assert.equal(after.impurity,55);assert.equal(after.games,0);
@@ -47,9 +46,11 @@ test('mode ceiling guarantees BIG during a CZ and resets after the bonus',()=>{
  const cz={phase:'cz',remaining:2,totalGames:15,success:false,winProbability:.4};
  for(const flow of [{phase:'normal'},cz,{...cz,remaining:1,success:true}]){
   const t=spin({mode:'A',games:799,impurity:0},seq(.9,0),flow);
-  assert.equal(t.internalBonus.kind,'BIG');assert.match(t.internalBonus.source,/800G/);
-  assert.equal(t.state.impurity,10);assert.equal(t.state.ceilingHandled,true);assert.equal(t.state.prelude,null);
-  const fresh=n.afterBonus(t.state,()=>0);assert.equal(fresh.ceilingHandled,false);assert.equal(fresh.games,0);
+  assert.equal(t.state.impurity,5);assert.equal(t.state.ceilingHandled,true);assert.equal(t.state.prelude,null);
+  const resolved=flow.phase==='cz'&&flow.remaining>1?spin(t.state,seq(.9,0),f.advance(t.czFlow)):t;
+  if(flow.phase==='cz'&&flow.remaining>1){assert.equal(t.internalBonus,null);assert.equal(t.czFlow.success,true);assert.equal(t.czFlow.winProbability,1);}
+  assert.equal(resolved.internalBonus.kind,'BIG');assert.match(resolved.internalBonus.source,/800G/);assert.equal(resolved.state.impurity,5);
+  const fresh=n.afterBonus(resolved.state,()=>0);assert.equal(fresh.ceilingHandled,false);assert.equal(fresh.games,0);
   assert.equal(spin(fresh).internalBonus,null);
  }
 });

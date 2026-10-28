@@ -14,6 +14,7 @@ const constants=source.slice(source.indexOf('  const A_TYPE_PAYOUTS'),source.ind
 const result=source.slice(source.indexOf('  const RESULT ='),source.indexOf('  const SETTING_PROFILE'));
 const sheetHelpers=source.slice(source.indexOf('  const NOVA_SHEET_DATA'),source.indexOf('  function novaSymbol'));
 const strips=source.slice(source.indexOf('  const REEL_STRIPS ='),source.indexOf('  function mod('));
+const autoReference=source.slice(source.indexOf('  const AUTO_REFERENCE_LEFT_COLUMNS'),source.indexOf('  function standardAutoMissBarBottomEligible'));
 vm.runInContext('const A_TYPE_PREMIUM_BIG_PAYOUT=500;'+constants+result+sheetHelpers+`
 const A_TYPE_MODE=true;
 const novaStopGridCache=new Map();const pressedStopCache=new Map();
@@ -24,8 +25,8 @@ const isNovaGrid=grid=>[0,1,2].every(r=>[0,1,2].every(c=>grid[r][c]===novaSymbol
 'hasBellDiagonal','cherryResultFromRow','cherryResultFromRows','displayedResultFromGrid',
 'displayedResultFromRow','gridPaylineRows','gridHasOnlyAllowedPaylines','buildNovaReelGrid',
 'normalRewardFor','resolveATypeBonusOutcome','isCherryResult','novaPatternFromGrid','isNovaResult','buildForcedNovaGrid',
-'bellNavigationMiss','nearestNavigatedBellStop','setGridColumn','nearestCommonStopColumn','pressedStopCandidates','nearestPressedStopColumn','prepareManualRareOutcome','drawSuperNovaBonus','resolveNormalOutcome','decideBigPremiumEffect','drawNormalResult'
-].map(fn).join('\n')+`
+'bellNavigationMiss','nearestNavigatedBellStop','setGridColumn','nearestCommonStopColumn','pressedStopCandidates','standardAutoMissBarBottomEligible','commitAutoMissBarBottom','nearestPressedStopColumn','prepareManualRareOutcome','drawSuperNovaBonus','resolveNormalOutcome','decideBigPremiumEffect','drawNormalResult'
+].map(fn).join('\n')+autoReference+`
 const aTypeBonusRemainingNet=()=>remaining;
 let remaining=1;const session={paid:0,bonusKind:"BIG"};const isATypeBonusComplete=()=>session.paid>=NovaArt.bonusTarget(session.bonusKind);
 let pendingATypeInternalBonus=null;let pendingArtStep=null;let pendingPreparationRole='';
@@ -116,15 +117,35 @@ test('middle-first NEBULA aim pulls the three symbols below it up to the top lin
  }
 });
 
-test('AUTO and super-speed MISS layouts keep BAR at the lower-left without changing the result',()=>{
- let draws=0;context.autoRng=()=>{draws++;return .37;};
- const built=run(`(()=>{const originalRandom=Math.random;Math.random=autoRng;try{return buildNovaReelGrid('MISS',1,0,{autoMissBarBottom:true});}finally{Math.random=originalRandom;}})()`);
- assert.equal(draws,1);assert.equal(built[2][0],'BAR');
- for(const order of [[0,1,2],[1,0,2],[0,2,1]])for(let top=0;top<20;top++){context.top=top;context.order=order;
-  const out=run(`(()=>{const spin={result:'MISS',grid:buildNovaReelGrid('MISS',1,0,{autoMissBarBottom:true}),autoMissBarBottom:true,stopped:[false,false,false],auditPressOrder:[],resolved:{reward:0,flowAfter:{phase:'normal'}}};
-   const before=JSON.stringify(spin.resolved);for(const i of order){spin.auditPressOrder.push(i);const distance=col=>Math.min(...REEL_STRIPS[i].flatMap((_,n)=>col.every((v,r)=>REEL_STRIPS[i][(n+r)%20]===v)?[mod(top+.5-n,20)]:[]));nearestPressedStopColumn(i,spin,distance,true);spin.stopped[i]=true;}
-   return {bar:spin.grid[2][0],listed:pressedStopCandidates('MISS').misses.some(g=>JSON.stringify(g)===JSON.stringify(spin.grid)),same:before===JSON.stringify(spin.resolved),shown:displayedResultFromGrid(spin.grid)};})()`);
-  assert.equal(out.bar,'BAR');assert.equal(out.listed,true);assert.equal(out.same,true);assert.equal(out.shown,'MISS');
+test('AUTO and super-speed share one BAR timing and derive every ordinary role from it',()=>{
+ const rows=[
+  ['MISS',['REPLAY','🔔','BAR'],'MISS',0],['ONE_COIN',['REPLAY','🔔','BAR'],'ONE_COIN',1],
+  ['CZ',['REPLAY','🔔','BAR'],'MISS',0],['STRONG_CZ',['REPLAY','🔔','BAR'],'MISS',0],
+  ['REPLAY',['REPLAY','🔔','BAR'],'REPLAY',3],['BELL15',['REPLAY','🔔','BAR'],'BELL15',15],
+  ['BELL',['🍋','REPLAY','🔔'],'BELL',8],['WEAK_SUICA',['🍋','REPLAY','🔔'],'WEAK_SUICA',3],
+  ['WEAK_NOVA',['🔔','BAR','🍒'],'WEAK_NOVA',2],['STRONG_NOVA',['🔔','BAR','🍒'],'STRONG_NOVA',2]
+ ];
+ for(const [role,left,shown,reward] of rows){context.role=role;context.expectedLeft=left;context.expectedShown=shown;context.reward=reward;
+  let draws=0;context.autoRng=()=>{draws++;return .37;};
+  const built=run(`(()=>{const originalRandom=Math.random;Math.random=autoRng;try{return buildNovaReelGrid(role,1,0,{autoMissBarBottom:true});}finally{Math.random=originalRandom;}})()`);
+  assert.equal(draws,['WEAK_NOVA','STRONG_NOVA'].includes(role)?2:1,role);assert.deepEqual(Array.from(built,r=>r[0]),left,role);
+  for(const order of [[0,1,2],[1,0,2],[0,2,1]])for(const speed of ['AUTO','SUPER']){context.order=order;context.speed=speed;
+   const out=run(`(()=>{const spin={result:role,grid:buildNovaReelGrid(role,1,0,{autoMissBarBottom:true}),autoMissBarBottom:true,stopped:[false,false,false],auditPressOrder:[],resolved:{reward,flowAfter:{phase:'normal'}}};
+    if(['BELL','BELL15'].includes(role))spin.bellNaviOrder=order.slice();
+    const before=JSON.stringify(spin.resolved);for(const i of order){spin.auditPressOrder.push(i);const distance=col=>Math.min(...REEL_STRIPS[i].flatMap((_,n)=>col.every((v,r)=>REEL_STRIPS[i][(n+r)%20]===v)?[mod(8.5-n,20)]:[]));let col=nearestCommonStopColumn(i,spin,distance)||nearestPressedStopColumn(i,spin,distance,true)||spin.grid.map(row=>row[i]);col=nearestNavigatedBellStop(i,spin,distance)||col;spin.stopped[i]=true;}
+    return {left:spin.grid.map(row=>row[0]),listed:autoReferenceStopChoices(role).some(g=>JSON.stringify(g)===JSON.stringify(spin.grid)),same:before===JSON.stringify(spin.resolved),shown:displayedResultFromGrid(spin.grid)};})()`);
+   assert.deepEqual(Array.from(out.left),left,`${role} ${order} ${speed}`);assert.equal(out.listed,true,role);assert.equal(out.same,true,role);assert.equal(out.shown,shown,role);
+  }
+ }
+});
+
+test('AUTO takeover commits the compatible full grid without RNG and keeps special cues excluded',()=>{
+ for(const role of ['MISS','ONE_COIN','REPLAY','BELL','BELL15','WEAK_SUICA','WEAK_NOVA','STRONG_NOVA']){context.role=role;
+  const out=run(`(()=>{const spin={result:role,grid:buildNovaReelGrid(role,1),stopped:[false,false,false],resolved:{reward:0}};const before=JSON.stringify(spin.resolved);const originalRandom=Math.random;Math.random=()=>{throw Error('Unexpected RNG');};try{return {committed:commitAutoMissBarBottom(spin),eligible:standardAutoMissBarBottomEligible(spin),left:spin.grid.map(row=>row[0]),listed:autoReferenceStopChoices(role).some(g=>JSON.stringify(g)===JSON.stringify(spin.grid)),same:before===JSON.stringify(spin.resolved)};}finally{Math.random=originalRandom;}})()`);
+  assert.equal(out.committed,true,role);assert.equal(out.eligible,true,role);assert.equal(out.listed,true,role);assert.equal(out.same,true,role);
+ }
+ for(const special of [{zoneActiveAtStart:true},{reversePushGuide:'red'},{reachMeLine:'BARBAR7'},{resolved:{aim:{symbol:'nebula'}}},{resolved:{zoneSpin:true}},{resolved:{researchSortie:{}}},{resolved:{stockEntry:{}}}]){context.special=special;
+  assert.equal(run(`standardAutoMissBarBottomEligible({result:'MISS',resolved:{},...special})`),false,JSON.stringify(special));
  }
 });
 

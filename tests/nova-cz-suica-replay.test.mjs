@@ -24,14 +24,15 @@ test('CZ watermelon displays and pays replay while its last-game rare-role rewri
 test('CZ losses, fake CZ, first 100G and ceiling spins also pay replay without changing the internal success rules',()=>{
  for(const phase of ['cz','strong_cz']){
   const lost=n.spin({games:120},flow(phase,{remaining:1}),1,{},()=>.999,'WEAK_SUICA');
-  const gain=n.config({}).czFailureGain*ctx.NovaTuning.balanceProfile(1).failureRecovery;
-  assert.equal(lost.result,'REPLAY');assert.equal(lost.internalBonus,null);assert.equal(lost.state.impurity,gain);
+  assert.equal(lost.result,'REPLAY');assert.equal(lost.internalBonus,null);assert.equal(lost.state.impurity,1);
   const fake=n.spin({games:120},flow(phase,{modeFake:true}),1,{},()=>0,'WEAK_SUICA');
   assert.equal(fake.result,'REPLAY');assert.equal(fake.czFlow.success,false);
   const early=n.spin({games:60},flow(phase),1,{},()=>0,'WEAK_SUICA');
   assert.equal(early.result,'REPLAY');assert.equal(early.internalBonus,null);
   const ceiling=n.spin({games:799,mode:'A'},flow(phase),1,{},()=>.999,'WEAK_SUICA');
-  assert.equal(ceiling.result,'REPLAY');assert.match(ceiling.internalBonus.source,/天井800G/);
+  assert.equal(ceiling.result,'REPLAY');assert.equal(ceiling.internalBonus,null);assert.equal(ceiling.czFlow.success,true);assert.equal(ceiling.state.impurity,5);
+  const reveal=n.spin(ceiling.state,{...ceiling.czFlow,remaining:1},1,{},()=>.999,'WEAK_SUICA');
+  assert.equal(reveal.result,'REPLAY');assert.match(reveal.internalBonus.source,/天井800G/);assert.equal(reveal.state.impurity,5);
  }
 });
 
@@ -49,7 +50,7 @@ test('ordinary normal play, normal-to-CZ entry and other CZ roles retain their o
 
 test('rare sortie keeps the internal watermelon and saved replay spins retain the already drawn result and 3pt payment',()=>{
  let draws=0;
- const c=vm.createContext({A_TYPE_MODE:true,settings:{setting:3},currentProfit:()=>0,NovaProgress:{drawSortie:(s,role)=>{assert.equal(role,'WEAK_SUICA');draws++;return true;}}});
+ const c=vm.createContext({A_TYPE_MODE:true,settings:{setting:3},currentGameProfit:()=>0,NovaProgress:{drawSortie:(s,role)=>{assert.equal(role,'WEAK_SUICA');draws++;return true;}}});
  vm.runInContext(source.match(/  function drawRareSortie\([^]*?\n  }/)[0],c);
  const resolved={internalResult:'WEAK_SUICA',reward:3,flowBefore:{phase:'cz'}};
  c.drawRareSortie('REPLAY',resolved);assert.equal(draws,1);assert.equal(resolved.sortieWon,true);
@@ -61,7 +62,7 @@ test('rare sortie keeps the internal watermelon and saved replay spins retain th
 
 test('CZ replay disguise also retains the internal-role fake-sortie rate',()=>{
  const roles=[];
- const c=vm.createContext({A_TYPE_MODE:true,settings:{setting:2},currentProfit:()=>0,
+ const c=vm.createContext({A_TYPE_MODE:true,settings:{setting:2},currentGameProfit:()=>0,
   NovaProgress:{drawSortie:(_,role)=>{roles.push(role);return false;},sortieEligible:role=>{roles.push(role);return true;},sortieChance:(_,role)=>{roles.push(role);return .01;}},
   NovaStockEntry:{drawFake:(p,won)=>{assert.equal(p,.01);assert.equal(won,false);return true;}}
  });

@@ -12,6 +12,7 @@ test('final lamp slot switches all eight CZ lamps to fast rainbow; clearing CZ r
  const order=c.NovaFlow.lampCharacters;
  assert.equal(order.length,8);assert.equal(order.at(-1),'ouma1');
  c.items=new Map(order.map(id=>[id,{dataset:{}}]));
+ c.setLampData=(el,key,value)=>{el.dataset[key]=String(value);};
  c.machine={dataset:{czLamp:'7',czBlink:'2'},classList:{contains:()=>false}};
  c.chance={classList:{contains:()=>false}};c.layer={dataset:{}};c.lampMode={value:'auto'};
  const source=fs.readFileSync('nova-artwork.js','utf8');
@@ -37,7 +38,13 @@ test('each displayed rare navigation plays the supplied effect once on BET in ma
   assert.equal(sounds.length,before+1);assert.equal(spin.rareNaviSoundPlayed,true);
   assert.equal(sounds.at(-1)[0],'assets/media/nova/rare-navi.mp3');assert.equal(sounds.at(-1)[1],.37);
  }
- assert.equal(variants.size,6);
+ assert.equal(variants.size,3);assert([...variants].every(variant=>variant.endsWith('!')&&!variant.endsWith('!!')));
+ const confirmedVariants=new Set();
+ for(const result of ['WEAK_SUICA','STRONG_SUICA','CHANCE_A','CHANCE_B','WEAK_NOVA','STRONG_NOVA','SUPER_NOVA'])for(const roll of [0,.999]){
+  const spin={result,resolved:{flowBefore:{phase:'art'},atOutcome:{direct:1}}};
+  const signal=c.NovaBellNavi.drawRareNavi(spin,()=>roll);assert(signal);confirmedVariants.add(signal.color+signal.mark);
+ }
+ assert.equal(confirmedVariants.size,6);
  const count=sounds.length;
  for(const spin of [null,{}, {result:'WEAK_SUICA'},{result:'BELL',bellNaviOrder:[0,1,2]}])c.playRareNaviSound(spin);
  for(const flag of ['debugFastSpinActive','speedToBonusActive']){c[flag]=true;c.playRareNaviSound({rareNavi:{color:'red',mark:'!!'}});c[flag]=false;}

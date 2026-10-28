@@ -69,7 +69,7 @@ test('legacy normal interval excludes elapsed AT games using the existing post-A
 test('live counted games split by phase while bonus and 0G spins remain excluded',()=>{
  const c=vm.createContext({A_TYPE_MODE:true,session:{active:false},normalState:{flow:{phase:'normal'}},stats:{totalSpins:0},
   NovaFlow:{normalize:x=>x},NovaArt:{prepareBet:x=>x},NovaProgress:{beforeBet:x=>x},NovaDecrement:{observe(){},beforeBet(){}},
-  settings:{},syncNovaProgress(){},currentProfit:()=>0,recordAtFirstEntry(){}});
+  settings:{},syncNovaProgress(){},currentGameProfit:()=>0,recordAtFirstEntry(){}});
  vm.runInContext(js+fn('countTotalSpinIfNeeded'),c);
  c.countTotalSpinIfNeeded(false);c.normalState.flow={phase:'cz'};c.countTotalSpinIfNeeded(false);
  c.normalState.flow={phase:'art',zone:'sora'};c.countTotalSpinIfNeeded(false);

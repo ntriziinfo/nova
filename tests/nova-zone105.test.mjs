@@ -1,10 +1,16 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';const c=vm.createContext({});for(const f of ['nova-tuning.js','nova-art.js','nova-balance.js'])vm.runInContext(fs.readFileSync(f,'utf8'),c);const a=c.NovaArt;
-test('ouma final miss below 100 rewrites to a win without freeze',()=>{
- for(const award of ['0','50']){const out=a.step({...a.startZone(a.enter(),'ouma'),zoneLeft:1,award},{},()=>.9,'MISS');assert.equal(out.result,'SUPER_NOVA');assert.equal(out.flow.award,'100');assert.equal(out.flow.oumaPending,false);assert.equal(out.flow.zone,'');}
+test('ouma final miss reaches 100 through fixed 50pt wins without freeze',()=>{
+ for(const award of ['0','50']){
+  let state={...a.startZone(a.enter(),'ouma'),zoneLeft:1,award},wins=0;
+  while(state.zone){const before=Number(state.award),out=a.step(state,{},()=>.9,'MISS');assert.equal(out.result,'SUPER_NOVA');assert.equal(out.zoneAward,50);assert.equal(Number(out.flow.award)-before,50);assert.equal(out.flow.oumaPending,false);state=out.flow;wins++;}
+  assert.equal(state.award,'100');assert.equal(wins,award==='0'?2:1);
+ }
  const out=a.step({...a.startZone(a.enter(),'ouma'),zoneLeft:1,award:'100'},{},()=>.9,'MISS');assert.equal(out.result,'MISS');
 });
-test('natural final nova still gets a freeze lottery and satisfies 100 floor',()=>{
- const out=a.step({...a.startZone(a.enter(),'ouma'),zoneLeft:1},{},()=>.9,'SUPER_NOVA');assert.equal(out.flow.award,'100');assert.equal(out.flow.oumaPending,true);
+test('natural final nova still gets a freeze lottery before its fixed wins satisfy the 100 floor',()=>{
+ let out=a.step({...a.startZone(a.enter(),'ouma'),zoneLeft:1},{},()=>.9,'SUPER_NOVA');assert.equal(out.flow.award,'50');assert.equal(out.zoneAward,50);assert.equal(out.flow.oumaPending,true);
+ const continued=a.prepareBet(out.flow,{},()=>.999);assert.equal(continued.zone,'ouma');assert.equal(continued.zoneLeft,1);assert.equal(continued.zero,false);
+ out=a.step(continued,{},()=>.9,'MISS');assert.equal(out.result,'SUPER_NOVA');assert.equal(out.zoneAward,50);assert.equal(out.flow.award,'100');assert.equal(out.flow.zone,'');
 });
 test('zone awards no longer reduce hit or freeze chances above 2000',()=>{
  for(const id of ['urapi','ouma','ura_ouma','toto','sora','ura_sora']){const s=a.startZone(a.enter(),id);const low=a.zoneRules(s,a.defaults),high=a.zoneRules({...s,award:'10000'},a.defaults);assert.equal(high.hit,low.hit);assert.equal(high.reset,low.reset);assert.equal(high.freeze,low.freeze);}

@@ -6,18 +6,20 @@ const ctx=vm.createContext({});
 for(const file of ['nova-tuning.js','nova-decrement.js','nova-art.js','nova-balance.js','nova-flow.js','nova-normal.js'])vm.runInContext(fs.readFileSync(file,'utf8'),ctx);
 const n=ctx.NovaNormal,f=ctx.NovaFlow,a=ctx.NovaArt;
 const spin=(state,flow={phase:'normal'},rng=()=>.99,role='BELL')=>n.spin(state,flow,3,{},rng,role);
-test('mode rules: no normal bonus through 100G; 100G real CZ resolves from 101G after save/reload',()=>{
+test('normal lotteries remain active through the first 100G and the 100G CZ draws its result at entry',()=>{
  for(const mode of n.modes){
-  for(const g of [0,49,50,98,99])for(const role of ['MISS','STRONG_NOVA','SUPER_NOVA']){
-   const t=spin(n.normalize({mode,games:g,fiftyChecked:true}),{phase:'normal'},()=>0,role);
-   assert.equal(t.internalBonus,null);assert.notEqual(t.result,'SUPER_NOVA');if(g<99)assert.equal(t.entry,'');
+  for(const g of [0,49,50,98]){
+   const rare=spin(n.normalize({mode,games:g,fiftyChecked:true}),{phase:'normal'},()=>0,'STRONG_NOVA');
+   assert.equal(rare.result,'STRONG_NOVA');assert.equal(rare.entry,'');assert.equal(rare.state.prelude.entry,'STRONG_CZ');
+   const premium=spin(n.normalize({mode,games:g,fiftyChecked:true}),{phase:'normal'},()=>0,'SUPER_NOVA');
+   assert.equal(premium.result,'SUPER_NOVA');assert.equal(premium.internalBonus,null);
   }
   const t=spin(n.normalize({mode,games:99,fiftyChecked:true}),{phase:'normal'},()=>0);
-  assert.equal(t.entry,'CZ');assert.equal(t.czOptions.modePending,true);
+  assert.equal(t.entry,'CZ');assert.equal(t.czOptions.modePending,false);assert.equal(t.modeEvent.type,'realZone');
   const cz=f.normalize(JSON.parse(JSON.stringify(f.enterCZ(false,t.czOptions,()=>0))));
-  assert.equal(cz.success,false);assert.equal(cz.modePending,true);
-  const next=spin(n.normalize(JSON.parse(JSON.stringify(t.state))),cz,()=>0);
-  assert.equal(next.state.games,101);assert.equal(next.czFlow.success,true);assert.equal(next.czFlow.modePending,false);
+  assert.equal(cz.success,true);assert.equal(cz.modePending,false);
+  const next=spin(n.normalize(JSON.parse(JSON.stringify(t.state))),cz,()=>.999);
+  assert.equal(next.state.games,101);assert.equal(next.czFlow.success,true);assert.equal(next.czFlow.modePending,false);assert.equal(next.internalBonus,null);
  }
 });
 test('mode fake CZ survives reload and cannot be rescued by a strong rare role',()=>{
@@ -33,9 +35,14 @@ test('mode fake CZ survives reload and cannot be rescued by a strong rare role',
  }
 });
 test('mode ceilings guarantee BIG even when CZ or a prelude overlaps',()=>{
- for(const [i,mode]of n.modes.entries())for(const flow of [{phase:'normal'},f.enterCZ(false,{czChance:0},()=>.99)]){
-  const g=n.ceilings[i],s=n.normalize({mode,games:g-1,fiftyChecked:true,prelude:{kind:'czFake',presentation:'reel',left:5,total:8}});
-  const t=spin(s,flow);assert.equal(t.internalBonus.kind,'BIG');assert.match(t.internalBonus.source,/天井/);assert.equal(t.state.games,g);assert.equal(t.state.prelude,null);
+ for(const [i,mode]of n.modes.entries()){
+  const g=n.ceilings[i],ceilingImpurity=5+(g===400?2:g===600?3:0),s=n.normalize({mode,games:g-1,fiftyChecked:true,prelude:{kind:'czFake',presentation:'reel',left:5,total:8}});
+  const normal=spin(s,{phase:'normal'});assert.equal(normal.internalBonus.kind,'BIG');assert.match(normal.internalBonus.source,/天井/);assert.equal(normal.state.games,g);assert.equal(normal.state.prelude,null);assert.equal(normal.state.impurity,ceilingImpurity);
+  let state=s,flow=f.enterCZ(false,{czChance:0},()=>.99),t=spin(state,flow);
+  assert.equal(t.internalBonus,null);assert.equal(t.czFlow.success,true);assert.equal(t.czFlow.winProbability,1);assert.equal(t.state.games,g);assert.equal(t.state.prelude,null);assert.equal(t.state.impurity,ceilingImpurity);
+  state=t.state;flow=f.advance(t.czFlow);
+  while(flow.remaining>1){t=spin(state,flow);assert.equal(t.internalBonus,null);assert.equal(t.czFlow.success,true);assert.equal(t.state.impurity,ceilingImpurity);state=t.state;flow=f.advance(t.czFlow);}
+  t=spin(state,flow);assert.equal(t.internalBonus.kind,'BIG');assert.match(t.internalBonus.source,/天井/);assert.equal(t.state.impurity,ceilingImpurity);
  }
 });
 test('bonus promotion never demotes before AT, resets checkpoints; AT end redraws mode',()=>{

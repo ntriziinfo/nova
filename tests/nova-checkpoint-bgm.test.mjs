@@ -2,7 +2,7 @@ import test from 'node:test';import assert from 'node:assert/strict';import fs f
 import {readGameSource} from '../scripts/game-source.mjs';
 const source=readGameSource();
 function context(){
- const c=vm.createContext({isSpinning:false,currentSpin:null,session:{active:false},normalState:{flow:{}},NovaProgress:{snapshot:()=>({next:2400})},currentProfit:()=>2000,speedToBonusActive:false,isHighMode:()=>false,DEFAULT_NORMAL_BGM_SRC:'normal'});
+ const c=vm.createContext({isSpinning:false,currentSpin:null,session:{active:false},normalState:{flow:{}},NovaProgress:{snapshot:()=>({next:2400})},currentGameProfit:()=>2000,speedToBonusActive:false,isHighMode:()=>false,DEFAULT_NORMAL_BGM_SRC:'normal'});
  vm.runInContext(fs.readFileSync('nova-art.js','utf8'),c);
  const constants=[...source.matchAll(/  const \w+_BGM_SRC = "[^"]+";/g)].map(m=>m[0]).join('\n');
  vm.runInContext(constants+'\n'+source.match(/^  function presentedArtFlow\(.*$/m)[0]+'\n'+['atCheckpointStatus','normalBgmSrc','ensureNormalBgmSource'].map(name=>source.match(new RegExp('  function '+name+'\\([^]*?\\n  }'))[0]).join('\n'),c);

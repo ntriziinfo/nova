@@ -49,12 +49,13 @@ test('zone and AT result third stops skip result delay; ordinary games keep it',
  }
 });
 
-test('shutter stops restart movement sound and third stop replaces it with close sound',()=>{
+test('shutter stops restart movement sound and play each third-stop outcome only once',()=>{
  const sounds=[];let paused=0;const c=vm.createContext({superSpeedActive:false,currentSpin:{result:'REPLAY'},isLadderShutterSpin:()=>true,sfxOutputVolume:()=>.5,oneShotSoundCache:new Map([['assets/media/nova/shutter.wav',{pause(){paused++;}}]]),playOneShotSound:(src)=>sounds.push(src)});
  vm.runInContext(fn('playStopSound'),c);
  c.playStopSound(2,1);c.playStopSound(0,2);c.playStopSound(1,3);
  assert.deepEqual(sounds,['assets/media/nova/shutter.wav','assets/media/nova/shutter.wav','assets/media/nova/shutter-close.wav']);assert.equal(paused,1);
- c.currentSpin.result='MISS';c.playStopSound(1,3);assert.equal(sounds.at(-1),'assets/media/nova/ouma-fail.wav');assert.equal(paused,2);
+ c.currentSpin.result='MISS';c.playStopSound(1,3);assert.equal(sounds.length,3);assert.equal(paused,2);
+ c.currentSpin={result:'MISS'};c.playStopSound(1,3);assert.equal(sounds.at(-1),'assets/media/nova/ouma-fail.wav');assert.equal(paused,3);
 });
 
 test('internal red seven confirmation plays patrol once before lineup',()=>{

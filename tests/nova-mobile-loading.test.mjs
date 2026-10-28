@@ -21,13 +21,20 @@ function environment(compact){
  return {context,elements,listeners};
 }
 
-test('mobile image routing preserves licensed originals and desktop source paths',()=>{
+test('mobile image routing uses compact copies and desktop lossless copies without changing source files',()=>{
  const mobile=environment(true).context.NovaMedia,desktop=environment(false).context.NovaMedia;
- for(const src of ['assets/illustrations/lamps-20260916/sora1.png','assets/symbols/seven-nebula-original.png','assets/symbols/nebula-original.png','unknown.png']){
+ for(const src of ['assets/illustrations/lamps-20260916/sora1.png','assets/symbols/nebula-original.png','unknown.png']){
   assert.equal(mobile.imageSource(src),src);assert.equal(desktop.imageSource(src),src);
  }
+ const seven='assets/lossless-20261027/seven-nebula-original.webp';
+ assert.equal(mobile.imageSource('assets/symbols/seven-nebula-original.png'),seven);
+ assert.equal(desktop.imageSource('assets/symbols/seven-nebula-original.png'),seven);
+ const desktopLossless=new Map([
+  ['assets/design/nova-cabinet-v1/cabinet-game.png','assets/lossless-20261027/cabinet-game.webp'],
+  ...['miss','replay','bell','suika','bar'].map(id=>['assets/symbols/gang-v3/'+id+'.png','assets/lossless-20261027/'+id+'.webp'])
+ ]);
  for(const {source,target} of JSON.parse(fs.readFileSync('assets/mobile-20261013/manifest.json')).entries){
-  assert.equal(mobile.imageSource(source),target);assert.equal(desktop.imageSource(source),source);
+  assert.equal(mobile.imageSource(source),target);assert.equal(desktop.imageSource(source),desktopLossless.get(source)||source);
  }
  assert.equal(mobile.videoPreload,'none');assert.equal(desktop.videoPreload,'auto');
 });
@@ -51,7 +58,8 @@ test('mobile defers hidden aim media while first-use scenes retain their video, 
  assert(elements.filter(e=>e.tag==='video').length>10);
  assert(elements.filter(e=>e.tag==='video').every(e=>e.preload==='none'&&e.hidden));
   assert(elements.filter(e=>e.tag==='video').every(e=>!e.loads),'explicit load can override the mobile preload hint');
- assert(elements.filter(e=>e.tag==='img').every(e=>e.loading==='lazy'&&e.hidden));
+ const deferredTitles=elements.filter(e=>e.tag==='img'&&/^nova(?:CzIntro|Comeback|AtWait|Sortie|SuperChallenge)Title$/.test(e.className||''));
+ assert.equal(deferredTitles.length,5);assert(deferredTitles.every(e=>e.loading==='lazy'&&e.hidden));
  const scenes=[
   [{flowBefore:{phase:'cz',remaining:20,totalGames:20}},'cz-intro-bg.mp4','novaCzIntroTitle'],
   [{flowBefore:{phase:'art',initialStage:'wait'}},'at-wait-bg.mp4','novaAtWaitTitle'],

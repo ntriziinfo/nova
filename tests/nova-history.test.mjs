@@ -61,7 +61,7 @@ test('cached full/compact JSON stays equivalent and fresh through tail updates, 
 test('recording retains progress/decrement observation order and only renders changed points',()=>{
  const calls=[];let profit=10;
  const c=vm.createContext({completeTrialState:{},stats:{totalSpins:1,slumpHistory:[]},A_TYPE_MODE:true,SLUMP_MAX_HISTORY_POINTS:max,NovaHistory:history,reduceSlumpPoints:reduce,
-  currentProfit:()=>profit,syncNovaProgress:()=>calls.push('sync'),NovaProgress:{observeNet:p=>calls.push(['net',p])},NovaDecrement:{observe:p=>calls.push(['decrement',p])},scheduleSlumpGraphRender:()=>calls.push('render')});
+  currentProfit:()=>profit,currentGameProfit:()=>profit,syncNovaProgress:()=>calls.push('sync'),NovaProgress:{observeNet:p=>calls.push(['net',p])},NovaDecrement:{observe:p=>calls.push(['decrement',p])},scheduleSlumpGraphRender:()=>calls.push('render')});
  vm.runInContext(fn('recordSlumpPoint'),c);
  c.recordSlumpPoint(false);c.recordSlumpPoint(true);profit=12;c.recordSlumpPoint(true);
  assert.deepEqual(calls,['sync',['net',10],'render','sync',['net',10],['decrement',10],'sync',['net',12],['decrement',12],'render']);

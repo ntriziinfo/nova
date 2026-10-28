@@ -94,11 +94,11 @@ test('seven aim tolerance does not snap an unaligned press or change ordinary ca
 });
 
 test('seven aim chooses the closest approved window and retains its random draw',()=>{
- const source=readGameSource(),start=source.indexOf('let column=getReelWindowFromStrip(i,symbol,target.onLine?1:0);'),end=source.indexOf('setGridColumn(currentSpin.grid,i,column);',start);
+ const source=readGameSource(),start=source.indexOf('let column=normalizeNebulaMiddleFirstColumn(currentSpin,i)||getReelWindowFromStrip(i,symbol,target.onLine?1:0);'),end=source.indexOf('setGridColumn(currentSpin.grid,i,column);',start);
  assert.ok(start>0&&end>start);
  const a=[['A','M','R'],['7','7','7'],['B','N','S']],b=[['C','M','R'],['7','7','7'],['D','N','S']];
  let draws=0;
- const context=vm.createContext({i:0,symbol:'7',target:{onLine:true},motionAt:{pos:0},currentSpin:{stopped:[false,false,false]},getReelWindowFromStrip:()=>{draws++;return ['A','7','B'];},novaSheetStopChoices:()=>[a,b],NovaReelMotion:{distance:(_,col)=>col[0]==='C'?0:18}});
+ const context=vm.createContext({i:0,symbol:'7',target:{onLine:true},motionAt:{pos:0},currentSpin:{stopped:[false,false,false]},normalizeNebulaMiddleFirstColumn:()=>null,getReelWindowFromStrip:()=>{draws++;return ['A','7','B'];},novaSheetStopChoices:()=>[a,b],NovaReelMotion:{distance:(_,col)=>col[0]==='C'?0:18}});
  const result=vm.runInContext(source.slice(start,end)+'column;',context);
  assert.deepEqual(Array.from(result),['C','7','D']);assert.equal(draws,1);
 });

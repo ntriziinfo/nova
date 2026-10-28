@@ -23,6 +23,7 @@ test('lighting order survives stage changes, success rewrites and JSON reload wi
 test('renderer uses the shuffled prefix, keeps positions, and reserves rainbow for confirmation',()=>{
  c.canEdit=false;
  const order=['ouma1','sora1','giru1','urapi','toto','sosuke','nito','kushuri'];
+ c.setLampData=(el,key,value)=>{el.dataset[key]=String(value);};
  c.items=new Map(f.lampCharacters.map(id=>[id,{dataset:{},style:{left:id}}]));c.machine={dataset:{czLamp:'1',czOrder:order.join(',')},classList:{contains:()=>false}};
  c.chance={classList:{contains:()=>false}};c.layer={dataset:{}};c.lampMode={value:'auto'};
  vm.runInContext(fs.readFileSync('nova-artwork.js','utf8').match(/  function syncLamp\(\)\{[^]*?\n  }/)[0],c);
@@ -48,7 +49,9 @@ test('live stop handler applies the same shuffled prefix throughout one CZ and c
   }
  }
  assert.equal(previous,6);assert.equal(machine.dataset.czRainbow,'false');
- ctx.showCzLamp(3,{bonusHit:true,czLamp:{stage:4,totalGames:20,remaining:1,timingSeed:42}});assert.equal(machine.dataset.czLamp,'8');assert.equal(machine.dataset.czRainbow,'true');
+ const terminal={bonusHit:true,czLamp:{stage:4,totalGames:20,remaining:1,timingSeed:42}};
+ ctx.showCzLamp(3,terminal);assert.notEqual(machine.dataset.czLamp,'8');assert.equal(machine.dataset.czRainbow,'false');
+ terminal.czPushConfirmed=true;ctx.showCzLamp(0,terminal);assert.equal(machine.dataset.czLamp,'8');assert.equal(machine.dataset.czRainbow,'true');
  ctx.showCzLamp(0,null);assert.equal(machine.dataset.czOrder,'');assert.equal(machine.dataset.czLamp,'0');
 });
 
@@ -66,11 +69,13 @@ test('confirmed prefixes cannot occur below their minimum, and ordinary shuffle 
   if(expected===0)assert.equal(frequency,0);else{assert(frequency>0);assert(Math.abs(frequency-expected)<.006,`${setting} ${h.id}: ${frequency}`);}
  }
 });
-test('a confirmed CZ stores its stage-8 rainbow presentation on the paid spin',()=>{
+test('a winning CZ stores stage 8 only after the PUSH confirmation',()=>{
  const machine={dataset:{czLamp:'0',czRainbow:'false'}},ctx=vm.createContext({settings:{setting:1},normalState:{},document:{getElementById:()=>machine},NovaFlow:f,NovaCzPresentation:c.NovaCzPresentation,sfxOutputVolume:()=>.5,playOneShotSound(){}});
  vm.runInContext(fs.readFileSync('nova-game.js','utf8').match(/  function showCzLamp\([^]*?\n  }/)[0],ctx);
  const resolved={bonusHit:true,czLamp:{stage:4,totalGames:15,remaining:1,timingSeed:42}};
  ctx.showCzLamp(0,resolved);
+ assert.equal(resolved.czLampAtBet,undefined);assert.notEqual(machine.dataset.czLamp,'8');assert.equal(machine.dataset.czRainbow,'false');
+ resolved.czPushConfirmed=true;ctx.showCzLamp(0,resolved);
  assert.equal(resolved.czLampAtBet,8);assert.equal(machine.dataset.czLamp,'8');assert.equal(machine.dataset.czColor,'rainbow');assert.equal(machine.dataset.czRainbow,'true');
 });
 test('CZ setting hints survive reload without reselecting or changing awards and timing',()=>{

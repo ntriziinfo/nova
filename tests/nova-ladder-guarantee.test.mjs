@@ -18,7 +18,9 @@ test('guarantee follows current secured amount and never applies to table seven'
   }
  }
 });
-test('confirmed zone uses saved setting, not config defaults',()=>{
- const state={...a.enter(),entryStage:'confirmed',pendingZone:'giru',giruSetting:6};
- const got=a.prepareBet(state,{},()=>.20);assert.deepEqual(got.ladder,a.ladderTables.giru[1]);assert.equal(got.giruSetting,6);
+test('first confirmed zone is common; later zones use the saved setting, not config defaults',()=>{
+ const first={...a.enter(),entryStage:'confirmed',pendingZone:'giru',giruSetting:6,balanceZoneCount:0};
+ const common=a.prepareBet(first,{},()=>.20);assert.deepEqual(common.ladder,a.ladderTables.giru[0]);assert.equal(common.giruSetting,6);assert.equal(common.balanceZoneCount,1);
+ const later={...a.enter(),entryStage:'confirmed',pendingZone:'giru',giruSetting:6,balanceZoneCount:1};
+ const profiled=a.prepareBet(later,{},()=>.20);assert.deepEqual(profiled.ladder,a.ladderTables.giru[1]);assert.equal(profiled.giruSetting,6);assert.equal(profiled.balanceZoneCount,2);
 });

@@ -17,7 +17,9 @@ export function check(){
   for(let setting=1;setting<=6;setting++){
    let flow={...NovaArt.enter({setting},()=>.5),researchUpper:false,remaining:'500',burstUsed:true};
    let t=NovaArt.step(reload(flow),{setting},seq([.9,.9,.1,.1,.5,.5]),'STRONG_NOVA');
-   assert.equal(t.atOutcome.direct,0);assert.equal(t.atOutcome.fixed50,true);assert.equal(t.flow.remaining,'500');
+   assert.equal(t.atOutcome.direct,0);assert.equal(t.atOutcome.fixed50,true);
+   const afterTrigger=BigInt(flow.remaining)-BigInt(NovaArt.cashPayout('STRONG_NOVA'));
+   assert.equal(t.flow.remaining,String(afterTrigger),'The 2-pay trigger remains part of the AT ledger');
    assert.equal(ui.NovaDirectAward.amount({...t,flowBefore:flow,flowAfter:t.flow}),0,'No immediate +50 overlay');
    assert.equal(ui.rareCueGrade({result:'STRONG_NOVA',resolved:{...t,flowBefore:flow,flowAfter:t.flow}}),'hot','Same guaranteed-zone cue eligibility');
    assert.deepEqual(t.flow.atPrelude.zones,['fixed50_sosuke']);assert.equal(t.flow.entryStage,'');
@@ -31,7 +33,7 @@ export function check(){
    const before=BigInt(flow.remaining);
    t=NovaArt.step(reload(flow),{setting},()=>0,'BELL');assert.equal(t.result,'MISS');assert.equal(t.zoneAward,50);assert(t.flow.ladderRevealed);assert.equal(BigInt(t.flow.remaining),before);flow=t.flow;
    const presentation=reload(flow);
-   t=NovaArt.step(reload(flow),{setting},()=>0,'SUPER_NOVA');assert.equal(t.result,'MISS');assert.equal(t.flow.zone,'');assert.equal(t.flow.award,'50');assert.equal(t.flow.remaining,String(before+50n));assert.equal(t.zoneAward,0);assert(!t.flow.fixed50Zone);
+   t=NovaArt.step(reload(flow),{setting},()=>0,'SUPER_NOVA');assert.equal(t.result,'MISS');assert.equal(t.flow.zone,'');assert.equal(t.flow.award,'50');assert.equal(t.flow.remaining,String(before+50n));assert.equal(BigInt(t.flow.remaining)-before,50n);assert.equal(t.zoneAward,0);assert(!t.flow.fixed50Zone);
    const c=vm.createContext({});vm.runInContext(fs.readFileSync(path.join(root,'nova-results.js'),'utf8'),c);
    const card=c.NovaResults.transition(presentation,t.flow,setting,()=>.5);assert.equal(card.character,'sosuke');assert.equal(card.pt,'50');
    const again=NovaArt.settleZone(reload(t.flow));assert.equal(again.remaining,t.flow.remaining,'No duplicate settlement');
@@ -76,11 +78,12 @@ test('upper AT credits 50pt once, retains simultaneous zones and previously earn
   const flow={...NovaArt.enter({setting},()=>.5),researchUpper:true,remaining:'500',burstUsed:true};
   let t=NovaArt.step(reload(flow),{setting},seq([.9,.9,.1,.1,.5,.5]),'STRONG_NOVA');
   assert.equal(t.atOutcome.direct,50);assert(!t.atOutcome.fixed50);assert.equal(t.atOutcome.zone,'');
-  assert.equal(t.flow.remaining,'550');assert.deepEqual(t.flow.atPrelude.zones,[]);
+  const afterTrigger=BigInt(flow.remaining)+50n-BigInt(NovaArt.cashPayout('STRONG_NOVA'));
+  assert.equal(t.flow.remaining,String(afterTrigger));assert.equal(afterTrigger-(BigInt(flow.remaining)-BigInt(NovaArt.cashPayout('STRONG_NOVA'))),50n);assert.deepEqual(t.flow.atPrelude.zones,[]);
   assert.equal(ui.NovaDirectAward.directAmount({...t,flowBefore:flow,flowAfter:t.flow}),50);
-  assert.equal(NovaArt.settleZone(NovaArt.normalize(reload(t.flow))).remaining,'550');
+  assert.equal(NovaArt.settleZone(NovaArt.normalize(reload(t.flow))).remaining,String(afterTrigger));
   while(t.flow.atPrelude)t=NovaArt.step(reload(t.flow),{setting},()=>.99,'REPLAY');
-  assert.equal(t.flow.entryStage,'');assert.equal(t.flow.pendingZone,'');assert.equal(t.flow.remaining,'541');
+  assert.equal(t.flow.entryStage,'');assert.equal(t.flow.pendingZone,'');assert.equal(t.flow.remaining,String(afterTrigger-9n));
   t=NovaArt.step(reload(flow),{setting},seq([.9,.9,.5,0,.9,.5,.5]),'STRONG_NOVA');
   assert.equal(t.atOutcome.direct,50);assert(t.atOutcome.zone);assert(!t.atOutcome.fixed50);
   assert.deepEqual(t.flow.atPrelude.zones,[t.atOutcome.zone]);

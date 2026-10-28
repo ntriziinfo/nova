@@ -20,7 +20,7 @@ function setup(){
   startAutoPlay(){c.autoPlay=true;},updateAutoUi(){c.updateSuperSpeedUi();},log(){},queueAutoStep(){},AUTO_SPEED_MULTIPLIER:2,MIN_SPIN_WAIT_MS:500,
   settings:{autoDelay:.5}});
  vm.runInContext(fs.readFileSync('nova-super-speed.js','utf8'),c);
- for(const name of ['canDebugSuperSpeed','hasSuperSpeedPermission','setSuperSpeedDebugPermission','superSpeedUnavailableReason','updateSuperSpeedUi','applySuperSpeedPermission','setSuperSpeedActive','stopSuperSpeedIfNeeded','startSuperSpeed','autoScaledDelayMs','autoPacingProfile','autoPacingWaitMs','autoDelayMs','autoStopDelayMs','autoPollDelayMs'])vm.runInContext(fn(name),c);
+ for(const name of ['canDebugSuperSpeed','hasSuperSpeedPermission','setSuperSpeedDebugPermission','superSpeedUnavailableReason','updateSuperSpeedUi','applySuperSpeedPermission','setSuperSpeedActive','stopSuperSpeedIfNeeded','startSuperSpeed','autoScaledDelayMs','autoPacingProfile','autoPacingWaitMs','resetOrdinaryAutoPacingAfterNormalReturn','autoDelayMs','autoStopDelayMs','autoPollDelayMs'])vm.runInContext(fn(name),c);
  return {c,button,debugButton,debugStatus,timers};
 }
 
@@ -349,5 +349,27 @@ test('free AUTO follows all AT confirmation routes and returns to ordinary timin
   assert.equal(JSON.stringify([c.normalState,c.session]),before);
   c.normalState={flow:{phase:'normal'}};c.session={active:false};
   assert.equal(c.autoPacingProfile(),'normal');assert.equal(c.autoPacingWaitMs(),200);
+ }
+});
+
+test('ordinary AUTO starts a fresh pacing epoch when CZ or AT returns to normal',()=>{
+ assert.match(source,/normalState\.flow = NovaFlow\.normalize\(resolved\.flowAfter\);\s+if\(typeof resetOrdinaryAutoPacingAfterNormalReturn/);
+ for(const phase of ['cz','strong_cz','art']){
+  const {c}=setup();c.autoPlay=true;c.performance.now=()=>5000;
+  c.autoLastBetAt=0;c.autoPacingBudget={periodMs:1440,dueAt:2880,lastAt:0};
+  assert.equal(c.resetOrdinaryAutoPacingAfterNormalReturn({phase},{phase:'normal'}),true,phase);
+  assert.equal(c.autoLastBetAt,5000,phase);assert.equal(c.autoPacingBudget,null,phase);
+  assert.equal(c.autoPacingWaitMs(),400,phase);
+ }
+});
+
+test('normal pacing reset ignores ordinary games, stopped AUTO and paid full AUTO',()=>{
+ for(const mode of ['normal','stopped','paid']){
+  const {c}=setup();c.performance.now=()=>5000;c.autoPlay=mode!=='stopped';c.superFullAuto=mode==='paid';
+  c.autoLastBetAt=1000;c.autoPacingBudget={periodMs:1440,dueAt:2440,lastAt:1000};
+  const before=JSON.stringify([c.autoLastBetAt,c.autoPacingBudget]);
+  const from=mode==='normal'?{phase:'normal'}:{phase:'art'};
+  assert.equal(c.resetOrdinaryAutoPacingAfterNormalReturn(from,{phase:'normal'}),false,mode);
+  assert.equal(JSON.stringify([c.autoLastBetAt,c.autoPacingBudget]),before,mode);
  }
 });

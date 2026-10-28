@@ -35,7 +35,7 @@ test('AUTO and super AUTO wait the full sortie award hold before any spin or pha
 });
 
 test('manual BET during sortie award hold returns before charging or drawing a game',async()=>{
- const c=vm.createContext({canUsePlayState:()=>true,NovaSortie:{busy:true}});
+ const c=vm.createContext({canUsePlayState:()=>true,isCompleteTrialLocked:()=>false,NovaSortie:{busy:true}});
  vm.runInContext(html.match(/  async function spin\([^]*?\n  }/)[0],c);
  await c.spin();
 });

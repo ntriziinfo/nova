@@ -63,10 +63,10 @@ test('actual browser hooks clock bonus and AUTO BETs but not 0G, and observe set
  assert(count.indexOf('NovaDecrement.beforeBet')<count.indexOf('aTypeBonusActiveAtSpinStart) return false'));
  assert(html.includes('normalState.novaDecrement=NovaDecrement.bind(normalState.novaDecrement,settings.setting)'));
  assert(html.includes('recordSlumpPoint(false);'));
- assert(html.includes('if(settled)NovaDecrement.observe(currentProfit());'));
+ assert(html.includes('if(settled)NovaDecrement.observe(currentGameProfit());'));
  const c=vm.createContext({A_TYPE_MODE:true,session:{active:false},normalState:{flow:{phase:'art',zero:true}},stats:{totalSpins:0},
   NovaDecrement,NovaFlow:{normalize:x=>x},NovaArt:{prepareBet:x=>x},NovaProgress:{beforeBet:x=>x,drawSortie:()=>{}},
-  settings:{novaArt:{},setting:6},syncNovaProgress:()=>{},currentProfit:()=>0,auditCapture:()=>{}});
+  settings:{novaArt:{},setting:6},syncNovaProgress:()=>{},currentGameProfit:()=>0,auditCapture:()=>{}});
  vm.runInContext(fs.readFileSync('nova-data-counter.js','utf8')+html.match(/  function recordAtFirstEntry\([^]*?\n  }/)[0]+count,c);
  assert.equal(c.countTotalSpinIfNeeded(false),false);assert.equal(NovaDecrement.metrics().games,0);
  c.normalState.flow={phase:'normal'};c.countTotalSpinIfNeeded(false);assert.equal(NovaDecrement.metrics().games,1);

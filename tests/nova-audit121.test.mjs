@@ -37,5 +37,5 @@ test('gameplay does not load or feed the archival audit',()=>{
  assert.doesNotMatch(game,/auditCapture|auditSpinDetail|auditSnapshot|setupPlayAudit|NovaAudit/);
  // Stop order and visible grids are also used by the live reels and resume state.
  assert.match(game,/auditPressOrder/);assert.match(game,/auditStopOrder/);assert.match(game,/auditGrid/);
- assert.match(game,/finally\{if\(A_TYPE_MODE\)\{syncNovaProgress\(\);NovaDecrement\.observe\(currentProfit\(\)\);\}\}/);
+ assert.match(game,/finally\{if\(A_TYPE_MODE\)\{syncNovaProgress\(\);NovaDecrement\.observe\(currentGameProfit\(\)\);\}\}/);
 });

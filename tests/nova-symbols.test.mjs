@@ -17,6 +17,7 @@ const strips=source.slice(source.indexOf('  const REEL_STRIPS ='),source.indexOf
 vm.runInContext('const A_TYPE_PREMIUM_BIG_PAYOUT=500;'+constants+result+sheetHelpers+`
 const A_TYPE_MODE=true;
 const novaStopGridCache=new Map();
+const committedAutoReferenceColumn=()=>null;
 const novaSymbol=(column,row)=>'NOVA_'+column+'_'+row;
 const isNovaGrid=grid=>[0,1,2].every(r=>[0,1,2].every(c=>grid[r][c]===novaSymbol(c,r)));
 `+strips+[

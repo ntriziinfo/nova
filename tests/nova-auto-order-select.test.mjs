@@ -28,11 +28,12 @@ test('AUTO stop-order mapping is cloned and invalid saved values fall back to no
 
 test('saved in-flight AUTO order and BAR-bottom policy survive reload without restarting AUTO',()=>{
  const context=vm.createContext({});vm.runInContext(fs.readFileSync('nova-spin-resume.js','utf8'),context);
- for(const [mode,order] of [['normal',[0,1,2]],['middle',[1,0,2]],['scissors',[0,2,1]]]){
-  const spin={reelLayoutVersion:3,result:'MISS',lineRow:1,grid:[['A','B','C'],['D','E','F'],['BAR','H','I']],resolved:{reward:0},stopped:[false,false,false],autoStopAtStart:true,autoMissBarBottom:true,autoStopOrderMode:mode,autoStopOrder:order};
-  const restored=context.NovaSpinResume.restore(context.NovaSpinResume.capture(spin),{MISS:{label:'MISS'}});
-  assert.deepEqual(Array.from(restored.autoStopOrder),order);assert.equal(restored.autoStopOrderMode,mode);
-  assert.equal(restored.autoMissBarBottom,true);assert.equal(restored.autoStopAtStart,false);
+ const roles=[['MISS',['REPLAY','🔔','BAR']],['ONE_COIN',['REPLAY','🔔','BAR']],['REPLAY',['REPLAY','🔔','BAR']],['BELL',['🍋','REPLAY','🔔']],['BELL15',['REPLAY','🔔','BAR']],['WEAK_SUICA',['🍋','REPLAY','🔔']],['WEAK_NOVA',['🔔','BAR','🍒']],['STRONG_NOVA',['🔔','BAR','🍒']]],results=Object.fromEntries(roles.map(([role])=>[role,{}]));
+ for(const [mode,order] of [['normal',[0,1,2]],['middle',[1,0,2]],['scissors',[0,2,1]]])for(const [role,left] of roles){
+  const spin={reelLayoutVersion:3,result:role,lineRow:1,grid:left.map((symbol,row)=>[symbol,'M'+row,'R'+row]),resolved:{reward:0},stopped:[false,false,false],autoStopAtStart:true,autoMissBarBottom:true,autoStopOrderMode:mode,autoStopOrder:order};
+  const restored=context.NovaSpinResume.restore(context.NovaSpinResume.capture(spin),results);
+  assert.deepEqual(Array.from(restored.autoStopOrder),order,role);assert.equal(restored.autoStopOrderMode,mode,role);
+  assert.equal(restored.autoMissBarBottom,true,role);assert.equal(restored.autoStopAtStart,false,role);assert.deepEqual(Array.from(restored.grid,r=>r[0]),left,role);
  }
  const invalid={reelLayoutVersion:3,result:'MISS',grid:[['A','B','C'],['D','E','F'],['G','H','I']],resolved:{reward:0},stopped:[false,false,false],autoStopOrderMode:'right',autoStopOrder:[2,1,0]};
  const restored=context.NovaSpinResume.restore(context.NovaSpinResume.capture(invalid),{MISS:{}});
