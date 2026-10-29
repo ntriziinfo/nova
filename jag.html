@@ -32,7 +32,7 @@
 <link rel="preload" as="image" href="assets/controls/stop_button_red_cut.png">
 <link rel="stylesheet" href="nova-game.css?v=20261028-auto-stop-control">
 <link rel="stylesheet" href="nova-data-counter.css?v=20261027-cherry-reels">
-<link rel="stylesheet" href="nova-cabinet.css?v=20261028-sortie-aim-hot-layout">
+<link rel="stylesheet" href="nova-cabinet.css?v=20261030-sortie-challenge-video">
 <link rel="stylesheet" href="nova-remaining-counters.css?v=20261013-checkpoint-cue">
 <script src="nova-remaining-counters.js?v=20261028-lever-outcome"></script>
 <link rel="stylesheet" href="nova-artwork.css?v=20261028-push-half">
@@ -65,7 +65,7 @@
 <link rel="stylesheet" href="nova-aim-presentation.css?v=20261012-super-challenge">
 <script src="nova-aim-confidence.js?v=20261027-red90"></script>
 <script src="nova-reel-sheet-data.js?v=20261028-current-reels"></script>
-<script src="nova-aim-presentation.js?v=20261028-decisive-cue"></script>
+<script src="nova-aim-presentation.js?v=20261030-sortie-challenge-video"></script>
 <script src="nova-tuning.js?v=20261027-parity-v174"></script>
 <script src="nova-decrement.js?v=20261013-smartslot"></script>
 <script src="nova-art.js?v=20261028-bell-navigation-progress"></script>
@@ -326,7 +326,13 @@
               <label class="layoutEditRow"><span>W</span><input class="layoutEditInput" type="number" min="0" max="100" step="0.1" data-layout-target="supertitle" data-layout-prop="w"><b class="layoutEditValue" data-layout-view="supertitle-w"></b></label>
               <label class="layoutEditRow"><span>H</span><input class="layoutEditInput" type="number" min="0" max="100" step="0.1" data-layout-target="supertitle" data-layout-prop="h"><b class="layoutEditValue" data-layout-view="supertitle-h"></b></label>
             </div><small>文字だけの位置・サイズ。背景ムービーとは独立して保存。</small></div>
-            <div class="layoutEditGroup"><div class="layoutEditGroupTitle">背景ムービー（出陣・上位チャレンジ・完走確定・上位AT）</div><div class="layoutEditGrid">
+            <div class="layoutEditGroup"><div class="layoutEditGroupTitle">出陣チャレンジ動画</div><div class="layoutEditGrid">
+              <label class="layoutEditRow"><span>横位置</span><input class="layoutEditInput" type="number" min="0" max="100" step="0.1" data-layout-target="sortievideo" data-layout-prop="x"><b class="layoutEditValue" data-layout-view="sortievideo-x"></b></label>
+              <label class="layoutEditRow"><span>縦位置</span><input class="layoutEditInput" type="number" min="0" max="100" step="0.1" data-layout-target="sortievideo" data-layout-prop="y"><b class="layoutEditValue" data-layout-view="sortievideo-y"></b></label>
+              <label class="layoutEditRow"><span>幅</span><input class="layoutEditInput" type="number" min="0" max="100" step="0.1" data-layout-target="sortievideo" data-layout-prop="w"><b class="layoutEditValue" data-layout-view="sortievideo-w"></b></label>
+              <label class="layoutEditRow"><span>高さ</span><input class="layoutEditInput" type="number" min="0" max="100" step="0.1" data-layout-target="sortievideo" data-layout-prop="h"><b class="layoutEditValue" data-layout-view="sortievideo-h"></b></label>
+            </div><button type="button" id="sortieVideoPreview" aria-pressed="false">出陣チャレンジ動画プレビュー ON/OFF</button><small>出陣チャレンジ専用。0.1%刻みで調整し、変更は自動保存されます。</small></div>
+            <div class="layoutEditGroup"><div class="layoutEditGroupTitle">背景ムービー（上位チャレンジ・完走確定・上位AT）</div><div class="layoutEditGrid">
               <label class="layoutEditRow"><span>X</span><input class="layoutEditInput" type="number" min="0" max="100" step="0.1" data-layout-target="backgroundmovie" data-layout-prop="x"><b class="layoutEditValue" data-layout-view="backgroundmovie-x"></b></label>
               <label class="layoutEditRow"><span>Y</span><input class="layoutEditInput" type="number" min="0" max="100" step="0.1" data-layout-target="backgroundmovie" data-layout-prop="y"><b class="layoutEditValue" data-layout-view="backgroundmovie-y"></b></label>
               <label class="layoutEditRow"><span>W</span><input class="layoutEditInput" type="number" min="0" max="100" step="0.1" data-layout-target="backgroundmovie" data-layout-prop="w"><b class="layoutEditValue" data-layout-view="backgroundmovie-w"></b></label>
@@ -898,7 +904,7 @@
 <script src="nova-cz-push.js?v=20261028-cz-push-voices"></script>
 <script src="nova-impurity-hint.js?v=20261028-smooth"></script>
 <script src="nova-reel-reference.js?v=20261028-left-reference"></script>
-<script src="nova-game.js?v=20261029-auto-reference-stops-nebula-middle"></script>
+<script src="nova-game.js?v=20261030-sortie-challenge-video-layout"></script>
 <button type="button" id="novaSymbolPreviewOpen">チェリー・ノヴァ（BAR）停止形を確認</button>
 <dialog id="novaSymbolPreview"><h2>チェリー・ノヴァ（BAR）停止形</h2><label>出目<select id="novaPatternSelect"><option value="WEAK_NOVA">弱チェリー：左上段・下段</option><option value="STRONG_MIDDLE">強チェリー：右下がり</option><option value="STRONG_RIGHT">強チェリー：右上がり</option><option value="SUPER_NOVA" selected>ノヴァ（BAR）揃い</option></select></label><p id="novaPatternDescription"></p><div id="novaSymbolPreviewGrid"></div><p>出目の確認用です。通常時のノヴァ（BAR）揃いはBIG・フリーズ各50%。ボーナス中は対象外。弱チェリー・強チェリーはそれぞれ既存の抽選を維持します。</p><button type="button" id="novaSymbolPreviewClose">閉じる</button></dialog>
 </body>

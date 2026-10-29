@@ -251,8 +251,11 @@ body.layoutEditOpen #novaLampMoviePreview{display:block;}
 #novaCabinetStage:has(#machine[data-ouma-freeze=bet])>.playControls button:not(#spinBtn){pointer-events:none;}
 
 /* Background movies share their own geometry below reels (z-index 25). */
-#machine #novaUpperAtBackground[data-background-movie="true"],#machine #novaSuperChallengeBackground,#machine #novaSortieBackground,#machine #novaBackgroundMoviePreview{
+#machine #novaUpperAtBackground[data-background-movie="true"],#machine #novaSuperChallengeBackground,#machine #novaBackgroundMoviePreview{
  position:absolute;left:var(--layout-backgroundmovie-x,20.4%)!important;top:var(--layout-backgroundmovie-y,29.4%)!important;width:var(--layout-backgroundmovie-w,58.9%)!important;height:var(--layout-backgroundmovie-h,25.7%)!important;z-index:20;object-fit:cover;pointer-events:none;background:#080212;
+}
+#machine #novaSortieBackground{
+ position:absolute;left:var(--layout-sortievideo-x,20.4%)!important;top:var(--layout-sortievideo-y,29.4%)!important;width:var(--layout-sortievideo-w,58.9%)!important;height:var(--layout-sortievideo-h,25.7%)!important;z-index:20;object-fit:cover;pointer-events:none;background:#080212;
 }
 #novaSuperChallengeBackground[hidden],#novaSortieBackground[hidden]{display:none!important;}
 .novaAimPresentation[data-super-challenge="true"]{background:transparent;}

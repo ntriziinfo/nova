@@ -956,6 +956,7 @@
     cabinetmask:{x:20.3,y:29.5,w:58.9,h:25.7},
     lampmovie:{x:20.4,y:29.6,w:59.1,h:10.7},
     backgroundmovie:{x:20.4,y:29.4,w:58.9,h:25.7},
+    sortievideo:{x:20.4,y:29.4,w:58.9,h:25.7},
     zonepresentation:{x:22.3,y:31.8,w:55.7,h:8.3},
     sortieaimbg:{"x":20.3,"y":29.4,"w":59.1,"h":25.4},
     sortieaimmiddle:{"x":21.5,"y":32.7,"w":19.4,"h":5.8},
@@ -1168,6 +1169,11 @@
     const next = cloneLayoutDefaults();
     raw = migrateLegacySevenSegState(raw);
     if(!raw || typeof raw !== "object") return next;
+    // Preserve the tuned position from layouts saved before the Sortie movie
+    // received its own independent controls.
+    if((!raw.sortievideo || typeof raw.sortievideo !== "object") && raw.backgroundmovie && typeof raw.backgroundmovie === "object"){
+      raw = {...raw, sortievideo:{...raw.backgroundmovie}};
+    }
     Object.keys(next).forEach(target=>{
       if(!raw[target] || typeof raw[target] !== "object") return;
       Object.keys(next[target]).forEach(prop=>{

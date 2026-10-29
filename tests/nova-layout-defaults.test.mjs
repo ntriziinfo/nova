@@ -33,6 +33,8 @@ test('committed display defaults match the approved Chrome layout',()=>{
  assert.match(game,/cabinetmask:\{x:20\.3,y:29\.5,w:58\.9,h:25\.7\}/);
  assert.match(game,/lampmovie:\{x:20\.4,y:29\.6,w:59\.1,h:10\.7\}/);
  assert.match(game,/backgroundmovie:\{x:20\.4,y:29\.4,w:58\.9,h:25\.7\}/);
+ assert.match(game,/sortievideo:\{x:20\.4,y:29\.4,w:58\.9,h:25\.7\}/);
+ assert.match(game,/raw = \{\.\.\.raw, sortievideo:\{\.\.\.raw\.backgroundmovie\}\};/);
  assert.match(game,/zonepresentation:\{x:22\.3,y:31\.8,w:55\.7,h:8\.3\}/);
  assert.match(game,/sortieaimbg:\{"x":20\.3,"y":29\.4,"w":59\.1,"h":25\.4\}/);
  assert.match(game,/sortieaimmiddle:\{"x":21\.5,"y":32\.7,"w":19\.4,"h":5\.8\}/);
@@ -57,6 +59,10 @@ test('committed display defaults match the approved Chrome layout',()=>{
  assert.match(cabinet,/--layout-backgroundmovie-y,29\.4%/);
  assert.match(cabinet,/--layout-backgroundmovie-w,58\.9%/);
  assert.match(cabinet,/--layout-backgroundmovie-h,25\.7%/);
+ assert.match(cabinet,/--layout-sortievideo-x,20\.4%/);
+ assert.match(cabinet,/--layout-sortievideo-y,29\.4%/);
+ assert.match(cabinet,/--layout-sortievideo-w,58\.9%/);
+ assert.match(cabinet,/--layout-sortievideo-h,25\.7%/);
  assert.match(cabinet,/--layout-supertitle-x,21\.5%/);
  assert.match(cabinet,/--layout-zonepresentation-x,22\.3%/);
  assert.match(cabinet,/--layout-zonepresentation-y,31\.8%/);
@@ -67,8 +73,17 @@ test('committed display defaults match the approved Chrome layout',()=>{
  assert.match(cabinet,/--layout-sortieaimaim-y,32\.6%/);
  assert.match(html,/nova-game\.css\?v=20261028-auto-stop-control/);
  assert.match(html,/nova-data-counter\.css\?v=20261027-cherry-reels/);
- assert.match(html,/nova-cabinet\.css\?v=20261028-sortie-aim-hot-layout/);
- assert.match(html,/nova-game\.js\?v=20261028-auto-stop-control/);
+ assert.match(html,/nova-cabinet\.css\?v=20261030-sortie-challenge-video/);
+ assert.match(html,/nova-aim-presentation\.js\?v=20261030-sortie-challenge-video/);
+ assert.match(html,/nova-game\.js\?v=20261030-sortie-challenge-video-layout/);
+ assert.match(html,/出陣チャレンジ動画/);
+ for(const [label,prop] of [['横位置','x'],['縦位置','y'],['幅','w'],['高さ','h']]){
+  assert.match(html,new RegExp(`<span>${label}</span><input[^>]+data-layout-target="sortievideo"[^>]+data-layout-prop="${prop}"`));
+ }
+ assert.match(html,/id="sortieVideoPreview"[^>]*aria-pressed="false"/);
+ const sortieVideo='assets/media/nova/sortie-challenge-fire-20261030.mp4';
+ assert.ok(fs.existsSync(sortieVideo));
+ assert.ok(fs.statSync(sortieVideo).size>5_000_000);
  const navi=fs.readFileSync('nova-bell-navi.js','utf8');
  const remaining=fs.readFileSync('nova-remaining-counters.js','utf8');
  assert.match(navi,/const defaults=Object\.freeze\(\{x:\.5,y:44\.3,w:100,h:7\.9,gap:0\}\);/);
