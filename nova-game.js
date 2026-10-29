@@ -9056,12 +9056,12 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
   let oumaChainTimer=null;
   var oumaFailDimTimer=null;
   var oumaPresentation=null;
-  function clearOumaPresentation(keepNovaShake=false){
+  function clearOumaPresentation(keepNovaShake=false,keepReelMotion=false){
     if(!keepNovaShake)document.getElementById('machine').dataset.oumaNovaShake='';
     clearTimeout(oumaFailDimTimer);oumaFailDimTimer=null;
     document.getElementById('machine').dataset.oumaFailDim='';
     clearTimeout(oumaChainTimer);oumaChainTimer=null;
-    if(['lift','fail'].includes(oumaPresentation?.stage))NovaReelMotion.clearAll();
+    if(!keepReelMotion&&['lift','fail'].includes(oumaPresentation?.stage))NovaReelMotion.clearAll();
     if(oumaIntroAudio){oumaIntroAudio.pause();oumaIntroAudio=null;}
     if(oumaReverseAudio)oumaReverseAudio.onended=null;
     oumaPresentation=null;
@@ -9102,17 +9102,19 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     audio.volume=sfxOutputVolumeForSource(SFX_OUTPUT_SCALE,'assets/media/nova/uuufa.wav');
     audio.play()?.then(()=>{if(oumaIntroAudio!==audio)audio.pause();}).catch(()=>{});
     const started=performance.now(),tops=oumaStoppedTops.map(top=>Math.max(0,top));
-    // A failed continuation keeps the existing one-cell lift before blackout.
-    // On success, retain the stopped NOVA lineup so the full reverse motion can
-    // begin from that exact position without a lift-stop-restart visual seam.
-    if(oumaFailed)reels.forEach((reel,i)=>NovaReelMotion.start(i,reel,REEL_STRIPS[i],tops[i],true,cellHtml,{
-       clock:()=>Math.min(500,Math.max(0,performance.now()-started-[0,65,120][i]))/1000,
+    // Both outcomes lift the stopped NOVA/BAR lineup by one cell. Success waits
+    // until the end of the four-second cue, then keeps the completed motion
+    // layer alive so the synced reverse can replace it at the same top.
+    reels.forEach((reel,i)=>NovaReelMotion.start(i,reel,REEL_STRIPS[i],tops[i],true,cellHtml,{
+       clock:()=>Math.min(500,Math.max(0,performance.now()-started-(oumaFailed?[0,65,120][i]:3400)))/1000,
        duration:500,steps:1,done:()=>{}
      }));
     oumaChainTimer=setTimeout(()=>{
       if(oumaPresentation!==presentation)return;
       if(oumaFailed)reels.forEach((_,i)=>{NovaReelMotion.clear(i);setReelColumn(i,reelWindowFromTopIndex(i,tops[i]+1),'','',null);});
-      clearOumaPresentation();spin({oumaFailed});
+      else oumaStoppedTops=tops.map((top,i)=>mod(top+1,REEL_STRIPS[i].length));
+      clearOumaPresentation(false,!oumaFailed);spin({oumaFailed});
+      if(!oumaFailed&&!isSpinning)NovaReelMotion.clearAll();
     },4000);
   }
 
