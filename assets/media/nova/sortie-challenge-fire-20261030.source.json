@@ -1,3 +1,15 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:cd14a21b465bd5426c69af463920598a9954993c64c6ef52999b091080eae2ab
-size 545
+{
+  "originalFile": "1632112294wpdm_fire_15.mp4",
+  "source": "sortie-challenge-fire-20261030.mp4",
+  "originalUnmodified": true,
+  "bytes": 5707054,
+  "sha256": "9576feab62d721cdde84d0692324d1a8127ec740093852708336b1311ea8796f",
+  "durationSeconds": 8.02,
+  "width": 1280,
+  "height": 720,
+  "videoCodec": "H.264 High Profile",
+  "pixelFormat": "yuv420p",
+  "audioCodec": "AAC-LC stereo 48kHz",
+  "playback": "Muted loop during the main Sortie Challenge",
+  "usage": "User-provided video for the requested NOVA effect only. No training use."
+}
