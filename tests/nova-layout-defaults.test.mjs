@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import vm from 'node:vm';
 
 test('committed display defaults match the approved Chrome layout',()=>{
  const game=fs.readFileSync('nova-game.js','utf8');
@@ -33,7 +34,7 @@ test('committed display defaults match the approved Chrome layout',()=>{
  assert.match(game,/cabinetmask:\{x:20\.3,y:29\.5,w:58\.9,h:25\.7\}/);
  assert.match(game,/lampmovie:\{x:20\.4,y:29\.6,w:59\.1,h:10\.7\}/);
  assert.match(game,/backgroundmovie:\{x:20\.4,y:29\.4,w:58\.9,h:25\.7\}/);
- assert.match(game,/sortievideo:\{x:20\.4,y:29\.4,w:58\.9,h:25\.7\}/);
+ assert.match(game,/sortievideo:\{x:32\.7,y:29\.4,w:35\.6,h:11\.4\}/);
  assert.match(game,/raw = \{\.\.\.raw, sortievideo:\{\.\.\.raw\.backgroundmovie\}\};/);
  assert.match(game,/zonepresentation:\{x:22\.3,y:31\.8,w:55\.7,h:8\.3\}/);
  assert.match(game,/sortieaimbg:\{"x":20\.3,"y":29\.4,"w":59\.1,"h":25\.4\}/);
@@ -42,6 +43,9 @@ test('committed display defaults match the approved Chrome layout',()=>{
  assert.match(game,/sortieaimaim:\{"x":58\.7,"y":32\.6,"w":20,"h":5\.5\}/);
  assert.match(game,/const key='nova_sortie_aim_layout_20261028b';/);
  assert.match(game,/for\(const target of \['sortieaimbg','sortieaimmiddle','sortieaimsymbol','sortieaimaim'\]\)state\[target\]=\{\.\.\.LAYOUT_DEFAULTS\[target\]\};/);
+ assert.match(game,/const key='nova_sortie_fire_layout_20261030a';/);
+ assert.match(game,/state\.sortievideo=\{\.\.\.LAYOUT_DEFAULTS\.sortievideo\};/);
+ assert.match(game,/migrateSortieAimLayout\(\);\s*migrateSortieFireLayout\(\);/);
  assert.match(game,/supertitle:\{x:21\.5,y:29\.6,w:56\.7,h:10\.7\}/);
  assert.match(game,/displaygroup:\{x:0\.1,y:-0\.5,s:122\.4\}/);
  assert.match(counter,/--layout-playdata-x,19\.8%/);
@@ -59,10 +63,10 @@ test('committed display defaults match the approved Chrome layout',()=>{
  assert.match(cabinet,/--layout-backgroundmovie-y,29\.4%/);
  assert.match(cabinet,/--layout-backgroundmovie-w,58\.9%/);
  assert.match(cabinet,/--layout-backgroundmovie-h,25\.7%/);
- assert.match(cabinet,/--layout-sortievideo-x,20\.4%/);
+ assert.match(cabinet,/--layout-sortievideo-x,32\.7%/);
  assert.match(cabinet,/--layout-sortievideo-y,29\.4%/);
- assert.match(cabinet,/--layout-sortievideo-w,58\.9%/);
- assert.match(cabinet,/--layout-sortievideo-h,25\.7%/);
+ assert.match(cabinet,/--layout-sortievideo-w,35\.6%/);
+ assert.match(cabinet,/--layout-sortievideo-h,11\.4%/);
  assert.match(cabinet,/--layout-supertitle-x,21\.5%/);
  assert.match(cabinet,/--layout-zonepresentation-x,22\.3%/);
  assert.match(cabinet,/--layout-zonepresentation-y,31\.8%/);
@@ -73,10 +77,10 @@ test('committed display defaults match the approved Chrome layout',()=>{
  assert.match(cabinet,/--layout-sortieaimaim-y,32\.6%/);
  assert.match(html,/nova-game\.css\?v=20261028-auto-stop-control/);
  assert.match(html,/nova-data-counter\.css\?v=20261027-cherry-reels/);
- assert.match(html,/nova-cabinet\.css\?v=20261030-sortie-trigger-fire-v2/);
+ assert.match(html,/nova-cabinet\.css\?v=20261030-sortie-fire-position/);
  assert.match(html,/nova-aim-presentation\.js\?v=20261030-sortie-trigger-fire-v2/);
  assert.match(html,/nova-sortie-aim\.js\?v=20261030-sortie-trigger-fire-v2/);
- assert.match(html,/nova-game\.js\?v=20261030-ouma-lift-handoff/);
+ assert.match(html,/nova-game\.js\?v=20261030-sortie-fire-position/);
  assert.match(html,/出陣トリガー：炎エフェクト動画/);
  for(const [label,prop] of [['横位置','x'],['縦位置','y'],['幅','w'],['高さ','h']]){
   assert.match(html,new RegExp(`<span>${label}</span><input[^>]+data-layout-target="sortievideo"[^>]+data-layout-prop="${prop}"`));
@@ -87,7 +91,7 @@ test('committed display defaults match the approved Chrome layout',()=>{
  const triggerStart=html.indexOf('<div class="layoutEditGroupTitle">出陣トリガー：背景ムービー</div>');
  const triggerPreview=html.indexOf('id="sortieAimPreview"');
  assert.ok(fireGroup>triggerStart&&fireGroup<triggerPreview,'the fire movie controls must stay inside the Sortie trigger controls');
- assert.match(cabinet,/\.novaSortieAimFire\{[^}]*--layout-sortievideo-x,20\.4%[^}]*--layout-sortievideo-y,29\.4%[^}]*--layout-sortievideo-w,58\.9%[^}]*--layout-sortievideo-h,25\.7%/);
+ assert.match(cabinet,/\.novaSortieAimFire\{[^}]*--layout-sortievideo-x,32\.7%[^}]*--layout-sortievideo-y,29\.4%[^}]*--layout-sortievideo-w,35\.6%[^}]*--layout-sortievideo-h,11\.4%/);
  const aimPresentation=fs.readFileSync('nova-aim-presentation.js','utf8');
  assert.match(aimPresentation,/assets\/media\/nova\/sortie-fire-round-20261011\.mp4/);
  assert.doesNotMatch(aimPresentation,/sortie-challenge-fire-20261030\.mp4/);
@@ -98,6 +102,29 @@ test('committed display defaults match the approved Chrome layout',()=>{
  const remaining=fs.readFileSync('nova-remaining-counters.js','utf8');
  assert.match(navi,/const defaults=Object\.freeze\(\{x:\.5,y:44\.3,w:100,h:7\.9,gap:0\}\);/);
  assert.match(remaining,/remainingcounter:Object\.freeze\(\{x:21\.7,y:85\.8,w:15\.9,h:11\}\)/);
+});
+
+test('Sortie fire layout migration replaces only the saved fire rectangle once',()=>{
+ const game=fs.readFileSync('nova-game.js','utf8');
+ const start=game.indexOf('  function migrateSortieFireLayout(){');
+ const end=game.indexOf('\n  function loadLayoutDefaultState(){',start);
+ const migration=game.slice(start,end);
+ const storage=new Map([
+  ['default',JSON.stringify({sortievideo:{x:20.4,y:29.4,w:58.9,h:25.7},reels:{x:11}})],
+  ['edit',JSON.stringify({sortievideo:{x:1,y:2,w:3,h:4},reels:{x:22}})]
+ ]);
+ const context=vm.createContext({
+  LAYOUT_DEFAULT_STORAGE_KEY:'default',LAYOUT_EDIT_STORAGE_KEY:'edit',
+  LAYOUT_DEFAULTS:{sortievideo:{x:32.7,y:29.4,w:35.6,h:11.4}},
+  safeStorageGet:key=>storage.get(key)??null,safeStorageSet:(key,value)=>storage.set(key,value)
+ });
+ vm.runInContext(`${migration}\nmigrateSortieFireLayout();`,context);
+ assert.deepEqual(JSON.parse(storage.get('default')),{sortievideo:{x:32.7,y:29.4,w:35.6,h:11.4},reels:{x:11}});
+ assert.deepEqual(JSON.parse(storage.get('edit')),{sortievideo:{x:32.7,y:29.4,w:35.6,h:11.4},reels:{x:22}});
+ assert.equal(storage.get('nova_sortie_fire_layout_20261030a'),'1');
+ storage.set('edit',JSON.stringify({sortievideo:{x:9,y:9,w:9,h:9},reels:{x:22}}));
+ vm.runInContext('migrateSortieFireLayout();',context);
+ assert.deepEqual(JSON.parse(storage.get('edit')).sortievideo,{x:9,y:9,w:9,h:9});
 });
 
 test('licensed character defaults and stacking keep Sosuke and Kushuri behind',()=>{

@@ -956,7 +956,7 @@
     cabinetmask:{x:20.3,y:29.5,w:58.9,h:25.7},
     lampmovie:{x:20.4,y:29.6,w:59.1,h:10.7},
     backgroundmovie:{x:20.4,y:29.4,w:58.9,h:25.7},
-    sortievideo:{x:20.4,y:29.4,w:58.9,h:25.7},
+    sortievideo:{x:32.7,y:29.4,w:35.6,h:11.4},
     zonepresentation:{x:22.3,y:31.8,w:55.7,h:8.3},
     sortieaimbg:{"x":20.3,"y":29.4,"w":59.1,"h":25.4},
     sortieaimmiddle:{"x":21.5,"y":32.7,"w":19.4,"h":5.8},
@@ -1238,8 +1238,23 @@
     safeStorageSet(key,'1');
   }
 
+  function migrateSortieFireLayout(){
+    const key='nova_sortie_fire_layout_20261030a';
+    if(safeStorageGet(key)==='1')return;
+    for(const storageKey of [LAYOUT_DEFAULT_STORAGE_KEY,LAYOUT_EDIT_STORAGE_KEY]){
+      try{
+        const saved=safeStorageGet(storageKey);if(!saved)continue;
+        const state=JSON.parse(saved);
+        state.sortievideo={...LAYOUT_DEFAULTS.sortievideo};
+        safeStorageSet(storageKey,JSON.stringify(state));
+      }catch(e){/* Invalid saved layouts use the factory defaults below. */}
+    }
+    safeStorageSet(key,'1');
+  }
+
   function loadLayoutDefaultState(){
     migrateSortieAimLayout();
+    migrateSortieFireLayout();
     try{
       const saved = safeStorageGet(LAYOUT_DEFAULT_STORAGE_KEY);
       layoutDefaultState = saved ? normalizeLayoutState(JSON.parse(saved)) : cloneFactoryLayoutDefaults();
