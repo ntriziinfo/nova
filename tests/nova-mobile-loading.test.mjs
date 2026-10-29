@@ -64,7 +64,7 @@ test('mobile defers hidden aim media while first-use scenes retain their video, 
   [{flowBefore:{phase:'cz',remaining:20,totalGames:20}},'cz-intro-bg.mp4','novaCzIntroTitle'],
   [{flowBefore:{phase:'art',initialStage:'wait'}},'at-wait-bg.mp4','novaAtWaitTitle'],
   [{flowBefore:{phase:'art',comebackLeft:5}},'comeback-fire.mp4','novaComebackTitle'],
-  [{researchSortie:{won:false,finished:false}},'sortie-challenge-fire-20261030.mp4','novaSortieTitle'],
+  [{researchSortie:{won:false,finished:false}},'sortie-fire-round-20261011.mp4','novaSortieTitle'],
   [{researchChallenge:{started:true,finished:false}},'super-nova-challenge-tunnel-20261012.mp4','novaSuperChallengeTitle']
  ];
  for(const [spin,file,title] of scenes){

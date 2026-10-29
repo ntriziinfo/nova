@@ -25,7 +25,7 @@ test('sortie entry loops the rainbow nebula cue and never requests a seven voice
 test('sortie title overlays the supplied muted loop across losing games without locking or altering the draw',()=>{
  const t=setup(),spin={researchSortie:{won:false,finished:false},flowBefore:{phase:'art',researchSortieLeft:10}};
  const before=JSON.stringify(spin);assert.equal(t.aim.bet(null,spin),false);
- const root=t.elements[0],video=t.elements.find(e=>e.src==='assets/media/nova/sortie-challenge-fire-20261030.mp4'),title=t.elements.find(e=>e.className==='novaSortieTitle');
+ const root=t.elements[0],video=t.elements.find(e=>e.src==='assets/media/nova/sortie-fire-round-20261011.mp4'),title=t.elements.find(e=>e.className==='novaSortieTitle');
  assert.equal(root.dataset.sortie,'true');assert.equal(title.alt,'出陣チャレンジ');assert.equal(title.hidden,false);
  assert.equal(video.loop,true);assert.equal(video.muted,true);assert.equal(video.playsInline,true);assert.equal(video.paused,false);
  video.currentTime=3;t.aim.stop(spin);t.aim.bet(null,spin);
@@ -44,7 +44,7 @@ test('sortie background never replaces the entry nebula or next character seven 
  assert.equal(t.elements[0].dataset.symbol,'nebula');assert.equal(t.elements.find(e=>e.className==='novaSortieTitle').hidden,true);
  t.aim.bet(null,{researchSortie:{won:true,finished:true}});t.aim.stop({researchSortie:{won:true,finished:true}});
  t.aim.bet(null,{flowBefore:{phase:'art',entryStage:'seven'},flowAfter:{entryStage:'roulette'}});
- assert.equal(t.elements[0].dataset.symbol,'seven');assert.equal(t.elements.find(e=>e.src?.endsWith('sortie-challenge-fire-20261030.mp4')).paused,true);
+ assert.equal(t.elements[0].dataset.symbol,'seven');assert.equal(t.elements.find(e=>e.src?.endsWith('sortie-fire-round-20261011.mp4')).paused,true);
 });
 
 test('upper challenge retains the tunnel and title through HOLD and reveals neither success nor failure before the last stop',()=>{

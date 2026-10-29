@@ -73,14 +73,24 @@ test('committed display defaults match the approved Chrome layout',()=>{
  assert.match(cabinet,/--layout-sortieaimaim-y,32\.6%/);
  assert.match(html,/nova-game\.css\?v=20261028-auto-stop-control/);
  assert.match(html,/nova-data-counter\.css\?v=20261027-cherry-reels/);
- assert.match(html,/nova-cabinet\.css\?v=20261030-sortie-challenge-video/);
- assert.match(html,/nova-aim-presentation\.js\?v=20261030-sortie-challenge-video/);
+ assert.match(html,/nova-cabinet\.css\?v=20261030-sortie-trigger-fire-v2/);
+ assert.match(html,/nova-aim-presentation\.js\?v=20261030-sortie-trigger-fire-v2/);
+ assert.match(html,/nova-sortie-aim\.js\?v=20261030-sortie-trigger-fire-v2/);
  assert.match(html,/nova-game\.js\?v=20261030-sortie-challenge-video-layout/);
- assert.match(html,/出陣チャレンジ動画/);
+ assert.match(html,/出陣トリガー：炎エフェクト動画/);
  for(const [label,prop] of [['横位置','x'],['縦位置','y'],['幅','w'],['高さ','h']]){
   assert.match(html,new RegExp(`<span>${label}</span><input[^>]+data-layout-target="sortievideo"[^>]+data-layout-prop="${prop}"`));
  }
- assert.match(html,/id="sortieVideoPreview"[^>]*aria-pressed="false"/);
+ assert.doesNotMatch(html,/id="sortieVideoPreview"/);
+ assert.match(html,/id="sortieAimPreview"[^>]*aria-pressed="false"/);
+ const fireGroup=html.indexOf('<div class="layoutEditGroupTitle">出陣トリガー：炎エフェクト動画</div>');
+ const triggerStart=html.indexOf('<div class="layoutEditGroupTitle">出陣トリガー：背景ムービー</div>');
+ const triggerPreview=html.indexOf('id="sortieAimPreview"');
+ assert.ok(fireGroup>triggerStart&&fireGroup<triggerPreview,'the fire movie controls must stay inside the Sortie trigger controls');
+ assert.match(cabinet,/\.novaSortieAimFire\{[^}]*--layout-sortievideo-x,20\.4%[^}]*--layout-sortievideo-y,29\.4%[^}]*--layout-sortievideo-w,58\.9%[^}]*--layout-sortievideo-h,25\.7%/);
+ const aimPresentation=fs.readFileSync('nova-aim-presentation.js','utf8');
+ assert.match(aimPresentation,/assets\/media\/nova\/sortie-fire-round-20261011\.mp4/);
+ assert.doesNotMatch(aimPresentation,/sortie-challenge-fire-20261030\.mp4/);
  const sortieVideo='assets/media/nova/sortie-challenge-fire-20261030.mp4';
  assert.ok(fs.existsSync(sortieVideo));
  assert.ok(fs.statSync(sortieVideo).size>5_000_000);

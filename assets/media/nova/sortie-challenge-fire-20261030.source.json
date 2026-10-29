@@ -10,6 +10,6 @@
   "videoCodec": "H.264 High Profile",
   "pixelFormat": "yuv420p",
   "audioCodec": "AAC-LC stereo 48kHz",
-  "playback": "Muted loop during the main Sortie Challenge",
+  "playback": "Muted screen-blended loop during the Sortie trigger and its layout preview",
   "usage": "User-provided video for the requested NOVA effect only. No training use."
 }

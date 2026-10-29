@@ -10,7 +10,7 @@ test('blank artwork matches the visible replay core in every presentation',()=>{
  assert.match(cabinet,/#novaSymbolPreviewGrid img\.blankSymImg\{width:59%!important;height:59%!important;max-width:59%!important;max-height:59%!important;\}/);
  assert.match(cabinet,/\.novaSortieAimStack>\.sortieBlank\{width:83%;height:83%;\}/);
  assert.match(reference,/#novaReelReference \.blankSymImg \{ width:83%; height:83%; margin:auto; \}/);
- assert.match(html,/nova-cabinet\.css\?v=20261030-sortie-challenge-video/);
+ assert.match(html,/nova-cabinet\.css\?v=20261030-sortie-trigger-fire-v2/);
  assert.match(html,/nova-reel-reference\.css\?v=20261028-blank-replay-scale/);
 });
 

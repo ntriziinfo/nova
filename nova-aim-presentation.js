@@ -2,7 +2,6 @@
 globalThis.NovaAim=(()=>{
  const {setTimeout,clearTimeout}=globalThis.NovaClock||globalThis;
  let host,root,active=null,czTitle,comebackTitle,atWaitTitle,sortieTitle,superChallengeTitle,novaBarTitle,reverseNotice,aimSymbol;
- let sortiePreviewButton=null,sortiePreviewing=false;
  const videos=new Map();
  let winLocked=false,winTimer=null,winVoiceTimer=null,winToken=0,afterWinCallbacks=[],pendingStart=null;
  function playLoop(video){
@@ -34,7 +33,7 @@ globalThis.NovaAim=(()=>{
   comebackTitle=document.createElement('img');comebackTitle.className='novaComebackTitle';comebackTitle.hidden=true;comebackTitle.loading=globalThis.NovaMedia?.compact?'lazy':'eager';comebackTitle.src='assets/ui/comeback-challenge-title.png';comebackTitle.alt='引き戻しチャレンジ';root.append(comebackTitle);
   const atWait=document.createElement('video');atWait.muted=true;atWait.loop=true;atWait.playsInline=true;atWait.preload=globalThis.NovaMedia?.compact?'none':'metadata';atWait.hidden=true;atWait.src='assets/media/nova/at-wait-bg.mp4';root.append(atWait);videos.set('at-wait',atWait);
   atWaitTitle=document.createElement('img');atWaitTitle.className='novaAtWaitTitle';atWaitTitle.hidden=true;atWaitTitle.loading=globalThis.NovaMedia?.compact?'lazy':'eager';atWaitTitle.src='assets/ui/nova-rush-confirmed.png';atWaitTitle.alt='ノヴァラッシュ確定';root.append(atWaitTitle);
-  const sortie=document.createElement('video');sortie.muted=true;sortie.loop=true;sortie.playsInline=true;sortie.preload=globalThis.NovaMedia?.compact?'none':'metadata';sortie.hidden=true;sortie.src='assets/media/nova/sortie-challenge-fire-20261030.mp4';sortie.id='novaSortieBackground';host.append(sortie);videos.set('sortie',sortie);
+  const sortie=document.createElement('video');sortie.muted=true;sortie.loop=true;sortie.playsInline=true;sortie.preload=globalThis.NovaMedia?.compact?'none':'metadata';sortie.hidden=true;sortie.src='assets/media/nova/sortie-fire-round-20261011.mp4';sortie.id='novaSortieBackground';host.append(sortie);videos.set('sortie',sortie);
   sortieTitle=document.createElement('img');sortieTitle.className='novaSortieTitle';sortieTitle.hidden=true;sortieTitle.loading=globalThis.NovaMedia?.compact?'lazy':'eager';sortieTitle.src='assets/ui/sortie-challenge-title-20261011.png';sortieTitle.alt='出陣チャレンジ';root.append(sortieTitle);
   const superChallenge=document.createElement('video');superChallenge.muted=true;superChallenge.loop=true;superChallenge.playsInline=true;superChallenge.preload=globalThis.NovaMedia?.compact?'none':'metadata';superChallenge.hidden=true;superChallenge.src='assets/media/nova/super-nova-challenge-tunnel-20261012.mp4';superChallenge.id='novaSuperChallengeBackground';host.append(superChallenge);videos.set('super-challenge',superChallenge);
   superChallengeTitle=document.createElement('img');superChallengeTitle.className='novaSuperChallengeTitle';superChallengeTitle.hidden=true;superChallengeTitle.loading=globalThis.NovaMedia?.compact?'lazy':'eager';superChallengeTitle.src='assets/ui/super-nova-challenge-title-20261012.png';superChallengeTitle.alt='スーパーノヴァチャレンジ';host.append(superChallengeTitle);
@@ -66,8 +65,6 @@ globalThis.NovaAim=(()=>{
   Object.assign(root.style,{left:(r.left-base.left)/scale+'px',top:top+'px',width:r.width/scale+'px',height:Math.max(40,bottom-top)+'px'});
  }
  function hide(){
-  sortiePreviewing=false;
-  sortiePreviewButton?.setAttribute?.('aria-pressed','false');
   globalThis.NovaSortieAim?.hide();
   if(active){if(globalThis.NovaPresentation)NovaPresentation.stop(active);else active.pause();active.hidden=true;if(active.currentTime>0)active.currentTime=0;active=null;}
   if(czTitle)czTitle.hidden=true;
@@ -136,11 +133,6 @@ globalThis.NovaAim=(()=>{
   if(active===video&&!root.hidden)return;
   hide();active=video;root.hidden=false;root.dataset.sortie='true';root.dataset.symbol='sortie';
   host.dataset.aimActive='true';video.hidden=false;sortieTitle.hidden=false;layout();playLoop(video);
- }
- function toggleSortiePreview(){
-  if(sortiePreviewing){hide();return;}
-  showSortie();sortiePreviewing=true;
-  sortiePreviewButton?.setAttribute?.('aria-pressed','true');
  }
  function showSuperChallenge(){
   if(!init())return;
@@ -308,12 +300,9 @@ globalThis.NovaAim=(()=>{
  if(typeof document!=='undefined'){
   document.addEventListener('DOMContentLoaded',()=>{
    init();
-   sortiePreviewButton=document.getElementById('sortieVideoPreview');
-   sortiePreviewButton?.addEventListener?.('click',toggleSortiePreview);
-   sortiePreviewButton?.setAttribute?.('aria-pressed','false');
   });
   document.addEventListener('visibilitychange',()=>{if(document.hidden)pendingStart?.();});
   window.addEventListener('resize',layout);
  }
- return {hasGuide,drawGuide,stopTarget,stopVerdict,isNovaZoneSpin,novaZoneStopTarget,bet,stop,hide,layout,fail,win,confirmNova:()=>win(()=>{},'nova'),afterWin,reset,isCzIntro,syncAtWait,toggleSortiePreview,get busy(){return winLocked;}};
+ return {hasGuide,drawGuide,stopTarget,stopVerdict,isNovaZoneSpin,novaZoneStopTarget,bet,stop,hide,layout,fail,win,confirmNova:()=>win(()=>{},'nova'),afterWin,reset,isCzIntro,syncAtWait,get busy(){return winLocked;}};
 })();
