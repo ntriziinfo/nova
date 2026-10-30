@@ -40,7 +40,7 @@ globalThis.NovaPresentation=(()=>{
   });
   document.addEventListener('pointerdown',()=>{for(const state of players.values())state.failures=0;resume();},{passive:true});
  }
- // At most two image downloads/decodes at once. Yield between jobs, including
+ // Start at most two preparation jobs at once. Yield between jobs, including
  // on desktop, rather than competing with the first video and reel assets.
  function pump(){
   while(warming<2&&warmQueue.length){
@@ -54,5 +54,37 @@ globalThis.NovaPresentation=(()=>{
   if(warmSeen.has(key))return;warmSeen.add(key);warmQueue.push(job);
   if(globalThis.requestIdleCallback)requestIdleCallback(pump,{timeout:2000});else setTimeout(pump,100);
  }
- return Object.freeze({play,stop,warm});
+ // Fetch/decode the first frame before a short AUTO cue. Never call play() or
+ // reload an active video: preparing a future cue must not interrupt this one.
+ function warmVideo(video,{buffer=false}={}){
+  warm(video,async()=>{
+   // Short cues must not reopen a network range after the browser discards a
+   // hidden player's buffer. Keep these small clips local for this page only.
+   // Never swap a source once its cue has appeared, even if fetch finishes late.
+   if(buffer&&video.hidden&&video.paused&&typeof fetch==='function'&&typeof URL!=='undefined'&&typeof URL.createObjectURL==='function'){
+    const source=video.getAttribute('src'),controller=new AbortController();
+    const timer=setTimeout(()=>controller.abort(),5000);
+    try{
+     const response=await fetch(source,{signal:controller.signal});
+     if(!response.ok)throw Error('Video preload failed');
+     const blob=await response.blob();
+     if(video.hidden&&video.paused&&video.getAttribute('src')===source){
+      video.src=URL.createObjectURL(blob); // Released with this document.
+      video.preload='auto';video.load();
+     }
+    }catch{/* Native video loading remains available on a slow/offline link. */}
+    finally{clearTimeout(timer);}
+   }
+   if(video.readyState>=2||!video.paused)return;
+   return new Promise(resolve=>{
+    let timeout;
+    const finish=()=>{clearTimeout(timeout);video.removeEventListener('loadeddata',finish);video.removeEventListener('error',finish);resolve();};
+    video.addEventListener('loadeddata',finish);video.addEventListener('error',finish);
+    timeout=setTimeout(finish,buffer?1000:6000);
+    video.preload='auto';
+    if(video.networkState===0)video.load();
+   });
+  });
+ }
+ return Object.freeze({play,stop,warm,warmVideo});
 })();

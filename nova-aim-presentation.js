@@ -14,14 +14,14 @@ globalThis.NovaAim=(()=>{
   root=document.createElement('div');root.className='novaAimPresentation';root.hidden=true;host.append(root);
   for(const symbol of ['seven','nebula'])for(const color of ['blue','red','rainbow']){
    const video=document.createElement('video');video.muted=true;video.loop=true;video.playsInline=true;video.preload=globalThis.NovaMedia?.compact?'none':'metadata';video.hidden=true;
-   video.src=symbol==='seven'?'assets/media/nova/aim/seven-flash-20261027.mp4':`assets/media/nova/aim/${symbol}-${color}.mp4`;
+   video.src=symbol==='seven'?'assets/media/nova/aim/seven-flash-20261027.mp4':`assets/media/nova/aim/ready-20261030/${symbol}-${color}.mp4`;
    video.setAttribute('aria-label',`${symbol==='seven'?'7':'nebula'}を狙え！`);
    root.append(video);videos.set(symbol+':'+color,video);
   }
   // Preserve the original color-specific seven presentation.
   for(const color of ['blue','red','rainbow']){
    const video=document.createElement('video');video.muted=true;video.loop=true;video.playsInline=true;video.preload=globalThis.NovaMedia?.compact?'none':'metadata';video.hidden=true;
-   video.src=`assets/media/nova/aim/seven-${color}.mp4`;root.append(video);videos.set('sora-seven:'+color,video);
+   video.src=`assets/media/nova/aim/ready-20261030/seven-${color}.mp4`;root.append(video);videos.set('sora-seven:'+color,video);
   }
   const nebulaWin=document.createElement('video');nebulaWin.muted=true;nebulaWin.loop=false;nebulaWin.playsInline=true;nebulaWin.preload=globalThis.NovaMedia?.compact?'none':'metadata';nebulaWin.hidden=true;nebulaWin.src='assets/media/nova/aim/nebula-win.mp4';root.append(nebulaWin);videos.set('nebula-win',nebulaWin);
   const bonusNebulaWin=document.createElement('video');bonusNebulaWin.muted=true;bonusNebulaWin.loop=false;bonusNebulaWin.playsInline=true;bonusNebulaWin.preload=globalThis.NovaMedia?.compact?'none':'metadata';bonusNebulaWin.hidden=true;bonusNebulaWin.src='assets/media/nova/aim/bonus-nebula-win.mp4';root.append(bonusNebulaWin);videos.set('bonus-nebula-win',bonusNebulaWin);
@@ -53,6 +53,9 @@ globalThis.NovaAim=(()=>{
   novaBarTitle.append(artwork);root.append(novaBarTitle);
   reverseNotice=document.createElement('div');reverseNotice.className='novaAimReverseNotice';reverseNotice.hidden=true;reverseNotice.textContent='逆押し　右 → 中 → 左';root.append(reverseNotice);
   const win=document.createElement('video');win.muted=true;win.loop=false;win.playsInline=true;win.preload=globalThis.NovaMedia?.compact?'none':'metadata';win.hidden=true;win.src='assets/media/nova/aim/seven-win.mp4?v=20260918-rainbow-144';root.append(win);videos.set('win',win);
+  // Short AUTO spins can settle before a cold video has its first frame.
+  // Warm actual cue players in bounded idle jobs, including narrow screens.
+  for(const key of ['zone-entry-seven','nebula:blue','nebula:red','nebula:rainbow','bonus-nebula-win','sora-seven:blue','sora-seven:red','sora-seven:rainbow','nebula-win','win','nova:blue','nova:red','nova:rainbow'])globalThis.NovaPresentation?.warmVideo?.(videos.get(key),{buffer:key.startsWith('nebula:')||key.startsWith('sora-seven:')});
   return true;
  }
  // Same geometry as the ladder shutter: lamp bay, above the real reels.

@@ -9,13 +9,21 @@ function setup(){
  const host={dataset:{},append(){},querySelector(){return null;}};
  const context=vm.createContext({document:{hidden:false,getElementById:()=>host,addEventListener(name,fn){listeners[name]=fn;},createElement(tag){const e={tag,currentTime:0,style:{},dataset:{},append(){},setAttribute(){},pause(){this.paused=true;},play(){this.paused=false;return Promise.resolve();}};elements.push(e);return e;}},window:{addEventListener(){},dispatchEvent(){}},Event:class{},setTimeout(fn,ms){timers.set(++id,{fn,ms});return id;},clearTimeout(id){timers.delete(id);}});
  vm.runInContext(fs.readFileSync('nova-aim-presentation.js','utf8'),context);
- return {aim:context.NovaAim,elements,timers,hide(){context.document.hidden=true;listeners.visibilitychange();}};
+ return {context,init:()=>listeners.DOMContentLoaded(),aim:context.NovaAim,elements,timers,hide(){context.document.hidden=true;listeners.visibilitychange();}};
 }
+
+test('narrow screens also prepare every aim/color before the first AUTO cue without playback',()=>{
+ const t=setup(),warmed=[];t.context.NovaMedia={compact:true};t.context.NovaPresentation={warmVideo:v=>warmed.push(v)};
+ t.init();assert.equal(warmed.length,13);assert.equal(new Set(warmed).size,13);
+ for(const symbol of ['seven','nebula'])for(const color of ['blue','red','rainbow'])assert(warmed.some(v=>v.src===`assets/media/nova/aim/ready-20261030/${symbol}-${color}.mp4`));
+ for(const color of ['blue','red','rainbow'])assert(warmed.some(v=>v.src===`assets/media/nova/sortie-aim-${color}-20261027.mp4`));
+ assert(t.elements.filter(e=>e.tag==='video').every(v=>v.hidden&&v.paused!==false));assert.equal(t.aim.busy,false);
+});
 
 test('sortie entry loops the rainbow nebula cue and never requests a seven voice or freeze',()=>{
  const t=setup(),resolved={stockEntry:true,sortieEntry:true,reward:0,flowBefore:{phase:'art',entryStage:'seven',pendingZone:'sortie'},flowAfter:{phase:'art',entryStage:'roulette'}},before=JSON.stringify(resolved);
  assert.equal(t.aim.bet(null,resolved),false);
- const root=t.elements.find(e=>e.className==='novaAimPresentation'),video=t.elements.find(e=>e.src==='assets/media/nova/aim/nebula-rainbow.mp4');
+ const root=t.elements.find(e=>e.className==='novaAimPresentation'),video=t.elements.find(e=>e.src==='assets/media/nova/aim/ready-20261030/nebula-rainbow.mp4');
  assert.equal(root.dataset.symbol,'nebula');assert.equal(root.dataset.color,'rainbow');assert.equal(video.hidden,false);assert.equal(video.loop,true);assert.equal(video.paused,false);
  assert.equal(t.elements.filter(e=>e.src==='assets/media/nova/aim/seven-flash-20261027.mp4')[3].hidden,true);
  assert.equal(t.aim.busy,false);assert.equal(t.timers.size,0);assert.equal(JSON.stringify(resolved),before);
@@ -108,7 +116,7 @@ test('CZ intro can resume after reload, resets cleanly, and never replaces prelu
  assert(t.elements.filter(e=>e.tag==='video'&&!e.hidden).length===0);
  t.aim.bet({symbol:'seven',color:'red',guide:true},{flowBefore:{phase:'art'}});
  assert.equal(t.elements.find(e=>e.src==='assets/ui/nova-shuketsu-zone.png').hidden,true);
- assert.equal(t.elements.find(e=>e.src==='assets/media/nova/aim/seven-red.mp4').hidden,false);
+ assert.equal(t.elements.find(e=>e.src==='assets/media/nova/aim/ready-20261030/seven-red.mp4').hidden,false);
 });
 test('comeback fire and title loop across BETs and stops without touching the draw or locking AUTO',()=>{
  const t=setup();t.aim.stop({comebackEvent:'entry',flowBefore:{phase:'art'}});
@@ -414,7 +422,7 @@ test('colored zone seven/nebula guides retain their own movie after the entry re
  const {aim,elements}=setup();
  for(const symbol of ['seven','nebula'])for(const color of ['blue','red','rainbow']){
   aim.bet({symbol,color,result:'MISS',guide:true});
-  assert.equal(elements.find(e=>e.src===`assets/media/nova/aim/${symbol}-${color}.mp4`).hidden,false);
+  assert.equal(elements.find(e=>e.src===`assets/media/nova/aim/ready-20261030/${symbol}-${color}.mp4`).hidden,false);
   assert.equal(elements.filter(e=>e.src==='assets/media/nova/aim/seven-flash-20261027.mp4')[3].hidden,true);
  }
 });
@@ -486,12 +494,12 @@ test('All seven zones use shared colors without changing the draw',()=>{
  for(const zone of ['sora','ura_sora'])for(const color of ['blue','red','rainbow']){
   const t=setup(),aim={symbol:'seven',color,guide:true},r={aim,flowBefore:{phase:'art',zone}},before=JSON.stringify(r);
   t.aim.bet(aim,r);
-  const video=t.elements.find(e=>e.src===`assets/media/nova/aim/seven-${color}.mp4`);
+  const video=t.elements.find(e=>e.src===`assets/media/nova/aim/ready-20261030/seven-${color}.mp4`);
   assert.equal(video.hidden,false);assert.equal(video.paused,false);assert.equal(JSON.stringify(r),before);
   t.aim.hide();assert.equal(video.hidden,true);assert.equal(video.paused,true);
  }
  const t=setup(),aim={symbol:'seven',color:'blue',guide:true};t.aim.bet(aim,{flowBefore:{phase:'art',zone:'toto'}});
- assert.equal(t.elements.find(e=>e.src==='assets/media/nova/aim/seven-blue.mp4').hidden,false);
+ assert.equal(t.elements.find(e=>e.src==='assets/media/nova/aim/ready-20261030/seven-blue.mp4').hidden,false);
  assert.equal(t.elements.some(e=>e.src==='assets/media/nova/aim/seven-flash-20261027.mp4'&&!e.hidden),false);
 });
 
@@ -524,7 +532,7 @@ test('seven/nebula retain original movies; NOVA uses exact reel art on a clean m
   assert.equal(t.elements.find(e=>e.className==='novaBarAimTitle').hidden,symbol!=='nova');
   assert.equal(t.elements.some(e=>e.className==='novaAimArrow'||e.tag==='strong'),false);
   const source=symbol==='seven'?'seven':'nebula';
-  assert.equal(t.elements.find(e=>e.src===(symbol==='nova'?'assets/media/nova/sortie-aim-red-20261027.mp4':'assets/media/nova/aim/'+source+'-red.mp4')).hidden,false);
+  assert.equal(t.elements.find(e=>e.src===(symbol==='nova'?'assets/media/nova/sortie-aim-red-20261027.mp4':'assets/media/nova/aim/ready-20261030/'+source+'-red.mp4')).hidden,false);
   if(symbol==='nova')assert(t.elements.some(e=>e.src==='assets/lossless-20261027/nova-only-20261027.webp'));
   assert.equal(t.elements.find(e=>e.className==='novaAimReverseNotice').hidden,true);
   t.aim.reset();assert.equal(t.elements.find(e=>e.className==='novaBarAimTitle').hidden,true);
