@@ -951,9 +951,9 @@
     flowstatus:{x:38,y:92.6,w:40},
     reels:{x:22.3, y:35.6, w:55.7, h:36.9, gap:1.6},
     chance:{x:22.0, y:85.8, w:11.9, h:11.0},
-    credit:{x:45.0, y:87.7, w:13.1, h:7.2},
-    count:{x:15.5, y:24.1, w:21.2, h:11.2},
-    payout:{x:60.6, y:87.7, w:11.1, h:7.6},
+    credit:{x:38.8, y:87.7, w:21.2, h:7.6},
+    count:{x:21.8, y:24.1, w:15.2, h:13.7},
+    payout:{x:63.7, y:87.7, w:13.6, h:7.6},
     playdata:{x:19.8,y:13.5,w:60.5,h:11.5},
     cabinetmask:{x:20.3,y:29.5,w:58.9,h:25.7},
     lampmovie:{x:20.4,y:29.6,w:59.1,h:10.7},
@@ -1255,9 +1255,9 @@
   }
 
   function migrateAtCountLayout(){
-    const key='nova_meter_layout_20261030c';
+    const key='nova_meter_layout_20261030d';
     if(safeStorageGet(key)==='1')return;
-    const targets=safeStorageGet('nova_meter_layout_20261030b')==='1'?['count']:['reels','credit','count','payout'];
+    const targets=safeStorageGet('nova_meter_layout_20261030b')==='1'?['credit','count','payout']:['reels','credit','count','payout'];
     for(const storageKey of [LAYOUT_DEFAULT_STORAGE_KEY,LAYOUT_EDIT_STORAGE_KEY]){
       try{
         const saved=safeStorageGet(storageKey);if(!saved)continue;
