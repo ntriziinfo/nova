@@ -9131,11 +9131,11 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     audio.volume=sfxOutputVolumeForSource(SFX_OUTPUT_SCALE,'assets/media/nova/uuufa.wav');
     audio.play()?.then(()=>{if(oumaIntroAudio!==audio)audio.pause();}).catch(()=>{});
     const started=performance.now(),tops=oumaStoppedTops.map(top=>Math.max(0,top));
-    // Both outcomes lift the stopped NOVA/BAR lineup by one cell. Success waits
-    // until the end of the four-second cue, then keeps the completed motion
-    // layer alive so the synced reverse can replace it at the same top.
+    // Both outcomes use the same one-cell lift and hold. Only the reverse
+    // after the four-second cue reveals success; retain its completed layer
+    // so the synced reverse can replace it at the same top.
     reels.forEach((reel,i)=>NovaReelMotion.start(i,reel,REEL_STRIPS[i],tops[i],true,cellHtml,{
-       clock:()=>Math.min(500,Math.max(0,performance.now()-started-(oumaFailed?[0,65,120][i]:3400)))/1000,
+       clock:()=>Math.min(500,Math.max(0,performance.now()-started-[0,65,120][i]))/1000,
        duration:500,steps:1,done:()=>{}
      }));
     oumaChainTimer=setTimeout(()=>{

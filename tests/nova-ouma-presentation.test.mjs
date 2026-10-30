@@ -8,7 +8,35 @@ vm.runInContext(fs.readFileSync('nova-results.js','utf8').replace("if(typeof doc
 vm.runInContext('let oumaChainTimer=null;var oumaFailDimTimer=null;var oumaPresentation=null,oumaIntroAudio=null,oumaStoppedTops=[0,0,0],oumaReverseAudio=null;'+['trackZoneResult','clearOumaPresentation','scheduleOumaZeroChain','resolveOumaChallenge'].map(fn).join('\n'),c);
 if(playing)c.oumaReverseAudio={paused:false,ended:false};return {c,nodes,failures,forward,liftArgs,setNow:value=>{now=value;},advance:()=>callback(),rolls:()=>rolls,spins:()=>spins,played:()=>played,lifts:()=>lifts,clears:()=>clears,clearedAll:()=>clearedAll,staticColumns:()=>staticColumns};}
 test('stopped reels hold until reverse audio ends, then accept BET',()=>{const t=setup(true,true);t.c.scheduleOumaZeroChain();assert.equal(t.nodes.machine.dataset.oumaFreeze,'hold');assert.equal(t.nodes.spinBtn.disabled,true);t.c.resolveOumaChallenge();assert.equal(t.rolls(),0);t.c.oumaReverseAudio.onended();assert.equal(t.nodes.machine.dataset.oumaFreeze,'bet');assert.equal(t.nodes.spinBtn.disabled,false);});
-test('successful BET lifts the NOVA lineup then hands the same top to reverse without a stop seam',()=>{const t=setup(true);t.c.scheduleOumaZeroChain();t.c.resolveOumaChallenge();t.c.resolveOumaChallenge();assert.equal(t.rolls(),1);assert.equal(t.played(),1);assert.equal(t.c.awardCleared,true);assert.equal(t.spins(),0);assert.equal(t.c.delay,4000);assert.equal(t.lifts(),3);for(const args of t.liftArgs){assert.equal(args[4],true);assert.equal(args[6].duration,500);assert.equal(args[6].steps,1);assert.equal(args[6].clock(),0);}t.setNow(3400);for(const args of t.liftArgs)assert.equal(args[6].clock(),0);t.setNow(3900);for(const args of t.liftArgs)assert.equal(args[6].clock(),.5);assert.deepEqual([...t.c.oumaStoppedTops],[0,0,0]);t.setNow(4000);t.advance();assert.equal(t.spins(),1);assert.equal(t.c.spinOptions.oumaFailed,false);assert.equal(t.lifts(),3);assert.equal(t.clears(),0);assert.equal(t.clearedAll(),0);assert.equal(t.staticColumns(),0);assert.deepEqual([...t.c.oumaStoppedTops],[1,1,1]);});
+test('successful BET lifts the NOVA lineup then hands the same top to reverse without a stop seam',()=>{const t=setup(true);t.c.scheduleOumaZeroChain();t.c.resolveOumaChallenge();t.c.resolveOumaChallenge();assert.equal(t.rolls(),1);assert.equal(t.played(),1);assert.equal(t.c.awardCleared,true);assert.equal(t.spins(),0);assert.equal(t.c.delay,4000);assert.equal(t.lifts(),3);for(const args of t.liftArgs){assert.equal(args[4],true);assert.equal(args[6].duration,500);assert.equal(args[6].steps,1);assert.equal(args[6].clock(),0);}t.setNow(250);assert.deepEqual(t.liftArgs.map(args=>args[6].clock()),[.25,.185,.13]);t.setNow(620);for(const args of t.liftArgs)assert.equal(args[6].clock(),.5);assert.deepEqual([...t.c.oumaStoppedTops],[0,0,0]);t.setNow(4000);t.advance();assert.equal(t.spins(),1);assert.equal(t.c.spinOptions.oumaFailed,false);assert.equal(t.lifts(),3);assert.equal(t.clears(),0);assert.equal(t.clearedAll(),0);assert.equal(t.staticColumns(),0);assert.deepEqual([...t.c.oumaStoppedTops],[1,1,1]);});
+
+test('Urapi, Ouma and reverse Ouma reveal no outcome through the pre-reverse lift timing',()=>{
+ for(const [zone,ura] of [['urapi',false],['ouma',false],['ouma',true]]){
+  const runs=[true,false].map(win=>{
+   const t=setup(win);Object.assign(t.c.normalState.flow,{zone,ura});
+   t.c.oumaStoppedTops=[19,4,13];
+   t.c.scheduleOumaZeroChain();t.c.resolveOumaChallenge();
+   return t;
+  });
+  // Compare the full lead-in, including the period formerly delayed only on wins.
+  for(const now of [0,1,65,120,250,499,500,565,620,1000,3399,3400,3999]){
+   for(const t of runs)t.setNow(now);
+   assert.deepEqual(runs[0].liftArgs.map(a=>a[6].clock()),runs[1].liftArgs.map(a=>a[6].clock()));
+   for(const t of runs){
+    assert.equal(t.spins(),0);assert.equal(t.nodes.machine.dataset.oumaFreeze,'lift');
+    assert.equal(t.played(),1);assert.equal(t.rolls(),1);
+    t.liftArgs.forEach((a,i)=>{
+     assert.equal(a[3],[19,4,13][i]);assert.equal(a[4],true);
+     assert.equal(a[6].steps,1);assert.equal(a[6].duration,500);
+    });
+   }
+  }
+  for(const t of runs){t.setNow(4000);t.advance();assert.equal(t.spins(),1);assert.equal(t.rolls(),1);}
+  assert.equal(runs[0].c.spinOptions.oumaFailed,false);
+  assert.equal(runs[1].c.spinOptions.oumaFailed,true);
+  assert.deepEqual([...runs[0].c.oumaStoppedTops],[0,5,14]);
+ }
+});
 test('a blocked successful handoff clears the retained lift layer',()=>{const t=setup(true);t.c.scheduleOumaZeroChain();t.c.resolveOumaChallenge();t.c.resolveOumaChallenge();t.c.spin=options=>{t.c.spinOptions=options;};t.setNow(4000);t.advance();assert.equal(t.c.isSpinning,false);assert.equal(t.c.spinOptions.oumaFailed,false);assert.equal(t.clearedAll(),1);});
 test('failed BET keeps the existing lift and static blackout handoff before one real game',()=>{const t=setup(false);t.c.scheduleOumaZeroChain();t.c.resolveOumaChallenge();t.c.resolveOumaChallenge();assert.equal(t.rolls(),1);assert.equal(t.spins(),0);assert.equal(t.played(),1);assert.equal(t.c.delay,4000);assert.equal(t.nodes.machine.dataset.oumaFreeze,'lift');assert.equal(t.lifts(),3);t.advance();assert.equal(t.spins(),1);assert.equal(t.c.spinOptions.oumaFailed,true);assert.equal(t.clears(),3);assert.equal(t.staticColumns(),3);assert.equal(t.forward.length,0);assert.equal(t.nodes.machine.dataset.oumaFreeze,'');});
 test('reset invalidates delayed challenge result',()=>{const t=setup(true);t.c.scheduleOumaZeroChain();t.c.resolveOumaChallenge();t.c.clearOumaPresentation();t.advance();assert.equal(t.spins(),0);});
