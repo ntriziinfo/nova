@@ -59,6 +59,21 @@
         "tests/nova-background-auto.test.mjs",
         "tests/nova-layout-defaults.test.mjs"
       ]
+    },
+    {
+      "file": "nova-game.js",
+      "sourceHash": "5e2065f59a0d29d7e7855cce111aa2a443e65d93fadfc35ad060f12b9786e183",
+      "presentationHash": "6e99322a83374cbd839f5bc42ff04ed0f5b0634ab27a33162e31610c118f692a",
+      "sourceCommit": "d295064df1e205e9a5338759eceec485161b84ed",
+      "presentationCommit": "6d10071bb3ee33444923e528fed62dac0e31b2c1",
+      "reason": "既に確認済みの逆回転表示とメーター配置変更に加え、ユーザー指定のCREDIT・COUNT・PAYOUT座標と保存レイアウト移行のみ更新。前版への表示差分復元で全ファイルSHA256の一致を確認。抽選・乱数消費・払い出し・獲得pt計算・停止結果・ゲーム進行は同一。",
+      "tests": [
+        "tests/nova-ouma-presentation.test.mjs",
+        "tests/nova-ouma-audio-lifecycle.test.mjs",
+        "tests/nova-reel-motion.test.mjs",
+        "tests/nova-background-auto.test.mjs",
+        "tests/nova-layout-defaults.test.mjs"
+      ]
     }
   ]
 }
