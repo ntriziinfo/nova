@@ -74,6 +74,34 @@ test('ordinary queued character zones keep priority and seven cues when a sortie
  const c=harness();c.NovaProgress.snapshot=()=>({pending:0,sorties:1});
  assert(c.tryStockEntry());assert.equal(c.normalState.stockEntry.kind,undefined);assert(c.tryStockEntry());assert.equal(c.currentSpin.result,'BIG');assert.equal(c.currentSpin.resolved.sortieEntry,false);
 });
+
+test('normal-state success reveals the same free aim without entering AT before the stops',async()=>{
+ const c=harness();c.normalState.flow={phase:'normal',remaining:0};c.NovaProgress.snapshot=()=>({pending:0,sorties:1});
+ const before=JSON.stringify(c.normalState.flow);
+ assert(c.tryStockEntry());assert(c.tryStockEntry());
+ assert.equal(c.currentSpin.resolved.sortieFake,false);assert.equal(JSON.stringify(c.normalState.flow),before);
+ await c.stopStockEntryReel(1);c.currentSpin=c.NovaSpinResume.restore(c.NovaSpinResume.capture(c.currentSpin),c.RESULT);
+ await c.stopStockEntryReel(0);await c.stopStockEntryReel(2);
+ assert.equal(JSON.stringify(c.normalState.flow),before);assert.equal(c.normalState.stockEntry.stage,'ready');
+ assert.equal(c.tryStockEntry(),false);assert.equal(c.NovaProgress.snapshot().sorties,1);
+ assert.equal(c.lockedVoices.length,1);
+});
+
+test('a fresh normal save can reveal the forced sortie before its first paid game',()=>{
+ const c=harness();delete c.normalState.flow;
+ c.NovaFlow={normalize:()=>({phase:'normal',remaining:0,success:false})};
+ c.NovaProgress.snapshot=()=>({pending:0,sorties:1});
+ assert(c.tryStockEntry());assert.equal(c.normalState.flow.phase,'normal');
+ assert(c.tryStockEntry());assert.equal(c.currentSpin.resolved.sortieEntry,true);
+ assert.equal(c.normalState.flow.phase,'normal');
+});
+
+test('normal prelude and post-sortie initial handoff cannot be bypassed by an entry presentation',()=>{
+ const c=harness();c.normalState.flow={phase:'normal'};c.normalState.internal={prelude:{left:2}};c.NovaProgress.snapshot=()=>({pending:0,sorties:1});
+ assert.equal(c.tryStockEntry(),false);
+ c.normalState.flow={phase:'art',sortieInitialPending:true,queuedZones:['sora'],researchSortieLeft:0};
+ assert.equal(c.tryStockEntry(),false);assert.equal(c.normalState.stockEntry,undefined);
+});
 test('results, checkpoints and active engine phases keep their priority',()=>{
  const c=harness();c.normalState.ladderAwardPresentation={card:{pt:'500'}};
  assert.equal(c.tryStockEntry(),true);assert.equal(c.normalState.resultCard.pt,'500');assert.equal(c.normalState.stockEntry,undefined);

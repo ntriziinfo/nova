@@ -16,6 +16,8 @@ test('a complete current report is required; wrong engine, pending and partial v
  }
  assert.equal(c.NovaRtpClient.verified(r,'c'.repeat(64)),false);
  r.conditions='2.5億G×4系列合算・MY／差枚停止なし';assert(c.NovaRtpClient.verified(r));
+ r.gamesPerSetting=100_000_000;r.conditions='1億G連続・MY／差枚停止なし';assert(c.NovaRtpClient.verified(r));
+ r.gamesPerSetting=99_000_000;assert.equal(c.NovaRtpClient.verified(r),false);
 });
 test('live refresh clears stale data, recovers without reload and coalesces in-flight requests',async()=>{
  const {c,events}=harness();let resolve,calls=0;const updates=[];

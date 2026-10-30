@@ -34,15 +34,29 @@ globalThis.NovaProgress=(()=>{
   return s;
  }
  function enterCheckpoint(c,rng=Math.random){state.newAt++;return {...a.enter(c,rng),remaining:'0',initialStage:'',initialWait:0};}
- function ready(s){return s?.phase==='art'&&!s.initialStage&&!s.zone&&!s.entryStage&&!s.atPrelude&&!s.burstPending&&!s.burstLeft&&!s.researchSortieLeft&&!s.queuedZones?.length&&Number(s.sets||0)===0&&Number(s.stock||0)===0;}
+ function ready(s){return s?.phase==='art'&&!s.sortieInitialPending&&!s.initialStage&&!s.zone&&!s.entryStage&&!s.atPrelude&&!s.burstPending&&!s.burstLeft&&!s.researchSortieLeft&&!s.queuedZones?.length&&Number(s.sets||0)===0&&Number(s.stock||0)===0;}
+ // A normal-game sortie owns its ten games before any initial-AT preparation.
+ // Keep this handoff in the saved flow so reloads cannot lose or repeat it.
+ function beginNormalSortie(c,rng=Math.random){
+  const initial=a.enterInitial(c,rng);
+  // On this route the existing initial challenge selection guarantees upper AT;
+  // the initial-point zone and all sortie stocks still run before AT games.
+  if(initial.researchChallengeSource==='initial')Object.assign(initial,{burstPending:false,burstLeft:0,burstWon:true,researchUpper:true,researchChallengeSource:'',dryEligible:false});
+  return a.beginResearchSortie({...initial,initialStage:'',sortieInitialPending:true},rng,c.setting);
+ }
+ function resumeSortieInitial(flow){
+  if(!flow?.sortieInitialPending||flow.researchSortieLeft)return flow;
+  return {...a.normalize(flow),sortieInitialPending:false,initialStage:'wait'};
+ }
  function beforeBet(flow,c,net,blocked=false,rng=Math.random){
   if(blocked)return flow;
+  flow=resumeSortieInitial(flow);
   observeNet(net);
   if(state.pending&&flow?.phase==='normal')flow=enterCheckpoint(c,rng);
   if(flow?.phase==='art')flow=queueThreshold(flow,net,c.setting);
   if(state.sorties){
-   if(flow?.phase==='normal')flow=enterInitial(c,rng);
-   if(ready(flow)){state.sorties--;flow=a.beginResearchSortie(flow,rng,c.setting);}
+   if(flow?.phase==='normal'){state.sorties--;flow=beginNormalSortie(c,rng);}
+   else if(ready(flow)){state.sorties--;flow=a.beginResearchSortie(flow,rng,c.setting);}
   }
   return flow;
  }
@@ -80,5 +94,5 @@ globalThis.NovaProgress=(()=>{
  // The simulator uses the same engine and state transitions as the browser.
  globalThis.NovaArt={...a,enterInitial,afterBonus,step,queueResearchThreshold:queueThreshold,observeResearchNet:observeNet,
   resetResearchCheckpoints:reset,researchCheckpointStats:()=>({...state}),hasResearchCheckpoint:()=>state.pending>0,enterResearchCheckpoint:enterCheckpoint};
- return Object.freeze({bind,beforeBet,drawSortie,sortieChance,sortieEligible,queueSortie,observeNet,ready,snapshot:()=>({...state}),reset});
+ return Object.freeze({bind,beforeBet,beginNormalSortie,resumeSortieInitial,drawSortie,sortieChance,sortieEligible,queueSortie,observeNet,ready,snapshot:()=>({...state}),reset});
 })();

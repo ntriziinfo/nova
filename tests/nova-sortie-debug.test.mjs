@@ -41,10 +41,10 @@ test('saved queue survives BIG, CZ and active zones and enters the existing ten-
  }
 });
 
-test('normal-state force uses the natural initial-AT route and keeps the queued sortie',()=>{
+test('normal-state force starts the sortie before initial AT preparation',()=>{
  const {c}=load(),p=c.NovaProgress;c.takeForcedResult();
  const flow=p.beforeBet({phase:'normal'},{setting:3},0,false,()=>.9);
- assert.equal(flow.initialStage,'wait');assert.equal(p.snapshot().sorties,1);
+ assert.equal(flow.initialStage,'');assert.equal(flow.researchSortieLeft,10);assert.equal(flow.sortieInitialPending,true);assert.equal(p.snapshot().sorties,0);
 });
 
 test('old saved FREEZE debug flags remain a one-shot sortie reservation without a freeze',()=>{

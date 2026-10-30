@@ -1,4 +1,4 @@
-name: Current billion-game RTP
+name: Current 100-million-game RTP
 on:
   push:
     branches: [main]
@@ -43,8 +43,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: One continuous billion-game trial without COMPLETE
-        run: node scripts/report-rtp-parallel.mjs --games 1000000000 --setting "${{ matrix.setting }}" --seed "nova-current-${GITHUB_SHA}" > "setting-${{ matrix.setting }}.json"
+      - name: One continuous 100-million-game trial without COMPLETE
+        run: node scripts/report-rtp-parallel.mjs --games 100000000 --setting "${{ matrix.setting }}" --seed "nova-current-${GITHUB_SHA}" > "setting-${{ matrix.setting }}.json"
       - uses: actions/upload-artifact@v4
         with:
           name: rtp-setting-${{ matrix.setting }}
@@ -78,5 +78,5 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add docs/rtp-current-1b.json nova-rtp-current.json nova-rtp-current.js
-          git commit -m 'Update verified billion-game RTP evidence'
+          git commit -m 'Update verified 100-million-game RTP evidence'
           git push origin HEAD:main

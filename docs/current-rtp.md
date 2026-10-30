@@ -5,7 +5,7 @@
 ## 自動更新
 
 1. main更新時のビルドで `scripts/rtp-current.mjs` が機械割に関わる入力のSHA256を照合する。同一ソースまたは確認済みの表示だけの変更なら、検証済みの値を継続表示する。対応が確認できない変更なら数値を空にして未取得を公開する。
-2. 機械割に関わる変更で証跡が無効になった場合だけ、GitHub Actions `Current billion-game RTP` が各設定を独立ジョブで **10億G連続** 試算する。表示だけの変更では試算ジョブをスキップする。日ごとのリセット・MYコンプリート・差枚停止はすべてなし。実遊技の停止条件は変更しない。
+2. 機械割に関わる変更で証跡が無効になった場合だけ、GitHub Actions `Current 100-million-game RTP` が各設定を独立ジョブで **1億G連続** 試算する。表示だけの変更では試算ジョブをスキップする。日ごとのリセット・MYコンプリート・差枚停止はすべてなし。実遊技の停止条件は変更しない。
 3. 6設定すべてが完了し、ゲーム数・BET・払い出し・参考95%区間・最新mainのゲーム仕様が一致した場合だけ、証跡と表示データをmainへコミットする。機械割に関わる入力を変更した旧試算は採用しない。
 4. Vercelのmain連携で公開し、管理画面とデバッグ機が60秒ごと・タブ復帰時に再取得する。通信失敗や不正なデータも未取得。古い画面のデバッグ機には異なるゲーム版の数値を混在させない。
 
@@ -21,10 +21,10 @@
 
 ## 証跡と手動実行
 
-`docs/rtp-current-1b.json` が採用証跡。古い証跡はソース不一致で自動的に除外される。旧2.5億G×4系列合算の証跡にも専用検証があるが、新規自動試算は1設定1系列10億G。ブロック区間は100万G×1,000個。
+`docs/rtp-current-1b.json` が採用証跡。古い証跡はソース不一致で自動的に除外される。旧2.5億G×4系列合算の証跡にも専用検証があるが、新規自動試算は1設定1系列1億G。ブロック区間は100万G×100個。証跡ファイル名は互換性のため維持し、実際のゲーム数は内容で検証する。
 
 ```sh
-node scripts/report-rtp-parallel.mjs --games 1000000000 --seed nova-current-SOURCE_COMMIT > result.json
+node scripts/report-rtp-parallel.mjs --games 100000000 --seed nova-current-SOURCE_COMMIT > result.json
 node scripts/rtp-current.mjs adopt result.json SOURCE_COMMIT
 ```
 

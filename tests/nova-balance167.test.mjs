@@ -44,7 +44,7 @@ test('cumulative checkpoints persist across reload, reset carry once, and reward
 test('sortie trigger waits through BIG and preludes and is saved',()=>{
  const {NovaProgress:p}=load();p.reset();assert(p.drawSortie(1,'WEAK_NOVA',{},()=>0));p.bind(json(p.snapshot()));
  const flow={phase:'normal'};assert.equal(p.beforeBet(flow,{setting:1},0,true,()=>.9),flow);
- const next=p.beforeBet(flow,{setting:1},0,false,()=>.9);assert.equal(next.initialStage,'wait');assert.equal(p.snapshot().sorties,1);
+ const next=p.beforeBet(flow,{setting:1},0,false,()=>.9);assert.equal(next.initialStage,'');assert.equal(next.researchSortieLeft,10);assert.equal(next.sortieInitialPending,true);assert.equal(p.snapshot().sorties,0);
 });
 test('50% and 65% upper challenge gates include HOLD and aim-game rare rewrites',()=>{
  const {NovaArt:a}=load(),rare=a.atMix(1).chance,miss=.9-rare;

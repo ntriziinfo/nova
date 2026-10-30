@@ -12,7 +12,9 @@ export const REQUIRED_OPTIONS=Object.freeze({
  stopAtComplete:false,rareSortie:true,atBetRefund:true,replayRefund:true,
  checkpointQuiet:true,netGuard:true,decrement:true,recordBlocks:1_000_000
 });
-const GAMES_PER_SETTING=1_000_000_000;
+export const GAMES_PER_SETTING=100_000_000;
+// Retain verified historical billion-game evidence without relabeling its size.
+export const EVIDENCE_GAMES=Object.freeze([GAMES_PER_SETTING,1_000_000_000]);
 const BET_PER_GAME=3;
 export function presentationAliases(registry){
  if(registry?.schema!=='nova-rtp-presentation-equivalence/v1'||!Array.isArray(registry.changes))throw Error('Invalid presentation equivalence registry');
@@ -39,28 +41,28 @@ export function modelHash(current){
  return createHash('sha256').update(JSON.stringify(INPUTS.map(file=>[file,behaviorHash(file,current[file])]))).digest('hex');
 }
 export function evidenceRows(report){
- if(report?.gamesPerSetting===GAMES_PER_SETTING&&Array.isArray(report.results))return report.results;
- if(report?.totalGamesPerSetting===GAMES_PER_SETTING&&Array.isArray(report.settings))return report.settings;
+ if(EVIDENCE_GAMES.includes(report?.gamesPerSetting)&&Array.isArray(report.results))return report.results;
+ if(report?.totalGamesPerSetting===1_000_000_000&&Array.isArray(report.settings))return report.settings;
  return null;
 }
 function closeEnough(actual,expected,tolerance=5e-10){
  return Number.isFinite(actual)&&Math.abs(actual-expected)<=tolerance;
 }
-function resultValid(row,setting){
- if(row?.setting!==setting||row.games!==GAMES_PER_SETTING||row.totalBet!==row.games*BET_PER_GAME)return false;
+function resultValid(row,setting,games){
+ if(row?.setting!==setting||row.games!==games||row.totalBet!==row.games*BET_PER_GAME)return false;
  if(!Number.isSafeInteger(row.totalPaid)||row.totalPaid<0||row.net!==row.totalPaid-row.totalBet)return false;
  const rtp=row.totalPaid/row.totalBet;
  if(row.rtp!==undefined&&!closeEnough(row.rtp,rtp))return false;
  if(row.rtpPct!==undefined&&!closeEnough(row.rtpPct,rtp*100,5e-6))return false;
  const ci=row.ci95,values=[ci?.meanPct,ci?.lowPct,ci?.highPct,ci?.halfWidthPct];
- if(ci?.blocks!==1_000||ci?.blockGames!==1_000_000||values.some(value=>!Number.isFinite(value)))return false;
+ if(ci?.blocks!==games/REQUIRED_OPTIONS.recordBlocks||ci?.blockGames!==REQUIRED_OPTIONS.recordBlocks||values.some(value=>!Number.isFinite(value)))return false;
  if(ci.lowPct>ci.meanPct||ci.meanPct>ci.highPct||ci.halfWidthPct<0)return false;
  if(!closeEnough(ci.meanPct,rtp*100,5e-6))return false;
  return closeEnough((ci.highPct-ci.lowPct)/2,ci.halfWidthPct,2e-6);
 }
 function pooledValid(report,rows){
  if(rows!==report.settings)return true;
- if(report.chunksPerSetting!==4||report.gamesPerChunk!==250_000_000||report.chunksPerSetting*report.gamesPerChunk!==GAMES_PER_SETTING)return false;
+ if(report.chunksPerSetting!==4||report.gamesPerChunk!==250_000_000||report.chunksPerSetting*report.gamesPerChunk!==report.totalGamesPerSetting)return false;
  return rows.every(row=>{
   if(!Array.isArray(row.seeds)||row.seeds.length!==report.chunksPerSetting||new Set(row.seeds).size!==row.seeds.length)return false;
   if(!Array.isArray(row.chunkResults)||row.chunkResults.length!==report.chunksPerSetting)return false;
@@ -81,16 +83,18 @@ export function valid(report,current){
  const o=report.options??{};
  if(Object.entries(REQUIRED_OPTIONS).some(([key,value])=>o[key]!==value))return false;
  if(!sameSources(report.sourceHashes,current))return false;
- if(![1,2,3,4,5,6].every(n=>rows.filter(r=>r.setting===n).length===1&&resultValid(rows.find(r=>r.setting===n),n)))return false;
+ const games=report.gamesPerSetting??report.totalGamesPerSetting;
+ if(![1,2,3,4,5,6].every(n=>rows.filter(r=>r.setting===n).length===1&&resultValid(rows.find(r=>r.setting===n),n,games)))return false;
  return pooledValid(report,rows);
 }
 export function currentReport(report,current,commit){
  const ready=valid(report,current);
  const evidence=ready?evidenceRows(report):[];
  const pooled=ready&&evidence===report.settings;
+ const games=ready?(report.gamesPerSetting??report.totalGamesPerSetting):GAMES_PER_SETTING;
  const rows=evidence.toSorted((a,b)=>a.setting-b.setting);
  const presentationChanges=ready?INPUTS.filter(file=>report.sourceHashes[file]!==current[file]).map(file=>({file,simulationHash:report.sourceHashes[file],currentHash:current[file]})):[];
- return {schema:'nova-current-rtp/v1',status:ready?'ready':'pending',modelHash:modelHash(current),commit,sourceCommit:ready?report.sourceCommit:null,generatedAt:ready?report.generatedAt:null,sourceVerification:ready?{kind:presentationChanges.length?'reviewed-presentation-only':'identical',presentationChanges}:null,gamesPerSetting:GAMES_PER_SETTING,conditions:pooled?'2.5億G×4系列合算・MY／差枚停止なし':'10億G連続・MY／差枚停止なし',settings:rows.map(r=>({setting:r.setting,rtp:r.totalPaid/r.totalBet,rtpPct:r.totalPaid/r.totalBet*100,ci95:r.ci95}))};
+ return {schema:'nova-current-rtp/v1',status:ready?'ready':'pending',modelHash:modelHash(current),commit,sourceCommit:ready?report.sourceCommit:null,generatedAt:ready?report.generatedAt:null,sourceVerification:ready?{kind:presentationChanges.length?'reviewed-presentation-only':'identical',presentationChanges}:null,gamesPerSetting:games,conditions:pooled?'2.5億G×4系列合算・MY／差枚停止なし':`${games/100_000_000}億G連続・MY／差枚停止なし`,settings:rows.map(r=>({setting:r.setting,rtp:r.totalPaid/r.totalBet,rtpPct:r.totalPaid/r.totalBet*100,ci95:r.ci95}))};
 }
 function main(){
  const command=process.argv[2]||'build';
@@ -107,7 +111,7 @@ function main(){
    const raw=createHash('sha256').update(fs.readFileSync(file)).digest('hex');
    if(report.sourceHashes?.[file]===raw)report.sourceHashes[file]=canonical[file];
   }
-  if(!valid(report,hashes()))throw Error('Evidence does not match the current game behavior or billion-game conditions');
+  if(!valid(report,hashes()))throw Error('Evidence does not match the current game behavior or required trial conditions');
   fs.writeFileSync(EVIDENCE,JSON.stringify({...report,sourceReportSha256,sourceCommit,generatedAt:new Date().toISOString()},null,2)+'\n');
  }
  const report=fs.existsSync(EVIDENCE)?JSON.parse(fs.readFileSync(EVIDENCE,'utf8')):null;

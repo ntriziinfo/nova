@@ -6,8 +6,8 @@ globalThis.NovaStockEntry=(()=>{
  // Real:fake tickets are 1:2. Reuse seven/NOVA blue20/red90/rainbow100 confidence.
  function cueColor(fake=false,rng=visualRandom){return NovaAimConfidence.pick(1/3,!fake,rng);}
  function fakeReady(flow,progress,pending){return pending>0&&!progress?.sorties&&!flow?.queuedZones?.length&&!Number(flow?.stock||0)&&['normal','art'].includes(flow?.phase)&&!flow.zone&&!flow.initialStage&&!flow.entryStage&&!flow.atPrelude&&!flow.researchSortieLeft&&!flow.burstPending&&!flow.researchChallengeActive&&!flow.comebackLeft&&!flow.comebackConfirmed;}
- function sortieReady(flow,progress){return progress?.sorties>0&&NovaProgress.ready(flow);}
- function eligible(flow,progress,pending=0){return fakeReady(flow,progress,pending)|| sortieReady(flow,progress)||flow?.phase==='art'&&flow.queuedZones?.length>0&&!flow.zone&&!flow.initialStage&&!flow.entryStage&&!flow.atPrelude&&!flow.researchSortieLeft&&!flow.burstPending&&!flow.researchChallengeActive&&!flow.comebackLeft;}
+ function sortieReady(flow,progress){return progress?.sorties>0&&(flow?.phase==='normal'||NovaProgress.ready(flow));}
+ function eligible(flow,progress,pending=0){return !flow?.sortieInitialPending&&(fakeReady(flow,progress,pending)||sortieReady(flow,progress)||flow?.phase==='art'&&flow.queuedZones?.length>0&&!flow.zone&&!flow.initialStage&&!flow.entryStage&&!flow.atPrelude&&!flow.researchSortieLeft&&!flow.burstPending&&!flow.researchChallengeActive&&!flow.comebackLeft);}
  function prepare(flow,progress,pending=0){return sortieReady(flow,progress)?{kind:'sortie',zone:'sortie',count:progress.sorties,stage:'prepare'}:fakeReady(flow,progress,pending)?{kind:'sortieFake',zone:'sortie',count:pending,stage:'prepare'}:{zone:flow.queuedZones[0]==='fixed50_sosuke'?'sosuke':flow.queuedZones[0],fixed50:flow.queuedZones[0]==='fixed50_sosuke',count:flow.queuedZones.length,stage:'prepare'};}
  function matches(entry,flow,progress,pending=0){
   if(!entry||!eligible(flow,progress,pending))return false;

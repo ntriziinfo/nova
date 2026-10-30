@@ -7819,6 +7819,8 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
 
   function tryStockEntry(){
     const progress=NovaProgress.snapshot();
+    if(!normalState.flow)normalState.flow=NovaFlow.normalize(null);
+    if(progress.sorties>0&&normalState.flow?.phase==='normal'&&normalState.internal?.prelude)return false;
     if(session.active||normalState.bonusPending||normalState.pendingZoneResult||normalState.pendingSortieResult||progress.pending>0||!NovaStockEntry.eligible(normalState.flow,progress,normalState.pendingFakeSortie))return false;
     if(normalState.ladderAwardPresentation){
       const card=normalState.ladderAwardPresentation.card;delete normalState.ladderAwardPresentation;

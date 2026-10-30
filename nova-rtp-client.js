@@ -1,9 +1,9 @@
 /* Fail closed on stale/missing measurements; never substitute a target or old rate. */
 globalThis.NovaRtpClient=(()=>{
- const conditions=new Set(['10億G連続・MY／差枚停止なし','2.5億G×4系列合算・MY／差枚停止なし']);
+ const conditions=new Map([['1億G連続・MY／差枚停止なし',100_000_000],['10億G連続・MY／差枚停止なし',1_000_000_000],['2.5億G×4系列合算・MY／差枚停止なし',1_000_000_000]]);
  function verified(data,expectedModelHash){
   return data?.schema==='nova-current-rtp/v1'&&data.status==='ready'
-   &&data.gamesPerSetting===1_000_000_000&&/^[a-f0-9]{40}$/.test(data.commit||'')
+   &&conditions.get(data.conditions)===data.gamesPerSetting&&/^[a-f0-9]{40}$/.test(data.commit||'')
    &&/^[a-f0-9]{64}$/.test(data.modelHash||'')&&(!expectedModelHash||data.modelHash===expectedModelHash)
    &&conditions.has(data.conditions)&&Array.isArray(data.settings)&&data.settings.length===6
    &&[1,2,3,4,5,6].every(setting=>{

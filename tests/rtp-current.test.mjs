@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {INPUTS,REQUIRED_OPTIONS,valid,currentReport,hashes as sourceHashes,modelHash} from '../scripts/rtp-current.mjs';
+import {INPUTS,REQUIRED_OPTIONS,GAMES_PER_SETTING,valid,currentReport,hashes as sourceHashes,modelHash} from '../scripts/rtp-current.mjs';
 
 const hashes=Object.fromEntries(INPUTS.map(f=>[f,'matching-hash']));
 function evidence(){return {
@@ -36,6 +36,19 @@ test('only complete uncapped billion-game evidence matching the engine is displa
  }
  assert.equal(currentReport(null,hashes,'b').status,'pending');
 });
+
+test('100 million continuous games are sufficient, with exact counts and matching confidence blocks',()=>{
+ const r=evidence();r.gamesPerSetting=100_000_000;
+ for(const row of r.results){for(const key of ['games','totalBet','totalPaid','net'])row[key]/=10;row.ci95.blocks=100;}
+ assert(valid(r,hashes));const published=currentReport(r,hashes,'b'.repeat(40));
+ assert.equal(published.gamesPerSetting,100_000_000);assert.equal(published.conditions,'1億G連続・MY／差枚停止なし');
+ for(const change of [r=>r.results[0].games--,r=>r.results[0].ci95.blocks=1000,r=>r.gamesPerSetting=99_000_000,r=>r.sourceHashes[INPUTS[0]]='old']){
+  const bad=structuredClone(r);change(bad);assert.equal(valid(bad,hashes),false);
+ }
+ assert.equal(currentReport(null,hashes,'b'.repeat(40)).gamesPerSetting,GAMES_PER_SETTING);
+ const workflow=fs.readFileSync('.github/workflows/rtp-billion.yml','utf8');
+ assert.match(workflow,/--games 100000000 --setting/);assert.doesNotMatch(workflow,/--games 1000000000\b/);
+});
 test('verified four-series pooled evidence publishes the same six current values',()=>{
  const r=pooledEvidence();assert(valid(r,hashes));
  const data=currentReport(r,hashes,'b'.repeat(40));
@@ -51,7 +64,7 @@ test('published JSON, browser data and specification surfaces share one verified
  const json=JSON.parse(fs.readFileSync('nova-rtp-current.json','utf8'));
  const browserSource=fs.readFileSync('nova-rtp-current.js','utf8').trim();
  const browser=JSON.parse(browserSource.replace(/^globalThis\.NovaRtpCurrent=/,'').replace(/;$/,''));
- assert.equal(json.gamesPerSetting,1_000_000_000);assert.deepEqual(browser,json);
+ assert([GAMES_PER_SETTING,1_000_000_000].includes(json.gamesPerSetting));assert.deepEqual(browser,json);
  const evidence=JSON.parse(fs.readFileSync('docs/rtp-current-1b.json','utf8'));
  const computed=currentReport(evidence,sourceHashes(),json.commit);
  assert.deepEqual(json,computed);
