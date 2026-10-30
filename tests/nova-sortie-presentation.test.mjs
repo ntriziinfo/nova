@@ -25,16 +25,16 @@ test('all stop orders keep the award and reveal the miss at the decisive reel',(
   assert.equal(aligned,expected);for(const i of [0,1,2])assert.deepEqual(columns[i],!won&&i===(order[0]===1?1:2-order[0])?strips[i].slice(0,3):strips[i].slice(1,4));assert.equal(JSON.stringify(resolved),before);
  }
 });
-test('all stop orders defer winning verdicts to third landing but keep losses on the decisive reel',()=>{
+test('all stop orders reveal sound verdicts on the decisive landed reel',()=>{
  const c=load();
  for(const won of [false,true])for(const order of orders){
   const spin={stopped:[false,false,false],auditPressOrder:[],auditStopOrder:[],resolved:{researchSortie:{won}}},decisive=order[0]===1?1:2-order[0];
   for(const i of order){
    spin.auditPressOrder.push(i);
-   const before=c.NovaSortie.stopVerdict(spin),alreadyRevealed=won?spin.auditStopOrder.length===3:spin.auditStopOrder.includes(decisive);
+   const before=c.NovaSortie.stopVerdict(spin),alreadyRevealed=spin.auditStopOrder.includes(decisive);
    assert.equal(!!before,alreadyRevealed,'press alone cannot advance the reveal');
    spin.stopped[i]=true;spin.auditStopOrder.push(i);
-   const verdict=c.NovaSortie.stopVerdict(spin),expected=won?spin.auditStopOrder.length===3:spin.auditStopOrder.includes(decisive);
+   const verdict=c.NovaSortie.stopVerdict(spin),expected=spin.auditStopOrder.includes(decisive);
    assert.equal(!!verdict,expected,`${won?'win':'loss'} ${order.join('')}`);if(verdict)assert.equal(verdict.won,won);
   }
  }

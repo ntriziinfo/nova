@@ -18,16 +18,25 @@ const timingCache=new Map();
 function lampSchedule(seed,total){
  const key=seed+':'+total;if(timingCache.has(key))return timingCache.get(key);
  const style=pacing(seed),chance=fraction(seed,1229)<.05;
- const capacity=chance?4:2,used=Array(total).fill(0),times=[1];used[0]=1;
- for(let i=2;i<=8;i++){
+ const capacity=Math.max(chance?4:2,Math.ceil(8/total)),used=Array(total).fill(0),times=[1];used[0]=1;
+ // The seventh light (red) arrives in the final three games in 80% of seeds.
+ // Reserve its stop first, then fit the earlier lights around the same pacing.
+ const late=fraction(seed,2017)<.8||total<7;
+ const first=late?Math.max(0,total-3):3,last=late?total-1:total-4;
+ const redGame=first+Math.floor(fraction(seed,2027)*(last-first+1));
+ const redStop=redGame*3+1+Math.floor(fraction(seed,2029)*3);
+ used[redGame]++;
+ for(let i=2;i<=6;i++){
   const r=fraction(seed,i+401),progress=style==='early'?.08+.37*r:style==='middle'?.28+.42*r:style==='spread'?.08+.8*r:.68+.3*r;
   const preferred=Math.min(total-1,Math.floor(progress*total));
-  const available=used.map((n,g)=>({n,g})).filter(x=>x.n<capacity).sort((a,b)=>Math.abs(a.g-preferred)-Math.abs(b.g-preferred)||a.g-b.g);
+  const available=used.map((n,g)=>({n,g})).filter(x=>x.n<capacity&&x.g<=redGame).sort((a,b)=>Math.abs(a.g-preferred)-Math.abs(b.g-preferred)||a.g-b.g);
   const game=available[0]?.g??total-1;used[game]++;
   const occupied=new Set(times.filter(t=>Math.floor((t-1)/3)===game));
-  let stop=1+Math.floor(fraction(seed,i+701)*3);for(let j=0;j<3&&occupied.has(game*3+stop);j++)stop=stop%3+1;
+  const maxStop=game===redGame?(redStop-1)%3+1:3;
+  let stop=1+Math.floor(fraction(seed,i+701)*maxStop);for(let j=0;j<maxStop&&occupied.has(game*3+stop);j++)stop=stop%maxStop+1;
   times.push(game*3+stop);
  }
+ times.push(redStop,total*3);
  times.sort((a,b)=>a-b);if(timingCache.size>1000)timingCache.clear();timingCache.set(key,times);return times;
 }
 function lampStop(seed,index,total){return lampSchedule(seed,total)[index-1];}
@@ -41,10 +50,12 @@ function display(lamp,stop,won,setting,terminal=false,revealed=false){
  const p=rates[Math.max(0,Math.min(5,(Number(setting)||1)-1))],seed=lamp.timingSeed||0;
  const roll=fraction(seed,137),yes=selectTier(true,p,roll),no=selectTier(false,p,roll);
  const last=terminal||lamp.remaining===1;
- // Promote winning presentations to green or above in at least 85% of seeds.
- // This reads the saved outcome only; rainbow confirmation remains behind PUSH.
- const base=Math.min(7,yes.count,no.count);
- const target=revealed?(won?yes.count:no.count):(won&&fraction(seed,1879)<.85?Math.max(6,base):base);
+ // Half of BB wins finish red; another 35% reach at least green. The losing
+ // red rate keeps its pooled confidence at 90%, without touching the CZ draw.
+ // Share the roll so a late internal win can only add lights, never remove them.
+ const base=Math.min(6,yes.count,no.count),colorRoll=fraction(seed,1879);
+ const redRate=won?.5:.5*p/(9*(1-p));
+ const target=revealed?(won?yes.count:no.count):colorRoll<redRate?7:won&&colorRoll<.85?Math.max(6,base):base;
  const total=Math.max(1,lamp.totalGames||15),elapsed=total-(lamp.remaining||1)+1;
  const current=last?(total-1)*3+stop:(elapsed-1)*3+stop;
  let count=0;

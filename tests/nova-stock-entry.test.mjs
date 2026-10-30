@@ -82,7 +82,7 @@ test('normal-state success reveals the same free aim without entering AT before 
  const c=harness();c.normalState.flow={phase:'normal',remaining:0};c.NovaProgress.snapshot=()=>({pending:0,sorties:1});
  const before=JSON.stringify(c.normalState.flow);
  assert(c.tryStockEntry());
- assert.equal(c.currentSpin.resolved.sortieFake,false);assert.equal(JSON.stringify(c.normalState.flow),before);
+ assert.equal(c.currentSpin.resolved.sortieFake,false);assert.equal(c.currentSpin.resolved.flowBefore.phase,'normal');assert.equal(c.currentSpin.resolved.flowAfter.phase,'normal');assert.equal(JSON.stringify(c.normalState.flow),before);
  await c.stopStockEntryReel(1);c.currentSpin=c.NovaSpinResume.restore(c.NovaSpinResume.capture(c.currentSpin),c.RESULT);
  await c.stopStockEntryReel(0);await c.stopStockEntryReel(2);
  assert.equal(JSON.stringify(c.normalState.flow),before);assert.equal(c.normalState.stockEntry.stage,'ready');

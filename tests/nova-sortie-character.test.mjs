@@ -27,51 +27,25 @@ function setup({reduced=false}={}){
 function spin(won,zone='sora',finished=false){return {stopped:[false,false,false],resolved:{researchSortie:Object.freeze({won,zone:won?zone:'',finished}),reward:8,flowAfter:{remaining:'600',queuedZones:won?[zone]:[]}}};}
 const visible=t=>t.view().firstChild.children.filter(e=>e.tag==='img'&&!e.hidden).map(e=>e.dataset.character);
 
-test('BET and the first two stops fade the same awarded character; the third reveals the true award',()=>{
+test('portraits remain hidden through BET and first two stops for every award',()=>{
  for(const zone of ['sosuke','toto','urapi','giru','sora','ouma','ura_giru','ura_sora','ura_ouma','kushuri_nito']){
   const t=setup(),s=spin(true,zone),before=JSON.stringify(s.resolved);t.api.begin(s);
-  const expected=zone==='kushuri_nito'?['nito','kushuri']:[zone.replace('ura_','')];
-  assert.deepEqual(visible(t),expected);assert.equal(t.view().dataset.confirmed,'false');assert.equal(t.draws(),0);
-  for(let stage=0;stage<3;stage++){
-   if(stage){s.stopped[3-stage]=true;t.api.stop(s);}
-   assert.deepEqual(visible(t),expected);assert.equal(t.view().dataset.stage,String(stage));
-   assert.equal(t.animations.at(-1).frames[0].opacity,0);assert.equal(t.animations.at(-1).frames.at(-1).opacity,0);
-   const count=t.animations.length;t.api.stop(s);assert.equal(t.animations.length,count,'re-render must not replay a stop');
-  }
+  assert.equal(t.view().hidden,true);
+  for(const i of [2,1]){s.stopped[i]=true;t.api.stop(s);assert.equal(t.view().hidden,true);assert.equal(t.animations.length,0);}
   s.stopped[0]=true;t.api.stop(s);
-  assert.equal(t.view().dataset.confirmed,'true');assert.equal(t.view().hidden,false);assert.equal(t.animations.at(-1).frames.at(-1).opacity,1);
-  assert(t.view().children.at(-1).textContent.endsWith('ゾーン獲得！'));
-  if(zone.startsWith('ura_'))assert(t.view().children.at(-1).textContent.startsWith('裏'));
-  assert.equal(JSON.stringify(s.resolved),before);assert.equal(t.draws(),0);
+  assert.equal(t.view().hidden,false);assert.equal(t.view().dataset.confirmed,'true');
+  assert.deepEqual(visible(t),zone==='kushuri_nito'?['nito','kushuri']:[zone.replace('ura_','')]);
+  assert.equal(t.animations.length,1);assert.equal(t.animations[0].frames.at(-1).opacity,1);
   assert.equal(t.view().style.top,'600px');assert.equal(t.view().style.height,'240px');
-  assert.equal(t.lamps.filter(l=>l.dataset.sortieWon==='true').length,zone==='kushuri_nito'?2:1);
+  assert.equal(JSON.stringify(s.resolved),before);assert.equal(t.draws(),0);
  }
 });
-
-test('misses tease with separate visual randomness but never show a third-stop confirmation',()=>{
+test('misses never reveal a character and clearing a result cancels its animation',()=>{
  const t=setup(),s=spin(false),before=JSON.stringify(s.resolved);t.api.begin(s);
- assert.equal(t.draws(),1);assert.deepEqual(visible(t),['sosuke']);
- for(const i of [2,1]){s.stopped[i]=true;t.api.stop(s);assert.equal(t.draws(),1);assert.deepEqual(visible(t),['sosuke']);}
- const last=t.animations.at(-1);s.stopped[0]=true;t.api.stop(s);
- assert.equal(t.view().hidden,true);assert.equal(last.cancelled,true);assert.equal(t.animations.length,3);
- assert.equal(JSON.stringify(s.resolved),before);assert(t.lamps.every(l=>l.dataset.sortieWon==='false'));
-});
-
-test('wrong stop order still reveals an internally awarded zone; replay resumes the current stage',()=>{
- const t=setup(),s=spin(true,'ura_giru',true);s.stopped=[true,false,true];s.auditPressOrder=[0,2];t.api.begin(s);
- assert.equal(t.view().dataset.stage,'2');assert.equal(t.view().dataset.confirmed,'false');assert.deepEqual(visible(t),['giru']);
- assert(t.lamps.every(l=>l.dataset.sortieWon==='false'));
- s.stopped[1]=true;t.api.stop(s);assert.equal(t.view().dataset.confirmed,'true');
- assert.deepEqual(t.lamps.filter(l=>l.dataset.sortieWon==='true').map(l=>l.dataset.artwork),['giru1']);
- t.api.begin(JSON.parse(JSON.stringify(s)));assert.equal(t.view().dataset.stage,'3');assert.equal(t.view().dataset.confirmed,'true');
-});
-
-test('new BET, reset and leaving sortie cancel old fades and clear a final award',()=>{
- const t=setup(),s=spin(true,'sora');t.api.begin(s);const first=t.animations.at(-1);
- t.api.clear();assert.equal(first.cancelled,true);assert.equal(t.view().hidden,true);
- s.stopped=[true,true,true];t.api.begin(s);assert.equal(t.view().dataset.confirmed,'true');
- t.api.begin(spin(false));assert.equal(t.view().dataset.confirmed,'false');assert.deepEqual(visible(t),['sosuke']);
- const last=t.animations.at(-1);t.api.begin({resolved:{}});assert.equal(t.view().hidden,true);assert.equal(last.cancelled,true);
+ for(const i of [2,1,0]){s.stopped[i]=true;t.api.stop(s);assert.equal(t.view().hidden,true);}
+ assert.equal(t.animations.length,0);assert.equal(t.draws(),0);assert.equal(JSON.stringify(s.resolved),before);
+ const win=spin(true);win.stopped=[true,true,true];t.api.begin(win);const a=t.animations.at(-1);
+ t.api.begin(spin(false));assert.equal(a.cancelled,true);assert.equal(t.view().hidden,true);
  assert(t.lamps.every(l=>l.dataset.sortieWon==='false'));
 });
 
@@ -156,18 +130,18 @@ test('duo third stop layers 1012 with the common win SE once; neither playback e
  t.api.clear();assert(sounds.every(s=>s.paused));assert.equal(played.length,2);
 });
 
-test('all six stop orders delay winning portrait, lamp and award SE until third stop while losses stay decisive',()=>{
+test('all six stop orders play decisive sound once but delay portraits and lamps until third stop',()=>{
  for(const order of [[0,1,2],[0,2,1],[1,0,2],[1,2,0],[2,0,1],[2,1,0]])for(const won of [false,true]){
   const t=setup(),s=spin(won,'kushuri_nito'),played=[];s.auditPressOrder=[];s.auditStopOrder=[];
   t.api.setSoundPlayer(src=>{played.push(src);return {audio:sound(),promise:Promise.resolve()};});
   t.api.begin(s);const original=JSON.stringify(s.resolved),decisive=order[0]===1?1:2-order[0];
   for(const i of order){
    s.auditPressOrder.push(i);t.api.stop(s); // A pending animation must not reveal the result.
-   const before=won?s.auditStopOrder.length===3:s.auditStopOrder.includes(decisive);assert.equal(played.length,before?(won?2:1):0);
+   const before=s.auditStopOrder.includes(decisive);assert.equal(played.length,before?(won?2:1):0);
    s.auditStopOrder.push(i);s.stopped[i]=true;t.api.stop(s);
-   const revealed=won?s.auditStopOrder.length===3:s.auditStopOrder.includes(decisive);
+   const revealed=s.auditStopOrder.includes(decisive);
    assert.equal(played.length,revealed?(won?2:1):0);
-   if(revealed){assert.equal(t.view().hidden,!won);if(won)assert.equal(t.view().dataset.confirmed,'true');}
+   assert.equal(t.view().hidden,!(won&&s.auditStopOrder.length===3));if(won&&s.auditStopOrder.length===3)assert.equal(t.view().dataset.confirmed,'true');
    assert.equal(t.lamps.filter(l=>l.dataset.sortieWon==='true').length,won&&s.auditStopOrder.length===3?2:0);
    t.api.stop(s);assert.equal(played.length,revealed?(won?2:1):0);
   }

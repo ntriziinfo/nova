@@ -14,7 +14,7 @@ globalThis.NovaStockEntry=(()=>{
   const next=prepare(flow,progress,pending);
   return entry.kind===next.kind&&entry.zone===next.zone&&!!entry.fixed50===!!next.fixed50&&entry.count===next.count&&['prepare','seven','ready'].includes(entry.stage);
  }
- function spin(entry,flow,columns){return {result:entry.kind==='sortieFake'?'MISS':entry.kind==='sortie'?'NEBULA':'BIG',lineRow:1,grid:[0,1,2].map(r=>columns.map(c=>c[r])),stopped:[false,false,false],pendingStopColumns:[null,null,null],visualStopping:[false,false,false],auditPressOrder:[],auditStopOrder:[],resolved:{stockEntry:true,sortieEntry:['sortie','sortieFake'].includes(entry.kind),sortieFake:entry.kind==='sortieFake',sortieCueColor:entry.color||'rainbow',reward:0,flowBefore:{...flow,phase:'art',entryStage:'seven',pendingZone:entry.zone},flowAfter:{...flow,entryStage:'roulette',pendingZone:entry.zone}}};}
+ function spin(entry,flow,columns){return {result:entry.kind==='sortieFake'?'MISS':entry.kind==='sortie'?'NEBULA':'BIG',lineRow:1,grid:[0,1,2].map(r=>columns.map(c=>c[r])),stopped:[false,false,false],pendingStopColumns:[null,null,null],visualStopping:[false,false,false],auditPressOrder:[],auditStopOrder:[],resolved:{stockEntry:true,sortieEntry:['sortie','sortieFake'].includes(entry.kind),sortieFake:entry.kind==='sortieFake',sortieCueColor:entry.color||'rainbow',reward:0,flowBefore:{...flow,entryStage:'seven',pendingZone:entry.zone},flowAfter:{...flow,entryStage:'roulette',pendingZone:entry.zone}}};}
  // Exact contiguous windows from the live strips; no lottery draws.
  function sortieColumns(entry,strips){
   return strips.map((strip,i)=>{

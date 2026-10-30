@@ -2,8 +2,15 @@
 globalThis.NovaRemainingCounters=(()=>{
  const defaults=Object.freeze({
   remainingcounter:Object.freeze({x:21.7,y:85.8,w:15.9,h:11}),
-  zoneaward:Object.freeze({x:60,y:20,w:18,h:11})
+  zoneaward:Object.freeze({x:45,y:22.6,w:9.4,h:11.8,labelsize:8,valuesize:20,unitsize:10,textgap:4})
  });
+ const textProperties=['labelsize','valuesize','unitsize','textgap'];
+ const unit=(target,prop)=>target==='zoneaward'&&textProperties.includes(prop)?'px':'%';
+ function migrateLayout(raw){
+  const old=raw?.zoneaward;
+  if(!old||old.x!==60||old.y!==20||old.w!==18||old.h!==11)return raw;
+  return {...raw,zoneaward:{...old,x:45,y:22.6,w:9.4,h:11.8}};
+ }
  const titles={remainingcounter:'共通カウンター（BB・AT・CZ・ゾーン）',zoneaward:'今回の特化ゾーン獲得pt'};
  const empty=(label,unit)=>({label,value:'—',unit,active:false,hold:false});
  const games=value=>String(Math.max(0,Math.floor(Number(value)||0)));
@@ -108,7 +115,9 @@ globalThis.NovaRemainingCounters=(()=>{
    const group=document.createElement('div');group.className='layoutEditGroup';
    const heading=document.createElement('div');heading.className='layoutEditGroupTitle';heading.textContent=title;group.append(heading);
    const rows=document.createElement('div');rows.className='layoutEditRows';group.append(rows);
-   for(const [prop,label,min,max]of [['x','X',0,95],['y','Y',0,120],['w','幅',4,70],['h','高さ',2,30]]){
+   const fields=[['x','X',0,95],['y','Y',0,120],['w','幅',4,70],['h','高さ',2,30]];
+   if(key==='zoneaward')fields.push(['labelsize','見出し文字',4,40],['valuesize','pt数字',8,100],['unitsize','pt単位',4,40],['textgap','上下の間隔',-12,40]);
+   for(const [prop,label,min,max]of fields){
     const row=document.createElement('label');row.className='layoutEditRow';
     const name=document.createElement('span');name.textContent=label;
     const input=document.createElement('input');input.className='layoutEditInput';input.type='range';input.min=min;input.max=max;input.step='.1';input.dataset.layoutTarget=key;input.dataset.layoutProp=prop;input.setAttribute('aria-label',title+' '+label);
@@ -116,10 +125,10 @@ globalThis.NovaRemainingCounters=(()=>{
     row.append(name,input,view);rows.append(row);
    }
    const metrics=document.createElement('p');metrics.className='novaCounterMetrics';metrics.dataset.counterMetrics=key;group.append(metrics);
-   const help=document.createElement('small');help.textContent=key==='zoneaward'?'連続特化でも各ゾーン単位で表示。位置・サイズは自動保存されます。':'滞在状態に合わせて表示を自動切替。位置・サイズは全表示で共通です。変更は自動保存されます。';group.append(help);host.append(group);
+   const help=document.createElement('small');help.textContent=key==='zoneaward'?'連続特化でも各ゾーン単位で表示。文字サイズ・上下の間隔は枠サイズと独立して調整できます。変更は自動保存されます。':'滞在状態に合わせて表示を自動切替。位置・サイズは全表示で共通です。変更は自動保存されます。';group.append(help);host.append(group);
   }
   const machine=document.getElementById('machine');
   if(machine&&globalThis.ResizeObserver)new ResizeObserver(measure).observe(machine);
  }
- return Object.freeze({defaults,leverFlow,snapshot,current,zoneAward,render,addLayoutControls,measure});
+ return Object.freeze({defaults,unit,migrateLayout,leverFlow,snapshot,current,zoneAward,render,addLayoutControls,measure});
 })();

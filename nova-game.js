@@ -1174,6 +1174,7 @@
   function normalizeLayoutState(raw){
     const next = cloneLayoutDefaults();
     raw = migrateLegacySevenSegState(raw);
+    raw = NovaRemainingCounters.migrateLayout?.(raw) || raw;
     if(!raw || typeof raw !== "object") return next;
     // Preserve the tuned position from layouts saved before the Sortie movie
     // received its own independent controls.
@@ -1190,7 +1191,7 @@
   }
 
   function setLayoutCssVariable(target, prop, value){
-    document.documentElement.style.setProperty(`--layout-${target}-${prop}`, `${Math.round(value * 10) / 10}%`);
+    document.documentElement.style.setProperty(`--layout-${target}-${prop}`, `${Math.round(value * 10) / 10}${NovaRemainingCounters.unit?.(target,prop)||'%'}`);
     if(target==="displaygroup"&&prop==="s")document.documentElement.style.setProperty("--displaygroup-scale",String(value/100));
   }
 
@@ -1202,7 +1203,7 @@
       const value = Math.round(layoutEditState[target][prop] * 10) / 10;
       input.value = String(value);
       const view = document.querySelector(`[data-layout-view="${target}-${prop}"]`);
-      if(view) view.textContent = `${value.toFixed(1)}%`;
+      if(view) view.textContent = `${value.toFixed(1)}${NovaRemainingCounters.unit?.(target,prop)||'%'}`;
     });
   }
 
@@ -9096,7 +9097,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     const terminal=!!(resolved.czCompleted||resolved.bonusHit||resolved.aTypeBonusReady||resolved.flowAfter?.phase==='art');
     // The CZ draw may be fixed internally at entry; reveal the all-rainbow
     // confirmation only when this spin reaches its actual result boundary.
-    const won=!!(terminal&&(lamp?.success||resolved.bonusHit||resolved.aTypeBonusReady||resolved.flowAfter?.phase==='art'));
+    const won=!!(lamp?.success||resolved.bonusHit||resolved.aTypeBonusReady||resolved.flowAfter?.phase==='art');
     if(stopOrder===0&&!won){
       if(!machine.dataset.czLamp)machine.dataset.czLamp='0';
       resolved.czLampAtBet=Number(machine.dataset.czLamp)||0;

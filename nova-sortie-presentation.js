@@ -106,11 +106,8 @@ globalThis.NovaSortie=(()=>{
   const stopped=spin.auditStopOrder||[];
   if(!stopped.length)return spin.stopped?.length===3&&spin.stopped.every(Boolean)?{won:!!spin.resolved.researchSortie.won}:null;
   const won=!!spin.resolved.researchSortie.won;
-  // Keep the confirmed-character scene off the reels until the third stop.
-  // A miss can still be disclosed on its existing decisive stop.
-  if(won)return stopped.length===3?{won:true}:null;
   const first=(spin.auditPressOrder||stopped)[0],decisive=first===1?1:2-first;
-  return stopped.includes(decisive)?{won:false}:null;
+  return stopped.includes(decisive)?{won}:null;
  }
  function init(){
   if(root)return true;
@@ -136,33 +133,31 @@ globalThis.NovaSortie=(()=>{
  }
  function revealCharacter(spin,stage){
   const verdict=stopVerdict(spin),confirmed=verdict?.won===true;
-  // The confirmation is the same persistent scene from the third stop onward.
-  const scene=verdict?(confirmed?'won':'lost'):stage;
-  if(revealSpin===spin&&revealStage===scene)return;
-  stopAward();
-  animation?.cancel();animation=null;revealSpin=spin;revealStage=scene;
-  const event=spin.resolved.researchSortie;
-  if(verdict&&!confirmed){
-   reveal.hidden=true;
-   if(!spin.sortieOutcomeSoundPlayed){spin.sortieOutcomeSoundPlayed=true;try{const playback=soundPlayer?.('assets/media/nova/ouma-fail.wav');Promise.resolve(playback?.promise).catch(()=>{});}catch{}}
-   return;
+  const reduced=globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+  // Sound follows the decisive reel; the awarded portrait waits for all reels.
+  if(verdict&&!spin.sortieOutcomeSoundPlayed){
+   spin.sortieOutcomeSoundPlayed=true;
+   if(confirmed)startAward(reduced,spin.resolved.researchSortie.zone);
+   else try{const playback=soundPlayer?.('assets/media/nova/ouma-fail.wav');Promise.resolve(playback?.promise).catch(()=>{});}catch{}
   }
+  const scene=stage===3&&confirmed?'won':'hidden';
+  if(revealSpin===spin&&revealStage===scene)return;
+  animation?.cancel();animation=null;revealSpin=spin;revealStage=scene;
+  if(scene==='hidden'){reveal.hidden=true;return;}
   const zone=previewZone(spin),base=baseZone(zone);if(!zone){reveal.hidden=true;return;}
   const pair=base==='kushuri_nito',ids=pair?['nito','kushuri']:[base];
   for(const img of actors)img.hidden=!ids.includes(img.dataset.character);
   reveal.dataset.stage=String(stage);reveal.dataset.confirmed=String(confirmed);reveal.dataset.pair=String(pair);reveal.dataset.zone=zone;
   caption.textContent=confirmed?(zone.startsWith('ura_')?'裏':'')+(pair?'くしゅり＆にと':characters[base][1])+'ゾーン獲得！':'';
   reveal.hidden=false;
-  const reduced=globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
   animation=reveal.animate(confirmed?[{opacity:0},{opacity:1}]:[{opacity:0,offset:0},{opacity:.85,offset:.2},{opacity:.85,offset:.5},{opacity:0,offset:1}],{duration:confirmed?(reduced?1:220):520,easing:'ease-in-out'});
-  if(confirmed&&!spin.sortieOutcomeSoundPlayed){spin.sortieOutcomeSoundPlayed=true;startAward(reduced,event.zone);}
  }
  function render(spin){
   if(!eligible(spin)||!init())return;
   root.hidden=false;
   const stopped=spin.stopped||[],next=order.find(i=>!stopped[i]);
   const verdict=stopVerdict(spin);
-  if(verdict?.won)flash(spin.resolved.researchSortie.zone);
+  if(verdict?.won&&stopped.every(Boolean))flash(spin.resolved.researchSortie.zone);
   root.firstChild.textContent=verdict?(verdict.won?'特化ゾーン獲得！':'ノヴァ不揃い'):'逆押しでノヴァを狙え';
   for(const cell of root.querySelectorAll('[data-reel]')){const i=Number(cell.dataset.reel);cell.dataset.stopped=String(!!stopped[i]);cell.dataset.next=String(i===next);}
   for(const reel of host.querySelectorAll('.reel')){const i=Number(reel.dataset.reel);reel.classList.toggle('sortieStopped',!!stopped[i]);reel.style.setProperty('--ouma-rattle-speed',[35,41.5,30.5][i]+'ms');reel.style.setProperty('--ouma-rattle-delay',[0,-15.5,-8.5][i]+'ms');}

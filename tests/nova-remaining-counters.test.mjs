@@ -7,6 +7,18 @@ for(const file of ['nova-art.js','nova-remaining-counters.js'])vm.runInContext(f
 const snapshot=(...args)=>JSON.parse(JSON.stringify(ctx.NovaRemainingCounters.snapshot(...args)));
 const current=(...args)=>JSON.parse(JSON.stringify(ctx.NovaRemainingCounters.current(...args)));
 
+test('zone award defaults and text controls are independent of the frame; custom positions survive',()=>{
+ const api=ctx.NovaRemainingCounters,plain=v=>JSON.parse(JSON.stringify(v));
+ assert.deepEqual(plain(api.defaults.zoneaward),{x:45,y:22.6,w:9.4,h:11.8,labelsize:8,valuesize:20,unitsize:10,textgap:4});
+ for(const prop of ['labelsize','valuesize','unitsize','textgap'])assert.equal(api.unit('zoneaward',prop),'px');
+ assert.equal(api.unit('zoneaward','w'),'%');
+ const custom={zoneaward:{x:40,y:25,w:20,h:10},count:{x:21}};
+ assert.equal(api.migrateLayout(custom),custom);
+ const old={zoneaward:{x:60,y:20,w:18,h:11},count:{x:21}},saved=JSON.stringify(old);
+ assert.deepEqual(plain(api.migrateLayout(old)),{zoneaward:{x:45,y:22.6,w:9.4,h:11.8},count:{x:21}});
+ assert.equal(JSON.stringify(old),saved);
+});
+
 test('zone winnings are per zone, keep the settled result, and never reveal an unresolved award',()=>{
  const flow=Object.freeze({phase:'art',zone:'sora',award:'100',remaining:'300'});
  const before=JSON.stringify(flow),api=ctx.NovaRemainingCounters;
