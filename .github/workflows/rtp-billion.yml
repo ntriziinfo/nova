@@ -24,7 +24,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - run: node scripts/rtp-current.mjs build && node --test tests/rtp-current.test.mjs tests/nova-rtp-client.test.mjs
+      - run: node scripts/rtp-current.mjs build && node --test tests/rtp-current.test.mjs tests/rtp-presentation-equivalence.test.mjs tests/nova-rtp-client.test.mjs
       - id: evidence
         run: echo "status=$(node scripts/rtp-current.mjs check)" >> "$GITHUB_OUTPUT"
   simulate:

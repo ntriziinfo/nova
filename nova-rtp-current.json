@@ -1,11 +1,100 @@
 {
   "schema": "nova-current-rtp/v1",
-  "status": "pending",
-  "modelHash": "2e6cbaf97efe4edc106c73776bf55e7aa0ff6178103cda7b95ec2b789f8e6630",
-  "commit": "3c1a6b24f5cd26cc36e90d195a63291db546ba36",
-  "sourceCommit": null,
-  "generatedAt": null,
+  "status": "ready",
+  "modelHash": "3f489a04ad7749a02a5dbf65485c8878f7707f344e5e5cefa022f947140a93a2",
+  "commit": "7aa3825be72e46dcf89791545c1d32076768346a",
+  "sourceCommit": "d295064df1e205e9a5338759eceec485161b84ed",
+  "generatedAt": "2026-10-30T03:49:18.042Z",
+  "sourceVerification": {
+    "kind": "reviewed-presentation-only",
+    "presentationChanges": [
+      {
+        "file": "nova-game.js",
+        "simulationHash": "5e2065f59a0d29d7e7855cce111aa2a443e65d93fadfc35ad060f12b9786e183",
+        "currentHash": "1d2d1b2493ea7c5c0d569bd7201cd4c29e81d04f9296970335e2894f44831f2e"
+      }
+    ]
+  },
   "gamesPerSetting": 1000000000,
   "conditions": "10億G連続・MY／差枚停止なし",
-  "settings": []
+  "settings": [
+    {
+      "setting": 1,
+      "rtp": 0.9463568206666667,
+      "rtpPct": 94.63568206666667,
+      "ci95": {
+        "blocks": 1000,
+        "blockGames": 1000000,
+        "meanPct": 94.635682,
+        "lowPct": 94.552764,
+        "highPct": 94.7186,
+        "halfWidthPct": 0.082918
+      }
+    },
+    {
+      "setting": 2,
+      "rtp": 0.964466159,
+      "rtpPct": 96.4466159,
+      "ci95": {
+        "blocks": 1000,
+        "blockGames": 1000000,
+        "meanPct": 96.446616,
+        "lowPct": 96.35906,
+        "highPct": 96.534172,
+        "halfWidthPct": 0.087556
+      }
+    },
+    {
+      "setting": 3,
+      "rtp": 0.9872823423333333,
+      "rtpPct": 98.72823423333334,
+      "ci95": {
+        "blocks": 1000,
+        "blockGames": 1000000,
+        "meanPct": 98.728234,
+        "lowPct": 98.636848,
+        "highPct": 98.819621,
+        "halfWidthPct": 0.091386
+      }
+    },
+    {
+      "setting": 4,
+      "rtp": 1.0281884086666666,
+      "rtpPct": 102.81884086666666,
+      "ci95": {
+        "blocks": 1000,
+        "blockGames": 1000000,
+        "meanPct": 102.818841,
+        "lowPct": 102.74762,
+        "highPct": 102.890062,
+        "halfWidthPct": 0.071221
+      }
+    },
+    {
+      "setting": 5,
+      "rtp": 1.0980675243333333,
+      "rtpPct": 109.80675243333333,
+      "ci95": {
+        "blocks": 1000,
+        "blockGames": 1000000,
+        "meanPct": 109.806752,
+        "lowPct": 109.718305,
+        "highPct": 109.8952,
+        "halfWidthPct": 0.088447
+      }
+    },
+    {
+      "setting": 6,
+      "rtp": 1.1523933896666667,
+      "rtpPct": 115.23933896666666,
+      "ci95": {
+        "blocks": 1000,
+        "blockGames": 1000000,
+        "meanPct": 115.239339,
+        "lowPct": 115.143502,
+        "highPct": 115.335176,
+        "halfWidthPct": 0.095837
+      }
+    }
+  ]
 }

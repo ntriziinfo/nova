@@ -1,0 +1,14 @@
+{
+  "schema": "nova-rtp-presentation-equivalence/v1",
+  "changes": [
+    {
+      "file": "nova-game.js",
+      "sourceHash": "5e2065f59a0d29d7e7855cce111aa2a443e65d93fadfc35ad060f12b9786e183",
+      "presentationHash": "1d2d1b2493ea7c5c0d569bd7201cd4c29e81d04f9296970335e2894f44831f2e",
+      "sourceCommit": "d295064df1e205e9a5338759eceec485161b84ed",
+      "presentationCommit": "7aa3825be72e46dcf89791545c1d32076768346a",
+      "reason": "逆回転前の1段戻しの表示時計だけを成功・失敗で共通化。抽選呼出し、乱数消費、4000ms後のゲーム進行、払い出し、上乗せ、停止結果は同一。",
+      "tests": ["tests/nova-ouma-presentation.test.mjs", "tests/nova-ouma-audio-lifecycle.test.mjs", "tests/nova-reel-motion.test.mjs", "tests/nova-background-auto.test.mjs"]
+    }
+  ]
+}
