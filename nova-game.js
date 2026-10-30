@@ -951,9 +951,9 @@
     flowstatus:{x:38,y:92.6,w:40},
     reels:{x:22.3, y:35.6, w:55.7, h:36.9, gap:1.6},
     chance:{x:22.0, y:85.8, w:11.9, h:11.0},
-    credit:{x:38.0, y:85.8, w:12.2, h:11.0},
-    count:{x:38.0, y:7.0, w:24.0, h:11.0},
-    payout:{x:66.0, y:85.8, w:11.0, h:11.0},
+    credit:{x:45.0, y:87.7, w:13.1, h:7.2},
+    count:{x:21.3, y:0.8, w:9.6, h:6.9},
+    payout:{x:60.6, y:87.7, w:11.1, h:7.6},
     playdata:{x:19.8,y:13.5,w:60.5,h:11.5},
     cabinetmask:{x:20.3,y:29.5,w:58.9,h:25.7},
     lampmovie:{x:20.4,y:29.6,w:59.1,h:10.7},
@@ -1255,13 +1255,13 @@
   }
 
   function migrateAtCountLayout(){
-    const key='nova_at_count_lamp_layout_20261030';
+    const key='nova_meter_layout_20261030b';
     if(safeStorageGet(key)==='1')return;
     for(const storageKey of [LAYOUT_DEFAULT_STORAGE_KEY,LAYOUT_EDIT_STORAGE_KEY]){
       try{
         const saved=safeStorageGet(storageKey);if(!saved)continue;
         const state=JSON.parse(saved);
-        state.count={...LAYOUT_DEFAULTS.count};
+        for(const target of ['reels','credit','count','payout'])state[target]={...LAYOUT_DEFAULTS[target]};
         safeStorageSet(storageKey,JSON.stringify(state));
       }catch(e){/* Invalid saved layouts use the factory defaults below. */}
     }

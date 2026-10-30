@@ -37,8 +37,8 @@ html { background:#08070a !important; background-image:none !important; }
    Keep the live numeric node intact so only its presentation changes. */
 .novaAtCountLayer{position:absolute;left:0;top:var(--jag-reel-top);width:var(--jag-cabinet-width);height:var(--jag-reel-height);z-index:70;pointer-events:none;}
 .novaAtCountLayer .jagPayoutMeterCount{background:transparent!important;}
-.novaAtCountLayer #jagCountMeter{left:0!important;right:20%!important;top:0!important;height:100%!important;text-shadow:0 0 5px #f019,0 2px 3px #000,2px 0 3px #000,-2px 0 3px #000!important;}
-.jagPayoutMeter .jagCountUnit{display:block!important;position:absolute;grid-area:auto;margin:0;right:0;top:0;width:17%;height:100%;align-content:center;color:#ff3440;font:bold min(40cqh,9cqw)/1 system-ui;text-shadow:0 1px 3px #000,0 0 4px #f017;}
+.novaAtCountLayer #jagCountMeter{left:0!important;right:20%!important;top:0!important;height:100%!important;font-family:var(--nova-status-font)!important;font-weight:var(--nova-status-weight)!important;color:var(--nova-status-color)!important;text-shadow:var(--nova-status-shadow)!important;}
+.jagPayoutMeter .jagCountUnit{display:block!important;position:absolute;grid-area:auto;margin:0;right:0;top:0;width:17%;height:100%;align-content:center;color:var(--nova-status-color);font:var(--nova-status-weight) min(40cqh,9cqw)/1 var(--nova-status-font);text-shadow:var(--nova-status-shadow);}
 .jagPayoutMeter .jagMeterCaption{display:block!important;position:absolute;grid-area:auto;margin:0;left:0;top:-26%;width:100%;height:22%;color:#fff;font:700 min(22cqh,8cqw)/1 system-ui;letter-spacing:.08em;text-align:center;text-shadow:0 1px 3px #000;}
 .reels { padding:0 !important; }
 .payline { left:var(--layout-reels-x) !important; right:auto !important;
@@ -59,14 +59,22 @@ html { background:#08070a !important; background-image:none !important; }
 .novaAnyCell { display:flex; align-items:center; justify-content:center; width:100%; height:100%; color:#d5c9df; background:#ffffff0a; font:700 clamp(12px,3vw,24px) system-ui; }
 #novaPatternSelect { margin:8px 0; width:100%; padding:8px; background:#21182c; color:white; border:1px solid #b563b9; }
 
-#novaFlowStatus{position:absolute;left:22%;top:10%;width:56%;z-index:52;text-align:center;font:700 15px/24px system-ui;color:#ded2eb;background:#100b15;border:1px solid #644a75;border-radius:5px;pointer-events:none;box-sizing:border-box}
-#novaFlowStatus[data-phase=rt]{color:#8ff8ff;border-color:#469ba4}
-#novaFlowStatus[data-phase=cz]{color:#efa8ff;border-color:#ba63cd}
-#novaFlowStatus[data-phase=strong_cz]{color:#ffe087;border-color:#d1a035}
-#novaFlowStatus[data-phase=art]{color:#8ff8ff;border-color:#469ba4;font-size:12px;overflow-wrap:anywhere;line-height:17px;max-height:65px;overflow:auto}
-body[data-burst=pending] #novaFlowStatus,body[data-burst=challenge] #novaFlowStatus{color:#fff0ba;border-color:#ffc259;background:linear-gradient(110deg,#2c0f08,#481727);box-shadow:0 0 14px #ff722c66}
-body[data-burst=won] #novaFlowStatus{color:#fff3be;border-color:#ffe486;background:linear-gradient(110deg,#421832,#19205b,#143e44);box-shadow:0 0 18px #d375ff88;font-weight:900}
-body #novaFlowStatus[data-at-checkpoint=true]{color:#fff0a3;border-color:#ffd460;background:linear-gradient(110deg,#392406,#806018,#392406);box-shadow:inset 0 0 8px #ffe08333,0 0 10px #ffc83d66;text-shadow:0 0 5px #ffcf6866;font-weight:900}
+/* Status and AT winnings use one typography/color definition in every phase. */
+#machine{--nova-status-font:system-ui;--nova-status-weight:700;--nova-status-color:#ded2eb;--nova-status-shadow:none;}
+#machine:has(:where(#novaFlowStatus):is([data-phase=rt],[data-phase=art])){--nova-status-color:#8ff8ff;}
+#machine:has(:where(#novaFlowStatus)[data-phase=cz]){--nova-status-color:#efa8ff;}
+#machine:has(:where(#novaFlowStatus)[data-phase=strong_cz]){--nova-status-color:#ffe087;}
+body:is([data-burst=pending],[data-burst=challenge]) #machine{--nova-status-color:#fff0ba;}
+body[data-burst=won] #machine{--nova-status-color:#fff3be;--nova-status-weight:900;}
+body #machine:has(#novaFlowStatus[data-at-checkpoint=true]){--nova-status-color:#fff0a3;--nova-status-weight:900;--nova-status-shadow:0 0 5px #ffcf6866;}
+#novaFlowStatus{position:absolute;left:22%;top:10%;width:56%;z-index:52;text-align:center;font:var(--nova-status-weight) 15px/24px var(--nova-status-font);color:var(--nova-status-color);text-shadow:var(--nova-status-shadow);background:#100b15;border:1px solid #644a75;border-radius:5px;pointer-events:none;box-sizing:border-box}
+#novaFlowStatus[data-phase=rt]{border-color:#469ba4}
+#novaFlowStatus[data-phase=cz]{border-color:#ba63cd}
+#novaFlowStatus[data-phase=strong_cz]{border-color:#d1a035}
+#novaFlowStatus[data-phase=art]{border-color:#469ba4;font-size:12px;overflow-wrap:anywhere;line-height:17px;max-height:65px;overflow:auto}
+body[data-burst=pending] #novaFlowStatus,body[data-burst=challenge] #novaFlowStatus{border-color:#ffc259;background:linear-gradient(110deg,#2c0f08,#481727);box-shadow:0 0 14px #ff722c66}
+body[data-burst=won] #novaFlowStatus{border-color:#ffe486;background:linear-gradient(110deg,#421832,#19205b,#143e44);box-shadow:0 0 18px #d375ff88}
+body #novaFlowStatus[data-at-checkpoint=true]{border-color:#ffd460;background:linear-gradient(110deg,#392406,#806018,#392406);box-shadow:inset 0 0 8px #ffe08333,0 0 10px #ffc83d66}
 body[data-art-zone=toto] .novaArtItem[data-artwork=toto] img{animation:none!important;filter:brightness(1.25) drop-shadow(0 0 12px var(--toto-lamp,#fff))!important}
 body[data-toto-color=blue]{--toto-lamp:#248aff}
 body[data-toto-color=yellow]{--toto-lamp:#ffff00}
