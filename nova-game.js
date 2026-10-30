@@ -870,6 +870,8 @@
   let premiumBigConfirmStopLockTimer = null;
   let speedBonusRogiHoldActive = false;
   let battleIntroHideTimer = null;
+  let overlayHideTimer = null;
+  let overlayEpoch = 0;
   const adminParams = bootParams;
 
   function safeStorageGet(key){
@@ -6290,6 +6292,11 @@
     NovaAim.reset();
     clearComebackIntroVoiceHold();
     globalThis.NovaRushConfirm?.reset();
+    NovaCzPresentation.reset();
+    NovaImpurityHint.arm('');
+    NovaImpurityHint.hide();
+    NovaImpurityHint.syncRelease(null);
+    hideOverlay();
     NovaInitialDuo.clear();
     NovaBellNavi.clear();
     NovaSortie.clear();
@@ -6299,7 +6306,7 @@
     pauseNormalBgm();
     stopBattleBgm(false);
     stopBarBgm();
-    clearBonusConfirmSoundLock();
+    stopTransientPresentationAudio();
     stopGekiatsuEffect(true);
     clearPremiumBigConfirmMovie();
     hideBonusConfirmScreen();
@@ -6364,6 +6371,11 @@
     NovaAim.reset();
     clearComebackIntroVoiceHold();
     globalThis.NovaRushConfirm?.reset();
+    NovaCzPresentation.reset();
+    NovaImpurityHint.arm('');
+    NovaImpurityHint.hide();
+    NovaImpurityHint.syncRelease(null);
+    hideOverlay();
     NovaInitialDuo.clear();
     NovaBellNavi.clear();
     NovaSortie.clear();
@@ -6376,7 +6388,7 @@
     pauseNormalBgm();
     stopBattleBgm(false);
     stopBarBgm();
-    clearBonusConfirmSoundLock();
+    stopTransientPresentationAudio();
     stopGekiatsuEffect(true);
     clearPremiumBigConfirmMovie();
     hideBonusConfirmScreen();
@@ -7989,7 +8001,9 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     let superSpeedStartedAt = superSpeedActive ? performance.now() : null;
     if(superSpeedActive)superSpeedNextBetAt=superSpeedStartedAt+autoStopDelayMs(2)+autoScaledDelayMs(RESULT_WAIT_MS)+autoDelayMs();
 
-    if(NovaCzPresentation.failureActive){NovaCzPresentation.clearFailureOnBet();playNormalBgm();}
+    const resumeAfterCzFailure=NovaCzPresentation.failureActive;
+    NovaCzPresentation.reset();
+    if(resumeAfterCzFailure)playNormalBgm();
     if(!session.active)NovaImpurityHint.normalBet(normalState);
     if(SLOT_DEBUG_ENABLED)NovaImpurityHint.onBet();
     fadeAimWinSoundsOnBet();
@@ -10192,6 +10206,24 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     updateAutoUi();
   }
 
+  function stopTransientPresentationAudio(){
+    const lockedAudio=bonusConfirmSoundAudio;
+    if(lockedAudio){
+      lockedAudio.pause();
+      try{lockedAudio.currentTime=0;}catch(e){}
+      releaseCharacterVoiceAudio(lockedAudio);
+    }
+    clearBonusConfirmSoundLock();
+    for(const audio of [...aimWinAudios]){
+      if(audio.aimFadeTimer!==undefined){clearInterval(audio.aimFadeTimer);delete audio.aimFadeTimer;}
+      audio.onended=null;audio.onerror=null;
+      audio.pause();
+      try{audio.currentTime=0;}catch(e){}
+      aimWinAudios.delete(audio);
+      releaseCharacterVoiceAudio(audio);
+    }
+  }
+
   function premiumBigThirdStopVoiceSrc(spin=currentSpin){
     const resolved = spin && spin.resolved ? spin.resolved : null;
     if(resolved && resolved.oneGameRenBonus) return PREMIUM_BIG_SECOND_THIRD_STOP_VOICE_SRC;
@@ -10463,15 +10495,24 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
 
   function playLoseSound(){ if(debugFastSpinActive || speedToBonusActive) return; beep(190,.13,"sawtooth",.055); }
 
+  function hideOverlay(){
+    overlayEpoch++;
+    if(overlayHideTimer!==null){clearTimeout(overlayHideTimer);overlayHideTimer=null;}
+    $("overlay")?.classList.remove("show");
+  }
+
   function showOverlay(text){
     if(globalThis.NovaCompletePresentation?.active)return;
     if(debugFastSpinActive || speedToBonusActive) return;
     text=NovaSortie.label(text);
     const o = $("overlay");
     if(normalState.resultCard||isRogiThirdStopHoldActive()){
-      if(o) o.classList.remove("show");
+      hideOverlay();
       return;
     }
+    if(!o)return;
+    hideOverlay();
+    const epoch=overlayEpoch;
     const target = document.querySelector(".reelArea") || document.querySelector(".reels");
     if(target){
       const rect = target.getBoundingClientRect();
@@ -10488,7 +10529,11 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     o.classList.remove("show");
     void o.offsetWidth;
     o.classList.add("show");
-    setTimeout(()=>o.classList.remove("show"),2200);
+    const ownTimer=setTimeout(()=>{
+      if(overlayHideTimer===ownTimer)overlayHideTimer=null;
+      if(overlayEpoch===epoch)o.classList.remove("show");
+    },2200);
+    overlayHideTimer=ownTimer;
   }
 
   function confetti(n){

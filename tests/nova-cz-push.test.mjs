@@ -1,5 +1,5 @@
 import fs from 'node:fs';import vm from 'node:vm';import assert from 'node:assert/strict';
-const classes=new Set();const elements=new Map(),timers=[],timerDelays=[];let fadeRestarts=0;const c=vm.createContext({document:{documentElement:{classList:{add:x=>classes.add(x),remove:x=>classes.delete(x)}},getElementById:id=>elements.get(id),createElement:()=>Object.defineProperty({},'offsetWidth',{get(){fadeRestarts++;return 0;}}),querySelector:()=>({append:b=>elements.set(b.id,b)})},setTimeout:(fn,ms)=>{timerDelays.push(ms);return timers.push(fn);}});vm.runInContext(fs.readFileSync('nova-cz-push.js','utf8'),c);const p=c.NovaCzPresentation;
+const classes=new Set();const elements=new Map(),timers=[],timerDelays=[],clearedTimers=new Set();let fadeRestarts=0;const c=vm.createContext({document:{documentElement:{classList:{add:x=>classes.add(x),remove:x=>classes.delete(x)}},getElementById:id=>elements.get(id),createElement:()=>Object.defineProperty({},'offsetWidth',{get(){fadeRestarts++;return 0;}}),querySelector:()=>({append:b=>elements.set(b.id,b)})},setTimeout:(fn,ms)=>{timerDelays.push(ms);return timers.push(fn);},clearTimeout:id=>clearedTimers.add(id)});vm.runInContext(fs.readFileSync('nova-cz-push.js','utf8'),c);const p=c.NovaCzPresentation;
 for(let setting=1;setting<=6;setting++)for(let seed=0;seed<1000;seed++){for(const success of [false,true]){let previous=0;for(let remaining=15;remaining>=1;remaining--)for(let stop=1;stop<=3;stop++){const shown=p.display({remaining,totalGames:15,timingSeed:seed},stop,success,setting);const stage=Math.max(previous,shown.stage);assert(stage>=previous);previous=stage;if(remaining===1&&stop===3){assert(stage>=1&&stage<=8);assert(stage<=7);}}}}
 assert.deepEqual(JSON.parse(JSON.stringify(p.display({remaining:15,totalGames:15,timingSeed:42},0,true,1,true,true))),{stage:8,color:'rainbow',rainbow:true});
 assert.deepEqual(JSON.parse(JSON.stringify(p.display({remaining:15,totalGames:15,timingSeed:42},1,true,1,true,true))),{stage:8,color:'rainbow',rainbow:true});
@@ -18,7 +18,7 @@ for(let seed=0;seed<10000;seed++){
  if(offer.voice==='hot')hot++;if(offer.voice==='veryHot')veryHot++;
 }
 assert(hot>1000&&veryHot>1000,'Both confirmed PUSH voices must be reachable without gameplay RNG');
-let count=0;const offers=[];const r={czLamp:{},czCompleted:true,bonusHit:true};const hooks={auto:true,valid:()=>true,reveal:()=>count++,onOffer:(offer,resolved)=>offers.push({offer,resolved})};assert.equal(p.wait(r,hooks),true);assert.equal(p.wait(r,hooks),true);assert.equal(offers.length,1);assert.equal(offers[0].resolved,r);assert.deepEqual(JSON.parse(JSON.stringify(offers[0].offer)),{variant:'white',voice:'default'});assert.equal(elements.get('novaCzPush').className,'white novaCzEntering');assert.equal(fadeRestarts,1);assert.equal(timers.length,1);assert.equal(timerDelays[0],1000);assert.equal(count,0);timers[0]();elements.get('novaCzPush').onclick();assert.equal(count,1);assert.equal(p.wait(r,hooks),false);assert.equal(elements.get('novaCzPush').hidden,true);assert.equal(p.wait({},hooks),false);
+let count=0;const offers=[];const r={czLamp:{},czCompleted:true,bonusHit:true};const hooks={auto:true,valid:()=>true,reveal:()=>count++,onOffer:(offer,resolved)=>offers.push({offer,resolved})};assert.equal(p.wait(r,hooks),true);assert.equal(p.wait(r,hooks),true);assert.equal(offers.length,1);assert.equal(offers[0].resolved,r);assert.deepEqual(JSON.parse(JSON.stringify(offers[0].offer)),{variant:'white',voice:'default'});assert.equal(elements.get('novaCzPush').className,'white novaCzEntering');assert.equal(fadeRestarts,1);assert.equal(timers.length,1);assert.equal(timerDelays[0],1000);assert.equal(count,0);const staleClick=elements.get('novaCzPush').onclick;timers[0]();staleClick();assert.equal(count,1);assert.equal(p.wait(r,hooks),false);assert.equal(elements.get('novaCzPush').hidden,true);assert.equal(p.wait({},hooks),false);
 console.log('Candidate checks passed: 12,000 CZ schedules, final guarantees, monotonic display, PUSH wait/auto/repeated clicks.');
 
 const resumed={czLamp:{},czCompleted:true,czPushWaiting:true,bonusHit:true};p.wait(resumed,{auto:false,valid:()=>true,reveal:()=>count++});assert.equal(elements.get('novaCzPush').hidden,false);assert.equal(elements.get('novaCzPush').className,'white novaCzEntering');assert.equal(fadeRestarts,2);elements.get('novaCzPush').onclick();assert.equal(count,2);
@@ -92,10 +92,33 @@ p.autoPress();assert.equal(timerDelays.at(-1),2000);assert.equal(autoFailure.czP
 assert.equal(autoFailure.czPushConfirmed,true);assert(classes.has('novaCzFailed'));assert.equal(p.failureActive,true);p.clearFailureOnBet();assert(!classes.has('novaCzFailed'));
 console.log('AUTO PUSH: takeover while waiting, one timer, stop/restart, success and failure passed.');
 
+let resetReveals=0;
+const resetAuto={czLamp:{},czCompleted:true,bonusHit:true};
+p.wait(resetAuto,{auto:true,valid:()=>true,reveal:()=>resetReveals++});
+const staleAutoTimer=timers.at(-1),resetButton=elements.get('novaCzPush');
+assert.equal(resetButton.hidden,false);p.reset();
+assert.equal(resetButton.hidden,true);assert.equal(resetButton.disabled,true);assert.equal(resetButton.onclick,null);assert.equal(resetButton.className,'');
+assert.equal(p.failureActive,false);assert.equal(p.autoPress(),false);
+staleAutoTimer();assert.equal(resetReveals,0);assert.equal(resetAuto.czPushConfirmed,undefined);
+p.wait(resetAuto,{auto:false,valid:()=>true,reveal:()=>resetReveals++});
+const currentClick=resetButton.onclick;staleAutoTimer();assert.equal(resetReveals,0);currentClick();
+assert.equal(resetReveals,1);assert.equal(resetAuto.czPushConfirmed,true);
+
+const resetFailure={czLamp:{},czCompleted:true};
+p.wait(resetFailure,{auto:false,valid:()=>true,reveal:()=>resetReveals++});resetButton.onclick();
+const staleFailureTimer=timers.at(-1);assert(classes.has('novaCzFailed'));p.reset();
+assert(!classes.has('novaCzFailed'));assert.equal(resetButton.hidden,true);assert.equal(resetButton.onclick,null);
+p.wait(resetFailure,{auto:false,valid:()=>true,reveal:()=>resetReveals++});
+staleFailureTimer();assert.equal(resetFailure.czPushConfirmed,undefined);assert.equal(resetButton.hidden,false);
+resetButton.onclick();const currentFailureTimer=timers.at(-1);assert.equal(p.autoPress(),true);p.reset();
+currentFailureTimer();assert.equal(resetFailure.czPushConfirmed,undefined);assert.equal(resetReveals,1);assert.equal(p.autoPress(),false);
+assert(clearedTimers.size>=3);
+console.log('PUSH reset: stale AUTO/failure timers, same-object reuse and blackout cleanup passed.');
+
 const game=fs.readFileSync('nova-game.js','utf8');
 assert.match(game,/function playNormalBgm\(\)\{\s*if\(globalThis.NovaCzPresentation\?\.failureActive\)\{pauseNormalBgm\(\);return;\}/);
 assert.match(game,/resolved.czFailurePushPlayed=true;\s*pauseNormalBgm\(\);/);
-assert.match(game,/if\(NovaCzPresentation.failureActive\)\{NovaCzPresentation.clearFailureOnBet\(\);playNormalBgm\(\);\}/);
+assert.match(game,/const resumeAfterCzFailure=NovaCzPresentation.failureActive;\s*NovaCzPresentation.reset\(\);\s*if\(resumeAfterCzFailure\)playNormalBgm\(\);/);
 
 assert.match(game,/const resultWaitMs = \(czPushReady \|\|/);
 assert.match(game,/onOffer:cue=>playCzPushPromptVoice\(cue\)/);

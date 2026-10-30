@@ -71,9 +71,18 @@ function cue(resolved,setting=1){
  return {variant:button,voice:fraction(seed,1693)<.5?'hot':'veryHot'};
 }
 function gold(resolved){return variant(resolved)==='gold';}
-let pendingPush=null,pendingAuto=null,failureActive=false;
+let pendingPush=null,pendingAuto=null,failureActive=false,pendingEpoch=0,autoTimer=null,failureTimer=null;
 function clearFailureOnBet(){failureActive=false;document.documentElement.classList.remove('novaCzFailed');}
 function autoPress(){return pendingAuto?.()||false;}
+function reset(){
+ pendingEpoch++;
+ if(autoTimer!==null){clearTimeout(autoTimer);autoTimer=null;}
+ if(failureTimer!==null){clearTimeout(failureTimer);failureTimer=null;}
+ pendingPush=null;pendingAuto=null;
+ clearFailureOnBet();
+ const button=document.getElementById('novaCzPush');
+ if(button){button.onclick=null;button.hidden=true;button.disabled=true;button.className='';}
+}
 function restartFadeIn(button,className){
  button.hidden=false;
  button.className=className;
@@ -87,22 +96,26 @@ function wait(resolved,{auto=false,setting=1,valid,reveal,onOffer=()=>{},onFailu
  let button=document.getElementById('novaCzPush');
  if(!button){button=document.createElement('button');button.id='novaCzPush';button.type='button';button.textContent='PUSH';document.querySelector('.reelArea').append(button);}
  if(pendingPush===resolved)return true;
+ if(pendingPush)reset();
+ const epoch=++pendingEpoch;
  pendingPush=resolved;
  clearFailureOnBet();
  const offer=cue(resolved,setting);
  restartFadeIn(button,offer.variant);button.disabled=false;
  onOffer(offer,resolved);
  let accepted=false,autoQueued=false;
+ const current=()=>pendingEpoch===epoch&&pendingPush===resolved;
  const autoEnabled=()=>typeof auto==='function'?auto():auto;
  const accept=()=>{
-  if(pendingPush!==resolved||accepted)return;
-  if(!valid()||resolved.czPushConfirmed){button.hidden=true;return;}
+  if(!current()||accepted)return;
+  if(!valid()||resolved.czPushConfirmed){reset();return;}
+  if(autoTimer!==null){clearTimeout(autoTimer);autoTimer=null;}autoQueued=false;
   accepted=true;button.disabled=true;
   const complete=()=>{
-   if(pendingPush!==resolved)return;
-   pendingAuto=null;
-   button.hidden=true;
-   if(!valid()){clearFailureOnBet();return;}
+   if(!current())return;
+   if(!valid()){reset();return;}
+   pendingPush=null;pendingAuto=null;
+   button.onclick=null;button.hidden=true;button.disabled=true;
    resolved.czPushConfirmed=true;reveal();
   };
   const won=!!(resolved.bonusHit||resolved.aTypeBonusReady||resolved.flowAfter?.phase==='art');
@@ -111,18 +124,25 @@ function wait(resolved,{auto=false,setting=1,valid,reveal,onOffer=()=>{},onFailu
   button.className+=' failed';
   onFailure(resolved);
   // Hold the completed spin for two real seconds from blackout, in every speed mode.
-  setTimeout(complete,2000);
+  const ownTimer=setTimeout(()=>{if(failureTimer===ownTimer)failureTimer=null;complete();},2000);
+  failureTimer=ownTimer;
  };
  pendingAuto=()=>{
-  if(pendingPush!==resolved||!valid()||resolved.czPushConfirmed)return false;
+  if(!current()||!valid()||resolved.czPushConfirmed)return false;
   if(accepted||autoQueued)return true;
   if(!autoEnabled())return false;
   autoQueued=true;
-  setTimeout(()=>{autoQueued=false;if(autoEnabled())accept();},1000);
+  const ownTimer=setTimeout(()=>{
+   if(autoTimer!==ownTimer)return;
+   autoTimer=null;
+   if(!current())return;
+   autoQueued=false;if(autoEnabled())accept();
+  },1000);
+  autoTimer=ownTimer;
   return true;
  };
  button.onclick=accept;autoPress();return true;
 }
-return {tiers,display,wait,gold,variant,cue,autoPress,clearFailureOnBet,get failureActive(){return failureActive;}};
+return {tiers,display,wait,gold,variant,cue,autoPress,reset,clearFailureOnBet,get failureActive(){return failureActive;}};
 
 })();
