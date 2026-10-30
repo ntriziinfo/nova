@@ -74,6 +74,24 @@
         "tests/nova-background-auto.test.mjs",
         "tests/nova-layout-defaults.test.mjs"
       ]
+    },
+    {
+      "file": "nova-game.js",
+      "sourceHash": "5e2065f59a0d29d7e7855cce111aa2a443e65d93fadfc35ad060f12b9786e183",
+      "presentationHash": "500e6208f7896c3333fb816a8f2fdf729f105729d3c6f7cd210eaea2ea9582fc",
+      "sourceCommit": "d295064df1e205e9a5338759eceec485161b84ed",
+      "presentationCommit": "4b49e6a40a4081be3338b22369a149240d9cb6e2",
+      "reason": "既に検証済みの演出・配置変更に加え、利用権限の復元によるAUTO自動開始を削除。開始操作の受付のみ変更し、開始後の抽選・乱数消費・払い出し・上乗せ・停止結果・1G進行は同一。前版へ開始条件差分を復元して全ファイルSHA256一致を確認。API権限復元・再接続・停止維持と明示開始を検証し、10億G証跡の試算条件・元ソース・結果は維持。",
+      "tests": [
+        "tests/nova-ouma-presentation.test.mjs",
+        "tests/nova-ouma-audio-lifecycle.test.mjs",
+        "tests/nova-reel-motion.test.mjs",
+        "tests/nova-background-auto.test.mjs",
+        "tests/nova-layout-defaults.test.mjs",
+        "tests/nova-daily-speed.test.mjs",
+        "tests/nova-super-speed.test.mjs",
+        "tests/nova-admin-response.test.mjs"
+      ]
     }
   ]
 }

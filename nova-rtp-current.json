@@ -2,7 +2,7 @@
   "schema": "nova-current-rtp/v1",
   "status": "ready",
   "modelHash": "3f489a04ad7749a02a5dbf65485c8878f7707f344e5e5cefa022f947140a93a2",
-  "commit": "6d10071bb3ee33444923e528fed62dac0e31b2c1",
+  "commit": "4b49e6a40a4081be3338b22369a149240d9cb6e2",
   "sourceCommit": "d295064df1e205e9a5338759eceec485161b84ed",
   "generatedAt": "2026-10-30T03:49:18.042Z",
   "sourceVerification": {
@@ -11,7 +11,7 @@
       {
         "file": "nova-game.js",
         "simulationHash": "5e2065f59a0d29d7e7855cce111aa2a443e65d93fadfc35ad060f12b9786e183",
-        "currentHash": "6e99322a83374cbd839f5bc42ff04ed0f5b0634ab27a33162e31610c118f692a"
+        "currentHash": "500e6208f7896c3333fb816a8f2fdf729f105729d3c6f7cd210eaea2ea9582fc"
       }
     ]
   },
