@@ -33,6 +33,13 @@ html { background:#08070a !important; background-image:none !important; }
 .jagBonusDataMeter span { color:#eee; text-shadow:none; }
 /* Data readouts stay legible over the generated empty display recesses. */
 .jagPayoutMeter { background:#080609 !important; }
+/* AT winnings share the reel coordinate system, but sit in front of the lamps.
+   Keep the live numeric node intact so only its presentation changes. */
+.novaAtCountLayer{position:absolute;left:0;top:var(--jag-reel-top);width:var(--jag-cabinet-width);height:var(--jag-reel-height);z-index:70;pointer-events:none;}
+.novaAtCountLayer .jagPayoutMeterCount{background:transparent!important;}
+.novaAtCountLayer #jagCountMeter{left:0!important;right:20%!important;top:0!important;height:100%!important;text-shadow:0 0 5px #f019,0 2px 3px #000,2px 0 3px #000,-2px 0 3px #000!important;}
+.jagPayoutMeter .jagCountUnit{display:block!important;position:absolute;grid-area:auto;margin:0;right:0;top:0;width:17%;height:100%;align-content:center;color:#ff3440;font:bold min(40cqh,9cqw)/1 system-ui;text-shadow:0 1px 3px #000,0 0 4px #f017;}
+.jagPayoutMeter .jagMeterCaption{display:block!important;position:absolute;grid-area:auto;margin:0;left:0;top:-26%;width:100%;height:22%;color:#fff;font:700 min(22cqh,8cqw)/1 system-ui;letter-spacing:.08em;text-align:center;text-shadow:0 1px 3px #000;}
 .reels { padding:0 !important; }
 .payline { left:var(--layout-reels-x) !important; right:auto !important;
   width:var(--layout-reels-w) !important;

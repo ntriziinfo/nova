@@ -28,7 +28,7 @@ test('committed display defaults match the approved Chrome layout',()=>{
  assert.match(game,/reels:\{x:22\.3, y:35\.6, w:55\.7, h:36\.9, gap:1\.6\}/);
  assert.match(game,/chance:\{x:22\.0, y:85\.8, w:11\.9, h:11\.0\}/);
  assert.match(game,/credit:\{x:38\.0, y:85\.8, w:12\.2, h:11\.0\}/);
- assert.match(game,/count:\{x:51\.6, y:85\.8, w:12\.2, h:11\.0\}/);
+ assert.match(game,/count:\{x:38\.0, y:7\.0, w:24\.0, h:11\.0\}/);
  assert.match(game,/payout:\{x:66\.0, y:85\.8, w:11\.0, h:11\.0\}/);
  assert.match(game,/playdata:\{x:19\.8,y:13\.5,w:60\.5,h:11\.5\}/);
  assert.match(game,/cabinetmask:\{x:20\.3,y:29\.5,w:58\.9,h:25\.7\}/);
@@ -77,10 +77,10 @@ test('committed display defaults match the approved Chrome layout',()=>{
  assert.match(cabinet,/--layout-sortieaimaim-y,32\.6%/);
  assert.match(html,/nova-game\.css\?v=20261028-auto-stop-control/);
  assert.match(html,/nova-data-counter\.css\?v=20261027-cherry-reels/);
- assert.match(html,/nova-cabinet\.css\?v=20261030-sortie-fire-position/);
- assert.match(html,/nova-aim-presentation\.js\?v=20261030-sortie-trigger-fire-v2/);
+ assert.match(html,/nova-cabinet\.css\?v=20261030-at-count-lamp/);
+ assert.match(html,/nova-aim-presentation\.js\?v=20261030-aim-ready/);
  assert.match(html,/nova-sortie-aim\.js\?v=20261030-prewarm/);
- assert.match(html,/nova-game\.js\?v=20261030-auto-rtp/);
+ assert.match(html,/nova-game\.js\?v=20261030-at-count-lamp/);
  assert.match(html,/出陣トリガー：炎エフェクト動画/);
  for(const [label,prop] of [['横位置','x'],['縦位置','y'],['幅','w'],['高さ','h']]){
   assert.match(html,new RegExp(`<span>${label}</span><input[^>]+data-layout-target="sortievideo"[^>]+data-layout-prop="${prop}"`));
@@ -125,6 +125,27 @@ test('Sortie fire layout migration replaces only the saved fire rectangle once',
  storage.set('edit',JSON.stringify({sortievideo:{x:9,y:9,w:9,h:9},reels:{x:22}}));
  vm.runInContext('migrateSortieFireLayout();',context);
  assert.deepEqual(JSON.parse(storage.get('edit')).sortievideo,{x:9,y:9,w:9,h:9});
+});
+
+test('AT winnings layout migrates once and preserves every other saved position',()=>{
+ const game=fs.readFileSync('nova-game.js','utf8');
+ const start=game.indexOf('  function migrateAtCountLayout(){');
+ const end=game.indexOf('\n  function loadLayoutDefaultState(){',start);
+ const storage=new Map([
+  ['default',JSON.stringify({count:{x:51.6,y:85.8,w:12.2,h:11},credit:{x:31},reels:{y:34}})],
+  ['edit',JSON.stringify({count:{x:52,y:88,w:13,h:12},credit:{x:29},reels:{y:33}})]
+ ]);
+ const context=vm.createContext({
+  LAYOUT_DEFAULT_STORAGE_KEY:'default',LAYOUT_EDIT_STORAGE_KEY:'edit',
+  LAYOUT_DEFAULTS:{count:{x:38,y:7,w:24,h:11}},
+  safeStorageGet:key=>storage.get(key)??null,safeStorageSet:(key,value)=>storage.set(key,value)
+ });
+ vm.runInContext(`${game.slice(start,end)}\nmigrateAtCountLayout();`,context);
+ assert.deepEqual(JSON.parse(storage.get('default')),{count:{x:38,y:7,w:24,h:11},credit:{x:31},reels:{y:34}});
+ assert.deepEqual(JSON.parse(storage.get('edit')),{count:{x:38,y:7,w:24,h:11},credit:{x:29},reels:{y:33}});
+ storage.set('edit',JSON.stringify({count:{x:40,y:10,w:30,h:15}}));
+ vm.runInContext('migrateAtCountLayout();',context);
+ assert.deepEqual(JSON.parse(storage.get('edit')).count,{x:40,y:10,w:30,h:15});
 });
 
 test('licensed character defaults and stacking keep Sosuke and Kushuri behind',()=>{

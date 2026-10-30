@@ -32,7 +32,7 @@
 <link rel="preload" as="image" href="assets/controls/stop_button_red_cut.png">
 <link rel="stylesheet" href="nova-game.css?v=20261028-auto-stop-control">
 <link rel="stylesheet" href="nova-data-counter.css?v=20261027-cherry-reels">
-<link rel="stylesheet" href="nova-cabinet.css?v=20261030-sortie-fire-position">
+<link rel="stylesheet" href="nova-cabinet.css?v=20261030-at-count-lamp">
 <link rel="stylesheet" href="nova-remaining-counters.css?v=20261013-checkpoint-cue">
 <script src="nova-remaining-counters.js?v=20261028-lever-outcome"></script>
 <link rel="stylesheet" href="nova-artwork.css?v=20261028-push-half">
@@ -288,7 +288,7 @@
               </div>
             </div>
             <div class="layoutEditGroup">
-              <div class="layoutEditGroupTitle">7SEG COUNT</div>
+              <div class="layoutEditGroupTitle">AT獲得pt（キャラランプ前面）</div>
               <div class="layoutEditRows">
                 <label class="layoutEditRow"><span>X</span><input class="layoutEditInput" type="range" min="0" max="95" step="0.1" data-layout-target="count" data-layout-prop="x"><b class="layoutEditValue" data-layout-view="count-x"></b></label>
                 <label class="layoutEditRow"><span>Y</span><input class="layoutEditInput" type="range" min="0" max="95" step="0.1" data-layout-target="count" data-layout-prop="y"><b class="layoutEditValue" data-layout-view="count-y"></b></label>
@@ -576,18 +576,20 @@
         <div class="jagPayoutMeters" aria-label="払い出し表示">
           <div class="jagPayoutMeter jagPayoutMeterCredit">
             <b id="jagCreditMeter">00000</b>
-            <span>CREDIT</span>
-          </div>
-          <div class="jagPayoutMeter jagPayoutMeterCount">
-            <b id="jagCountMeter">000</b>
-            <span>COUNT</span>
+            <span class="jagMeterCaption">CEDIT</span>
           </div>
           <div class="jagPayoutMeter jagPayoutMeterPayout">
             <b id="jagGamePayoutMeter">000</b>
-            <span>PAYOUT</span>
+            <span class="jagMeterCaption">PAYOUT</span>
           </div>
         </div>
         <div class="novaRemainingCounter" id="nova-remainingcounter" aria-label="通常時" data-mode="idle" data-active="false"><span data-counter-label>通常時</span><div class="novaCounterReading"><b data-counter-value>—</b><span data-counter-unit></span><span class="novaCounterHold">HOLD</span></div></div>
+      </div>
+
+      <div class="novaAtCountLayer" aria-label="AT獲得pt">
+        <div class="jagPayoutMeter jagPayoutMeterCount">
+          <b id="jagCountMeter">000</b><span class="jagCountUnit" aria-hidden="true">pt</span>
+        </div>
       </div>
 
       <div class="buttonRow playControls">
@@ -907,7 +909,7 @@
 <script src="nova-cz-push.js?v=20261030-presentation-reset"></script>
 <script src="nova-impurity-hint.js?v=20261028-smooth"></script>
 <script src="nova-reel-reference.js?v=20261028-left-reference"></script>
-<script src="nova-game.js?v=20261030-common-freeze-lift"></script>
+<script src="nova-game.js?v=20261030-at-count-lamp"></script>
 <button type="button" id="novaSymbolPreviewOpen">チェリー・ノヴァ（BAR）停止形を確認</button>
 <dialog id="novaSymbolPreview"><h2>チェリー・ノヴァ（BAR）停止形</h2><label>出目<select id="novaPatternSelect"><option value="WEAK_NOVA">弱チェリー：左上段・下段</option><option value="STRONG_MIDDLE">強チェリー：右下がり</option><option value="STRONG_RIGHT">強チェリー：右上がり</option><option value="SUPER_NOVA" selected>ノヴァ（BAR）揃い</option></select></label><p id="novaPatternDescription"></p><div id="novaSymbolPreviewGrid"></div><p>出目の確認用です。通常時のノヴァ（BAR）揃いはBIG・フリーズ各50%。ボーナス中は対象外。弱チェリー・強チェリーはそれぞれ既存の抽選を維持します。</p><button type="button" id="novaSymbolPreviewClose">閉じる</button></dialog>
 </body>

@@ -952,7 +952,7 @@
     reels:{x:22.3, y:35.6, w:55.7, h:36.9, gap:1.6},
     chance:{x:22.0, y:85.8, w:11.9, h:11.0},
     credit:{x:38.0, y:85.8, w:12.2, h:11.0},
-    count:{x:51.6, y:85.8, w:12.2, h:11.0},
+    count:{x:38.0, y:7.0, w:24.0, h:11.0},
     payout:{x:66.0, y:85.8, w:11.0, h:11.0},
     playdata:{x:19.8,y:13.5,w:60.5,h:11.5},
     cabinetmask:{x:20.3,y:29.5,w:58.9,h:25.7},
@@ -1254,9 +1254,24 @@
     safeStorageSet(key,'1');
   }
 
+  function migrateAtCountLayout(){
+    const key='nova_at_count_lamp_layout_20261030';
+    if(safeStorageGet(key)==='1')return;
+    for(const storageKey of [LAYOUT_DEFAULT_STORAGE_KEY,LAYOUT_EDIT_STORAGE_KEY]){
+      try{
+        const saved=safeStorageGet(storageKey);if(!saved)continue;
+        const state=JSON.parse(saved);
+        state.count={...LAYOUT_DEFAULTS.count};
+        safeStorageSet(storageKey,JSON.stringify(state));
+      }catch(e){/* Invalid saved layouts use the factory defaults below. */}
+    }
+    safeStorageSet(key,'1');
+  }
+
   function loadLayoutDefaultState(){
     migrateSortieAimLayout();
     migrateSortieFireLayout();
+    migrateAtCountLayout();
     try{
       const saved = safeStorageGet(LAYOUT_DEFAULT_STORAGE_KEY);
       layoutDefaultState = saved ? normalizeLayoutState(JSON.parse(saved)) : cloneFactoryLayoutDefaults();
