@@ -92,6 +92,33 @@
         "tests/nova-super-speed.test.mjs",
         "tests/nova-admin-response.test.mjs"
       ]
+    },
+    {
+      "file": "nova-game.js",
+      "sourceHash": "0b2218e28fef26505051badc5c676e2c4a33fbc2d9a7ec8d0309bc14130bccb5",
+      "presentationHash": "22976557dae10732e72eb2ed2ac33e7b02a58924ed99cd0c1ce32e76817c0387",
+      "sourceCommit": "61556ab064571540abdf7dbd566cf05b3fda08b3",
+      "presentationCommit": "e435cfbe381f4f05a20c82a2f27c2be892c35132",
+      "reason": "特化ごとの獲得pt、既存BB→AT獲得表示の開始基準・引継ぎ保護、固定されたモード示唆の再表示、出陣狙えSEの音量と停止待機を追加。待機は演出の実時間のみで、1Gの抽選・乱数消費・内部pt・ストック・払い出し・停止結果・状態遷移は変更しない。朝一示唆は既存の視覚専用crypto乱数を使用し保存して再利用。手動と超ハイスピードで4秒停止ロックと成功音声終了待ち、BBからATへ150pt保持、PUSH前後の投入・払出・G数不変を実画面で確認。関連148テスト合格。",
+      "tests": [
+        "tests/nova-result-recall.test.mjs",
+        "tests/nova-result-audio.test.mjs",
+        "tests/nova-chain-count.test.mjs",
+        "tests/nova-remaining-counters.test.mjs",
+        "tests/nova-sortie-aim.test.mjs",
+        "tests/nova-sortie-presentation.test.mjs",
+        "tests/nova-audio-wait-ui.test.mjs",
+        "tests/nova-background-auto.test.mjs",
+        "tests/nova-auto-stop-order.test.mjs",
+        "tests/nova-stock-entry.test.mjs",
+        "tests/nova-spin-resume.test.mjs",
+        "tests/nova-sortie-normal-flow.test.mjs",
+        "tests/nova-results.test.mjs",
+        "tests/nova-result-net.test.mjs",
+        "tests/nova-auto-results.test.mjs",
+        "tests/nova-entry-flow.test.mjs",
+        "tests/nova-super-audio.test.mjs"
+      ]
     }
   ]
 }
