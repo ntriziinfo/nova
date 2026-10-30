@@ -1,9 +1,10 @@
 /* Read-only counters: never normalize, advance, or draw from the game state. */
 globalThis.NovaRemainingCounters=(()=>{
  const defaults=Object.freeze({
-  remainingcounter:Object.freeze({x:21.7,y:85.8,w:15.9,h:11})
+  remainingcounter:Object.freeze({x:21.7,y:85.8,w:15.9,h:11}),
+  zoneaward:Object.freeze({x:60,y:20,w:18,h:11})
  });
- const titles={remainingcounter:'共通カウンター（BB・AT・CZ・ゾーン）'};
+ const titles={remainingcounter:'共通カウンター（BB・AT・CZ・ゾーン）',zoneaward:'今回の特化ゾーン獲得pt'};
  const empty=(label,unit)=>({label,value:'—',unit,active:false,hold:false});
  const games=value=>String(Math.max(0,Math.floor(Number(value)||0)));
  function points(value){try{return BigInt(/^\d+$/.test(String(value))?value:0).toLocaleString('ja-JP');}catch{return '0';}}
@@ -62,8 +63,31 @@ globalThis.NovaRemainingCounters=(()=>{
   if(values.atcounter.active)return {mode:'at',...values.atcounter};
   return {mode:'idle',...empty(options.bonus?'ボーナス中':options.bonusPending?'ボーナス準備':options.czPrelude?'CZ前兆':'通常時','')};
  }
- let node;
+ function zoneAward(flow,options={}){
+  if(options.bonus)return null;
+  const card=options.zoneResult;
+  if(!options.spin&&card?.kind==='zone')return {label:'今回の特化 獲得',value:points(card.pt)};
+  const r=options.spin?.resolved;
+  const shown=r?.zoneStartFlow||r?.flowBefore||flow;
+  if(!shown?.zone||shown.entryStage)return null;
+  return {label:(shown.initialStage==='zone'?'初期pt':'今回の特化')+' 獲得',value:points(shown.award)};
+ }
+ let node,awardNode;
+ function renderAward(flow,options){
+  if(!awardNode){
+   const machine=document.getElementById('machine');if(!machine)return;
+   // Use reel coordinates outside its stacking context, above character lamps.
+   const host=document.createElement('div');host.className='novaZoneAwardLayer';machine.append(host);
+   awardNode=document.createElement('div');awardNode.id='nova-zoneaward';awardNode.className='novaRemainingCounter novaZoneAward';
+   awardNode.innerHTML='<span data-counter-label></span><div class="novaCounterReading"><b data-counter-value>0</b><span data-counter-unit>pt</span></div>';host.append(awardNode);
+  }
+  const value=zoneAward(flow,options);awardNode.dataset.active=String(!!value);
+  if(!value)return;
+  for(const key of ['label','value']){const el=awardNode.querySelector('[data-counter-'+key+']');if(el.textContent!==value[key])el.textContent=value[key];}
+  awardNode.setAttribute('aria-label',value.label+' '+value.value+'pt');
+ }
  function render(flow,options){
+  renderAward(flow,options);
   node ||= document.getElementById('nova-remainingcounter');if(!node)return;
   const value=current(flow,options);
   node.dataset.checkpoint=String(value.mode==='at'&&!!options?.checkpointStatus?.gold);
@@ -92,10 +116,10 @@ globalThis.NovaRemainingCounters=(()=>{
     row.append(name,input,view);rows.append(row);
    }
    const metrics=document.createElement('p');metrics.className='novaCounterMetrics';metrics.dataset.counterMetrics=key;group.append(metrics);
-   const help=document.createElement('small');help.textContent='滞在状態に合わせて表示を自動切替。位置・サイズは全表示で共通です。変更は自動保存されます。';group.append(help);host.append(group);
+   const help=document.createElement('small');help.textContent=key==='zoneaward'?'連続特化でも各ゾーン単位で表示。位置・サイズは自動保存されます。':'滞在状態に合わせて表示を自動切替。位置・サイズは全表示で共通です。変更は自動保存されます。';group.append(help);host.append(group);
   }
   const machine=document.getElementById('machine');
   if(machine&&globalThis.ResizeObserver)new ResizeObserver(measure).observe(machine);
  }
- return Object.freeze({defaults,leverFlow,snapshot,current,render,addLayoutControls,measure});
+ return Object.freeze({defaults,leverFlow,snapshot,current,zoneAward,render,addLayoutControls,measure});
 })();

@@ -42,6 +42,21 @@ test('eyecatch holds next spin until ended, without a fixed release timer',()=>{
  assert.equal(c.bonusConfirmSoundPlaying,true);assert.equal(audio.volume,.5);
  audio.onended();assert.equal(c.bonusConfirmSoundPlaying,false);
 });
+
+test('sortie success voice stays at natural speed and holds the next BET until ended, also in super AUTO',()=>{
+ let audio;const c=vm.createContext({watchPlaybackProgress:()=>()=>{},superSpeedActive:true,debugFastSpinActive:false,speedToBonusActive:false,A_TYPE_MODE:true,SEVEN_CONFIRM_SOUND_SRC:'seven',oneShotSoundCache:new Map(),bonusConfirmSoundPlaying:false,bonusConfirmSoundAudio:null,bonusConfirmSoundTimer:null,updateAutoUi(){},soundOutputVolume:(src,v)=>v,prepareCharacterVoiceAudio(){},setTimeout(){throw Error('healthy audio must wait for ended')},clearTimeout(){},Audio:class{constructor(src){audio=this;this.src=src;}pause(){}getAttribute(){return this.src;}play(){return Promise.resolve();}}});
+ vm.runInContext(fn('clearBonusConfirmSoundLock')+'\n'+fn('playLockedBonusConfirmSound'),c);
+ let done=0;c.playLockedBonusConfirmSound('sortie.wav',.5,()=>done++,{naturalSpeed:true});
+ assert.equal(audio.playbackRate,1);assert.equal(c.bonusConfirmSoundPlaying,true);assert.equal(done,0);
+ audio.onended();assert.equal(c.bonusConfirmSoundPlaying,false);assert.equal(done,1);
+});
+
+test('only the sortie entry aim SE receives +3 dB, including master-volume reapplication',()=>{
+ const c=vm.createContext({SORTIE_SANDWICH_AIM_SOUND_SRC:'sortie.wav',NovaAudioAssets:{entry:()=>({category:'sfx'})},sfxOutputVolume:()=>.25});
+ vm.runInContext(fn('soundOutputVolume'),c);
+ assert.equal(c.soundOutputVolume('sortie.wav',.25),.25*10**(3/20));
+ assert.equal(c.soundOutputVolume('other.wav',.25),.25);
+});
 test('zone and AT result third stops skip result delay; ordinary games keep it',()=>{
  const code=html.match(/      const r=currentSpin.resolved;[^]*?const resultWaitMs =[^]*?;/)[0];
  for(const [before,after,expected] of [[{zone:'toto'},{zone:''},0],[{phase:'art'},{phase:'normal'},0],[{phase:'normal'},{phase:'normal'},1000]]){

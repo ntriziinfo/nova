@@ -7,6 +7,19 @@ for(const file of ['nova-art.js','nova-remaining-counters.js'])vm.runInContext(f
 const snapshot=(...args)=>JSON.parse(JSON.stringify(ctx.NovaRemainingCounters.snapshot(...args)));
 const current=(...args)=>JSON.parse(JSON.stringify(ctx.NovaRemainingCounters.current(...args)));
 
+test('zone winnings are per zone, keep the settled result, and never reveal an unresolved award',()=>{
+ const flow=Object.freeze({phase:'art',zone:'sora',award:'100',remaining:'300'});
+ const before=JSON.stringify(flow),api=ctx.NovaRemainingCounters;
+ assert.equal(api.zoneAward(flow).value,'100');
+ assert.equal(api.zoneAward(flow,{spin:{resolved:{flowBefore:flow,flowAfter:{...flow,award:'200'}}}}).value,'100');
+ assert.equal(api.zoneAward({phase:'art',zone:''},{zoneResult:{kind:'zone',pt:'200',totalPt:'900'}}).value,'200');
+ assert.equal(api.zoneAward({phase:'art',zone:'toto',award:'0'}).value,'0');
+ assert.equal(api.zoneAward({phase:'normal'}),null);
+ assert.equal(api.zoneAward(flow,{bonus:true}),null);
+ assert.equal(api.zoneAward(flow,{spin:{resolved:{zoneStartFlow:{zone:'toto',award:'10'},flowBefore:flow}}}).value,'10');
+ assert.equal(JSON.stringify(flow),before);
+});
+
 test('the shared display switches between CZ, AT and the active zone without changing banked points',()=>{
  const flow=Object.freeze({phase:'art',remaining:'1234',zone:'sora',ura:true,zoneLeft:5});
  assert.deepEqual(current(flow),{mode:'zone',label:'裏空ゾーン',value:'5',unit:'G',active:true,hold:false});

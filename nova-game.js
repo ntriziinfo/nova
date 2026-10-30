@@ -1382,7 +1382,7 @@
     const category=globalThis.NovaAudioAssets?.entry(src)?.category;
     if(category==='voice')return voiceOutputVolume();
     if(category==='bgm')return bgmOutputVolume();
-    if(category==='sfx')return sfxOutputVolume();
+    if(category==='sfx')return Math.min(1,sfxOutputVolume()*(src===SORTIE_SANDWICH_AIM_SOUND_SRC?10**(3/20):1));
     if(category==='payout')return payoutOutputVolume();
     return CHARACTER_VOICE_KEYS.has(normalizedAudioSourceKey(src))?voiceOutputVolume():applyAudioSourceOutputScale(volume,src);
   }
@@ -4754,6 +4754,9 @@
           resultPayout:null,
           endSignal:null
         };
+        // Anchor the displayed BB -> AT chain before the first BB BET, including
+        // a forced/debug BB that did not pass through bonusPending.
+        jagChainCount=chainCountStep(jagChainCount,true,Number(stats.totalPaid)||0,Number(stats.totalFee)||0).state;
         jagLastBonusPayout = 0;
         jagLastGamePayout = 0;
         jagChanceHold = true;
@@ -4868,6 +4871,9 @@
     clearPremiumBigConfirmMovie();
     session.resultPayout = aTypeEnd ? null : resultPayout;
     session.endSignal = null;
+    // UI/audio cleanup can redraw between BB ending and afterBonus(). Preserve
+    // its display baseline across that handoff; the final normal redraw resets it.
+    jagChainBonusHandoff=true;
     session.active = false;
     session.remain = 0;
     session.stockSets = 0;
@@ -4956,6 +4962,7 @@
     if(aTypeEnd && !premiumOneGameRen && normalizeATypeBonusKind(endedBonusKind)==='BIG'){
       displayNovaResult(NovaResults.bonus(resultPayout,normalState.flow,normalState.internal?.mode));
     }
+    jagChainBonusHandoff=false;
     updateDisplay();
     persistState();
   }
@@ -5439,6 +5446,7 @@
     NovaLadder.hide();
     NovaAim.hide();
     NovaInitialDuo.clear();
+    globalThis.NovaResultRecall?.remember(normalState,card);
     normalState.resultCard=card;NovaResults.show(card);
     if(card.kind==='bonus'||card.color==='mode')persistState(); // Also save a character revealed after a deferred win animation.
     $('overlay')?.classList.remove('show');
@@ -5930,7 +5938,7 @@
     const wasWaiting=button.dataset.audioWait==='true';
     button.dataset.audioWait=String(waiting);
     if(!waiting&&!wasWaiting)return;
-    const canStopNow=isSpinning&&spinCanStop&&!isPremiumBigConfirmStopLocked();
+    const canStopNow=isSpinning&&spinCanStop&&!isPremiumBigConfirmStopLocked()&&!globalThis.NovaSortieAudioGate?.locked(currentSpin);
     const wait=waiting||NovaSortie.busy||isSpinning&&!canStopNow;
     button.textContent=complete&&!isSpinning?"COMPLETE":wait?"WAIT":canStopNow?"STOP":"BET";
     button.classList.toggle("waiting",wait);
@@ -5941,7 +5949,7 @@
 
   function syncCabinetControlState(){
     syncAudioWaitUi();
-    const canStopNow = !!(isSpinning && spinCanStop && !isPremiumBigConfirmStopLocked());
+    const canStopNow = !!(isSpinning && spinCanStop && !isPremiumBigConfirmStopLocked() && !globalThis.NovaSortieAudioGate?.locked(currentSpin));
     stopBtns.forEach((btn, i)=>{
       if(!btn) return;
       const reelStopped = !!(currentSpin && Array.isArray(currentSpin.stopped) && currentSpin.stopped[i]);
@@ -5967,6 +5975,7 @@
   function renderRemainingCounters(){
     const spin=isSpinning?currentSpin:null;
     NovaRemainingCounters.render(normalState.flow,{spin,checkpointStatus:atCheckpointStatus(normalState.flow,NovaProgress.snapshot(),currentGameProfit(),true),bonus:session.active,bonusRemaining:isATypeBonusActive()?aTypeBonusRemainingNet():undefined,bonusPending:normalState.bonusPending,
+      zoneResult:normalState.ladderAwardPresentation?.card||normalState.pendingZoneResult||normalState.resultCard,
       czPrelude:normalState.internal?.prelude?.presentation==='reel'&&!spin?.resolved?.czPrelude?.announce});
     if(spin&&!session.active){const node=$('novaFlowStatus');if(node)node.textContent=normalModeLabel();}
   }
@@ -5981,6 +5990,10 @@
   }
 
   function updateDisplay(){
+    globalThis.NovaResultRecall?.sync({state:normalState,
+      eligible:canUsePlayState()&&!isSpinning&&!autoPlay&&!speedToBonusActive&&!debugFastSpinActive&&!isCompleteTrialLocked()&&!bonusConfirmSoundPlaying&&!bonusEndBgmPlaying&&!pendingAtStartTimer&&!NovaSortie.busy&&!NovaAim.busy&&!NovaLadder.busy&&!NovaDirectAward.busy&&!NovaResults.editing&&!NovaCzPresentation.failureActive&&!document.getElementById('novaCzPush')?.matches(':not([hidden])'),
+      makeInitial:()=>NovaResults.bonus('0',{phase:'normal'},normalState.internal?.mode),
+      save:()=>persistState(),sound:()=>playOneShotSound('assets/media/nova/result-recall-push.mp3',sfxOutputVolume())});
     NovaImpurityHint.syncRelease(session);
     reconcilePlaySessionBaseline();
     syncCompletePresentation();
@@ -6194,7 +6207,7 @@
       const sortieHold=NovaSortie.busy;
       if(sortieHold||spinButton.dataset.sortieHold==='true')spinButton.disabled=sortieHold;
       spinButton.dataset.sortieHold=String(sortieHold);
-      const canStopNow = spinCanStop && !isPremiumBigConfirmStopLocked();
+      const canStopNow = spinCanStop && !isPremiumBigConfirmStopLocked() && !globalThis.NovaSortieAudioGate?.locked(currentSpin);
       spinButton.textContent = sortieHold ? "WAIT" : isSpinning ? (canStopNow ? "STOP" : "WAIT") : "BET";
       spinButton.classList.toggle("waiting", sortieHold || isSpinning && !canStopNow);
       spinButton.classList.toggle("stopReady", !sortieHold && isSpinning && canStopNow);
@@ -7753,6 +7766,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     spin.sortieSandwichAimSoundPlayed=true;
     const playback=playOneShotSound(SORTIE_SANDWICH_AIM_SOUND_SRC,sfxOutputVolume(),{allowDuringPremiumConfirm:true});
     if(playback?.audio)spin.sortieSandwichAimAudio=playback.audio;
+    globalThis.NovaSortieAudioGate?.begin(spin,playback,()=>{if(currentSpin===spin){syncCabinetControlState();updateDisplay();scheduleNextAuto();}});
     return true;
   }
 
@@ -7897,13 +7911,13 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     // Announce the free entry reveal once; retain its stock until the next real BET.
     if(spin.resolved.sortieEntry){
       playSortieSandwichHitSound(spin);
-      playLockedBonusConfirmSound(MODE_EVENT_VOICE_SRCS.sortie,voiceOutputVolume());
+      playLockedBonusConfirmSound(MODE_EVENT_VOICE_SRCS.sortie,voiceOutputVolume(),()=>{updateDisplay();scheduleNextAuto();},{naturalSpeed:true});
     }
     persistState();updateDisplay();syncCabinetControlState();scheduleNextAuto();
   }
   async function stopStockEntryReel(i,options={}){
     const spin=currentSpin;
-    if(!spin?.resolved?.stockEntry||!spinCanStop||!NovaStockEntry.canStop(spin,i)||spin.stopped[i]||(!options.visualReady&&spin.visualStopping?.[i]))return;
+    if(!spin?.resolved?.stockEntry||!spinCanStop||globalThis.NovaSortieAudioGate?.locked(spin)||!NovaStockEntry.canStop(spin,i)||spin.stopped[i]||(!options.visualReady&&spin.visualStopping?.[i]))return;
     const col=spin.grid.map(row=>row[i]);
     if(!options.visualReady){
       (spin.auditPressOrder ||= []).push(i);spin.visualStopping ||= [false,false,false];spin.visualStopping[i]=true;
@@ -7954,6 +7968,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
       if(wait>0){queueAutoStep(wait);return;}
     }
     if(A_TYPE_MODE&&(['SORTIE','FREEZE'].includes(forceResult)||NovaStockEntry.debugCue(forceResult)))takeForcedResult();
+    globalThis.NovaResultRecall?.bet();
     if(tryStockEntry())return;
     applyQueuedControlInput();
 
@@ -8359,7 +8374,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     const next=NovaBellNavi.stopOrder(spin).find(index=>!spin.stopped[index]);
     // Worker/native deadlines can arrive before the stop unlock or out of order.
     // Retry the same drawn spin; never let a later reel become the first press.
-    if(!spinCanStop||isPremiumBigConfirmStopLocked()||next!==i){
+    if(!spinCanStop||globalThis.NovaSortieAudioGate?.locked(spin)||isPremiumBigConfirmStopLocked()||next!==i){
       spin.autoStopRetryTimers ||= [];
       if(!spin.autoStopRetryTimers[i])spin.autoStopRetryTimers[i]=setTimeout(()=>{
         spin.autoStopRetryTimers[i]=null;stopAutoReelInOrder(spin,i,options);
@@ -8398,6 +8413,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
 
   function stopSingleReel(i, options={}){
     if(!canUsePlayState())return;
+    if(globalThis.NovaSortieAudioGate?.locked(currentSpin))return;
     if(currentSpin?.resolved?.stockEntry){void stopStockEntryReel(i,options);return;}
     if(currentSpin?.resolved?.oumaFreeze&&!options.oumaAuto)return;
     if(!isSpinning || !currentSpin || currentSpin.stopped[i]) return;
@@ -8594,6 +8610,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
   }
 
   function stopAllReels(){
+    if(globalThis.NovaSortieAudioGate?.locked(currentSpin))return;
     if(currentSpin?.resolved?.oumaFreeze)return;
     if(!isSpinning || !currentSpin) return;
     if(isPremiumBigConfirmStopLocked()){
@@ -9555,7 +9572,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
   function requestAutoStopCurrentSpin(){
     if(!isSpinning || !currentSpin) return false;
     if(currentSpin.resolved?.oumaFreeze)return false; // Reverse reels stop together on the audio cue.
-    if(!spinCanStop) return false;
+    if(!spinCanStop||globalThis.NovaSortieAudioGate?.locked(currentSpin)) return false;
     if(isPremiumBigConfirmStopLocked()) return false;
     if(currentSpin.autoStopTakeoverScheduled) return true;
     currentSpin.autoStopTakeoverScheduled = true;
@@ -10289,7 +10306,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     }
   }
 
-  function playLockedBonusConfirmSound(src, volume=sfxOutputVolume(CONFIRM_SOUND_OUTPUT_SCALE), onEnded=null){
+  function playLockedBonusConfirmSound(src, volume=sfxOutputVolume(CONFIRM_SOUND_OUTPUT_SCALE), onEnded=null, options={}){
     if(globalThis.NovaCompletePresentation?.active&&src!==MODE_EVENT_VOICE_SRCS.complete)return;
     if(debugFastSpinActive || speedToBonusActive) return;
     if(!src) return;
@@ -10327,7 +10344,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
       audio.loop = false;
       audio.onended = ended;
       audio.onerror = ()=>finish();
-      audio.playbackRate=superSpeedActive?6:1;
+      audio.playbackRate=options.naturalSpeed?1:superSpeedActive?6:1;
       audio.novaCancelPlaybackWatch = watchPlaybackProgress(audio,finish);
 
       const p = audio.play();

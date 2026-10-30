@@ -3664,6 +3664,29 @@
       }
     },
     {
+      "src": "assets/media/nova/result-recall-push.mp3",
+      "category": "sfx",
+      "targetLufs": -16,
+      "output": "assets/media/normalized-20261012/nova/result-recall-push.wav",
+      "sourceSha256": "7a56faada6286601a59430b9fef88aa864bb39debffb28fba57e4479addd794e",
+      "outputSha256": "54d02883e64af5a220146a4be2e83b0323d6ec858085f64f3989bd80d77fcdac",
+      "rate": 48000,
+      "channels": 2,
+      "duration": 1.272979,
+      "outputDuration": 1.272979,
+      "gainDb": -2.15,
+      "before": {
+        "lufs": -13.85,
+        "peakDbtp": -2,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -16,
+        "peakDbtp": -4.15,
+        "rangeLu": 0
+      }
+    },
+    {
       "src": "assets/media/nova/rush-confirm-bgm.mp3",
       "category": "bgm",
       "targetLufs": -18,

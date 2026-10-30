@@ -188,7 +188,7 @@ globalThis.NovaResults=(()=>{
   const partner=art.querySelector('.novaResultPartner');if(partner){partner.hidden=value.character!=='kushuri_nito';if(!partner.hidden)partner.loading='eager';}
   const atLabel='AT総獲得';
   const label=isBonus?'BB獲得':isSortie?'出陣チャレンジ':all?'有利区間終了 / 累計差枚':settingHints.some(h=>h.character===value.character)?atLabel:`${names[value.character]} ${value.color==='initial'?'AT初期pt':value.kind==='at'?atLabel:value.totalPt!=null?'ゾーン / 今回':'上乗せ'}`;
-  const next=fallback.querySelector('.novaResultNext');if(next){next.hidden=!all&&!isBonus&&value.color!=='mode';next.textContent=value.color==='mode'?'次回モード示唆 / 次のBETで通常へ':isBonus?'次のBETで'+(value.next==='AT'?'ATへ':'通常へ'):isSortie?'次のBETで'+(value.next==='initial'?'初期ポイントゾーン準備':'特化ゾーン準備'):'次のBETでスーパーノヴァチャレンジ';}
+  const next=fallback.querySelector('.novaResultNext');if(next){next.hidden=!value.recall&&!all&&!isBonus&&value.color!=='mode';next.textContent=value.recall?'モード示唆の確認 / 次のBETで閉じる':value.color==='mode'?'次回モード示唆 / 次のBETで通常へ':isBonus?'次のBETで'+(value.next==='AT'?'ATへ':'通常へ'):isSortie?'次のBETで'+(value.next==='initial'?'初期ポイントゾーン準備':'特化ゾーン準備'):'次のBETでスーパーノヴァチャレンジ';}
   const total=fallback.querySelector('.novaResultTotal');if(total){total.hidden=value.totalPt==null;total.textContent=value.totalPt==null?'':'連続特化 合計 '+value.totalPt+'pt';}
   num.textContent=String(isSortie?value.count:value.pt);num.setAttribute('aria-label',awardText(value));
   fallback.querySelector('span').textContent=label;fallback.querySelector('output').textContent=awardText(value);

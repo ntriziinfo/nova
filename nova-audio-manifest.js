@@ -544,6 +544,10 @@ globalThis.NovaAudioManifest=Object.freeze({
     "src": "assets/media/normalized-20261012/nova/result-eyecatch.wav",
     "category": "bgm"
   },
+  "assets/media/nova/result-recall-push.mp3": {
+    "src": "assets/media/normalized-20261012/nova/result-recall-push.wav",
+    "category": "sfx"
+  },
   "assets/media/nova/rush-confirm-bgm.mp3": {
     "src": "assets/media/normalized-20261012/nova/rush-confirm-bgm.wav",
     "category": "bgm"
