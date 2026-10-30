@@ -153,6 +153,23 @@
         "tests/nova-result-recall.test.mjs",
         "tests/nova-audio-wait-ui.test.mjs"
       ]
+    },
+    {
+      "file": "nova-game.js",
+      "sourceHash": "0b2218e28fef26505051badc5c676e2c4a33fbc2d9a7ec8d0309bc14130bccb5",
+      "presentationHash": "02cc3ed8e3160a0c7583a6ced8470fe54e5220e0999c49ceeb5346b7123d61cc",
+      "sourceCommit": "61556ab064571540abdf7dbd566cf05b3fda08b3",
+      "presentationCommit": "c781726df672c27708fce1daad86235dfc474628",
+      "reason": "320233f47cbae2d64d42d0d80ae9e859ec12e118までに登録済みの表示変更に、出陣狙え成功背景の表示呼出し2行だけを追加。成功確定した中リール停止と、その停止済み状態の復元時に表示する。2行を除いた全ファイルSHA256が直前の検証済み表示版と一致。音声・表示の二重再生防止を保持し、抽選・乱数消費・獲得pt・ストック・払い出し・停止形・1G進行・待機時間は変更しない。関連79テスト合格。実ブラウザで成功時だけ中停止からリール裏の動画を再生し、第三停止後の音声待ちまで継続、G数・投入・払出が不変であることを確認。",
+      "tests": [
+        "tests/nova-sortie-aim.test.mjs",
+        "tests/nova-stock-entry.test.mjs",
+        "tests/nova-stop-verdict.test.mjs",
+        "tests/nova-sortie-normal-flow.test.mjs",
+        "tests/nova-spin-resume.test.mjs",
+        "tests/nova-presentation-reset.test.mjs",
+        "tests/nova-result-audio.test.mjs"
+      ]
     }
   ]
 }
