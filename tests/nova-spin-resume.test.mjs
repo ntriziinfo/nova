@@ -281,12 +281,13 @@ test('replay entitlement and zero-game cost exemptions survive pending saves',()
 
 test('displayed RTP identifies the uncapped verification profile; BIG fields still use the engine target',()=>{
  const {c}=harness();vm.runInContext(fn('targetRtpText'),c);
- c.NovaRtpCurrent={status:'ready',gamesPerSetting:1000000000,conditions:'2.5億G×4系列合算・MY／差枚停止なし',settings:[1,2,3,4,5,6].map(setting=>({setting,rtpPct:94+setting}))};
+ vm.runInContext(fs.readFileSync('nova-rtp-client.js','utf8'),c);
+ c.NovaRtpCurrent={schema:'nova-current-rtp/v1',commit:'a'.repeat(40),modelHash:'b'.repeat(64),status:'ready',gamesPerSetting:1000000000,conditions:'2.5億G×4系列合算・MY／差枚停止なし',settings:[1,2,3,4,5,6].map(setting=>({setting,rtpPct:94+setting}))};
  for(let setting=1;setting<=6;setting++){
    assert.equal(c.targetRtpText(setting),`${(94+setting).toFixed(2)}%（2.5億G×4系列合算・MY／差枚停止なし）`);
  }
- c.NovaRtpCurrent.status='pending';assert.match(c.targetRtpText(6),/試算待ち/);
- delete c.NovaRtpCurrent;assert.match(c.targetRtpText(6),/試算待ち/);
+ c.NovaRtpCurrent.status='pending';assert.equal(c.targetRtpText(6),'未取得');
+ delete c.NovaRtpCurrent;assert.equal(c.targetRtpText(6),'未取得');
  assert.equal(c.NovaArt.bonusTarget(),50);
  for(const field of ['midMulInput','bigMulInput','bigAddInput'])assert(fn('applySettings').includes('$("'+field+'").value = NovaArt.bonusTarget()'));
 });
@@ -335,7 +336,8 @@ test('custom lottery suppresses reference RTP; live COMPLETE and presentation pr
   c.settings={...standard,...change};
   for(let n=1;n<=6;n++)assert.equal(c.targetRtpText(n),'未試算（独自設定）');
  }
- c.NovaRtpCurrent={status:'ready',gamesPerSetting:1000000000,conditions:'2.5億G×4系列合算・MY／差枚停止なし',settings:[{setting:6,rtpPct:114.123}]};
+ vm.runInContext(fs.readFileSync('nova-rtp-client.js','utf8'),c);
+ c.NovaRtpCurrent={schema:'nova-current-rtp/v1',commit:'a'.repeat(40),modelHash:'b'.repeat(64),status:'ready',gamesPerSetting:1000000000,conditions:'2.5億G×4系列合算・MY／差枚停止なし',settings:[1,2,3,4,5,6].map(setting=>({setting,rtpPct:setting===6?114.123:94+setting}))};
  c.settings={...standard,audioMuted:true,voiceVolume:.1,autoDelay:2,title:'表示変更',completeEnabled:true,completeBasis:'my',completeMyLimitPt:19000,completeLimitPt:10000};
  assert.equal(c.targetRtpText(6),'114.12%（2.5億G×4系列合算・MY／差枚停止なし）');
  c.settings={...standard,novaFlow:{...standard.novaFlow,czChance:String(c.NovaFlow.defaults.czChance)}};

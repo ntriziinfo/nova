@@ -1,1 +1,1 @@
-globalThis.NovaRtpCurrent={"schema":"nova-current-rtp/v1","status":"pending","commit":"896258e1849363ac34656c10dcc2402efb271e92","sourceCommit":null,"generatedAt":null,"gamesPerSetting":1000000000,"conditions":"10億G連続・MY／差枚停止なし","settings":[]};
+globalThis.NovaRtpCurrent={"schema":"nova-current-rtp/v1","status":"pending","modelHash":"3f489a04ad7749a02a5dbf65485c8878f7707f344e5e5cefa022f947140a93a2","commit":"0debf0c9a0163819f4dc8ccfa09d218b002b40b4","sourceCommit":null,"generatedAt":null,"gamesPerSetting":1000000000,"conditions":"10億G連続・MY／差枚停止なし","settings":[]};

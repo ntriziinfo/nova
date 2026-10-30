@@ -2559,7 +2559,7 @@
     if(!NovaBalance.usesStandardSettings({...settings,completeEnabled:false,completeBasis:'none',completeLimitPt:0,completeMyLimitPt:0}))return "未試算（独自設定）";
     const data=globalThis.NovaRtpCurrent;
     const row=data?.status==='ready'&&data.gamesPerSetting===1_000_000_000&&data.settings?.find(r=>r.setting===Number(settingNo));
-    if(!row||!Number.isFinite(row.rtpPct))return "試算待ち（最新仕様・10億G）";
+    if(!row||!globalThis.NovaRtpClient?.verified(data)||!Number.isFinite(row.rtpPct))return "未取得";
     const conditions=String(data.conditions||'10億G・MY／差枚停止なし');
     return `${row.rtpPct.toFixed(2)}%（${conditions}）`;
   }
@@ -10567,6 +10567,11 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
   }
 
   function setup(){
+    const loadedModelHash=globalThis.NovaRtpCurrent?.modelHash;
+    if(loadedModelHash)globalThis.NovaRtpClient?.start({url:'nova-rtp-current.json',expectedModelHash:loadedModelHash,onUpdate:report=>{
+      globalThis.NovaRtpCurrent=report;
+      refreshRtpViews();
+    }});
     window.NovaReelReference?.mount({strips:REEL_STRIPS, renderSymbol:cellHtml});
     // 公開情報は右上ドックへ移動し、残りの設定カードは非公開デバッグメニューへ移動。
     const cabinetData = $("slumpPanel");

@@ -3,7 +3,9 @@ import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 import {pathToFileURL} from 'node:url';
 
-export const INPUTS=['nova-complete.js','nova-decrement.js','nova-tuning.js','nova-art.js','nova-balance.js','nova-flow.js','nova-normal.js','nova-progress.js','scripts/zone-v2-model.mjs','scripts/zone-v2-rng.mjs'];
+// Include browser settlement and stop handling too: changes there can affect
+// actual awards even when the simulation modules have not changed.
+export const INPUTS=['nova-complete.js','nova-decrement.js','nova-tuning.js','nova-art.js','nova-balance.js','nova-flow.js','nova-normal.js','nova-progress.js','nova-game.js','nova-stock-entry.js','nova-spin-resume.js','nova-bell-navi.js','nova-reel-sheet-data.js','scripts/zone-v2-model.mjs','scripts/zone-v2-rng.mjs','scripts/report-rtp-parallel.mjs'];
 export const EVIDENCE='docs/rtp-current-1b.json';
 export const REQUIRED_OPTIONS=Object.freeze({
  rng:'xoshiro128',exactGames:true,completeLimitPt:0,completeMyLimitPt:0,
@@ -14,6 +16,9 @@ const GAMES_PER_SETTING=1_000_000_000;
 const BET_PER_GAME=3;
 export function hashes(root='.'){
  return Object.fromEntries(INPUTS.map(file=>[file,createHash('sha256').update(fs.readFileSync(`${root}/${file}`,'utf8').replace(/\r\n/g,'\n')).digest('hex')]));
+}
+export function modelHash(current){
+ return createHash('sha256').update(JSON.stringify(INPUTS.map(file=>[file,current[file]]))).digest('hex');
 }
 export function evidenceRows(report){
  if(report?.gamesPerSetting===GAMES_PER_SETTING&&Array.isArray(report.results))return report.results;
@@ -66,7 +71,7 @@ export function currentReport(report,current,commit){
  const evidence=ready?evidenceRows(report):[];
  const pooled=ready&&evidence===report.settings;
  const rows=evidence.toSorted((a,b)=>a.setting-b.setting);
- return {schema:'nova-current-rtp/v1',status:ready?'ready':'pending',commit,sourceCommit:ready?report.sourceCommit:null,generatedAt:ready?report.generatedAt:null,gamesPerSetting:GAMES_PER_SETTING,conditions:pooled?'2.5億G×4系列合算・MY／差枚停止なし':'10億G連続・MY／差枚停止なし',settings:rows.map(r=>({setting:r.setting,rtp:r.totalPaid/r.totalBet,rtpPct:r.totalPaid/r.totalBet*100,ci95:r.ci95}))};
+ return {schema:'nova-current-rtp/v1',status:ready?'ready':'pending',modelHash:modelHash(current),commit,sourceCommit:ready?report.sourceCommit:null,generatedAt:ready?report.generatedAt:null,gamesPerSetting:GAMES_PER_SETTING,conditions:pooled?'2.5億G×4系列合算・MY／差枚停止なし':'10億G連続・MY／差枚停止なし',settings:rows.map(r=>({setting:r.setting,rtp:r.totalPaid/r.totalBet,rtpPct:r.totalPaid/r.totalBet*100,ci95:r.ci95}))};
 }
 function main(){
  const command=process.argv[2]||'build';

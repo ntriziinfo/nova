@@ -1,7 +1,7 @@
-import fs from 'node:fs';
-import {createHash} from 'node:crypto';
+import {fileURLToPath} from 'node:url';
 import {Worker,isMainThread,parentPort,workerData} from 'node:worker_threads';
 import {loadModel,simulate} from './zone-v2-model.mjs';
+import {INPUTS,hashes} from './rtp-current.mjs';
 
 const DEFAULT_GAMES=100_000_000;
 const DEFAULT_SEED='nova-rtp-v174-20261027';
@@ -20,19 +20,6 @@ const SIMULATION_OPTIONS=Object.freeze({
  decrement:true,
  recordBlocks:BLOCK_GAMES
 });
-const SOURCE_FILES=[
- 'nova-complete.js',
- 'nova-decrement.js',
- 'nova-tuning.js',
- 'nova-art.js',
- 'nova-balance.js',
- 'nova-flow.js',
- 'nova-normal.js',
- 'nova-progress.js',
- 'scripts/zone-v2-model.mjs',
- 'scripts/zone-v2-rng.mjs',
- 'scripts/report-rtp-parallel.mjs'
-];
 
 function usage(){
  return `Usage: node scripts/report-rtp-parallel.mjs [options]
@@ -40,6 +27,7 @@ function usage(){
 Options:
   --games <n>  Games per setting (default: ${DEFAULT_GAMES})
   --seed <s>   Deterministic base seed (default: ${DEFAULT_SEED})
+  --setting <n> Run one setting (1-6), for independent CI workers
   --help       Show this help`;
 }
 
@@ -59,6 +47,10 @@ function parseArguments(argv){
   const inlineValue=separator===-1?undefined:argument.slice(separator+1);
   const readValue=()=>inlineValue??argv[++index];
   if(name==='--games')config.games=positiveInteger(readValue(),'--games');
+  else if(name==='--setting'){
+   config.setting=positiveInteger(readValue(),'--setting');
+   if(config.setting>6)throw new Error('--setting must be 1-6');
+  }
   else if(name==='--seed'){
    const value=readValue();
    if(value===undefined||value==='')throw new Error('--seed requires a non-empty value');
@@ -105,7 +97,7 @@ function summarize(result,elapsedSeconds){
   setting:result.setting,
   seed:result.seed,
   games:result.games,
-  rtp:round(result.rtp),
+  rtp:result.totalPaid/result.totalBet,
   rtpPct:round(result.rtp*100),
   totalBet:result.totalBet,
   totalPaid:result.totalPaid,
@@ -119,10 +111,7 @@ function summarize(result,elapsedSeconds){
 }
 
 function sourceHashes(){
- return Object.fromEntries(SOURCE_FILES.map(relative=>{
-  const source=fs.readFileSync(new URL(relative.replaceAll('\\','/'),new URL('../',import.meta.url)));
-  return [relative,createHash('sha256').update(source).digest('hex')];
- }));
+ return hashes(fileURLToPath(new URL('../',import.meta.url)));
 }
 
 async function runWorker({setting,games,seed}){
@@ -155,14 +144,17 @@ async function main(){
  const config=parseArguments(process.argv.slice(2));
  if(config.help){process.stdout.write(`${usage()}\n`);return;}
  const started=performance.now();
- const results=(await Promise.all([1,2,3,4,5,6].map(setting=>spawnWorker(setting,config))))
+ const inputs=sourceHashes();
+ const results=(await Promise.all((config.setting?[config.setting]:[1,2,3,4,5,6]).map(setting=>spawnWorker(setting,config))))
   .toSorted((left,right)=>left.setting-right.setting);
+ const after=sourceHashes();
+ if(INPUTS.some(file=>inputs[file]!==after[file]))throw new Error('Source changed during simulation; discard this result');
  const report={
   schema:'nova-rtp-parallel/v1',
   gamesPerSetting:config.games,
   baseSeed:config.seed,
   options:SIMULATION_OPTIONS,
-  sourceHashes:sourceHashes(),
+  sourceHashes:inputs,
   results,
   elapsedSeconds:round((performance.now()-started)/1000,3)
  };

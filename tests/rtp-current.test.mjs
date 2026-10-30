@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {INPUTS,REQUIRED_OPTIONS,valid,currentReport} from '../scripts/rtp-current.mjs';
+import {INPUTS,REQUIRED_OPTIONS,valid,currentReport,hashes as sourceHashes,modelHash} from '../scripts/rtp-current.mjs';
 
 const hashes=Object.fromEntries(INPUTS.map(f=>[f,'matching-hash']));
 function evidence(){return {
@@ -51,16 +51,23 @@ test('published JSON, browser data and specification surfaces share one verified
  const json=JSON.parse(fs.readFileSync('nova-rtp-current.json','utf8'));
  const browserSource=fs.readFileSync('nova-rtp-current.js','utf8').trim();
  const browser=JSON.parse(browserSource.replace(/^globalThis\.NovaRtpCurrent=/,'').replace(/;$/,''));
- const expected=[94.032679,95.694448,98.163069,103.040231,109.458596,115.023831];
  assert.equal(json.gamesPerSetting,1_000_000_000);assert.deepEqual(browser,json);
- const current=fs.readFileSync('docs/current-rtp.md','utf8');
- const art=fs.readFileSync('ART-SPEC.md','utf8'),normal=fs.readFileSync('NORMAL-SPEC.md','utf8');
+ const evidence=JSON.parse(fs.readFileSync('docs/rtp-current-1b.json','utf8'));
+ const computed=currentReport(evidence,sourceHashes(),json.commit);
+ assert.deepEqual(json,computed);
  if(json.status==='ready'){
-  assert.equal(json.conditions,'2.5億G×4系列合算・MY／差枚停止なし');assert.deepEqual(json.settings.map(row=>Number(row.rtpPct.toFixed(6))),expected);
-  for(const value of expected){assert.match(current,new RegExp(`${value.toFixed(6)}%`));assert.match(art,new RegExp(`${value.toFixed(6)}%`));assert.match(normal,new RegExp(`${value.toFixed(6)}%`));}
+  assert.equal(json.settings.length,6);assert(valid(evidence,sourceHashes()));
  }else{
   assert.equal(json.status,'pending');assert.deepEqual(json.settings,[]);assert.equal(json.sourceCommit,null);assert.equal(json.generatedAt,null);
-  for(const surface of [current,art,normal]){assert.match(surface,/試算待ち/);for(const value of expected)assert.doesNotMatch(surface,new RegExp(`${value.toFixed(6)}%`));}
  }
  assert.match(fs.readFileSync('README.md','utf8'),/docs\/current-rtp\.md/);
+});
+
+test('every monitored input change invalidates evidence and changes the browser model identity',()=>{
+ for(const file of INPUTS){
+  const changed={...hashes,[file]:'new-version'};
+  assert.equal(valid(evidence(),changed),false,file);
+  assert.notEqual(modelHash(changed),modelHash(hashes),file);
+  assert.equal(currentReport(evidence(),changed,'a'.repeat(40)).status,'pending');
+ }
 });

@@ -1,0 +1,82 @@
+name: Current billion-game RTP
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'docs/rtp-current-1b.json'
+      - 'nova-rtp-current.js'
+      - 'nova-rtp-current.json'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: current-rtp-main
+  cancel-in-progress: true
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      status: ${{ steps.evidence.outputs.status }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: node scripts/rtp-current.mjs build && node --test tests/rtp-current.test.mjs tests/nova-rtp-client.test.mjs
+      - id: evidence
+        run: echo "status=$(node scripts/rtp-current.mjs check)" >> "$GITHUB_OUTPUT"
+  simulate:
+    needs: check
+    if: needs.check.outputs.status != 'ready'
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    strategy:
+      fail-fast: false
+      matrix:
+        setting: [1, 2, 3, 4, 5, 6]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: One continuous billion-game trial without COMPLETE
+        run: node scripts/report-rtp-parallel.mjs --games 1000000000 --setting "${{ matrix.setting }}" --seed "nova-current-${GITHUB_SHA}" > "setting-${{ matrix.setting }}.json"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rtp-setting-${{ matrix.setting }}
+          path: setting-${{ matrix.setting }}.json
+          retention-days: 30
+  publish:
+    needs: simulate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          lfs: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: rtp-setting-*
+          path: /tmp/rtp-settings
+          merge-multiple: true
+      - name: Validate against the current main before publication
+        run: |
+          node scripts/merge-rtp-current.mjs /tmp/rtp-settings /tmp/rtp-result.json
+          node scripts/rtp-current.mjs adopt /tmp/rtp-result.json "$GITHUB_SHA"
+          node --test tests/rtp-current.test.mjs tests/nova-rtp-client.test.mjs
+      - name: Publish verified values (triggers production deployment)
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/rtp-current-1b.json nova-rtp-current.json nova-rtp-current.js
+          git commit -m 'Update verified billion-game RTP evidence'
+          git push origin HEAD:main
