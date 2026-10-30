@@ -44,6 +44,21 @@
         "tests/nova-background-auto.test.mjs",
         "tests/nova-layout-defaults.test.mjs"
       ]
+    },
+    {
+      "file": "nova-game.js",
+      "sourceHash": "5e2065f59a0d29d7e7855cce111aa2a443e65d93fadfc35ad060f12b9786e183",
+      "presentationHash": "f1749a5273bab3e9e70cd470841d713de986d3e9080e7fa15e8b688cccb209e5",
+      "sourceCommit": "d295064df1e205e9a5338759eceec485161b84ed",
+      "presentationCommit": "15a10e8d9cef713a11040a0275c97731aaa63e8b",
+      "reason": "前回の逆回転前1段戻し表示の共通化に加え、COUNT表示座標と保存済みレイアウトの移行だけを変更。抽選・乱数消費・払い出し・獲得pt計算・停止結果・ゲーム進行は同一。 今回はリール・3メーターの指定座標への表示移行のみ追加。 今回はAT獲得ptの表示座標と保存配置の移行のみ変更。前版へこの差分を戻した全ファイルSHA256の一致も確認。",
+      "tests": [
+        "tests/nova-ouma-presentation.test.mjs",
+        "tests/nova-ouma-audio-lifecycle.test.mjs",
+        "tests/nova-reel-motion.test.mjs",
+        "tests/nova-background-auto.test.mjs",
+        "tests/nova-layout-defaults.test.mjs"
+      ]
     }
   ]
 }
