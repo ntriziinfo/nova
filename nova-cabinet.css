@@ -36,7 +36,7 @@ html { background:#08070a !important; background-image:none !important; }
 /* AT winnings share the reel coordinate system, but sit in front of the lamps.
    Keep the live numeric node intact so only its presentation changes. */
 .novaAtCountLayer{position:absolute;left:0;top:var(--jag-reel-top);width:var(--jag-cabinet-width);height:var(--jag-reel-height);z-index:70;pointer-events:none;}
-.novaAtCountLayer .jagPayoutMeterCount{background:transparent!important;}
+.novaAtCountLayer .jagPayoutMeterCount{background:#000!important;}
 .novaAtCountLayer #jagCountMeter{left:0!important;right:20%!important;top:0!important;height:100%!important;font-family:var(--nova-status-font)!important;font-weight:var(--nova-status-weight)!important;color:var(--nova-status-color)!important;text-shadow:var(--nova-status-shadow)!important;}
 .jagPayoutMeter .jagCountUnit{display:block!important;position:absolute;grid-area:auto;margin:0;right:0;top:0;width:17%;height:100%;align-content:center;color:var(--nova-status-color);font:var(--nova-status-weight) min(40cqh,9cqw)/1 var(--nova-status-font);text-shadow:var(--nova-status-shadow);}
 .jagPayoutMeter .jagMeterCaption{display:block!important;position:absolute;grid-area:auto;margin:0;left:0;top:-26%;width:100%;height:22%;color:#fff;font:700 min(22cqh,8cqw)/1 system-ui;letter-spacing:.08em;text-align:center;text-shadow:0 1px 3px #000;}

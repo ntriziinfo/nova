@@ -28,7 +28,7 @@ test('committed display defaults match the approved Chrome layout',()=>{
  assert.match(game,/reels:\{x:22\.3, y:35\.6, w:55\.7, h:36\.9, gap:1\.6\}/);
  assert.match(game,/chance:\{x:22\.0, y:85\.8, w:11\.9, h:11\.0\}/);
  assert.match(game,/credit:\{x:45\.0, y:87\.7, w:13\.1, h:7\.2\}/);
- assert.match(game,/count:\{x:21\.3, y:0\.8, w:9\.6, h:6\.9\}/);
+ assert.match(game,/count:\{x:15\.5, y:24\.1, w:21\.2, h:11\.2\}/);
  assert.match(game,/payout:\{x:60\.6, y:87\.7, w:11\.1, h:7\.6\}/);
  assert.match(game,/playdata:\{x:19\.8,y:13\.5,w:60\.5,h:11\.5\}/);
  assert.match(game,/cabinetmask:\{x:20\.3,y:29\.5,w:58\.9,h:25\.7\}/);
@@ -77,10 +77,10 @@ test('committed display defaults match the approved Chrome layout',()=>{
  assert.match(cabinet,/--layout-sortieaimaim-y,32\.6%/);
  assert.match(html,/nova-game\.css\?v=20261028-auto-stop-control/);
  assert.match(html,/nova-data-counter\.css\?v=20261027-cherry-reels/);
- assert.match(html,/nova-cabinet\.css\?v=20261030-meter-approved/);
+ assert.match(html,/nova-cabinet\.css\?v=20261030-count-black/);
  assert.match(html,/nova-aim-presentation\.js\?v=20261030-aim-ready/);
  assert.match(html,/nova-sortie-aim\.js\?v=20261030-prewarm/);
- assert.match(html,/nova-game\.js\?v=20261030-meter-approved/);
+ assert.match(html,/nova-game\.js\?v=20261030-count-black/);
  assert.match(html,/出陣トリガー：炎エフェクト動画/);
  for(const [label,prop] of [['横位置','x'],['縦位置','y'],['幅','w'],['高さ','h']]){
   assert.match(html,new RegExp(`<span>${label}</span><input[^>]+data-layout-target="sortievideo"[^>]+data-layout-prop="${prop}"`));
@@ -136,7 +136,7 @@ test('approved meter layout migrates once and preserves unrelated saved position
   ['edit',JSON.stringify({count:{x:52,y:88,w:13,h:12},credit:{x:29},reels:{y:33},flowstatus:{x:41}})],
   ['nova_at_count_lamp_layout_20261030','1']
  ]);
- const defaults={count:{x:21.3,y:0.8,w:9.6,h:6.9},credit:{x:45,y:87.7,w:13.1,h:7.2},payout:{x:60.6,y:87.7,w:11.1,h:7.6},reels:{x:22.3,y:35.6,w:55.7,h:36.9,gap:1.6}};
+ const defaults={count:{x:15.5,y:24.1,w:21.2,h:11.2},credit:{x:45,y:87.7,w:13.1,h:7.2},payout:{x:60.6,y:87.7,w:11.1,h:7.6},reels:{x:22.3,y:35.6,w:55.7,h:36.9,gap:1.6}};
  const context=vm.createContext({
   LAYOUT_DEFAULT_STORAGE_KEY:'default',LAYOUT_EDIT_STORAGE_KEY:'edit',
   LAYOUT_DEFAULTS:defaults,
@@ -148,6 +148,11 @@ test('approved meter layout migrates once and preserves unrelated saved position
  storage.set('edit',JSON.stringify({count:{x:40,y:10,w:30,h:15}}));
  vm.runInContext('migrateAtCountLayout();',context);
  assert.deepEqual(JSON.parse(storage.get('edit')).count,{x:40,y:10,w:30,h:15});
+ storage.delete('nova_meter_layout_20261030c');
+ storage.set('nova_meter_layout_20261030b','1');
+ storage.set('edit',JSON.stringify({count:{x:21.3,y:0.8,w:9.6,h:6.9},credit:{x:44},reels:{y:34}}));
+ vm.runInContext('migrateAtCountLayout();',context);
+ assert.deepEqual(JSON.parse(storage.get('edit')),{count:defaults.count,credit:{x:44},reels:{y:34}});
 });
 
 test('licensed character defaults and stacking keep Sosuke and Kushuri behind',()=>{
