@@ -146,6 +146,9 @@ globalThis.NovaAim=(()=>{
  }
  function stop(resolved){
   if(winLocked)return; // A decisive first/second-stop movie must finish once.
+  // Keep the decisive middle-stop background playing through the remaining stops
+  // and the title voice. The next BET dismisses it through hide().
+  if(resolved?.sortieEntry&&!resolved.sortieFake){globalThis.NovaSortieAim?.win?.();return;}
   if(resolved?.researchChallenge){
    if(resolved.researchChallenge.finished)hide();else showSuperChallenge();
    return;

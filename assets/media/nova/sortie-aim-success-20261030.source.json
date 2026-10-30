@@ -1,0 +1,13 @@
+{
+  "originalFile": "1674216828wpdm_bg_02.mp4",
+  "originalUnmodified": true,
+  "originalBytes": 20605471,
+  "originalSha256": "f312d226ee36af53fe5cba4bb90f3b6edcbec01b9fc5d6a9bcc6b1a68e3eec20",
+  "deliveryFile": "sortie-aim-success-20261030.mp4",
+  "deliveryBytes": 5180135,
+  "deliverySha256": "d782e9f32ef2dc36410e0c7cb5cc5aea649794c4ecc8f00d15f63441f1ff56a9",
+  "deliveryEncoding": "H.264 960x540 yuv420p, CRF 23, maxrate 3M, bufsize 6M, faststart; video only",
+  "durationSeconds": 13.013,
+  "playback": "Muted background loop behind reels after the decisive successful middle stop, until the next scene/BET",
+  "usage": "User-provided video for the requested NOVA effect only. No training use. Original source file is not altered."
+}

@@ -7773,6 +7773,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
   function playSortieSandwichHitSound(spin){
     if(!spin?.resolved?.sortieEntry||spin.resolved.sortieFake||spin.sortieConfirmSoundPlayed)return false;
     stopSortieSandwichAimSound(spin);
+    globalThis.NovaSortieAim?.win?.();
     spin.sortieConfirmSoundPlayed=true;
     playOneShotSound(SORTIE_SANDWICH_HIT_SOUND_SRC,sfxOutputVolume(),{allowDuringPremiumConfirm:true});
     return true;
@@ -7790,6 +7791,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     playSortieAwardVoice(spin);
     globalThis.NovaAimConfidence?.prepare(spin.resolved,{...settings.novaArt,setting:settings.setting});
     NovaAim.bet(spin.resolved.aim,spin.resolved);
+    if(spin.resolved.sortieEntry&&!spin.resolved.sortieFake&&spin.stopped?.[1])globalThis.NovaSortieAim?.win?.();
     playSortieSandwichAimSound(spin);
     NovaInitialDuo.begin(spin.resolved);
     NovaInitialDuo.stop(spin.stopped.filter(Boolean).length);

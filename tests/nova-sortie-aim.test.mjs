@@ -11,7 +11,7 @@ test('sortie-only lamp cue uses muted color videos, three movable images, and cl
   const spin={stockEntry:true,sortieEntry:true,sortieCueColor:color,reward:0},before=JSON.stringify(spin);
   assert.equal(c.NovaAim.bet(null,spin),false);
   const videos=elements.filter(e=>e.tag==='video'),video=videos.find(e=>e.className==='novaSortieAimBg'&&e.dataset.color===color),fire=videos.find(e=>e.className==='novaSortieAimFire');
-  assert.equal(videos.length,4);assert.equal(videos.filter(e=>!e.hidden).length,2);assert.equal(video.muted,true);assert.equal(video.loop,true);assert.equal(video.hidden,false);assert.equal(video.preload,'auto');
+  assert.equal(videos.length,5);assert.equal(videos.filter(e=>!e.hidden).length,2);assert.equal(video.muted,true);assert.equal(video.loop,true);assert.equal(video.hidden,false);assert.equal(video.preload,'auto');
   assert.match(video.src,new RegExp(color));assert.equal(video.dataset.color,color);
   assert.equal(fire.src,'assets/media/nova/sortie-challenge-fire-20261030.mp4');assert.equal(fire.muted,true);assert.equal(fire.loop,true);assert.equal(fire.playsInline,true);assert.equal(fire.hidden,false);assert.equal(fire.paused,false);
   assert.equal(elements.filter(e=>e.className?.startsWith('novaSortieAimPart')&&!e.hidden).length,3);
@@ -29,8 +29,15 @@ test('sortie-only lamp cue uses muted color videos, three movable images, and cl
   assert.equal(elements.filter(e=>e.className?.startsWith('novaSortieAimPart')).length,3,'Effects must not become extra movable layout parts');
   assert.equal(host.dataset.aimActive,'true');assert.equal(host.dataset.sortieAimColor,color);assert.equal(JSON.stringify(spin),before);
   c.NovaSortieAim.fail();assert.equal(host.dataset.sortieAimFailed,'true');assert.equal(effects.hidden,false);assert.equal(effects.dataset.color,color);assert.equal(host.dataset.sortieAimColor,color);
-  c.NovaAim.stop(spin);for(const movie of videos){assert.equal(movie.hidden,true);assert.equal(movie.paused,true);assert.equal(movie.currentTime,0);}assert.equal(effects.hidden,true);assert.equal(effects.dataset.color,undefined);assert.equal(host.dataset.sortieAimColor,undefined);assert.equal(host.dataset.aimActive,undefined);
+  const success=videos.find(v=>v.id==='novaSortieAimSuccessBackground');assert.equal(success.hidden,true);
+  c.NovaAim.stop({...spin,sortieFake:true});for(const movie of videos){assert.equal(movie.hidden,true);assert.equal(movie.paused,true);assert.equal(movie.currentTime,0);}assert.equal(effects.hidden,true);assert.equal(effects.dataset.color,undefined);assert.equal(host.dataset.sortieAimColor,undefined);assert.equal(host.dataset.aimActive,undefined);
+  c.NovaAim.bet(null,spin);c.NovaSortieAim.win();
+  assert.equal(success.hidden,false);assert.equal(success.paused,false);assert.equal(success.muted,true);assert.equal(success.loop,true);assert.equal(success.playsInline,true);assert.equal(success.src,'assets/media/nova/sortie-aim-success-20261030.mp4');
+  assert.equal(videos.filter(v=>!v.hidden).length,1);assert.equal(imagesVisible(),0);assert.equal(effects.hidden,true);assert.equal(host.dataset.sortieAimFailed,undefined);
+  success.currentTime=2;c.NovaSortieAim.win();c.NovaAim.stop(spin);assert.equal(success.currentTime,2);assert.equal(success.hidden,false);assert.equal(JSON.stringify(spin),before);
+  c.NovaAim.bet(null,{...spin,sortieFake:true});assert.equal(success.hidden,true);assert.equal(success.paused,true);assert.equal(success.currentTime,0);c.NovaAim.hide();
  }
+ function imagesVisible(){return elements.filter(e=>e.className?.startsWith('novaSortieAimPart')&&!e.hidden).length;}
 });
 
 test('Sortie aim preview is aria-aware and starts, stops and rewinds both trigger movies',()=>{
@@ -42,7 +49,7 @@ test('Sortie aim preview is aria-aware and starts, stops and rewinds both trigge
  const trigger=controls.sortieAimPreview,close=controls.layoutEditCloseBtn;
  assert.equal(trigger.getAttribute('aria-pressed'),'false');
  trigger.click();assert.equal(trigger.getAttribute('aria-pressed'),'true');
- const videos=elements.filter(e=>e.tag==='video');assert.equal(videos.length,4);assert.equal(videos.filter(e=>!e.hidden).length,2);for(const video of videos.filter(e=>!e.hidden)){assert.equal(video.paused,false);video.currentTime=3;}
+ const videos=elements.filter(e=>e.tag==='video');assert.equal(videos.length,5);assert.equal(videos.filter(e=>!e.hidden).length,2);for(const video of videos.filter(e=>!e.hidden)){assert.equal(video.paused,false);video.currentTime=3;}
  trigger.click();assert.equal(trigger.getAttribute('aria-pressed'),'false');for(const video of videos){assert.equal(video.hidden,true);assert.equal(video.paused,true);assert.equal(video.currentTime,0);}
  trigger.click();for(const video of videos)video.currentTime=2;close.click();assert.equal(trigger.getAttribute('aria-pressed'),'false');for(const video of videos){assert.equal(video.hidden,true);assert.equal(video.paused,true);assert.equal(video.currentTime,0);}
 });

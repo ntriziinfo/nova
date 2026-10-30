@@ -1,6 +1,6 @@
 /* Presentation only: a queued sortie is already won or lost before this cue. */
 globalThis.NovaSortieAim=(()=>{
- let host,video,fireVideo,effectLayer,images=[],previewing=false,previewButton=null;
+ let host,video,fireVideo,successVideo,effectLayer,images=[],previewing=false,previewButton=null,winning=false;
  const backgrounds=new Map(),colors=['blue','red','rainbow'];
  function movie(className,src){
   const item=document.createElement('video');item.className=className;item.muted=true;item.loop=true;item.playsInline=true;item.preload='auto';item.hidden=true;item.src=src;host.append(item);return item;
@@ -16,6 +16,8 @@ globalThis.NovaSortieAim=(()=>{
   for(const color of colors){const item=movie('novaSortieAimBg','assets/media/nova/sortie-aim-'+color+'-20261027.mp4');item.dataset.color=color;backgrounds.set(color,item);}
   video=backgrounds.get('blue');
   fireVideo=movie('novaSortieAimFire','assets/media/nova/sortie-challenge-fire-20261030.mp4');
+  successVideo=movie('novaSortieAimSuccess','assets/media/nova/sortie-aim-success-20261030.mp4');
+  successVideo.id='novaSortieAimSuccessBackground';successVideo.setAttribute('aria-hidden','true');
   effectLayer=document.createElement('div');effectLayer.className='novaSortieAimEffects';effectLayer.setAttribute('aria-hidden','true');effectLayer.hidden=true;host.append(effectLayer);
   for(const [part,src,alt] of [['middle','middle-text','中リールに'],['symbol','center-symbol','NOVA・ブランク・NOVA'],['aim','aim-text','狙え！']]){
    const effect=document.createElement('div');effect.className='novaSortieAimFx novaSortieAimFx-'+part;effectLayer.append(effect);
@@ -31,7 +33,7 @@ globalThis.NovaSortieAim=(()=>{
   }
   return true;
  }
- function hide(){for(const item of [...backgrounds.values(),fireVideo])if(item){if(globalThis.NovaPresentation)NovaPresentation.stop(item);else item.pause();item.hidden=true;if(item.currentTime>0)item.currentTime=0;}images.forEach(img=>img.hidden=true);if(effectLayer){effectLayer.hidden=true;delete effectLayer.dataset.color;}if(host){delete host.dataset.aimActive;delete host.dataset.sortieAimColor;}previewing=false;syncPreviewButton(false);}
+ function hide(){for(const item of [...backgrounds.values(),fireVideo,successVideo])if(item){if(globalThis.NovaPresentation)NovaPresentation.stop(item);else item.pause();item.hidden=true;if(item.currentTime>0)item.currentTime=0;}images.forEach(img=>img.hidden=true);if(effectLayer){effectLayer.hidden=true;delete effectLayer.dataset.color;}if(host){delete host.dataset.aimActive;delete host.dataset.sortieAimColor;}winning=false;previewing=false;syncPreviewButton(false);}
  function show(color='blue',preview=false){
   if(!init())return;
   hide();delete host.dataset.sortieAimFailed;previewing=preview;
@@ -43,8 +45,14 @@ globalThis.NovaSortieAim=(()=>{
  previewButton?.addEventListener('click',()=>{if(previewing)hide();else show('red',true);});
  document.getElementById('layoutEditCloseBtn')?.addEventListener('click',()=>{if(previewing)hide();});
  function fail(){if(host)host.dataset.sortieAimFailed='true';}
+ function win(){
+  if(winning||!init())return;
+  hide();winning=true;delete host.dataset.sortieAimFailed;
+  host.dataset.aimActive='true';successVideo.hidden=false;
+  if(globalThis.NovaPresentation)NovaPresentation.play(successVideo,()=>winning&&!successVideo.hidden);else successVideo.play().catch(()=>{});
+ }
  // Warm after initial rendering; no playback, audio, RNG, or visible cue here.
  function warm(){if(globalThis.requestIdleCallback)requestIdleCallback(init,{timeout:1500});else setTimeout(init,250);}
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',warm,{once:true});else warm();
- return {show,hide,fail};
+ return {show,hide,fail,win};
 })();

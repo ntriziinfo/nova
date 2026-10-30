@@ -125,3 +125,5 @@ assets/media/nova/cz-push-voices-20261028.sources.json -filter -diff -merge text
 assets/media/nova/sortie-challenge-fire-20261030.mp4 -filter -diff -merge -text
 assets/media/nova/sortie-challenge-fire-20261030.source.json -filter -diff -merge text
 assets/media/nova/aim/ready-20261030/** -filter -diff -merge -text
+assets/media/nova/sortie-aim-success-20261030.mp4 -filter -diff -merge -text
+assets/media/nova/sortie-aim-success-20261030.source.json -filter -diff -merge text

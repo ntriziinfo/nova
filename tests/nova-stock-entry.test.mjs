@@ -15,6 +15,7 @@ function harness(){
   SORTIE_SANDWICH_AIM_SOUND_SRC:'assets/media/nova/sortie-sandwich-aim.wav',SORTIE_SANDWICH_HIT_SOUND_SRC:'assets/media/nova/sortie-sandwich-hit.wav',
   setTimeout:f=>{f();return 1;},clearTimeout:noop,spinWaitMsForMode:()=>500,displayNovaResult:card=>{c.normalState.resultCard=card;}});
  c.MODE_EVENT_VOICE_SRCS=loadVoiceCatalog(c).MODE_EVENT_VOICE_SRCS;
+ c.winMovies=0;c.NovaSortieAim.win=()=>c.winMovies++;
  c.cues=[];c.audios=[];c.playOneShotSound=(src,volume)=>{
   const audio={src,paused:false,currentTime:3,pause(){this.paused=true;}};c.audios.push(audio);c.cues.push({src,volume});return {audio,promise:Promise.resolve()};
  };
@@ -55,6 +56,7 @@ test('sortie has a guaranteed free NOVA center entrance, retains its award throu
  const aimAudio=c.currentSpin.sortieSandwichAimAudio;assert.equal(aimAudio,c.audios[0]);assert.equal(aimAudio.paused,false);
  assert.equal(c.currentSpin.resolved.reward,0);assert.deepEqual(plain(c.currentSpin.grid[1]),['BAR','CHERRY','BAR']);
  await c.stopStockEntryReel(2);assert.equal(c.currentSpin.stopped[2],false);await c.stopStockEntryReel(1);
+ assert.equal(c.winMovies,1,'Success background starts on the decisive middle stop');
  assert.equal(c.lockedVoices.length,0);
  assert.deepEqual(c.cues.map(cue=>cue.src),['assets/media/nova/sortie-sandwich-aim.wav','assets/media/nova/sortie-sandwich-hit.wav']);
  assert.equal(aimAudio.paused,true);assert.equal(aimAudio.currentTime,0);assert.equal(c.currentSpin.sortieConfirmSoundPlayed,true);
@@ -65,6 +67,7 @@ test('sortie has a guaranteed free NOVA center entrance, retains its award throu
  assert(!c.cues.some(cue=>cue.src==='assets/media/nova/sortie-nebula-cue.mp3'));
  assert.deepEqual(c.lockedVoices,[{src:c.MODE_EVENT_VOICE_SRCS.sortie,volume:1}]);
  c.finishStockEntry();assert.equal(c.cues.length,2);assert.equal(c.lockedVoices.length,1,'Repeated third-stop callback must not replay the title');
+ assert.equal(c.winMovies,1,'Later stops do not restart the success background');
  assert.equal(c.normalState.stockEntry.stage,'ready');assert.equal(JSON.stringify(c.normalState.flow),before);assert.equal(c.NovaProgress.snapshot().sorties,1);
  assert.equal(c.tryStockEntry(),false);assert.equal(c.normalState.stockEntry,undefined);
  c.NovaProgress.snapshot=()=>({pending:0,sorties:0});assert.equal(c.tryStockEntry(),false);
@@ -150,6 +153,7 @@ test('fake reverse cue consumes only its presentation ticket, preserves paid flo
  await c.stopStockEntryReel(1);c.currentSpin=c.NovaSpinResume.restore(c.NovaSpinResume.capture(c.currentSpin),c.RESULT);await c.stopStockEntryReel(2);await c.stopStockEntryReel(0);
  assert.equal(c.cues[0].src,'assets/media/nova/sortie-sandwich-aim.wav');
  assert(!c.cues.some(cue=>cue.src==='assets/media/nova/sortie-sandwich-hit.wav'),'Missed entry never plays success');
+ assert.equal(c.winMovies,0,'Failed aim never shows the success background');
  assert.equal(c.normalState.pendingFakeSortie,1);assert.equal(c.normalState.stockEntry,undefined);assert.equal(c.lockedVoices.length,0);assert.equal(JSON.stringify(c.normalState.flow),before);assert.equal(c.NovaProgress.snapshot().sorties,0);
 });
 
