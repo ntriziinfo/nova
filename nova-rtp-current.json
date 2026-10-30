@@ -2,12 +2,18 @@
   "schema": "nova-current-rtp/v1",
   "status": "ready",
   "modelHash": "ea908994d3e3317e63c425b654b81d8ff2b15fd917a9330d45d1c74d67f72544",
-  "commit": "e325baad3e5d4c49f5b3e7d59af89bf37222a7d8",
+  "commit": "7c5f886497e17ec430183b77569004a249c3f690",
   "sourceCommit": "e325baad3e5d4c49f5b3e7d59af89bf37222a7d8",
   "generatedAt": "2026-10-30T09:07:22.397Z",
   "sourceVerification": {
-    "kind": "identical",
-    "presentationChanges": []
+    "kind": "reviewed-presentation-only",
+    "presentationChanges": [
+      {
+        "file": "nova-game.js",
+        "simulationHash": "94ab30797e42a58b50fe090022af16ab0070c1f42cb71b1820fff0ebe7645914",
+        "currentHash": "91f6711decb75fa6bb3f091dadadae15929d55d6066a163e3b7266336f72b43f"
+      }
+    ]
   },
   "gamesPerSetting": 100000000,
   "conditions": "1億G連続・MY／差枚停止なし",

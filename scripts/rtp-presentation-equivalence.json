@@ -225,6 +225,21 @@
         "tests/nova-cz-push.test.mjs",
         "tests/nova-spin-resume.test.mjs"
       ]
+    },
+    {
+      "file": "nova-game.js",
+      "sourceHash": "94ab30797e42a58b50fe090022af16ab0070c1f42cb71b1820fff0ebe7645914",
+      "presentationHash": "91f6711decb75fa6bb3f091dadadae15929d55d6066a163e3b7266336f72b43f",
+      "sourceCommit": "e325baad3e5d4c49f5b3e7d59af89bf37222a7d8",
+      "presentationCommit": "7c5f886497e17ec430183b77569004a249c3f690",
+      "reason": "検証済みe325baa試算ソースに対し、穢れ解放BB用BGMの定数・選択と、BB開始／復元時に既存impurityReleasedを音楽選択へ渡す4箇所だけを変更。4箇所を逆適用した全文SHA256が試算元と一致。抽選・乱数消費・獲得pt・ストック・払い出し・停止結果・ゲーム進行は不変。通常BB／穢れ解放BBの実ブラウザ再生と保存・リロード復元を確認。獲得ptの配置・文字サイズ・間隔は独立した表示モジュールだけで変更し、旧デフォルトを移行、個別調整は保持。原音は完全保存、再生コピーを既存BGMと同じ−18 LUFSに調整。関連51テスト合格。",
+      "tests": [
+        "tests/nova-bonus-bgm.test.mjs",
+        "tests/nova-remaining-counters.test.mjs",
+        "tests/nova-spin-resume.test.mjs",
+        "tests/nova-audio-assets.test.mjs",
+        "tests/nova-audio-normalization.test.mjs"
+      ]
     }
   ]
 }
