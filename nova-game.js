@@ -7542,7 +7542,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
   }
 
   function bellNavigationMiss(spin){
-    return ['BELL','BELL15'].includes(spin?.result)&&spin.bellNaviOrder?.length===3&&
+    return !spin?.resolved?.researchSortie&&['BELL','BELL15'].includes(spin?.result)&&spin.bellNaviOrder?.length===3&&
       (spin.auditPressOrder||spin.auditStopOrder||[]).some((reel,n)=>reel!==spin.bellNaviOrder[n]);
   }
 
@@ -7562,6 +7562,8 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
   }
 
   function nearestNavigatedBellStop(index,spin,distance){
+    // Sortie owns the stops. Its hidden, RNG-compatible bell order is not a guide.
+    if(spin?.resolved?.researchSortie)return null;
     if(!['BELL','BELL15'].includes(spin?.result)||spin.bellNaviOrder?.length!==3)return null;
     const held=[0,1,2].map(c=>c===index?null:spin.pendingStopColumns?.[c]||
       (spin.stopped[c]?spin.grid.map(row=>row[c]):null));
@@ -7585,7 +7587,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
 
   function prepareManualRareOutcome(spin){
     // Keep the engine decrement. Settlement records the forfeited cash for internal progress.
-    if(spin?.stopped?.every(Boolean)&&['BELL','BELL15'].includes(spin.result)&&spin.bellNaviOrder?.length===3&&!spin.resolved.bellNaviPenaltyApplied){
+    if(!spin?.resolved?.researchSortie&&spin?.stopped?.every(Boolean)&&['BELL','BELL15'].includes(spin.result)&&spin.bellNaviOrder?.length===3&&!spin.resolved.bellNaviPenaltyApplied){
       const pressed=spin.auditPressOrder||spin.auditStopOrder;
       if(pressed?.length===3&&pressed.some((reel,index)=>reel!==spin.bellNaviOrder[index])){
         spin.resolved.bellNaviPenaltyApplied=true;
