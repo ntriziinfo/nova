@@ -35,6 +35,16 @@ test('standalone debug permission enables the button without starting AUTO, and 
  assert.equal(setup().c.superSpeedDebugAllowed,false,'fresh page starts with debug permission OFF');
 });
 
+test('managed daily permission never auto-starts, but explicit super start remains available',()=>{
+ const {c,button}=setup();c.VERTEX_CONTROLLER_ENABLED=true;
+ c.applySuperSpeedPermission(true,true);
+ assert.equal(button.disabled,false);assert.equal(c.autoPlay,false);assert.equal(c.superFullAuto,false);
+ c.startSuperSpeed('nonstop');assert.equal(c.autoPlay,true);assert.equal(c.superFullAuto,true);
+ c.applySuperSpeedPermission(true,true);assert.equal(c.autoPlay,true);
+ c.stopAutoPlay('user');c.applySuperSpeedPermission(true,true);
+ assert.equal(c.autoPlay,false);assert.equal(button.disabled,false);
+});
+
 test('debug permission cannot bypass managed play or disabled debugging',()=>{
  for(const flags of [{VERTEX_CONTROLLER_ENABLED:true},{SLOT_PLAY_SESSION:true},{SLOT_DEBUG_ENABLED:false}]){
   const {c,button,debugButton}=setup();Object.assign(c,flags);
