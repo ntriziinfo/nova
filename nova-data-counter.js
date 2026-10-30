@@ -6,7 +6,8 @@ globalThis.NovaDataCounter=(()=>{
   const names={sosuke:'宗介',toto:'とと',urapi:'うらぴ',giru:'ギル',sora:'空',ouma:'逢魔'};
   function snapshot(stats){return Object.fromEntries(keys.map(key=>[key,n(stats?.[key])]));}
   function init(stats){if(stats.dataLastHitSpin==null)stats.dataLastHitSpin=n(stats.totalSpins);}
-  const zoneId=flow=>flow?.phase==='art'&&names[flow.zone]?(flow.ura?'ura_':'')+flow.zone:'';
+  const challengeId='supernova_challenge';
+  const zoneId=flow=>flow?.phase!=='art'?'':flow.researchChallengeActive?challengeId:names[flow.zone]?(flow.ura?'ura_':'')+flow.zone:'';
   const phase=flow=>flow?.phase==='art'?'art':'normal';
   function alignPhase(stats,flow){
     const next=phase(flow);
@@ -43,6 +44,7 @@ globalThis.NovaDataCounter=(()=>{
   }
   function title(hit){
     if(hit.kind==='CURRENT')return '現在';
+    if(hit.kind==='ZONE'&&hit.zone===challengeId)return 'スーパーノヴァチャレンジ';
     if(hit.kind!=='ZONE')return hit.kind;
     return (hit.zone.startsWith('ura_')?'裏':'')+(names[hit.zone.replace(/^ura_/,'')]||'特化')+'ゾーン';
   }
@@ -106,14 +108,14 @@ globalThis.NovaDataCounter=(()=>{
         if(hit.kind==='CURRENT')updateColumn(old,hit);
         return old;
       }
-      const column=document.createElement('button');column.type='button';column.className='novaHitColumn';column.dataset.kind=hit.kind;
+      const column=document.createElement('button');column.type='button';column.className='novaHitColumn';column.dataset.kind=hit.kind;column.dataset.zone=hit.zone||'';
 
       const cells=document.createElement('span');cells.className='novaHitCells';
       // A 0G hit still occupies one visual step; never change the recorded games.
       const steps=hit.kind==='CURRENT'?Math.ceil(n(hit.games)/100):Math.max(1,Math.ceil(n(hit.games)/100));
       const ticks=[];
       for(let tick=8;tick>=1;tick--){const cell=document.createElement('i');cell.className=steps>=tick?'lit':'';cells.append(cell);ticks.push(cell);}
-      const mark=document.createElement('span');mark.className='novaHitMark';mark.textContent=hit.games>800?'+':hit.kind==='CURRENT'?'今':hit.kind==='ZONE'?'特':hit.kind==='BIG'?'B':'AT';
+      const mark=document.createElement('span');mark.className='novaHitMark';
       column.append(cells,mark);column.addEventListener('click',()=>set('detail',column.title));
       const record={key,column,ticks,mark};updateColumn(record,hit);return record;
     });
@@ -122,7 +124,7 @@ globalThis.NovaDataCounter=(()=>{
       if(record.column.title!==label){record.column.title=label;record.column.setAttribute('aria-label',label);}
       const steps=hit.kind==='CURRENT'?Math.ceil(n(hit.games)/100):Math.max(1,Math.ceil(n(hit.games)/100));
       record.ticks.forEach((cell,i)=>{const value=steps>=8-i?'lit':'';if(cell.className!==value)cell.className=value;});
-      const mark=hit.games>800?'+':hit.kind==='CURRENT'?'今':hit.kind==='ZONE'?'特':hit.kind==='BIG'?'B':'AT';
+      const mark=hit.games>800?'+':hit.kind==='CURRENT'?'今':hit.kind==='ZONE'?(hit.zone===challengeId?'上':'特'):hit.kind==='BIG'?'B':'AT';
       if(record.mark.textContent!==mark)record.mark.textContent=mark;
     }
     const structureChanged=records.length!==previous.length||records.some((r,i)=>r!==previous[i]);
