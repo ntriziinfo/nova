@@ -32,10 +32,10 @@ globalThis.NovaStockEntry=(()=>{
   if(!m||m[1]==='MISS'&&m[2]==='RAINBOW')return null;
   return {fake:m[1]==='MISS',color:m[2].toLowerCase()};
  }
- function message(entry){return entry?.kind==='sortieFake'?'出陣チャンス / 次のBETで中リールにNOVAを狙え':entry?.kind==='sortie'?(entry.stage==='ready'?'出陣チャレンジ / 次のBETで開始':'出陣チャンス / 次のBETで中リールにNOVAを狙え'):entry?.stage==='ready'?NovaArt.zoneName(entry.zone)+'ゾーン / 次のBETで開始':'特化ゾーン準備中 / 次のBETで7を狙え';}
+ function message(entry){return ['sortie','sortieFake'].includes(entry?.kind)?(entry.kind==='sortie'&&entry.stage==='ready'?'出陣チャレンジ / 次のBETで開始':''):entry?.stage==='ready'?NovaArt.zoneName(entry.zone)+'ゾーン / 次のBETで開始':'特化ゾーン準備中 / 次のBETで7を狙え';}
  function show(entry){
   if(!panel){panel=document.createElement('div');panel.id='novaStockPreparation';panel.setAttribute('role','status');document.getElementById('machine').append(panel);}
-  panel.hidden=!entry||entry.stage==='seven';if(panel.hidden)return;
+  panel.hidden=!entry||entry.stage==='seven'||!message(entry);if(panel.hidden)return;
   panel.textContent=message(entry);
   layout();
  }

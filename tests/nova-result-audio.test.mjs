@@ -51,10 +51,11 @@ test('sortie success voice stays at natural speed and holds the next BET until e
  audio.onended();assert.equal(c.bonusConfirmSoundPlaying,false);assert.equal(done,1);
 });
 
-test('only the sortie entry aim SE receives +3 dB, including master-volume reapplication',()=>{
+test('only the sortie entry aim SE receives another +5 dB over the prior +3 dB, including master-volume reapplication',()=>{
  const c=vm.createContext({SORTIE_SANDWICH_AIM_SOUND_SRC:'sortie.wav',NovaAudioAssets:{entry:()=>({category:'sfx'})},sfxOutputVolume:()=>.25});
  vm.runInContext(fn('soundOutputVolume'),c);
- assert.equal(c.soundOutputVolume('sortie.wav',.25),.25*10**(3/20));
+ assert.equal(c.soundOutputVolume('sortie.wav',.25),.25*10**(8/20));
+ assert.ok(Math.abs(20*Math.log10(c.soundOutputVolume('sortie.wav',.25)/(.25*10**(3/20)))-5)<1e-10);
  assert.equal(c.soundOutputVolume('other.wav',.25),.25);
 });
 test('zone and AT result third stops skip result delay; ordinary games keep it',()=>{

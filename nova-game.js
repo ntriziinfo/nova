@@ -1382,7 +1382,7 @@
     const category=globalThis.NovaAudioAssets?.entry(src)?.category;
     if(category==='voice')return voiceOutputVolume();
     if(category==='bgm')return bgmOutputVolume();
-    if(category==='sfx')return Math.min(1,sfxOutputVolume()*(src===SORTIE_SANDWICH_AIM_SOUND_SRC?10**(3/20):1));
+    if(category==='sfx')return Math.min(1,sfxOutputVolume()*(src===SORTIE_SANDWICH_AIM_SOUND_SRC?10**(8/20):1));
     if(category==='payout')return payoutOutputVolume();
     return CHARACTER_VOICE_KEYS.has(normalizedAudioSourceKey(src))?voiceOutputVolume():applyAudioSourceOutputScale(volume,src);
   }
@@ -7842,7 +7842,8 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     }
     let entry=normalState.stockEntry;
     if(!NovaStockEntry.matches(entry,normalState.flow,progress,normalState.pendingFakeSortie))entry=null;
-    if(entry&&Date.now()<Number(entry.notBefore||0)){scheduleNextAuto();return true;}
+    const restoredSortiePreparation=entry?.stage==='prepare'&&['sortie','sortieFake'].includes(entry.kind);
+    if(entry&&!restoredSortiePreparation&&Date.now()<Number(entry.notBefore||0)){scheduleNextAuto();return true;}
     if(entry?.stage==='ready'){
       NovaStockEntry.hide();delete normalState.stockEntry;
       const src=ZONE_START_VOICE_SRCS[entry.zone];
@@ -7858,9 +7859,13 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
       if(cue&&normalState.stockEntry.kind===(cue.fake?'sortieFake':'sortie')){
         normalState.stockEntry.color=cue.color;delete normalState.sortieDebugCue;
       }
-      normalState.stockEntry.notBefore=Date.now()+700;
-      $('resultText').textContent=NovaStockEntry.message(normalState.stockEntry);
-      persistState();updateDisplay();scheduleNextAuto();return true;
+      entry=normalState.stockEntry;
+      // The sortie cue starts on this BET, without advertising the next BET first.
+      if(!['sortie','sortieFake'].includes(entry.kind)){
+        entry.notBefore=Date.now()+700;
+        $('resultText').textContent=NovaStockEntry.message(entry);
+        persistState();updateDisplay();scheduleNextAuto();return true;
+      }
     }
     entry.stage='seven';
     // Preserve the previous three presentation RNG draws; replace only the stop windows.

@@ -48,8 +48,8 @@ test('partial seven stops survive saving without charging a game or consuming th
 test('sortie has a guaranteed free NOVA center entrance, retains its award through reload, then hands off once',async()=>{
  const c=harness();c.normalState.flow.queuedZones=[];c.NovaProgress.snapshot=()=>({pending:0,sorties:1});
  const before=JSON.stringify(c.normalState.flow);
- assert(c.tryStockEntry());assert.equal(c.normalState.stockEntry.kind,'sortie');assert.match(c.$('resultText').textContent,/出陣チャンス.*NOVA/);
- assert(c.tryStockEntry());assert.equal(c.currentSpin.result,'NEBULA');
+ assert(c.tryStockEntry());assert.equal(c.normalState.stockEntry.kind,'sortie');assert.equal(c.normalState.stockEntry.stage,'seven');
+ assert.equal(c.currentSpin.result,'NEBULA');assert.doesNotMatch(c.$('resultText').textContent,/次のBET|出陣チャンス/);
  assert.deepEqual(c.cues,[{src:'assets/media/nova/sortie-sandwich-aim.wav',volume:1}]);
  assert.equal(c.currentSpin.sortieSandwichAimSoundPlayed,true);assert.equal(c.voiceSymbol,undefined);assert.equal(c.voiceZone,undefined);
  const aimAudio=c.currentSpin.sortieSandwichAimAudio;assert.equal(aimAudio,c.audios[0]);assert.equal(aimAudio.paused,false);
@@ -78,7 +78,7 @@ test('ordinary queued character zones keep priority and seven cues when a sortie
 test('normal-state success reveals the same free aim without entering AT before the stops',async()=>{
  const c=harness();c.normalState.flow={phase:'normal',remaining:0};c.NovaProgress.snapshot=()=>({pending:0,sorties:1});
  const before=JSON.stringify(c.normalState.flow);
- assert(c.tryStockEntry());assert(c.tryStockEntry());
+ assert(c.tryStockEntry());
  assert.equal(c.currentSpin.resolved.sortieFake,false);assert.equal(JSON.stringify(c.normalState.flow),before);
  await c.stopStockEntryReel(1);c.currentSpin=c.NovaSpinResume.restore(c.NovaSpinResume.capture(c.currentSpin),c.RESULT);
  await c.stopStockEntryReel(0);await c.stopStockEntryReel(2);
@@ -92,7 +92,7 @@ test('a fresh normal save can reveal the forced sortie before its first paid gam
  c.NovaFlow={normalize:()=>({phase:'normal',remaining:0,success:false})};
  c.NovaProgress.snapshot=()=>({pending:0,sorties:1});
  assert(c.tryStockEntry());assert.equal(c.normalState.flow.phase,'normal');
- assert(c.tryStockEntry());assert.equal(c.currentSpin.resolved.sortieEntry,true);
+ assert.equal(c.currentSpin.resolved.sortieEntry,true);
  assert.equal(c.normalState.flow.phase,'normal');
 });
 
@@ -119,6 +119,20 @@ test('restored preparation renders even before the status bar has been mounted',
  const c=vm.createContext({document:{createElement:()=>panel,getElementById:id=>id==='machine'?host:null},NovaArt:{zoneName:z=>z}});
  vm.runInContext(fs.readFileSync('nova-stock-entry.js','utf8'),c);c.NovaStockEntry.show({zone:'sora',stage:'prepare'});assert.equal(panel.hidden,false);assert.equal(panel.style.width,'500px');
 });
+
+test('restored real and fake sortie preparations stay hidden and start on the first BET',()=>{
+ for(const fake of [false,true]){
+  const c=harness();c.normalState.flow={phase:'normal',remaining:'900',queuedZones:[]};c.normalState.pendingFakeSortie=fake?1:0;c.NovaProgress.snapshot=()=>({pending:0,sorties:fake?0:1});
+  c.normalState.stockEntry={...c.NovaStockEntry.prepare(c.normalState.flow,c.NovaProgress.snapshot(),c.normalState.pendingFakeSortie),color:'red',notBefore:1e12};
+  const flow=JSON.stringify(c.normalState.flow),ticket=c.normalState.stockEntry;
+  assert.equal(c.NovaStockEntry.message(ticket),'');
+  assert(c.tryStockEntry());assert.equal(c.normalState.stockEntry,ticket);assert.equal(ticket.stage,'seven');assert.equal(c.isSpinning,true);assert.equal(c.cues.length,1);
+  assert.equal(c.currentSpin.resolved.sortieFake,fake);assert.equal(c.currentSpin.resolved.sortieCueColor,'red');assert.equal(c.currentSpin.resolved.reward,0);assert.equal(JSON.stringify(c.normalState.flow),flow);
+ }
+ const panel={setAttribute(){}},c=vm.createContext({document:{createElement:()=>panel,getElementById:()=>({append(){}})}});
+ vm.runInContext(fs.readFileSync('nova-stock-entry.js','utf8'),c);
+ for(const kind of ['sortie','sortieFake']){c.NovaStockEntry.show({kind,stage:'prepare'});assert.equal(panel.hidden,true);}
+});
 test('the first queued zone game exposes its pre-draw display state without consuming another game',()=>{
  const c=vm.createContext({});for(const file of ['nova-tuning.js','nova-art.js'])vm.runInContext(fs.readFileSync(file,'utf8'),c);
  for(const zone of [...c.NovaArt.zoneIds,'kushuri_nito']){
@@ -132,7 +146,7 @@ test('the first queued zone game exposes its pre-draw display state without cons
 
 test('fake reverse cue consumes only its presentation ticket, preserves paid flow and saved stop progress',async()=>{
  const c=harness();c.normalState.flow={phase:'normal',remaining:'900',queuedZones:[]};c.normalState.pendingFakeSortie=2;const before=JSON.stringify(c.normalState.flow);
- assert(c.tryStockEntry());assert.equal(c.normalState.stockEntry.kind,'sortieFake');assert(c.tryStockEntry());assert.equal(c.currentSpin.result,'MISS');assert.equal(c.currentSpin.resolved.reward,0);assert.equal(c.currentSpin.resolved.sortieCueColor,'blue');
+ assert(c.tryStockEntry());assert.equal(c.normalState.stockEntry.kind,'sortieFake');assert.equal(c.normalState.stockEntry.stage,'seven');assert.equal(c.currentSpin.result,'MISS');assert.equal(c.currentSpin.resolved.reward,0);assert.equal(c.currentSpin.resolved.sortieCueColor,'blue');
  await c.stopStockEntryReel(1);c.currentSpin=c.NovaSpinResume.restore(c.NovaSpinResume.capture(c.currentSpin),c.RESULT);await c.stopStockEntryReel(2);await c.stopStockEntryReel(0);
  assert.equal(c.cues[0].src,'assets/media/nova/sortie-sandwich-aim.wav');
  assert(!c.cues.some(cue=>cue.src==='assets/media/nova/sortie-sandwich-hit.wav'),'Missed entry never plays success');
@@ -142,7 +156,7 @@ test('fake reverse cue consumes only its presentation ticket, preserves paid flo
 test('real and fake sandwich aim cues are one-shot even when the helper is retried or the spin is serialized',()=>{
  for(const fake of [false,true]){
   const c=harness();c.normalState.flow={phase:fake?'normal':'art',remaining:'900',queuedZones:[]};c.normalState.pendingFakeSortie=fake?1:0;c.NovaProgress.snapshot=()=>({pending:0,sorties:fake?0:1});
-  assert(c.tryStockEntry());assert(c.tryStockEntry());assert.equal(c.currentSpin.resolved.sortieFake,fake);
+  assert(c.tryStockEntry());assert.equal(c.currentSpin.resolved.sortieFake,fake);
   c.playSortieSandwichAimSound(c.currentSpin);c.playSortieSandwichAimSound(c.currentSpin);
   const restored=c.NovaSpinResume.restore(c.NovaSpinResume.capture(c.currentSpin),c.RESULT);c.playSortieSandwichAimSound(restored);
   assert.deepEqual(c.cues.map(cue=>cue.src),['assets/media/nova/sortie-sandwich-aim.wav']);
