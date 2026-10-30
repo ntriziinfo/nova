@@ -8,7 +8,27 @@
       "sourceCommit": "d295064df1e205e9a5338759eceec485161b84ed",
       "presentationCommit": "7aa3825be72e46dcf89791545c1d32076768346a",
       "reason": "逆回転前の1段戻しの表示時計だけを成功・失敗で共通化。抽選呼出し、乱数消費、4000ms後のゲーム進行、払い出し、上乗せ、停止結果は同一。",
-      "tests": ["tests/nova-ouma-presentation.test.mjs", "tests/nova-ouma-audio-lifecycle.test.mjs", "tests/nova-reel-motion.test.mjs", "tests/nova-background-auto.test.mjs"]
+      "tests": [
+        "tests/nova-ouma-presentation.test.mjs",
+        "tests/nova-ouma-audio-lifecycle.test.mjs",
+        "tests/nova-reel-motion.test.mjs",
+        "tests/nova-background-auto.test.mjs"
+      ]
+    },
+    {
+      "file": "nova-game.js",
+      "sourceHash": "5e2065f59a0d29d7e7855cce111aa2a443e65d93fadfc35ad060f12b9786e183",
+      "presentationHash": "498496866990886af4e70f7d50daa640645242cf692a96a88ff80298a4eaf2dc",
+      "sourceCommit": "d295064df1e205e9a5338759eceec485161b84ed",
+      "presentationCommit": "3dfa43380770b0d06d3e070dce966ee8a2ac1191",
+      "reason": "前回の逆回転前1段戻し表示の共通化に加え、COUNT表示座標と保存済みレイアウトの移行だけを変更。抽選・乱数消費・払い出し・獲得pt計算・停止結果・ゲーム進行は同一。",
+      "tests": [
+        "tests/nova-ouma-presentation.test.mjs",
+        "tests/nova-ouma-audio-lifecycle.test.mjs",
+        "tests/nova-reel-motion.test.mjs",
+        "tests/nova-background-auto.test.mjs",
+        "tests/nova-layout-defaults.test.mjs"
+      ]
     }
   ]
 }
