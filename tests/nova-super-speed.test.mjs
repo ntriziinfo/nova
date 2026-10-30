@@ -373,3 +373,38 @@ test('normal pacing reset ignores ordinary games, stopped AUTO and paid full AUT
   assert.equal(JSON.stringify([c.autoLastBetAt,c.autoPacingBudget]),before,mode);
  }
 });
+
+test('AT/CZ/video holds never become a burst of fast games on return',()=>{
+ const {c}=setup(),speed=c.NovaSuperSpeed;
+ vm.runInContext('Math.random=()=>{throw Error("timing consumed a draw");}',c);
+ for(const profile of ['normal','normalAt','fast','at'])for(const hold of [2000,36000,180000]){
+  let budget=speed.recordBet(null,0,profile),now=hold;
+  for(let game=0;game<100;game++){
+   budget=speed.recordBet(budget,now,profile);
+   const target=speed.targetPeriod(profile);
+   assert.equal(budget.dueAt,now+target,`${profile}: no carried deficit at game ${game}`);
+   assert.equal(speed.budgetWait(budget,now+200,profile),target-200);
+   assert.equal(speed.budgetWait(budget,now+target,profile),0);
+   now+=target;
+  }
+ }
+});
+
+test('paid AUTO after a 36-second AT delay waits for every next BET instead of catching up for 70G',()=>{
+ const {c,timers}=setup();let now=36000,spins=0;
+ Object.assign(c,{autoPlay:true,superFullAuto:true,superSpeedActive:true,superSpeedDebugAllowed:true,
+  autoLastBetAt:0,autoPacingBudget:{periodMs:720,dueAt:720,lastAt:0},
+  performance:{now:()=>now},A_TYPE_MODE:true,oumaPresentation:null,
+  isRogiThirdStopHoldActive:()=>false,canPlayCompleteTrial:()=>true,
+  spin(){spins++;c.autoLastBetAt=now;c.autoPacingBudget=c.NovaSuperSpeed.recordBet(c.autoPacingBudget,now,c.autoPacingProfile());c.isSpinning=true;}});
+ for(const name of ['queueAutoStep','runAutoStep'])vm.runInContext(fn(name),c);
+ const before=JSON.stringify([c.normalState,c.session]);
+ vm.runInContext('Math.random=()=>{throw Error("timing consumed a draw");}',c);
+ c.runAutoStep();assert.equal(spins,1);
+ for(let game=1;game<=70;game++){
+  c.isSpinning=false;now+=200;c.runAutoStep();assert.equal(spins,game);
+  assert.equal(timers.get(c.autoTimer).ms,520);
+  now+=520;c.runAutoStep();assert.equal(spins,game+1);
+ }
+ assert.equal(JSON.stringify([c.normalState,c.session]),before);
+});

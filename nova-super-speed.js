@@ -1,18 +1,16 @@
 /* Presentation speed only: never resolves a role, charges a BET or advances a flow. */
 globalThis.NovaSuperSpeed=Object.freeze({
   multiplier:6,
-  // Average elapsed time per counted game, including presentation holds.
+  // Minimum cadence for each counted game. Presentation holds may extend it;
+  // they must never be repaid by rushing later games.
   targetPeriod(profile='normal'){return ['fast','at'].includes(profile)?720:1440;},
   budgetWait(budget,now,profile='normal'){
     return budget?.periodMs===this.targetPeriod(profile)?Math.max(0,budget.dueAt-now):0;
   },
-  recordBet(budget,now,profile='normal'){
+  recordBet(_budget,now,profile='normal'){
     const periodMs=this.targetPeriod(profile);
-    // Repay consecutive presentation holds within five minutes of carry.
-    // A minute without a counted BET starts a fresh pace after a pause/stall.
-    const continuous=budget?.periodMs===periodMs&&now-budget.lastAt<=60000;
-    const previous=continuous?Math.max(now-300000,budget.dueAt):now;
-    return {periodMs,dueAt:previous+periodMs,lastAt:now};
+    // Use this BET's actual time, not a deadline from before an AT/CZ/video.
+    return {periodMs,dueAt:now+periodMs,lastAt:now};
   },
   // BET-to-BET minimums. Audio and presentation locks can extend a game.
   pacing:Object.freeze({
