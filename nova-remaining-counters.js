@@ -2,14 +2,17 @@
 globalThis.NovaRemainingCounters=(()=>{
  const defaults=Object.freeze({
   remainingcounter:Object.freeze({x:21.7,y:85.8,w:15.9,h:11}),
-  zoneaward:Object.freeze({x:45,y:22.6,w:9.4,h:11.8,labelsize:8,valuesize:20,unitsize:10,textgap:4})
+  zoneaward:Object.freeze({x:65.2,y:26.5,w:12.7,h:8.2,labelsize:11.1,valuesize:26.8,unitsize:14.6,textgap:-3.1})
  });
  const textProperties=['labelsize','valuesize','unitsize','textgap'];
  const unit=(target,prop)=>target==='zoneaward'&&textProperties.includes(prop)?'px':'%';
  function migrateLayout(raw){
   const old=raw?.zoneaward;
-  if(!old||old.x!==60||old.y!==20||old.w!==18||old.h!==11)return raw;
-  return {...raw,zoneaward:{...old,x:45,y:22.6,w:9.4,h:11.8}};
+  if(!old||![[60,20,18,11],[45,22.6,9.4,11.8]].some(rect=>['x','y','w','h'].every((key,i)=>old[key]===rect[i])))return raw;
+  const zoneaward={...old,...defaults.zoneaward};
+  const previousText={labelsize:8,valuesize:20,unitsize:10,textgap:4};
+  for(const key of textProperties)if(old[key]!==undefined&&old[key]!==previousText[key])zoneaward[key]=old[key];
+  return {...raw,zoneaward};
  }
  const titles={remainingcounter:'共通カウンター（BB・AT・CZ・ゾーン）',zoneaward:'今回の特化ゾーン獲得pt'};
  const empty=(label,unit)=>({label,value:'—',unit,active:false,hold:false});

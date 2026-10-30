@@ -2263,6 +2263,29 @@
       }
     },
     {
+      "src": "assets/media/nova/impurity-release-bgm-1143035-20261030.mp3",
+      "category": "bgm",
+      "targetLufs": -18,
+      "output": "assets/media/normalized-20261012/nova/impurity-release-bgm-1143035-20261030.mp3",
+      "sourceSha256": "cb0bdcdb28c87abee518542b802474cbc5102c78416915c78c852ae3628755a4",
+      "outputSha256": "4eece2e2895f4e82155c84436a5d835691a1d34cf1cd523250266e24c4068edb",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 269.539501,
+      "outputDuration": 269.539501,
+      "gainDb": -8.4,
+      "before": {
+        "lufs": -9.34,
+        "peakDbtp": 0.48,
+        "rangeLu": 1.8
+      },
+      "after": {
+        "lufs": -18,
+        "peakDbtp": -7.79,
+        "rangeLu": 1.8
+      }
+    },
+    {
       "src": "assets/media/nova/initial-duo-bgm.mp3",
       "category": "bgm",
       "targetLufs": -18,

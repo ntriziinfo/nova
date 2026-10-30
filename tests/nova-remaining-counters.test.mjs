@@ -9,13 +9,16 @@ const current=(...args)=>JSON.parse(JSON.stringify(ctx.NovaRemainingCounters.cur
 
 test('zone award defaults and text controls are independent of the frame; custom positions survive',()=>{
  const api=ctx.NovaRemainingCounters,plain=v=>JSON.parse(JSON.stringify(v));
- assert.deepEqual(plain(api.defaults.zoneaward),{x:45,y:22.6,w:9.4,h:11.8,labelsize:8,valuesize:20,unitsize:10,textgap:4});
+ assert.deepEqual(plain(api.defaults.zoneaward),{x:65.2,y:26.5,w:12.7,h:8.2,labelsize:11.1,valuesize:26.8,unitsize:14.6,textgap:-3.1});
  for(const prop of ['labelsize','valuesize','unitsize','textgap'])assert.equal(api.unit('zoneaward',prop),'px');
  assert.equal(api.unit('zoneaward','w'),'%');
  const custom={zoneaward:{x:40,y:25,w:20,h:10},count:{x:21}};
  assert.equal(api.migrateLayout(custom),custom);
  const old={zoneaward:{x:60,y:20,w:18,h:11},count:{x:21}},saved=JSON.stringify(old);
- assert.deepEqual(plain(api.migrateLayout(old)),{zoneaward:{x:45,y:22.6,w:9.4,h:11.8},count:{x:21}});
+ assert.deepEqual(plain(api.migrateLayout(old)),{zoneaward:plain(api.defaults.zoneaward),count:{x:21}});
+ const previous={zoneaward:{x:45,y:22.6,w:9.4,h:11.8,labelsize:8,valuesize:20,unitsize:10,textgap:4}};
+ assert.deepEqual(plain(api.migrateLayout(previous).zoneaward),plain(api.defaults.zoneaward));
+ assert.equal(api.migrateLayout({...previous,zoneaward:{...previous.zoneaward,valuesize:30}}).zoneaward.valuesize,30);
  assert.equal(JSON.stringify(old),saved);
 });
 

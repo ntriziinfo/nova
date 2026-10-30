@@ -9,7 +9,7 @@
 }
 #nova-remainingcounter {--counter-x:var(--layout-remainingcounter-x,22%);--counter-y:var(--layout-remainingcounter-y,85.8%);--counter-w:var(--layout-remainingcounter-w,15%);--counter-h:var(--layout-remainingcounter-h,11%);}
 .novaZoneAwardLayer{position:absolute;left:0;top:var(--jag-reel-top);width:var(--jag-cabinet-width);height:var(--jag-reel-height);z-index:71;pointer-events:none;}
-#nova-zoneaward {--counter-x:var(--layout-zoneaward-x,45%);--counter-y:var(--layout-zoneaward-y,22.6%);--counter-w:var(--layout-zoneaward-w,9.4%);--counter-h:var(--layout-zoneaward-h,11.8%);--counter-color:#ffe199;z-index:70;background:#09060bd9;display:flex;flex-direction:column;justify-content:center;overflow:visible;}
+#nova-zoneaward {--counter-x:var(--layout-zoneaward-x,65.2%);--counter-y:var(--layout-zoneaward-y,26.5%);--counter-w:var(--layout-zoneaward-w,12.7%);--counter-h:var(--layout-zoneaward-h,8.2%);--counter-color:#ffe199;z-index:70;background:#09060bd9;display:flex;flex-direction:column;justify-content:center;overflow:visible;}
 #nova-zoneaward[data-active=false]{display:none;}
 body.layoutEditOpen #nova-zoneaward[data-active=false]{display:flex;}
 .novaRemainingCounter[data-mode=cz] {--counter-color:#e9b6ff;}
@@ -25,7 +25,7 @@ body.layoutEditOpen .novaRemainingCounter {outline:2px dashed #4de7ff;outline-of
 .novaCounterMetrics {margin:9px 0 0;color:#c6c9d5;font:11px/1.6 system-ui;}
 
 .novaRemainingCounter[data-checkpoint=true] [data-counter-label]{font-size:6.4cqw;line-height:1.1}
-#nova-zoneaward [data-counter-label]{height:auto;margin:0;font-size:var(--layout-zoneaward-labelsize,8px);line-height:1.15;white-space:nowrap;overflow-wrap:normal;flex-shrink:0;}
-#nova-zoneaward .novaCounterReading{height:auto;margin-top:var(--layout-zoneaward-textgap,4px);gap:2px;flex-shrink:0;}
-#nova-zoneaward [data-counter-value]{font-size:var(--layout-zoneaward-valuesize,20px);}
-#nova-zoneaward [data-counter-unit]{font-size:var(--layout-zoneaward-unitsize,10px);}
+#nova-zoneaward [data-counter-label]{height:auto;margin:0;font-size:var(--layout-zoneaward-labelsize,11.1px);line-height:1.15;white-space:nowrap;overflow-wrap:normal;flex-shrink:0;}
+#nova-zoneaward .novaCounterReading{height:auto;margin-top:var(--layout-zoneaward-textgap,-3.1px);gap:2px;flex-shrink:0;}
+#nova-zoneaward [data-counter-value]{font-size:var(--layout-zoneaward-valuesize,26.8px);}
+#nova-zoneaward [data-counter-unit]{font-size:var(--layout-zoneaward-unitsize,14.6px);}

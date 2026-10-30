@@ -52,6 +52,7 @@
   const NOVA_UPPER_ART_BGM_SRC = "assets/media/nova/upper-at-bgm.mp3";
   const NOVA_CHECKPOINT_BGM_SRC = "assets/media/nova/checkpoint-bgm.mp3";
   const NOVA_BIG_BGM_SRC = "assets/media/nova/BIG.wav";
+  const NOVA_IMPURITY_BGM_SRC = "assets/media/nova/impurity-release-bgm-1143035-20261030.mp3";
 
   const CZ_BGM_SRC = "assets/media/nova/audiostock_860274.mp3";
   const DEFAULT_NORMAL_BGM_SRC = "assets/media/nova/audiostock_1117081.wav";
@@ -4079,7 +4080,7 @@
           endSignal:runtime.session.endSignal || null
         };
       }
-      if(A_TYPE_MODE && session.active && session.phase==='a_type_bonus'){Object.assign(session,NovaArt.restoreBonusExtraStockPlan(session,NovaArt.bonusStockEligible(session,normalState.flow)));session.bonusBgmSrc=pickATypeBonusBgm(session.bonusKind).src;session.bonusTarget=NovaArt.bonusTarget(session.bonusKind);session.bonusPointsRemaining=Math.max(0,session.bonusTarget-NovaArt.bonusProgress(session));}
+      if(A_TYPE_MODE && session.active && session.phase==='a_type_bonus'){Object.assign(session,NovaArt.restoreBonusExtraStockPlan(session,NovaArt.bonusStockEligible(session,normalState.flow)));session.bonusBgmSrc=pickATypeBonusBgm(session.bonusKind,false,session).src;session.bonusTarget=NovaArt.bonusTarget(session.bonusKind);session.bonusPointsRemaining=Math.max(0,session.bonusTarget-NovaArt.bonusProgress(session));}
       jagChainCount = runtime.jagChainCount?.payoutVersion===1 && Number.isFinite(runtime.jagChainCount.paid) && Number.isFinite(runtime.jagChainCount.fee) ? {...runtime.jagChainCount} : null;
       jagLastGamePayout = Number(runtime.jagLastGamePayout) || 0;
       jagLastBonusPayout = Number(runtime.jagLastBonusPayout) || 0;
@@ -4726,7 +4727,7 @@
           ? !!normalState.risingBonusOrigin
           : !!options.risingBonusOrigin;
         const within50 = hadPreviousBonus && gamesSinceLastBonus <= 50;
-        const bonusBgm = pickATypeBonusBgm(bonusKind, within50, {premiumBonus, oneGameRenBonus});
+        const bonusBgm = pickATypeBonusBgm(bonusKind, within50, {premiumBonus, oneGameRenBonus, impurityReleased});
         resetNormalModeAfterBonus();
         pauseNormalBgm();
         session = {
@@ -5325,7 +5326,7 @@
 
   function pickATypeBonusBgm(kind="BIG", within50=false, options={}){
     const normalized = normalizeATypeBonusKind(kind);
-    if(A_TYPE_MODE)return {src:NOVA_BIG_BGM_SRC,label:'BIG BGM'};
+    if(A_TYPE_MODE)return options.impurityReleased?{src:NOVA_IMPURITY_BGM_SRC,label:'穢れ解放BB BGM'}:{src:NOVA_BIG_BGM_SRC,label:'BIG BGM'};
   }
 
   function playATypeBonusBgm(bgmInfo){

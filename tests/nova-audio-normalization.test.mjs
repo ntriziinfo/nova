@@ -45,5 +45,5 @@ test('every registered voice uses speech-level v2 mastering at -14 LUFS, without
 });
 
 test('the game cache-busts the complete audio manifest',()=>{
- assert.match(fs.readFileSync('jag.html','utf8'),/nova-audio-manifest\.js\?v=20261030-result-recall/);
+ assert.match(fs.readFileSync('jag.html','utf8'),/nova-audio-manifest\.js\?v=20261030-impurity-bgm-layout/);
 });

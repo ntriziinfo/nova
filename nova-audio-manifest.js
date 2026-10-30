@@ -340,6 +340,10 @@ globalThis.NovaAudioManifest=Object.freeze({
     "src": "assets/media/normalized-voices-20261013/nova/giru-ladder-result-under500.wav",
     "category": "voice"
   },
+  "assets/media/nova/impurity-release-bgm-1143035-20261030.mp3": {
+    "src": "assets/media/normalized-20261012/nova/impurity-release-bgm-1143035-20261030.mp3",
+    "category": "bgm"
+  },
   "assets/media/nova/initial-duo-bgm.mp3": {
     "src": "assets/media/normalized-20261012/nova/initial-duo-bgm.mp3",
     "category": "bgm"

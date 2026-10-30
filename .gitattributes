@@ -127,3 +127,5 @@ assets/media/nova/sortie-challenge-fire-20261030.source.json -filter -diff -merg
 assets/media/nova/aim/ready-20261030/** -filter -diff -merge -text
 assets/media/nova/sortie-aim-success-20261030.mp4 -filter -diff -merge -text
 assets/media/nova/sortie-aim-success-20261030.source.json -filter -diff -merge text
+# Supplied impurity-release BB BGM; retain the original and ship its mastered copy.
+assets/media/nova/impurity-release-bgm-1143035-20261030.mp3 -filter -diff -merge -text
