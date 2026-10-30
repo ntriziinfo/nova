@@ -1,69 +1,101 @@
-import {readGameSource} from '../scripts/game-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import fs from 'node:fs';
-import vm from 'node:vm';
 import {loadModel} from '../scripts/zone-v2-model.mjs';
-import {xoshiro128} from '../scripts/zone-v2-rng.mjs';
-loadModel();const a=NovaArt;
 
-test('only secured-AT bonus stock odds use the setting profile; first AT odds and bonus payouts stay identical',()=>{
- for(let setting=1;setting<=6;setting++)for(const tier of ['normal','upper']){
-  const before=a.bonusRoleProbabilities(setting,tier),stock=a.bonusRoleProbabilities(setting,tier,true),factor=a.bonusStockFactor(setting);
-  assert.equal(factor,NovaTuning.balanceProfile(setting).bonusStock);assert.ok(factor>0);
-  assert.ok(Math.abs(1-(before.BELL/(before.BELL+before.NEBULA))**7-a.bonusRules[tier].atChance)<1e-12);
-  assert.equal(stock.BELL,before.BELL);assert.equal(stock.REPLAY,before.REPLAY);
-  assert.equal(stock.NEBULA,before.NEBULA*factor);
-  assert.ok(Math.abs(stock.NEBULA+stock.MISS-before.NEBULA-before.MISS)<1e-12);
-  assert.ok(Math.abs(Object.values(stock).reduce((s,p)=>s+p,0)-1)<1e-12);
- }
+loadModel();
+const a=NovaArt;
+const fresh=(sets=0)=>({
+  bonusKind:'BIG',paid:0,bonusArtSets:sets,
+  bonusExtraStockVersion:a.bonusExtraStockRules.version,
+  bonusExtraStockReady:false,bonusExtraStockTarget:0,bonusExtraStockRemaining:0
 });
 
-test('secured status derives from saved bonus wins or an existing AT, including initial wait and comeback',()=>{
- assert.equal(a.bonusStockEligible({bonusArtSets:0},{phase:'normal'}),false);
- assert.equal(a.bonusStockEligible({bonusArtSets:1},{phase:'normal'}),true);
- const saved=JSON.parse(JSON.stringify({bonusArtSets:2,paid:30}));assert.equal(a.bonusStockEligible(saved,{phase:'normal'}),true);
- for(const flow of [a.enter({},()=>.5),a.enterInitial({},()=>.5),a.beginComeback(a.enter({},()=>.5))])assert.equal(a.bonusStockEligible({bonusArtSets:0},flow),true);
+test('BB-level extra stock draw has exact 87/10/3 boundaries',()=>{
+  assert.deepEqual([...a.bonusExtraStockRules.weights],[.87,.10,.03]);
+  for(const [roll,count] of [
+    [0,0],[.869999999999,0],[.87,1],[.969999999999,1],[.97,2],[.999999999999,2]
+  ])assert.equal(a.drawBonusExtraStockCount(()=>roll),count,`roll=${roll}`);
 });
 
-test('an entire BIG switches to reduced odds only after its first win and retains 52/80% entry',()=>{
- for(const tier of ['normal','upper']){
-  const rng=xoshiro128(146+tier),trials=50000;let wins=0,extras=0;
-  for(let i=0;i<trials;i++){
-   let state={paid:0,bonusArtSets:0};
-   while(state.paid<50){
-    const role=a.drawBonus(rng,6,tier,a.bonusStockEligible(state,{phase:'normal'})),pay=a.bonusPayout(state,role);
-    state={...state,...a.advanceBonus(state,role==='NEBULA',pay),paid:state.paid+pay};
-   }
-   wins+=state.bonusArtSets>0;extras+=Math.max(0,state.bonusArtSets-1);
+test('saved plans sanitize current data and migrate old secured BBs without a release-only redraw',()=>{
+  const version=a.bonusExtraStockRules.version;
+  assert.deepEqual(a.restoreBonusExtraStockPlan({bonusExtraStockVersion:version,bonusExtraStockReady:true,bonusExtraStockTarget:99,bonusExtraStockRemaining:88},true),{
+    bonusExtraStockVersion:version,bonusExtraStockReady:true,bonusExtraStockTarget:2,bonusExtraStockRemaining:2
+  });
+  assert.deepEqual(a.restoreBonusExtraStockPlan({bonusExtraStockVersion:version,bonusExtraStockReady:false,bonusExtraStockTarget:2,bonusExtraStockRemaining:2},false),{
+    bonusExtraStockVersion:version,bonusExtraStockReady:false,bonusExtraStockTarget:0,bonusExtraStockRemaining:0
+  });
+  assert.deepEqual(a.restoreBonusExtraStockPlan({bonusArtSets:1},true),{
+    bonusExtraStockVersion:version,bonusExtraStockReady:true,bonusExtraStockTarget:0,bonusExtraStockRemaining:0
+  });
+  assert.deepEqual(a.restoreBonusExtraStockPlan({bonusArtSets:0},false),{
+    bonusExtraStockVersion:version,bonusExtraStockReady:false,bonusExtraStockTarget:0,bonusExtraStockRemaining:0
+  });
+});
+
+test('first AT odds remain 52/80 in every setting and secured natural NEBULA is suppressed',()=>{
+  for(let setting=1;setting<=6;setting++)for(const tier of ['normal','upper']){
+    const entry=a.bonusRoleProbabilities(setting,tier,false);
+    const secured=a.bonusRoleProbabilities(setting,tier,true);
+    assert.ok(Math.abs(1-(entry.BELL/(entry.BELL+entry.NEBULA))**7-a.bonusRules[tier].atChance)<1e-12);
+    assert.equal(secured.NEBULA,0);
+    assert.equal(secured.BELL,entry.BELL);
+    assert.equal(secured.REPLAY,entry.REPLAY);
+    assert.ok(Math.abs(Object.values(secured).reduce((sum,p)=>sum+p,0)-1)<1e-12);
   }
-  const p=a.bonusRoleProbabilities(6,tier),expected=(7*p.NEBULA/p.BELL-a.bonusRules[tier].atChance)*a.bonusStockFactor(6);
-  assert.ok(Math.abs(wins/trials-a.bonusRules[tier].atChance)<.008);
-  assert.ok(Math.abs(extras/trials-expected)<.018);
- }
 });
 
-test('reduced stock guides retain blue/red/rainbow confidence and half of misses remain guided',()=>{
- for(const setting of [1,6])for(const tier of ['normal','upper']){
-  const rng=xoshiro128(146+setting+tier),counts={blue:[0,0],red:[0,0],rainbow:[0,0]};let misses=0,guidedMisses=0;
-  for(let i=0;i<250000;i++){
-   const role=a.drawBonus(rng,setting,tier,true),aim=a.bonusAim(role,rng,setting,true);
-   if(role==='MISS'){misses++;guidedMisses+=!!aim.guide;}
-   if(aim?.guide){counts[aim.color][0]++;counts[aim.color][1]+=role==='NEBULA';}
+test('the first successful NEBULA grants AT before sealing and does not consume the extra plan',()=>{
+  let state=fresh(0);
+  const first=a.drawBonusWithPlan(state,{phase:'normal'},()=>0,3,'normal');
+  assert.equal(first.role,'NEBULA');assert.equal(first.extraOffer,false);
+  state={...state,...first.state,...a.advanceBonus(state,true,0,first.extraOffer)};
+  assert.equal(state.bonusArtSets,1);assert.equal(state.bonusExtraStockRemaining,0);
+  state={...state,...a.ensureBonusExtraStockPlan(state,()=>.9)};
+  assert.equal(state.bonusExtraStockTarget,1);assert.equal(state.bonusExtraStockRemaining,1);
+});
+
+function runSecuredPlan(targetRoll,setting,tier,flow={phase:'normal'},startingSets=1){
+  const rolls=[targetRoll,0,0,0,0,0];let index=0;
+  const rng=()=>rolls[index++]??0;
+  let state=fresh(startingSets),offers=0;
+  for(let spin=0;spin<4;spin++){
+    const draw=a.drawBonusWithPlan(state,flow,rng,setting,tier);
+    state={...state,...draw.state};
+    if(draw.extraOffer){offers++;state={...state,...a.advanceBonus(state,true,0,true)};continue;}
+    assert.notEqual(draw.role,'NEBULA','natural third extra must stay suppressed');
+    break;
   }
-  for(const {color,hit} of [{color:'blue',hit:.2},{color:'red',hit:.9},{color:'rainbow',hit:1}]){const [n,w]=counts[color];assert.ok(n>100);assert.ok(Math.abs(w/n-hit)<.025,`${setting}/${tier}/${color}: ${w/n}`);}
-  assert.ok(Math.abs(guidedMisses/misses-.5)<.015);
- }
+  return {state,offers};
+}
+
+test('secured and guaranteed BBs offer exactly the sealed 0/1/2 extras, independent of setting and tier',()=>{
+  for(let setting=1;setting<=6;setting++)for(const tier of ['normal','upper'])for(const [roll,target] of [[0,0],[.9,1],[.98,2]]){
+    const guaranteed=runSecuredPlan(roll,setting,tier,{phase:'normal'},1);
+    assert.equal(guaranteed.state.bonusExtraStockTarget,target);
+    assert.equal(guaranteed.state.bonusExtraStockRemaining,0);
+    assert.equal(guaranteed.offers,target);
+    assert.equal(guaranteed.state.bonusArtSets,1+target);
+
+    const existingAt=runSecuredPlan(roll,setting,tier,{phase:'art'},0);
+    assert.equal(existingAt.state.bonusExtraStockTarget,target);
+    assert.equal(existingAt.offers,target);
+    assert.equal(existingAt.state.bonusArtSets,target);
+  }
 });
 
-test('live bonus draw and aim use the same secured state; forced stock wins still work',()=>{
- const html=readGameSource(),ctx=vm.createContext({NovaArt:a,NovaNormal,A_TYPE_MODE:true,
-  session:{bonusKind:'BIG',bonusTier:'normal',bonusArtSets:1,paid:30,active:true,phase:'a_type_bonus'},
-  normalState:{flow:{phase:'normal'}},pendingForceResult:'',settings:{setting:1},isNovaResult:()=>false});
- for(const name of ['normalizeATypeBonusKind','isATypeBonusActive','aTypeBonusTarget','isATypeBonusComplete','drawATypeBonusResult','resolveATypeBonusOutcome'])vm.runInContext(html.match(new RegExp('  function '+name+'\\([^]*?\\n  }'))[0],ctx);
- const old=a.bonusRoleProbabilities(1).NEBULA,reduced=a.bonusRoleProbabilities(1,'normal',true).NEBULA;
- vm.runInContext('Math.random=()=>'+((old+reduced)/2),ctx);
- assert.equal(ctx.drawATypeBonusResult(),'MISS');ctx.session.bonusArtSets=0;assert.equal(ctx.drawATypeBonusResult(),'NEBULA');
- ctx.normalState.flow={phase:'art'};assert.equal(ctx.drawATypeBonusResult(),'MISS');
- ctx.pendingForceResult='NEBULA';assert.equal(ctx.drawATypeBonusResult(),'NEBULA');assert.equal(ctx.resolveATypeBonusOutcome('NEBULA').artSetWon,1);
+test('an offered extra is consumed once even when the player misses the lineup',()=>{
+  const state={...fresh(1),bonusExtraStockReady:true,bonusExtraStockTarget:1,bonusExtraStockRemaining:1};
+  const missed={...state,...a.advanceBonus(state,false,0,true)};
+  assert.equal(missed.bonusArtSets,1);assert.equal(missed.bonusExtraStockRemaining,0);
+  const won={...state,...a.advanceBonus(state,true,0,true)};
+  assert.equal(won.bonusArtSets,2);assert.equal(won.bonusExtraStockRemaining,0);
+  const firstAt={...state,...a.advanceBonus(state,true,0,false)};
+  assert.equal(firstAt.bonusArtSets,2);assert.equal(firstAt.bonusExtraStockRemaining,1);
+});
+
+test('secured-state detection includes saved wins and every active AT phase',()=>{
+  assert.equal(a.bonusStockEligible({bonusArtSets:0},{phase:'normal'}),false);
+  assert.equal(a.bonusStockEligible({bonusArtSets:1},{phase:'normal'}),true);
+  for(const flow of [a.enter({},()=>.5),a.enterInitial({},()=>.5),a.beginComeback(a.enter({},()=>.5))])assert.equal(a.bonusStockEligible({bonusArtSets:0},flow),true);
 });

@@ -4,7 +4,7 @@ import {loadModel,simulate} from './zone-v2-model.mjs';
 import {INPUTS,hashes} from './rtp-current.mjs';
 
 const DEFAULT_GAMES=100_000_000;
-const DEFAULT_SEED='nova-rtp-v174-20261027';
+const DEFAULT_SEED='nova-rtp-v175-20261030';
 const BLOCK_GAMES=1_000_000;
 const SIMULATION_OPTIONS=Object.freeze({
  rng:'xoshiro128',

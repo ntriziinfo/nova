@@ -1,11 +1,12 @@
 import test from 'node:test';import assert from 'node:assert/strict';import {loadModel} from '../scripts/zone-v2-model.mjs';
-test('weak roles keep a common six-percent response and setting-specific quality while strong-role awards remain independent',()=>{
+test('weak roles keep a common fifteen-percent response and setting-specific quality while strong-role awards remain independent',()=>{
  loadModel();const a=NovaArt;assert.deepEqual(a.weakAtAwardScales,[1,1,1,1,1,1]);
  const sequence=(...values)=>()=>values.shift()??.999999;
  for(let setting=1;setting<=6;setting++)for(const upper of [false,true]){
   const profile=NovaTuning.balanceProfile(setting),weights=a.weakQualityWeights(setting,upper);
+  assert.equal(profile.weakResponse,.15);
   assert.equal(a.weakAtResponseChance(setting,upper,false),profile.weakResponse);
-  assert.equal(a.weakAtResponseChance(setting,upper,true),profile.weakResponse*1.5);
+  assert(Math.abs(a.weakAtResponseChance(setting,upper,true)-.225)<1e-12);
   assert.equal(a.drawWeakAtReward(setting,{upper},()=>profile.weakResponse).quality,-1);
   const qualityOne=(weights[0]+weights[1]/2)/weights.reduce((sum,value)=>sum+value,0);
   const kept=a.drawWeakAtReward(setting,{upper},sequence(0,qualityOne));

@@ -295,20 +295,39 @@ globalThis.NovaArt=(()=>{
  }
  // Compatibility alias for existing callers: preparation during AT awards only a character-zone stock.
  function drawPreparation(role,setting=1,rng=Math.random){return drawAtPreparationReward(role,setting,rng);}
- // Bell payouts are capped to the BIG target.
- // Choose the per-game hazard so P(at least one NEBULA before the required bells)
- // equals the tier's 52% / 80%. Half of the misses have no guide.
- // Only additional wins after AT is secured are reduced. First-hit AT odds,
- // bell/replay frequencies and the 50pt BIG payout remain unchanged.
- const bonusStockRules=Object.freeze({version:174,factors:Object.freeze([.45,.58,.68,.85,1.05,1.25])});
- const bonusStockFactor=setting=>balanceFor(setting).bonusStock;
+ // Bell payouts are capped to the BIG target. Before AT is secured, choose the
+ // per-game hazard so P(at least one NEBULA before the required bells) remains
+ // the tier's 52% / 80%. Once AT is secured, seal one BB-level extra-stock plan
+ // (none 87%, one 10%, two 3%) and suppress all other natural extra wins.
+ const bonusExtraStockRules=Object.freeze({version:175,weights:Object.freeze([.87,.10,.03])});
+ const bonusStockRules=bonusExtraStockRules;
+ // Compatibility export for older callers. Extra stock is no longer scaled by
+ // setting on every game; natural secured-AT NEBULA now has zero weight.
+ const bonusStockFactor=()=>0;
  const bonusStockEligible=(state,flow)=>flow?.phase==='art'||integer(state?.bonusArtSets)>0n;
+ function drawBonusExtraStockCount(rng=Math.random){const roll=rng();return roll<.87?0:roll<.97?1:2;}
+ function restoreBonusExtraStockPlan(state={},secured=false){
+  const current=Number(state?.bonusExtraStockVersion)===bonusExtraStockRules.version;
+  if(current){
+   const ready=state?.bonusExtraStockReady===true,target=ready?Math.max(0,Math.min(2,Math.floor(Number(state?.bonusExtraStockTarget)||0))):0;
+   return {bonusExtraStockVersion:bonusExtraStockRules.version,bonusExtraStockReady:ready,bonusExtraStockTarget:target,bonusExtraStockRemaining:ready?Math.max(0,Math.min(target,Math.floor(Number(state?.bonusExtraStockRemaining)||0))):0};
+  }
+  // An old in-progress BB that had already secured AT must not receive a fresh
+  // release-only draw after reload. Fresh sessions carry the current version.
+  return {bonusExtraStockVersion:bonusExtraStockRules.version,bonusExtraStockReady:!!secured,bonusExtraStockTarget:0,bonusExtraStockRemaining:0};
+ }
+ function ensureBonusExtraStockPlan(state={},rng=Math.random){
+  const restored=restoreBonusExtraStockPlan(state,false);if(restored.bonusExtraStockReady)return restored;
+  const target=drawBonusExtraStockCount(rng);
+  return {bonusExtraStockVersion:bonusExtraStockRules.version,bonusExtraStockReady:true,bonusExtraStockTarget:target,bonusExtraStockRemaining:target};
+ }
+ const bonusExtraStockPending=state=>Math.max(0,Math.min(2,Math.floor(Number(state?.bonusExtraStockRemaining)||0)));
  function bonusRoleProbabilities(setting,tier='normal',stockEligible=false){
   // Keep the old bell frequency and the first-hit 52/80% despite seven 8pt bells.
   const target=bonusRules[bonusTier(tier)].atChance,oldRatio=(1-target)**(-1/4)-1;
   const oldZero=4*oldRatio/(6-3*oldRatio),BELL=(4+3*oldZero)/12;
   const ratio=(1-target)**(-1/Math.ceil(bonusTarget()/8))-1,NEBULA=BELL*ratio;
-  const factor=stockEligible?bonusStockFactor(setting):1;
+  const factor=stockEligible?0:1;
   return {NEBULA:NEBULA*factor,MISS:NEBULA+NEBULA*(1-factor),BELL,REPLAY:1-BELL-2*NEBULA};
  }
  const bonusSpecial=bonusRoleProbabilities().NEBULA;
@@ -316,7 +335,7 @@ globalThis.NovaArt=(()=>{
  const biasFor=setting=>settingBias[Math.max(0,Math.min(5,Math.round(Number(setting)||1)-1))];
  const bonusSpecialRates=Array(6).fill(bonusSpecial);
  const bonusSpecialFor=(setting,tier='normal')=>bonusRoleProbabilities(setting,tier).NEBULA;
- function advanceBonus(state,special=false,reward=0){const target=bonusTarget(state.bonusKind),paid=bonusProgress(state);return {bonusTarget:target,bonusPointsRemaining:Math.max(0,target-paid-Math.max(0,Number(reward)||0)),bonusArtSets:(Number(state.bonusArtSets)||0)+(paid<target&&special?1:0)};}
+ function advanceBonus(state,special=false,reward=0,extraOffer=false){const target=bonusTarget(state.bonusKind),paid=bonusProgress(state),remaining=bonusExtraStockPending(state);return {bonusTarget:target,bonusPointsRemaining:Math.max(0,target-paid-Math.max(0,Number(reward)||0)),bonusArtSets:(Number(state.bonusArtSets)||0)+(paid<target&&special?1:0),bonusExtraStockRemaining:Math.max(0,remaining-(extraOffer?1:0))};}
  function bonusStockLabel(state,flow){
   const wins=integer(state?.bonusArtSets),continuing=flow?.phase==='art';
   const zones=(wins>(continuing?0n:1n)?wins-(continuing?0n:1n):0n)+BigInt(state?.bonusZones?.length||0);
@@ -327,11 +346,19 @@ globalThis.NovaArt=(()=>{
  function paidBellChance(otherChance=0,bellPay=15,otherPay=0){return Math.max(0,Math.min(1,(4-otherChance*(otherPay-3))/((1-otherChance)*(bellPay-3))));}
  function drawPaidRole(zeroChance=0,bellPay=15,rng=Math.random){return rng()<paidBellChance(zeroChance,bellPay)?'BELL':'REPLAY';}
  function drawBonus(rng=Math.random,setting,tier='normal',stockEligible=false){let roll=rng();for(const [role,p]of Object.entries(bonusRoleProbabilities(setting,tier,stockEligible)))if((roll-=p)<0)return role;return 'REPLAY';}
+ function drawBonusWithPlan(state={},flow={},rng=Math.random,setting=1,tier='normal'){
+  const secured=bonusStockEligible(state,flow);let plan=restoreBonusExtraStockPlan(state,secured);
+  if(secured&&!plan.bonusExtraStockReady)plan=ensureBonusExtraStockPlan({...state,...plan},rng);
+  if(secured&&plan.bonusExtraStockRemaining>0)return {role:'NEBULA',state:plan,extraOffer:true};
+  return {role:drawBonus(rng,setting,tier,secured),state:plan,extraOffer:false};
+ }
  function bonusAim(result,rng=Math.random,setting=1,stockEligible=false){
   if(!['NEBULA','MISS'].includes(result))return null;
+  if(stockEligible&&result==='NEBULA')return bonusAim(result,rng,setting,false);
+  if(stockEligible){rng();return {symbol:'nebula',color:'blue',result,guide:rng()<.5,forced:false};}
   // Half of misses still have a guide. Adjust the color mix to its new guided
   // success prior, preserving blue/red/rainbow confidence at 20/90/100%.
-  const factor=stockEligible?bonusStockFactor(setting):1,guidedHit=2*factor/(2+factor);
+  const factor=1,guidedHit=2*factor/(2+factor);
   const red=(guidedHit-.24)/.7;
   const colors=[{color:'blue',weight:.95-red,hit:.2},{color:'red',weight:red,hit:.9},{color:'rainbow',weight:.05,hit:1}],success=result==='NEBULA',weights=colors.map(row=>row.weight*(success?row.hit:1-row.hit));
   let roll=rng()*weights.reduce((a,b)=>a+b,0),index=weights.findIndex(w=>(roll-=w)<0);if(index<0)index=success?2:0;
@@ -362,7 +389,7 @@ const tuning={"weak":128,"strong":1500,"other":1.15,"tilts":[-0.28,-0.28,-0.28,0
  function zoneRoleMultiplier(role){let weighted=0;for(const [key,v]of Object.entries(rareRoles))weighted+=v.p*(zoneRoleWeights[key]||1);return (zoneRoleWeights[role]||1)*rareTotal/weighted;}
  const direct=[1400,1320,1240,1160,1080,1000];
  const validSetting=x=>Math.max(1,Math.min(6,Math.round(Number(x)||1)));
- const fallbackBalance=Object.freeze({style:'steady',failureRecovery:1,bonusStock:.85,preparationReward:1,upperEntry:.5,upperGroups:Object.freeze([0,80,20]),weakResponse:.06,weakQuality:Object.freeze([40,35,20,5,0]),repeatZone:Object.freeze({values:Object.freeze([1,1,1]),weights:Object.freeze([1,0,0])})});
+ const fallbackBalance=Object.freeze({style:'steady',failureRecovery:1,bonusStock:.85,preparationReward:1,upperEntry:.5,upperGroups:Object.freeze([0,80,20]),weakResponse:.15,weakQuality:Object.freeze([40,35,20,5,0]),repeatZone:Object.freeze({values:Object.freeze([1,1,1]),weights:Object.freeze([1,0,0])})});
  const balanceFor=setting=>globalThis.NovaTuning?.balanceProfile?.(setting)||fallbackBalance;
  const integer=x=>{try{return BigInt(String(x??0))<0n?0n:BigInt(String(x??0));}catch{return 0n;}};
  function config(v={}){if(v?.payoutVersion!==1&&v?.initial!=null)v={...v,initial:Number(points(v.initial)),payoutVersion:1};const c={...defaults};for(const k in c){const n=Number(v?.[k]);if(Number.isFinite(n))c[k]=k.startsWith('direct')?Math.max(2,Math.min(100000,Math.round(n))):k==='initial'?Math.max(1,Math.min(Number.MAX_SAFE_INTEGER,Math.round(n))):k.endsWith('Games')?Math.max(1,Math.min(1000,Math.round(n))):Math.max(0,Math.min(1,n));}c.zone=Math.min(c.zone,1-c.big);return c;}
@@ -663,5 +690,5 @@ if(v?.payoutVersion!==1)v={...v,remaining:points(v?.remaining).toString(),award:
   s.researchSortieRate=[.1,.25,.4,.6,.8][i<0?4:i];s.researchSortieLeft=10;s.researchSortieHits=0;
   s.comebackLeft=0;s.comebackConfirmed=false;s.comebackLamp='';s.zero=false;s.dryEligible=false;return s;
  }
- return {repeatZoneProbabilityFactors,challengeAimChance,atNetRules,atLowPayoutRules,oneCoinHighDownChance,weakAtAwardScales,weakAtResponseChance,weakQualityWeights,drawWeakAtReward,upperAtRules,initialBurstChance,checkpointQuietRules,checkpointGuaranteed,cashPayout,replayRefund,lowPayoutRoles,lowPayout,atShortfallRefund,scriptedInitialRoles,freshInitialRules,freshInitialBases,previousFreshInitialBases,isFreshInitialRuleVersion,freshInitialBase,freshInitialAward,positiveNetZoneRules,positiveNetZoneFactor,restoreBetCost,extraZoneChance,commonAtRulesFor,balanceFor,drawRepeatZoneFactor,balanceZoneAward,preparationStockWeights,entryWeights:researchEntryWeights,beginResearchSortie,atPreludeRules,initialRareAwards,initialZoneIds,rouletteZones,sevenGuaranteed,initialBoostRules,entryQuotaRules,initialZoneAllowed,initialZoneWeights,pickInitialZone,drawEntryQuota,enterInitial,challengeName,burstReward,comebackRules,comebackChance,comebackRoleProbabilities,drawComebackRole,beginComeback,prepareComeback,stepComeback,burstRules,burstChance,commonAtRules,bonusRules,bonusTier,drawBonusTier,bonusLabel,bonusProgress,bonusPayout,bonusAim,aimColors,aimColorsFor,sevenAimRules,drawSevenAim,ladderWeightsFor,ladderGuaranteed,drawLadderRole,lossRewardControl,zoneTailControl,zoneAwardFactor,netRewardControl,netLimits,netRewardFactor,superZoneChance,zoneGroups,zoneGroupWeights,upgradeGuaranteedZone,bonusSpecialRates,zoneRules,ladderTables,ladderTableFor,ladderValues,sevenValues,sevenWeights,atZoneWeights,tuning,atMix,drawAtRare,atRoleRules,pickAtZone,pickNonSosukeZone,resolveAtRole,rareRoles,rareTotal,rareMean,rareFactor,drawRare,roleProbabilities,initialRoleProbabilities,bonusRoleProbabilities,preparationRules,isPreparationStartReplay,preparationStartOrder,preparationDisplayRole,preparationCashPayout,preparationProbabilities,drawPreparationRole,drawPreparationStockCount,preparationRewardRates,drawBonusPreparationReward,atPreparationZoneChance,drawAtPreparationReward,zoneRoleWeights,zoneRoleMultiplier,paidBellChance,drawPreparation,zoneEntryScale,points,bonusTarget,payout,settleZone,prepareBet,oumaFreezeRate,baseZone,zoneName,zoneIds,names,defaults,direct,zoneWeights,pickZone,bonusSpecial,settingBias,biasFor,bonusSpecialFor,advanceBonus,bonusStockLabel,bonusStockRules,bonusStockFactor,bonusStockEligible,drawPaidRole,drawBonus,config,normalize,enter,startZone,afterBonus,step,label};
+ return {repeatZoneProbabilityFactors,challengeAimChance,atNetRules,atLowPayoutRules,oneCoinHighDownChance,weakAtAwardScales,weakAtResponseChance,weakQualityWeights,drawWeakAtReward,upperAtRules,initialBurstChance,checkpointQuietRules,checkpointGuaranteed,cashPayout,replayRefund,lowPayoutRoles,lowPayout,atShortfallRefund,scriptedInitialRoles,freshInitialRules,freshInitialBases,previousFreshInitialBases,isFreshInitialRuleVersion,freshInitialBase,freshInitialAward,positiveNetZoneRules,positiveNetZoneFactor,restoreBetCost,extraZoneChance,commonAtRulesFor,balanceFor,drawRepeatZoneFactor,balanceZoneAward,preparationStockWeights,entryWeights:researchEntryWeights,beginResearchSortie,atPreludeRules,initialRareAwards,initialZoneIds,rouletteZones,sevenGuaranteed,initialBoostRules,entryQuotaRules,initialZoneAllowed,initialZoneWeights,pickInitialZone,drawEntryQuota,enterInitial,challengeName,burstReward,comebackRules,comebackChance,comebackRoleProbabilities,drawComebackRole,beginComeback,prepareComeback,stepComeback,burstRules,burstChance,commonAtRules,bonusRules,bonusTier,drawBonusTier,bonusLabel,bonusProgress,bonusPayout,bonusAim,aimColors,aimColorsFor,sevenAimRules,drawSevenAim,ladderWeightsFor,ladderGuaranteed,drawLadderRole,lossRewardControl,zoneTailControl,zoneAwardFactor,netRewardControl,netLimits,netRewardFactor,superZoneChance,zoneGroups,zoneGroupWeights,upgradeGuaranteedZone,bonusSpecialRates,zoneRules,ladderTables,ladderTableFor,ladderValues,sevenValues,sevenWeights,atZoneWeights,tuning,atMix,drawAtRare,atRoleRules,pickAtZone,pickNonSosukeZone,resolveAtRole,rareRoles,rareTotal,rareMean,rareFactor,drawRare,roleProbabilities,initialRoleProbabilities,bonusRoleProbabilities,preparationRules,isPreparationStartReplay,preparationStartOrder,preparationDisplayRole,preparationCashPayout,preparationProbabilities,drawPreparationRole,drawPreparationStockCount,preparationRewardRates,drawBonusPreparationReward,atPreparationZoneChance,drawAtPreparationReward,zoneRoleWeights,zoneRoleMultiplier,paidBellChance,drawPreparation,zoneEntryScale,points,bonusTarget,payout,settleZone,prepareBet,oumaFreezeRate,baseZone,zoneName,zoneIds,names,defaults,direct,zoneWeights,pickZone,bonusSpecial,settingBias,biasFor,bonusSpecialFor,advanceBonus,bonusStockLabel,bonusExtraStockRules,bonusStockRules,bonusStockFactor,bonusStockEligible,drawBonusExtraStockCount,restoreBonusExtraStockPlan,ensureBonusExtraStockPlan,bonusExtraStockPending,drawPaidRole,drawBonus,drawBonusWithPlan,config,normalize,enter,startZone,afterBonus,step,label};
 })();

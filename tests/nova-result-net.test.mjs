@@ -64,6 +64,23 @@ test('zero-game chains and legacy free replays subtract only fees actually charg
  assert.equal(c.chainCountStep(c.jagChainCount,true,108,1003).count,5);
 });
 
+test('AT acquisition count keeps its first-hit baseline through presentation transitions until the actual AT exit',()=>{
+ const {c}=harness();
+ c.jagChainCount=c.chainCountStep(null,true,c.stats.totalPaid,c.stats.totalFee).state;
+ c.stats.totalPaid=140;c.stats.totalFee=1015;
+ // A checkpoint/COMPLETE presentation can temporarily expose no active bonus
+ // and a non-ART display flow. The existing baseline must still win.
+ c.session.active=false;c.jagChainBonusHandoff=false;c.normalState.bonusPending=false;c.normalState.flow={phase:'normal'};
+ const original=JSON.stringify(c.jagChainCount);c.chargeSpinCost();
+ assert.equal(JSON.stringify(c.jagChainCount),original);
+ assert.equal(c.chainCountStep(c.jagChainCount,true,c.stats.totalPaid,c.stats.totalFee).count,22);
+ // The real ART -> normal transition clears this explicitly after recording
+ // the final result; only then may a new chain start from zero.
+ c.jagChainCount=null;
+ const cleared=c.chainCountStep(c.jagChainCount,false,c.stats.totalPaid,c.stats.totalFee);
+ assert.equal(cleared.state,null);assert.equal(cleared.count,0);
+});
+
 test('AT returning to normal hints the newly selected mode, using no extra game draws and keeping the exact payout',()=>{
  const {c,cards}=harness();
  c.recordAtFirstEntry=()=>{};vm.runInContext(fn('resetNormalCountersAfterArt'),c);

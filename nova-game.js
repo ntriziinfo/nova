@@ -493,6 +493,11 @@
     phase:"idle",
     bonusKind:"",
     bonusTarget:0,
+    bonusExtraStockVersion:NovaArt.bonusExtraStockRules.version,
+    bonusExtraStockReady:false,
+    bonusExtraStockTarget:0,
+    bonusExtraStockRemaining:0,
+    bonusExtraStockOffered:false,
     bonusStartGames:0,
     risingResumeRemain:0,
     risingBonusOrigin:false,
@@ -2708,17 +2713,23 @@
   }
 
   function drawATypeBonusResult(){
+    session.bonusExtraStockOffered=false;
     if(pendingForceResult === "NEBULA")return "NEBULA";
     if(isNovaResult(pendingForceResult)) return pendingForceResult;
     if(NovaNormal.rare[pendingForceResult]||['BELL','REPLAY','MISS'].includes(pendingForceResult))return pendingForceResult;
-    return NovaArt.drawBonus(Math.random,settings.setting,session.bonusTier,NovaArt.bonusStockEligible(session,normalState.flow));
+    const securedBefore=NovaArt.bonusStockEligible(session,normalState.flow);
+    const draw=NovaArt.drawBonusWithPlan(session,normalState.flow,Math.random,settings.setting,session.bonusTier);
+    Object.assign(session,draw.state);session.bonusExtraStockOffered=!!draw.extraOffer;
+    if(!securedBefore&&draw.role==='NEBULA'&&!session.bonusExtraStockReady)Object.assign(session,NovaArt.ensureBonusExtraStockPlan(session,Math.random));
+    return draw.role;
   }
 
   function resolveATypeBonusOutcome(result){
     const special=result === "NEBULA";
+    const stockEligible=NovaArt.bonusStockEligible(session,normalState.flow);
     const reward = !isATypeBonusComplete() ? NovaArt.bonusPayout(session,result) : 0;
     return {
-      aim:NovaArt.bonusAim(result,Math.random,settings.setting,NovaArt.bonusStockEligible(session,normalState.flow)),
+      aim:NovaArt.bonusAim(result,Math.random,settings.setting,stockEligible),
       reward,
       add:0,
       sets:0,
@@ -2731,7 +2742,8 @@
       zoneGameAdd:0,
       zoneSevenHit:false,
       artSetWon:special && !isATypeBonusComplete()?1:0,
-      novaRushConfirmed:special&&!isATypeBonusComplete()&&!NovaArt.bonusStockEligible(session,normalState.flow),
+      novaRushConfirmed:special&&!isATypeBonusComplete()&&!stockEligible,
+      bonusExtraStockOffered:special&&!isATypeBonusComplete()&&!!session.bonusExtraStockOffered,
       aTypeBonusGame:true,
       initialBonusGame:normalState.flow?.phase!=='art'
     };
@@ -3162,7 +3174,7 @@
     clearCzReelBlackout();
     if(session.active)jagChainBonusHandoff=false;
     // Capture both ledgers before BET, also when FAST does not render every game.
-    jagChainCount=chainCountStep(jagChainCount,!!(session.active||jagChainBonusHandoff||normalState.bonusPending||normalState.flow?.phase==='art'),Number(stats.totalPaid)||0,Number(stats.totalFee)||0).state;
+    jagChainCount=chainCountStep(jagChainCount,!!(jagChainCount||session.active||jagChainBonusHandoff||normalState.bonusPending||normalState.flow?.phase==='art'),Number(stats.totalPaid)||0,Number(stats.totalFee)||0).state;
     if(!session.active && normalState.flow?.phase==='art' && normalState.flow.zero)return;
     autoLastBetAt=performance.now();
     autoPacingBudget=autoPlay?NovaSuperSpeed.recordBet(autoPacingBudget,autoLastBetAt,autoPacingProfile()):null;
@@ -4037,6 +4049,7 @@
           hits:Number(runtime.session.hits) || 0,
           bonusPointsRemaining:Math.max(0,NovaArt.bonusTarget(runtime.session.bonusKind)-NovaArt.bonusProgress(runtime.session)),
           bonusArtSets:Math.max(0,Math.floor(Number(runtime.session.bonusArtSets)||0)),
+          bonusExtraStockOffered:!!runtime.session.bonusExtraStockOffered,
           added:Number(runtime.session.added) || 0,
           addedGames:Number(runtime.session.addedGames) || 0,
           setNo:Number(runtime.session.setNo) || 0,
@@ -4065,7 +4078,7 @@
           endSignal:runtime.session.endSignal || null
         };
       }
-      if(A_TYPE_MODE && session.active && session.phase==='a_type_bonus'){session.bonusBgmSrc=pickATypeBonusBgm(session.bonusKind).src;session.bonusTarget=NovaArt.bonusTarget(session.bonusKind);session.bonusPointsRemaining=Math.max(0,session.bonusTarget-NovaArt.bonusProgress(session));}
+      if(A_TYPE_MODE && session.active && session.phase==='a_type_bonus'){Object.assign(session,NovaArt.restoreBonusExtraStockPlan(session,NovaArt.bonusStockEligible(session,normalState.flow)));session.bonusBgmSrc=pickATypeBonusBgm(session.bonusKind).src;session.bonusTarget=NovaArt.bonusTarget(session.bonusKind);session.bonusPointsRemaining=Math.max(0,session.bonusTarget-NovaArt.bonusProgress(session));}
       jagChainCount = runtime.jagChainCount?.payoutVersion===1 && Number.isFinite(runtime.jagChainCount.paid) && Number.isFinite(runtime.jagChainCount.fee) ? {...runtime.jagChainCount} : null;
       jagLastGamePayout = Number(runtime.jagLastGamePayout) || 0;
       jagLastBonusPayout = Number(runtime.jagLastBonusPayout) || 0;
@@ -4738,6 +4751,11 @@
           bonusTarget,
           bonusPointsRemaining:NovaArt.bonusTarget(bonusKind),
           bonusArtSets:bonusGuarantee.sets,
+          bonusExtraStockVersion:NovaArt.bonusExtraStockRules.version,
+          bonusExtraStockReady:false,
+          bonusExtraStockTarget:0,
+          bonusExtraStockRemaining:0,
+          bonusExtraStockOffered:false,
           bonusZones:bonusGuarantee.zones,
           impurityReleased,
           bonusStartGames:gamesSinceLastBonus,
@@ -4754,6 +4772,7 @@
           resultPayout:null,
           endSignal:null
         };
+        if(NovaArt.bonusStockEligible(session,normalState.flow))Object.assign(session,NovaArt.ensureBonusExtraStockPlan(session,Math.random));
         // Anchor the displayed BB -> AT chain before the first BB BET, including
         // a forced/debug BB that did not pass through bonusPending.
         jagChainCount=chainCountStep(jagChainCount,true,Number(stats.totalPaid)||0,Number(stats.totalFee)||0).state;
@@ -4769,6 +4788,7 @@
         log(`${bonusLabel} BONUS開始：${aTypeBonusRemainingNet()}pt / 設定${settings.setting}${within50 ? " / 50G以内" : ""}`);
         updateDisplay();
         playATypeBonusBgm(bonusBgm);
+        persistState();
         return true;
       }
 
@@ -4884,6 +4904,11 @@
     session.bigZoneType = "";
     session.bonusKind = "";
     session.bonusTarget = 0;
+    session.bonusExtraStockVersion = NovaArt.bonusExtraStockRules.version;
+    session.bonusExtraStockReady = false;
+    session.bonusExtraStockTarget = 0;
+    session.bonusExtraStockRemaining = 0;
+    session.bonusExtraStockOffered = false;
     session.bonusStartGames = 0;
     session.risingResumeRemain = 0;
     session.risingBonusOrigin = false;
@@ -4962,6 +4987,10 @@
     if(aTypeEnd && !premiumOneGameRen && normalizeATypeBonusKind(endedBonusKind)==='BIG'){
       displayNovaResult(NovaResults.bonus(resultPayout,normalState.flow,normalState.internal?.mode));
     }
+    // A BB that returns to normal never became (or has just left) an AT chain.
+    // All AT continuations, including an upper-AT checkpoint and comeback, keep
+    // the original first-hit baseline until the real ART -> normal transition.
+    if(aTypeEnd && !premiumOneGameRen && normalState.flow?.phase!=='art')jagChainCount=null;
     jagChainBonusHandoff=false;
     updateDisplay();
     persistState();
@@ -5765,7 +5794,8 @@
     const aTypeBonusSpin = currentSpin && currentSpin.aTypeBonusActiveAtStart;
     if(resolved.aTypeBonusGame){
       const firstAtWin=normalState.flow?.phase!=="art"&&!(Number(session.bonusArtSets)>0);
-      Object.assign(session,NovaArt.advanceBonus(session,!!resolved.artSetWon,reward));
+      Object.assign(session,NovaArt.advanceBonus(session,!!resolved.artSetWon,reward,!!resolved.bonusExtraStockOffered));
+      session.bonusExtraStockOffered=false;
       if(resolved.artSetWon){showOverlay(firstAtWin?"ネビュラ揃い AT確定":"上乗せ特化ゾーン獲得");log("ネビュラ揃い："+NovaArt.bonusStockLabel(session,normalState.flow));}
     }
 
@@ -6134,7 +6164,9 @@
     }
     const displayCredit = playSessionCredit();
     if(active)jagChainBonusHandoff=false;
-    const chain=chainCountStep(jagChainCount,!!(active || jagChainBonusHandoff || normalState.bonusPending || normalState.flow?.phase==='art'),Number(stats.totalPaid)||0,Number(stats.totalFee)||0);
+    // Once the first-hit baseline exists, presentation-only state changes must
+    // never re-anchor it. Actual AT exit and administrative resets clear it.
+    const chain=chainCountStep(jagChainCount,!!(jagChainCount||active||jagChainBonusHandoff||normalState.bonusPending||normalState.flow?.phase==='art'),Number(stats.totalPaid)||0,Number(stats.totalFee)||0);
     jagChainCount=chain.state;
     const displayCount=normalState.resultCard?.kind==='at'?Number(normalState.resultCard.pt)||0:chain.count;
     const creditText = formatCreditDifference(displayCredit);
@@ -6367,7 +6399,7 @@
     bonusConfirmBgmHold = false;
     normalState = {internal:NovaNormal.reset(Math.random,settings.setting),mode:"normal",highRemain:0,risingRemain:0,risingBonusOrigin:false,sinceBonus:0,bonusPending:false,bonusKind:"",bonusSource:"",premiumBonus:false,oneGameRenBonus:false,bonusWaitGames:0,bonusHitGamesSince:0,reachMePending:false,reachMeBonusKind:"",reachMeBonusSource:"",reachMeHitGamesSince:0,reachMePrepSets:0,reachMePrepZones:[],pendingSettingVoiceSrc:"",pendingPremiumVoiceSrc:"",morningCeilingActive:false};
     clearBonusPreparationState();
-    session = {active:false,remain:0,fee:0,cost:0,paid:0,hits:0,added:0,addedGames:0,setNo:0,stockSets:0,barBgmSets:0,nextSetBarBgm:false,currentSetBarBgm:false,continuationRate:0,bigZone:0,bigZoneType:"",phase:"idle",bonusKind:"",bonusTarget:0,bonusStartGames:0,risingResumeRemain:0,risingBonusOrigin:false,premiumBonus:false,oneGameRenBonus:false,bonusUpperAt:false,premiumChainEligible:false,bonusBgmSrc:"",battleRemain:0,battleWin:false,battleSource:"",resultPayout:null,endSignal:null};
+    session = {active:false,remain:0,fee:0,cost:0,paid:0,hits:0,added:0,addedGames:0,setNo:0,stockSets:0,barBgmSets:0,nextSetBarBgm:false,currentSetBarBgm:false,continuationRate:0,bigZone:0,bigZoneType:"",phase:"idle",bonusKind:"",bonusTarget:0,bonusExtraStockVersion:NovaArt.bonusExtraStockRules.version,bonusExtraStockReady:false,bonusExtraStockTarget:0,bonusExtraStockRemaining:0,bonusExtraStockOffered:false,bonusStartGames:0,risingResumeRemain:0,risingBonusOrigin:false,premiumBonus:false,oneGameRenBonus:false,bonusUpperAt:false,premiumChainEligible:false,bonusBgmSrc:"",battleRemain:0,battleWin:false,battleSource:"",resultPayout:null,endSignal:null};
     jagLastGamePayout = 0;
     jagLastBonusPayout = 0;
     jagChanceHold = false;
@@ -6448,7 +6480,7 @@
     bonusConfirmBgmHold = false;
     normalState = {internal:NovaNormal.reset(Math.random,settings.setting),mode:"normal",highRemain:0,risingRemain:0,risingBonusOrigin:false,sinceBonus:0,bonusPending:false,bonusKind:"",bonusSource:"",premiumBonus:false,oneGameRenBonus:false,bonusWaitGames:0,bonusHitGamesSince:0,reachMePending:false,reachMeBonusKind:"",reachMeBonusSource:"",reachMeHitGamesSince:0,reachMePrepSets:0,reachMePrepZones:[],pendingSettingVoiceSrc:"",pendingPremiumVoiceSrc:"",morningCeilingActive:!A_TYPE_MODE};
     clearBonusPreparationState();
-    session = {active:false,remain:0,fee:0,cost:0,paid:0,hits:0,added:0,addedGames:0,setNo:0,stockSets:0,barBgmSets:0,nextSetBarBgm:false,currentSetBarBgm:false,continuationRate:0,bigZone:0,bigZoneType:"",phase:"idle",bonusKind:"",bonusTarget:0,bonusStartGames:0,risingResumeRemain:0,risingBonusOrigin:false,premiumBonus:false,oneGameRenBonus:false,bonusUpperAt:false,premiumChainEligible:false,bonusBgmSrc:"",battleRemain:0,battleWin:false,battleSource:"",resultPayout:null,endSignal:null};
+    session = {active:false,remain:0,fee:0,cost:0,paid:0,hits:0,added:0,addedGames:0,setNo:0,stockSets:0,barBgmSets:0,nextSetBarBgm:false,currentSetBarBgm:false,continuationRate:0,bigZone:0,bigZoneType:"",phase:"idle",bonusKind:"",bonusTarget:0,bonusExtraStockVersion:NovaArt.bonusExtraStockRules.version,bonusExtraStockReady:false,bonusExtraStockTarget:0,bonusExtraStockRemaining:0,bonusExtraStockOffered:false,bonusStartGames:0,risingResumeRemain:0,risingBonusOrigin:false,premiumBonus:false,oneGameRenBonus:false,bonusUpperAt:false,premiumChainEligible:false,bonusBgmSrc:"",battleRemain:0,battleWin:false,battleSource:"",resultPayout:null,endSignal:null};
     jagLastGamePayout = 0;
     jagLastBonusPayout = 0;
     jagChanceHold = false;
@@ -6729,7 +6761,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     entryTable.innerHTML='<p>初当たりの初期3Gは全設定共通で毎G100ptを下限とし、スイカ／弱チェリーはそのGを150pt、強チェリーは200ptにします。合計は300〜600pt、平均約306.02ptです。成立役は開始時に3G分を一度だけ抽選し、保存後も引き直しません。5%の初当たり上位チャレンジ経由はこの3Gを経由しません。出陣・引き戻し・後からのストックは従来の配分です。変更前の保存データは、保存時に確定した初期ptのまま再開します。</p><table><tr><th>設定</th><th>通常役</th><th>スイカ／弱チェリー</th><th>強チェリー</th><th>3G合計</th></tr>'+[1,2,3,4,5,6].map(n=>'<tr><td>'+n+'</td><td>100pt</td><td>150pt</td><td>200pt</td><td>300〜600pt</td></tr>').join('')+'</table>';artPanel.append(entryTable);
     const artLabels={ladderSosuke:'宗介 小役合算率',ladderGiru:'ギル 小役合算率',ladderUraGiru:'裏ギル 小役合算率',totoHit:'とと 7揃い率',totoReset:'とと nebula率',soraHit:'空 7揃い率',soraReset:'空 nebula率',soraUraHit:'裏空 7揃い率（保証前）',soraUraReset:'裏空 nebula率',urapiSuper:'うらぴ スーパーノヴァ率',oumaSuper:'逢魔 スーパーノヴァ率',oumaUraSuper:'裏逢魔 スーパーノヴァ率',urapiFreeze:'うらぴフリーズ継続率',oumaFreeze:'逢魔フリーズ継続率',oumaUraFreeze:'裏逢魔フリーズ継続率'};
     const zoneTable=document.createElement('div');zoneTable.innerHTML='<p>宗介・ギルは通常テーブル①〜⑤を設定別に抽選、裏ギルはテーブル⑥固定・300pt通過確定。同額の段階も突破で次へ進みます。<br>7揃い：全3ゾーン共通＋100pt。nebulaは＋10ptと残り5Gリセット（毎G：とと2%／空15%／裏空30%）。とと7揃い1回、空2回、裏空500pt以上を保証。<br>スーパーノヴァ：通常50・100pt、裏逢魔100・200pt（フリーズ中も共通）。逢魔と裏逢魔はBETでフリーズ抽選、当選時は無料の自動0G連。</p><table><tr><th>設定（AT準備中抽選）</th>'+['弱上乗せ','強上乗せ','超上乗せ'].map(x=>'<th>'+x+'</th>').join('')+'</tr>'+[1,2,3,4,5,6].map(setting=>NovaArt.zoneGroupWeights(setting,false,true)).map((row,i)=>'<tr><td>'+(i+1)+'</td>'+row.map(p=>'<td>'+p.toFixed(2)+'%</td>').join('')+'</tr>').join('')+'</table><p>弱＝宗介・とと・うらぴ、強＝ギル・空・逢魔、超＝裏3種。強当選後の3%で超へ昇格（従来どおり）。各区分内は3種均等。キャラルーレット中のレア役でテーブル⑥⑦への昇格抽選あり。通常ATの抽選は上記の共通ATを参照。AT準備中はレア役で特化ゾーンを抽選します。</p>';artPanel.append(zoneTable);
-    const bonusTable=document.createElement('p');bonusTable.textContent='BIGは50pt。通常52%／上位80%のAT期待度（保証契機は別枠）。上位選択率10%の仮設定、全設定共通。白点滅＝通常、赤点滅＝上位。ネビュラを狙えは逆押し。REGは廃止。AT獲得後は特化ストック抽選：通常BIG 約1/'+(1/NovaArt.bonusRoleProbabilities(settings.setting,'normal',true).NEBULA).toFixed(2)+'／G、上位BIG 約1/'+(1/NovaArt.bonusRoleProbabilities(settings.setting,'upper',true).NEBULA).toFixed(2)+'／G。';artPanel.append(bonusTable);
+    const bonusTable=document.createElement('p');bonusTable.textContent='BIGは50pt。通常52%／上位80%のAT期待度（保証契機は別枠）。上位選択率10%の仮設定、全設定共通。白点滅＝通常、赤点滅＝上位。ネビュラを狙えは逆押し。REGは廃止。AT確定後の追加特化ストックはBB単位で、追加なし87%／1個10%／2個3%（全設定・通常／上位BIG共通）。';artPanel.append(bonusTable);
     const ladderTable=document.createElement('div');ladderTable.innerHTML=Object.entries(NovaArt.ladderTables).map(([id,rows])=>{const flow={zone:NovaArt.baseZone(id),ura:id.startsWith('ura_')};return '<p>'+NovaArt.zoneName(id)+'</p><table><tr><th>番号</th><th>段階（pt）</th>'+[1,2,3,4,5,6].map(n=>'<th>設定'+n+'</th>').join('')+'</tr>'+rows.map((row,i)=>'<tr><td>'+(i+1)+'</td><td>'+row.join(' → ')+'</td>'+[1,2,3,4,5,6].map(n=>'<td>'+NovaArt.ladderWeightsFor(flow,n)[i].toFixed(1)+'%</td>').join('')+'</tr>').join('')+'</table>';}).join('');artPanel.append(ladderTable);const ladderNote=document.createElement('p');ladderNote.textContent='上表は通常選択率。⑥はギルではレア役昇格時のみ、裏ギルは常に⑥。⑦はレア役昇格時のみ宗介。';artPanel.append(ladderNote);
     const artCfg=NovaArt.config(settings.novaArt);
     for(const [key,label]of Object.entries(artLabels)){const row=document.createElement('label');row.className='field';row.textContent=label;const input=document.createElement('input');input.type='number';input.dataset.artConfig=key;input.setAttribute('aria-label',label);input.min=key.startsWith('direct')?'2':key==='initial'||key.endsWith('Games')?'1':'0';input.max=key.startsWith('direct')?'100000':key==='initial'?String(Number.MAX_SAFE_INTEGER):key.endsWith('Games')?'1000':'1';input.step=key.startsWith('direct')?'1':key==='initial'||key.endsWith('Games')?'1':'0.01';input.value=artCfg[key];row.append(input);artPanel.append(row);}
@@ -9238,7 +9270,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
         : "";
     const isNormalSpinResult = currentSpin && currentSpin.normalActiveAtStart;
     const resultParts = [];
-    if(resolved.artSetWon)resultParts.push("ネビュラ揃い / "+NovaArt.bonusStockLabel({...session,...NovaArt.advanceBonus(session,true,reward)},normalState.flow));
+    if(resolved.artSetWon)resultParts.push("ネビュラ揃い / "+NovaArt.bonusStockLabel({...session,...NovaArt.advanceBonus(session,true,reward,!!resolved.bonusExtraStockOffered)},normalState.flow));
     if(resolved.artMessage)resultParts.push(NovaSortie.label(resolved.artMessage));
     // A two-reel tease in these zones is a failed SUPER NOVA, not a rare-role hit.
     const novaPattern = NovaAim.isNovaZoneSpin?.(currentSpin)&&result==='MISS'?'':novaPatternFromGrid(currentSpin?.grid);

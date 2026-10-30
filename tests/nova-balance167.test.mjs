@@ -16,8 +16,22 @@ test('current visible roles are common, ordinary base is 30G, and fresh initial 
  }
 });
 test('sortie stock rates vary by setting, guarantee two and preserve quota',()=>{
- const {NovaArt:a}=load();
+ const {NovaArt:a,NovaTuning:t}=load();
+ const expectedTiers=[
+  [.325,.135,.135,.225,.18],
+  [.19,.18,.36,.225,.045],
+  [.325,.135,.135,.225,.18],
+  [.19,.18,.36,.225,.045],
+  [.523,.045,.045,.045,.342],
+  [.19,.18,.54,.081,.009]
+ ];
+ const expectedMeans=[4.393074772636821,4.069435395037094,4.393074772636821,4.069435395037094,4.404793675423475,3.646611272259494];
+ const stockMeans=[2.084777369200001,2.8003387451171875,4.052404019199999,6.0017825792,8.0000043008];
  for(let setting=1;setting<=6;setting++){
+  assert.deepEqual(json(t.profile(setting).tiers),expectedTiers[setting-1]);
+  assert(Math.abs(t.profile(setting).tiers.reduce((sum,value)=>sum+value,0)-1)<1e-12);
+  const exactMean=t.profile(setting).tiers.reduce((sum,weight,index)=>sum+weight*stockMeans[index],0);
+  assert(Math.abs(exactMean-expectedMeans[setting-1])<1e-12);
   let s=a.beginResearchSortie(a.enter({setting},()=>.5),()=>.01),quota=s.remaining;
   assert.equal(s.researchSortieRate,.1);
   for(let i=0;i<10;i++)s=a.step(s,{setting},()=>.999).flow;

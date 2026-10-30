@@ -27,7 +27,7 @@ test('common rares share lotteries; strong NOVA preserves four base branches bef
  loadModel();const a=NovaArt,n=NovaNormal;
  for(let setting=1;setting<=6;setting++)for(const high of [false,true]){
   near(n.roleCzRate({level:high?'high':'low'},'WEAK_SUICA',setting),n.roleCzRate({level:high?'high':'low'},'WEAK_NOVA',setting));
-  near(a.weakAtResponseChance(setting,false,high),high?.09:.06);near(a.weakAtResponseChance(setting,true,high),high?.09:.06);
+  near(a.weakAtResponseChance(setting,false,high),high?.225:.15);near(a.weakAtResponseChance(setting,true,high),high?.225:.15);
   for(const upper of [false,true]){const weights=a.weakQualityWeights(setting,upper),start=upper?2:1;near(a.extraZoneChance(setting,'WEAK_SUICA',upper,high),a.weakAtResponseChance(setting,upper,high)*weights.slice(start).reduce((sum,value)=>sum+value,0)/weights.reduce((sum,value)=>sum+value,0));}
   for(let i=0;i<100;i++){
    const seed=`${setting}/${high}/${i}`,state={atHigh:high,atHighLeft:10};

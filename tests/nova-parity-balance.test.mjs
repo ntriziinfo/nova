@@ -54,16 +54,16 @@ test('CZ profiles make each even setting steadier than the preceding odd setting
  }
 });
 
-test('weak roles keep a common 6% response while quality and repeat-zone spread create odd/even character',()=>{
+test('weak roles keep a common 15% response while quality and repeat-zone spread create odd/even character',()=>{
  const {t,a}=load(),profiles=[1,2,3,4,5,6].map(t.balanceProfile);
  for(let setting=1;setting<=6;setting++){
   const profile=profiles[setting-1];
-  assert.equal(profile.weakResponse,.06);assert.equal(profile.weakQuality.reduce((sum,value)=>sum+value,0),100);
+  assert.equal(profile.weakResponse,.15);assert.equal(profile.weakQuality.reduce((sum,value)=>sum+value,0),100);
   assert.deepEqual(plain(a.balanceFor(setting).weakQuality),plain(profile.weakQuality));
   assert.deepEqual(plain(a.weakQualityWeights(setting,false)),plain(profile.weakQuality));
-  near(a.weakAtResponseChance(setting,false,false),.06);near(a.weakAtResponseChance(setting,true,false),.06);
-  near(a.weakAtResponseChance(setting,false,true),.09);near(a.weakAtResponseChance(setting,true,true),.09);
-  assert.equal(a.drawWeakAtReward(setting,{},()=>.06).quality,-1);
+  near(a.weakAtResponseChance(setting,false,false),.15);near(a.weakAtResponseChance(setting,true,false),.15);
+  near(a.weakAtResponseChance(setting,false,true),.225);near(a.weakAtResponseChance(setting,true,true),.225);
+  assert.equal(a.drawWeakAtReward(setting,{},()=>.15).quality,-1);
   let edge=0;
   for(let quality=0;quality<profile.weakQuality.length;quality++){
    const weight=profile.weakQuality[quality];if(!weight)continue;

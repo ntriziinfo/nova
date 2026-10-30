@@ -90,7 +90,7 @@ test('v170 tuning exactly replays pre-integration independent 30,000G trial ledg
   const {lowestNet,maxMy,completeReason,...actual}=simulate(expected.setting,30000,expected.seed,{...fixture.options,decrementAudit:true});
   assert.ok(actual.preparationMetrics);
   for(const phase of ['bonus','at'])for(const key of ['entries','games','bet','paid'])assert.ok(Number.isFinite(actual.preparationMetrics[phase][key])&&actual.preparationMetrics[phase][key]>=0,`${expected.seed}/${phase}/${key}`);
-  const historical=json(actual);delete historical.preparationMetrics;
+  const historical=json(actual);delete historical.preparationMetrics;delete historical.bonusMetrics.extraStockPlans;delete historical.bonusMetrics.extraStockHist;delete historical.bonusMetrics.extraStocks;
   assert.deepEqual(historical,expected,expected.seed);
  }
 });

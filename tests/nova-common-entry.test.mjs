@@ -44,7 +44,7 @@ test('saved multipliers 3-5 and fixed initial plans remain earned; later duo sto
 
 test('weak zone chances are derived from the common response and each setting quality profile',()=>{
  for(let setting=1;setting<=6;setting++){
-  const profile=NovaTuning.balanceProfile(setting);assert.equal(profile.weakResponse,.06);
+  const profile=NovaTuning.balanceProfile(setting);assert.equal(profile.weakResponse,.15);
   for(const upper of [false,true])for(const high of [false,true]){
    const weights=a.weakQualityWeights(setting,upper),total=weights.reduce((sum,value)=>sum+value,0),zoneStart=upper?2:1;
    const expected=profile.weakResponse*(high?1.5:1)*weights.slice(zoneStart).reduce((sum,value)=>sum+value,0)/total;

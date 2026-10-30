@@ -8,7 +8,7 @@ test('parity profiles control upper entry and zone quality without changing weak
   const profile=a.balanceFor(setting);assert.equal(a.initialBurstChance(setting),.05*profile.upperEntry);
   for(const role of ['WEAK_SUICA','WEAK_NOVA','STRONG_NOVA'])assert.equal(a.burstChance(role,setting),a.burstRules.roles[role]*entries[setting-1]*profile.upperEntry);
   assert.deepEqual(a.atZoneWeights(setting,false,false,true),profile.upperGroups.flatMap(p=>[p/3,p/3,p/3]));
-  for(const high of [false,true])assert.equal(a.weakAtResponseChance(setting,true,high),high?.09:.06);
+  for(const high of [false,true])assert(Math.abs(a.weakAtResponseChance(setting,true,high)-(high?.225:.15))<1e-12);
  }
  assert.equal(a.burstRules.initialSuccess,.5);assert.equal(a.burstRules.success,.65);
 });

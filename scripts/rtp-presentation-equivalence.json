@@ -170,6 +170,23 @@
         "tests/nova-presentation-reset.test.mjs",
         "tests/nova-result-audio.test.mjs"
       ]
+    },
+    {
+      "file": "nova-game.js",
+      "sourceHash": "d4736cec05e32fdff6e18b8d734dcc96ce820ec8060ead553892d2fd52d0103c",
+      "presentationHash": "4b398af4f076b8e6282a8ca115230654aa6cd7e64c9414b8cd5631a6f0636770",
+      "sourceCommit": "cb6c74d4cecc4b8a18a6e2d903146824f40a814e",
+      "presentationCommit": "ad99f2ee36afd22cf498468de39ef34b51ec85d7",
+      "reason": "v175試算ソースに対し、出陣成功背景の表示呼出しとAT獲得COUNTの表示基準保持だけを統合。COUNTは描画時の一時状態では消さず、AT初当たりから引き戻しを含む実AT終了まで保持し、BB終了で通常へ戻る経路、既存のARTから通常への確定遷移、管理・朝一リセットだけで消す。抽選、乱数消費、内部pt、ストック、払い出し、停止結果、ゲーム進行は変更しない。",
+      "tests": [
+        "tests/nova-result-net.test.mjs",
+        "tests/nova-at-checkpoint-status.test.mjs",
+        "tests/nova-spin-resume.test.mjs",
+        "tests/nova-upper-value.test.mjs",
+        "tests/nova-role-merge.test.mjs",
+        "tests/nova-sortie-aim.test.mjs",
+        "tests/nova-presentation-reset.test.mjs"
+      ]
     }
   ]
 }

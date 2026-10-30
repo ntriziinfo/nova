@@ -53,7 +53,7 @@ export function simulate(setting,games,seed,options={}){
  let bonusG=0,bonusP=0,bonusFee=0,freezes=0,ceilings=0,release=0,normalGap=0,maxBonusGap=0;
  const counts={normal:0,cz:0,prep:0,align:0,bonus:0,at:0,zone:0,zero:0,BIG:0,REG:0,czEntries:0,strongEntries:0,czWins:0,artEntries:0,zoneEntries:0,gameCzEntries:0,ceilingCzEntries:0,rareCzEntries:0,backgroundCzEntries:0,highNormalG:0,favoredNormalG:0};
  const preparationMetrics={bonus:{entries:0,games:0,bet:0,paid:0,startOrders:{right:0,middle:0,left:0}},at:{entries:0,games:0,bet:0,paid:0,startOrders:{right:0,middle:0,left:0}}};let atPreparationActive=false;
- const bonusMetrics={normal:{completed:0,nebulaWins:0},upper:{completed:0,nebulaWins:0}};
+ const bonusMetrics={normal:{completed:0,nebulaWins:0},upper:{completed:0,nebulaWins:0},extraStockPlans:0,extraStockHist:{0:0,1:0,2:0},extraStocks:0};
  const atLevelMetrics=Object.fromEntries([0,1,2,3,4,5].map(t=>[t,{entries:0,completed:0,completedPaid:0,completedNet:0,games:0}]));let treatmentStart=null;
  const atMetrics={eligible:0,high:0,zoneWins:0,directWins:0,directPoints:0,promotions:0,suica100:0,suica300:0};const blocks=[];let blockBet=0,blockPaid=0,blockPeak=0,firstComplete=null;
  const zones={},normalRoles={},normalPayout={bet:0,paid:0,games:0};
@@ -86,7 +86,18 @@ export function simulate(setting,games,seed,options={}){
   bet('align');const claim=n.claim(state,freeze,rng);if(state.impurity===100)release++;
   state=flow.phase==='art'?claim.state:n.afterBonus(claim.state,rng,setting);claim.zones.push(...prep.zones);if(award.directZone)claim.zones.push(award.directZone);let sets=claim.sets+prep.sets+(award.direct?1:0);
   const tier=prep.upperBonus?'upper':a.drawBonusTier?.(rng)||'normal';let nebula=false;
-  for(let bonusPaid=0;bonusPaid<a.bonusTarget(kind);){
+  if(a.drawBonusWithPlan&&a.ensureBonusExtraStockPlan){
+   let bonusState={paid:0,bonusArtSets:sets,bonusExtraStockVersion:a.bonusExtraStockRules.version,bonusExtraStockReady:false,bonusExtraStockTarget:0,bonusExtraStockRemaining:0};
+   const recordPlan=wasReady=>{if(wasReady||!bonusState.bonusExtraStockReady)return;const target=Math.max(0,Math.min(2,Math.floor(Number(bonusState.bonusExtraStockTarget)||0)));bonusMetrics.extraStockPlans++;bonusMetrics.extraStockHist[target]++;bonusMetrics.extraStocks+=target;};
+   while(a.bonusProgress(bonusState)<a.bonusTarget(kind)){
+    const securedBefore=a.bonusStockEligible(bonusState,flow),readyBefore=!!bonusState.bonusExtraStockReady;
+    const draw=a.drawBonusWithPlan(bonusState,flow,rng,setting,tier);bonusState={...bonusState,...draw.state};recordPlan(readyBefore);
+    const r=draw.role;if(!securedBefore&&r==='NEBULA'&&!bonusState.bonusExtraStockReady){const wasReady=!!bonusState.bonusExtraStockReady;bonusState={...bonusState,...a.ensureBonusExtraStockPlan(bonusState,rng)};recordPlan(wasReady);}
+    const pay=a.bonusPayout?a.bonusPayout(bonusState,r):n.pay(r),before=fee;bet('bonus');roleSortie(r,'bonus');bonusFee+=fee-before;paid+=pay+refund(r);replay=r==='REPLAY';bonusG++;bonusP+=pay+refund(r);track();
+    bonusState={...bonusState,...a.advanceBonus(bonusState,r==='NEBULA',pay,draw.extraOffer),paid:bonusState.paid+pay};
+    sets=bonusState.bonusArtSets;nebula=nebula||r==='NEBULA';
+   }
+  }else for(let bonusPaid=0;bonusPaid<a.bonusTarget(kind);){
    const r=a.drawBonus(rng,setting,tier,flow.phase==='art'||sets>0),pay=a.bonusPayout?a.bonusPayout({paid:bonusPaid},r):n.pay(r);bonusPaid+=pay;const before=fee;bet('bonus');roleSortie(r,'bonus');bonusFee+=fee-before;paid+=pay+refund(r);replay=r==='REPLAY';bonusG++;bonusP+=pay+refund(r);track();if(r==='NEBULA'){sets++;nebula=true;}
   }
   bonusMetrics[tier].completed++;bonusMetrics[tier].nebulaWins+=nebula;
