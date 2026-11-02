@@ -1,0 +1,5 @@
+#novaPlayLimitScreen{position:absolute;z-index:9998;display:flex;align-items:center;justify-content:center;box-sizing:border-box;background:linear-gradient(150deg,#21172d,#09070e);border:2px solid #d8bd72;border-radius:8px;box-shadow:0 0 20px #000b;color:#fff3d5;text-align:center;line-height:1.8;pointer-events:auto}
+#novaPlayLimitScreen[hidden]{display:none!important}
+#novaPlayLimitScreen strong{display:block;color:#ffe39b;font-size:2em;letter-spacing:.12em}
+#novaPlayLimitScreen p{margin:.5em 0;font-weight:700}
+#novaPlayLimitScreen small{display:block;margin-top:1em;color:#c5bdd1;font-size:.8em}

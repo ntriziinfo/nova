@@ -5,7 +5,7 @@ import {pathToFileURL} from 'node:url';
 
 // Keep settlement and stop handling monitored. Reviewed presentation-only
 // revisions may reuse evidence, but an unknown source change still fails closed.
-export const INPUTS=['nova-complete.js','nova-decrement.js','nova-tuning.js','nova-art.js','nova-balance.js','nova-flow.js','nova-normal.js','nova-progress.js','nova-game.js','nova-stock-entry.js','nova-spin-resume.js','nova-bell-navi.js','nova-reel-sheet-data.js','scripts/zone-v2-model.mjs','scripts/zone-v2-rng.mjs','scripts/report-rtp-parallel.mjs'];
+export const INPUTS=['nova-complete.js','nova-play-limit.js','nova-decrement.js','nova-tuning.js','nova-art.js','nova-balance.js','nova-flow.js','nova-normal.js','nova-progress.js','nova-game.js','nova-stock-entry.js','nova-spin-resume.js','nova-bell-navi.js','nova-reel-sheet-data.js','scripts/zone-v2-model.mjs','scripts/zone-v2-rng.mjs','scripts/report-rtp-parallel.mjs'];
 export const EVIDENCE='docs/rtp-current-1b.json';
 export const REQUIRED_OPTIONS=Object.freeze({
  rng:'xoshiro128',exactGames:true,completeLimitPt:0,completeMyLimitPt:0,

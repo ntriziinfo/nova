@@ -3301,6 +3301,44 @@
     return isCompleteLockEnabled() && !!completeTrialState.locked;
   }
 
+  function isPlayLimitLocked(){
+    return A_TYPE_MODE && !!normalState.playLimit?.locked;
+  }
+
+  function updatePlayLimitState(){
+    if(!A_TYPE_MODE || !globalThis.NovaPlayLimit)return false;
+    const previous=normalState.playLimit;
+    const next=NovaPlayLimit.observe(previous,{
+      totalSpins:machineDisplayStats().totalSpins,
+      continuingAt:NovaPlayLimit.continuingAt(normalState),
+      unsettled:!!(isSpinning || currentSpin || sessionStartGuard || bonusEndBgmPlaying)
+    });
+    if(!next.reached&&!previous)return false;
+    normalState.playLimit=next;
+    const changed=JSON.stringify(previous)!==JSON.stringify(next);
+    if(next.locked&&!previous?.locked){
+      stopAutoPlay('10,000G上限到達のためAUTO停止');
+      stopSpeedToBonus('10,000G上限到達のためSPEED停止');
+      stopDebugFastSpin('10,000G上限到達');
+      pauseNormalBgm();stopBarBgm();stopBattleBgm(false);
+      showMessage('遊技終了','累計10,000Gに到達 / 管理リセットまたは設定変更まで遊技できません');
+      log(`[GAME LIMIT] ${next.stoppedAt.toLocaleString()}Gで打ち止め`);
+    }
+    if(changed){persistState();updateDisplay();}
+    return next.locked;
+  }
+
+  function syncPlayLimitUi(){
+    const locked=isPlayLimitLocked();
+    globalThis.NovaPlayLimitPresentation?.sync(normalState.playLimit);
+    for(const id of ['spinBtn','quickAutoBtn','topAutoBtn','autoStartBtn','speedAutoBtn','speedModeToggleBtn']){
+      const button=$(id);if(!button)continue;
+      if(locked){button.dataset.playLimitLocked='true';button.disabled=true;}
+      else if(button.dataset.playLimitLocked==='true'){delete button.dataset.playLimitLocked;button.disabled=false;}
+    }
+    if(locked&&$('spinBtn'))$('spinBtn').textContent='遊技終了';
+  }
+
   function bar3PremiumDenominator(){
     return BAR3_PREMIUM_DENOM;
   }
@@ -3328,6 +3366,7 @@
   }
 
   function canPlayCompleteTrial({allowOumaPresentation=false}={}){
+    if(globalThis.NovaPlayLimit&&updatePlayLimitState())return false;
     if(!allowOumaPresentation&&typeof oumaPresentation!=='undefined'&&oumaPresentation)return false;
     if(bonusConfirmSoundPlaying || bonusEndBgmPlaying)return false;
     if(!isCompleteTrialLocked()) return true;
@@ -4809,6 +4848,7 @@
   }
 
   function startBonusSessionNow(options={}){
+    if(globalThis.NovaPlayLimit&&isPlayLimitLocked())return;
     const hasExplicitOptions = options && Object.keys(options).length > 0;
     const startOptions = hasExplicitOptions
       ? {...options}
@@ -4994,6 +5034,7 @@
     // the original first-hit baseline until the real ART -> normal transition.
     if(aTypeEnd && !premiumOneGameRen && normalState.flow?.phase!=='art')jagChainCount=null;
     jagChainBonusHandoff=false;
+    if(globalThis.NovaPlayLimit)updatePlayLimitState();
     updateDisplay();
     persistState();
   }
@@ -5263,6 +5304,7 @@
 
   function playNormalBgm(){
     if(globalThis.NovaCzPresentation?.failureActive){pauseNormalBgm();return;}
+    if(globalThis.NovaPlayLimit&&isPlayLimitLocked())return;
     if(globalThis.NovaCompletePresentation?.active)return;
     if(globalThis.NovaRushConfirm?.active)return;
     const initialDuoZone=NovaInitialDuo.eligible(presentedArtFlow());
@@ -6023,7 +6065,7 @@
 
   function updateDisplay(){
     globalThis.NovaResultRecall?.sync({state:normalState,
-      eligible:canUsePlayState()&&!isSpinning&&!autoPlay&&!speedToBonusActive&&!debugFastSpinActive&&!isCompleteTrialLocked()&&!bonusConfirmSoundPlaying&&!bonusEndBgmPlaying&&!pendingAtStartTimer&&!NovaSortie.busy&&!NovaAim.busy&&!NovaLadder.busy&&!NovaDirectAward.busy&&!NovaResults.editing&&!NovaCzPresentation.failureActive&&!document.getElementById('novaCzPush')?.matches(':not([hidden])'),
+      eligible:canUsePlayState()&&!isSpinning&&!autoPlay&&!speedToBonusActive&&!debugFastSpinActive&&!isCompleteTrialLocked()&&!(globalThis.NovaPlayLimit&&isPlayLimitLocked())&&!bonusConfirmSoundPlaying&&!bonusEndBgmPlaying&&!pendingAtStartTimer&&!NovaSortie.busy&&!NovaAim.busy&&!NovaLadder.busy&&!NovaDirectAward.busy&&!NovaResults.editing&&!NovaCzPresentation.failureActive&&!document.getElementById('novaCzPush')?.matches(':not([hidden])'),
       makeInitial:()=>NovaResults.bonus('0',{phase:'normal'},normalState.internal?.mode),
       save:()=>persistState(),sound:()=>playOneShotSound('assets/media/nova/result-recall-push.mp3',sfxOutputVolume())});
     NovaImpurityHint.syncRelease(session);
@@ -6265,6 +6307,7 @@
       $("topAutoBtn").disabled = (isCompleteTrialLocked() || bonusEndBgmPlaying || bonusConfirmSoundPlaying) && !autoPlay;
     }
     updateSpeedToBonusUi();
+    if(globalThis.NovaPlayLimit)syncPlayLimitUi();
     scheduleAdminStatePush();
   }
 
@@ -6421,6 +6464,7 @@
     setMorningBarReels();
     showMessage("READY",`1回転${SPIN_COST}pt / BB・RB完全告知 / 設定${settings.setting}`);
     $("resultText").textContent = "-";
+    machineDisplayBase=null;displaySinceBonusOffset=0;
     updateDisplay();
     persistState();
     log("統計を初期化しました");
@@ -6502,6 +6546,7 @@
     setMorningBarReels();
     showMessage(reason, `設定${settings.setting}据え置き / 朝一リセット / 初回BBまで最大600G（C：400G／天国系：200G）`);
     $("resultText").textContent = `朝一 / 初回BBまで最大600G（C：400G／天国系：200G）`;
+    machineDisplayBase=null;displaySinceBonusOffset=0;
     persistState();
     updateDisplay();
     log(`[RESET] ${reason} / 設定${settings.setting} / Aタイプ通常`);
@@ -9385,7 +9430,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     }else{
       scheduleNextAuto();
     }
-    }finally{persistState();}
+    }finally{if(globalThis.NovaPlayLimit)updatePlayLimitState();persistState();}
   }
 
   function direct(result){
@@ -9430,6 +9475,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
       applyResult(result, resolved, lineRow);
     }
     $("resultText").textContent = `DEBUG：${spec.name} / ${result !== "MISS" ? lineName(lineRow)+"ライン" : ""}`;
+    if(globalThis.NovaPlayLimit)updatePlayLimitState();
     updateDisplay();
   }
 
@@ -9476,6 +9522,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
       $("topAutoBtn").disabled = (isCompleteTrialLocked() || bonusEndBgmPlaying) && !autoPlay;
     }
     updateSpeedToBonusUi();
+    if(globalThis.NovaPlayLimit)syncPlayLimitUi();
   }
 
   function closeAutoStopOrderDialog(){
@@ -9682,6 +9729,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
   }
 
   function scheduleNextAuto(){
+    if(globalThis.NovaPlayLimit&&updatePlayLimitState())return;
     if(!autoPlay) return;
     if(globalThis.NovaSortie?.busy){queueAutoStep(NovaSortie.waitMs);return;}
     if(stopSuperSpeedIfNeeded()) return;
@@ -10151,6 +10199,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
       startContinuationBattlePart();
     }
 
+    if(globalThis.NovaPlayLimit)updatePlayLimitState();
     return true;
   }
 
@@ -11128,6 +11177,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     if($("premiumForceStatus")) $("premiumForceStatus").value = forcePremiumEffect ? "ON" : "OFF";
     updateDisplay();
     updateCompleteTrialState("再開");
+    if(globalThis.NovaPlayLimit)updatePlayLimitState();
     updateAutoUi();
     updateDebugFastUi();
     requestBackgroundLogoSync();
