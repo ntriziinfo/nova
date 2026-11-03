@@ -256,6 +256,22 @@
         "tests/nova-audio-assets.test.mjs",
         "tests/nova-spin-resume.test.mjs"
       ]
+    },
+    {
+      "file": "nova-game.js",
+      "sourceHash": "7b8a6f7de0fbfb5e0196b197f55820edcaf1791c21bd61db25fe2583a316299c",
+      "presentationHash": "abfe5f9881e0469ead82501fb69ae56aff78e5dcfe94466e53295db86310fe32",
+      "sourceCommit": "e113f0fc76f731933594d0a6c5dbe790f8bea3f7",
+      "presentationCommit": "233498a0d5e0ce85bd953b4d18924112b3310cf6",
+      "reason": "穢れ解放BBのネビュラ狙え音声のみを指定原音の再生コピーに変更（通常／AT中共通）。通常の初回BBは既存のキャラ選択乱数1回を維持し、元々音声抽選のなかったAT中BBは乱数を追加せず再生だけを行う。4差分の逆適用で試算元全文SHA256に一致。抽選、乱数消費、獲得pt、ストック、払い出し、停止結果、ゲーム進行は不変。音声の長さで進行を待つ処理は追加しない。",
+      "tests": [
+        "tests/nova-impurity-voice-equivalence.test.mjs",
+        "tests/nova-sora-voice.test.mjs",
+        "tests/nova-voice-catalog.test.mjs",
+        "tests/nova-audio-normalization.test.mjs",
+        "tests/nova-audio-assets.test.mjs",
+        "tests/nova-spin-resume.test.mjs"
+      ]
     }
   ]
 }
