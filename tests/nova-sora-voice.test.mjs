@@ -162,8 +162,8 @@ test('impurity-release BB uses the supplied nebula aim voice while preserving th
  for(const impurityReleased of [false,true])for(const initialBonusGame of [false,true])for(const roll of [0,.5,.99]){
   const {c,sounds}=setup();c.session={impurityReleased};let draws=0;
   c.playNebulaAimVoice({aTypeBonusGame:true,initialBonusGame},()=>{draws++;return roll;});
-  assert.equal(draws,initialBonusGame?1:0);assert.equal(sounds.length,initialBonusGame?1:0);
-  if(initialBonusGame)assert.equal(sounds[0].src,impurityReleased?'assets/media/nova/impurity-nebula-aim-20261103.wav':c.NovaVoiceCatalog.AIM_VOICE_SRCS.nebula[Math.floor(roll*4)]);
+  assert.equal(draws,initialBonusGame?1:0);assert.equal(sounds.length,initialBonusGame||impurityReleased?1:0);
+  if(initialBonusGame||impurityReleased)assert.equal(sounds[0].src,impurityReleased?'assets/media/nova/impurity-nebula-aim-20261103.wav':c.NovaVoiceCatalog.AIM_VOICE_SRCS.nebula[Math.floor(roll*4)]);
  }
  const {c,sounds}=setup();c.session={impurityReleased:true};let draws=0;
  c.playNebulaAimVoice({flowBefore:{phase:'art',zone:'giru'}},()=>{draws++;return 0;});

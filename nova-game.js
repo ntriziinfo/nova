@@ -8820,6 +8820,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     if(resolved?.aTypeBonusGame){
       // Preserve the existing character draw when using the supplied BB voice.
       if(resolved.initialBonusGame)playRandomAimVoice('nebula',rng,session.impurityReleased?MODE_EVENT_VOICE_SRCS.impurityNebulaAim:undefined);
+      else if(session.impurityReleased)playOneShotSound(MODE_EVENT_VOICE_SRCS.impurityNebulaAim,voiceOutputVolume(),{allowDuringPremiumConfirm:true});
       return;
     }
     const flow=resolved?.zoneStartFlow||resolved?.flowBefore;
