@@ -1,0 +1,12 @@
+{
+  "sourceName": "かいきネビュラをねらえ.wav",
+  "copy": "assets/media/nova/impurity-nebula-aim-20261103.wav",
+  "sha256": "b2fc3a483f19e3fc2eadb9c17256128ac1c62a1e08a827d76878a7da4cfb8ad4",
+  "bytes": 245322,
+  "durationSeconds": 1.386553,
+  "sampleRate": 44100,
+  "channels": 2,
+  "originalUnmodified": true,
+  "trigger": "穢れ解放BBの初回BB区間・ネビュラ狙え音声",
+  "delivery": "assets/media/normalized-voices-20261013/nova/impurity-nebula-aim-20261103.wav"
+}

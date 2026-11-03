@@ -7,8 +7,8 @@ import vm from 'node:vm';
 const html=readGameSource();
 function setup(){
  const sounds=[],c=vm.createContext({debugFastSpinActive:false,speedToBonusActive:false,voiceOutputVolume:()=>.6,sfxOutputVolume:()=>.4,playOneShotSound:(src,volume)=>sounds.push({src,volume}),NovaAim:{drawGuide:()=>true,hasGuide:a=>!!a&&a.guide!==false,bet:()=>false}});
- loadVoiceCatalog(c);
- for(const name of ['AIM_VOICE_SRCS','SEVEN_ZONE_VOICE_SRCS','NEBULA_ZONE_VOICE_SRCS','ZONE_START_VOICE_SRCS','ZONE_CONTINUE_VOICE_SRCS','OUMA_NOVA_VOICE_SRCS'])vm.runInContext(html.match(new RegExp('  const '+name+'=[^\\n]+'))[0],c);
+ loadVoiceCatalog(c);c.session={};
+ for(const name of ['AIM_VOICE_SRCS','SEVEN_ZONE_VOICE_SRCS','NEBULA_ZONE_VOICE_SRCS','ZONE_START_VOICE_SRCS','ZONE_CONTINUE_VOICE_SRCS','OUMA_NOVA_VOICE_SRCS','MODE_EVENT_VOICE_SRCS'])vm.runInContext(html.match(new RegExp('  const '+name+'=[^\\n]+'))[0],c);
  for(const name of ['playRandomAimVoice','playSevenAimVoice','playNebulaAimVoice','playAimBetPresentation','playZoneStartVoice','playZoneContinueVoice','playOumaNovaAimVoice','playOumaNovaWinVoice','novaSymbol','isNovaGrid'])vm.runInContext(name==='novaSymbol'||name==='isNovaGrid'?html.match(new RegExp('  function '+name+'[^\\n]+'))[0]:html.match(new RegExp('  function '+name+'\\([^]*?\\n  }'))[0],c);
  vm.runInContext(fs.readFileSync('nova-tuning.js','utf8')+'\n'+fs.readFileSync('nova-art.js','utf8'),c);
  for(const name of ['currentPreparationVersion','replayGatedBonusPreparation'])vm.runInContext(html.match(new RegExp('  function '+name+'\\([^]*?\\n  }'))[0],c);
@@ -156,4 +156,16 @@ test('nova win voices cannot leak into normal, other zones, bonuses, misses, inc
  for(const s of cases)c.playOumaNovaWinVoice(s);
  for(const flag of ['debugFastSpinActive','speedToBonusActive']){c[flag]=true;c.playOumaNovaWinVoice(oumaSpin());c[flag]=false;}
  assert.deepEqual(sounds,[]);
+});
+
+test('impurity-release BB uses the supplied nebula aim voice while preserving the legacy RNG draw and other cues',()=>{
+ for(const impurityReleased of [false,true])for(const initialBonusGame of [false,true])for(const roll of [0,.5,.99]){
+  const {c,sounds}=setup();c.session={impurityReleased};let draws=0;
+  c.playNebulaAimVoice({aTypeBonusGame:true,initialBonusGame},()=>{draws++;return roll;});
+  assert.equal(draws,initialBonusGame?1:0);assert.equal(sounds.length,initialBonusGame?1:0);
+  if(initialBonusGame)assert.equal(sounds[0].src,impurityReleased?'assets/media/nova/impurity-nebula-aim-20261103.wav':c.NovaVoiceCatalog.AIM_VOICE_SRCS.nebula[Math.floor(roll*4)]);
+ }
+ const {c,sounds}=setup();c.session={impurityReleased:true};let draws=0;
+ c.playNebulaAimVoice({flowBefore:{phase:'art',zone:'giru'}},()=>{draws++;return 0;});
+ assert.equal(draws,0);assert.equal(sounds[0].src,'assets/media/nova/aim-nebula-giru.wav');
 });

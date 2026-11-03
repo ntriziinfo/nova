@@ -39,11 +39,11 @@ test('all audio assets are mapped, originals are unchanged, and delivered files 
 
 test('every registered voice uses speech-level v2 mastering at -14 LUFS, without clipping or duration edits',()=>{
  const catalog={};vm.runInNewContext(fs.readFileSync('nova-voice-catalog.js','utf8'),catalog);
- const voices=report.files.filter(f=>f.category==='voice');assert.equal(voices.length,102);assert.equal(report.version,2);
+ const voices=report.files.filter(f=>f.category==='voice');assert.equal(voices.length,103);assert.equal(report.version,2);
  for(const src of catalog.NovaVoiceCatalog.CHARACTER_VOICE_SRCS){const cleanSrc=src.split('?')[0],row=voices.find(f=>f.src===cleanSrc),premastered=report.preNormalizedFiles.find(f=>f.src===cleanSrc);assert(row||premastered,src);if(premastered){assert.equal(premastered.category,'voice');assert(Math.abs(premastered.after.lufs+14)<=.3,src);continue;}assert.equal(row.measurementVersion,2);assert.match(row.output,/normalized-voices-20261013/);assert(row.fileLoudness.peakDbtp<=-1,src);assert(Math.abs(row.after.lufs+14)<=.15,src);}
  const values=voices.map(f=>f.after.lufs);assert(Math.max(...values)-Math.min(...values)<=.3);
 });
 
 test('the game cache-busts the complete audio manifest',()=>{
- assert.match(fs.readFileSync('jag.html','utf8'),/nova-audio-manifest\.js\?v=20261030-impurity-bgm-layout/);
+ assert.match(fs.readFileSync('jag.html','utf8'),/nova-audio-manifest\.js\?v=20261103-impurity-aim-voice/);
 });

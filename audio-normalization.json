@@ -2263,6 +2263,35 @@
       }
     },
     {
+      "src": "assets/media/nova/impurity-nebula-aim-20261103.wav",
+      "category": "voice",
+      "measurementVersion": 2,
+      "fileLoudness": {
+        "lufs": -14.28,
+        "peakDbtp": -2,
+        "rangeLu": 0
+      },
+      "targetLufs": -14,
+      "output": "assets/media/normalized-voices-20261013/nova/impurity-nebula-aim-20261103.wav",
+      "sourceSha256": "b2fc3a483f19e3fc2eadb9c17256128ac1c62a1e08a827d76878a7da4cfb8ad4",
+      "outputSha256": "9efb5cc8749b73ade14b97a0fa18948432234a2e683e0494791b88cf8b31f957",
+      "rate": 44100,
+      "channels": 2,
+      "duration": 1.386553,
+      "outputDuration": 1.386553,
+      "gainDb": 2.55,
+      "before": {
+        "lufs": -16.55,
+        "peakDbtp": -3.6,
+        "rangeLu": 0
+      },
+      "after": {
+        "lufs": -14.08,
+        "peakDbtp": -2,
+        "rangeLu": 0
+      }
+    },
+    {
       "src": "assets/media/nova/impurity-release-bgm-1143035-20261030.mp3",
       "category": "bgm",
       "targetLufs": -18,

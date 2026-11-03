@@ -81,6 +81,7 @@ globalThis.NovaVoiceCatalog=(()=>{
     "toto": "assets/media/nova/continue-toto.wav"
   };
   const MODE_EVENT_VOICE_SRCS={
+    "impurityNebulaAim": "assets/media/nova/impurity-nebula-aim-20261103.wav",
     "upperChallenge": "assets/media/nova/sosuke-upper-challenge-entry.wav",
     "comeback": "assets/media/nova/sosuke-comeback-entry.wav",
     "upperAt": "assets/media/nova/sosuke-upper-at-entry.wav",

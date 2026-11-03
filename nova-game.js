@@ -8793,12 +8793,12 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     }
   }
 
-  function playRandomAimVoice(symbol,rng=Math.random){
+  function playRandomAimVoice(symbol,rng=Math.random,overrideSrc){
     if(debugFastSpinActive||speedToBonusActive)return;
     const voices=AIM_VOICE_SRCS[symbol];
     if(!voices?.length)return;
     const src=voices[Math.min(voices.length-1,Math.max(0,Math.floor(rng()*voices.length)))];
-    playOneShotSound(src,voiceOutputVolume(),{allowDuringPremiumConfirm:true});
+    playOneShotSound(overrideSrc||src,voiceOutputVolume(),{allowDuringPremiumConfirm:true});
   }
 
   function playSevenAimVoice(resolved,rng=Math.random){
@@ -8818,7 +8818,8 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
   function playNebulaAimVoice(resolved,rng=Math.random){
     if(debugFastSpinActive||speedToBonusActive)return;
     if(resolved?.aTypeBonusGame){
-      if(resolved.initialBonusGame)playRandomAimVoice('nebula',rng);
+      // Preserve the existing character draw when using the supplied BB voice.
+      if(resolved.initialBonusGame)playRandomAimVoice('nebula',rng,session.impurityReleased?MODE_EVENT_VOICE_SRCS.impurityNebulaAim:undefined);
       return;
     }
     const flow=resolved?.zoneStartFlow||resolved?.flowBefore;
