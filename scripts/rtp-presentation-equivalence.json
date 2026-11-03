@@ -240,6 +240,22 @@
         "tests/nova-audio-assets.test.mjs",
         "tests/nova-audio-normalization.test.mjs"
       ]
+    },
+    {
+      "file": "nova-game.js",
+      "sourceHash": "7b8a6f7de0fbfb5e0196b197f55820edcaf1791c21bd61db25fe2583a316299c",
+      "presentationHash": "f312c18c6712e684ee1c2e114e225160f8b43c2734047dd377512de11a930f7d",
+      "sourceCommit": "e113f0fc76f731933594d0a6c5dbe790f8bea3f7",
+      "presentationCommit": "4d1eb1bf5f16d55c59db7a59f84fe1eb76c6a896",
+      "reason": "穢れ解放BBの初回BB区間のネビュラ狙え音声のみ supplied voice に変更。既存 playRandomAimVoice の選択乱数を同数消費した後に再生srcだけを差し替える。3差分の逆適用で試算元の全文SHA256と完全一致。抽選、獲得pt、ストック、払い出し、停止結果、ゲーム進行は不変。原音は完全保存、音声再生コピーのみ既存の-14 LUFS基準へ調整。",
+      "tests": [
+        "tests/nova-impurity-voice-equivalence.test.mjs",
+        "tests/nova-sora-voice.test.mjs",
+        "tests/nova-voice-catalog.test.mjs",
+        "tests/nova-audio-normalization.test.mjs",
+        "tests/nova-audio-assets.test.mjs",
+        "tests/nova-spin-resume.test.mjs"
+      ]
     }
   ]
 }
