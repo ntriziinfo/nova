@@ -272,6 +272,22 @@
         "tests/nova-audio-assets.test.mjs",
         "tests/nova-spin-resume.test.mjs"
       ]
+    },
+    {
+      "file": "nova-game.js",
+      "sourceHash": "7b8a6f7de0fbfb5e0196b197f55820edcaf1791c21bd61db25fe2583a316299c",
+      "presentationHash": "d761f85b894370bd95fc2b63afa5c69fd789f14682a284413cdfcbbd20cadf92",
+      "sourceCommit": "e113f0fc76f731933594d0a6c5dbe790f8bea3f7",
+      "presentationCommit": "a309660b4ea781407cdc547171fa7a174cffd09a",
+      "reason": "検証済み試算ソースから音声ルーティング差分と今回の保存・待機診断差分を逆適用した全文SHA256が一致。同期保存は同一内容の重複書き込みのみ省略し、pendingSpinと払い出しの保存は遅延しない。BET/AUTOの既存待機条件を同値のモジュールに移し、管理者向け読取診断のみ追加。抽選・乱数消費・払い出し・上乗せ・停止結果・ゲーム進行は不変。営業試算は別ファイルで停止条件のみ比較し、既存RTP証跡を維持。",
+      "tests": [
+        "tests/nova-impurity-voice-equivalence.test.mjs",
+        "tests/nova-runtime-reliability.test.mjs",
+        "tests/nova-spin-resume.test.mjs",
+        "tests/nova-auto-target.test.mjs",
+        "tests/nova-complete-presentation.test.mjs",
+        "tests/nova-operating-model.test.mjs"
+      ]
     }
   ]
 }
