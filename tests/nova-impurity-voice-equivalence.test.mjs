@@ -2,8 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {createHash} from 'node:crypto';
+import {withoutReliabilityPresentation} from './helpers/reliability-source.mjs';
 test('undoing only the reviewed voice routing restores the exact verified simulation source',()=>{
- let source=fs.readFileSync('nova-game.js','utf8').replaceAll('\r\n','\n');
+ let source=withoutReliabilityPresentation(fs.readFileSync('nova-game.js','utf8').replaceAll('\r\n','\n'));
  source=source.replace("      else if(session.impurityReleased)playOneShotSound(MODE_EVENT_VOICE_SRCS.impurityNebulaAim,voiceOutputVolume(),{allowDuringPremiumConfirm:true});\n",'');
  source=source.replace('function playRandomAimVoice(symbol,rng=Math.random,overrideSrc){','function playRandomAimVoice(symbol,rng=Math.random){')
  .replace('playOneShotSound(overrideSrc||src,voiceOutputVolume(),{allowDuringPremiumConfirm:true});','playOneShotSound(src,voiceOutputVolume(),{allowDuringPremiumConfirm:true});')

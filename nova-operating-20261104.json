@@ -1,0 +1,409 @@
+{
+  "schema": "nova-operating-report/v1",
+  "manifest": {
+    "date": "2026-11-04T04:48:33.619Z",
+    "sourceHashes": {
+      "nova-complete.js": "02e400ed22e424827fd05038bc574f21282ecb723c8f2fffc1516d16d7cbb69d",
+      "nova-play-limit.js": "c0e6666e53947d369b2e97240c0c3af23dcc338b31b6376abc10f337fc80f79c",
+      "nova-decrement.js": "0717d5e964fdfdddbaedf5226f5abce28d87dd7f593b597d5ac89cf74b292514",
+      "nova-tuning.js": "ee1da6510a32713e05cde89e2882458fbc19338531501169ba2b183d6c08695c",
+      "nova-art.js": "17992f362d744151e96d182c25189cd855fd68de7337253dcd9ac523af02c9d3",
+      "nova-balance.js": "4b09c355d3da35d0a3ec09a0e5125ed06fbe57b40f70a892c04ee63a1f878d8b",
+      "nova-flow.js": "7b0333fd34492b3f3e33e1f64375f69ac992d0633528a992932d713aa26b456c",
+      "nova-normal.js": "cbecb833e8ccbc45b8262ff38421c8d1dd43022e2c4065b5aa8a25cec98037aa",
+      "nova-progress.js": "50c8f714a30bf059e828377a922e643e26ad6448a1f8db4f6426ea87c2d05368",
+      "nova-game.js": "abfe5f9881e0469ead82501fb69ae56aff78e5dcfe94466e53295db86310fe32",
+      "nova-stock-entry.js": "d839fdec525d77cbc0a6bbb511e0b208e195bac3b991d8d1d8e38361b496b04f",
+      "nova-spin-resume.js": "e5fa67f40744d90b77e83024dd3b0c4982ddaf9e185cc4d7302aa669664e59b8",
+      "nova-bell-navi.js": "f92810108e96827c205e917092d274d57c8c0f13b33f56cff5779140c463c3bc",
+      "nova-reel-sheet-data.js": "08fc0b0ea0feb33162ccb4348be1a79acca89ac2e5ff4dd3fa3db8a3c34fe8e6",
+      "scripts/zone-v2-model.mjs": "3860dd25e31f5c00fc0e658c0859913afa36b6ad0e1a4415f6cc1a0f09529881",
+      "scripts/zone-v2-rng.mjs": "0e5424d7a743850591b4029b730d93267c986633a0be83942a69a19b18c8fcce",
+      "scripts/report-rtp-parallel.mjs": "650eb2257161709d88383a5770cc02835890cc5134e61eb41a57335e9f452bab"
+    },
+    "modelHash": "71ca62cfa750beb0f3b47bb4b254008fc1bb9c9a614badfd53ed0a0476d0288b",
+    "sessions": 1200,
+    "my": 10000,
+    "limit": 10000,
+    "policy": "At 10000G finish the current spin; keep art chain until normal. MY stops immediately after payout.",
+    "options": {
+      "rng": "xoshiro128",
+      "exactGames": true,
+      "completeLimitPt": 0,
+      "completeMyLimitPt": 10000,
+      "stopAtComplete": true,
+      "rareSortie": true,
+      "atBetRefund": true,
+      "replayRefund": true,
+      "checkpointQuiet": true,
+      "netGuard": true,
+      "decrement": true,
+      "recordBlocks": 0,
+      "operatingLimit": true
+    }
+  },
+  "settings": [
+    {
+      "setting": 1,
+      "n": 1200,
+      "rtpPct": 91.82778898097457,
+      "rtpCi95": [
+        91.19074584530594,
+        92.46483211664321
+      ],
+      "win": {
+        "pct": 23.25,
+        "ci95": [
+          20.947552418226927,
+          25.723172368156927
+        ]
+      },
+      "tenK": {
+        "pct": 0,
+        "ci95": [
+          0,
+          0.319111750250199
+        ]
+      },
+      "complete": {
+        "pct": 0.25,
+        "ci95": [
+          0.08505665045668186,
+          0.7324595410422662
+        ]
+      },
+      "averageGames": 10049.215,
+      "averageNet": -2463.7291666666665,
+      "meanNetCi95": [
+        -2655.375939524336,
+        -2272.082393808997
+      ]
+    },
+    {
+      "setting": 2,
+      "n": 1200,
+      "rtpPct": 93.39290296212548,
+      "rtpCi95": [
+        92.73217343364355,
+        94.0536324906074
+      ],
+      "win": {
+        "pct": 28.583333333333332,
+        "ci95": [
+          26.098485655504692,
+          31.204867210852466
+        ]
+      },
+      "tenK": {
+        "pct": 0,
+        "ci95": [
+          0,
+          0.319111750250199
+        ]
+      },
+      "complete": {
+        "pct": 0.16666666666666666,
+        "ci95": [
+          0.04571695940219296,
+          0.605664418347172
+        ]
+      },
+      "averageGames": 10050.703333333333,
+      "averageNet": -1992.1791666666666,
+      "meanNetCi95": [
+        -2191.0334913675715,
+        -1793.3248419657616
+      ]
+    },
+    {
+      "setting": 3,
+      "n": 1200,
+      "rtpPct": 95.28277133138442,
+      "rtpCi95": [
+        94.55647398629472,
+        96.00906867647413
+      ],
+      "win": {
+        "pct": 34.666666666666664,
+        "ci95": [
+          32.02674593698171,
+          37.40444833309501
+        ]
+      },
+      "tenK": {
+        "pct": 0,
+        "ci95": [
+          0,
+          0.319111750250199
+        ]
+      },
+      "complete": {
+        "pct": 1.6666666666666667,
+        "ci95": [
+          1.081459720813932,
+          2.560348304427927
+        ]
+      },
+      "averageGames": 10049.7625,
+      "averageNet": -1422.2108333333333,
+      "meanNetCi95": [
+        -1641.105850391032,
+        -1203.3158162756347
+      ]
+    },
+    {
+      "setting": 4,
+      "n": 1200,
+      "rtpPct": 99.75980097294817,
+      "rtpCi95": [
+        98.99916133749917,
+        100.52044060839717
+      ],
+      "win": {
+        "pct": 48.083333333333336,
+        "ci95": [
+          45.26702014926688,
+          50.9118791344927
+        ]
+      },
+      "tenK": {
+        "pct": 0,
+        "ci95": [
+          0,
+          0.319111750250199
+        ]
+      },
+      "complete": {
+        "pct": 3.75,
+        "ci95": [
+          2.81427180673942,
+          4.980906562242014
+        ]
+      },
+      "averageGames": 9998.305833333334,
+      "averageNet": -72.0475,
+      "meanNetCi95": [
+        -300.2457308198931,
+        156.1507308198931
+      ]
+    },
+    {
+      "setting": 5,
+      "n": 1200,
+      "rtpPct": 108.61922962762429,
+      "rtpCi95": [
+        107.73804242289253,
+        109.50041683235605
+      ],
+      "win": {
+        "pct": 69.5,
+        "ci95": [
+          66.83618840334046,
+          72.03935801406195
+        ]
+      },
+      "tenK": {
+        "pct": 0,
+        "ci95": [
+          0,
+          0.319111750250199
+        ]
+      },
+      "complete": {
+        "pct": 17.5,
+        "ci95": [
+          15.454773922839756,
+          19.75264871482287
+        ]
+      },
+      "averageGames": 9739.424166666666,
+      "averageNet": 2518.39,
+      "meanNetCi95": [
+        2268.333230948128,
+        2768.446769051872
+      ]
+    },
+    {
+      "setting": 6,
+      "n": 1200,
+      "rtpPct": 112.28872732004127,
+      "rtpCi95": [
+        111.36077025660042,
+        113.21668438348213
+      ],
+      "win": {
+        "pct": 76.66666666666667,
+        "ci95": [
+          74.19079709233499,
+          78.97234330753157
+        ]
+      },
+      "tenK": {
+        "pct": 0,
+        "ci95": [
+          0,
+          0.319111750250199
+        ]
+      },
+      "complete": {
+        "pct": 26.333333333333332,
+        "ci95": [
+          23.91965634973163,
+          28.89805654538679
+        ]
+      },
+      "averageGames": 9466.094166666666,
+      "averageNet": 3489.7875,
+      "meanNetCi95": [
+        3242.632826347434,
+        3736.942173652566
+      ]
+    }
+  ],
+  "shops": [
+    {
+      "name": "全台設定4",
+      "days": 100,
+      "averageCustomerNet": -864.57,
+      "averageStoreNet": 864.57,
+      "meanNetCi95": [
+        -3605.086769247516,
+        1875.9467692475155
+      ],
+      "medianCustomerNet": -756,
+      "p10CustomerNet": -20285,
+      "p90CustomerNet": 19027,
+      "customerPositive": {
+        "pct": 46,
+        "ci95": [
+          36.56064385333187,
+          55.73531460647615
+        ]
+      },
+      "storePositive": {
+        "pct": 54,
+        "ci95": [
+          44.264685393523855,
+          63.439356146668146
+        ]
+      },
+      "averageWinningMachines": 5.77,
+      "over15000": {
+        "pct": 15,
+        "ci95": [
+          9.305903191162297,
+          23.283733332157837
+        ]
+      },
+      "rtpPct": 99.75980097294817
+    },
+    {
+      "name": "全台設定5",
+      "days": 100,
+      "averageCustomerNet": 30220.68,
+      "averageStoreNet": -30220.68,
+      "meanNetCi95": [
+        27052.79054305608,
+        33388.56945694392
+      ],
+      "medianCustomerNet": 32014,
+      "p10CustomerNet": 10277,
+      "p90CustomerNet": 48293,
+      "customerPositive": {
+        "pct": 98,
+        "ci95": [
+          92.99868370580063,
+          99.44981477650317
+        ]
+      },
+      "storePositive": {
+        "pct": 2,
+        "ci95": [
+          0.5501852234968185,
+          7.001316294199365
+        ]
+      },
+      "averageWinningMachines": 8.34,
+      "over15000": {
+        "pct": 81,
+        "ci95": [
+          72.22097592919215,
+          87.48534600729573
+        ]
+      },
+      "rtpPct": 108.61922962762429
+    },
+    {
+      "name": "全台設定6",
+      "days": 100,
+      "averageCustomerNet": 41877.45,
+      "averageStoreNet": -41877.45,
+      "meanNetCi95": [
+        38838.34873345208,
+        44916.55126654791
+      ],
+      "medianCustomerNet": 41171,
+      "p10CustomerNet": 21626,
+      "p90CustomerNet": 61701,
+      "customerPositive": {
+        "pct": 100,
+        "ci95": [
+          96.30051925239981,
+          99.99999999999999
+        ]
+      },
+      "storePositive": {
+        "pct": 0,
+        "ci95": [
+          0,
+          3.699480747600191
+        ]
+      },
+      "averageWinningMachines": 9.2,
+      "over15000": {
+        "pct": 96,
+        "ci95": [
+          90.16278276739263,
+          98.4336949448152
+        ]
+      },
+      "rtpPct": 112.28872732004127
+    },
+    {
+      "name": "設定4×6台・5×3台・6×3台",
+      "days": 100,
+      "averageCustomerNet": 16738.52,
+      "averageStoreNet": -16738.52,
+      "meanNetCi95": [
+        13624.282098373764,
+        19852.75790162624
+      ],
+      "medianCustomerNet": 15937,
+      "p10CustomerNet": -3262,
+      "p90CustomerNet": 37887,
+      "customerPositive": {
+        "pct": 84,
+        "ci95": [
+          75.57955544110557,
+          89.90479765052628
+        ]
+      },
+      "storePositive": {
+        "pct": 16,
+        "ci95": [
+          10.095202349473716,
+          24.420444558894413
+        ]
+      },
+      "averageWinningMachines": 7.17,
+      "over15000": {
+        "pct": 55,
+        "ci95": [
+          45.24442703164345,
+          64.38562489359654
+        ]
+      },
+      "rtpPct": 104.73593002381388
+    }
+  ]
+}

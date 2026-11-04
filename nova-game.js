@@ -4185,6 +4185,7 @@
     banner.hidden=!text;
   }
 
+  let stateStorageWriter=null;
   function persistState(){
     if(!canUsePlayState())return false;
     // Commit the result and removal of the pending spin together, after finishSpin returns.
@@ -4193,6 +4194,10 @@
     const savedAt = Date.now();
     const runtimeState = runtimeStateForStorage();
     const write=(key,value)=>{
+      if(globalThis.NovaStateStorage){
+        stateStorageWriter ||= NovaStateStorage.create({read:safeStorageGet,write:safeStorageSet,serialize:value=>NovaHistory.stringify(value)});
+        return stateStorageWriter.save(key,value);
+      }
       try{return safeStorageSet(key,NovaHistory.stringify(value));}
       catch(e){console.warn('Failed to serialize local state',e);return false;}
     };
@@ -6789,6 +6794,15 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     const normalPanel=document.createElement('details');normalPanel.id='novaNormalConfig';
     normalPanel.innerHTML='<summary>モード・規定GのCZ抽選・穢れ</summary><output id="novaInternalStatus"></output><label>モード<select id="novaNormalMode">'+NovaNormal.modes.map(mode=>'<option>'+mode+'</option>').join('')+'</select></label><label>天井カウンター<input id="novaNormalGames" type="number" min="0" max="800" value="0"></label><label>内部状態<select id="novaLevel"><option value="low">低確</option><option value="high">高確</option></select></label><button id="novaApplyInternal" type="button">内部状態を適用</button><p>通常はA800G、B700G、C400G、天国・天国ループ200GでBIG確定。リセット・設定変更後の初回BBまではA・Bを600Gに短縮し、C・天国系は通常の天井を維持します。通常＋CZのG数を数え、ボーナスごとにリセットしてモード昇格を抽選します。AT初当たりまでは降格なし。AT終了時にモードを再抽選します。50Gは天国系でガセCZ、天国系以外でも10%。全モード100GでCZに入り、ボーナス抽選は101Gから再開します。ガセCZはレア役でも成功しません。通常の弱レア役CZ抽選は従来の10%、強チェリーは101G以降に強CZ前兆へ。レア役からの出陣抽選は別に行います。穢れ100ptは次のボーナスで消費し、AT＋特化ゾーンを予約します。</p>';
     NovaImpurityHint.mountDebug(normalPanel);
+    const diagnosis=document.createElement('details');diagnosis.id='novaRuntimeDiagnostics';
+    const diagnosisTitle=document.createElement('summary');diagnosisTitle.textContent='動作診断（読取専用）';
+    const diagnosisRefresh=document.createElement('button');diagnosisRefresh.type='button';diagnosisRefresh.textContent='待機理由と保存状態を確認';
+    const diagnosisOutput=document.createElement('pre');diagnosisOutput.style.whiteSpace='pre-wrap';
+    diagnosisRefresh.onclick=()=>{
+      const waits=globalThis.NovaRuntimeGates?.inspect()||[];
+      diagnosisOutput.textContent=(waits.length?waits.map(w=>w.label+'：観測開始から'+(w.elapsedMs/1000).toFixed(1)+'秒').join('\n'):'演出待ちなし')+'\nAUTO：'+(autoPlay?'ON':'OFF')+'\n'+(stateStorageWriter?JSON.stringify(stateStorageWriter.metrics()):'保存診断：未記録');
+    };
+    diagnosis.append(diagnosisTitle,diagnosisRefresh,diagnosisOutput);forceSelect.closest('.field').before(diagnosis);
     const impurityRulesNote=document.createElement('p');impurityRulesNote.textContent='穢れ加算：CZ連続失敗1～2回目1pt／3～4回目5pt／5回目以降10pt。BB連続AT非突入1～2回目3pt／3～4回目8pt／5回目以降15pt。400Gで2pt、600Gで3pt、天井5pt、AT駆け抜け5pt。設定4のみ各加算70%。CZ連敗はBB、BB非突入連続回数はAT突入でリセット。';normalPanel.append(impurityRulesNote);
     const resetTable=document.createElement('div');resetTable.innerHTML='<table><tr><th>設定</th>'+NovaNormal.resetImpurityPoints.map(pt=>'<th>'+pt+'pt</th>').join('')+'</tr>'+NovaNormal.resetImpurityWeights.map((row,i)=>'<tr><td>'+(i+1)+'</td>'+row.map(w=>'<td>'+w+'%</td>').join('')+'</tr>').join('')+'</table>';normalPanel.append(resetTable);
     const nc=NovaNormal.config(settings.novaNormal);for(const [k,v]of Object.entries(nc).filter(([k])=>!['bandMultiplier','regChainGain','czFailureGain','bonusFailureGain','atDryGain','ceilingGain'].includes(k))){const label=document.createElement('label');label.textContent=({highMultiplier:'高確CZ倍率',downMiss:'ハズレ降格率',downReplay:'リプレイ降格率',czFailureGain:'CZ失敗の穢れpt',bonusFailureGain:'ボーナスAT非突入の穢れpt',atDryGain:'AT駆け抜けの穢れpt',ceilingGain:'天井到達の穢れpt',superDenom:'通常スーパーノヴァ目分母'})[k];const input=document.createElement('input');input.type='number';input.step='any';input.value=v;input.dataset.normalConfig=k;label.append(input);normalPanel.append(label);}
@@ -8025,8 +8039,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
       if(!autoPlay&&!speedToBonusActive&&!debugFastSpinActive)syncCompletePresentation(true);
       return; // Audio only: no BET, RNG, or game progression.
     }
-    if(NovaSortie.busy)return;
-    if(NovaLadder.busy||NovaAim.busy||NovaDirectAward.busy)return;
+    if(globalThis.NovaRuntimeGates?.busy('bet') ?? (NovaSortie.busy||NovaLadder.busy||NovaAim.busy||NovaDirectAward.busy))return;
     if(NovaResults.editing)return;
     if(!oumaPresentation&&!isSpinning&&!debugFastSpinActive&&['ouma','urapi'].includes(normalState.flow?.zone)&&normalState.flow.oumaPending){scheduleOumaZeroChain();return;}
     if(oumaPresentation){if(oumaPresentation.stage==='bet')resolveOumaChallenge();return;}
@@ -9683,7 +9696,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
 
   function runAutoStep(){
     if(!autoPlay) return;
-    if(globalThis.NovaSortie?.busy){queueAutoStep(NovaSortie.waitMs);return;}
+    if(globalThis.NovaRuntimeGates?.busy('sortie') ?? !!globalThis.NovaSortie?.busy){queueAutoStep(NovaSortie.waitMs);return;}
     if(stopSuperSpeedIfNeeded()) return;
     if(bonusEndBgmPlaying || bonusConfirmSoundPlaying){
       queueAutoStep(autoPollDelayMs());
@@ -9733,7 +9746,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
   function scheduleNextAuto(){
     if(globalThis.NovaPlayLimit&&updatePlayLimitState())return;
     if(!autoPlay) return;
-    if(globalThis.NovaSortie?.busy){queueAutoStep(NovaSortie.waitMs);return;}
+    if(globalThis.NovaRuntimeGates?.busy('sortie') ?? !!globalThis.NovaSortie?.busy){queueAutoStep(NovaSortie.waitMs);return;}
     if(stopSuperSpeedIfNeeded()) return;
     if(bonusEndBgmPlaying || bonusConfirmSoundPlaying){
       queueAutoStep(autoPollDelayMs());
@@ -11156,6 +11169,16 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     });
   }
 
+  globalThis.NovaRuntimeGates?.configure(scope=>{
+    if(scope==='sortie')return {sortie:NovaSortie.busy};
+    const waits={sortie:NovaSortie.busy,ladder:NovaLadder.busy,aim:NovaAim.busy,award:NovaDirectAward.busy};
+    if(scope==='bet')return waits;
+    return {...waits,
+    bonusAudio:bonusEndBgmPlaying||bonusConfirmSoundPlaying,reverse:!!oumaPresentation,
+    audioGate:!!globalThis.NovaSortieAudioGate?.locked(currentSpin),
+    czPush:!!document.getElementById('novaCzPush')?.matches(':not([hidden])'),
+    ending:!!storeEndSnapshot,access:!canUsePlayState(),reels:isSpinning
+  };});
   function bootGame(){
     if(!load()){showPlayBlocked('restore');return;}
     NovaDataCounter.adopt(stats,normalState.flow,normalState.sinceBonus);

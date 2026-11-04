@@ -27,7 +27,9 @@ test('sortie entry loops the rainbow nebula cue and never requests a seven voice
  assert.equal(root.dataset.symbol,'nebula');assert.equal(root.dataset.color,'rainbow');assert.equal(video.hidden,false);assert.equal(video.loop,true);assert.equal(video.paused,false);
  assert.equal(t.elements.filter(e=>e.src==='assets/media/nova/aim/seven-flash-20261027.mp4')[3].hidden,true);
  assert.equal(t.aim.busy,false);assert.equal(t.timers.size,0);assert.equal(JSON.stringify(resolved),before);
- t.aim.stop(resolved);assert.equal(video.hidden,true);assert.equal(video.paused,true);
+ let wins=0;t.context.NovaSortieAim={win(){wins++;},hide(){}};
+ t.aim.stop(resolved);assert.equal(wins,1);assert.equal(video.hidden,false,'keep decisive success visible through the title voice');
+ t.aim.reset();assert.equal(video.hidden,true);assert.equal(video.paused,true);
 });
 
 test('sortie title overlays the supplied muted loop across losing games without locking or altering the draw',()=>{

@@ -65,7 +65,7 @@ test('static page starts RTP fields in loading state and cache-busts current scr
  assert.match(html,/id="adminTargetRtpView">読込中</);
  assert.match(html,/nova-art\.js\?v=20261030-at-rebalance-v175/);
  assert.match(html,/nova-complete\.js\?v=20261027-live-my/);
- assert.match(html,/nova-game\.js\?v=20261030-at-rebalance-count-sortie/);
+ assert.match(html,/nova-game\.js\?v=20261104-reliability/);
  assert.match(html,/nova-balance\.js\?v=20261027-parity-v174-100m-at-onecoin-v1/);
  assert.match(html,/ライブ遊技はMY19,000ptを基準にコンプリート停止します/);
  assert.match(html,/各設定1億G連続・MY／差枚停止なし/);

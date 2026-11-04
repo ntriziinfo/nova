@@ -7,7 +7,7 @@ const pace=c.NovaSuperSpeed;
 const game=fs.readFileSync('nova-game.js','utf8');
 const fn=name=>game.match(new RegExp('  function '+name+'\\([^]*?\\n  }'))[0];
 
-test('eight-hour targets count real BETs only and include recoverable animation time',()=>{
+test('eight-hour targets are minimum cadence; presentation holds extend elapsed time without catch-up',()=>{
  for(const [paid,games]of [[false,20000],[true,40000]]){
   let now=0,last=null,budget=null;
   for(let i=0;i<=games;i++){
@@ -18,20 +18,21 @@ test('eight-hour targets count real BETs only and include recoverable animation 
    const execution=pace.pacing[profile].periodMs;
    now+=execution+(i%199===0?5000:0);
   }
-  assert.ok(Math.abs(now-28800000)<15000,`${games}: ${now}`);
+  assert.ok(now>=28800000,`${games}: cannot catch up after a presentation hold`);
+  assert.ok(now<28800000+Math.ceil(games/199)*5000,`${games}: no extra BETs or unbounded delay`);
  }
 });
 
-test('mode changes discard the previous budget, brief holds are repaid, long suspension stays bounded',()=>{
+test('mode changes discard the previous budget and every hold uses the new BET time',()=>{
  let b=pace.recordBet(null,0,'normal');assert.equal(pace.budgetWait(b,500,'normal'),940);
  assert.equal(pace.budgetWait(b,500,'fast'),0);
  b=pace.recordBet(b,500,'fast');assert.equal(b.dueAt,1220);
  assert.equal(pace.budgetWait(b,500,'at'),720,'AT handoff retains paid target');
- b=pace.recordBet(b,5500,'at');assert.equal(b.dueAt,1940);
+ b=pace.recordBet(b,5500,'at');assert.equal(b.dueAt,6220);
  b=pace.recordBet(b,3600000,'at');assert.equal(b.dueAt,3600720,'a long pause is not repaid');
  assert.equal(pace.remainingWait(3600000,3600000,'at'),600,'no bursts after stalls');
  for(let i=0;i<100;i++)b=pace.recordBet(b,3600000+(i+1)*5000,'at');
- assert.equal(b.dueAt,b.lastAt-300000+720,'continuous presentation carry remains bounded');
+ assert.equal(b.dueAt,b.lastAt+720,'no accumulated timing debt after presentations');
 });
 
 test('AUTO STOP clears the pace budget without modifying the game state',()=>{

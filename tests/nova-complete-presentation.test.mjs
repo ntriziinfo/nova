@@ -59,7 +59,7 @@ test('missing audio never removes the terminal screen or unlocks play',()=>{
 
 test('manual COMPLETE lever repeats voice while blocking BET and all gameplay',async()=>{
  const h=setup(),c=h.c;c.completeTrialState={locked:true};c.canUsePlayState=()=>true;c.autoPlay=false;
- const prefix=source.slice(source.indexOf('  async function spin(options={}){'),source.indexOf('    if(NovaSortie.busy)return;',source.indexOf('  async function spin(options={}){')));
+ const prefix=source.slice(source.indexOf('  async function spin(options={}){'),source.indexOf("    if(globalThis.NovaRuntimeGates?.busy('bet')",source.indexOf('  async function spin(options={}){')));
  vm.runInContext(prefix+'throw Error("must never advance gameplay");}',c);
  await c.spin();await c.spin();assert.equal(h.played.length,2);assert(c.isCompleteTrialLocked());assert.equal(h.elements.at(-1).paused,false);
  c.autoPlay=true;await c.spin();assert.equal(h.played.length,2);
