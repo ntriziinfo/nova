@@ -6068,7 +6068,16 @@
     NovaUpperAtBackground.sync(specialSpin||debugFastSpinActive||session.active||normalState.bonusPending||normalState.resultCard||normalState.pendingZoneResult||normalState.pendingSortieResult||normalState.ladderAwardPresentation||normalState.stockEntry||isCompleteTrialLocked()?null:presentedArtFlow(),!!checkpoint?.gold,atPrelude);
   }
 
+  function syncSuperSpeedReelDisplay(){
+    globalThis.NovaSuperSpeedReels?.sync({active:superSpeedActive&&autoPlay,flow:normalState.flow,
+      bonus:session.active||normalState.bonusPending,spin:isSpinning?currentSpin:null,
+      blocked:!!(normalState.resultCard||normalState.pendingZoneResult||normalState.pendingSortieResult||
+        normalState.ladderAwardPresentation||['seven','ready'].includes(normalState.stockEntry?.stage)||
+        normalState.internal?.prelude?.presentation==='reel'||NovaCzPresentation.failureActive||isCompleteTrialLocked())});
+  }
+
   function updateDisplay(){
+    globalThis.NovaSuperSpeedReels && syncSuperSpeedReelDisplay();
     globalThis.NovaResultRecall?.sync({state:normalState,
       eligible:canUsePlayState()&&!isSpinning&&!autoPlay&&!speedToBonusActive&&!debugFastSpinActive&&!isCompleteTrialLocked()&&!(globalThis.NovaPlayLimit&&isPlayLimitLocked())&&!bonusConfirmSoundPlaying&&!bonusEndBgmPlaying&&!pendingAtStartTimer&&!NovaSortie.busy&&!NovaAim.busy&&!NovaLadder.busy&&!NovaDirectAward.busy&&!NovaResults.editing&&!NovaCzPresentation.failureActive&&!document.getElementById('novaCzPush')?.matches(':not([hidden])'),
       makeInitial:()=>NovaResults.bonus('0',{phase:'normal'},normalState.internal?.mode),
@@ -7880,6 +7889,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     migratePendingReelLayout(spin);
     delete spin.resolved.sortieFreezeUntil; // Resume the paid spin; never repeat its opening hold.
     isSpinning=true;spinCanStop=true;
+    globalThis.NovaSuperSpeedReels && syncSuperSpeedReelDisplay();
     NovaBellNavi.restore(spin);
     NovaSortie.begin(spin);
     globalThis.NovaCheckpointHint?.begin(spin,settings.setting);
@@ -7970,6 +7980,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     currentSpin=NovaStockEntry.spin(entry,normalState.flow,['sortie','sortieFake'].includes(entry.kind)?NovaStockEntry.sortieColumns(entry,REEL_STRIPS):entryColumns);
     currentSpin.spec=RESULT[currentSpin.result];
     isSpinning=true;spinCanStop=false;
+    globalThis.NovaSuperSpeedReels && syncSuperSpeedReelDisplay();
     reels.forEach((reel,i)=>{reel.classList.add('spinning');NovaReelMotion.start(i,reel,REEL_STRIPS[i],currentReelTopIndex(i),false,cellHtml);});
     NovaAim.bet(null,currentSpin.resolved);
     playSortieSandwichAimSound(currentSpin);
@@ -8313,6 +8324,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
       reversePushGuide,
       pendingBattleOutcome:null
     };
+    globalThis.NovaSuperSpeedReels && syncSuperSpeedReelDisplay();
     showCzPrelude(0,resolved);
     playCzCountdownOnLever(resolved);
     currentSpin.manualBonusStop = false; // Fixed-G prototype: bonus starts on the next confirmed spin.
@@ -9503,6 +9515,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
   }
 
   function updateAutoUi(){
+    globalThis.NovaSuperSpeedReels && syncSuperSpeedReelDisplay();
     syncAudioWaitUi();
     const startBtn = $("autoStartBtn");
     const stopBtn = $("autoStopBtn");
@@ -9952,6 +9965,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
   function setSuperSpeedActive(active){
     if(superSpeedActive === active) return;
     superSpeedActive = active;
+    globalThis.NovaSuperSpeedReels && syncSuperSpeedReelDisplay();
     // Refresh playing audio too, without changing the user's saved master slider.
     applyAudioOutputVolumes();
   }
