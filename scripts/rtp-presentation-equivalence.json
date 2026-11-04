@@ -288,6 +288,28 @@
         "tests/nova-complete-presentation.test.mjs",
         "tests/nova-operating-model.test.mjs"
       ]
+    },
+    {
+      "file": "nova-game.js",
+      "sourceHash": "7b8a6f7de0fbfb5e0196b197f55820edcaf1791c21bd61db25fe2583a316299c",
+      "presentationHash": "d4eca49434f2644495774421649e0cf82e1219c56182bfbe7102e12749a3a0e9",
+      "sourceCommit": "e113f0fc76f731933594d0a6c5dbe790f8bea3f7",
+      "presentationCommit": "0af938714e5c955d7b5efa525e890917a0e27bf0",
+      "reason": "検証済み試算ソースから音声ルーティング差分と今回の保存・待機診断差分を逆適用した全文SHA256が一致。同期保存は同一内容の重複書き込みのみ省略し、pendingSpinと払い出しの保存は遅延しない。BET/AUTOの既存待機条件を同値のモジュールに移し、管理者向け読取診断のみ追加。抽選・乱数消費・払い出し・上乗せ・停止結果・ゲーム進行は不変。営業試算は別ファイルで停止条件のみ比較し、既存RTP証跡を維持。 今回は通常超ハイスピード中に静止リールを暗転表示する読取専用adapterと6か所の表示同期だけを追加。これらを除くと直前本番b689505のnova-game.js全文SHA256が一致する。停止・抽選・乱数・払い出し・進行・AUTO速度は不変。独立した表示モジュールは静止画DOMを複製するのみでエンジン状態を変更しない。",
+      "tests": [
+        "tests/nova-impurity-voice-equivalence.test.mjs",
+        "tests/nova-runtime-reliability.test.mjs",
+        "tests/nova-spin-resume.test.mjs",
+        "tests/nova-auto-target.test.mjs",
+        "tests/nova-complete-presentation.test.mjs",
+        "tests/nova-operating-model.test.mjs",
+        "tests/nova-super-speed-reels.test.mjs",
+        "tests/nova-super-speed.test.mjs",
+        "tests/nova-background-auto.test.mjs",
+        "tests/nova-reel-motion.test.mjs"
+      ],
+      "previousPresentationHash": "d761f85b894370bd95fc2b63afa5c69fd789f14682a284413cdfcbbd20cadf92",
+      "previousPresentationCommit": "b6895059150216d3abf73cbd4d00cb89dd3f8833"
     }
   ]
 }
