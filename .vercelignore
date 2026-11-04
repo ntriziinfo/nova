@@ -1,4 +1,5 @@
 data
 .DS_Store
-research
+# Research fixtures are required by the release tests. The static builder
+# publishes only root web files and assets, never the research directory.
 *.log
