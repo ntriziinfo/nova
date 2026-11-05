@@ -1,0 +1,60 @@
+{
+  "modelHash": "8c9d50e12fea18aa2d22a85a2fa55977f480f96d0cf32bb23824a2e0db6fb078",
+  "gamesPerSetting": 10000000,
+  "settings": [
+    {
+      "games": 10000000,
+      "setting": 1,
+      "seed": 2026110501,
+      "atGames": 2622276,
+      "directSevens": 19554,
+      "stockSevens": 7924,
+      "sortieStarts": 1446
+    },
+    {
+      "games": 10000000,
+      "setting": 2,
+      "seed": 2026110502,
+      "atGames": 2688254,
+      "directSevens": 23495,
+      "stockSevens": 6007,
+      "sortieStarts": 1002
+    },
+    {
+      "games": 10000000,
+      "setting": 3,
+      "seed": 2026110503,
+      "atGames": 2887956,
+      "directSevens": 21691,
+      "stockSevens": 7873,
+      "sortieStarts": 1435
+    },
+    {
+      "games": 10000000,
+      "setting": 4,
+      "seed": 2026110504,
+      "atGames": 3173123,
+      "directSevens": 28394,
+      "stockSevens": 5631,
+      "sortieStarts": 1046
+    },
+    {
+      "games": 10000000,
+      "setting": 5,
+      "seed": 2026110505,
+      "atGames": 3574563,
+      "directSevens": 24420,
+      "stockSevens": 6838,
+      "sortieStarts": 1369
+    },
+    {
+      "games": 10000000,
+      "setting": 6,
+      "seed": 2026110506,
+      "atGames": 3847491,
+      "directSevens": 30570,
+      "stockSevens": 4496,
+      "sortieStarts": 729
+    }
+  ]
+}

@@ -128,3 +128,9 @@
 .novaGuideRaw summary { padding:12px 16px;cursor:pointer;font-weight:700;color:#644566; }
 .novaGuideRaw pre { margin:0;padding:18px;max-height:460px;overflow:auto;overscroll-behavior:contain;background:#f0ece6;font:12px/1.7 ui-monospace,monospace;white-space:pre;color:#302737; }
 @media (max-width:720px) { .novaGuideIndexLabel { grid-column:1/-1; } }
+
+#novaFlowGuide .novaGuideRates :is(th, td) {text-align:center;font-variant-numeric:tabular-nums;}
+#novaFlowGuide .novaGuideRates td {white-space:nowrap;}
+@media (max-width: 720px) {
+  #novaFlowGuide .novaGuideRates :is(th, td) {padding:5px 3px;font-size:12px;}
+}

@@ -1,6 +1,7 @@
 // Build read-only analysis tables from the same default rules as the game.
 // Never imports nova-game.js or accesses a player's saved settings/state.
 import fs from 'node:fs';
+import {EVIDENCE, evidenceRows, hashes, modelHash, valid} from './rtp-current.mjs';
 import vm from 'node:vm';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -30,7 +31,40 @@ const bySetting=(title,headers,fn)=>h(title)+st(headers,fn);
 const sections=[];
 function add(id,title,body){sections.push({id,title,html:'<section id="guide-analysis-'+id+'" class="novaGuideSection novaGuideAnalysis" aria-labelledby="guide-analysis-'+id+'-title"><h3 id="guide-analysis-'+id+'-title" tabindex="-1">'+title+'</h3>'+body+'</section>'});}
 const rtp=JSON.parse(fs.readFileSync(path.join(root,'nova-rtp-current.json'),'utf8'));
-add('overview','全情報版・数値の見方',text('現行ルールの標準設定を掲載。横長の表は左右にスクロールできます。設定1〜6の差・共通確率・保証・設定示唆・補正まで確認できます。管理画面で個別に変更された値は含みません。表中の確率は小数点以下を丸めているため、合計が100%と一致しない場合があります。')+table(['設定','指定の機械割表記','現行モデルの連続試算値'],settings.map((s,i)=>[s,[95,97,99,103,111,116][i]+'%',num(rtp.settings[i].rtpPct,5)+'%']))+note('掲載用の指定表記と試算値は別の指標です。連続試算は各設定1億G・日次リセットなし・コンプリート打ち切りなし。試算値は勝率や1日1万Gの収支を保証しません。以下は現行標準ルールの値であり、台の設定番号を開示する機能ではありません。'));
+// Keep the guide's published PAY column distinct from the continuous model results.
+const publishedPay = [95, 97, 99, 103, 111, 116];
+const report = JSON.parse(fs.readFileSync(path.join(root, EVIDENCE), 'utf8'));
+const cues = JSON.parse(fs.readFileSync(path.join(root, 'docs/guide-bonus-frequencies.json'), 'utf8'));
+const currentHashes = hashes(root);
+const verifiedRows = valid(report, currentHashes) ? evidenceRows(report) : [];
+const cueRows = cues.modelHash === modelHash(currentHashes) ? cues.settings : [];
+const frequency = (games, hits) => Number.isSafeInteger(games) && Number.isSafeInteger(hits) && hits > 0 && games >= hits
+  ? '1/' + (games / hits).toLocaleString('ja-JP', {minimumFractionDigits:1, maximumFractionDigits:1})
+  : '未集計';
+const summaryRow = setting => verifiedRows.find(row => row.setting === setting);
+const bbFrequency = row => frequency(row?.games, row?.counts?.BIG);
+const specs = st(['ボーナス確率','AT初当たり確率','機械割（掲載値）'], setting => {
+  const row = summaryRow(setting);
+  return [bbFrequency(row), frequency(row?.games, row?.counts?.artEntries), publishedPay[setting - 1] + '%'];
+}) + text('本機は純増約4pt/Gの「ノヴァラッシュ」を搭載したAT機。ノヴァラッシュへはビッグボーナス（50pt）中のネビュラ揃いを経由して突入する。さらに、爆発契機の「出陣チャレンジ」を搭載。')
+   + note('ボーナスとAT初当たりの確率は、筐体のカウンターと同じく総ゲーム数を各当選回数で割った試算値。機械割の連続試算値は「詳細解析・全数値」の「全情報版・数値の見方」に掲載。');
+const bonusRates = st(['ビッグボーナス','AT中赤7揃い','出陣揃い'], setting => {
+  const row = cueRows.find(row => row.setting === setting);
+  return [bbFrequency(summaryRow(setting)), frequency(row?.atGames, row && row.directSevens + row.stockSevens), frequency(row?.games, row?.sortieStarts)];
+}) + h('出陣揃いの抽選内訳')
+   + st(['スイカ成立時','弱チェリー成立時','強チェリー成立時'], setting =>
+     ['WEAK_SUICA','WEAK_NOVA','STRONG_NOVA'].map(role => pct(P.sortieChance(setting, role))))
+   + text('抽選対象のゲームで各小役を引いたときの出陣当選率。当選すると「中リールにNOVAを狙え！」でNOVA・チェリー・NOVAが止まり、出陣チャレンジへ。狙え演出の抽選比率は本前兆1に対してフェイク2。')
+   + note('ビッグボーナスは総ゲーム数あたり（通常BIG・上位BIGの合算）。赤7はAT中のゲーム数あたりで、初期特化・ストック放出を含む特化突入告知だけを集計。特化中の上乗せ7揃いは除外。出陣揃いは総ゲーム数あたりの成功回数で、フェイクを除く。')
+   + note('ビッグボーナス・AT初当たりは各設定' + (report.gamesPerSetting ?? report.totalGamesPerSetting).toLocaleString('ja-JP') + 'G、赤7・出陣揃いは各設定' + cues.gamesPerSetting.toLocaleString('ja-JP') + 'Gの連続試算。いずれもコンプリートによる打ち切りなし。');
+function guideRatesSection(id, title, body) {
+  return '<section id="guide-' + id + '" class="novaGuideSection novaGuideRates" aria-labelledby="guide-' + id + '-title">\n<h3 id="guide-' + id + '-title" tabindex="-1">' + title + '</h3>\n' + body + '\n</section>';
+}
+const rateSections = [
+  guideRatesSection('features', 'スロットノヴァのスペックと特徴', specs),
+  guideRatesSection('bonus-rates', 'ボーナス確率', bonusRates)
+];
+add('overview','全情報版・数値の見方',text('現行ルールの標準設定を掲載。横長の表は左右にスクロールできます。設定1〜6の差・共通確率・保証・設定示唆・補正まで確認できます。管理画面で個別に変更された値は含みません。表中の確率は小数点以下を丸めているため、合計が100%と一致しない場合があります。')+table(['設定','指定の機械割表記','現行モデルの連続試算値'],settings.map((s,i)=>[s,publishedPay[i]+'%',num(rtp.settings[i].rtpPct,5)+'%']))+note('掲載用の指定表記と試算値は別の指標です。連続試算は各設定1億G・日次リセットなし・コンプリート打ち切りなし。試算値は勝率や1日1万Gの収支を保証しません。以下は現行標準ルールの値であり、台の設定番号を開示する機能ではありません。'));
 add('roles','小役確率・払い出しの全表',roleTable('通常時（CZ前兆を含む）',s=>N.normalRoleProbabilities(s))+note('通常スーパーノヴァは、通常小役の後段で1/32768の別抽選。前兆・ゲーム数契機・天井などの先行処理で抽選に到達しないゲームがあるため、全ゲーム実測の出現率をそのまま1/32768と断定しないこと。')+roleTable('CZ中の基礎小役テーブル',s=>N.roleProbabilities(s))+note('CZ中の内部スイカは見た目と払い出しをリプレイへ置換。通常時用の押し順ベル・1pt役はこの共通テーブルに含まれません。')+roleTable('通常AT中',s=>A.roleProbabilities(s,false))+roleTable('上位AT中',s=>A.roleProbabilities(s,true))+roleTable('初期特化・出陣の払い出し役',s=>{const r={...A.initialRoleProbabilities(s)};r.BELL+=r.BELL15;delete r.BELL15;return r;})+roleTable('BB・AT準備中',s=>A.preparationProbabilities(s))+table(['役','基礎払い出し'],['WEAK_SUICA','WEAK_NOVA','STRONG_NOVA','BELL','BELL15','ONE_COIN','REPLAY'].map(role=>[names[role],role==='ONE_COIN'?'1pt':A.payout(role)+'pt']))+note('BETは3pt。リプレイのBET返却、AT通常区間のBET消費分補填、BB残り規定ptによる払い出し上限、押し順ミスの扱いは別処理。通常ベースは全設定30G/50pt設計。'));
 let mode=h('モード別天井')+table(['モード','天井G'],N.modes.map((x,i)=>[x,N.ceilings[i]]))+note('朝一リセットは上表と600Gの小さい方。通常＋CZの内部ゲーム数を使用。天井到達時はBB、継続中CZでは成功を確保して最終決着まで進む場合があります。');
 for(const [key,title] of [['initial','リセット・通常系AT終了後'],['afterHeaven','天国でAT終了後'],['afterLoop','天国ループでAT終了後']])mode+=bySetting(title,N.modes,s=>N.modeSelection[key][s-1].map(x=>num(x)+'%'));
@@ -57,6 +91,7 @@ const data={schema:'nova-strategy-values/v1',edition:'2026-11-05',scope:'Standar
 const raw=Object.entries(data.exportedReference).map(([module,values])=>'<details class="novaGuideRaw"><summary>'+esc(module)+'・公開定数一覧</summary><pre>'+esc(JSON.stringify(values,null,2))+'</pre></details>').join('');
 add('reference','全パラメータ一覧・互換値',note('上の各表は現行処理に基づく実効値です。以下はルールモジュールが公開する定数の全一覧で、廃止された役・旧セーブ互換・計算用の基礎値も含みます。defaultsの数値がそのまま現行の成立確率・初期ptになるとは限りません。割合0〜1、重み0〜100、分母、ptなど単位は各キーによって異なります。')+raw+'<details class="novaGuideRaw"><summary>設定別プロファイル・計算済テーブル</summary><pre>'+esc(JSON.stringify(data.current,null,2))+'</pre></details>'+note('ゲーム本体の抽選・保存データは変更せず、標準ルールから読み取り専用で作成。旧値や無効な制御は現行の攻略数値に混ぜていません。'));
 const file=path.join(root,'jag.html');const originalHtml=fs.readFileSync(file,'utf8');let html=originalHtml;
+html=html.replace(/(<!-- NOVA GUIDE RATES START -->)[\s\S]*?(<!-- NOVA GUIDE RATES END -->)/, (_match,start,end)=>[start,...rateSections,end].join('\n'));
 html=html.replace(/\n?<!-- NOVA FULL ANALYSIS START -->[\s\S]*?<!-- NOVA FULL ANALYSIS END -->/,'');
 html=html.replace(/<!-- NOVA FULL INDEX START -->[\s\S]*?<!-- NOVA FULL INDEX END -->/,'');
 const end=html.indexOf('<footer class="novaGuideFoot">');if(end<0)throw Error('Guide footer missing');

@@ -86,7 +86,7 @@
 <script src="nova-comeback-presentation.js?v=20260909-comeback-114"></script>
 <link rel="stylesheet" href="nova-mobile.css?v=20261014-touch-layout">
 <script src="nova-mobile.js?v=20261028-aim-caption" defer></script>
-<link rel="stylesheet" href="nova-flow-guide.css?v=20261105-basic-spec">
+<link rel="stylesheet" href="nova-flow-guide.css?v=20261105-bonus-rates">
 <script src="nova-flow-guide.js?v=20261105-basic-spec" defer></script>
 <style>
 /* Fit the original nebula art to reel width; its transparent vertical margins
@@ -118,7 +118,7 @@
 </header><div class="novaGuideLayout">
 <details class="novaGuideIndex" open>
 <summary>目次から探す</summary>
-<nav aria-label="攻略情報の目次"><a href="#guide-spec"><span>01</span>基本スペック</a><a href="#guide-play"><span>02</span>打ち方・狙え</a><a href="#guide-flow"><span>03</span>ゲームフロー</a><a href="#guide-normal"><span>04</span>通常時・天井</a><a href="#guide-cz"><span>05</span>CZ・強CZ</a><a href="#guide-bb"><span>06</span>BB・穢れ解放</a><a href="#guide-at"><span>07</span>AT・引き戻し</a><a href="#guide-zones"><span>08</span>キャラ特化ゾーン</a><a href="#guide-premium"><span>09</span>出陣・上位AT</a><a href="#guide-setting"><span>10</span>設定推測・やめどき</a>
+<nav aria-label="攻略情報の目次"><a href="#guide-spec"><span>01</span>基本スペック</a><a href="#guide-features"><span>02</span>スロットノヴァのスペックと特徴</a><a href="#guide-bonus-rates"><span>03</span>ボーナス確率</a><a href="#guide-play"><span>04</span>打ち方・狙え</a><a href="#guide-flow"><span>05</span>ゲームフロー</a><a href="#guide-normal"><span>06</span>通常時・天井</a><a href="#guide-cz"><span>07</span>CZ・強CZ</a><a href="#guide-bb"><span>08</span>BB・穢れ解放</a><a href="#guide-at"><span>09</span>AT・引き戻し</a><a href="#guide-zones"><span>10</span>キャラ特化ゾーン</a><a href="#guide-premium"><span>11</span>出陣・上位AT</a><a href="#guide-setting"><span>12</span>設定推測・やめどき</a>
 <!-- NOVA FULL INDEX START --><span class="novaGuideIndexLabel">詳細解析・全数値</span><a href="#guide-analysis-overview">全情報版・数値の見方</a><a href="#guide-analysis-roles">小役確率・払い出しの全表</a><a href="#guide-analysis-modes">モード移行・天井・高確</a><a href="#guide-analysis-cz">CZ当選・成功・AT直撃</a><a href="#guide-analysis-bb">BB抽選・準備中の振分</a><a href="#guide-analysis-at">AT中の全抽選・補正</a><a href="#guide-analysis-zones">特化性能・段階・キャラ選択率</a><a href="#guide-analysis-sortie">出陣・上位AT・差枚節目</a><a href="#guide-analysis-impurity">穢れの全数値・解放条件</a><a href="#guide-analysis-hints">設定・モード示唆の全表</a><a href="#guide-analysis-reference">全パラメータ一覧・互換値</a><!-- NOVA FULL INDEX END --></nav>
 </details>
 <article class="novaGuideArticle" tabindex="0" aria-label="NOVA攻略情報">
@@ -159,29 +159,18 @@
 <tr><td>設定</td><td>1〜6の6段階</td>
 </tr>
 </tbody>
-</table></div><div class="novaGuideTableWrap">
-<table>
-<thead>
-<tr><th scope="col">設定</th><th scope="col">機械割</th>
-</tr>
-</thead>
-<tbody>
-<tr><td>1</td><td>95%</td>
-</tr>
-<tr><td>2</td><td>97%</td>
-</tr>
-<tr><td>3</td><td>99%</td>
-</tr>
-<tr><td>4</td><td>103%</td>
-</tr>
-<tr><td>5</td><td>111%</td>
-</tr>
-<tr><td>6</td><td>116%</td>
-</tr>
-</tbody>
 </table></div>
-<p class="novaGuideNote">機械割は本攻略情報の掲載用表記値。1日単位の勝率や実測値を表すものではありません。純増は準備・特化区間を含むAT全体の数値ではありません。</p>
 </section>
+<!-- NOVA GUIDE RATES START -->
+<section id="guide-features" class="novaGuideSection novaGuideRates" aria-labelledby="guide-features-title">
+<h3 id="guide-features-title" tabindex="-1">スロットノヴァのスペックと特徴</h3>
+<div class="novaGuideTableWrap"><table><thead><tr><th scope="col">設定</th><th scope="col">ボーナス確率</th><th scope="col">AT初当たり確率</th><th scope="col">機械割（掲載値）</th></tr></thead><tbody><tr><td>1</td><td>1/483.7</td><td>1/744.3</td><td>95%</td></tr><tr><td>2</td><td>1/464.3</td><td>1/734.4</td><td>97%</td></tr><tr><td>3</td><td>1/506.5</td><td>1/774.7</td><td>99%</td></tr><tr><td>4</td><td>1/484.8</td><td>1/775.1</td><td>103%</td></tr><tr><td>5</td><td>1/555.6</td><td>1/846.9</td><td>111%</td></tr><tr><td>6</td><td>1/539.3</td><td>1/855.3</td><td>116%</td></tr></tbody></table></div><p>本機は純増約4pt/Gの「ノヴァラッシュ」を搭載したAT機。ノヴァラッシュへはビッグボーナス（50pt）中のネビュラ揃いを経由して突入する。さらに、爆発契機の「出陣チャレンジ」を搭載。</p><p class="novaGuideNote">ボーナスとAT初当たりの確率は、筐体のカウンターと同じく総ゲーム数を各当選回数で割った試算値。機械割の連続試算値は「詳細解析・全数値」の「全情報版・数値の見方」に掲載。</p>
+</section>
+<section id="guide-bonus-rates" class="novaGuideSection novaGuideRates" aria-labelledby="guide-bonus-rates-title">
+<h3 id="guide-bonus-rates-title" tabindex="-1">ボーナス確率</h3>
+<div class="novaGuideTableWrap"><table><thead><tr><th scope="col">設定</th><th scope="col">ビッグボーナス</th><th scope="col">AT中赤7揃い</th><th scope="col">出陣揃い</th></tr></thead><tbody><tr><td>1</td><td>1/483.7</td><td>1/95.4</td><td>1/6,915.6</td></tr><tr><td>2</td><td>1/464.3</td><td>1/91.1</td><td>1/9,980.0</td></tr><tr><td>3</td><td>1/506.5</td><td>1/97.7</td><td>1/6,968.6</td></tr><tr><td>4</td><td>1/484.8</td><td>1/93.3</td><td>1/9,560.2</td></tr><tr><td>5</td><td>1/555.6</td><td>1/114.4</td><td>1/7,304.6</td></tr><tr><td>6</td><td>1/539.3</td><td>1/109.7</td><td>1/13,717.4</td></tr></tbody></table></div><h4>出陣揃いの抽選内訳</h4><div class="novaGuideTableWrap"><table><thead><tr><th scope="col">設定</th><th scope="col">スイカ成立時</th><th scope="col">弱チェリー成立時</th><th scope="col">強チェリー成立時</th></tr></thead><tbody><tr><td>1</td><td>0.397%</td><td>0.397%</td><td>3.97%</td></tr><tr><td>2</td><td>0.276%</td><td>0.276%</td><td>2.76%</td></tr><tr><td>3</td><td>0.39%</td><td>0.39%</td><td>3.9%</td></tr><tr><td>4</td><td>0.272%</td><td>0.272%</td><td>2.72%</td></tr><tr><td>5</td><td>0.383%</td><td>0.383%</td><td>3.83%</td></tr><tr><td>6</td><td>0.212%</td><td>0.212%</td><td>2.12%</td></tr></tbody></table></div><p>抽選対象のゲームで各小役を引いたときの出陣当選率。当選すると「中リールにNOVAを狙え！」でNOVA・チェリー・NOVAが止まり、出陣チャレンジへ。狙え演出の抽選比率は本前兆1に対してフェイク2。</p><p class="novaGuideNote">ビッグボーナスは総ゲーム数あたり（通常BIG・上位BIGの合算）。赤7はAT中のゲーム数あたりで、初期特化・ストック放出を含む特化突入告知だけを集計。特化中の上乗せ7揃いは除外。出陣揃いは総ゲーム数あたりの成功回数で、フェイクを除く。</p><p class="novaGuideNote">ビッグボーナス・AT初当たりは各設定100,000,000G、赤7・出陣揃いは各設定10,000,000Gの連続試算。いずれもコンプリートによる打ち切りなし。</p>
+</section>
+<!-- NOVA GUIDE RATES END -->
 <section id="guide-play" class="novaGuideSection" aria-labelledby="guide-play-title">
 <h3 id="guide-play-title" tabindex="-1">打ち方・狙え演出</h3><div class="novaGuideCard">
 <h4>押し順ナビを最優先</h4>
