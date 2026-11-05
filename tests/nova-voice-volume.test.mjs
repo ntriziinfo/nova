@@ -41,6 +41,23 @@ test('mastered one-shots use their category slider and ignore historical per-fil
  near(c.audioSourceOutputScale('assets/media/nova/shutter.wav'),1);
 });
 
+test('lever and reel-stop clips stay at 70% through playback and volume refresh, including super speed and mute',()=>{
+ const {c}=setup();
+ vm.runInContext(fs.readFileSync('nova-audio-manifest.js','utf8'),c);
+ c.NovaAudioAssets={entry:src=>c.NovaAudioManifest[String(src).split('?')[0]]};
+ const controls=['assets/media/nova/spin_start.wav','assets/media/nova/reel-stop.wav?v=current'];
+ const other='assets/media/nova/aim/seven-win.wav';
+ for(const src of [...controls,other])c.playOneShotSound(src,c.sfxOutputVolume());
+ const check=()=>{for(const src of controls)near(c.oneShotSoundCache.get(src).volume,c.sfxOutputVolume()*.7);near(c.oneShotSoundCache.get(other).volume,c.sfxOutputVolume());};
+ check();
+ for(const superSpeed of [true,false]){
+  c.superSpeedActive=superSpeed;c.settings.masterVolume=.4;c.settings.sfxVolume=.6;
+  c.applyCharacterVoiceOutputVolumes();check();c.applyCharacterVoiceOutputVolumes();check();
+ }
+ c.settings.audioMuted=true;c.applyCharacterVoiceOutputVolumes();check();
+ for(const audio of c.oneShotSoundCache.values())assert.equal(audio.plays,1);
+});
+
 test('mastered reverse-reel SE retains its requested +5 dB trim and follows SFX, master and mute controls',()=>{
  const {c}=setup(),src='assets/media/nova/ouma-reverse-v2.wav';
  c.NovaAudioAssets={entry:()=>({category:'sfx'})};

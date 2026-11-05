@@ -1402,7 +1402,10 @@
     const category=globalThis.NovaAudioAssets?.entry(src)?.category;
     if(category==='voice')return voiceOutputVolume();
     if(category==='bgm')return bgmOutputVolume();
-    if(category==='sfx')return Math.min(1,sfxOutputVolume()*(src===SORTIE_SANDWICH_AIM_SOUND_SRC?10**(8/20):1));
+    if(category==='sfx'){
+      const trim=['assets/media/nova/spin_start.wav','assets/media/nova/reel-stop.wav'].includes(String(src).split('?')[0])?0.7:1;
+      return Math.min(1,sfxOutputVolume()*trim*(src===SORTIE_SANDWICH_AIM_SOUND_SRC?10**(8/20):1));
+    }
     if(category==='payout')return payoutOutputVolume();
     return CHARACTER_VOICE_KEYS.has(normalizedAudioSourceKey(src))?voiceOutputVolume():applyAudioSourceOutputScale(volume,src);
   }

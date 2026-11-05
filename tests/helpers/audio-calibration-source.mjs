@@ -2,6 +2,9 @@ import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 
 export function beforeAudioCalibration(source){
+ const quietControls="    if(category==='sfx'){\n      const trim=['assets/media/nova/spin_start.wav','assets/media/nova/reel-stop.wav'].includes(String(src).split('?')[0])?0.7:1;\n      return Math.min(1,sfxOutputVolume()*trim*(src===SORTIE_SANDWICH_AIM_SOUND_SRC?10**(8/20):1));\n    }";
+ assert.equal(source.split(quietControls).length,2);
+ source=source.replace(quietControls,"    if(category==='sfx')return Math.min(1,sfxOutputVolume()*(src===SORTIE_SANDWICH_AIM_SOUND_SRC?10**(8/20):1));");
  const migration=source.match(/  \/\/ All50 reproduces calibration v1 sliders 50\/100\/100\/57\/37\.\n  function migrateAudioCalibration\([^]*?\n  }\n\n/);
  assert(migration);
  source=source.replace(migration[0],'  // Reference mix at all50: old master25, BGM34, SFX50, voice64, payout50.\n');
