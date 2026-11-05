@@ -1391,8 +1391,7 @@
     if(category==='sfx'){
       const key = normalizedAudioSourceKey(src);
       let gain = sfxOutputVolume();
-      if(key === SPIN_SOUND_SRC) gain *= 0.7;
-      if(key === STOP_SOUND_SRC) gain *= 0.7 * dbToGain(-3);
+      if(key === SPIN_SOUND_SRC || key === STOP_SOUND_SRC) gain *= 0.7 * dbToGain(-3);
       if(src === SORTIE_SANDWICH_AIM_SOUND_SRC) gain *= dbToGain(8);
       return Math.min(1, gain);
     }

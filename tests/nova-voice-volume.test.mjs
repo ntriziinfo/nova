@@ -47,7 +47,7 @@ test('mastered one-shots use their category slider and ignore historical per-fil
  near(c.audioSourceOutputScale('assets/media/nova/shutter.wav'),1);
 });
 
-test('reel stop is 3 dB below the 70% lever trim on play, refresh, super speed and mute',()=>{
+test('lever and reel stop are both 3 dB below the prior 70% trim on play, refresh, super speed and mute',()=>{
  const {c}=setup();
  vm.runInContext(fs.readFileSync('nova-audio-manifest.js','utf8'),c);
  c.NovaAudioAssets={entry:src=>c.NovaAudioManifest[String(src).split('?')[0]]};
@@ -56,8 +56,7 @@ test('reel stop is 3 dB below the 70% lever trim on play, refresh, super speed a
  for(const src of [...controls,other])c.playOneShotSound(src,c.sfxOutputVolume());
  const check=()=>{
   const level=c.sfxOutputVolume();
-  near(c.oneShotSoundCache.get(controls[0]).volume,level*.7);
-  near(c.oneShotSoundCache.get(controls[1]).volume,level*.7*10**(-3/20));
+  for(const src of controls) near(c.oneShotSoundCache.get(src).volume,level*.7*10**(-3/20));
   near(c.oneShotSoundCache.get(other).volume,level);
  };
  check();

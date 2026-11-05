@@ -24,7 +24,7 @@
     "    return audioOutputVolume(settings.payoutVolume, scale * 0.74);"
   ],
   [
-    "      const key = normalizedAudioSourceKey(src);\n      let gain = sfxOutputVolume();\n      if(key === SPIN_SOUND_SRC) gain *= 0.7;\n      if(key === STOP_SOUND_SRC) gain *= 0.7 * dbToGain(-3);\n      if(src === SORTIE_SANDWICH_AIM_SOUND_SRC) gain *= dbToGain(8);\n      return Math.min(1, gain);",
+    "      const key = normalizedAudioSourceKey(src);\n      let gain = sfxOutputVolume();\n      if(key === SPIN_SOUND_SRC || key === STOP_SOUND_SRC) gain *= 0.7 * dbToGain(-3);\n      if(src === SORTIE_SANDWICH_AIM_SOUND_SRC) gain *= dbToGain(8);\n      return Math.min(1, gain);",
     "      const trim=['assets/media/nova/spin_start.wav','assets/media/nova/reel-stop.wav'].includes(String(src).split('?')[0])?0.7:1;\n      return Math.min(1,sfxOutputVolume()*trim*(src===SORTIE_SANDWICH_AIM_SOUND_SRC?10**(8/20):1));"
   ]
 ]
