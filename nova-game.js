@@ -840,6 +840,7 @@
   preloadOneShotSound(SORTIE_SANDWICH_HIT_SOUND_SRC);
   const BELL_NAVI_VOICE_SRCS=NovaVoiceCatalog.BELL_NAVI_VOICE_SRCS;
   const BELL_NAVI_COMPLETE_VOICE_SRCS=NovaVoiceCatalog.BELL_NAVI_COMPLETE_VOICE_SRCS;
+  const KUSHURI_NAVI_VOICE_KEYS = new Set([...BELL_NAVI_VOICE_SRCS.kushuri, BELL_NAVI_COMPLETE_VOICE_SRCS.kushuri].map(normalizedAudioSourceKey));
   const BELL_NAVI_FAILURE_VOICE_SRC=NovaVoiceCatalog.BELL_NAVI_FAILURE_VOICE_SRC;
   const AIM_VOICE_SRCS=NovaVoiceCatalog.AIM_VOICE_SRCS;
   const SEVEN_ZONE_VOICE_SRCS=NovaVoiceCatalog.SEVEN_ZONE_VOICE_SRCS;
@@ -1339,8 +1340,9 @@
     return audioOutputVolume(remapVolumeSlider(settings.sfxVolume, 0.5, AUDIO_MIX_CENTER.sfxVolume), scale * 2);
   }
 
-  function voiceOutputVolume(scale=1){
-    return audioOutputVolume(remapVolumeSlider(settings.voiceVolume, 0.5, AUDIO_MIX_CENTER.voiceVolume), scale * 1.4592);
+  function voiceOutputVolume(scale=1, src=""){
+    const volume = audioOutputVolume(remapVolumeSlider(settings.voiceVolume, 0.5, AUDIO_MIX_CENTER.voiceVolume), scale * 1.4592);
+    return src && KUSHURI_NAVI_VOICE_KEYS.has(normalizedAudioSourceKey(src)) ? volume * dbToGain(-1) : volume;
   }
 
   function resumeCharacterVoiceAudio(){
@@ -1387,7 +1389,7 @@
 
   function soundOutputVolume(src, volume){
     const category=globalThis.NovaAudioAssets?.entry(src)?.category;
-    if(category==='voice')return voiceOutputVolume();
+    if(category==='voice')return voiceOutputVolume(1,src);
     if(category==='bgm')return bgmOutputVolume();
     if(category==='sfx'){
       const key = normalizedAudioSourceKey(src);
@@ -1396,8 +1398,8 @@
       if(src === SORTIE_SANDWICH_AIM_SOUND_SRC) gain *= dbToGain(8);
       return Math.min(1, gain);
     }
-    if(category==='payout')return payoutOutputVolume();
-    return CHARACTER_VOICE_KEYS.has(normalizedAudioSourceKey(src))?voiceOutputVolume():applyAudioSourceOutputScale(volume,src);
+    if(category==='payout')return payoutOutputVolume(undefined,src);
+    return CHARACTER_VOICE_KEYS.has(normalizedAudioSourceKey(src))?voiceOutputVolume(1,src):applyAudioSourceOutputScale(volume,src);
   }
 
   function aimWinOutputVolume(audio){
@@ -1407,25 +1409,26 @@
   function applyCharacterVoiceOutputVolumes(){
     for(const [src,audio] of oneShotSoundCache){
       if(globalThis.NovaAudioAssets?.entry(src)){audio.volume=soundOutputVolume(src,audio.volume);continue;}
-      if(CHARACTER_VOICE_KEYS.has(normalizedAudioSourceKey(src)))audio.volume=voiceOutputVolume();
+      if(CHARACTER_VOICE_KEYS.has(normalizedAudioSourceKey(src)))audio.volume=voiceOutputVolume(1,src);
     }
     for(const audio of aimWinAudios)audio.volume=aimWinOutputVolume(audio);
   }
 
   function voiceOutputVolumeForSource(scale=1, src=""){
-    return voiceOutputVolume(scale * audioSourceOutputScale(src));
+    return voiceOutputVolume(scale * audioSourceOutputScale(src),src);
   }
 
   function sfxOutputVolumeForSource(scale=SFX_OUTPUT_SCALE, src=""){
     return sfxOutputVolume(scale * audioSourceOutputScale(src));
   }
 
-  function payoutOutputVolume(scale=PAYOUT_SOUND_OUTPUT_SCALE){
-    return audioOutputVolume(remapVolumeSlider(settings.payoutVolume, 0.5, AUDIO_MIX_CENTER.payoutVolume), scale * 0.74);
+  function payoutOutputVolume(scale=PAYOUT_SOUND_OUTPUT_SCALE, src=""){
+    const volume = audioOutputVolume(remapVolumeSlider(settings.payoutVolume, 0.5, AUDIO_MIX_CENTER.payoutVolume), scale * 0.74);
+    return src && normalizedAudioSourceKey(src) === REPLAY_SOUND_SRC ? volume * dbToGain(-3) : volume;
   }
 
   function payoutOutputVolumeForSource(scale=PAYOUT_SOUND_OUTPUT_SCALE, src=""){
-    return payoutOutputVolume(scale * audioSourceOutputScale(src));
+    return payoutOutputVolume(scale * audioSourceOutputScale(src),src);
   }
 
   function clearBonusEndBgmLock(){
