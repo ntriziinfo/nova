@@ -405,6 +405,20 @@
         "tests/nova-cz-push.test.mjs",
         "tests/deployment-assets.test.mjs"
       ]
+    },
+    {
+      "file": "nova-game.js",
+      "sourceHash": "b2c2a90e6edf4bea490bc7cd19df55db0131f0fd1ca0a8c77641b298d0c5cc6c",
+      "presentationHash": "b4af06aaff89aaeb80bdee02e06134122625c0f2f77db429a379d1f56cedc7e9",
+      "sourceCommit": "44d96c5caf9bee17e17e2aede939f9115e354a93",
+      "presentationCommit": "2c342a9bef6417481aa5fe7c1a78cad7fe43b7f7",
+      "reason": "ATレア役の前兆表示と第三停止の既存パトランプ音に、DOM・無音動画専用の表示呼び出しを2行追加。表示は抽選・乱数・払い出し・上乗せ・入力待ちを操作しない。2行の厳密な逆適用で直前のエンジンSHA256、既存の検証で採用試算元との一致を確認。",
+      "tests": [
+        "tests/nova-at-patrol.test.mjs",
+        "tests/nova-checkpoint-quiet.test.mjs",
+        "tests/nova-zone-get-voice.test.mjs",
+        "tests/nova-audio-defaults-equivalence.test.mjs"
+      ]
     }
   ]
 }
