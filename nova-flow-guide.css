@@ -2,35 +2,100 @@
 #flowToggleBtn:focus-visible { outline:2px solid #ffd56b;outline-offset:3px; }
 #novaFlowGuide {
   box-sizing:border-box;position:fixed;inset:0;margin:auto;padding:0;
-  width:min(1050px,calc(100vw - 24px));height:min(94vh,1100px);height:min(94dvh,1100px);
+  width:min(1200px,calc(100vw - 32px));height:min(92vh,1100px);height:min(92dvh,1100px);
   max-width:calc(100vw - 24px);max-height:calc(100dvh - 24px);
-  color:#edf4ff;background:#090e20;border:1px solid #caa959;border-radius:12px;
-  box-shadow:0 16px 80px #000b;overflow:hidden;
+  color:#232533;background:#f7f5f1;border:1px solid #bc9851;border-radius:12px;
+  box-shadow:0 16px 80px #000b;overflow:hidden;text-align:left;font:15px/1.85 system-ui,sans-serif;
 }
+#novaFlowGuide, #novaFlowGuide * { box-sizing:border-box; }
 #novaFlowGuide:not([open]) { display:none; }
 #novaFlowGuide[open] { display:flex;flex-direction:column; }
 #novaFlowGuide::backdrop { background:#000c; }
 #novaFlowGuide button {
-  min-height:44px;padding:8px 14px;border:1px solid #577086;border-radius:8px;
-  background:#17243b;color:#edf4ff;font:700 14px/1.3 system-ui;cursor:pointer;box-shadow:none;
+  min-height:44px;padding:8px 14px;border:1px solid #665577;border-radius:6px;
+  background:#30243d;color:#fff;font:700 14px/1.3 system-ui;cursor:pointer;box-shadow:none;
 }
-#novaFlowGuide button:focus-visible { outline:2px solid #ffd56b;outline-offset:2px; }
-.novaFlowGuideHead { display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 14px;flex:none; }
-.novaFlowGuideHead h2 { margin:0;font:700 20px/1.3 system-ui;color:#ffd56b; }
-.novaFlowGuideNav { display:flex;align-items:center;flex-wrap:wrap;gap:8px;padding:0 14px 10px;flex:none; }
-#novaFlowGuide .novaFlowGuideNav button[aria-pressed="true"] { background:#ffd56b;border-color:#ffd56b;color:#111b31; }
+#novaFlowGuide :is(button,a,summary):focus-visible { outline:3px solid #b47715;outline-offset:2px; }
+.novaFlowGuideHead { display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 22px;flex:none;background:#21182e;color:#fff;border-bottom:3px solid #bc9851; }
+.novaFlowGuideHead span { display:block;font:700 10px/1.4 system-ui;letter-spacing:.14em;color:#d8bc7a; }
+#novaFlowGuide .novaFlowGuideHead h2 { margin:2px 0 0;font:700 20px/1.4 system-ui;color:#fff; }
+.novaGuideLayout { display:flex;flex:1;min-height:0;overflow:hidden; }
+.novaGuideIndex { flex:0 0 222px;overflow:auto;padding:22px 12px;background:#eeeae4;border-right:1px solid #ded6c9;overscroll-behavior:contain; }
+.novaGuideIndex > summary { padding:0 12px 12px;font-weight:800;color:#53436a;pointer-events:none;list-style:none; }
+.novaGuideIndex > summary::-webkit-details-marker { display:none; }
+.novaGuideIndex nav { display:grid;gap:5px; }
+#novaFlowGuide .novaGuideIndex a { display:flex;align-items:center;gap:10px;padding:11px 10px;border-radius:5px;color:#42374e;text-decoration:none;font-size:13px;font-weight:700;line-height:1.5;border-left:3px solid transparent; }
+.novaGuideIndex a span { color:#9d865e;font-size:10px; }
+#novaFlowGuide .novaGuideIndex a:hover { background:#fff9; }
+#novaFlowGuide .novaGuideIndex a[aria-current] { background:#fff;border-left-color:#a32c50;color:#97234b; }
+.novaGuideArticle { min-width:0;flex:1;overflow:auto;overscroll-behavior:contain;padding:26px 34px 40px;scrollbar-gutter:stable; }
+.novaGuideHero { padding:28px 30px;color:#fff;background:linear-gradient(120deg,#251932,#4a2343);border-radius:8px; }
+.novaGuideHero > span { font-size:10px;letter-spacing:.18em;color:#ddc485; }
+#novaFlowGuide .novaGuideHero h3 { margin:14px 0;font-size:30px;line-height:1.5;color:#fff; }
+#novaFlowGuide .novaGuideHero p { margin:12px 0 22px;font-size:13px;color:#e0d4df; }
+.novaGuideBadges { display:flex;gap:10px;flex-wrap:wrap; }
+.novaGuideBadges b { padding:8px 12px;border:1px solid #ffffff30;border-radius:4px;font-size:11px;color:#e4cc94; }
+.novaGuideBadges strong { margin-left:8px;color:white;font-size:18px; }
+.novaGuideSection { padding-top:34px; }
+#novaFlowGuide .novaGuideSection > h3 { border-left:5px solid #a32c50;border-bottom:1px solid #d7c8ae;padding:6px 0 12px 14px;margin:0 0 20px;font-size:22px;line-height:1.5;color:#33273e;scroll-margin-top:16px; }
+#novaFlowGuide .novaGuideSection h4 { margin:0 0 8px;color:#90294c;font-size:16px;line-height:1.6; }
+#novaFlowGuide .novaGuideSection p { margin:10px 0 16px; }
+.novaGuideTableWrap { max-width:100%;overflow:auto;margin:16px 0; }
+#novaFlowGuide table { width:100%;border-collapse:collapse;table-layout:auto;font:inherit;font-size:14px; }
+#novaFlowGuide th, #novaFlowGuide td { padding:12px 16px;border:1px solid #ded7cb;text-align:left;vertical-align:top;white-space:normal; }
+#novaFlowGuide th { background:#42334e;color:#fff;font-weight:700; }
+#novaFlowGuide td { background:#fff;color:#30303b; }
+#novaFlowGuide tr:nth-child(even) td { background:#f0ebe4; }
+#novaFlowGuide .novaGuideNote { font-size:12px;line-height:1.8;color:#706b75; }
+.novaGuideCard { padding:18px 20px;border:1px solid #e0d8ca;background:white;border-radius:5px;margin:14px 0; }
+#novaFlowGuide .novaGuideCard p { margin:0; }
+.novaGuideFlow { list-style:none;margin:0;padding:0;display:grid;gap:22px; }
+.novaGuideFlow li { position:relative;background:#fff;padding:14px 20px;border:1px solid #ded5c7;border-left:4px solid #b18b46; }
+.novaGuideFlow li:not(:last-child)::after { content:'↓';position:absolute;bottom:-26px;left:50%;color:#a32c50;font-weight:900; }
+.novaGuideFlow b,.novaGuideFlow span { display:block; }
+.novaGuideFlow span { font-size:13px;color:#746b7b; }
+.novaGuideDiagram { margin:22px 0;padding:12px;border:1px solid #d8c49f;border-radius:5px;background:#fff; }
+.novaGuideDiagram > summary { padding:8px;font-weight:700;cursor:pointer;color:#90294c; }
+.novaFlowGuideNav { display:flex;align-items:center;flex-wrap:wrap;gap:8px;padding:12px 0; }
+#novaFlowGuide .novaFlowGuideNav button[aria-pressed="true"] { background:#e9d094;border-color:#caa959;color:#21182e; }
 #novaFlowGuideZoom { margin-left:auto; }
-.novaFlowGuideViewport { flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;padding:8px;scrollbar-gutter:stable; }
+.novaFlowGuideViewport { height:480px;max-height:65dvh;min-height:200px;overflow:auto;overscroll-behavior:contain;scrollbar-gutter:stable;background:#090e20; }
 #novaFlowGuideImage { display:block;width:100%;height:auto;max-width:none;margin:0 auto; }
 .novaFlowGuideViewport.isZoomed #novaFlowGuideImage { width:200%;min-width:1100px; }
 #novaFlowGuide [hidden] { display:none!important; }
-#novaFlowGuideStatus { padding:14px;font:16px/1.5 system-ui; }
-@media (max-width:600px) {
+#novaFlowGuideStatus { padding:14px;color:#fff; }
+.novaGuideHighlight { padding:20px 24px;background:#30213c;border-radius:5px;color:#ddc485; }
+.novaGuideHighlight strong { display:block;font-size:32px;color:white; }
+.novaGuideZones { display:grid;gap:16px; }
+.novaGuideZone { display:flex;align-items:center;gap:20px;padding:20px;background:#fff;border:1px solid #ded5c7;border-radius:6px; }
+.novaGuideZone img { flex:none;width:90px;height:120px;object-fit:contain; }
+.novaGuideZone span { font-size:10px;letter-spacing:.08em;color:#94783e; }
+#novaFlowGuide .novaGuideZone p { font-size:14px;margin:0; }
+.novaGuideFoot { margin-top:30px;border-top:1px solid #ded5c7;padding-top:20px;font-size:11px;color:#827784; }
+@media (max-width:720px) {
   #audioDock > #flowToggleBtn { width:64px;min-width:64px;font-size:14px; }
-  #novaFlowGuide { width:calc(100vw - 12px);max-width:calc(100vw - 12px);height:calc(100dvh - 20px);max-height:calc(100dvh - 20px); }
-  .novaFlowGuideHead { padding:8px; }
-  .novaFlowGuideHead h2 { font-size:18px; }
-  .novaFlowGuideNav { padding:0 8px 8px;gap:5px; }
+  #novaFlowGuide { width:calc(100vw - 12px);max-width:calc(100vw - 12px);height:calc(100dvh - 20px);max-height:calc(100dvh - 20px);font-size:14px; }
+  .novaFlowGuideHead { padding:10px 12px; }
+  #novaFlowGuide .novaFlowGuideHead h2 { font-size:17px; }
   #novaFlowGuide button { font-size:12px;padding:8px; }
-  .novaFlowGuideViewport { padding:0;scrollbar-gutter:auto; }
+  .novaGuideLayout { flex-direction:column; }
+  .novaGuideIndex { flex:none;padding:0;border:0;border-bottom:1px solid #d8cbb8;max-height:45%; }
+  .novaGuideIndex > summary { pointer-events:auto;padding:12px 16px;cursor:pointer;list-style:disclosure-closed; }
+  .novaGuideIndex[open] > summary { list-style:disclosure-open; }
+  .novaGuideIndex nav { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));padding:0 8px 10px; }
+  #novaFlowGuide .novaGuideIndex a { font-size:12px;padding:10px 7px;gap:6px; }
+  .novaGuideArticle { padding:16px 14px 28px; }
+  .novaGuideHero { padding:22px 18px; }
+  #novaFlowGuide .novaGuideHero h3 { font-size:26px; }
+  .novaGuideBadges { gap:6px; }
+  .novaGuideBadges b { padding:6px 8px; }
+  .novaGuideBadges strong { font-size:15px;margin-left:4px; }
+  .novaGuideSection { padding-top:28px; }
+  #novaFlowGuide .novaGuideSection > h3 { font-size:19px; }
+  #novaFlowGuide th, #novaFlowGuide td { padding:10px 9px;font-size:13px;overflow-wrap:anywhere; }
+  .novaGuideCard { padding:14px; }
+  .novaGuideZone { padding:14px;gap:12px;align-items:flex-start; }
+  .novaGuideZone img { width:64px;height:98px; }
+  .novaGuideZone > div { min-width:0; }
 }
+@media (prefers-reduced-motion:reduce) { #novaFlowGuide * { scroll-behavior:auto; } }

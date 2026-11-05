@@ -86,8 +86,8 @@
 <script src="nova-comeback-presentation.js?v=20260909-comeback-114"></script>
 <link rel="stylesheet" href="nova-mobile.css?v=20261014-touch-layout">
 <script src="nova-mobile.js?v=20261028-aim-caption" defer></script>
-<link rel="stylesheet" href="nova-flow-guide.css?v=20261014">
-<script src="nova-flow-guide.js?v=20261014" defer></script>
+<link rel="stylesheet" href="nova-flow-guide.css?v=20261105-strategy">
+<script src="nova-flow-guide.js?v=20261105-strategy" defer></script>
 <style>
 /* Fit the original nebula art to reel width; its transparent vertical margins
    no longer shrink the lettering to the cell height. Keep native proportions. */
@@ -113,21 +113,234 @@
   <p>各20コマ・20の次は01に戻ります</p>
 </aside>
 <dialog id="novaFlowGuide" aria-labelledby="novaFlowGuideTitle">
-  <header class="novaFlowGuideHead">
-    <h2 id="novaFlowGuideTitle">ゲームフロー</h2>
-    <button id="novaFlowGuideClose" type="button" autofocus aria-label="ゲームフローを閉じる">閉じる ×</button>
-  </header>
-  <nav class="novaFlowGuideNav" aria-label="フローのページ選択">
-    <button type="button" data-flow-page="0" aria-pressed="true">1 通常時〜AT</button>
-    <button type="button" data-flow-page="1" aria-pressed="false">2 AT〜上位・引き戻し</button>
-    <button id="novaFlowGuideZoom" type="button" aria-pressed="false">拡大</button>
-  </nav>
-  <div class="novaFlowGuideViewport" tabindex="0" aria-label="ゲームフロー画像。拡大時はスクロールして閲覧できます。">
-    <p id="novaFlowGuideStatus" role="status" hidden></p>
-    <button id="novaFlowGuideRetry" type="button" hidden>再読み込み</button>
-    <img id="novaFlowGuideImage" width="1697" height="2400" decoding="async" alt="通常時からCZ、BIG、AT初当たりまでのゲームフロー">
-  </div>
-</dialog>
+<header class="novaFlowGuideHead"><div><span>NOVA / PLAYER’S GUIDE</span>
+<h2 id="novaFlowGuideTitle">フロー・攻略情報</h2></div><button id="novaFlowGuideClose" type="button" autofocus aria-label="攻略情報を閉じる">閉じる ×</button>
+</header><div class="novaGuideLayout">
+<details class="novaGuideIndex" open>
+<summary>目次から探す</summary>
+<nav aria-label="攻略情報の目次"><a href="#guide-spec"><span>01</span>基本スペック</a><a href="#guide-play"><span>02</span>打ち方・狙え</a><a href="#guide-flow"><span>03</span>ゲームフロー</a><a href="#guide-normal"><span>04</span>通常時・天井</a><a href="#guide-cz"><span>05</span>CZ・強CZ</a><a href="#guide-bb"><span>06</span>BB・穢れ解放</a><a href="#guide-at"><span>07</span>AT・引き戻し</a><a href="#guide-zones"><span>08</span>キャラ特化ゾーン</a><a href="#guide-premium"><span>09</span>出陣・上位AT</a><a href="#guide-setting"><span>10</span>設定推測・やめどき</a>
+</nav>
+</details>
+<article class="novaGuideArticle" tabindex="0" aria-label="NOVA攻略情報"><div class="novaGuideHero"><span>NOVA / PLAY GUIDE</span>
+<h3>狙えを楽しむ。<br>特化をつなぐ。</h3>
+<p>基本スペックから特化ゾーンまで。<br>気になる項目を目次からチェック。</p><div class="novaGuideBadges"><b>CZ <strong>15G</strong></b><b>BB <strong>50pt</strong></b><b>AT <strong>300pt＋α</strong></b></div></div>
+<section id="guide-spec" class="novaGuideSection" aria-labelledby="guide-spec-title">
+<h3 id="guide-spec-title" tabindex="-1">基本スペック</h3><div class="novaGuideTableWrap">
+<table>
+<thead>
+<tr><th scope="col">項目</th><th scope="col">基本情報</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>タイプ</td><td>BBからATを目指すpt管理タイプ</td>
+</tr>
+<tr><td>BB</td><td>規定50pt／通常BIG・上位BIG</td>
+</tr>
+<tr><td>AT初期残りpt</td><td>300pt＋α（初期特化を経由）</td>
+</tr>
+<tr><td>AT純増</td><td>通常AT区間：約4pt/G</td>
+</tr>
+<tr><td>設定</td><td>1〜6の6段階</td>
+</tr>
+</tbody>
+</table></div><div class="novaGuideTableWrap">
+<table>
+<thead>
+<tr><th scope="col">設定</th><th scope="col">機械割</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>1</td><td>95%</td>
+</tr>
+<tr><td>2</td><td>97%</td>
+</tr>
+<tr><td>3</td><td>99%</td>
+</tr>
+<tr><td>4</td><td>103%</td>
+</tr>
+<tr><td>5</td><td>111%</td>
+</tr>
+<tr><td>6</td><td>116%</td>
+</tr>
+</tbody>
+</table></div>
+<p class="novaGuideNote">機械割は本攻略情報の掲載用表記値。1日単位の勝率や実測値を表すものではありません。純増は準備・特化区間を含むAT全体の数値ではありません。</p>
+</section>
+<section id="guide-play" class="novaGuideSection" aria-labelledby="guide-play-title">
+<h3 id="guide-play-title" tabindex="-1">打ち方・狙え演出</h3><div class="novaGuideCard">
+<h4>押し順ナビを最優先</h4>
+<p>通常時は順押しを基本に、ナビが出たら指定された順番で停止。狙え演出では図柄・リール・押し順を確認しよう。</p></div><div class="novaGuideTableWrap">
+<table>
+<thead>
+<tr><th scope="col">演出</th><th scope="col">確認するポイント</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>ネビュラを狙え</td><td>逆押しの指示を確認し、指定されたネビュラ図柄を狙う</td>
+</tr>
+<tr><td>中リールに狙え</td><td>NOVA・ブランク・NOVAの図柄配置と、画面の指示を確認</td>
+</tr>
+<tr><td>赤7・スーパーノヴァ狙え</td><td>表示された図柄と押し順に従って停止する</td>
+</tr>
+</tbody>
+</table></div>
+<p class="novaGuideNote">BBの50ptは規定払い出し、ATの300ptは初期残りptの管理値。BET消費があるため、そのまま差枚＋50pt・＋300ptを保証するものではありません。</p>
+</section>
+<section id="guide-flow" class="novaGuideSection" aria-labelledby="guide-flow-title">
+<h3 id="guide-flow-title" tabindex="-1">ゲームフロー</h3>
+<ol class="novaGuideFlow">
+<li><b>通常時</b><span>レア役やゲーム数からCZへ</span>
+</li>
+<li><b>CZ・強CZ / 15G</b><span>BB当選、さらにAT直撃にも期待</span>
+</li>
+<li><b>BB / 50pt</b><span>ネビュラ揃いがATへの鍵</span>
+</li>
+<li><b>初期特化 → AT</b><span>300pt＋αを上乗せでつなぐ</span>
+</li>
+<li><b>キャラ特化・上位への挑戦</b><span>多彩な上乗せとストック獲得</span>
+</li>
+<li><b>引き戻し / 5G</b><span>成功すれば特化を獲得しAT復帰</span>
+</li>
+</ol>
+<details class="novaGuideDiagram">
+<summary>詳しいフロー図を見る（2枚）</summary>
+<nav class="novaFlowGuideNav" aria-label="フロー図の選択"><button type="button" data-flow-page="0" aria-pressed="true">通常時〜AT</button><button type="button" data-flow-page="1" aria-pressed="false">AT〜上位・引き戻し</button><button id="novaFlowGuideZoom" type="button" aria-pressed="false">拡大</button>
+</nav><div class="novaFlowGuideViewport" tabindex="0" aria-label="ゲームフロー図。拡大時は縦横にスクロールできます。">
+<p id="novaFlowGuideStatus" role="status" hidden>
+</p><button id="novaFlowGuideRetry" type="button" hidden>再読み込み</button><img id="novaFlowGuideImage" width="1697" height="2400" decoding="async" alt="通常時からCZ、BIG、AT初当たりまでのゲームフロー"></div>
+</details>
+<p class="novaGuideNote">基本ルートのほか、CZからのAT直撃やフリーズ・穢れ解放などの特別なルートも存在。</p>
+</section>
+<section id="guide-normal" class="novaGuideSection" aria-labelledby="guide-normal-title">
+<h3 id="guide-normal-title" tabindex="-1">通常時・モード・天井</h3>
+<p>レア役とゲーム数の節目がCZへの入口。強チェリーは強CZにつながる注目契機だ。</p><div class="novaGuideCard">
+<h4>モードでチャンスの位置が変わる</h4>
+<p>通常A・通常B・通常C・天国・天国ループが存在。モードによってCZのチャンスとなるゲーム数や天井の位置が変化する。</p></div><div class="novaGuideTableWrap">
+<table>
+<thead>
+<tr><th scope="col">注目ポイント</th><th scope="col">目安・特徴</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>序盤</td><td>50G付近など、早い段階のCZにも注目</td>
+</tr>
+<tr><td>ゲーム数の節目</td><td>100G単位のチャンス位置はモードで変化</td>
+</tr>
+<tr><td>天国系</td><td>200G以内がひとつの目安</td>
+</tr>
+<tr><td>通常時の天井</td><td>最大800G</td>
+</tr>
+<tr><td>朝一リセット後</td><td>最大600Gが目安</td>
+</tr>
+</tbody>
+</table></div>
+<p class="novaGuideNote">天井は通常・CZ側の内部カウントが基準。総ゲーム数とは異なり、CZ消化中などは告知のタイミングが変わる場合があります。前兆だけで当選確定とは判断しないようにしよう。</p>
+</section>
+<section id="guide-cz" class="novaGuideSection" aria-labelledby="guide-cz-title">
+<h3 id="guide-cz-title" tabindex="-1">CZ・強CZ</h3><div class="novaGuideTableWrap">
+<table>
+<thead>
+<tr><th scope="col">項目</th><th scope="col">CZ</th><th scope="col">強CZ</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>継続</td><td>15G</td><td>15G</td>
+</tr>
+<tr><td>主な入口</td><td>レア役・ゲーム数など</td><td>強チェリー</td>
+</tr>
+<tr><td>注目点</td><td>BB当選と当選内容の昇格</td><td>通常CZよりも突破に期待</td>
+</tr>
+</tbody>
+</table></div><div class="novaGuideCard">
+<h4>成功後にも見せ場あり</h4>
+<p>BB当選に加え、AT直撃への昇格ルートも存在。チャンス役やランプの展開、最終ゲームの告知まで見届けよう。</p></div><div class="novaGuideCard">
+<h4>PUSHが出たら</h4>
+<p>画面の指示に従って決着を確認。途中の演出だけで成功・失敗を決めつけず、最終表示までチェック。</p></div>
+</section>
+<section id="guide-bb" class="novaGuideSection" aria-labelledby="guide-bb-title">
+<h3 id="guide-bb-title" tabindex="-1">BB・穢れ解放</h3><div class="novaGuideTableWrap">
+<table>
+<thead>
+<tr><th scope="col">BB</th><th scope="col">規定pt</th><th scope="col">基本AT期待度</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>通常BIG（白点滅）</td><td>50pt</td><td>約52%</td>
+</tr>
+<tr><td>上位BIG（赤点滅）</td><td>50pt</td><td>約80%</td>
+</tr>
+</tbody>
+</table></div>
+<p class="novaGuideNote">穢れ解放やフリーズなど、AT保証を伴う契機は別扱い。</p><div class="novaGuideCard">
+<h4>ネビュラ揃いがATへの鍵</h4>
+<p>狙え演出では逆押しの指示を確認。図柄が揃えばATにつながる。AT確定後も、特化ストック獲得の見せ場がある。</p></div><div class="novaGuideCard">
+<h4>穢れ解放BB</h4>
+<p>不利な展開の積み重ねが、次のBBで報われることも。穢れ解放時はATに加えて特化ゾーンを獲得。専用演出・BGM・狙えボイスにも注目。</p></div><div class="novaGuideCard">
+<h4>フリーズを伴うBB</h4>
+<p>通常時の特別な成立役から訪れるプレミアム契機。BBに加え、ATと強力な特化ゾーンにつながる。</p></div>
+</section>
+<section id="guide-at" class="novaGuideSection" aria-labelledby="guide-at-title">
+<h3 id="guide-at-title" tabindex="-1">AT・初期特化・引き戻し</h3><div class="novaGuideHighlight">初期残りpt <strong>300pt＋α</strong></div><div class="novaGuideCard">
+<h4>初期特化「くしゅり＆にと」</h4>
+<p>ATの入口を飾る3Gの初期特化。初期300ptに、レア役などによる加算も期待できる。</p></div><div class="novaGuideCard">
+<h4>AT中は直乗せとキャラ特化</h4>
+<p>レア役から直乗せや特化ゾーンなどを抽選。前兆からの告知、赤7狙え、キャラルーレットといった流れに注目。</p></div><div class="novaGuideCard">
+<h4>残りpt消化後も、5Gの引き戻し</h4>
+<p>成功すれば特化ゾーンを獲得してATに復帰。区間中のレア役は大きなチャンスだ。</p></div>
+<p class="novaGuideNote">残りptは払い出しに応じて減算。液晶の残りpt・獲得表示と、台データの差枚は役割が異なります。</p>
+</section>
+<section id="guide-zones" class="novaGuideSection" aria-labelledby="guide-zones-title">
+<h3 id="guide-zones-title" tabindex="-1">キャラ特化ゾーン</h3><div class="novaGuideZones"><div class="novaGuideZone"><img src="assets/guide/character-sosuke.webp" alt="宗介" width="110" height="130" loading="lazy" decoding="async"><div><span>STEP UP</span>
+<h4>宗介ゾーン</h4>
+<p>段階を突破するたびに上乗せ額がアップするステップ型。次の段階へ進めるか、毎回の決着に注目。</p></div></div><div class="novaGuideZone"><img src="assets/guide/character-toto.webp" alt="とと" width="110" height="130" loading="lazy" decoding="async"><div><span>7 ATTACK</span>
+<h4>ととゾーン</h4>
+<p>7揃いでpt上乗せ。ネビュラ揃いでは上乗せに加え、残りゲーム数のリセットにも期待。</p></div></div><div class="novaGuideZone"><img src="assets/guide/character-urapi.webp" alt="うらぴ" width="110" height="130" loading="lazy" decoding="async"><div><span>SUPERNOVA</span>
+<h4>うらぴゾーン</h4>
+<p>スーパーノヴァ狙えが主役。揃った後の次BETや、0G連の見せ場にも注目。</p></div></div><div class="novaGuideZone"><img src="assets/guide/character-giru1.webp" alt="ギル" width="110" height="130" loading="lazy" decoding="async"><div><span>STEP UP / STRONG</span>
+<h4>ギルゾーン</h4>
+<p>宗介と同じ段階突破型。さらに上の段階へ確保ptを押し上げる。性能を強めた裏ギルも存在。</p></div></div><div class="novaGuideZone"><img src="assets/guide/character-sora1.webp" alt="空" width="110" height="130" loading="lazy" decoding="async"><div><span>7 ATTACK / RESET</span>
+<h4>空ゾーン</h4>
+<p>7揃いの上乗せとネビュラ揃いによる残りゲーム数リセットが見せ場。裏空ではさらなる展開に期待。</p></div></div><div class="novaGuideZone"><img src="assets/guide/character-ouma1.webp" alt="逢魔" width="110" height="130" loading="lazy" decoding="async"><div><span>SUPERNOVA / FREEZE</span>
+<h4>逢魔ゾーン</h4>
+<p>スーパーノヴァ揃いの上乗せとフリーズ・0G連の連鎖が魅力。裏逢魔は通常版以上の上乗せに期待。</p></div></div></div>
+</section>
+<section id="guide-premium" class="novaGuideSection" aria-labelledby="guide-premium-title">
+<h3 id="guide-premium-title" tabindex="-1">出陣・チャレンジ・上位AT</h3><div class="novaGuideCard">
+<h4>出陣 / 10G</h4>
+<p>特化ストックの集中獲得を目指す特別な区間。前段の「中リールに狙え」では、図柄配置と画面の指示を確認しよう。</p></div><div class="novaGuideCard">
+<h4>スーパーノヴァチャレンジ / 10G</h4>
+<p>成功で裏ギル・裏空・裏逢魔のいずれかを獲得し、上位ATにつながる。狙え演出や最終決着が見せ場。</p></div><div class="novaGuideCard">
+<h4>上位AT</h4>
+<p>純増設計は通常AT区間と同じ約4pt/G。特化ゾーンにつながる期待感が増し、上乗せをつなぐ展開を狙える。</p></div><div class="novaGuideCard">
+<h4>穢れの蓄積</h4>
+<p>CZ失敗やBBからのAT非突入など、不利な展開で蓄積。示唆が出ても解放までの距離は一律ではない。</p></div>
+</section>
+<section id="guide-setting" class="novaGuideSection" aria-labelledby="guide-setting-title">
+<h3 id="guide-setting-title" tabindex="-1">設定推測・やめどき</h3><div class="novaGuideTableWrap">
+<table>
+<thead>
+<tr><th scope="col">記録するもの</th><th scope="col">見方のポイント</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>CZの入口と回数</td><td>契機とゲーム数を合わせて記録</td>
+</tr>
+<tr><td>CZの結果</td><td>突破やAT直撃の展開も見る</td>
+</tr>
+<tr><td>BBとAT初当たり</td><td>BB回数とATにつながった回数を分ける</td>
+</tr>
+<tr><td>特化・差枚・総ゲーム数</td><td>単発の大きな上乗せやグラフだけで断定しない</td>
+</tr>
+</tbody>
+</table></div><div class="novaGuideCard">
+<h4>小役カウントを過信しない</h4>
+<p>現行版の見える通常小役は全設定共通。小役の回数だけで高設定と断定せず、CZやATまでの展開と合わせて考えよう。</p></div><div class="novaGuideCard">
+<h4>やめる前に確認</h4>
+<p>引き戻しの決着、継続中の前兆、特化の告知・待機が残っていないかをチェック。天井までの距離や示唆ひとつで、続行が必ず有利とは断定できない。</p></div>
+<p class="novaGuideNote">内部振分・穢れの具体的な数値・細かな設定差は非掲載。「期待」「チャンス」は結果を保証する表現ではありません。ptはゲーム内の単位。更新や店舗設定によって内容が変わる場合は、遊技画面の案内を優先してください。</p>
+</section>
+<footer class="novaGuideFoot">NOVA 攻略ガイド · 2026.11.05 更新</footer>
+</article></div></dialog>
 <dialog id="autoStopOrderDialog" class="autoStopOrderDialog" aria-labelledby="autoStopOrderTitle">
   <h2 id="autoStopOrderTitle">AUTO停止順を選択</h2>
   <p>通常AUTO・超スピード共通</p>
@@ -178,7 +391,7 @@
         </div>
       </div>
       <div class="audioDock" id="audioDock">
-        <button class="utilityTextBtn" id="flowToggleBtn" type="button" aria-label="ゲームフローを開く" aria-haspopup="dialog" aria-controls="novaFlowGuide" aria-expanded="false">フロー</button>
+        <button class="utilityTextBtn" id="flowToggleBtn" type="button" aria-label="フロー・攻略情報を開く" aria-haspopup="dialog" aria-controls="novaFlowGuide" aria-expanded="false">フロー</button>
         <button class="utilityToggleBtn" id="oddsToggleBtn" type="button" aria-label="確率表を開く" aria-expanded="false" title="確率表">
           <picture class="novaResponsiveImage"><source media="(max-width:1024px)" srcset="assets/mobile-20261013/icon_odds_percent_blue.webp"><img src="assets/ui/icon_odds_percent_blue.png" alt=""></picture>
         </button>
