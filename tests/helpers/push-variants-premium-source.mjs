@@ -5,6 +5,12 @@ const cabinetEdits=JSON.parse(fs.readFileSync(new URL('./retired-cabinet-source.
 const edits=JSON.parse(fs.readFileSync(new URL('./push-variants-premium-source.json',import.meta.url),'utf8'));
 // Undo retired cabinet readouts and the preceding presentation-only edits. No approximate substitutions.
 export function beforePushVariantsAndPremiumCleanup(source){
+ const mixEdits=JSON.parse(fs.readFileSync(new URL('./audio-mix-center-source.json',import.meta.url),'utf8'));
+ for(const [after,before] of mixEdits){
+  assert.equal(source.split(after).length,2,'Audio calibration must match exactly once');
+  source=source.replace(after,()=>before);
+ }
+ assert.equal(createHash('sha256').update(source).digest('hex'),'b4af06aaff89aaeb80bdee02e06134122625c0f2f77db429a379d1f56cedc7e9');
  for(const hook of [
   "    if(resolved.atPrelude?.confirmed)globalThis.NovaAtPatrol?.confirm();\n",
   "    globalThis.NovaAtPatrol?.sync(session.active||normalState.bonusPending||debugFastSpinActive||speedToBonusActive||normalState.resultCard||normalState.stockEntry||isCompleteTrialLocked()?null:normalState.flow,resolved);\n"

@@ -319,18 +319,29 @@
     return Math.max(0, Math.min(1, raw * audioSourceOutputScale(src)));
   }
 
-  // All50 reproduces calibration v1 sliders 50/100/100/57/37.
+  // Slider 50 reproduces these v2 category levels; both ends retain their full range.
+  const AUDIO_MIX_CENTER = Object.freeze({
+    bgmVolume: 0.69, sfxVolume: 0.46, voiceVolume: 0.55, payoutVolume: 0.52
+  });
+
+  function remapVolumeSlider(value, fromCenter, toCenter){
+    if(value <= fromCenter) return value * toCenter / fromCenter;
+    return toCenter + (value - fromCenter) * (1 - toCenter) / (1 - fromCenter);
+  }
+
   function migrateAudioCalibration(target, previousVersion=0){
-    if(Number(previousVersion)>=2)return;
-    if(Number(previousVersion)>=1){
-      for(const [key,ratio] of [['bgmVolume',2],['sfxVolume',2],['voiceVolume',1.14],['payoutVolume',0.74]]){
-        const value=Number(target[key]);
-        target[key]=Number.isFinite(value)?clamp(value/ratio,0,1):0.5;
+    if(Number(previousVersion) >= 3) return;
+    const v1Scale = {bgmVolume: 2, sfxVolume: 2, voiceVolume: 1.14, payoutVolume: 0.74};
+    for(const [key, center] of Object.entries(AUDIO_MIX_CENTER)){
+      const value = Number(target[key]);
+      if(!(Number(previousVersion) >= 1) || !Number.isFinite(value)){
+        target[key] = 0.5;
+        continue;
       }
-    }else{
-      for(const key of ['masterVolume','bgmVolume','sfxVolume','voiceVolume','payoutVolume'])target[key]=0.5;
+      const previousLevel = Number(previousVersion) < 2 ? value / v1Scale[key] : value;
+      target[key] = remapVolumeSlider(clamp(previousLevel, 0, 1), center, 0.5);
     }
-    target.audioCalibrationVersion=2;
+    target.audioCalibrationVersion = 3;
   }
 
   function audioOutputVolume(value, scale=1){
@@ -369,7 +380,7 @@
     rogiMovieVolume:DEFAULT_ROGI_MOVIE_VOLUME,
     audioMuted:false,
     audioBalanceVersion:AUDIO_BALANCE_VERSION,
-    audioCalibrationVersion:2,
+    audioCalibrationVersion:3,
     completeEnabled:false,
     completeBasis:"none",
     completeLimitPt:0,
@@ -1316,7 +1327,7 @@
   }
 
   function bgmOutputVolume(scale=1){
-    return audioOutputVolume(settings.bgmVolume, scale * 1.36);
+    return audioOutputVolume(remapVolumeSlider(settings.bgmVolume, 0.5, AUDIO_MIX_CENTER.bgmVolume), scale * 1.36);
   }
 
   function bgmOutputVolumeForSource(scale, src=""){
@@ -1324,11 +1335,11 @@
   }
 
   function sfxOutputVolume(scale=SFX_OUTPUT_SCALE){
-    return audioOutputVolume(settings.sfxVolume, scale * 2);
+    return audioOutputVolume(remapVolumeSlider(settings.sfxVolume, 0.5, AUDIO_MIX_CENTER.sfxVolume), scale * 2);
   }
 
   function voiceOutputVolume(scale=1){
-    return audioOutputVolume(settings.voiceVolume, scale * 1.4592);
+    return audioOutputVolume(remapVolumeSlider(settings.voiceVolume, 0.5, AUDIO_MIX_CENTER.voiceVolume), scale * 1.4592);
   }
 
   function resumeCharacterVoiceAudio(){
@@ -1378,8 +1389,12 @@
     if(category==='voice')return voiceOutputVolume();
     if(category==='bgm')return bgmOutputVolume();
     if(category==='sfx'){
-      const trim=['assets/media/nova/spin_start.wav','assets/media/nova/reel-stop.wav'].includes(String(src).split('?')[0])?0.7:1;
-      return Math.min(1,sfxOutputVolume()*trim*(src===SORTIE_SANDWICH_AIM_SOUND_SRC?10**(8/20):1));
+      const key = normalizedAudioSourceKey(src);
+      let gain = sfxOutputVolume();
+      if(key === SPIN_SOUND_SRC) gain *= 0.7;
+      if(key === STOP_SOUND_SRC) gain *= 0.7 * dbToGain(-3);
+      if(src === SORTIE_SANDWICH_AIM_SOUND_SRC) gain *= dbToGain(8);
+      return Math.min(1, gain);
     }
     if(category==='payout')return payoutOutputVolume();
     return CHARACTER_VOICE_KEYS.has(normalizedAudioSourceKey(src))?voiceOutputVolume():applyAudioSourceOutputScale(volume,src);
@@ -1406,7 +1421,7 @@
   }
 
   function payoutOutputVolume(scale=PAYOUT_SOUND_OUTPUT_SCALE){
-    return audioOutputVolume(settings.payoutVolume, scale * 0.74);
+    return audioOutputVolume(remapVolumeSlider(settings.payoutVolume, 0.5, AUDIO_MIX_CENTER.payoutVolume), scale * 0.74);
   }
 
   function payoutOutputVolumeForSource(scale=PAYOUT_SOUND_OUTPUT_SCALE, src=""){
