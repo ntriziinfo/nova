@@ -20,7 +20,7 @@ test('only ordinary normal games count, including high state and preludes, with 
   n.record(stats,'BELL',{flowBefore:{phase:'normal'},normalBellNavi:true});
   const saved=JSON.stringify(stats);
   for(const resolved of [
-    {flowBefore:{phase:'cz'}},{flowBefore:{phase:'rt'}},{flowBefore:{phase:'art'}},
+    {flowBefore:{phase:'rt'}},{flowBefore:{phase:'art'}},
     {flowBefore:{phase:'art',zone:'sora'}},{flowBefore:{phase:'normal',zero:true}},
     {flowBefore:{phase:'normal'},bonusPendingAtStart:true},{flowBefore:{phase:'normal'},zoneSpin:true}
   ])n.record(stats,'WEAK_SUICA',resolved);
@@ -28,6 +28,24 @@ test('only ordinary normal games count, including high state and preludes, with 
   assert.equal(stats.normalRoleGames,7);
   for(const role of n.roles)assert.equal(stats[role.key],1,role.label);
   assert.equal(stats.totalPaid,800);assert.equal(stats.totalFee,300);
+});
+
+test('both CZ types count for first hits, preparation and zero-game effects do not double count BBs',()=>{
+  const c=context({stats:{},NovaDataCounter:{hit(){}}}), n=c.NovaRoleCounter;
+  const play=(phase,other={})=>n.record(c.stats,'REPLAY',{flowBefore:{phase},...other});
+  vm.runInContext(fn('recordAtFirstEntry'),c);
+  c.recordAtFirstEntry({phase:'normal'},{phase:'art'}); // legacy BB already pending on update
+  assert.equal(c.stats.firstHitAtCount,undefined);
+  play('normal'); play('cz',{bonusHit:true,bonusKind:'BIG'});
+  play('normal',{bonusPendingAtStart:true,bonusReady:true,bonusKind:'BIG'});
+  play('strong_cz',{bonusReady:true,bonusKind:'BIG'});
+  play('cz',{flowBefore:{phase:'cz',zero:true},bonusHit:true,bonusKind:'BIG'});
+  play('art',{bonusHit:true,bonusKind:'BIG'}); play('rt');
+  c.recordAtFirstEntry({phase:'normal'},{phase:'art'});
+  c.recordAtFirstEntry({phase:'art'},{phase:'art'});
+  assert.deepEqual([c.stats.firstHitEligibleGames,c.stats.firstHitBigCount,c.stats.firstHitAtCount],[3,2,1]);
+  assert.equal(c.stats.normalRoleGames,1);
+  assert.equal(c.stats.normalRoleReplayCount,1);
 });
 
 test('role counts carry through player changes and reloads, without inventing legacy normal-role history',()=>{
@@ -57,12 +75,16 @@ test('panel displays cumulative AT and combined BIG with their own denominator, 
   const els=new Map(),element=id=>{
     if(!els.has(id))els.set(id,{textContent:'',children:[{}]});return els.get(id);
   };
-  const c=context({$:element,stats:{normalRoleGames:100,normalRoleReplayCount:10},machineDisplayBase:{normalRoleGames:900,normalRoleReplayCount:90},playSessionStartStats:{}});
+  const c=context({$:element,stats:{normalRoleGames:100,normalRoleReplayCount:10,firstHitEligibleGames:180,firstHitBigCount:2,firstHitAtCount:1},machineDisplayBase:{normalRoleGames:900,normalRoleReplayCount:90,firstHitEligibleGames:420,firstHitBigCount:3,firstHitAtCount:1},playSessionStartStats:{}});
   vm.runInContext(fn('updateRoleCounter'),c);
   const total={totalSpins:2000,atFirstCount:4,bigCount:10};c.updateRoleCounter(total);
   assert.equal(element('roleCounterTotalGames').textContent,'2,000');
-  assert.equal(element('roleCounterAtCount').textContent,'4');assert.equal(element('roleCounterAtOdds').textContent,'1/500.0');
-  assert.equal(element('roleCounterBigCount').textContent,'10');assert.equal(element('roleCounterBigOdds').textContent,'1/200.0');
+  assert.equal(element('roleCounterEligibleGames').textContent,'600');
+  assert.equal(element('roleCounterAtCount').textContent,'2');assert.equal(element('roleCounterAtOdds').textContent,'1/300.0');
+  assert.equal(element('roleCounterBigCount').textContent,'5');assert.equal(element('roleCounterBigOdds').textContent,'1/120.0');
   assert.equal(element('roleCounterNormalGames').textContent,'1,000');assert.equal(element('roleCounterReplayOdds').textContent,'1/10.0');
-  c.updateRoleCounter({...total,atFirstCountPartial:true});assert.equal(element('roleCounterAtOdds').textContent,'—');
+  c.updateRoleCounter({...total,atFirstCountPartial:true});assert.equal(element('roleCounterAtOdds').textContent,'1/300.0');
+  c.stats={...total,dataNormalGames:800};c.machineDisplayBase={...total};c.updateRoleCounter(total);
+  assert.equal(element('roleCounterEligibleGames').textContent,'0');
+  assert.equal(element('roleCounterBigOdds').textContent,'—');assert.equal(element('roleCounterAtOdds').textContent,'—');
 });

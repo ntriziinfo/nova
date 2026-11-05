@@ -3365,12 +3365,13 @@
             <button class="infoCloseBtn" id="roleCounterCloseBtn" type="button" aria-label="役カウンターを閉じる" title="閉じる">×</button>
           </div>
           <div id="roleCounterPanelBody">
-            <h2>AT・BIG・設定差のある小役</h2>
+            <h2>BB・AT初当たり</h2>
             <p class="small">台累計 / 総回転数 <b id="roleCounterTotalGames">0</b> G</p>
+            <p class="small">初当たり集計対象（通常＋CZ） <b id="roleCounterEligibleGames">0</b> G</p>
             <table class="oddsTable roleCounterTable">
               <tr><th scope="col">役</th><th scope="col">回数</th><th scope="col">実践値</th></tr>
               <tr><td>AT（初当たり）</td><td id="roleCounterAtCount">0</td><td id="roleCounterAtOdds">—</td></tr>
-              <tr><td>BIG（合算）</td><td id="roleCounterBigCount">0</td><td id="roleCounterBigOdds">—</td></tr>
+              <tr><td>BB（通常・上位）</td><td id="roleCounterBigCount">0</td><td id="roleCounterBigOdds">—</td></tr>
             </table>
             <h2>通常時の小役</h2>
             <p class="small">小役集計対象 <b id="roleCounterNormalGames">0</b> G</p>
@@ -3378,7 +3379,7 @@
               <thead><tr><th scope="col">役</th><th scope="col">回数</th><th scope="col">実践値</th></tr></thead>
               <tbody id="roleCounterSmallRows"></tbody>
             </table>
-            <p class="small">AT・BIGの実践値は総回転数から算出。BIGは通常・上位を合算します。<br>小役はこのカウンター追加後の通常時（高確・前兆を含む）を集計し、CZ・AT・ボーナス・準備中は含みません。台累計は管理リセットで区切られます。</p>
+            <p class="small">BB・ATの実践値は、更新後の通常GとCZ消化Gを各初当たり回数で割って表示します。BB準備・BB・AT中のGは除きます。<br>小役はこのカウンター追加後の通常時（高確・前兆を含む）を集計し、CZ・AT・ボーナス・準備中は含みません。台累計は管理リセットで区切られます。</p>
           </div>
         </div>
         <div class="audioPanel" id="audioPanel">
@@ -3820,7 +3821,7 @@
 <script src="nova-spin-resume.js?v=20261028-auto-stop-control"></script>
 <script src="nova-play-access.js?v=20261001-save-recovery"></script>
 <script src="nova-history.js?v=20261001-history-performance"></script>
-<script src="nova-role-counter.js?v=20261014-role-counter-suica3-cherry2-v1"></script>
+<script src="nova-role-counter.js?v=20261105-role-counter-first-hits"></script>
 <script src="nova-data-counter.js?v=20261030-challenge-history"></script>
 <script src="nova-display-group.js?v=20261027-group"></script>
 <script src="nova-sortie-aim.js?v=20261030-sortie-success"></script>
@@ -3832,7 +3833,7 @@
 <script src="nova-result-recall.js?v=20261105-push-front"></script>
 <script src="nova-state-storage.js?v=20261104-reliability"></script>
 <script src="nova-runtime-gates.js?v=20261104-reliability"></script>
-<script src="nova-game.js?v=20261105-checkpoint-interrupt-audio-calibration50-click70-ouma-push-retired-cabinet-patrol-mix50-stop3db-lever3db-speed-volume-normalbgm5db-replay3-kushuri1"></script>
+<script src="nova-game.js?v=20261105-checkpoint-interrupt-audio-calibration50-click70-ouma-push-retired-cabinet-patrol-mix50-stop3db-lever3db-speed-volume-normalbgm5db-replay3-kushuri1-first-hits"></script>
 <button type="button" id="novaSymbolPreviewOpen">チェリー・ノヴァ（BAR）停止形を確認</button>
 <dialog id="novaSymbolPreview"><h2>チェリー・ノヴァ（BAR）停止形</h2><label>出目<select id="novaPatternSelect"><option value="WEAK_NOVA">弱チェリー：左上段・下段</option><option value="STRONG_MIDDLE">強チェリー：右下がり</option><option value="STRONG_RIGHT">強チェリー：右上がり</option><option value="SUPER_NOVA" selected>ノヴァ（BAR）揃い</option></select></label><p id="novaPatternDescription"></p><div id="novaSymbolPreviewGrid"></div><p>出目の確認用です。通常時のノヴァ（BAR）揃いはBIG・フリーズ各50%。ボーナス中は対象外。弱チェリー・強チェリーはそれぞれ既存の抽選を維持します。</p><button type="button" id="novaSymbolPreviewClose">閉じる</button></dialog>
 </body>

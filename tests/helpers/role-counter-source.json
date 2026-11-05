@@ -1,0 +1,10 @@
+[
+  [
+    "      stats.atFirstCount=(Number(stats.atFirstCount)||0)+1;\n      if(stats.firstHitEligibleGames>0)stats.firstHitAtCount=(Number(stats.firstHitAtCount)||0)+1;",
+    "      stats.atFirstCount=(Number(stats.atFirstCount)||0)+1;"
+  ],
+  [
+    "    const counted=NovaRoleCounter.display(stats,machineDisplayBase,playSessionStartStats);\n    set('roleCounterEligibleGames',format(counted.firstHitEligibleGames));\n    set('roleCounterAtCount',format(counted.firstHitAtCount));\n    set('roleCounterAtOdds',NovaRoleCounter.odds(counted.firstHitAtCount,counted.firstHitEligibleGames));\n    set('roleCounterBigCount',format(counted.firstHitBigCount));\n    set('roleCounterBigOdds',NovaRoleCounter.odds(counted.firstHitBigCount,counted.firstHitEligibleGames));\n",
+    "    set('roleCounterAtCount',machineDisplay.atFirstCountPartial?'—':format(machineDisplay.atFirstCount));\n    set('roleCounterAtOdds',machineDisplay.atFirstCountPartial?'—':NovaRoleCounter.odds(machineDisplay.atFirstCount,machineDisplay.totalSpins));\n    set('roleCounterBigCount',format(machineDisplay.bigCount));\n    set('roleCounterBigOdds',NovaRoleCounter.odds(machineDisplay.bigCount,machineDisplay.totalSpins));\n    const counted=NovaRoleCounter.display(stats,machineDisplayBase,playSessionStartStats);\n"
+  ]
+]

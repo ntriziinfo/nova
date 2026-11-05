@@ -3066,6 +3066,7 @@
   function recordAtFirstEntry(before,after){
     if(before?.phase!=='art' && after?.phase==='art'){
       stats.atFirstCount=(Number(stats.atFirstCount)||0)+1;
+      if(stats.firstHitEligibleGames>0)stats.firstHitAtCount=(Number(stats.firstHitAtCount)||0)+1;
       NovaDataCounter.hit(stats,'AT');
     }
   }
@@ -6256,11 +6257,12 @@
     const set=(id,value)=>{const el=$(id);if(el&&el.textContent!==String(value))el.textContent=value;};
     const format=value=>(Number(value)||0).toLocaleString('ja-JP');
     set('roleCounterTotalGames',format(machineDisplay.totalSpins));
-    set('roleCounterAtCount',machineDisplay.atFirstCountPartial?'—':format(machineDisplay.atFirstCount));
-    set('roleCounterAtOdds',machineDisplay.atFirstCountPartial?'—':NovaRoleCounter.odds(machineDisplay.atFirstCount,machineDisplay.totalSpins));
-    set('roleCounterBigCount',format(machineDisplay.bigCount));
-    set('roleCounterBigOdds',NovaRoleCounter.odds(machineDisplay.bigCount,machineDisplay.totalSpins));
     const counted=NovaRoleCounter.display(stats,machineDisplayBase,playSessionStartStats);
+    set('roleCounterEligibleGames',format(counted.firstHitEligibleGames));
+    set('roleCounterAtCount',format(counted.firstHitAtCount));
+    set('roleCounterAtOdds',NovaRoleCounter.odds(counted.firstHitAtCount,counted.firstHitEligibleGames));
+    set('roleCounterBigCount',format(counted.firstHitBigCount));
+    set('roleCounterBigOdds',NovaRoleCounter.odds(counted.firstHitBigCount,counted.firstHitEligibleGames));
     set('roleCounterNormalGames',format(counted.normalRoleGames));
     const body=$('roleCounterSmallRows');
     if(!body)return;

@@ -8,11 +8,17 @@ globalThis.NovaRoleCounter=(()=>{
     {id:'Bell',key:'normalRoleBellCount',result:'BELL',label:'ベル（ナビなし）'},
     {id:'NaviBell',key:'normalRoleNaviBellCount',result:'NAVI_BELL',label:'押し順ベル'}
   ].map(Object.freeze));
-  const keys=Object.freeze(['normalRoleGames',...roles.map(role=>role.key)]);
+  const keys=Object.freeze(['firstHitEligibleGames','firstHitBigCount','firstHitAtCount','normalRoleGames',...roles.map(role=>role.key)]);
   const number=value=>Number.isFinite(Number(value)) ? Math.max(0,Number(value)) : 0;
   function snapshot(stats){return Object.fromEntries(keys.map(key=>[key,number(stats?.[key])]));}
   function record(stats,result,resolved){
-    if(resolved?.flowBefore?.phase!=='normal'||resolved.flowBefore.zero||resolved.bonusPendingAtStart||resolved.zoneSpin)return;
+    const phase=resolved?.flowBefore?.phase;
+    if(!['normal','cz','strong_cz'].includes(phase)||resolved.flowBefore.zero||resolved.bonusPendingAtStart||resolved.zoneSpin)return;
+    stats.firstHitEligibleGames=number(stats.firstHitEligibleGames)+1;
+    if(resolved.bonusKind==='BIG'&&(resolved.bonusHit||resolved.bonusReady)){
+      stats.firstHitBigCount=number(stats.firstHitBigCount)+1;
+    }
+    if(phase!=='normal')return;
     stats.normalRoleGames=number(stats.normalRoleGames)+1;
     const role=roles.find(row=>row.result===(result==='BELL'&&resolved.normalBellNavi?'NAVI_BELL':result));
     if(role)stats[role.key]=number(stats[role.key])+1;
