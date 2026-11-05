@@ -325,6 +325,22 @@
         "tests/nova-super-speed-reels.test.mjs",
         "tests/nova-impurity-voice-equivalence.test.mjs"
       ]
+    },
+    {
+      "file": "nova-game.js",
+      "sourceHash": "b2c2a90e6edf4bea490bc7cd19df55db0131f0fd1ca0a8c77641b298d0c5cc6c",
+      "presentationHash": "5706f5765b17bc9e771d9d4a4f54f91dc10d24d6185d358c4c7249444878310f",
+      "sourceCommit": "44d96c5caf9bee17e17e2aede939f9115e354a93",
+      "presentationCommit": "d468025eb8285fa2242ca609286c30e031cc21c9",
+      "reason": "現在の聞こえ方50/100/100/57/37を全スライダー50で再現するカテゴリ音量校正。変更は音量初期値・4カテゴリの出力倍率・音量設定だけの一度限りの移行。音量変更を逆適用した全文SHA256が試算元44d96c5と完全一致。抽選・乱数・獲得pt・ストック・払い出し・停止結果・進行は同一。完了済み1億G証跡を保持し再試算しない。",
+      "tests": [
+        "tests/nova-audio-defaults-equivalence.test.mjs",
+        "tests/nova-volume50.test.mjs",
+        "tests/nova-voice-volume.test.mjs",
+        "tests/nova-spin-resume.test.mjs",
+        "tests/nova-super-speed-reels.test.mjs",
+        "tests/nova-impurity-voice-equivalence.test.mjs"
+      ]
     }
   ]
 }
