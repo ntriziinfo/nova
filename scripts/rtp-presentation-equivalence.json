@@ -310,6 +310,21 @@
       ],
       "previousPresentationHash": "d761f85b894370bd95fc2b63afa5c69fd789f14682a284413cdfcbbd20cadf92",
       "previousPresentationCommit": "b6895059150216d3abf73cbd4d00cb89dd3f8833"
+    },
+    {
+      "file": "nova-game.js",
+      "sourceHash": "b2c2a90e6edf4bea490bc7cd19df55db0131f0fd1ca0a8c77641b298d0c5cc6c",
+      "presentationHash": "07e29ce1b9023bda7e4b6310e0254c8f2f52a8366512a92b49517ad18a1910cd",
+      "sourceCommit": "44d96c5caf9bee17e17e2aede939f9115e354a93",
+      "presentationCommit": "27eec63f72cd5e754f318dffdd44dd2eea6f95b9",
+      "reason": "ユーザーが現在の遊技画面で設定した音量50/100/100/57/37を新規ブラウザのデフォルトにする。変更はBGM・SE・ボイス・払い出しの初期音量定数4個のみ。4行を逆適用したソース全文SHA256が現行試算元44d96c5と完全一致。抽選・乱数・獲得pt・ストック・払い出し・停止結果・進行を変更しない。進行中の1億G試算を再起動せず、その結果を互換な表示版で採用可能にする。",
+      "tests": [
+        "tests/nova-audio-defaults-equivalence.test.mjs",
+        "tests/nova-volume50.test.mjs",
+        "tests/nova-voice-volume.test.mjs",
+        "tests/nova-super-speed-reels.test.mjs",
+        "tests/nova-impurity-voice-equivalence.test.mjs"
+      ]
     }
   ]
 }
