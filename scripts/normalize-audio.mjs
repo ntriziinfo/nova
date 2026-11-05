@@ -25,14 +25,13 @@ const preNormalizedSources=new Map([
 const manifestDeliverySourceOverrides=new Map([
  ['assets/media/nova/upper-at-bgm.mp3','assets/media/nova/upper-at-bgm-1287779-20261027.mp3']
 ]);
-const bgm=new Set(['sosuke-bgm','toto-bgm','urapi-bgm','sora-bgm','giru-bgm','oumafreez','initial-duo-bgm','sortie-bgm','RUSH','upper-at-bgm','checkpoint-bgm','BIG','audiostock_860274','audiostock_1117081','audiostock_862200','audiostock_933855','audiostock_932814','NovaREG','rush-confirm-bgm','result-eyecatch','bonus_art_end','bonus_end','big_1','big_2','big_50g','reg_bonus','premium_big_first','premium_big_second']);
+const bgm=new Set(['sosuke-bgm','toto-bgm','urapi-bgm','sora-bgm','giru-bgm','oumafreez','initial-duo-bgm','sortie-bgm','RUSH','upper-at-bgm','checkpoint-bgm','BIG','audiostock_860274','audiostock_1117081','audiostock_862200','audiostock_933855','audiostock_932814','NovaREG','rush-confirm-bgm','result-eyecatch','bonus_art_end','bonus_end','big_1','big_2','big_50g','reg_bonus']);
 bgm.add('impurity-release-bgm-1143035-20261030');
-const payout=new Set(['bell','bell_payout','replay','cherry','special_symbol','premium_piero_symbol']);
-const category=src=>voices.has(src)||/\/(?:setting_voice_|premium_.*(?:voice|bb2_bgm)|bar_wo_nerae|big_kakutei|reg_kakutei)/.test(src)?'voice':bgm.has(path.parse(src).name)?'bgm':payout.has(path.parse(src).name)?'payout':src.endsWith('.mp4')?'movie':'sfx';
+const payout=new Set(['bell','bell_payout','replay','cherry','special_symbol']);
+const category=src=>voices.has(src)||/\/(?:setting_voice_|bar_wo_nerae|big_kakutei|reg_kakutei)/.test(src)?'voice':bgm.has(path.parse(src).name)?'bgm':payout.has(path.parse(src).name)?'payout':src.endsWith('.mp4')?'movie':'sfx';
 const walk=dir=>fs.readdirSync(path.join(root,dir),{withFileTypes:true}).flatMap(item=>item.isDirectory()?walk(dir+'/'+item.name):[dir+'/'+item.name]);
 const sources=walk('assets/media/nova').concat(walk('assets/media/jag')).filter(s=>/\.(wav|mp3)$/.test(s)&&!preNormalizedSources.has(s));
 // Other movie players are intentionally muted and use separate audio tracks.
-sources.push('assets/media/jag/premium_big_confirm_movie.mp4');
 const hash=file=>createHash('sha256').update(fs.readFileSync(file)).digest('hex');
 function run(exe,args){const r=spawnSync(exe,args,{encoding:'utf8',windowsHide:true,maxBuffer:8*1024*1024});if(r.error||r.status!==0)throw Error(r.error||r.stderr);return r;}
 function probe(file){const s=JSON.parse(run('ffprobe',['-v','error','-select_streams','a:0','-show_entries','stream=sample_rate,channels,duration,duration_ts,time_base','-of','json',file]).stdout).streams[0];if(!s)return null;return {rate:+s.sample_rate,channels:s.channels,duration:+s.duration};}

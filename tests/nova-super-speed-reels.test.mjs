@@ -50,3 +50,14 @@ test('historical static reel proof restores the exact prior source independently
   .replace(/^    globalThis\.NovaSuperSpeedReels && syncSuperSpeedReelDisplay\(\);\n/gm,'');
  assert.equal(createHash('sha256').update(restored).digest('hex'),'d761f85b894370bd95fc2b63afa5c69fd789f14682a284413cdfcbbd20cadf92');
 });
+
+test('high-speed skips random preview symbols but actual stopped columns remain visible',()=>{
+ const cells=Array.from({length:3},()=>({}));let renders=0,motion=0;
+ const c=vm.createContext({REEL_STRIPS:[['A','B','C']],reelSpinOffsets:[0],currentSpin:{},superSpeedActive:true,autoPlay:true,normalState:{flow:{phase:'normal'}},session:{active:false},NovaSuperSpeedReels:context.NovaSuperSpeedReels,
+  ensureReelCells:()=>cells,updateReelCell(){renders++;},mod:(a,b)=>(a%b+b)%b,reels:[{classList:{contains:()=>false}}],REEL_FULL_ROTATION_MS:800});
+ vm.runInContext(game.match(/  function setRandomReel\([^]*?\n  }/)[0],c);
+ c.setRandomReel(0);assert.equal(renders,0);assert.equal(c.reelSpinOffsets[0],2);
+ c.superSpeedActive=false;c.setRandomReel(0);assert.equal(renders,3);assert.equal(c.reelSpinOffsets[0],1);
+ const css=fs.readFileSync('nova-super-speed-reels.css','utf8');assert.doesNotMatch(css,/visibility:hidden|opacity:|background:/);
+ assert.doesNotMatch(source,/createElement|cloneNode|超ハイスピード中/);
+});

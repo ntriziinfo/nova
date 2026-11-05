@@ -16,8 +16,8 @@ test('entry and zone differences stay small and all six zones remain possible',(
 test('bonus paid-role correction preserves 4pt across all setting-specific special rates',()=>{for(let setting=1;setting<=6;setting++){const p=a.bonusSpecialFor(setting);assert.ok(p>0&&p<1);let bells=0;for(let i=0;i<100000;i++)if(a.drawPaidRole(p,15,()=> (i+.5)/100000)==='BELL')bells++;assert.ok(Math.abs((1-p)*12*bells/100000-3*p-4)<.0002);}});
 test('freeze bonus uses BIG payout target, no setting hint, no old PBB sound',()=>{
  const h=readGameSource(),fn=name=>h.match(new RegExp('  function '+name+'\\([^]*?\\n  }'))[0];
- vm.runInContext('const normalizeATypeBonusKind=k=>k;const A_TYPE_MODE=true;const session={bonusKind:"BIG",premiumBonus:true};const settings={setting:6};'+['aTypeBonusTarget','pickSettingBonusEndVoiceSrc','premiumBonusEndImmediateVoiceSrc','playPremiumBigThirdStopVoice','isPremiumBigConfirmSoundContext'].map(fn).join('\n')+'\nconst currentSpin={};',ctx);
- assert.equal(vm.runInContext('aTypeBonusTarget()',ctx),50);assert.equal(vm.runInContext('pickSettingBonusEndVoiceSrc()',ctx),'');assert.equal(vm.runInContext('premiumBonusEndImmediateVoiceSrc()',ctx),'');assert.equal(vm.runInContext('playPremiumBigThirdStopVoice()',ctx),false);assert.equal(vm.runInContext('isPremiumBigConfirmSoundContext()',ctx),false);
+ vm.runInContext('const normalizeATypeBonusKind=k=>k;const A_TYPE_MODE=true;const session={bonusKind:"BIG",premiumBonus:true};const settings={setting:6};'+['aTypeBonusTarget','pickSettingBonusEndVoiceSrc'].map(fn).join('\n')+'\nconst currentSpin={};',ctx);
+ assert.equal(vm.runInContext('aTypeBonusTarget()',ctx),50);assert.equal(vm.runInContext('pickSettingBonusEndVoiceSrc()',ctx),'');
  assert.match(h,/premiumChainEligible:false/);assert.doesNotMatch(h,/A_TYPE_PREMIUM_BIG_PAYOUT = 500/);
 });
 

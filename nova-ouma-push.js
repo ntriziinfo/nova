@@ -22,7 +22,7 @@ globalThis.NovaOumaPush=(()=>{
   }
   return true;
  }
- function show({valid,auto,onOffer,reveal}){
+ function show({valid,auto,onOffer,reveal,won,probability}){
   reset();
   if(!valid())return;
   let button=document.getElementById('novaOumaPush');
@@ -37,10 +37,12 @@ globalThis.NovaOumaPush=(()=>{
    if(!valid())return;
    reset();reveal();
   }};
-  // Always the CZ default: neither the button nor the voice reveals the draw.
-  button.className='white';button.disabled=false;button.hidden=false;
+  // Browser entropy is presentation-only: never consume the game RNG.
+  const seed=globalThis.crypto?.getRandomValues(new Uint32Array(1))[0];
+  const cue=NovaCzPresentation.pushCue({won,probability,seed});
+  button.className=cue.variant;button.disabled=false;button.hidden=false;
   button.onclick=offer.accept;
-  onOffer({variant:'white',voice:'default'});
+  onOffer(cue);
   autoPress();
  }
  return {show,reset,autoPress,get busy(){return pending!==null;}};

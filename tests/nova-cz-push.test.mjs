@@ -52,7 +52,7 @@ for(let setting=1;setting<=6;setting++){
  console.log('Setting '+setting+': red calibrated confidence '+(confidence*100).toFixed(2)+'%, big '+win.big+'/100000 wins');
 }
 const css=fs.readFileSync('nova-artwork.css','utf8');
-assert.match(css,/#novaCzPush\.big,#novaCzPush\.gold\{left:0%;top:12\.5%;width:100%;height:70%\}/);
+assert.match(css,/#novaCzPush\.big,#novaCzPush\.gold,#novaOumaPush\.big,#novaOumaPush\.gold\{left:0%;top:12\.5%;width:100%;height:70%\}/);
 assert.match(css,/#novaCzPush\.novaCzEntering\{animation:novaPushFadeIn/);
 assert.match(css,/data-lamp=cz-rainbow[^}]+novaCzRainbowFlash \.14s/);
 assert.match(css,/data-cz-color=rainbow[^}]+novaCzReelRainbowFlash \.14s/);

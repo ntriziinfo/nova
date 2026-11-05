@@ -1,8 +1,10 @@
+import {beforePushVariantsAndPremiumCleanup} from './push-variants-premium-source.mjs';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 
 // Exact pre-PUSH engine reconstruction; UI gating cannot hide gameplay edits.
 export function beforeOumaPush(source){
+ source=beforePushVariantsAndPremiumCleanup(source);
  const replacements=[
 ["    NovaDirectAward.clear();\n    globalThis.NovaResultRecall?.bet();\n    document.getElementById('machine').dataset.oumaNovaShake='';","    NovaDirectAward.clear();\n    document.getElementById('machine').dataset.oumaNovaShake='';"],
   [

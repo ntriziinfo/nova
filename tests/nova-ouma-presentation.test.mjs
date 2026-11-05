@@ -20,13 +20,14 @@ function setup(win,playing=false){
   document:{getElementById:id=>nodes[id],createElement:()=>({setAttribute(){}}),querySelector:()=>({append:b=>nodes[b.id]=b})},
   $:id=>nodes[id],clearTimeout:id=>timers.delete(id),setTimeout(cb,ms){timers.set(++id,{cb,ms});return id;},
   clearOumaReverseAudio(){c.oumaReverseAudio=null;},stopAutoPlay(){},stopSpeedToBonus(){},persistState(){},updateDisplay(){},isCompleteTrialLocked:()=>false,
-  NovaArt:{zoneName:()=>"逢魔",prepareBet(v){rolls++;return {...v,oumaPending:false,zero:win};}},
+  NovaArt:{normalize:v=>v,config:v=>v,oumaFreezeRate:()=>.6,zoneName:()=>"逢魔",prepareBet(v){rolls++;return {...v,oumaPending:false,zero:win};}},
   spin(options){spins++;c.spinOptions=options;c.isSpinning=true;},
   Audio:function(){this.play=()=>{played++;return Promise.resolve();};this.pause=()=>{};},
   performance:{now:()=>now},sfxOutputVolumeForSource:()=>1,SFX_OUTPUT_SCALE:1,
   NovaReelMotion:{start(...args){liftArgs.push(args);},clear(){clears++;},clearAll(){clearedAll++;}},
   REEL_STRIPS:strips,cellHtml(){},setReelColumn(){staticColumns++;},reelWindowFromTopIndex(){}
  });
+ vm.runInContext(fs.readFileSync('nova-cz-push.js','utf8'),c);
  vm.runInContext(fs.readFileSync('nova-ouma-push.js','utf8'),c);
  vm.runInContext(fs.readFileSync('nova-results.js','utf8').replace("if(typeof document!=='undefined')document.addEventListener('DOMContentLoaded',init);",''),c);
  vm.runInContext('let oumaChainTimer=null;var oumaFailDimTimer=null;var oumaPresentation=null,oumaIntroAudio=null,oumaStoppedTops=[0,0,0],oumaReverseAudio=null;'+['trackZoneResult','clearOumaPresentation','scheduleOumaZeroChain','resolveOumaChallenge'].map(fn).join('\n'),c);

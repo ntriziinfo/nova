@@ -574,47 +574,56 @@
     {
       "path": "assets/media/jag/premium_bb2_bgm.mp3",
       "size": 54232,
-      "sha256": "3e4409418c16d7b4c0010c8a9d2dc45f82f87c882efe391d1aa4a2d60caab52d"
+      "sha256": "3e4409418c16d7b4c0010c8a9d2dc45f82f87c882efe391d1aa4a2d60caab52d",
+      "retired": true
     },
     {
       "path": "assets/media/jag/premium_big_confirm_movie.mp4",
       "size": 12205456,
-      "sha256": "63505261d82205d6b5b5343cec6d1335f98b94c32652ad8cb52f76a5d9ac0235"
+      "sha256": "63505261d82205d6b5b5343cec6d1335f98b94c32652ad8cb52f76a5d9ac0235",
+      "retired": true
     },
     {
       "path": "assets/media/jag/premium_big_first.mp3",
       "size": 9476269,
-      "sha256": "d40be91f5f1f8795e2c165ecc937017734ebd6ecfa460348ae085542e92c2e90"
+      "sha256": "d40be91f5f1f8795e2c165ecc937017734ebd6ecfa460348ae085542e92c2e90",
+      "retired": true
     },
     {
       "path": "assets/media/jag/premium_big_reel.mp4",
       "size": 5073446,
-      "sha256": "0e12c4d919e24d435af1cfbd68c50c43395554ed4e02efe2144dfe4fdeddeca2"
+      "sha256": "0e12c4d919e24d435af1cfbd68c50c43395554ed4e02efe2144dfe4fdeddeca2",
+      "retired": true
     },
     {
       "path": "assets/media/jag/premium_big_second.wav",
       "size": 67354976,
-      "sha256": "3a45eea86b2dfa7a6a0fdaa2664bc9ccb91ee7452970d4f1bcf2c7e808e25dd7"
+      "sha256": "3a45eea86b2dfa7a6a0fdaa2664bc9ccb91ee7452970d4f1bcf2c7e808e25dd7",
+      "retired": true
     },
     {
       "path": "assets/media/jag/premium_bonus_end_voice.wav",
       "size": 292556,
-      "sha256": "fc578a3d19215e72af4f00b37192e1e3db9f71f156b3b8523e1c601f4ce7b9ef"
+      "sha256": "fc578a3d19215e72af4f00b37192e1e3db9f71f156b3b8523e1c601f4ce7b9ef",
+      "retired": true
     },
     {
       "path": "assets/media/jag/premium_first_end_voice.mp3",
       "size": 50944,
-      "sha256": "9129e41eb75dffbbdbc2399274260a669228a010a62408f88958b973cb6b0cc7"
+      "sha256": "9129e41eb75dffbbdbc2399274260a669228a010a62408f88958b973cb6b0cc7",
+      "retired": true
     },
     {
       "path": "assets/media/jag/premium_piero_symbol.wav",
       "size": 720044,
-      "sha256": "e20c596c1eb675444a8d59f9dad4092cbde419b5361dbc14377b552324dbf583"
+      "sha256": "e20c596c1eb675444a8d59f9dad4092cbde419b5361dbc14377b552324dbf583",
+      "retired": true
     },
     {
       "path": "assets/media/jag/premium_second_end_voice.mp3",
       "size": 45809,
-      "sha256": "49217dd2f5107c2e9cf3745c9ae0ae0e7a0a97b6287870336ee8f28ddef8d493"
+      "sha256": "49217dd2f5107c2e9cf3745c9ae0ae0e7a0a97b6287870336ee8f28ddef8d493",
+      "retired": true
     },
     {
       "path": "assets/media/jag/reg_bonus.wav",

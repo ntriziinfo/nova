@@ -64,23 +64,22 @@ function display(lamp,stop,won,setting,terminal=false,revealed=false){
  return {stage:count,color,rainbow:count>=8};
 }
 // Dedicated presentation hash: no gameplay RNG draw and no outcome changes.
-function variant(resolved,setting=1){
- const seed=resolved?.czLamp?.timingSeed;
- if(!Number.isFinite(seed))return 'white';
- const won=!!(resolved.bonusHit||resolved.aTypeBonusReady||resolved.flowAfter?.phase==='art');
- const roll=fraction(seed,947);
- if(won)return roll<.01?'gold':roll<.11?'big':roll<.31?'red':'white';
- // Bayes calibration: P(red|win)=20%, P(win|red)=80%.
- const p=rates[Math.max(0,Math.min(5,(Number(setting)||1)-1))];
- return roll<.05*p/(1-p)?'red':'white';
+function pushCue({won,probability,seed}){
+ if(!Number.isFinite(seed))return {variant:'white',voice:'default'};
+ const roll=fraction(seed,947),p=Math.max(0,Math.min(1,Number(probability)||0));
+ // Same winning split for both CZ and reverse-freeze: 1% gold, 10% big,
+ // 20% red, 69% white. Losing red is calibrated to 80% confidence.
+ const button=won?(roll<.01?'gold':roll<.11?'big':roll<.31?'red':'white')
+  :roll<Math.min(1,.05*p/(1-p))?'red':'white';
+ const voice=button==='white'?'default':!won?'chance':fraction(seed,1693)<.5?'hot':'veryHot';
+ return {variant:button,voice};
 }
 function cue(resolved,setting=1){
- const button=variant(resolved,setting),seed=resolved?.czLamp?.timingSeed;
- const won=!!(resolved?.bonusHit||resolved?.aTypeBonusReady||resolved?.flowAfter?.phase==='art');
- if(button==='white')return {variant:button,voice:'default'};
- if(!won)return {variant:button,voice:'chance'};
- return {variant:button,voice:fraction(seed,1693)<.5?'hot':'veryHot'};
+ return pushCue({seed:resolved?.czLamp?.timingSeed,
+  won:!!(resolved?.bonusHit||resolved?.aTypeBonusReady||resolved?.flowAfter?.phase==='art'),
+  probability:rates[Math.max(0,Math.min(5,(Number(setting)||1)-1))]});
 }
+function variant(resolved,setting=1){return cue(resolved,setting).variant;}
 function gold(resolved){return variant(resolved)==='gold';}
 let pendingPush=null,pendingAuto=null,failureActive=false,pendingEpoch=0,autoTimer=null,failureTimer=null;
 function clearFailureOnBet(){failureActive=false;document.documentElement.classList.remove('novaCzFailed');}
@@ -154,6 +153,6 @@ function wait(resolved,{auto=false,setting=1,valid,reveal,onOffer=()=>{},onFailu
  };
  button.onclick=accept;autoPress();return true;
 }
-return {tiers,display,wait,gold,variant,cue,autoPress,reset,clearFailureOnBet,get failureActive(){return failureActive;}};
+return {pushCue,tiers,display,wait,gold,variant,cue,autoPress,reset,clearFailureOnBet,get failureActive(){return failureActive;}};
 
 })();

@@ -2,7 +2,7 @@
 import fs from 'node:fs';import path from 'node:path';import os from 'node:os';import crypto from 'node:crypto';import {execFile} from 'node:child_process';import {promisify} from 'node:util';import {pathToFileURL} from 'node:url';
 import {outputConfig} from './lossless-output-config.mjs';
 const exec=promisify(execFile),sha=b=>crypto.createHash('sha256').update(b).digest('hex');
-const fallback=new Set(['assets/media/nova/sortie-award-duo.wav','assets/media/jag/premium_big_second.wav']);
+const fallback=new Set(['assets/media/nova/sortie-award-duo.wav']);
 const webpArchive={url:'https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-1.6.0-linux-x86-64.tar.gz',sha256:'1c5ffab71efecefa0e3c23516c3a3a1dccb45cc310ae1095c6f14ae268e38067'};
 const walk=dir=>fs.readdirSync(dir,{withFileTypes:true}).flatMap(item=>{if(item.isSymbolicLink())throw Error('Unexpected symlink');return item.isDirectory()?walk(path.join(dir,item.name)):[path.join(dir,item.name)];});
 async function command(executable,args){return (await exec(executable,args,{windowsHide:true,maxBuffer:16*1024*1024})).stdout.trim();}

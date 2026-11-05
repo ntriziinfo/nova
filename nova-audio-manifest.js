@@ -80,38 +80,6 @@ globalThis.NovaAudioManifest=Object.freeze({
     "src": "assets/media/normalized-20261012/jag/peka_kyuin_triple.wav",
     "category": "sfx"
   },
-  "assets/media/jag/premium_bb2_bgm.mp3": {
-    "src": "assets/media/normalized-voices-20261013/jag/premium_bb2_bgm.wav",
-    "category": "voice"
-  },
-  "assets/media/jag/premium_big_confirm_movie.mp4": {
-    "src": "assets/media/normalized-20261012/jag/premium_big_confirm_movie.mp4",
-    "category": "movie"
-  },
-  "assets/media/jag/premium_big_first.mp3": {
-    "src": "assets/media/normalized-20261012/jag/premium_big_first.mp3",
-    "category": "bgm"
-  },
-  "assets/media/jag/premium_big_second.wav": {
-    "src": "assets/media/normalized-20261012/jag/premium_big_second.mp3",
-    "category": "bgm"
-  },
-  "assets/media/jag/premium_bonus_end_voice.wav": {
-    "src": "assets/media/normalized-voices-20261013/jag/premium_bonus_end_voice.wav",
-    "category": "voice"
-  },
-  "assets/media/jag/premium_first_end_voice.mp3": {
-    "src": "assets/media/normalized-voices-20261013/jag/premium_first_end_voice.wav",
-    "category": "voice"
-  },
-  "assets/media/jag/premium_piero_symbol.wav": {
-    "src": "assets/media/normalized-20261012/jag/premium_piero_symbol.wav",
-    "category": "payout"
-  },
-  "assets/media/jag/premium_second_end_voice.mp3": {
-    "src": "assets/media/normalized-voices-20261013/jag/premium_second_end_voice.wav",
-    "category": "voice"
-  },
   "assets/media/jag/reg_bonus.wav": {
     "src": "assets/media/normalized-20261012/jag/reg_bonus.mp3",
     "category": "bgm"

@@ -17,6 +17,7 @@ export function validateManifest(manifest){
   for(const file of manifest.files){
     if(!/^assets\/[A-Za-z0-9_./-]+$/.test(file.path) || file.path.split('/').some(p=>!p || p==='.' || p==='..') || paths.has(file.path))throw Error('Invalid/duplicate asset path');
     if(!digestPattern.test(file.sha256) || !Number.isSafeInteger(file.size) || file.size<0)throw Error('Invalid asset checksum/size');
+    if(file.retired!==undefined && typeof file.retired!=='boolean')throw Error('Invalid retired asset flag');
     paths.add(file.path);
   }
   return manifest;
@@ -51,10 +52,12 @@ export async function inspectAssets(root,manifest){
   const indexed=new Map(manifest.files.map(f=>[f.path,f]));
   for(const file of walkAssets(path.join(root,'assets'))){
     const p=pointer(file),relative=path.relative(root,file).split(path.sep).join('/');
+    if(indexed.get(relative)?.retired)throw Error('Retired asset remains in checkout: '+relative);
     if(p && !indexed.has(relative))throw Error(`New LFS asset missing from release manifest: ${relative}`);
   }
   const missing=[];
   for(const file of manifest.files){
+    if(file.retired)continue;
     const target=path.join(root,file.path);
     if(!fs.existsSync(target)){missing.push(file.path);continue;}
     const p=pointer(target);
@@ -87,7 +90,9 @@ export async function prepareDeploy(root=process.cwd()){
     const entries=execFileSync('tar',['-tzf',bundle],{encoding:'utf8',maxBuffer:4*1024*1024}).trim().split(/\r?\n/);
     const expected=new Set(manifest.files.map(f=>f.path));
     if(entries.length!==expected.size || new Set(entries).size!==expected.size || entries.some(f=>!expected.has(f)))throw Error('Unexpected archive contents');
-    execFileSync('tar',['-xzf',bundle,'-C',root],{stdio:'inherit'});
+    const activeList=path.join(temporary,'active-assets.txt');
+    fs.writeFileSync(activeList,manifest.files.filter(f=>!f.retired).map(f=>f.path).join('\n')+'\n');
+    execFileSync('tar',['-xzf',bundle,'-C',root,'-T',activeList],{stdio:'inherit'});
     if((await inspectAssets(root,manifest)).length)throw Error('Unresolved LFS pointers after asset restore');
     console.log(`Restored and verified ${manifest.files.length} assets from the deployment release.`);
   }finally{

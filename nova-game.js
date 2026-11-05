@@ -67,8 +67,6 @@
   ]);
   const BIG_50G_BONUS_BGM_SRC = "assets/media/jag/big_50g.wav" + BGM_ASSET_VERSION;
   const REG_BONUS_BGM_SRC = "assets/media/jag/reg_bonus.wav" + BGM_ASSET_VERSION;
-  const PREMIUM_BIG_FIRST_BGM_SRC = "assets/media/jag/premium_big_first.mp3" + BGM_ASSET_VERSION;
-  const PREMIUM_BIG_SECOND_BGM_SRC = "assets/media/jag/premium_big_second.wav" + BGM_ASSET_VERSION;
 
   const BIG_SOUND_SRC = "assets/media/jag/big_confirm.mp3";
 
@@ -78,7 +76,6 @@
   const REPLAY_SOUND_SRC = "assets/media/nova/replay.wav";
   const CHERRY_SOUND_SRC = "assets/media/jag/cherry.wav";
   const SPECIAL_SYMBOL_SOUND_SRC = "assets/media/jag/special_symbol.wav";
-  const PREMIUM_PIERO_SYMBOL_SOUND_SRC = "assets/media/jag/premium_piero_symbol.wav";
   const SPIN_SOUND_SRC = "assets/media/nova/spin_start.wav";
   const STOP_SOUND_SRC = "assets/media/nova/reel-stop.wav";
   const PEKA_SOUND_SRC = "assets/media/jag/peka_1.wav";
@@ -95,14 +92,8 @@
   const REG_CONFIRM_SOUND_SRC = "assets/media/jag/reg_kakutei.wav";
   const BONUS_CONFIRM_SOUND_SRC = "assets/media/jag/big_confirm.mp3";
   const BONUS_END_BGM_SRC = "assets/media/nova/bonus_art_end.wav";
-  const PREMIUM_BONUS_END_VOICE_SRC = "assets/media/jag/premium_bonus_end_voice.wav";
-  const PREMIUM_BIG_FIRST_THIRD_STOP_VOICE_SRC = "assets/media/jag/premium_bb2_bgm.mp3";
-  const PREMIUM_BIG_SECOND_THIRD_STOP_VOICE_SRC = PREMIUM_BONUS_END_VOICE_SRC;
 
-  const PREMIUM_BIG_FIRST_END_VOICE_SRC = "assets/media/jag/premium_first_end_voice.mp3";
-  const PREMIUM_BIG_SECOND_END_VOICE_SRC = "assets/media/jag/premium_second_end_voice.mp3";
 
-  const PREMIUM_BIG_CONFIRM_MOVIE_SRC = "assets/media/jag/premium_big_confirm_movie.mp4";
   const BAR_AIM_VOICE_SRC = "assets/media/jag/bar_wo_nerae.mp3";
   const CZ_FAILURE_PUSH_SOUND_SRC = "assets/media/nova/cz-failure-blackout-20261027.mp3";
   const CZ_SUCCESS_PUSH_SOUND_SRC = "assets/media/nova/cz-success-push-20261027.mp3";
@@ -266,7 +257,6 @@
   const BAR_BGM_OUTPUT_SCALE = dbToGain(MATCHED_BGM_GAIN_DB);
   const SFX_OUTPUT_SCALE = NORMALIZED_AUDIO_OUTPUT_SCALE;
   const SETTING_VOICE_OUTPUT_SCALE = 1;
-  const PREMIUM_VOICE_OUTPUT_SCALE = 1;
   const CONFIRM_SOUND_OUTPUT_SCALE = NORMALIZED_AUDIO_OUTPUT_SCALE;
   const LINEUP_CONFIRM_SOUND_OUTPUT_SCALE = 1;
 
@@ -289,14 +279,11 @@
     [BIG_BONUS_BGM_SRCS[1]]: dbToGain(-2),
     [BIG_50G_BONUS_BGM_SRC]: dbToGain(-3.5),
     [REG_BONUS_BGM_SRC]: dbToGain(-2),
-    [PREMIUM_BIG_FIRST_BGM_SRC]: dbToGain(-3.5),
-    [PREMIUM_BIG_SECOND_BGM_SRC]: dbToGain(-7),
     [BONUS_END_BGM_SRC]: dbToGain(0),
     [PAYOUT_SOUND_SRC]: dbToGain(-0.5),
     [REPLAY_SOUND_SRC]: dbToGain(0),
     [CHERRY_SOUND_SRC]: dbToGain(1),
     [SPECIAL_SYMBOL_SOUND_SRC]: dbToGain(-1.5),
-    [PREMIUM_PIERO_SYMBOL_SOUND_SRC]: dbToGain(-2),
     [SPIN_SOUND_SRC]: dbToGain(-1),
     [STOP_SOUND_SRC]: dbToGain(-1),
     [PEKA_SOUND_SRC]: dbToGain(-1),
@@ -312,11 +299,6 @@
     [SETTING_BONUS_END_VOICE_SRCS[4]]: dbToGain(3),
     [SETTING_BONUS_END_VOICE_SRCS[5]]: dbToGain(3),
     [SETTING_BONUS_END_VOICE_SRCS[6]]: dbToGain(3),
-    [PREMIUM_BIG_FIRST_THIRD_STOP_VOICE_SRC]: dbToGain(4),
-    [PREMIUM_BIG_SECOND_THIRD_STOP_VOICE_SRC]: dbToGain(4),
-    [PREMIUM_BIG_FIRST_END_VOICE_SRC]: dbToGain(3),
-    [PREMIUM_BIG_SECOND_END_VOICE_SRC]: dbToGain(5),
-    [PREMIUM_BIG_CONFIRM_MOVIE_SRC]: dbToGain(4)
   });
 
   function normalizedAudioSourceKey(src=""){
@@ -600,7 +582,6 @@
   const REVERSE_PUSH_BLUE_EXPECTATION = 0.30;
   const REVERSE_PUSH_HIT_RED_RATE = 0.70;
   const GEKIATSU_VIDEO_SRC = "";
-  const BAR3_LEVER_VIDEO_SRC = PREMIUM_BIG_CONFIRM_MOVIE_SRC;
   const ROGI_STOP_VIDEO_SRCS = Object.freeze({
     1:"",
     2:"",
@@ -881,11 +862,6 @@
   preloadOneShotSound('assets/media/nova/super-nova-stop.wav');
   let gekiatsuActive = false;
   let gekiatsuHideTimer = null;
-  let premiumBigConfirmMovieHold = false;
-  let premiumBigConfirmMovieTranslucent = false;
-  let premiumBigConfirmSilence = false;
-  let premiumBigConfirmStopLock = false;
-  let premiumBigConfirmStopLockTimer = null;
   let speedBonusRogiHoldActive = false;
   let battleIntroHideTimer = null;
   let overlayHideTimer = null;
@@ -1470,10 +1446,6 @@
     if(typeof cb === "function") cb();
   }
 
-  function premiumBonusEndImmediateVoiceSrc(){
-    if(A_TYPE_MODE)return "";
-  }
-
   function playCzCountdownOnLever(resolved){
     if(resolved?.bonusPendingAtStart)return;
     const flow=resolved?.flowBefore;
@@ -1486,22 +1458,13 @@
   }
 
   function playPendingSettingVoiceOnLever(){
-    const premiumSrc = String(normalState.pendingPremiumVoiceSrc || "");
-    const settingSrc = String(normalState.pendingSettingVoiceSrc || "");
-    if(!premiumSrc && !settingSrc) return false;
+    // Discard legacy voice paths from old saves; they are not NOVA assets.
     normalState.pendingPremiumVoiceSrc = "";
+    const settingSrc = String(normalState.pendingSettingVoiceSrc || "");
+    if(!settingSrc) return false;
     normalState.pendingSettingVoiceSrc = "";
-    if(premiumSrc){
-      playOneShotSound(premiumSrc, voiceOutputVolume(PREMIUM_VOICE_OUTPUT_SCALE));
-      log("プレミアBIG継続ボイス：次GレバーON");
-      if(settingSrc){
-        setTimeout(()=>playOneShotSound(settingSrc, voiceOutputVolume(SETTING_VOICE_OUTPUT_SCALE)), 1400);
-        log("設定示唆ボイス予約：継続ボイス後に再生");
-      }
-    }else if(settingSrc){
-      playOneShotSound(settingSrc, voiceOutputVolume(SETTING_VOICE_OUTPUT_SCALE));
-      log("設定示唆ボイス：ボーナス後1G目レバーON");
-    }
+    playOneShotSound(settingSrc, voiceOutputVolume(SETTING_VOICE_OUTPUT_SCALE));
+    log("設定示唆ボイス：ボーナス後1G目レバーON");
     return true;
   }
 
@@ -1513,11 +1476,10 @@
   }
 
   function playBonusEndBgmThen(callback){
-    const premiumEndVoiceSrc = premiumBonusEndImmediateVoiceSrc();
     clearBonusEndBgmLock();
     bonusEndBgmPlaying = true;
     updateAutoUi();
-    if($("resultText")) $("resultText").textContent = premiumEndVoiceSrc ? "プレミアムBIG終了ボイス中..." : "ボーナス終了BGM中...";
+    if($("resultText")) $("resultText").textContent = "ボーナス終了BGM中...";
     stopBattleBgm(false);
     stopBarBgm(false);
     if(bgm){
@@ -1541,16 +1503,10 @@
       }
       completeBonusEndBgmSequence(callback);
     };
-    const audio = new Audio(premiumEndVoiceSrc || BONUS_END_BGM_SRC);
+    const audio = new Audio(BONUS_END_BGM_SRC);
     audio.playbackRate=superSpeedActive?6:1;
     bonusEndBgmAudio = audio;
-    audio.volume = premiumEndVoiceSrc
-      ? voiceOutputVolumeForSource(PREMIUM_VOICE_OUTPUT_SCALE, premiumEndVoiceSrc)
-      : bgmOutputVolumeForSource(BGM_OUTPUT_SCALE, BONUS_END_BGM_SRC);
-    if(premiumEndVoiceSrc){
-      const label = session.oneGameRenBonus ? "2回目PBB終了ボイス" : "1回目PBB終了ボイス";
-      log(`${label}再生：${premiumEndVoiceSrc.split("/").pop()}`);
-    }
+    audio.volume = bgmOutputVolumeForSource(BGM_OUTPUT_SCALE, BONUS_END_BGM_SRC);
     audio.onended = finish;
     audio.onerror = finish;
     audio.novaCancelPlaybackWatch = watchPlaybackProgress(audio,finish);
@@ -2208,64 +2164,6 @@
     }else{
       hideDevilZoneFireVideos();
     }
-  }
-
-  function isPremiumBigConfirmStopLocked(){
-    return !!(
-      premiumBigConfirmStopLock &&
-      isSpinning &&
-      currentSpin &&
-      currentSpin.premiumBigConfirmMovieEffect &&
-      Array.isArray(currentSpin.stopped) &&
-      !currentSpin.stopped.every(Boolean)
-    );
-  }
-
-  function releasePremiumBigConfirmStopLock(){
-    if(premiumBigConfirmStopLockTimer){
-      clearTimeout(premiumBigConfirmStopLockTimer);
-      premiumBigConfirmStopLockTimer = null;
-    }
-    if(!premiumBigConfirmStopLock) return;
-    premiumBigConfirmStopLock = false;
-    if(isSpinning && spinCanStop && currentSpin && Array.isArray(currentSpin.stopped) && !currentSpin.stopped.every(Boolean)){
-      if($("resultText")) $("resultText").textContent = "フリーズ告知終了 / 停止できます";
-    }
-    syncCabinetControlState();
-    updateAutoUi();
-  }
-
-  function updatePremiumBigReelMovie(){
-    if(A_TYPE_MODE){const layer=$('premiumBigReelMovie');if(layer){layer.classList.remove('show');layer.setAttribute('aria-hidden','true');const video=layer.querySelector('video');if(video){video.pause();video.removeAttribute('src');}}return;}
-  }
-
-  function playPremiumBigConfirmMovie(){
-    if(A_TYPE_MODE){showOverlay('プレミアムBIG — AT ＋ 特化ゾーン');showMessage('プレミアムBIG','BIG'+NovaArt.bonusTarget()+'pt・AT確定／ギル・空・逢魔を各1/3');return true;}
-  }
-
-  function startPremiumBigConfirmBarAimIfNeeded(normalActiveAtSpinStart){
-    if(!normalActiveAtSpinStart || !premiumBigConfirmMovieHold || !normalState.bonusPending) return false;
-    if(!(normalState.premiumBonus || normalState.oneGameRenBonus) || normalState.bonusKind === "MID") return false;
-    premiumBigConfirmMovieHold = false;
-    premiumBigConfirmMovieTranslucent = false;
-    premiumBigConfirmSilence = false;
-    releasePremiumBigConfirmStopLock();
-    const layer = $("premiumBigReelMovie");
-    const video = layer ? layer.querySelector("video") : null;
-    if(video){
-      video.muted = true;
-      try{ video.pause(); }catch(e){}
-    }
-    updatePremiumBigReelMovie();
-    playOneShotSound(BAR_AIM_VOICE_SRC, voiceOutputVolume(CONFIRM_SOUND_OUTPUT_SCALE), {allowDuringPremiumConfirm:true});
-    return true;
-  }
-
-  function clearPremiumBigConfirmMovie(){
-    premiumBigConfirmMovieHold = false;
-    premiumBigConfirmMovieTranslucent = false;
-    premiumBigConfirmSilence = false;
-    releasePremiumBigConfirmStopLock();
   }
 
   function ensureReelVideo(index){
@@ -4875,7 +4773,7 @@
     setSpeedFrameOffHold(false);
     stopSpeedToBonus("ボーナス開始のためSPEED停止");
     clearPendingAtStart();
-    clearPremiumBigConfirmMovie();
+
     const started = startSession(startOptions);
     if(started) scheduleNextAuto();
     return started;
@@ -4947,7 +4845,7 @@
     hideBattleIntro();
     devilZoneConfirmIntroPending = false;
     hideDevilZoneConfirmScreen();
-    clearPremiumBigConfirmMovie();
+
     session.resultPayout = aTypeEnd ? null : resultPayout;
     session.endSignal = null;
     // UI/audio cleanup can redraw between BB ending and afterBonus(). Preserve
@@ -5720,9 +5618,7 @@
       if(isRegBonus){
         playRegConfirmSound();
         confetti(45);
-      }else if(isPremiumBigLineupSpin(currentSpin)){
-        playPremiumBigThirdStopVoice(currentSpin);
-        confetti(90);
+
       }else{
         playSevenConfirmSound();
         confetti(90);
@@ -6033,7 +5929,7 @@
     const wasWaiting=button.dataset.audioWait==='true';
     button.dataset.audioWait=String(waiting);
     if(!waiting&&!wasWaiting)return;
-    const canStopNow=isSpinning&&spinCanStop&&!isPremiumBigConfirmStopLocked()&&!globalThis.NovaSortieAudioGate?.locked(currentSpin);
+    const canStopNow=isSpinning&&spinCanStop&&!globalThis.NovaSortieAudioGate?.locked(currentSpin);
     const wait=waiting||NovaSortie.busy||isSpinning&&!canStopNow;
     button.textContent=complete&&!isSpinning?"COMPLETE":wait?"WAIT":canStopNow?"STOP":"BET";
     button.classList.toggle("waiting",wait);
@@ -6044,7 +5940,7 @@
 
   function syncCabinetControlState(){
     syncAudioWaitUi();
-    const canStopNow = !!(isSpinning && spinCanStop && !isPremiumBigConfirmStopLocked() && !globalThis.NovaSortieAudioGate?.locked(currentSpin));
+    const canStopNow = !!(isSpinning && spinCanStop && !globalThis.NovaSortieAudioGate?.locked(currentSpin));
     stopBtns.forEach((btn, i)=>{
       if(!btn) return;
       const reelStopped = !!(currentSpin && Array.isArray(currentSpin.stopped) && currentSpin.stopped[i]);
@@ -6121,11 +6017,10 @@
     updateDevilStatusLamp();
     updateReelFrameMode();
     syncDevilZoneConfirmScreen();
-    updatePremiumBigReelMovie();
+
     const machineClass = "machine " + (active ? "active" : "normal") + (session.paid > 0 ? " win" : "");
     if(machine.className!==machineClass)machine.className=machineClass;
     if(reelArea){
-      reelArea.classList.toggle("premiumBigOverlayOn", !!(isATypeBonusActive() && (session.premiumBonus || session.oneGameRenBonus)));
     }
     const internal=NovaNormal.normalize(normalState.internal);
     if($('novaImpurityCurrent'))$('novaImpurityCurrent').textContent='現在：'+Number(internal.impurity.toFixed(2))+'pt';
@@ -6313,7 +6208,7 @@
       const sortieHold=NovaSortie.busy;
       if(sortieHold||spinButton.dataset.sortieHold==='true')spinButton.disabled=sortieHold;
       spinButton.dataset.sortieHold=String(sortieHold);
-      const canStopNow = spinCanStop && !isPremiumBigConfirmStopLocked() && !globalThis.NovaSortieAudioGate?.locked(currentSpin);
+      const canStopNow = spinCanStop && !globalThis.NovaSortieAudioGate?.locked(currentSpin);
       spinButton.textContent = sortieHold ? "WAIT" : isSpinning ? (canStopNow ? "STOP" : "WAIT") : "BET";
       spinButton.classList.toggle("waiting", sortieHold || isSpinning && !canStopNow);
       spinButton.classList.toggle("stopReady", !sortieHold && isSpinning && canStopNow);
@@ -6443,7 +6338,7 @@
     stopBarBgm();
     stopTransientPresentationAudio();
     stopGekiatsuEffect(true);
-    clearPremiumBigConfirmMovie();
+
     hideBonusConfirmScreen();
     devilZoneConfirmIntroPending = false;
     hideDevilZoneConfirmScreen();
@@ -6526,7 +6421,7 @@
     stopBarBgm();
     stopTransientPresentationAudio();
     stopGekiatsuEffect(true);
-    clearPremiumBigConfirmMovie();
+
     hideBonusConfirmScreen();
     devilZoneConfirmIntroPending = false;
     hideDevilZoneConfirmScreen();
@@ -6756,7 +6651,7 @@
   function drawSuperNovaBonus(){
     const premium = Math.random() < 0.5;
     return {kind:"BIG",premiumBonus:premium,superNovaOutcome:premium?"PREMIUM_BIG":"BIG",
-      source:premium?"スーパーノヴァ目 → プレミアムBIG":"スーパーノヴァ目 → BIG",
+      source:premium?"スーパーノヴァ目 → BIG（AT確定）":"スーパーノヴァ目 → BIG",
       internalResult:"SUPER_NOVA",gamesSinceLastBonusAtStart:normalizeBonusAfterGames(normalState.sinceBonus)};
   }
   function buildForcedNovaGrid(result,options={}){
@@ -7760,6 +7655,10 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
       strip[mod(start + 1, strip.length)],
       strip[mod(start + 2, strip.length)]
     ];
+    // Advance the same offsets/RNG above, but retain the previous stop result
+    // until each real stop replaces it during ordinary super-speed play.
+    if(globalThis.NovaSuperSpeedReels?.eligible({active:superSpeedActive&&autoPlay,flow:normalState.flow,
+      bonus:session.active,spin:currentSpin}))return;
     const cells = ensureReelCells(index);
     symbols.forEach((symbol,i)=>updateReelCell(cells[i], symbol, "", "", false, i === 1));
     if(reels[index].classList.contains('spinning')){
@@ -8111,7 +8010,6 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
       return;
     }
     const normalActiveAtSpinStart = !session.active;
-    startPremiumBigConfirmBarAimIfNeeded(normalActiveAtSpinStart);
     if(normalActiveAtSpinStart) playPendingSettingVoiceOnLever();
     triggerBonusConfirmBetSoundIfNeeded();
     hideBattleIntro();
@@ -8183,17 +8081,14 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     const unlockSpin=()=>{
       spinCanStop = true;
       if(isSpinning){
-        const stopLocked = isPremiumBigConfirmStopLocked();
-        $("spinBtn").textContent = stopLocked ? "WAIT" : "ストップ";
-        stopBtns.forEach(b=>b.disabled=stopLocked);
+        $("spinBtn").textContent = "ストップ";
+        stopBtns.forEach(b=>b.disabled=false);
         syncCabinetControlState();
         $("resultText").textContent = zoneActiveAtSpinStart
           ? `${goraiZoneRemainText(session.bigZone, session.bigZoneType)} / 停止できます`
           : battleActiveAtSpinStart
             ? `${battleRemainText()} / 停止できます`
-            : stopLocked
-              ? "フリーズ告知中..."
-              : "停止できます";
+            : "停止できます";
       }
     };
     spinWaitTimer=setTimeout(unlockSpin,spinWaitMs);
@@ -8265,17 +8160,6 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     if(A_TYPE_MODE && normalActiveAtSpinStart && resolved && (resolved.bonusHit || resolved.bonusReady) && resolved.bonusKind === "BIG"){
       resolved.premiumBonus = !!(resolved.premiumBonus || bigPremiumEffect);
     }
-    const premiumConfirmMovieEffect = !!(
-      A_TYPE_MODE &&
-      normalActiveAtSpinStart &&
-      resolved &&
-      resolved.bonusKind === "BIG" &&
-      resolved.premiumBonus &&
-      (
-        resolved.bonusHit ||
-        (!resolved.bonusPendingAtStart && result === "BAR3")
-      )
-    );
     const premiumMovieEffect = !A_TYPE_MODE && bigPremiumEffect;
     const speedModeBonusRogiEffect = speedModeSpinAtStart && !premiumMovieEffect && shouldPlaySpeedModeBonusRogi(result, resolved);
     const gekiatsuChance = premiumMovieEffect;
@@ -8320,7 +8204,6 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
       bonusAnnouncementTiming,
       bonusAnnouncementLit:false,
       reachMeLine,
-      premiumBigConfirmMovieEffect:premiumConfirmMovieEffect,
       devilRushEntryEffect,
       battleRound:battleRoundAtSpinStart,
       stopped:[false,false,false],
@@ -8380,9 +8263,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
       showBonusConfirmScreen("translucent");
     }
     currentSpin.rogiStopEffectMax = decideRogiStopEffectMax(currentSpin);
-    if(premiumConfirmMovieEffect){
-      playPremiumBigConfirmMovie();
-    }else if(speedModeBonusRogiEffect){
+    if(speedModeBonusRogiEffect){
       startGekiatsuEffect(false, ROGI_STOP_VIDEO_SRCS[3], "SPEED BONUS ROGI", {
         muted:false,
         solid:true,
@@ -8393,8 +8274,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
         volumeGroup:"rogi",
         allowDuringSpeed:true
       });
-    }else if(bar3LeverEffect){
-      startGekiatsuEffect(false, BAR3_LEVER_VIDEO_SRC, "BAR LEVER MOVIE", {solid:true, fadeOnEnd:true});
+
     }else if(gekiatsuChance){
       startGekiatsuEffect(premiumForced);
     }
@@ -8413,7 +8293,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
       ? "SPEED中 / 停止できます"
       : bar3LeverEffect
         ? `BAR揃い演出発生！ ${waitSeconds}後に停止可能`
-        : (gekiatsuChance || premiumConfirmMovieEffect)
+        : gekiatsuChance
           ? `プレミア演出発生！ ${waitSeconds}後に停止可能`
           : `ウェイト中... ${waitSeconds}後に停止可能`;
     $("resultText").textContent = zoneActiveAtSpinStart
@@ -8421,7 +8301,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
       : battleActiveAtSpinStart
         ? `${battleRemainText()} / ${waitText}`
         : waitText;
-    if(!speedModeSpinAtStart && !premiumBigConfirmSilence) playNormalBgm();
+    if(!speedModeSpinAtStart) playNormalBgm();
     if(comebackIntroPlayback){
       // BET and the outcome are already recorded. Keep these same reels/prize
       // while loading and playing the announcement, then start motion once.
@@ -8503,7 +8383,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     const next=NovaBellNavi.stopOrder(spin).find(index=>!spin.stopped[index]);
     // Worker/native deadlines can arrive before the stop unlock or out of order.
     // Retry the same drawn spin; never let a later reel become the first press.
-    if(!spinCanStop||globalThis.NovaSortieAudioGate?.locked(spin)||isPremiumBigConfirmStopLocked()||next!==i){
+    if(!spinCanStop||globalThis.NovaSortieAudioGate?.locked(spin)||next!==i){
       spin.autoStopRetryTimers ||= [];
       if(!spin.autoStopRetryTimers[i])spin.autoStopRetryTimers[i]=setTimeout(()=>{
         spin.autoStopRetryTimers[i]=null;stopAutoReelInOrder(spin,i,options);
@@ -8548,11 +8428,6 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     if(!isSpinning || !currentSpin || currentSpin.stopped[i]) return;
     if(options.keyboardTurbo){
       currentSpin.keyboardTurboStop = true;
-    }
-    if(isPremiumBigConfirmStopLocked()){
-      $("resultText").textContent = "フリーズ告知中...";
-      syncCabinetControlState();
-      return;
     }
     if(!spinCanStop){
       const waitSeconds = spinWaitSecondsText();
@@ -8671,7 +8546,6 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     }
     if(stopOrder===3 && currentSpin.resolved?.czLamp)playCzConfirmedSound(currentSpin.resolved);
     if(stopOrder===3)showZoneRoulette(currentSpin.resolved?.flowAfter);
-    maybePlayPremiumBigLineupVoice(stopOrder, currentSpin);
     maybeLightBonusAnnouncementForStop(stopOrder, currentSpin);
     if(stopOrder === 1 && currentSpin.reversePushGuide){
       setReversePushGuideTranslucent();
@@ -8710,7 +8584,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     if(currentSpin.stopped.every(Boolean) && !currentSpin.finishScheduled){
       currentSpin.finishScheduled = true;
       prepareManualBonusOutcome(currentSpin);
-      updatePremiumBigReelMovie();
+
       if(willEnterBattleAfterCurrentSpin(currentSpin)){
         ensurePendingBattleOutcome(currentSpin);
         showBattleIntro(battleRoundNumber(), !!(currentSpin.pendingBattleOutcome && currentSpin.pendingBattleOutcome.win));
@@ -8742,11 +8616,6 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     if(globalThis.NovaSortieAudioGate?.locked(currentSpin))return;
     if(currentSpin?.resolved?.oumaFreeze)return;
     if(!isSpinning || !currentSpin) return;
-    if(isPremiumBigConfirmStopLocked()){
-      $("resultText").textContent = "フリーズ告知中...";
-      syncCabinetControlState();
-      return;
-    }
     if(!spinCanStop){
       $("resultText").textContent = `ウェイト中... ${spinWaitSecondsText()}後に停止可能`;
       return;
@@ -9316,7 +9185,8 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
       if(!valid()){clearOumaPresentation();return;}
       if(oumaIntroAudio){oumaIntroAudio.pause();oumaIntroAudio=null;}
       presentation.stage='push';machine.dataset.oumaFreeze='push';
-      NovaOumaPush.show({valid,auto:()=>!!autoPlay,onOffer:playCzPushPromptVoice,reveal});
+      NovaOumaPush.show({valid,auto:()=>!!autoPlay,onOffer:playCzPushPromptVoice,reveal,
+        won:!oumaFailed,probability:NovaArt.oumaFreezeRate(NovaArt.normalize(previous),NovaArt.config({...settings.novaArt,setting:settings.setting}))});
     };
     reels.forEach((reel,i)=>NovaReelMotion.start(i,reel,REEL_STRIPS[i],tops[i],true,cellHtml,{
        clock:()=>Math.min(500,Math.max(0,performance.now()-started-[0,65,120][i]))/1000,
@@ -9390,7 +9260,6 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     $("resultText").textContent = `${RESULT[displayResult].name}${lineText} / ${resultParts.join(" / ")}`;
     const holdRogiThirdStopEffect = shouldHoldRogiThirdStopEffect(currentSpin);
     const holdSpeedBonusRogiEffect = currentSpin && currentSpin.speedModeBonusRogiEffect;
-    const premiumConfirmMovieSpin = currentSpin && currentSpin.premiumBigConfirmMovieEffect;
     const stopAutoAtFirstHit = currentSpin && currentSpin.normalActiveAtStart && isAtFirstHitForAuto(resolved);
     if(currentSpin && currentSpin.normalActiveAtStart){
       applyNormalResult(result, resolved, lineRow);
@@ -9412,10 +9281,6 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
         stopGekiatsuEffect(false);
       }else{
         stopGekiatsuEffect(true);
-      }
-      if(premiumConfirmMovieSpin){
-        premiumBigConfirmSilence = false;
-        updatePremiumBigReelMovie();
       }
       hideDevilRushEntryEffect();
       pendingForceResult = "";
@@ -9719,7 +9584,6 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     if(!isSpinning || !currentSpin) return false;
     if(currentSpin.resolved?.oumaFreeze)return false; // Reverse reels stop together on the audio cue.
     if(!spinCanStop||globalThis.NovaSortieAudioGate?.locked(currentSpin)) return false;
-    if(isPremiumBigConfirmStopLocked()) return false;
     if(currentSpin.autoStopTakeoverScheduled) return true;
     currentSpin.autoStopTakeoverScheduled = true;
     currentSpin.autoStopAtStart = true;
@@ -10326,7 +10190,6 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
   function playOneShotSound(src, volume=sfxOutputVolume(), options={}){
     if(globalThis.NovaCompletePresentation?.active&&src!==MODE_EVENT_VOICE_SRCS.complete)return;
     if(debugFastSpinActive || speedToBonusActive) return;
-    if(premiumBigConfirmSilence && !options.allowDuringPremiumConfirm) return;
     if(!src) return;
     try{
       let audio = oneShotSoundCache.get(src);
@@ -10405,27 +10268,8 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     }
   }
 
-  function premiumBigThirdStopVoiceSrc(spin=currentSpin){
-    const resolved = spin && spin.resolved ? spin.resolved : null;
-    if(resolved && resolved.oneGameRenBonus) return PREMIUM_BIG_SECOND_THIRD_STOP_VOICE_SRC;
-    if(normalState.oneGameRenBonus) return PREMIUM_BIG_SECOND_THIRD_STOP_VOICE_SRC;
-    return PREMIUM_BIG_FIRST_THIRD_STOP_VOICE_SRC;
-  }
-
-  function isPremiumBigDedicatedVoiceSrc(src=""){
-    return src === PREMIUM_BIG_FIRST_THIRD_STOP_VOICE_SRC || src === PREMIUM_BIG_SECOND_THIRD_STOP_VOICE_SRC;
-  }
-
-  function playPremiumBigConfirmVoice(label="PBB確定ボイス", src=PREMIUM_BIG_SECOND_THIRD_STOP_VOICE_SRC){
-    if(A_TYPE_MODE)return false;
-  }
-
   function stopSingleReelByKeyboard(i){
     stopSingleReel(i, {keyboardTurbo:true});
-  }
-
-  function playPremiumBigThirdStopVoice(spin=currentSpin){
-    if(A_TYPE_MODE)return false;
   }
 
   function isPremiumBigLineupSpin(spin=currentSpin){
@@ -10440,32 +10284,10 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     );
   }
 
-  function isPremiumBigConfirmSoundContext(spin=currentSpin){
-    if(A_TYPE_MODE)return false;
-  }
-
-  function maybePlayPremiumBigLineupVoice(stopOrder, spin=currentSpin){
-    if(spin?.resolved?.czLamp&&!spin.resolved.czPushConfirmed)return false;
-    if(!isPremiumBigLineupSpin(spin)) return;
-    if(stopOrder === 2 && !spin.premiumBigSecondStopVoicePlayed){
-      spin.premiumBigSecondStopVoicePlayed = true;
-      return;
-    }
-    if(stopOrder === 3 && !spin.premiumBigThirdStopVoicePlayed){
-      playPremiumBigThirdStopVoice(spin);
-    }
-  }
-
   function playLockedBonusConfirmSound(src, volume=sfxOutputVolume(CONFIRM_SOUND_OUTPUT_SCALE), onEnded=null, options={}){
     if(globalThis.NovaCompletePresentation?.active&&src!==MODE_EVENT_VOICE_SRCS.complete)return;
     if(debugFastSpinActive || speedToBonusActive) return;
     if(!src) return;
-    if(src === SEVEN_CONFIRM_SOUND_SRC && isPremiumBigConfirmSoundContext(currentSpin)){
-      src = premiumBigThirdStopVoiceSrc(currentSpin);
-      volume = voiceOutputVolume(PREMIUM_VOICE_OUTPUT_SCALE);
-      log(`PBB通常BIG確定音を差し替え：${src.split("/").pop()}`);
-    }
-    if(!A_TYPE_MODE && premiumBigConfirmSilence && !isPremiumBigDedicatedVoiceSrc(src)) return;
     try{
       clearBonusConfirmSoundLock();
       let audio = oneShotSoundCache.get(src);
@@ -10505,10 +10327,6 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
   }
 
   function playSevenConfirmSound(){
-    if(isPremiumBigConfirmSoundContext(currentSpin)){
-      playPremiumBigConfirmVoice("PBB通常BIG確定音差し替え", premiumBigThirdStopVoiceSrc(currentSpin));
-      return;
-    }
     playLockedBonusConfirmSound(SEVEN_CONFIRM_SOUND_SRC, voiceOutputVolume(LINEUP_CONFIRM_SOUND_OUTPUT_SCALE));
   }
   function playRegConfirmSound(){ playLockedBonusConfirmSound(REG_CONFIRM_SOUND_SRC, voiceOutputVolume(LINEUP_CONFIRM_SOUND_OUTPUT_SCALE)); }
@@ -10524,26 +10342,9 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     playOneShotSound(src, voiceOutputVolume(CONFIRM_SOUND_OUTPUT_SCALE));
   }
 
-  function isPremiumBigBonusActiveForSound(){
-    return !!(
-      isATypeBonusActive() &&
-      normalizeATypeBonusKind(session.bonusKind) === "BIG" &&
-      (session.premiumBonus || session.oneGameRenBonus)
-    );
-  }
-
-  function isPremiumBigBonusPieroSound(result="", spin=currentSpin){
-    return !!(
-      result === A_TYPE_BONUS_MAIN_RESULT &&
-      isPremiumBigBonusActiveForSound() &&
-      (!spin || spin.aTypeBonusActiveAtStart || isATypeBonusActive())
-    );
-  }
-
   function payoutSoundSrcFor(result, reward=0, spin=currentSpin){
     if(globalThis.NovaLadder?.outcome?.(spin?.resolved)?.won)return REPLAY_SOUND_SRC;
     if(A_TYPE_MODE && ["BELL","BELL15","GRAPE","BELL3"].includes(result))return PAYOUT_3PT_BELL_SOUND_SRC;
-    if(isPremiumBigBonusPieroSound(result, spin)) return PREMIUM_PIERO_SYMBOL_SOUND_SRC;
     if(result === "REPLAY") return REPLAY_SOUND_SRC;
     if(result === "CHERRY_ANY" || result === "CHERRY_DOUBLE" || result === "CHERRY_TRIPLE" || result === "MID_CHERRY") return CHERRY_SOUND_SRC;
     if(result === "MID" || result === "BAR3" || result === "SMALL" || result === "DEVIL_ZONE" || result === "SUPER_DEVIL_ZONE") return SPECIAL_SYMBOL_SOUND_SRC;
@@ -10552,7 +10353,6 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
   }
 
   function payoutSoundScaleFor(result="", reward=0, spin=currentSpin){
-    if(isPremiumBigBonusPieroSound(result, spin)) return PAYOUT_SOUND_OUTPUT_SCALE;
     return ["BELL","BELL15"].includes(result) ? BELL_PAYOUT_SOUND_OUTPUT_SCALE : PAYOUT_SOUND_OUTPUT_SCALE;
   }
 

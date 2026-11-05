@@ -1,25 +1,5 @@
-/* Scoped to the three reel windows; lamp movies and counters remain visible. */
+/* Normal high-speed play omits motion but always shows the actual stop result. */
 .reels.novaSuperSpeedReelsStatic > .reel{
- visibility:hidden;
  animation:none !important;
-}
-.novaSuperSpeedReelCover{
- position:absolute;inset:10px 0 2px;z-index:4;
- display:grid;place-items:center;overflow:hidden;pointer-events:none;
- background:#06050a;border-radius:3px;container-type:inline-size;
-}
-.novaSuperSpeedReelCover[hidden]{display:none !important;}
-.novaSuperSpeedReelStill{
- position:absolute;inset:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
- gap:var(--layout-reels-gap,.2%);opacity:.14;
-}
-.novaSuperSpeedReelStill *{animation:none !important;transition:none !important;}
-.novaSuperSpeedFrozenReel{display:grid;grid-template-rows:repeat(3,minmax(0,1fr));overflow:hidden;}
-.novaSuperSpeedFrozenReel > .cell{
- min-height:0 !important;height:100% !important;animation:none !important;transform:none !important;
-}
-.novaSuperSpeedReelCover > span{
- position:relative;z-index:1;color:#fff;font-size:24px;font-size:5.5cqw;
- font-weight:800;letter-spacing:.06em;white-space:nowrap;
- text-shadow:0 2px 5px #000,0 0 10px #000;
+ filter:none;
 }

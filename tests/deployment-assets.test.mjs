@@ -47,3 +47,21 @@ test('manifest rejects path traversal, duplicate entries and unrelated release o
  assert.throws(()=>validateManifest({...manifest,files:[...manifest.files,...manifest.files]}),/duplicate/);
  assert.throws(()=>validateManifest({...manifest,archive:{...manifest.archive,url:'https://example.com/assets.tar.gz'}}),/release URL/);
 });
+
+test('retired archive members are never restored or allowed in the deployment checkout',async t=>{
+ const {root,manifest,file}=fixture(t);manifest.files[0].retired=true;
+ assert.deepEqual(await inspectAssets(root,manifest),[]);
+ fs.writeFileSync(file,content);await assert.rejects(inspectAssets(root,manifest),/Retired asset remains/);
+ assert.throws(()=>validateManifest({...manifest,files:[{...manifest.files[0],retired:'yes'}]}),/Invalid retired/);
+});
+
+test('release restore extracts active members only, even when retired media remains in the archive',async t=>{
+ const {root,manifest,file}=fixture(t),{execFileSync}=await import('node:child_process'),{prepareDeploy}=await import('../scripts/prepare-deploy.mjs');
+ const retired=path.join(root,'assets/retired.wav');fs.writeFileSync(file,content);fs.writeFileSync(retired,content);
+ manifest.files.push({...manifest.files[0],path:'assets/retired.wav',retired:true});
+ const bundle=path.join(root,'fixture.tar.gz');execFileSync('tar',['-czf',bundle,'-C',root,'assets/sample.wav','assets/retired.wav']);
+ const bytes=fs.readFileSync(bundle);Object.assign(manifest.archive,{sha256:sha(bytes),size:bytes.length});fs.writeFileSync(path.join(root,'deploy-assets.json'),JSON.stringify(manifest));
+ fs.unlinkSync(file);fs.unlinkSync(retired);const original=globalThis.fetch;globalThis.fetch=async()=>new Response(bytes);
+ try{await prepareDeploy(root);}finally{globalThis.fetch=original;}
+ assert.deepEqual(fs.readFileSync(file),content);assert.equal(fs.existsSync(retired),false);
+});
