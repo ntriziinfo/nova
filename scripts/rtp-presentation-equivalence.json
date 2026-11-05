@@ -357,6 +357,23 @@
         "tests/nova-super-speed-reels.test.mjs",
         "tests/nova-impurity-voice-equivalence.test.mjs"
       ]
+    },
+    {
+      "file": "nova-game.js",
+      "sourceHash": "b2c2a90e6edf4bea490bc7cd19df55db0131f0fd1ca0a8c77641b298d0c5cc6c",
+      "presentationHash": "dffd882384e0b7e9fe9cabcfdb7ca160d92be9ba89f3c6901d145486eadd7906",
+      "sourceCommit": "44d96c5caf9bee17e17e2aede939f9115e354a93",
+      "presentationCommit": "fcc8cefb886dbf844fd0468d84e37d34e0e18e12",
+      "reason": "既存音量校正に続く演出のみの変更。逢魔・裏逢魔・うらぴの共通1コマ戻り終了後、従来の4秒タイマーをCZ白PUSH・案内ボイスによる入力待ちに置換。BET時のprepareBetと乱数消費は維持し、決定済みの成功/失敗を一度だけ既存spinへ引き渡す。AUTOは1秒後の自動押下、取消時は旧コールバックを無効化。追加BET・払い出し・上乗せ・ストック・G数変更はなく、演出待ち時間のみ変更。全エンジンの変更を逆適用して試算元44d96c5のSHA256完全一致を確認。3ゾーン×成否×手動/超AUTOの実画面12ケースと関連テストで確認し、既存1億G証跡を保持。",
+      "tests": [
+        "tests/nova-ouma-presentation.test.mjs",
+        "tests/nova-ouma-failed-zero.test.mjs",
+        "tests/nova-ouma-audio-lifecycle.test.mjs",
+        "tests/nova-audio-defaults-equivalence.test.mjs",
+        "tests/nova-cz-push.test.mjs",
+        "tests/nova-super-speed-reels.test.mjs",
+        "tests/nova-impurity-voice-equivalence.test.mjs"
+      ]
     }
   ]
 }
