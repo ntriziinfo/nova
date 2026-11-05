@@ -1,0 +1,30 @@
+[
+  [
+    "  // Slider 50 reproduces these v2 category levels; both ends retain their full range.\n  const AUDIO_MIX_CENTER = Object.freeze({\n    bgmVolume: 0.69, sfxVolume: 0.46, voiceVolume: 0.55, payoutVolume: 0.52\n  });\n\n  function remapVolumeSlider(value, fromCenter, toCenter){\n    if(value <= fromCenter) return value * toCenter / fromCenter;\n    return toCenter + (value - fromCenter) * (1 - toCenter) / (1 - fromCenter);\n  }\n\n  function migrateAudioCalibration(target, previousVersion=0){\n    if(Number(previousVersion) >= 3) return;\n    const v1Scale = {bgmVolume: 2, sfxVolume: 2, voiceVolume: 1.14, payoutVolume: 0.74};\n    for(const [key, center] of Object.entries(AUDIO_MIX_CENTER)){\n      const value = Number(target[key]);\n      if(!(Number(previousVersion) >= 1) || !Number.isFinite(value)){\n        target[key] = 0.5;\n        continue;\n      }\n      const previousLevel = Number(previousVersion) < 2 ? value / v1Scale[key] : value;\n      target[key] = remapVolumeSlider(clamp(previousLevel, 0, 1), center, 0.5);\n    }\n    target.audioCalibrationVersion = 3;\n  }\n\n",
+    "  // All50 reproduces calibration v1 sliders 50/100/100/57/37.\n  function migrateAudioCalibration(target, previousVersion=0){\n    if(Number(previousVersion)>=2)return;\n    if(Number(previousVersion)>=1){\n      for(const [key,ratio] of [['bgmVolume',2],['sfxVolume',2],['voiceVolume',1.14],['payoutVolume',0.74]]){\n        const value=Number(target[key]);\n        target[key]=Number.isFinite(value)?clamp(value/ratio,0,1):0.5;\n      }\n    }else{\n      for(const key of ['masterVolume','bgmVolume','sfxVolume','voiceVolume','payoutVolume'])target[key]=0.5;\n    }\n    target.audioCalibrationVersion=2;\n  }\n\n"
+  ],
+  [
+    "    audioCalibrationVersion:3,",
+    "    audioCalibrationVersion:2,"
+  ],
+  [
+    "    return audioOutputVolume(remapVolumeSlider(settings.bgmVolume, 0.5, AUDIO_MIX_CENTER.bgmVolume), scale * 1.36);",
+    "    return audioOutputVolume(settings.bgmVolume, scale * 1.36);"
+  ],
+  [
+    "    return audioOutputVolume(remapVolumeSlider(settings.sfxVolume, 0.5, AUDIO_MIX_CENTER.sfxVolume), scale * 2);",
+    "    return audioOutputVolume(settings.sfxVolume, scale * 2);"
+  ],
+  [
+    "    return audioOutputVolume(remapVolumeSlider(settings.voiceVolume, 0.5, AUDIO_MIX_CENTER.voiceVolume), scale * 1.4592);",
+    "    return audioOutputVolume(settings.voiceVolume, scale * 1.4592);"
+  ],
+  [
+    "    return audioOutputVolume(remapVolumeSlider(settings.payoutVolume, 0.5, AUDIO_MIX_CENTER.payoutVolume), scale * 0.74);",
+    "    return audioOutputVolume(settings.payoutVolume, scale * 0.74);"
+  ],
+  [
+    "      const key = normalizedAudioSourceKey(src);\n      let gain = sfxOutputVolume();\n      if(key === SPIN_SOUND_SRC) gain *= 0.7;\n      if(key === STOP_SOUND_SRC) gain *= 0.7 * dbToGain(-3);\n      if(src === SORTIE_SANDWICH_AIM_SOUND_SRC) gain *= dbToGain(8);\n      return Math.min(1, gain);",
+    "      const trim=['assets/media/nova/spin_start.wav','assets/media/nova/reel-stop.wav'].includes(String(src).split('?')[0])?0.7:1;\n      return Math.min(1,sfxOutputVolume()*trim*(src===SORTIE_SANDWICH_AIM_SOUND_SRC?10**(8/20):1));"
+  ]
+]

@@ -53,7 +53,7 @@ test('sortie success voice stays at natural speed and holds the next BET until e
 
 test('only the sortie entry aim SE receives another +5 dB over the prior +3 dB, including master-volume reapplication',()=>{
  const c=vm.createContext({SORTIE_SANDWICH_AIM_SOUND_SRC:'sortie.wav',NovaAudioAssets:{entry:()=>({category:'sfx'})},sfxOutputVolume:()=>.25});
- vm.runInContext(fn('soundOutputVolume'),c);
+ vm.runInContext(html.match(/  const SPIN_SOUND_SRC = [^;]+;/)[0]+html.match(/  const STOP_SOUND_SRC = [^;]+;/)[0]+fn('dbToGain')+fn('normalizedAudioSourceKey')+fn('soundOutputVolume'),c);
  assert.equal(c.soundOutputVolume('sortie.wav',.25),.25*10**(8/20));
  assert.ok(Math.abs(20*Math.log10(c.soundOutputVolume('sortie.wav',.25)/(.25*10**(3/20)))-5)<1e-10);
  assert.equal(c.soundOutputVolume('other.wav',.25),.25);

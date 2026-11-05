@@ -1,3 +1,4 @@
+import {installVolumeCalibration} from './helpers/audio-mix.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -33,7 +34,8 @@ function harness(saved=null){
  // Navigation renderer is tested separately with DOM stubs; restore must not draw an order.
  c.NovaBellNavi={restore:spin=>{c.shownOrder=json(spin.bellNaviOrder);},clear:noop};
  c.SORTIE_AWARD_VOICE_SRCS=loadVoiceCatalog(c).SORTIE_AWARD_VOICE_SRCS;
- for(const name of ['reduceSlumpPoints','canUsePlayState','clearBonusPreparationState','migrateAudioCalibration','load','runtimeStateForStorage','compactStatsForResume','updateStorageStatus','persistState','playSortieSandwichAimSound','playSortieSandwichHitSound','playSortieAwardVoice','restoreCzLampPresentation','restorePendingSpin','prepareManualRareOutcome'])vm.runInContext(fn(name),c);
+ installVolumeCalibration(source,c);
+ for(const name of ['reduceSlumpPoints','canUsePlayState','clearBonusPreparationState','load','runtimeStateForStorage','compactStatsForResume','updateStorageStatus','persistState','playSortieSandwichAimSound','playSortieSandwichHitSound','playSortieAwardVoice','restoreCzLampPresentation','restorePendingSpin','prepareManualRareOutcome'])vm.runInContext(fn(name),c);
  c.migratePendingReelLayout=spin=>{c.restoredReelLayout=spin.reelLayoutVersion;};
  return {c,storage,errors,timers,$,voices,sortieCues,sortieAudios};
 }
@@ -366,9 +368,9 @@ test('saved legacy net-completion is released below MY19k',()=>{
  const again=harness(JSON.parse(h.storage.get('state')));assert(again.c.load());assert(!again.c.completeTrialState.locked);assert.equal(again.c.completeTrialState.reason,undefined);
 });
 
-test('reference audio mix migrates once to all50 without changing saved play or mute',()=>{
+test('unversioned audio settings adopt new category defaults and keep master, play and mute',()=>{
  const h=harness();h.c.load();Object.assign(h.c.settings,{masterVolume:.25,bgmVolume:.34,sfxVolume:.5,voiceVolume:.64,payoutVolume:.5,audioMuted:true});h.c.stats.totalPaid=321;delete h.c.settings.audioCalibrationVersion;h.c.persistState();
- const again=harness(JSON.parse(h.storage.get('state')));again.c.load();for(const key of ['masterVolume','bgmVolume','sfxVolume','voiceVolume','payoutVolume'])assert.equal(again.c.settings[key],.5);assert.equal(again.c.settings.audioMuted,true);assert.equal(again.c.stats.totalPaid,321);assert.equal(again.c.settings.audioCalibrationVersion,2);
+ const again=harness(JSON.parse(h.storage.get('state')));again.c.load();assert.equal(again.c.settings.masterVolume,.25);for(const key of ['bgmVolume','sfxVolume','voiceVolume','payoutVolume'])assert.equal(again.c.settings[key],.5);assert.equal(again.c.settings.audioMuted,true);assert.equal(again.c.stats.totalPaid,321);assert.equal(again.c.settings.audioCalibrationVersion,3);
  again.c.settings.voiceVolume=.7;again.c.persistState();const third=harness(JSON.parse(again.storage.get('state')));third.c.load();assert.equal(third.c.settings.voiceVolume,.7);
 });
 
