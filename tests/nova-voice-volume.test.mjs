@@ -93,8 +93,9 @@ test('every registered character line uses one voice category regardless of call
  const {c}=setup();
  for(const src of c.voiceSources){
   assert(fs.existsSync(src.split('?')[0]),src);
-  c.playOneShotSound(src,.99);const audio=c.oneShotSoundCache.get(src);near(audio.volume,.128);
-  c.settings.sfxVolume=0;c.playOneShotSound(src,0);near(audio.volume,.128);
+  const expected=.128*(src.includes('navi-')&&src.endsWith('-kushuri.wav')?10**(-1/20):1);
+  c.playOneShotSound(src,.99);const audio=c.oneShotSoundCache.get(src);near(audio.volume,expected);
+  c.settings.sfxVolume=0;c.playOneShotSound(src,0);near(audio.volume,expected);
  }
  for(const src of ['assets/media/nova/aim/zone-roulette-confirm.wav?v=future','assets/media/jag/cz_last.wav?v=future']){
   c.playOneShotSound(src,0);near(c.oneShotSoundCache.get(src).volume,.128);
