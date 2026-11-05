@@ -104,7 +104,7 @@ function restartFadeIn(button,className){
 function wait(resolved,{auto=false,setting=1,valid,reveal,onOffer=()=>{},onFailure=()=>{}}){
  if(!resolved?.czLamp||resolved.czPushConfirmed||!(resolved.czCompleted||resolved.bonusHit||resolved.aTypeBonusReady))return false;
  let button=document.getElementById('novaCzPush');
- if(!button){button=document.createElement('button');button.id='novaCzPush';button.type='button';button.textContent='PUSH';document.querySelector('.reelArea').append(button);}
+ if(!button){button=document.createElement('button');button.id='novaCzPush';button.type='button';button.textContent='PUSH';document.querySelector('.novaPushLayer').append(button);}
  if(pendingPush===resolved)return true;
  if(pendingPush)reset();
  const epoch=++pendingEpoch;

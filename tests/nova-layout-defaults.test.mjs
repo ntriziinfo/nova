@@ -75,7 +75,7 @@ test('committed display defaults match the approved Chrome layout',()=>{
  assert.match(cabinet,/--layout-sortieaimsymbol-y,28%/);
  assert.match(cabinet,/--layout-sortieaimsymbol-compact,37\.6%/);
  assert.match(cabinet,/--layout-sortieaimaim-y,32\.6%/);
- assert.match(html,/nova-game\.css\?v=20261028-auto-stop-control/);
+ assert.match(html,/nova-game\.css\?v=20261105-premium-cleanup/);
  assert.match(html,/nova-data-counter\.css\?v=20261030-challenge-history/);
  assert.match(html,/nova-cabinet\.css\?v=20261030-sortie-success/);
  assert.match(html,/nova-aim-presentation\.js\?v=20261030-sortie-success/);

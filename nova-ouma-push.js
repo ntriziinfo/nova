@@ -30,7 +30,7 @@ globalThis.NovaOumaPush=(()=>{
    button=document.createElement('button');button.id='novaOumaPush';
    button.type='button';button.textContent='PUSH';
    button.setAttribute('aria-label','PUSHでフリーズ継続を告知');
-   document.querySelector('.reelArea').append(button);
+   document.querySelector('.novaPushLayer').append(button);
   }
   const offer=pending={valid,auto,accept:()=>{
    if(pending!==offer)return;

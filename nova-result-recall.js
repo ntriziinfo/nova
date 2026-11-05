@@ -3,7 +3,7 @@ globalThis.NovaResultRecall=(()=>{
  let node,timer=null,state=null,eligible=false,initial=true,opened=false,options=null;
  function init(){
   if(node)return;
-  const host=document.querySelector('.reelArea');if(!host)return;
+  const host=document.querySelector('.novaPushLayer');if(!host)return;
   node=document.createElement('button');node.id='novaResultRecallPush';node.type='button';node.hidden=true;
   node.textContent='PUSH';node.setAttribute('aria-label','直近のモード示唆を見る');host.append(node);
   node.onclick=()=>{
