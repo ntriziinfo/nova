@@ -5,10 +5,6 @@ html { background:#08070a !important; background-image:none !important; }
 @media(max-width:760px) {
   :root { --jag-reel-top:474px; --jag-reel-height:503px; }
 }
-.cabinetPartsScene > .cabinetPart,
-.cabinetPartsScene > .cabinetTopSevenOverlay,
-.cabinetFrontParts,
-.reelCenterBandLayer { display:none !important; }
 .novaCabinetArtwork {
   position:absolute; inset:0; width:100%; height:100%;
   display:block; pointer-events:none; user-select:none;
@@ -27,10 +23,6 @@ html { background:#08070a !important; background-image:none !important; }
 .playControls.leverDown .cabinetStartLever { top:70%; }
 .playControls .autoArea { top:69.3% !important; }
 .playControls .betArea .spinBtn { width:100% !important; height:100% !important; }
-.jagBonusDataMeters {
-  border:0; border-radius:0; background:#080609; box-shadow:none;
-}
-.jagBonusDataMeter span { color:#eee; text-shadow:none; }
 /* Data readouts stay legible over the generated empty display recesses. */
 .jagPayoutMeter { background:#080609 !important; }
 /* AT winnings share the reel coordinate system, but sit in front of the lamps.

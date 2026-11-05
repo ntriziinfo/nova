@@ -5,7 +5,7 @@ test('Premium BIG media, handlers and markup are removed; active NOVA media rema
  const c={};vm.runInNewContext(fs.readFileSync('nova-audio-manifest.js','utf8'),c);
  for(const src of ['assets/media/nova/BIG.wav','assets/media/nova/upper-at-bgm.mp3','assets/media/nova/impurity-release-bgm-1143035-20261030.mp3'])assert(c.NovaAudioManifest[src],src);
  const manifest=JSON.parse(fs.readFileSync('deploy-assets.json','utf8'));
- const retired=manifest.files.filter(f=>f.retired);assert.equal(retired.length,9);
+ const retired=manifest.files.filter(f=>f.retired);assert.equal(retired.filter(f=>f.path.includes('/premium_')).length,9);
  for(const f of retired)assert(!fs.existsSync(f.path));
  for(const dir of ['assets/media/jag','assets/media/normalized-20261012/jag','assets/media/normalized-voices-20261013/jag'])assert(!fs.readdirSync(dir).some(f=>f.startsWith('premium_')));
 });

@@ -944,7 +944,6 @@
     navi:{...NovaBellNavi.defaults},
     flowstatus:{x:38,y:92.6,w:40},
     reels:{x:22.3, y:35.6, w:55.7, h:36.9, gap:1.6},
-    chance:{x:22.0, y:85.8, w:11.9, h:11.0},
     credit:{x:38.8, y:87.7, w:21.2, h:7.6},
     count:{x:21.8, y:24.1, w:15.2, h:13.7},
     payout:{x:63.7, y:87.7, w:13.6, h:7.6},
@@ -6103,34 +6102,6 @@
       const raw = Math.round(Number(value) || 0);
       return `${raw < 0 ? "-" : ""}${formatMeterDigits(raw, 5, 99999)}`;
     };
-    setText("jagTotalGameDataMeter", formatMeterDigits(machineDisplay.totalSpins, 5, 99999));
-    const afterBonusMeter = $("jagAfterBonusDataMeter");
-    const holdAfterBonusGames = !!(A_TYPE_MODE && isATypeBonusActive());
-    const afterBonusGames = holdAfterBonusGames ? normalizeBonusAfterGames(session.bonusStartGames) : normalizeBonusAfterGames(machineDisplay.sinceBonus);
-    setText("jagAfterBonusDataMeter", formatMeterDigits(afterBonusGames, 4, 9999));
-    if(afterBonusMeter) afterBonusMeter.classList.toggle("is-bonus-held", holdAfterBonusGames);
-    setText("jagAtDataMeter", machineDisplay.atFirstCountPartial ? "---" : formatMeterDigits(machineDisplay.atFirstCount, 3, 999));
-    // bigCount already includes upper BIG; upperBigCount is its breakdown.
-    setText("jagBigDataMeter", formatMeterDigits(machineDisplay.bigCount, 3, 999));
-    const stLampOn = !!($("stLamp") && $("stLamp").classList.contains("on"));
-    const jagChanceLit = !!(active || normalState.bonusPending || jagChanceHold || stLampOn || bonusConfirmBgmHold);
-    if(reelArea) reelArea.classList.toggle("jagChanceLit", jagChanceLit);
-    const gogoChance = $("jagGogoChance");
-    if(gogoChance){
-      const premiumBonusActive = !!(isATypeBonusActive() && (session.premiumBonus || session.oneGameRenBonus));
-      const jagChanceBarConfirm = !!(
-        premiumBonusActive ||
-        (jagChanceLit && pendingBonusLabel() === "BAR") ||
-        barRainbowHold ||
-        (currentSpin && jagChanceLit && (
-          currentSpin.result === "BAR3" ||
-          !!(currentSpin.resolved && (currentSpin.resolved.premiumBonus || currentSpin.resolved.oneGameRenBonus))
-        ))
-      );
-      gogoChance.classList.toggle("is-lit", jagChanceLit);
-      gogoChance.classList.toggle("is-bar-confirm", jagChanceBarConfirm);
-      gogoChance.setAttribute("aria-pressed", jagChanceLit ? "true" : "false");
-    }
     const displayCredit = playSessionCredit();
     if(active)jagChainBonusHandoff=false;
     // Once the first-hit baseline exists, presentation-only state changes must
@@ -6752,7 +6723,6 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     }
     const status=document.createElement("div");status.id="novaFlowStatus";
     document.querySelector(".reelArea").append(status);
-    for(const key of ['czDenom','strongDenom','strongChance'])document.querySelector('[data-flow-config="'+key+'"]')?.closest('label')?.remove();
     const cfg=NovaFlow.config(settings.novaFlow);
     for(const key of Object.keys(cfg)){
       const input=document.querySelector('[data-flow-config="'+key+'"]');

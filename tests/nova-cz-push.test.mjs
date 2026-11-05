@@ -57,7 +57,7 @@ assert.match(css,/#novaCzPush\.novaCzEntering\{animation:novaPushFadeIn/);
 assert.match(css,/data-lamp=cz-rainbow[^}]+novaCzRainbowFlash \.14s/);
 assert.match(css,/data-cz-color=rainbow[^}]+novaCzReelRainbowFlash \.14s/);
 assert.match(css,/\.novaCzFailed #machine :is\([^}]+filter:brightness\(0\)!important/);
-for(const selector of ['.lamps','.lamp','#stLamp','.jagStatusLamps'])assert.match(css,new RegExp('\\.novaCzFailed #machine :is\\([^}]*'+selector.replace('.','\\.')+'[^}]*\\)'));
+for(const selector of ['.reels','.novaArtLayer','.lamps','.lamp','#stLamp'])assert.match(css,new RegExp('\\.novaCzFailed #machine :is\\([^}]*'+selector.replace('.','\\.')+'[^}]*\\)'));
 assert.doesNotMatch(css,/\.novaCzFailed #machine :is\([^}]*#novaCzPush/);
 assert.match(css,/prefers-reduced-motion:reduce[^}]+#novaCzPush\.failed\{animation:none;opacity:0/);
 assert(!fs.readFileSync('nova-cz-push.js','utf8').includes('Math.random'));

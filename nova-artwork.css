@@ -122,7 +122,7 @@ body[data-game-phase=bonus][data-bonus-tier=upper] .novaArtLayer .novaArtItem im
 @media(prefers-reduced-motion:reduce){#machine[data-cz-color=rainbow] .reels::after{animation:none;--cz-color:#d56dff}}
 /* CZ failure: the physical reel window, its trim, and every lamp are truly off
  * for the existing 900ms result hold. The PUSH remains above them to fade out. */
-.novaCzFailed #machine :is(.reels,.risingReelBackplate,.reelFrameOnOverlay,.reelCenterBandLayer,.cabinetFrontParts,.cabinetPartReelBack,.jagFrameLamps,.jagSideRail,.jagTopBeacon,.cabinetTopSevenOverlay,.novaArtLayer,.lamps,.lamp,#stLamp,.jagStatusLamps){animation:none!important;filter:brightness(0)!important;box-shadow:none!important}
+.novaCzFailed #machine :is(.reels,.novaArtLayer,.lamps,.lamp,#stLamp){animation:none!important;filter:brightness(0)!important;box-shadow:none!important}
 .novaCzFailed #machine .reelArea::before,.novaCzFailed #machine .reelArea::after{animation:none!important;filter:brightness(0)!important;box-shadow:none!important}
 .novaCzFailed #machine .novaArtItem::before,.novaCzFailed #machine .novaArtItem img{animation:none!important;filter:brightness(0)!important;box-shadow:none!important}
 .novaCzFailed #machine .reels::after{animation:none!important;opacity:0!important;box-shadow:none!important}

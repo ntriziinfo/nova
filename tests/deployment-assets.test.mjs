@@ -65,3 +65,17 @@ test('release restore extracts active members only, even when retired media rema
  try{await prepareDeploy(root);}finally{globalThis.fetch=original;}
  assert.deepEqual(fs.readFileSync(file),content);assert.equal(fs.existsSync(retired),false);
 });
+
+test('the public cabinet and its styles never request retired release assets',()=>{
+ const manifest=JSON.parse(fs.readFileSync('deploy-assets.json','utf8'));
+ const page=fs.readFileSync('jag.html','utf8');
+ const sources=[['jag.html',page]];
+ for(const [,file] of page.matchAll(/(?:src|href)="([\w-]+\.(?:js|css))(?:\?[^"]*)?"/g)){
+  sources.push([file,fs.readFileSync(file,'utf8')]);
+ }
+ for(const asset of manifest.files.filter(file=>file.retired)){
+  for(const [name,source] of sources){
+   assert.ok(!source.includes(asset.path),name+' still references '+asset.path);
+  }
+ }
+});

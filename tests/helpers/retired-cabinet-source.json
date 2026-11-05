@@ -1,0 +1,14 @@
+[
+  [
+    "    credit:{x:38.8, y:87.7, w:21.2, h:7.6},",
+    "    chance:{x:22.0, y:85.8, w:11.9, h:11.0},\n    credit:{x:38.8, y:87.7, w:21.2, h:7.6},"
+  ],
+  [
+    "    const displayCredit = playSessionCredit();\n    if(active)jagChainBonusHandoff=false;",
+    "    setText(\"jagTotalGameDataMeter\", formatMeterDigits(machineDisplay.totalSpins, 5, 99999));\n    const afterBonusMeter = $(\"jagAfterBonusDataMeter\");\n    const holdAfterBonusGames = !!(A_TYPE_MODE && isATypeBonusActive());\n    const afterBonusGames = holdAfterBonusGames ? normalizeBonusAfterGames(session.bonusStartGames) : normalizeBonusAfterGames(machineDisplay.sinceBonus);\n    setText(\"jagAfterBonusDataMeter\", formatMeterDigits(afterBonusGames, 4, 9999));\n    if(afterBonusMeter) afterBonusMeter.classList.toggle(\"is-bonus-held\", holdAfterBonusGames);\n    setText(\"jagAtDataMeter\", machineDisplay.atFirstCountPartial ? \"---\" : formatMeterDigits(machineDisplay.atFirstCount, 3, 999));\n    // bigCount already includes upper BIG; upperBigCount is its breakdown.\n    setText(\"jagBigDataMeter\", formatMeterDigits(machineDisplay.bigCount, 3, 999));\n    const stLampOn = !!($(\"stLamp\") && $(\"stLamp\").classList.contains(\"on\"));\n    const jagChanceLit = !!(active || normalState.bonusPending || jagChanceHold || stLampOn || bonusConfirmBgmHold);\n    if(reelArea) reelArea.classList.toggle(\"jagChanceLit\", jagChanceLit);\n    const gogoChance = $(\"jagGogoChance\");\n    if(gogoChance){\n      const premiumBonusActive = !!(isATypeBonusActive() && (session.premiumBonus || session.oneGameRenBonus));\n      const jagChanceBarConfirm = !!(\n        premiumBonusActive ||\n        (jagChanceLit && pendingBonusLabel() === \"BAR\") ||\n        barRainbowHold ||\n        (currentSpin && jagChanceLit && (\n          currentSpin.result === \"BAR3\" ||\n          !!(currentSpin.resolved && (currentSpin.resolved.premiumBonus || currentSpin.resolved.oneGameRenBonus))\n        ))\n      );\n      gogoChance.classList.toggle(\"is-lit\", jagChanceLit);\n      gogoChance.classList.toggle(\"is-bar-confirm\", jagChanceBarConfirm);\n      gogoChance.setAttribute(\"aria-pressed\", jagChanceLit ? \"true\" : \"false\");\n    }\n    const displayCredit = playSessionCredit();\n    if(active)jagChainBonusHandoff=false;"
+  ],
+  [
+    "    const cfg=NovaFlow.config(settings.novaFlow);\n    for(const key of Object.keys(cfg)){",
+    "    for(const key of ['czDenom','strongDenom','strongChance'])document.querySelector('[data-flow-config=\"'+key+'\"]')?.closest('label')?.remove();\n    const cfg=NovaFlow.config(settings.novaFlow);\n    for(const key of Object.keys(cfg)){"
+  ]
+]

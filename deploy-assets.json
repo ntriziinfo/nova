@@ -54,32 +54,38 @@
     {
       "path": "assets/cabinet/edit_parts/piero.png",
       "size": 83211,
-      "sha256": "107c6592ea37df4b041e55199edfd695a7620e35afa38945db41080b6f397275"
+      "sha256": "107c6592ea37df4b041e55199edfd695a7620e35afa38945db41080b6f397275",
+      "retired": true
     },
     {
       "path": "assets/cabinet/parts/rising_part_controls.png",
       "size": 232540,
-      "sha256": "d3de203d78a544ad760857f0681251b915c96811281908d488ce587872eea0c2"
+      "sha256": "d3de203d78a544ad760857f0681251b915c96811281908d488ce587872eea0c2",
+      "retired": true
     },
     {
       "path": "assets/cabinet/parts/rising_part_lower.png",
       "size": 743623,
-      "sha256": "16cd37f942daebb1632ec334e0bc4e51617919d854214b271312aea42528680b"
+      "sha256": "16cd37f942daebb1632ec334e0bc4e51617919d854214b271312aea42528680b",
+      "retired": true
     },
     {
       "path": "assets/cabinet/parts/rising_part_reel_back_roles.png",
       "size": 552812,
-      "sha256": "250be09fafc03bb8baf01832c33883dcac2204be7b5e7fb2594706aa6bf311f0"
+      "sha256": "250be09fafc03bb8baf01832c33883dcac2204be7b5e7fb2594706aa6bf311f0",
+      "retired": true
     },
     {
       "path": "assets/cabinet/parts/rising_part_reel_center_bands.png",
       "size": 25515,
-      "sha256": "35d297c8b09a5c56a4ebed959ccc458b7e82e7ddecb3b7993d1eefb52ccbe213"
+      "sha256": "35d297c8b09a5c56a4ebed959ccc458b7e82e7ddecb3b7993d1eefb52ccbe213",
+      "retired": true
     },
     {
       "path": "assets/cabinet/parts/rising_part_top.png",
       "size": 908740,
-      "sha256": "74dca69da42f626899a45bac93aacced3f8adbce17999d4228153d909ad20366"
+      "sha256": "74dca69da42f626899a45bac93aacced3f8adbce17999d4228153d909ad20366",
+      "retired": true
     },
     {
       "path": "assets/controls/start_lever_ball.png",
@@ -239,7 +245,8 @@
     {
       "path": "assets/frames/rising_reel_frame_on.svg",
       "size": 3553,
-      "sha256": "b5c5516298a4e30a5710a9fa477c9ba220de688e0d6536097260a2bcd13a8695"
+      "sha256": "b5c5516298a4e30a5710a9fa477c9ba220de688e0d6536097260a2bcd13a8695",
+      "retired": true
     },
     {
       "path": "assets/guide/jag_chance_patterns.svg",
@@ -1563,22 +1570,26 @@
     {
       "path": "assets/ui/rising_chance_bar_confirm.png",
       "size": 299787,
-      "sha256": "c47410ff0950abb5ff122d9994f782bc1082bc32475bcb55a645871467199ba0"
+      "sha256": "c47410ff0950abb5ff122d9994f782bc1082bc32475bcb55a645871467199ba0",
+      "retired": true
     },
     {
       "path": "assets/ui/rising_chance_lamp_bg.png",
       "size": 237587,
-      "sha256": "445c47d10c41f8e8f1de4736f7639a82e31251577b325f05c2e49d0af66737a2"
+      "sha256": "445c47d10c41f8e8f1de4736f7639a82e31251577b325f05c2e49d0af66737a2",
+      "retired": true
     },
     {
       "path": "assets/ui/rising_chance_lamp_text.png",
       "size": 79171,
-      "sha256": "a7e1d273a6f4a68d8ac287e3683e81e7049bfea6da56b5b8b10ac030bec78877"
+      "sha256": "a7e1d273a6f4a68d8ac287e3683e81e7049bfea6da56b5b8b10ac030bec78877",
+      "retired": true
     },
     {
       "path": "assets/ui/rising_gogo_chance.png",
       "size": 298054,
-      "sha256": "a868d7db7e1b91a76f3087a26b9c4a18b9024e25102f3bf4e535d8fc3f7da0a7"
+      "sha256": "a868d7db7e1b91a76f3087a26b9c4a18b9024e25102f3bf4e535d8fc3f7da0a7",
+      "retired": true
     }
   ]
 }
