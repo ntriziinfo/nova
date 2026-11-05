@@ -374,6 +374,23 @@
         "tests/nova-super-speed-reels.test.mjs",
         "tests/nova-impurity-voice-equivalence.test.mjs"
       ]
+    },
+    {
+      "file": "nova-game.js",
+      "sourceHash": "b2c2a90e6edf4bea490bc7cd19df55db0131f0fd1ca0a8c77641b298d0c5cc6c",
+      "presentationHash": "ba8b58f6d5a8042d84df0749a0c735bda3b864e33c45a7662a1bf19088925fcc",
+      "sourceCommit": "44d96c5caf9bee17e17e2aede939f9115e354a93",
+      "presentationCommit": "e8677281bd090d07cc9fa3c7d5d55d822f30762c",
+      "reason": "演出のみ。逢魔・裏逢魔・うらぴのPUSHは決定済み成否と同じ継続率を読み取り、ゲーム乱数とは独立した表示seedでCZ共通の白・デカ・赤・金とボイスを選択。プレミアムBIG専用の未使用動画状態・音声分岐・表示を削除し、現行NOVAの内部当選・保証・獲得pt・ストック・再開処理は保持。通常の超ハイスピードは同一の乱数/リールオフセット更新後に回転中の仮出目描画だけを省き、実停止出目を毎ゲーム表示する。正確な全エンジン差分の逆適用により採用試算元SHA256への完全一致、各ゾーン成否/手動AUTOの12画面ケース、実スピンの最終出目、関連試験を確認。抽選乱数消費・払い出し・上乗せ・停止判定・ゲーム計数変更なし。既存1億G試算証跡を維持する。",
+      "tests": [
+        "tests/nova-audio-defaults-equivalence.test.mjs",
+        "tests/nova-impurity-voice-equivalence.test.mjs",
+        "tests/nova-ouma-presentation.test.mjs",
+        "tests/nova-push-variants.test.mjs",
+        "tests/nova-premium-cleanup.test.mjs",
+        "tests/nova-cz-push.test.mjs",
+        "tests/nova-super-speed-reels.test.mjs"
+      ]
     }
   ]
 }
