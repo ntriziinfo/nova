@@ -8914,6 +8914,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     if(debugFastSpinActive||speedToBonusActive||!resolved||resolved.zonePatrolPlayed)return;
     if(resolved.flowBefore?.phase!=='art'||resolved.flowBefore?.entryStage||resolved.flowAfter?.entryStage!=='seven')return;
     resolved.zonePatrolPlayed=true;
+    if(resolved.atPrelude?.confirmed)globalThis.NovaAtPatrol?.confirm();
     const afterPatrol=resolved.flowBefore.initialStage?null:()=>playLockedBonusConfirmSound(MODE_EVENT_VOICE_SRCS.zoneGet,voiceOutputVolume());
     playLockedBonusConfirmSound('assets/media/jag/cz_patrol_confirm.wav?v=19',sfxOutputVolume(),afterPatrol);
   }
@@ -8983,6 +8984,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     // Use the current spin's cue so hit and fake preludes also glow on their
     // trigger/final game; between spins use the saved, unfinished prelude.
     machine.dataset.atPreludeActive=String(!session.active&&!normalState.bonusPending&&normalState.flow?.phase==='art'&&!!(resolved?.atPrelude||normalState.flow.atPrelude));
+    globalThis.NovaAtPatrol?.sync(session.active||normalState.bonusPending||debugFastSpinActive||speedToBonusActive||normalState.resultCard||normalState.stockEntry||isCompleteTrialLocked()?null:normalState.flow,resolved);
   }
   function showCzPrelude(stopOrder,resolved,reelIndex=null){
     const prelude=resolved?.czPrelude||resolved?.atPrelude;

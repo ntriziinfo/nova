@@ -5,6 +5,14 @@ const cabinetEdits=JSON.parse(fs.readFileSync(new URL('./retired-cabinet-source.
 const edits=JSON.parse(fs.readFileSync(new URL('./push-variants-premium-source.json',import.meta.url),'utf8'));
 // Undo retired cabinet readouts and the preceding presentation-only edits. No approximate substitutions.
 export function beforePushVariantsAndPremiumCleanup(source){
+ for(const hook of [
+  "    if(resolved.atPrelude?.confirmed)globalThis.NovaAtPatrol?.confirm();\n",
+  "    globalThis.NovaAtPatrol?.sync(session.active||normalState.bonusPending||debugFastSpinActive||speedToBonusActive||normalState.resultCard||normalState.stockEntry||isCompleteTrialLocked()?null:normalState.flow,resolved);\n"
+ ]){
+  assert.equal(source.split(hook).length,2,'Patrol presentation hook must occur exactly once');
+  source=source.replace(hook,'');
+ }
+ assert.equal(createHash('sha256').update(source).digest('hex'),'53db720e064bca4b337f5cbfb379fde1fd69de2c4de3f7ec5a711c3e9054998a');
  for(const [after,before] of cabinetEdits){
   assert.equal(source.split(after).length,2,'Cabinet removal must match exactly once');
   source=source.replace(after,before);
