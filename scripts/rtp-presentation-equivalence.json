@@ -391,6 +391,20 @@
         "tests/nova-cz-push.test.mjs",
         "tests/nova-super-speed-reels.test.mjs"
       ]
+    },
+    {
+      "file": "nova-game.js",
+      "sourceHash": "b2c2a90e6edf4bea490bc7cd19df55db0131f0fd1ca0a8c77641b298d0c5cc6c",
+      "presentationHash": "53db720e064bca4b337f5cbfb379fde1fd69de2c4de3f7ec5a711c3e9054998a",
+      "sourceCommit": "44d96c5caf9bee17e17e2aede939f9115e354a93",
+      "presentationCommit": "b8337f6d45afb8bbc2cbf141e1d205e11d381e26",
+      "reason": "旧筐体の消滅済みカウンター・CHANCEランプへの表示更新、対応する配置の初期値、起動時に非表示化していた旧CZ入力欄のDOM処理だけを削除。過去の配置の既知項目は従来どおり復元する。全ゲームソースの当該差分を厳密に逆適用して直前のSHA256と採用試算元への一致を検証。抽選・乱数消費・払い出し・停止形・ゲーム進行への変更はない。",
+      "tests": [
+        "tests/nova-audio-defaults-equivalence.test.mjs",
+        "tests/nova-layout-defaults.test.mjs",
+        "tests/nova-cz-push.test.mjs",
+        "tests/deployment-assets.test.mjs"
+      ]
     }
   ]
 }
