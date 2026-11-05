@@ -9285,6 +9285,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     const presentation=oumaPresentation,previous=presentation.previous;
     if(normalState.flow!==previous){clearOumaPresentation();return;}
     NovaDirectAward.clear();
+    globalThis.NovaResultRecall?.bet();
     document.getElementById('machine').dataset.oumaNovaShake='';
     presentation.stage='lift';$('spinBtn').disabled=true;
     const machine=document.getElementById('machine');machine.dataset.oumaFreeze='lift';

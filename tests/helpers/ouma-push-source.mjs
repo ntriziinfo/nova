@@ -4,6 +4,7 @@ import {createHash} from 'node:crypto';
 // Exact pre-PUSH engine reconstruction; UI gating cannot hide gameplay edits.
 export function beforeOumaPush(source){
  const replacements=[
+["    NovaDirectAward.clear();\n    globalThis.NovaResultRecall?.bet();\n    document.getElementById('machine').dataset.oumaNovaShake='';","    NovaDirectAward.clear();\n    document.getElementById('machine').dataset.oumaNovaShake='';"],
   [
     "&&!oumaPresentation&&!NovaCzPresentation.failureActive&&!document.getElementById('novaCzPush')",
     "&&!NovaCzPresentation.failureActive&&!document.getElementById('novaCzPush')"
