@@ -73,6 +73,6 @@ test('a stale overlay timer cannot hide a newer overlay and reset hides immediat
 
 test('page cache keys load the reset-safe presentation scripts',()=>{
  const page=fs.readFileSync('jag.html','utf8');
- assert.match(page,/nova-cz-push\.js\?v=20261030-sortie-cz-layout/);
+ assert.match(page,/nova-cz-push\.js\?v=20261105-push-variants/);
  assert.match(page,/nova-game\.js\?v=20261105-checkpoint-interrupt/);
 });
