@@ -80,7 +80,7 @@ test('committed display defaults match the approved Chrome layout',()=>{
  assert.match(html,/nova-cabinet\.css\?v=20261030-sortie-success/);
  assert.match(html,/nova-aim-presentation\.js\?v=20261030-sortie-success/);
  assert.match(html,/nova-sortie-aim\.js\?v=20261030-sortie-success/);
- assert.match(html,/nova-game\.js\?v=20261104-reliability/);
+ assert.match(html,/nova-game\.js\?v=20261105-checkpoint-interrupt/);
  assert.match(html,/出陣トリガー：炎エフェクト動画/);
  for(const [label,prop] of [['横位置','x'],['縦位置','y'],['幅','w'],['高さ','h']]){
   assert.match(html,new RegExp(`<span>${label}</span><input[^>]+data-layout-target="sortievideo"[^>]+data-layout-prop="${prop}"`));
