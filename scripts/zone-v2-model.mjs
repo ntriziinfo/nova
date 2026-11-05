@@ -44,7 +44,7 @@ export function simulate(setting,games,seed,options={}){
  const entryRng=xoshiro128(String(seed)+'|sortie-entry');
  const rare={...(roleSortieRates?{eligibleRoles:{},eligibleByPhase:{},triggersByRole:{}}:{}),draws:0,triggered:0,pending:0,started:0,completed:0,newAt:0,spins:0,stocks:0,guaranteedStocks:0,byPhase:{},tiers:{},stockHist:{},zones:{},audit:options.rareAudit?[]:undefined};
  const forcedRare=options.rareForcedGames?new Set(options.rareForcedGames):null;
- const isReady=()=>flow.phase==='art'&&!flow.sortieInitialPending&&!flow.initialStage&&!flow.zone&&!flow.entryStage&&!flow.atPrelude&&!flow.burstPending&&!flow.burstLeft&&!flow.researchSortieLeft&&!flow.queuedZones?.length&&Number(flow.sets||0)===0&&Number(flow.stock||0)===0;
+ const isReady=()=>flow.phase==='art'&&!flow.checkpointCountdown&&!flow.sortieInitialPending&&!flow.initialStage&&!flow.zone&&!flow.entryStage&&!flow.atPrelude&&!flow.burstPending&&!flow.burstLeft&&!flow.researchSortieLeft&&!flow.queuedZones?.length&&Number(flow.sets||0)===0&&Number(flow.stock||0)===0;
  let flow={phase:'normal'},state=options.initialImpurity===undefined?n.reset(rng,setting):n.normalize({impurity:options.initialImpurity});
  if(options.initialMode)state.mode=options.initialMode;
  if(options.initialModeWeights){let r=rng()*options.initialModeWeights.reduce((s,w)=>s+w,0);state.mode=n.modes[options.initialModeWeights.findIndex(w=>(r-=w)<0)];}

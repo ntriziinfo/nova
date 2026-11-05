@@ -42,10 +42,11 @@ test('view adapter respects results, shutdown, CZ failure and automatic stop',()
  delete c.normalState.stockEntry;c.NovaCzPresentation.failureActive=true;c.syncSuperSpeedReelDisplay();assert.equal(eligible(seen),false);
  c.NovaCzPresentation.failureActive=false;c.autoPlay=false;c.syncSuperSpeedReelDisplay();assert.equal(eligible(seen),false);
 });
-test('removing only the view adapter and six sync hooks restores the exact published game source',()=>{
+test('historical static reel proof restores the exact prior source independently of checkpoint gameplay',async()=>{
+ const {beforeCheckpointInterruption}=await import('./helpers/checkpoint-source.mjs');
  const hooks=game.match(/^    globalThis\.NovaSuperSpeedReels && syncSuperSpeedReelDisplay\(\);\n/gm);
  assert.equal(hooks.length,6);
- const restored=game.replace(/  function syncSuperSpeedReelDisplay\([^]*?\n  }\n\n/,'')
+ const restored=beforeCheckpointInterruption(game).replace(/  function syncSuperSpeedReelDisplay\([^]*?\n  }\n\n/,'')
   .replace(/^    globalThis\.NovaSuperSpeedReels && syncSuperSpeedReelDisplay\(\);\n/gm,'');
  assert.equal(createHash('sha256').update(restored).digest('hex'),'d761f85b894370bd95fc2b63afa5c69fd789f14682a284413cdfcbbd20cadf92');
 });

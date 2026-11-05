@@ -363,7 +363,7 @@ test('free AUTO follows all AT confirmation routes and returns to ordinary timin
 });
 
 test('ordinary AUTO starts a fresh pacing epoch when CZ or AT returns to normal',()=>{
- assert.match(source,/normalState\.flow = NovaFlow\.normalize\(resolved\.flowAfter\);\s+if\(typeof resetOrdinaryAutoPacingAfterNormalReturn/);
+ assert.match(source,/normalState\.flow = NovaFlow\.normalize\(resolved\.flowAfter\);[^]*?NovaProgress\.prepareCountdown[^]*?if\(typeof resetOrdinaryAutoPacingAfterNormalReturn/);
  for(const phase of ['cz','strong_cz','art']){
   const {c}=setup();c.autoPlay=true;c.performance.now=()=>5000;
   c.autoLastBetAt=0;c.autoPacingBudget={periodMs:1440,dueAt:2880,lastAt:0};

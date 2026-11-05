@@ -17,13 +17,23 @@ function harness(){
   showCzPrelude:noop,countRoleStat:noop,lineName:()=>'',normalizeBonusAfterGames:x=>Number(x)||0,
   syncNovaProgress:noop,resetNormalCountersAfterArt:noop,showMessage:noop,normalModeLabel:()=>'',log:noop,showOverlay:noop,
   NovaDecrement:{observe:noop},currentProfit:()=>0,
-  NovaLadder:{eligible:()=>false},displayNovaResult:card=>cards.push(JSON.parse(JSON.stringify(card))),
+  NovaLadder:{eligible:()=>false},NovaDirectAward:{amount:()=>0},displayNovaResult:card=>cards.push(JSON.parse(JSON.stringify(card))),
   console:{error:e=>{throw e;}}
  });
- for(const file of ['nova-tuning.js','nova-art.js','nova-balance.js','nova-flow.js','nova-normal.js','nova-results.js','nova-role-counter.js','nova-data-counter.js'])vm.runInContext(fs.readFileSync(file,'utf8'),c);
+ for(const file of ['nova-tuning.js','nova-art.js','nova-balance.js','nova-flow.js','nova-normal.js','nova-progress.js','nova-results.js','nova-role-counter.js','nova-data-counter.js'])vm.runInContext(fs.readFileSync(file,'utf8'),c);
  for(const name of ['currentGameProfit','settleBellNavigationPenalty','chainCountStep','chargeSpinCost','trackZoneResult','applyNormalResult'])vm.runInContext(fn(name),c);
  return {c,cards};
 }
+
+test('first queued-zone game that secures the threshold displays its result and parks all remaining stocks',()=>{
+ const {c,cards}=harness();c.currentProfit=()=>2000;c.settings.setting=5;
+ const before={...c.NovaArt.enter({setting:5},()=>.9),remaining:'100',queuedZones:['toto','sora']};
+ const started=c.NovaArt.startZone({...before,queuedZones:['sora']},'toto',{setting:5},()=>.5);
+ const after={...started,award:'300'};
+ c.applyNormalResult('MISS',{reward:0,flowBefore:before,zoneStartFlow:started,flowAfter:after,artMessage:'上乗せ'});
+ assert.equal(cards.length,1);assert.equal(cards[0].kind,'zone');assert.equal(cards[0].character,'toto');assert.equal(cards[0].pt,'300');
+ assert.equal(c.normalState.flow.remaining,'400');assert.equal(c.normalState.flow.zone,'');assert.equal(c.normalState.flow.checkpointCarry.zones,1);
+});
 
 test('final AT result reconciles bonus, preparation, zones, upper AT and comeback with the same paid-minus-BET ledger',()=>{
  const {c,cards}=harness();

@@ -25,7 +25,7 @@ globalThis.NovaProgress=(()=>{
   const won=rng()<sortieChance(setting,result,netPt);if(won)queueSortie();return won;
  }
  function queueThreshold(value,net,setting=value?.modelSetting||3){
-  observeNet(net);if(value?.phase!=='art')return value;const s={...value};
+  observeNet(net);if(value?.phase!=='art')return value;const s={...prepareCountdown(value,net)};
   if(state.pending&&!s.burstPending&&!s.researchChallengeActive&&!s.burstLeft){state.pending--;s.burstPending=true;s.researchChallengeSource='threshold';}
   // Pin before charging this BET, so manual play and simulation use the same net.
   if(s.burstPending&&s.researchChallengeSource==='threshold'&&!s.researchChallengeActive&&!s.zone&&!s.entryStage&&!s.atPrelude&&!s.initialStage&&!s.researchSortieLeft&&s.researchChallengeSuccess===undefined){
@@ -34,7 +34,23 @@ globalThis.NovaProgress=(()=>{
   return s;
  }
  function enterCheckpoint(c,rng=Math.random){state.newAt++;return {...a.enter(c,rng),remaining:'0',initialStage:'',initialWait:0};}
- function ready(s){return s?.phase==='art'&&!s.sortieInitialPending&&!s.initialStage&&!s.zone&&!s.entryStage&&!s.atPrelude&&!s.burstPending&&!s.burstLeft&&!s.researchSortieLeft&&!s.queuedZones?.length&&Number(s.sets||0)===0&&Number(s.stock||0)===0;}
+ function ready(s){return s?.phase==='art'&&!s.checkpointCountdown&&!s.sortieInitialPending&&!s.initialStage&&!s.zone&&!s.entryStage&&!s.atPrelude&&!s.burstPending&&!s.burstLeft&&!s.researchSortieLeft&&!s.queuedZones?.length&&Number(s.sets||0)===0&&Number(s.stock||0)===0;}
+ // Only secured points count. Future stock/zone awards never guarantee a line.
+ // Park unconsumed carry until the threshold starts, where the existing discard
+ // ledger clears it. Settling the current zone here transfers its award once.
+ function prepareCountdown(value,net){
+  if(value?.phase!=='art'||value.checkpointCountdown||value.researchChallengeActive||value.burstLeft||value.researchSortieLeft||value.sortieInitialPending||value.comebackLeft||value.comebackConfirmed)return value;
+  if(value.burstPending&&value.researchChallengeSource==='initial')return value;
+  if(value.initialStage&&value.initialStage!=='zone')return value;
+  if(!Number.isFinite(Number(net)))return value;
+  const settled=value.zone?a.settleZone(value):value;
+  const reached=state.pending>0||(value.burstPending&&value.researchChallengeSource==='threshold');
+  if(!reached&&Number(net)+Number(settled.remaining||0)<state.next)return value;
+  const s={...settled,checkpointCountdown:true,checkpointCarry:{zones:value.queuedZones?.length||0,sets:String(value.sets||0),bonusStocks:String(value.stock||0)},queuedZones:[],sets:'0',stock:'0',entryStage:'',pendingZone:'',pendingFixed50:false,rouletteTable:0,atPrelude:null,atHigh:false,atHighLeft:0,dryEligible:false};
+  // An unstarted rare-role challenge must not jump ahead of this earned line.
+  if(s.burstPending&&s.researchChallengeSource==='rare'){s.burstPending=false;s.researchChallengeSource='';delete s.researchChallengeSuccess;}
+  return s;
+ }
  // A normal-game sortie owns its ten games before any initial-AT preparation.
  // Keep this handoff in the saved flow so reloads cannot lose or repeat it.
  function beginNormalSortie(c,rng=Math.random){
@@ -61,7 +77,8 @@ globalThis.NovaProgress=(()=>{
   return flow;
  }
  function clearCarry(s){
-  const discarded={pt:Number(s.remaining||0),zones:s.queuedZones?.length||0,sets:Number(s.sets||0),bonusStocks:Number(s.stock||0)};
+  const discarded={pt:Number(s.remaining||0),zones:(s.queuedZones?.length||0)+Number(s.checkpointCarry?.zones||0),sets:Number(s.sets||0)+Number(s.checkpointCarry?.sets||0),bonusStocks:Number(s.stock||0)+Number(s.checkpointCarry?.bonusStocks||0)};
+  delete s.checkpointCountdown;delete s.checkpointCarry;
   Object.assign(s,{remaining:'0',sets:'0',stock:'0',queuedZones:[],pendingZone:'',entryStage:'',rouletteTable:0,comebackLeft:0,comebackLamp:'',comebackConfirmed:false,zoneSets:'0',zoneZones:'0',award:'0',initialAward:'0',atHigh:false,atHighLeft:0});
   return discarded;
  }
@@ -94,5 +111,5 @@ globalThis.NovaProgress=(()=>{
  // The simulator uses the same engine and state transitions as the browser.
  globalThis.NovaArt={...a,enterInitial,afterBonus,step,queueResearchThreshold:queueThreshold,observeResearchNet:observeNet,
   resetResearchCheckpoints:reset,researchCheckpointStats:()=>({...state}),hasResearchCheckpoint:()=>state.pending>0,enterResearchCheckpoint:enterCheckpoint};
- return Object.freeze({bind,beforeBet,beginNormalSortie,resumeSortieInitial,drawSortie,sortieChance,sortieEligible,queueSortie,observeNet,ready,snapshot:()=>({...state}),reset});
+ return Object.freeze({bind,beforeBet,prepareCountdown,beginNormalSortie,resumeSortieInitial,drawSortie,sortieChance,sortieEligible,queueSortie,observeNet,ready,snapshot:()=>({...state}),reset});
 })();

@@ -5587,13 +5587,17 @@
     normalState.sinceBonus = normalizeBonusAfterGames(resolved.ceilingAfter);
     if(A_TYPE_MODE){
       normalState.flow = NovaFlow.normalize(resolved.flowAfter);
+      // Payout (including the internal navigation ledger) is settled above.
+      // Interrupt only at this completed-spin boundary, never during a stop.
+      if(!resolved.bonusHit&&!resolved.aTypeBonusReady)normalState.flow=NovaProgress.prepareCountdown(normalState.flow,currentGameProfit());
       if(typeof resetOrdinaryAutoPacingAfterNormalReturn==='function')resetOrdinaryAutoPacingAfterNormalReturn(resolved.flowBefore,normalState.flow);
       if(resolved.czCompleted&&!resolved.bonusHit&&!resolved.aTypeBonusReady&&normalState.flow.phase==='normal')NovaImpurityHint.queue(normalState,'cz-failed');
       if(resolved.sortieFakeWon&&!debugFastSpinActive)normalState.pendingFakeSortie=(Number(normalState.pendingFakeSortie)||0)+1;
       if(!debugFastSpinActive){const sortieCard=NovaResults.sortie(resolved.researchSortie,normalState.flow);if(sortieCard)normalState.pendingSortieResult=sortieCard;}
-      const zoneCard=trackZoneResult(resolved.comebackEvent==='entry'?null:NovaResults.transition(resolved.flowBefore,normalState.flow,settings.setting),resolved.zoneStartFlow||resolved.flowBefore,normalState.flow);
+      const zoneBefore=resolved.zoneStartFlow||resolved.flowBefore;
+      const zoneCard=trackZoneResult(resolved.comebackEvent==='entry'?null:NovaResults.transition(zoneBefore,normalState.flow,settings.setting),zoneBefore,normalState.flow);
       if(zoneCard){
-        if(!debugFastSpinActive&&NovaLadder.eligible(resolved.flowBefore)){
+        if(!debugFastSpinActive&&!normalState.flow.checkpointCountdown&&NovaLadder.eligible(resolved.flowBefore)){
           normalState.ladderAwardPresentation={card:zoneCard,flow:resolved.flowBefore,started:false,promoted:result!=="MISS"};
         }else displayNovaResult(zoneCard);
       }
