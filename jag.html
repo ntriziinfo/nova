@@ -86,8 +86,8 @@
 <script src="nova-comeback-presentation.js?v=20260909-comeback-114"></script>
 <link rel="stylesheet" href="nova-mobile.css?v=20261014-touch-layout">
 <script src="nova-mobile.js?v=20261028-aim-caption" defer></script>
-<link rel="stylesheet" href="nova-flow-guide.css?v=20261105-full-analysis">
-<script src="nova-flow-guide.js?v=20261105-full-analysis" defer></script>
+<link rel="stylesheet" href="nova-flow-guide.css?v=20261105-basic-spec">
+<script src="nova-flow-guide.js?v=20261105-basic-spec" defer></script>
 <style>
 /* Fit the original nebula art to reel width; its transparent vertical margins
    no longer shrink the lettering to the cell height. Keep native proportions. */
@@ -113,27 +113,43 @@
   <p>各20コマ・20の次は01に戻ります</p>
 </aside>
 <dialog id="novaFlowGuide" aria-labelledby="novaFlowGuideTitle">
-<header class="novaFlowGuideHead"><div><span>NOVA / PLAYER’S GUIDE</span>
-<h2 id="novaFlowGuideTitle">フロー・攻略情報</h2></div><button id="novaFlowGuideClose" type="button" autofocus aria-label="攻略情報を閉じる">閉じる ×</button>
+<header class="novaFlowGuideHead"><div><span>全情報版 / COMPLETE DATA</span>
+<h2 id="novaFlowGuideTitle">攻略情報</h2></div><button id="novaFlowGuideClose" type="button" autofocus aria-label="攻略情報を閉じる">閉じる ×</button>
 </header><div class="novaGuideLayout">
 <details class="novaGuideIndex" open>
 <summary>目次から探す</summary>
 <nav aria-label="攻略情報の目次"><a href="#guide-spec"><span>01</span>基本スペック</a><a href="#guide-play"><span>02</span>打ち方・狙え</a><a href="#guide-flow"><span>03</span>ゲームフロー</a><a href="#guide-normal"><span>04</span>通常時・天井</a><a href="#guide-cz"><span>05</span>CZ・強CZ</a><a href="#guide-bb"><span>06</span>BB・穢れ解放</a><a href="#guide-at"><span>07</span>AT・引き戻し</a><a href="#guide-zones"><span>08</span>キャラ特化ゾーン</a><a href="#guide-premium"><span>09</span>出陣・上位AT</a><a href="#guide-setting"><span>10</span>設定推測・やめどき</a>
 <!-- NOVA FULL INDEX START --><span class="novaGuideIndexLabel">詳細解析・全数値</span><a href="#guide-analysis-overview">全情報版・数値の見方</a><a href="#guide-analysis-roles">小役確率・払い出しの全表</a><a href="#guide-analysis-modes">モード移行・天井・高確</a><a href="#guide-analysis-cz">CZ当選・成功・AT直撃</a><a href="#guide-analysis-bb">BB抽選・準備中の振分</a><a href="#guide-analysis-at">AT中の全抽選・補正</a><a href="#guide-analysis-zones">特化性能・段階・キャラ選択率</a><a href="#guide-analysis-sortie">出陣・上位AT・差枚節目</a><a href="#guide-analysis-impurity">穢れの全数値・解放条件</a><a href="#guide-analysis-hints">設定・モード示唆の全表</a><a href="#guide-analysis-reference">全パラメータ一覧・互換値</a><!-- NOVA FULL INDEX END --></nav>
 </details>
-<article class="novaGuideArticle" tabindex="0" aria-label="NOVA攻略情報"><div class="novaGuideHero"><span>全情報版 / COMPLETE DATA</span>
-<h3>狙えを楽しむ。<br>特化をつなぐ。</h3>
-<p>設定別の確率・振分・穢れ・示唆まで掲載。<br>目次の「詳細解析・全数値」からチェック。</p><div class="novaGuideBadges"><b>CZ <strong>15G</strong></b><b>BB <strong>50pt</strong></b><b>AT <strong>300pt＋α</strong></b></div></div>
+<article class="novaGuideArticle" tabindex="0" aria-label="NOVA攻略情報">
 <section id="guide-spec" class="novaGuideSection" aria-labelledby="guide-spec-title">
-<h3 id="guide-spec-title" tabindex="-1">基本スペック</h3><div class="novaGuideTableWrap">
+<h3 id="guide-spec-title" tabindex="-1">基本スペック</h3>
+<div class="novaGuideSpecBoard">
+  <div class="novaGuideMachine">
+    <div class="novaGuideCabinetPhoto"><img src="assets/guide/nova-cabinet-overview.webp" alt="NOVAの遊技筐体" loading="lazy" decoding="async" width="440" height="738"></div>
+    <dl class="novaGuideMachineFacts">
+      <div><dt>タイプ</dt><dd>AT（pt管理型）</dd></div>
+      <div><dt>有効ライン</dt><dd>中段・右上がり・右下がり</dd></div>
+    </dl>
+    <div class="novaGuideLines">
+      <svg viewBox="0 0 150 54" aria-hidden="true"><rect x="1" y="1" width="148" height="52" rx="4" fill="#fff" stroke="#c9c1b8"/><path d="M51 1v52m48-52v52M1 18h148M1 36h148" fill="none" stroke="#e2dcd5"/><path d="M24 9l102 36m-102 0L126 9" fill="none" stroke="#aa385e" stroke-width="3" stroke-linecap="round"/><path d="M24 27h102" stroke="#534470" stroke-width="3" stroke-linecap="round"/></svg>
+      <small>役ごとに成立する停止形が異なります。</small>
+    </div>
+  </div>
+  <table class="novaGuideStrips">
+    <caption>リール配列</caption>
+    <colgroup><col class="novaGuideStripNumber"><col><col><col></colgroup>
+    <thead><tr><th scope="col">No.</th><th scope="col">左</th><th scope="col">中</th><th scope="col">右</th></tr></thead>
+    <tbody id="novaGuideReelRows"></tbody>
+  </table>
+</div>
+<div class="novaGuideTableWrap">
 <table>
 <thead>
 <tr><th scope="col">項目</th><th scope="col">基本情報</th>
 </tr>
 </thead>
 <tbody>
-<tr><td>タイプ</td><td>BBからATを目指すpt管理タイプ</td>
-</tr>
 <tr><td>BB</td><td>規定50pt／通常BIG・上位BIG</td>
 </tr>
 <tr><td>AT初期残りpt</td><td>300pt＋α（初期特化を経由）</td>
@@ -3177,7 +3193,7 @@
         </div>
       </div>
       <div class="audioDock" id="audioDock">
-        <button class="utilityTextBtn" id="flowToggleBtn" type="button" aria-label="フロー・攻略情報を開く" aria-haspopup="dialog" aria-controls="novaFlowGuide" aria-expanded="false">フロー</button>
+        <button class="utilityTextBtn" id="flowToggleBtn" type="button" aria-label="攻略情報を開く" aria-haspopup="dialog" aria-controls="novaFlowGuide" aria-expanded="false">攻略情報</button>
         <button class="utilityToggleBtn" id="oddsToggleBtn" type="button" aria-label="確率表を開く" aria-expanded="false" title="確率表">
           <picture class="novaResponsiveImage"><source media="(max-width:1024px)" srcset="assets/mobile-20261013/icon_odds_percent_blue.webp"><img src="assets/ui/icon_odds_percent_blue.png" alt=""></picture>
         </button>
@@ -3822,7 +3838,7 @@
 <script src="nova-ouma-push.js?v=20261105-push-variants-front"></script>
 <script src="nova-cz-push.js?v=20261105-push-variants-front"></script>
 <script src="nova-impurity-hint.js?v=20261028-smooth"></script>
-<script src="nova-reel-reference.js?v=20261028-left-reference"></script>
+<script src="nova-reel-reference.js?v=20261105-guide-strips"></script>
 <script src="nova-sortie-audio-gate.js?v=20261030-result-recall"></script>
 <script src="nova-result-recall.js?v=20261105-push-front"></script>
 <script src="nova-state-storage.js?v=20261104-reliability"></script>

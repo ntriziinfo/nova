@@ -65,7 +65,12 @@
   diagram.addEventListener('toggle', () => { if (diagram.open) select(current); });
   button.addEventListener('click', () => {
     if (dialog.open) return;
-    dialog.showModal(); button.setAttribute('aria-expanded', 'true');
+    syncLayout();
+    dialog.showModal();
+    article.scrollTop = 0;
+    index.scrollTop = 0;
+    setActive(sections[0]);
+    button.setAttribute('aria-expanded', 'true');
   });
   document.getElementById('novaFlowGuideClose').addEventListener('click', () => dialog.close());
   dialog.addEventListener('close', () => {

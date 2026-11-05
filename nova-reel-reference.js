@@ -22,6 +22,8 @@
         }
         fragment.append(row);
       }
+      // Both tables show the same windows, in the order used by the cabinet.
+      document.getElementById('novaGuideReelRows')?.replaceChildren(fragment.cloneNode(true));
       rows.replaceChildren(fragment);
       panel.dataset.ready = 'true';
       // Every page starts visible; this control changes presentation only.

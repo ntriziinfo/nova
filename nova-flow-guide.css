@@ -1,4 +1,4 @@
-#flowToggleBtn { cursor:pointer; }
+#audioDock > #flowToggleBtn { cursor:pointer;width:76px;white-space:nowrap;padding-inline:4px; }
 #flowToggleBtn:focus-visible { outline:2px solid #ffd56b;outline-offset:3px; }
 #novaFlowGuide {
   box-sizing:border-box;position:fixed;inset:0;margin:auto;padding:0;
@@ -29,13 +29,30 @@
 #novaFlowGuide .novaGuideIndex a:hover { background:#fff9; }
 #novaFlowGuide .novaGuideIndex a[aria-current] { background:#fff;border-left-color:#a32c50;color:#97234b; }
 .novaGuideArticle { min-width:0;flex:1;overflow:auto;overscroll-behavior:contain;padding:26px 34px 40px;scrollbar-gutter:stable; }
-.novaGuideHero { padding:28px 30px;color:#fff;background:linear-gradient(120deg,#251932,#4a2343);border-radius:8px; }
-.novaGuideHero > span { font-size:10px;letter-spacing:.18em;color:#ddc485; }
-#novaFlowGuide .novaGuideHero h3 { margin:14px 0;font-size:30px;line-height:1.5;color:#fff; }
-#novaFlowGuide .novaGuideHero p { margin:12px 0 22px;font-size:13px;color:#e0d4df; }
-.novaGuideBadges { display:flex;gap:10px;flex-wrap:wrap; }
-.novaGuideBadges b { padding:8px 12px;border:1px solid #ffffff30;border-radius:4px;font-size:11px;color:#e4cc94; }
-.novaGuideBadges strong { margin-left:8px;color:white;font-size:18px; }
+
+#novaFlowGuide #guide-spec { padding-top:0; }
+.novaGuideSpecBoard {
+  display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.12fr);gap:clamp(8px,1.5vw,18px);
+  max-width:780px;margin:0 auto 24px;
+}
+.novaGuideMachine { display:flex;flex-direction:column;overflow:hidden;background:#fff;border:1px solid #d8cfc3;border-radius:6px; }
+.novaGuideCabinetPhoto { position:relative;flex:1;min-height:160px;background:#09080a; }
+.novaGuideCabinetPhoto img { position:absolute;inset:0;width:100%;height:100%;object-fit:contain; }
+.novaGuideMachineFacts { margin:0;padding:0 10px; }
+.novaGuideMachineFacts > div { display:flex;flex-wrap:wrap;align-items:baseline;gap:0 10px;padding:7px 0;border-bottom:1px solid #ded7cb; }
+.novaGuideMachineFacts dt { color:#62576a;font-size:12px; }
+.novaGuideMachineFacts dd { margin:0;color:#33273e;font-size:14px;font-weight:750; }
+.novaGuideLines { padding:8px 10px;text-align:center; }
+.novaGuideLines svg { display:block;width:min(150px,100%);height:auto;margin:auto; }
+.novaGuideLines small { display:block;margin-top:4px;color:#62576a;font-size:11px;line-height:1.45; }
+#novaFlowGuide .novaGuideStrips { table-layout:fixed;align-self:start;font-variant-numeric:tabular-nums;line-height:1; }
+.novaGuideStrips caption { padding:6px;background:#30243d;color:#fff;font-size:14px;font-weight:bold;border-radius:6px 6px 0 0; }
+.novaGuideStripNumber { width:2.4em; }
+#novaFlowGuide .novaGuideStrips :is(td,th) { padding:0 2px;text-align:center;vertical-align:middle;font-size:12px; }
+#novaFlowGuide .novaGuideStrips thead th { height:22px; }
+#novaFlowGuide .novaGuideStrips tbody th { color:#62576a;background:#f0ebe4; }
+#novaFlowGuide .novaGuideStrips tbody td { background:#fff; }
+#novaFlowGuide .novaGuideStrips .symImg { display:block;position:static;width:100%!important;height:clamp(17px,2.55dvh,29px)!important;max-width:100%!important;max-height:none!important;margin:auto;object-fit:contain;transform:none;filter:none!important; }
 .novaGuideSection { padding-top:34px; }
 #novaFlowGuide .novaGuideSection > h3 { border-left:5px solid #a32c50;border-bottom:1px solid #d7c8ae;padding:6px 0 12px 14px;margin:0 0 20px;font-size:22px;line-height:1.5;color:#33273e;scroll-margin-top:16px; }
 #novaFlowGuide .novaGuideSection h4 { margin:0 0 8px;color:#90294c;font-size:16px;line-height:1.6; }
@@ -73,7 +90,7 @@
 #novaFlowGuide .novaGuideZone p { font-size:14px;margin:0; }
 .novaGuideFoot { margin-top:30px;border-top:1px solid #ded5c7;padding-top:20px;font-size:11px;color:#827784; }
 @media (max-width:720px) {
-  #audioDock > #flowToggleBtn { width:64px;min-width:64px;font-size:14px; }
+  #audioDock > #flowToggleBtn { width:68px;min-width:68px;font-size:14px; }
   #novaFlowGuide { width:calc(100vw - 12px);max-width:calc(100vw - 12px);height:calc(100dvh - 20px);max-height:calc(100dvh - 20px);font-size:14px; }
   .novaFlowGuideHead { padding:10px 12px; }
   #novaFlowGuide .novaFlowGuideHead h2 { font-size:17px; }
@@ -85,11 +102,10 @@
   .novaGuideIndex nav { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));padding:0 8px 10px; }
   #novaFlowGuide .novaGuideIndex a { font-size:12px;padding:10px 7px;gap:6px; }
   .novaGuideArticle { padding:16px 14px 28px; }
-  .novaGuideHero { padding:22px 18px; }
-  #novaFlowGuide .novaGuideHero h3 { font-size:26px; }
-  .novaGuideBadges { gap:6px; }
-  .novaGuideBadges b { padding:6px 8px; }
-  .novaGuideBadges strong { font-size:15px;margin-left:4px; }
+  .novaGuideSpecBoard { gap:6px; }
+  .novaGuideStripNumber { width:2em; }
+  .novaGuideMachineFacts dd { font-size:12px; }
+  .novaGuideLines small { font-size:10px; }
   .novaGuideSection { padding-top:28px; }
   #novaFlowGuide .novaGuideSection > h3 { font-size:19px; }
   #novaFlowGuide th, #novaFlowGuide td { padding:10px 9px;font-size:13px;overflow-wrap:anywhere; }
