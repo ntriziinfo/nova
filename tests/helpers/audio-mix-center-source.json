@@ -34,5 +34,9 @@
   [
     "    globalThis.NovaSuperSpeedReels && syncSuperSpeedReelDisplay();\n  }",
     "    globalThis.NovaSuperSpeedReels && syncSuperSpeedReelDisplay();\n    // Refresh playing audio too, without changing the user's saved master slider.\n    applyAudioOutputVolumes();\n  }"
+  ],
+  [
+    "    const volume = bgmOutputVolume(scale * audioSourceOutputScale(src));\n    return normalizedAudioSourceKey(src) === DEFAULT_NORMAL_BGM_SRC ? volume * dbToGain(-5) : volume;",
+    "    return bgmOutputVolume(scale * audioSourceOutputScale(src));"
   ]
 ]
