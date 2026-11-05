@@ -86,8 +86,8 @@
 <script src="nova-comeback-presentation.js?v=20260909-comeback-114"></script>
 <link rel="stylesheet" href="nova-mobile.css?v=20261014-touch-layout">
 <script src="nova-mobile.js?v=20261028-aim-caption" defer></script>
-<link rel="stylesheet" href="nova-flow-guide.css?v=20261105-strategy">
-<script src="nova-flow-guide.js?v=20261105-strategy" defer></script>
+<link rel="stylesheet" href="nova-flow-guide.css?v=20261105-full-analysis">
+<script src="nova-flow-guide.js?v=20261105-full-analysis" defer></script>
 <style>
 /* Fit the original nebula art to reel width; its transparent vertical margins
    no longer shrink the lettering to the cell height. Keep native proportions. */
@@ -119,7 +119,7 @@
 <details class="novaGuideIndex" open>
 <summary>目次から探す</summary>
 <nav aria-label="攻略情報の目次"><a href="#guide-spec"><span>01</span>基本スペック</a><a href="#guide-play"><span>02</span>打ち方・狙え</a><a href="#guide-flow"><span>03</span>ゲームフロー</a><a href="#guide-normal"><span>04</span>通常時・天井</a><a href="#guide-cz"><span>05</span>CZ・強CZ</a><a href="#guide-bb"><span>06</span>BB・穢れ解放</a><a href="#guide-at"><span>07</span>AT・引き戻し</a><a href="#guide-zones"><span>08</span>キャラ特化ゾーン</a><a href="#guide-premium"><span>09</span>出陣・上位AT</a><a href="#guide-setting"><span>10</span>設定推測・やめどき</a>
-</nav>
+<!-- NOVA FULL INDEX START --><span class="novaGuideIndexLabel">詳細解析・全数値</span><a href="#guide-analysis-overview">全情報版・数値の見方</a><a href="#guide-analysis-roles">小役確率・払い出しの全表</a><a href="#guide-analysis-modes">モード移行・天井・高確</a><a href="#guide-analysis-cz">CZ当選・成功・AT直撃</a><a href="#guide-analysis-bb">BB抽選・準備中の振分</a><a href="#guide-analysis-at">AT中の全抽選・補正</a><a href="#guide-analysis-zones">特化性能・段階・キャラ選択率</a><a href="#guide-analysis-sortie">出陣・上位AT・差枚節目</a><a href="#guide-analysis-impurity">穢れの全数値・解放条件</a><a href="#guide-analysis-hints">設定・モード示唆の全表</a><a href="#guide-analysis-reference">全パラメータ一覧・互換値</a><!-- NOVA FULL INDEX END --></nav>
 </details>
 <article class="novaGuideArticle" tabindex="0" aria-label="NOVA攻略情報"><div class="novaGuideHero"><span>NOVA / PLAY GUIDE</span>
 <h3>狙えを楽しむ。<br>特化をつなぐ。</h3>
@@ -309,7 +309,7 @@
 <h4>出陣 / 10G</h4>
 <p>特化ストックの集中獲得を目指す特別な区間。前段の「中リールに狙え」では、図柄配置と画面の指示を確認しよう。</p></div><div class="novaGuideCard">
 <h4>スーパーノヴァチャレンジ / 10G</h4>
-<p>成功で裏ギル・裏空・裏逢魔のいずれかを獲得し、上位ATにつながる。狙え演出や最終決着が見せ場。</p></div><div class="novaGuideCard">
+<p>成功報酬は契機で異なり、上位ATにつながる。初回・差枚節目の報酬は上位ATの特化選択表、レア役契機は裏3種均等。狙え演出や最終決着が見せ場。</p></div><div class="novaGuideCard">
 <h4>上位AT</h4>
 <p>純増設計は通常AT区間と同じ約4pt/G。特化ゾーンにつながる期待感が増し、上乗せをつなぐ展開を狙える。</p></div><div class="novaGuideCard">
 <h4>穢れの蓄積</h4>
@@ -337,8 +337,2794 @@
 <p>現行版の見える通常小役は全設定共通。小役の回数だけで高設定と断定せず、CZやATまでの展開と合わせて考えよう。</p></div><div class="novaGuideCard">
 <h4>やめる前に確認</h4>
 <p>引き戻しの決着、継続中の前兆、特化の告知・待機が残っていないかをチェック。天井までの距離や示唆ひとつで、続行が必ず有利とは断定できない。</p></div>
-<p class="novaGuideNote">内部振分・穢れの具体的な数値・細かな設定差は非掲載。「期待」「チャンス」は結果を保証する表現ではありません。ptはゲーム内の単位。更新や店舗設定によって内容が変わる場合は、遊技画面の案内を優先してください。</p>
+<p class="novaGuideNote">内部振分・穢れ・設定差の全数値は、目次の「詳細解析・全数値」に掲載。「期待」「チャンス」は結果を保証する表現ではありません。ptはゲーム内の単位。更新や店舗設定によって内容が変わる場合は、遊技画面の案内を優先してください。</p>
 </section>
+<!-- NOVA FULL ANALYSIS START -->
+<section id="guide-analysis-overview" class="novaGuideSection novaGuideAnalysis" aria-labelledby="guide-analysis-overview-title"><h3 id="guide-analysis-overview-title" tabindex="-1">全情報版・数値の見方</h3><p>現行ルールの標準設定を掲載。横長の表は左右にスクロールできます。設定1〜6の差・共通確率・保証・設定示唆・補正まで確認できます。管理画面で個別に変更された値は含みません。表中の確率は小数点以下を丸めているため、合計が100%と一致しない場合があります。</p><div class="novaGuideTableWrap"><table><thead><tr><th scope="col">設定</th><th scope="col">指定の機械割表記</th><th scope="col">現行モデルの連続試算値</th></tr></thead><tbody><tr><td>1</td><td>95%</td><td>93.78056%</td></tr><tr><td>2</td><td>97%</td><td>95.3721%</td></tr><tr><td>3</td><td>99%</td><td>98.13773%</td></tr><tr><td>4</td><td>103%</td><td>102.87671%</td></tr><tr><td>5</td><td>111%</td><td>109.99278%</td></tr><tr><td>6</td><td>116%</td><td>115.22289%</td></tr></tbody></table></div><p class="novaGuideNote">掲載用の指定表記と試算値は別の指標です。連続試算は各設定1億G・日次リセットなし・コンプリート打ち切りなし。試算値は勝率や1日1万Gの収支を保証しません。以下は現行標準ルールの値であり、台の設定番号を開示する機能ではありません。</p></section>
+<section id="guide-analysis-roles" class="novaGuideSection novaGuideAnalysis" aria-labelledby="guide-analysis-roles-title"><h3 id="guide-analysis-roles-title" tabindex="-1">小役確率・払い出しの全表</h3><h4>通常時（CZ前兆を含む）</h4><div class="novaGuideTableWrap"><table><thead><tr><th scope="col">成立役</th><th scope="col">設定1</th><th scope="col">設定2</th><th scope="col">設定3</th><th scope="col">設定4</th><th scope="col">設定5</th><th scope="col">設定6</th></tr></thead><tbody><tr><td>スイカ</td><td>2.48% / 約1/40.323</td><td>2.48% / 約1/40.323</td><td>2.48% / 約1/40.323</td><td>2.48% / 約1/40.323</td><td>2.48% / 約1/40.323</td><td>2.48% / 約1/40.323</td></tr><tr><td>旧・強スイカ</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td></tr><tr><td>旧・チャンス目A</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td></tr><tr><td>旧・チャンス目B</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td></tr><tr><td>弱チェリー</td><td>0.7813% / 約1/128</td><td>0.7813% / 約1/128</td><td>0.7813% / 約1/128</td><td>0.7813% / 約1/128</td><td>0.7813% / 約1/128</td><td>0.7813% / 約1/128</td></tr><tr><td>強チェリー</td><td>0.04% / 約1/2500</td><td>0.04% / 約1/2500</td><td>0.04% / 約1/2500</td><td>0.04% / 約1/2500</td><td>0.04% / 約1/2500</td><td>0.04% / 約1/2500</td></tr><tr><td>リプレイ</td><td>18.9089% / 約1/5.289</td><td>18.9089% / 約1/5.289</td><td>18.9089% / 約1/5.289</td><td>18.9089% / 約1/5.289</td><td>18.9089% / 約1/5.289</td><td>18.9089% / 約1/5.289</td></tr><tr><td>8ptベル</td><td>0.5058% / 約1/197.726</td><td>0.5058% / 約1/197.726</td><td>0.5058% / 約1/197.726</td><td>0.5058% / 約1/197.726</td><td>0.5058% / 約1/197.726</td><td>0.5058% / 約1/197.726</td></tr><tr><td>ハズレ</td><td>60.5994% / 約1/1.65</td><td>60.5994% / 約1/1.65</td><td>60.5994% / 約1/1.65</td><td>60.5994% / 約1/1.65</td><td>60.5994% / 約1/1.65</td><td>60.5994% / 約1/1.65</td></tr><tr><td>押し順8ptベル</td><td>6.6848% / 約1/14.959</td><td>6.6848% / 約1/14.959</td><td>6.6848% / 約1/14.959</td><td>6.6848% / 約1/14.959</td><td>6.6848% / 約1/14.959</td><td>6.6848% / 約1/14.959</td></tr><tr><td>1pt役</td><td>10% / 約1/10</td><td>10% / 約1/10</td><td>10% / 約1/10</td><td>10% / 約1/10</td><td>10% / 約1/10</td><td>10% / 約1/10</td></tr></tbody></table></div><p class="novaGuideNote">通常スーパーノヴァは、通常小役の後段で1/32768の別抽選。前兆・ゲーム数契機・天井などの先行処理で抽選に到達しないゲームがあるため、全ゲーム実測の出現率をそのまま1/32768と断定しないこと。</p><h4>CZ中の基礎小役テーブル</h4><div class="novaGuideTableWrap"><table><thead><tr><th scope="col">成立役</th><th scope="col">設定1</th><th scope="col">設定2</th><th scope="col">設定3</th><th scope="col">設定4</th><th scope="col">設定5</th><th scope="col">設定6</th></tr></thead><tbody><tr><td>スイカ</td><td>2.48% / 約1/40.323</td><td>2.48% / 約1/40.323</td><td>2.48% / 約1/40.323</td><td>2.48% / 約1/40.323</td><td>2.48% / 約1/40.323</td><td>2.48% / 約1/40.323</td></tr><tr><td>旧・強スイカ</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td></tr><tr><td>旧・チャンス目A</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td></tr><tr><td>旧・チャンス目B</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td></tr><tr><td>弱チェリー</td><td>0.7813% / 約1/128</td><td>0.7813% / 約1/128</td><td>0.7813% / 約1/128</td><td>0.7813% / 約1/128</td><td>0.7813% / 約1/128</td><td>0.7813% / 約1/128</td></tr><tr><td>強チェリー</td><td>0.04% / 約1/2500</td><td>0.04% / 約1/2500</td><td>0.04% / 約1/2500</td><td>0.04% / 約1/2500</td><td>0.04% / 約1/2500</td><td>0.04% / 約1/2500</td></tr><tr><td>リプレイ</td><td>46.9325% / 約1/2.131</td><td>46.9325% / 約1/2.131</td><td>46.9325% / 約1/2.131</td><td>46.9325% / 約1/2.131</td><td>46.9325% / 約1/2.131</td><td>46.9325% / 約1/2.131</td></tr><tr><td>8ptベル</td><td>0.5058% / 約1/197.726</td><td>0.5058% / 約1/197.726</td><td>0.5058% / 約1/197.726</td><td>0.5058% / 約1/197.726</td><td>0.5058% / 約1/197.726</td><td>0.5058% / 約1/197.726</td></tr><tr><td>ハズレ</td><td>49.2605% / 約1/2.03</td><td>49.2605% / 約1/2.03</td><td>49.2605% / 約1/2.03</td><td>49.2605% / 約1/2.03</td><td>49.2605% / 約1/2.03</td><td>49.2605% / 約1/2.03</td></tr></tbody></table></div><p class="novaGuideNote">CZ中の内部スイカは見た目と払い出しをリプレイへ置換。通常時用の押し順ベル・1pt役はこの共通テーブルに含まれません。</p><h4>通常AT中</h4><div class="novaGuideTableWrap"><table><thead><tr><th scope="col">成立役</th><th scope="col">設定1</th><th scope="col">設定2</th><th scope="col">設定3</th><th scope="col">設定4</th><th scope="col">設定5</th><th scope="col">設定6</th></tr></thead><tbody><tr><td>スイカ</td><td>3.0992% / 約1/32.267</td><td>3.0992% / 約1/32.267</td><td>3.0992% / 約1/32.267</td><td>3.0992% / 約1/32.267</td><td>3.0992% / 約1/32.267</td><td>3.0992% / 約1/32.267</td></tr><tr><td>旧・強スイカ</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td></tr><tr><td>旧・チャンス目A</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td></tr><tr><td>旧・チャンス目B</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td></tr><tr><td>弱チェリー</td><td>0.7813% / 約1/128</td><td>0.7813% / 約1/128</td><td>0.7813% / 約1/128</td><td>0.7813% / 約1/128</td><td>0.7813% / 約1/128</td><td>0.7813% / 約1/128</td></tr><tr><td>強チェリー</td><td>0.0667% / 約1/1500</td><td>0.0667% / 約1/1500</td><td>0.0667% / 約1/1500</td><td>0.0667% / 約1/1500</td><td>0.0667% / 約1/1500</td><td>0.0667% / 約1/1500</td></tr><tr><td>1pt役</td><td>10% / 約1/10</td><td>10% / 約1/10</td><td>10% / 約1/10</td><td>10% / 約1/10</td><td>10% / 約1/10</td><td>10% / 約1/10</td></tr><tr><td>8ptベル</td><td>24.7558% / 約1/4.039</td><td>24.7558% / 約1/4.039</td><td>24.7558% / 約1/4.039</td><td>24.7558% / 約1/4.039</td><td>24.7558% / 約1/4.039</td><td>24.7558% / 約1/4.039</td></tr><tr><td>15ptベル</td><td>24.7558% / 約1/4.039</td><td>24.7558% / 約1/4.039</td><td>24.7558% / 約1/4.039</td><td>24.7558% / 約1/4.039</td><td>24.7558% / 約1/4.039</td><td>24.7558% / 約1/4.039</td></tr><tr><td>リプレイ</td><td>36.5414% / 約1/2.737</td><td>36.5414% / 約1/2.737</td><td>36.5414% / 約1/2.737</td><td>36.5414% / 約1/2.737</td><td>36.5414% / 約1/2.737</td><td>36.5414% / 約1/2.737</td></tr></tbody></table></div><h4>上位AT中</h4><div class="novaGuideTableWrap"><table><thead><tr><th scope="col">成立役</th><th scope="col">設定1</th><th scope="col">設定2</th><th scope="col">設定3</th><th scope="col">設定4</th><th scope="col">設定5</th><th scope="col">設定6</th></tr></thead><tbody><tr><td>スイカ</td><td>3.0992% / 約1/32.267</td><td>3.0992% / 約1/32.267</td><td>3.0992% / 約1/32.267</td><td>3.0992% / 約1/32.267</td><td>3.0992% / 約1/32.267</td><td>3.0992% / 約1/32.267</td></tr><tr><td>旧・強スイカ</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td></tr><tr><td>旧・チャンス目A</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td></tr><tr><td>旧・チャンス目B</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td></tr><tr><td>弱チェリー</td><td>0.7813% / 約1/128</td><td>0.7813% / 約1/128</td><td>0.7813% / 約1/128</td><td>0.7813% / 約1/128</td><td>0.7813% / 約1/128</td><td>0.7813% / 約1/128</td></tr><tr><td>強チェリー</td><td>0.0667% / 約1/1500</td><td>0.0667% / 約1/1500</td><td>0.0667% / 約1/1500</td><td>0.0667% / 約1/1500</td><td>0.0667% / 約1/1500</td><td>0.0667% / 約1/1500</td></tr><tr><td>1pt役</td><td>10% / 約1/10</td><td>10% / 約1/10</td><td>10% / 約1/10</td><td>10% / 約1/10</td><td>10% / 約1/10</td><td>10% / 約1/10</td></tr><tr><td>8ptベル</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td></tr><tr><td>15ptベル</td><td>35.0707% / 約1/2.851</td><td>35.0707% / 約1/2.851</td><td>35.0707% / 約1/2.851</td><td>35.0707% / 約1/2.851</td><td>35.0707% / 約1/2.851</td><td>35.0707% / 約1/2.851</td></tr><tr><td>リプレイ</td><td>50.9823% / 約1/1.961</td><td>50.9823% / 約1/1.961</td><td>50.9823% / 約1/1.961</td><td>50.9823% / 約1/1.961</td><td>50.9823% / 約1/1.961</td><td>50.9823% / 約1/1.961</td></tr></tbody></table></div><h4>初期特化・出陣の払い出し役</h4><div class="novaGuideTableWrap"><table><thead><tr><th scope="col">成立役</th><th scope="col">設定1</th><th scope="col">設定2</th><th scope="col">設定3</th><th scope="col">設定4</th><th scope="col">設定5</th><th scope="col">設定6</th></tr></thead><tbody><tr><td>スイカ</td><td>3.0992% / 約1/32.267</td><td>3.0992% / 約1/32.267</td><td>3.0992% / 約1/32.267</td><td>3.0992% / 約1/32.267</td><td>3.0992% / 約1/32.267</td><td>3.0992% / 約1/32.267</td></tr><tr><td>旧・強スイカ</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td></tr><tr><td>旧・チャンス目A</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td></tr><tr><td>旧・チャンス目B</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td></tr><tr><td>弱チェリー</td><td>0.7813% / 約1/128</td><td>0.7813% / 約1/128</td><td>0.7813% / 約1/128</td><td>0.7813% / 約1/128</td><td>0.7813% / 約1/128</td><td>0.7813% / 約1/128</td></tr><tr><td>強チェリー</td><td>0.0667% / 約1/1500</td><td>0.0667% / 約1/1500</td><td>0.0667% / 約1/1500</td><td>0.0667% / 約1/1500</td><td>0.0667% / 約1/1500</td><td>0.0667% / 約1/1500</td></tr><tr><td>8ptベル</td><td>58.9233% / 約1/1.697</td><td>58.9233% / 約1/1.697</td><td>58.9233% / 約1/1.697</td><td>58.9233% / 約1/1.697</td><td>58.9233% / 約1/1.697</td><td>58.9233% / 約1/1.697</td></tr><tr><td>リプレイ</td><td>37.1296% / 約1/2.693</td><td>37.1296% / 約1/2.693</td><td>37.1296% / 約1/2.693</td><td>37.1296% / 約1/2.693</td><td>37.1296% / 約1/2.693</td><td>37.1296% / 約1/2.693</td></tr></tbody></table></div><h4>BB・AT準備中</h4><div class="novaGuideTableWrap"><table><thead><tr><th scope="col">成立役</th><th scope="col">設定1</th><th scope="col">設定2</th><th scope="col">設定3</th><th scope="col">設定4</th><th scope="col">設定5</th><th scope="col">設定6</th></tr></thead><tbody><tr><td>スイカ</td><td>2.65% / 約1/37.736</td><td>2.65% / 約1/37.736</td><td>2.65% / 約1/37.736</td><td>2.65% / 約1/37.736</td><td>2.65% / 約1/37.736</td><td>2.65% / 約1/37.736</td></tr><tr><td>旧・強スイカ</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td></tr><tr><td>旧・チャンス目A</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td></tr><tr><td>旧・チャンス目B</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td></tr><tr><td>弱チェリー</td><td>0.25% / 約1/400</td><td>0.25% / 約1/400</td><td>0.25% / 約1/400</td><td>0.25% / 約1/400</td><td>0.25% / 約1/400</td><td>0.25% / 約1/400</td></tr><tr><td>強チェリー</td><td>0.05% / 約1/2000</td><td>0.05% / 約1/2000</td><td>0.05% / 約1/2000</td><td>0.05% / 約1/2000</td><td>0.05% / 約1/2000</td><td>0.05% / 約1/2000</td></tr><tr><td>開始リプレイ（右→中→左）</td><td>11.1111% / 約1/9</td><td>11.1111% / 約1/9</td><td>11.1111% / 約1/9</td><td>11.1111% / 約1/9</td><td>11.1111% / 約1/9</td><td>11.1111% / 約1/9</td></tr><tr><td>開始リプレイ（中→右→左）</td><td>11.1111% / 約1/9</td><td>11.1111% / 約1/9</td><td>11.1111% / 約1/9</td><td>11.1111% / 約1/9</td><td>11.1111% / 約1/9</td><td>11.1111% / 約1/9</td></tr><tr><td>開始リプレイ（左→中→右）</td><td>11.1111% / 約1/9</td><td>11.1111% / 約1/9</td><td>11.1111% / 約1/9</td><td>11.1111% / 約1/9</td><td>11.1111% / 約1/9</td><td>11.1111% / 約1/9</td></tr><tr><td>リプレイ</td><td>13.419% / 約1/7.452</td><td>13.419% / 約1/7.452</td><td>13.419% / 約1/7.452</td><td>13.419% / 約1/7.452</td><td>13.419% / 約1/7.452</td><td>13.419% / 約1/7.452</td></tr><tr><td>8ptベル</td><td>33.8991% / 約1/2.95</td><td>33.8991% / 約1/2.95</td><td>33.8991% / 約1/2.95</td><td>33.8991% / 約1/2.95</td><td>33.8991% / 約1/2.95</td><td>33.8991% / 約1/2.95</td></tr><tr><td>ハズレ</td><td>16.3985% / 約1/6.098</td><td>16.3985% / 約1/6.098</td><td>16.3985% / 約1/6.098</td><td>16.3985% / 約1/6.098</td><td>16.3985% / 約1/6.098</td><td>16.3985% / 約1/6.098</td></tr></tbody></table></div><div class="novaGuideTableWrap"><table><thead><tr><th scope="col">役</th><th scope="col">基礎払い出し</th></tr></thead><tbody><tr><td>スイカ</td><td>3pt</td></tr><tr><td>弱チェリー</td><td>2pt</td></tr><tr><td>強チェリー</td><td>2pt</td></tr><tr><td>8ptベル</td><td>8pt</td></tr><tr><td>15ptベル</td><td>15pt</td></tr><tr><td>1pt役</td><td>1pt</td></tr><tr><td>リプレイ</td><td>0pt</td></tr></tbody></table></div><p class="novaGuideNote">BETは3pt。リプレイのBET返却、AT通常区間のBET消費分補填、BB残り規定ptによる払い出し上限、押し順ミスの扱いは別処理。通常ベースは全設定30G/50pt設計。</p></section>
+<section id="guide-analysis-modes" class="novaGuideSection novaGuideAnalysis" aria-labelledby="guide-analysis-modes-title"><h3 id="guide-analysis-modes-title" tabindex="-1">モード移行・天井・高確</h3><h4>モード別天井</h4><div class="novaGuideTableWrap"><table><thead><tr><th scope="col">モード</th><th scope="col">天井G</th></tr></thead><tbody><tr><td>A</td><td>800</td></tr><tr><td>B</td><td>700</td></tr><tr><td>C</td><td>400</td></tr><tr><td>天国</td><td>200</td></tr><tr><td>天国ループ</td><td>200</td></tr></tbody></table></div><p class="novaGuideNote">朝一リセットは上表と600Gの小さい方。通常＋CZの内部ゲーム数を使用。天井到達時はBB、継続中CZでは成功を確保して最終決着まで進む場合があります。</p><h4>リセット・通常系AT終了後</h4><div class="novaGuideTableWrap"><table><thead><tr><th scope="col">設定</th><th scope="col">A</th><th scope="col">B</th><th scope="col">C</th><th scope="col">天国</th><th scope="col">天国ループ</th></tr></thead><tbody><tr><td>1</td><td>46.9%</td><td>25%</td><td>10.7%</td><td>13.7%</td><td>3.7%</td></tr><tr><td>2</td><td>48.9%</td><td>25%</td><td>10.3%</td><td>12.6%</td><td>3.2%</td></tr><tr><td>3</td><td>49.1%</td><td>25%</td><td>10.2%</td><td>12.5%</td><td>3.2%</td></tr><tr><td>4</td><td>49.8%</td><td>25%</td><td>10.1%</td><td>12.1%</td><td>3%</td></tr><tr><td>5</td><td>47.8%</td><td>24.5%</td><td>13.4%</td><td>12.3%</td><td>2%</td></tr><tr><td>6</td><td>50.4%</td><td>25%</td><td>9.9%</td><td>11.8%</td><td>2.9%</td></tr></tbody></table></div><h4>天国でAT終了後</h4><div class="novaGuideTableWrap"><table><thead><tr><th scope="col">設定</th><th scope="col">A</th><th scope="col">B</th><th scope="col">C</th><th scope="col">天国</th><th scope="col">天国ループ</th></tr></thead><tbody><tr><td>1</td><td>36.7%</td><td>24.5%</td><td>10.5%</td><td>22.3%</td><td>6%</td></tr><tr><td>2</td><td>38.7%</td><td>24.8%</td><td>10.2%</td><td>20.9%</td><td>5.4%</td></tr><tr><td>3</td><td>39%</td><td>24.9%</td><td>10.1%</td><td>20.7%</td><td>5.3%</td></tr><tr><td>4</td><td>39.7%</td><td>25%</td><td>10%</td><td>20.2%</td><td>5.1%</td></tr><tr><td>5</td><td>38.5%</td><td>25.5%</td><td>13.7%</td><td>18.9%</td><td>3.4%</td></tr><tr><td>6</td><td>40.4%</td><td>25.1%</td><td>9.9%</td><td>19.7%</td><td>4.9%</td></tr></tbody></table></div><h4>天国ループでAT終了後</h4><div class="novaGuideTableWrap"><table><thead><tr><th scope="col">設定</th><th scope="col">A</th><th scope="col">B</th><th scope="col">C</th><th scope="col">天国</th><th scope="col">天国ループ</th></tr></thead><tbody><tr><td>1</td><td>8.1%</td><td>8.7%</td><td>4.7%</td><td>14.9%</td><td>63.6%</td></tr><tr><td>2</td><td>9.2%</td><td>9.5%</td><td>4.9%</td><td>15%</td><td>61.4%</td></tr><tr><td>3</td><td>9.4%</td><td>9.6%</td><td>4.9%</td><td>15%</td><td>61.1%</td></tr><tr><td>4</td><td>9.8%</td><td>9.9%</td><td>5%</td><td>15%</td><td>60.3%</td></tr><tr><td>5</td><td>6.7%</td><td>12.8%</td><td>10.4%</td><td>18%</td><td>52.1%</td></tr><tr><td>6</td><td>10.3%</td><td>10.2%</td><td>5.1%</td><td>15%</td><td>59.4%</td></tr></tbody></table></div><h4>BB後のモード移行（現モードを起点）</h4><div class="novaGuideTableWrap"><table><thead><tr><th scope="col">移行元</th><th scope="col">A</th><th scope="col">B</th><th scope="col">C</th><th scope="col">天国</th><th scope="col">天国ループ</th></tr></thead><tbody><tr><td>A</td><td>60%</td><td>25%</td><td>10%</td><td>4%</td><td>1%</td></tr><tr><td>B</td><td>0%</td><td>65%</td><td>20%</td><td>12%</td><td>3%</td></tr><tr><td>C</td><td>0%</td><td>0%</td><td>65%</td><td>30%</td><td>5%</td></tr><tr><td>天国</td><td>0%</td><td>0%</td><td>0%</td><td>80%</td><td>20%</td></tr><tr><td>天国ループ</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>100%</td></tr></tbody></table></div><h4>100G単位のCZ入口抽選・基礎値</h4><div class="novaGuideTableWrap"><table><thead><tr><th scope="col">モード</th><th scope="col">100G</th><th scope="col">200G</th><th scope="col">300G</th><th scope="col">400G</th><th scope="col">500G</th><th scope="col">600G</th><th scope="col">700G</th></tr></thead><tbody><tr><td>A</td><td>10%</td><td>15%</td><td>3%</td><td>25%</td><td>3%</td><td>50%</td><td>3%</td></tr><tr><td>B</td><td>20%</td><td>3%</td><td>25%</td><td>3%</td><td>45%</td><td>3%</td><td>—</td></tr><tr><td>C</td><td>40%</td><td>25%</td><td>45%</td><td>—</td><td>—</td><td>—</td><td>—</td></tr><tr><td>天国</td><td>65%</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr><tr><td>天国ループ</td><td>65%</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr></tbody></table></div><div class="novaGuideTableWrap"><table><thead><tr><th scope="col">設定</th><th scope="col">入口補正</th></tr></thead><tbody><tr><td>1</td><td>×0.9</td></tr><tr><td>2</td><td>×1.07</td></tr><tr><td>3</td><td>×0.92</td></tr><tr><td>4</td><td>×1.1</td></tr><tr><td>5</td><td>×0.98</td></tr><tr><td>6</td><td>×1.08</td></tr></tbody></table></div><p class="novaGuideNote">実際の入口率＝基礎値×設定別入口補正（上限100%）。天井を優先。50GのフェイクCZは天国系100%・その他10%。100Gの実抽選に外れてもフェイクCZへ入る。フェイクCZは成功・書き換えなし。</p><h4>通常高確・前兆</h4><div class="novaGuideTableWrap"><table><thead><tr><th scope="col">項目</th><th scope="col">標準値</th></tr></thead><tbody><tr><td>スイカ・弱チェリーで低確→高確</td><td>16.7114%</td></tr><tr><td>高確の最低保持</td><td>10G。保持中はハズレ等による降格を停止</td></tr><tr><td>ハズレで降格</td><td>8%（最低保持後）</td></tr><tr><td>リプレイで降格</td><td>5%（最低保持後）</td></tr><tr><td>1pt役で降格</td><td>7%</td></tr><tr><td>高確のレア役CZ入口倍率</td><td>基礎抽選計算内の倍率×2</td></tr><tr><td>レア役からCZ前兆</td><td>3〜10G、外れ時のフェイク前兆抽選50%</td></tr></tbody></table></div></section>
+<section id="guide-analysis-cz" class="novaGuideSection novaGuideAnalysis" aria-labelledby="guide-analysis-cz-title"><h3 id="guide-analysis-cz-title" tabindex="-1">CZ当選・成功・AT直撃</h3><h4>小役成立時のCZ入口</h4><div class="novaGuideTableWrap"><table><thead><tr><th scope="col">設定</th><th scope="col">スイカ／弱チェリー・低確</th><th scope="col">スイカ／弱チェリー・高確</th><th scope="col">強チェリー</th></tr></thead><tbody><tr><td>1</td><td>1.4357%</td><td>2.8051%</td><td>100%（強CZ）</td></tr><tr><td>2</td><td>1.7069%</td><td>3.335%</td><td>100%（強CZ）</td></tr><tr><td>3</td><td>1.4676%</td><td>2.8675%</td><td>100%（強CZ）</td></tr><tr><td>4</td><td>1.7548%</td><td>3.4285%</td><td>100%（強CZ）</td></tr><tr><td>5</td><td>1.5634%</td><td>3.0545%</td><td>100%（強CZ）</td></tr><tr><td>6</td><td>1.7229%</td><td>3.3662%</td><td>100%（強CZ）</td></tr></tbody></table></div><h4>15G固定CZの基本成功値</h4><div class="novaGuideTableWrap"><table><thead><tr><th scope="col">設定</th><th scope="col">規定G CZ・入場時</th><th scope="col">レア役CZ・15G合算</th><th scope="col">強CZ・規定G等の基本</th><th scope="col">強CZ・レア役15G合算</th></tr></thead><tbody><tr><td>1</td><td>52%</td><td>58%</td><td>74%</td><td>82%</td></tr><tr><td>2</td><td>60%</td><td>64%</td><td>76%</td><td>84%</td></tr><tr><td>3</td><td>56%</td><td>62%</td><td>78%</td><td>85%</td></tr><tr><td>4</td><td>64%</td><td>68%</td><td>80%</td><td>87%</td></tr><tr><td>5</td><td>60%</td><td>66%</td><td>82%</td><td>88%</td></tr><tr><td>6</td><td>68%</td><td>72%</td><td>84%</td><td>90%</td></tr></tbody></table></div><p class="novaGuideNote">規定G CZは入場時の成否抽選に加え、小役で未当選→BB→AT直撃の順に昇格。レア役CZは毎G独立抽選で、表示役とは別に成否を抽選。強CZのレア役入口は低確時の15G合算が上表、高確での強チェリーは最終GまでにBB成功を保証（AT直撃保証とは別）。</p><h4>CZ中の書き換え・直撃抽選</h4><div class="novaGuideTableWrap"><table><thead><tr><th scope="col">設定</th><th scope="col">規定G系・スイカ／弱チェリー昇格</th><th scope="col">強チェリー昇格</th><th scope="col">レア役CZの毎G成功率</th><th scope="col">成功後の毎G AT直撃率</th><th scope="col">強CZ・毎G成功率</th></tr></thead><tbody><tr><td>1</td><td>20%</td><td>100%</td><td>5.6193%</td><td>0.8%</td><td>10.8027%</td></tr><tr><td>2</td><td>15%</td><td>100%</td><td>6.5842%</td><td>0.6%</td><td>11.5004%</td></tr><tr><td>3</td><td>22%</td><td>100%</td><td>6.2469%</td><td>1.1%</td><td>11.8804%</td></tr><tr><td>4</td><td>17%</td><td>100%</td><td>7.3149%</td><td>0.7%</td><td>12.717%</td></tr><tr><td>5</td><td>24%</td><td>100%</td><td>6.9395%</td><td>1.6%</td><td>13.1815%</td></tr><tr><td>6</td><td>19%</td><td>100%</td><td>8.1363%</td><td>1%</td><td>14.2304%</td></tr></tbody></table></div><p class="novaGuideNote">成功後の毎G AT直撃率は通常レア役CZのみ。強CZはその独立直撃抽選を持たない。フェイク／未決CZの書き換えは停止。CZ直撃時の特化は準備中の選択率から宗介を除外して再正規化。</p><h4>最終ランプ期待度</h4><div class="novaGuideTableWrap"><table><thead><tr><th scope="col">最終段階</th><th scope="col">理論成功期待度</th></tr></thead><tbody><tr><td>1</td><td>1%</td></tr><tr><td>2</td><td>5%</td></tr><tr><td>3</td><td>30%</td></tr><tr><td>4</td><td>60%</td></tr><tr><td>5</td><td>80%</td></tr><tr><td>6</td><td>100%</td></tr></tbody></table></div><p class="novaGuideNote">最終段階の表示モデルの期待度。途中の点灯数とは区別。最上位成功の50%で虹演出を選択。点灯順の設定示唆は「示唆全表」に掲載。</p></section>
+<section id="guide-analysis-bb" class="novaGuideSection novaGuideAnalysis" aria-labelledby="guide-analysis-bb-title"><h3 id="guide-analysis-bb-title" tabindex="-1">BB抽選・準備中の振分</h3><div class="novaGuideTableWrap"><table><thead><tr><th scope="col">項目</th><th scope="col">値</th></tr></thead><tbody><tr><td>BB規定</td><td>50pt（押し順ミスで失ったナビ分も規定消化に加算）</td></tr><tr><td>通常BIG／上位BIGの振分</td><td>90%／10%（全設定共通）</td></tr><tr><td>通常BIG／上位BIGのAT期待度</td><td>52%／80%（保証契機は別）</td></tr><tr><td>AT確保後の追加特化</td><td>追加なし87%／1個10%／2個3%。BBごとに一度プランを抽選</td></tr></tbody></table></div><h4>通常BIG・AT未確保時の内部役</h4><div class="novaGuideTableWrap"><table><thead><tr><th scope="col">成立役</th><th scope="col">設定1</th><th scope="col">設定2</th><th scope="col">設定3</th><th scope="col">設定4</th><th scope="col">設定5</th><th scope="col">設定6</th></tr></thead><tbody><tr><td>ネビュラ</td><td>4.0975% / 約1/24.405</td><td>4.0975% / 約1/24.405</td><td>4.0975% / 約1/24.405</td><td>4.0975% / 約1/24.405</td><td>4.0975% / 約1/24.405</td><td>4.0975% / 約1/24.405</td></tr><tr><td>ハズレ</td><td>4.0975% / 約1/24.405</td><td>4.0975% / 約1/24.405</td><td>4.0975% / 約1/24.405</td><td>4.0975% / 約1/24.405</td><td>4.0975% / 約1/24.405</td><td>4.0975% / 約1/24.405</td></tr><tr><td>8ptベル</td><td>37.066% / 約1/2.698</td><td>37.066% / 約1/2.698</td><td>37.066% / 約1/2.698</td><td>37.066% / 約1/2.698</td><td>37.066% / 約1/2.698</td><td>37.066% / 約1/2.698</td></tr><tr><td>リプレイ</td><td>54.7389% / 約1/1.827</td><td>54.7389% / 約1/1.827</td><td>54.7389% / 約1/1.827</td><td>54.7389% / 約1/1.827</td><td>54.7389% / 約1/1.827</td><td>54.7389% / 約1/1.827</td></tr></tbody></table></div><h4>上位BIG・AT未確保時の内部役</h4><div class="novaGuideTableWrap"><table><thead><tr><th scope="col">成立役</th><th scope="col">設定1</th><th scope="col">設定2</th><th scope="col">設定3</th><th scope="col">設定4</th><th scope="col">設定5</th><th scope="col">設定6</th></tr></thead><tbody><tr><td>ネビュラ</td><td>11.4533% / 約1/8.731</td><td>11.4533% / 約1/8.731</td><td>11.4533% / 約1/8.731</td><td>11.4533% / 約1/8.731</td><td>11.4533% / 約1/8.731</td><td>11.4533% / 約1/8.731</td></tr><tr><td>ハズレ</td><td>11.4533% / 約1/8.731</td><td>11.4533% / 約1/8.731</td><td>11.4533% / 約1/8.731</td><td>11.4533% / 約1/8.731</td><td>11.4533% / 約1/8.731</td><td>11.4533% / 約1/8.731</td></tr><tr><td>8ptベル</td><td>44.3071% / 約1/2.257</td><td>44.3071% / 約1/2.257</td><td>44.3071% / 約1/2.257</td><td>44.3071% / 約1/2.257</td><td>44.3071% / 約1/2.257</td><td>44.3071% / 約1/2.257</td></tr><tr><td>リプレイ</td><td>32.7863% / 約1/3.05</td><td>32.7863% / 約1/3.05</td><td>32.7863% / 約1/3.05</td><td>32.7863% / 約1/3.05</td><td>32.7863% / 約1/3.05</td><td>32.7863% / 約1/3.05</td></tr></tbody></table></div><p class="novaGuideNote">AT確保後の自然ネビュラによる追加獲得は停止し、BB単位の追加ストックプランに従う。狙え色は下記示唆表を参照。</p><h4>BB準備中：スイカ成立時</h4><div class="novaGuideTableWrap"><table><thead><tr><th scope="col">設定</th><th scope="col">上位BB昇格</th><th scope="col">上位AT当選</th><th scope="col">AT当選の独立抽選</th><th scope="col">AT準備中の特化当選</th></tr></thead><tbody><tr><td>1</td><td>0.8573%</td><td>4.2866%</td><td>8.5733%</td><td>4.2866%</td></tr><tr><td>2</td><td>1.0552%</td><td>5.2759%</td><td>10.5517%</td><td>5.2759%</td></tr><tr><td>3</td><td>1.1211%</td><td>5.6056%</td><td>11.2112%</td><td>5.6056%</td></tr><tr><td>4</td><td>1.3849%</td><td>6.9246%</td><td>13.8491%</td><td>6.9246%</td></tr><tr><td>5</td><td>1.5828%</td><td>7.9138%</td><td>15.8276%</td><td>7.9138%</td></tr><tr><td>6</td><td>1.8466%</td><td>9.2328%</td><td>18.4655%</td><td>9.2328%</td></tr></tbody></table></div><h4>BB準備中：強チェリー成立時</h4><div class="novaGuideTableWrap"><table><thead><tr><th scope="col">設定</th><th scope="col">上位BB昇格</th><th scope="col">上位AT当選</th><th scope="col">AT当選の独立抽選</th><th scope="col">AT準備中の特化当選</th></tr></thead><tbody><tr><td>1</td><td>3.25%</td><td>16.25%</td><td>32.5%</td><td>16.25%</td></tr><tr><td>2</td><td>4%</td><td>20%</td><td>40%</td><td>20%</td></tr><tr><td>3</td><td>4.25%</td><td>21.25%</td><td>42.5%</td><td>21.25%</td></tr><tr><td>4</td><td>5.25%</td><td>26.25%</td><td>52.5%</td><td>26.25%</td></tr><tr><td>5</td><td>6%</td><td>30%</td><td>60%</td><td>30%</td></tr><tr><td>6</td><td>7%</td><td>35%</td><td>70%</td><td>35%</td></tr></tbody></table></div><p class="novaGuideNote">スイカと弱チェリーは同率。上位BB・上位AT・ATは独立抽選で、上位AT当選またはAT当選ならATを確保。開始リプレイは合計1/3、3種各1/9、平均待機3G。</p><h4>準備中AT当選時の獲得ストック数</h4><div class="novaGuideTableWrap"><table><thead><tr><th scope="col">設定</th><th scope="col">1個</th><th scope="col">2個</th><th scope="col">3個</th></tr></thead><tbody><tr><td>1</td><td>98.6%</td><td>1%</td><td>0.4%</td></tr><tr><td>2</td><td>99.6%</td><td>0.38%</td><td>0.02%</td></tr><tr><td>3</td><td>98.6%</td><td>1%</td><td>0.4%</td></tr><tr><td>4</td><td>99.6%</td><td>0.38%</td><td>0.02%</td></tr><tr><td>5</td><td>98.6%</td><td>1%</td><td>0.4%</td></tr><tr><td>6</td><td>99.6%</td><td>0.38%</td><td>0.02%</td></tr></tbody></table></div></section>
+<section id="guide-analysis-at" class="novaGuideSection novaGuideAnalysis" aria-labelledby="guide-analysis-at-title"><h3 id="guide-analysis-at-title" tabindex="-1">AT中の全抽選・補正</h3><h4>弱役成立時の反応率</h4><div class="novaGuideTableWrap"><table><thead><tr><th scope="col">設定</th><th scope="col">低確</th><th scope="col">高確</th><th scope="col">高確での倍率</th></tr></thead><tbody><tr><td>1</td><td>15%</td><td>22.5%</td><td>×1.5</td></tr><tr><td>2</td><td>15%</td><td>22.5%</td><td>×1.5</td></tr><tr><td>3</td><td>15%</td><td>22.5%</td><td>×1.5</td></tr><tr><td>4</td><td>15%</td><td>22.5%</td><td>×1.5</td></tr><tr><td>5</td><td>15%</td><td>22.5%</td><td>×1.5</td></tr><tr><td>6</td><td>15%</td><td>22.5%</td><td>×1.5</td></tr></tbody></table></div><p class="novaGuideNote">対象はスイカ・弱チェリー。通常／上位ATで反応率は共通、報酬の質が変化する。</p><h4>通常AT・反応当選後の振分</h4><div class="novaGuideTableWrap"><table><thead><tr><th scope="col">設定</th><th scope="col">10pt直乗せ</th><th scope="col">50pt固定宗介</th><th scope="col">弱特化</th><th scope="col">強特化</th><th scope="col">裏特化</th></tr></thead><tbody><tr><td>1</td><td>75%</td><td>15%</td><td>7%</td><td>2.5%</td><td>0.5%</td></tr><tr><td>2</td><td>50%</td><td>32%</td><td>16%</td><td>2%</td><td>0%</td></tr><tr><td>3</td><td>62%</td><td>16%</td><td>13%</td><td>7%</td><td>2%</td></tr><tr><td>4</td><td>23%</td><td>34%</td><td>36%</td><td>7%</td><td>0%</td></tr><tr><td>5</td><td>47%</td><td>13%</td><td>18%</td><td>17%</td><td>5%</td></tr><tr><td>6</td><td>13%</td><td>28%</td><td>45%</td><td>13%</td><td>1%</td></tr></tbody></table></div><h4>上位AT・反応当選後の振分</h4><div class="novaGuideTableWrap"><table><thead><tr><th scope="col">設定</th><th scope="col">15pt直乗せ</th><th scope="col">50pt直乗せ</th><th scope="col">弱特化</th><th scope="col">強特化</th><th scope="col">裏特化</th></tr></thead><tbody><tr><td>1</td><td>75%</td><td>15%</td><td>5.25%</td><td>3.625%</td><td>1.125%</td></tr><tr><td>2</td><td>50%</td><td>32%</td><td>12%</td><td>5.5%</td><td>0.5%</td></tr><tr><td>3</td><td>62%</td><td>16%</td><td>9.75%</td><td>8.5%</td><td>3.75%</td></tr><tr><td>4</td><td>23%</td><td>34%</td><td>27%</td><td>14.25%</td><td>1.75%</td></tr><tr><td>5</td><td>47%</td><td>13%</td><td>13.5%</td><td>17.25%</td><td>9.25%</td></tr><tr><td>6</td><td>13%</td><td>28%</td><td>33.75%</td><td>21%</td><td>4.25%</td></tr></tbody></table></div><p class="novaGuideNote">各特化グループ内は3種均等。50pt固定宗介は通常宗介の段階抽選と別。上位ATの品質補正は弱特化の25%を強へ、強特化の25%を裏へ移す。</p><h4>特化2個目以降の成立確率補正</h4><div class="novaGuideTableWrap"><table><thead><tr><th scope="col">設定</th><th scope="col">オッズ倍率</th></tr></thead><tbody><tr><td>1</td><td>×0.8</td></tr><tr><td>2</td><td>×1.35</td></tr><tr><td>3</td><td>×1</td></tr><tr><td>4</td><td>×1.9</td></tr><tr><td>5</td><td>×1.95</td></tr><tr><td>6</td><td>×3.2</td></tr></tbody></table></div><p class="novaGuideNote">pを基礎確率、kを倍率とすると補正後p＝p×k÷(1−p＋p×k)。段階突破・7揃い・ネビュラリセット・スーパーノヴァ・フリーズの各抽選に適用。初期特化と50pt固定宗介は特化回数に含まない。獲得ptを後から倍率で増減する処理は無効。</p><h4>純増・初期値・前兆・補償</h4><div class="novaGuideTableWrap"><table><thead><tr><th scope="col">項目</th><th scope="col">値</th></tr></thead><tbody><tr><td>通常AT／上位AT／節目待機の純増設計</td><td>いずれも＋4pt/G</td></tr><tr><td>初期特化</td><td>3G×100pt。弱レア役は1Gの獲得を150pt、強レア役は200ptへ</td></tr><tr><td>初期特化開始時</td><td>全設定初期300pt＋α。旧倍率2〜5は新規抽選なし</td></tr><tr><td>AT前兆</td><td>3〜5G</td></tr><tr><td>獲得ptによる尾部抑制</td><td>現行は常に倍率1（無効）</td></tr><tr><td>負け額／差枚による報酬補正</td><td>無効。差枚による特化・出陣補正も倍率1</td></tr><tr><td>旧レジーム切替</td><td>無効。互換APIの設定5・6用0.25は現行の報酬処理には掛けない</td></tr><tr><td>押し順ミス</td><td>払い出し・規定消化に影響する。正しい押し順を前提とした設計</td></tr></tbody></table></div><h4>強チェリーとAT高確</h4><div class="novaGuideTableWrap"><table><thead><tr><th scope="col">項目</th><th scope="col">値</th></tr></thead><tbody><tr><td>強チェリー・直乗せ系の抽選枝</td><td>直乗せのみ20%／特化のみ20%／両方20%／どちらもなし40%</td></tr><tr><td>強チェリー・直乗せ枝の50pt当選率</td><td>52.28%。上位ATではこの当選率を×1.5</td></tr><tr><td>通常ATの強チェリー直乗せ</td><td>50pt固定宗介へ置換。上位ATでは50ptを直接加算</td></tr><tr><td>スイカ／弱チェリーでAT低確→高確</td><td>各15%。反応抽選は昇格前の状態で判定</td></tr><tr><td>AT高確の最低保持</td><td>10G。保持後はリプレイ5%／ハズレ8%で降格</td></tr><tr><td>1pt役によるAT高確降格</td><td>通常AT 6.1765%／上位AT 5.8333%</td></tr></tbody></table></div><h4>引き戻し</h4><div class="novaGuideTableWrap"><table><thead><tr><th scope="col">項目</th><th scope="col">値</th></tr></thead><tbody><tr><td>区間</td><td>5G・合算成功率20%</td></tr><tr><td>レア役</td><td>復活100%</td></tr><tr><td>ベル復活</td><td>奇数設定確定</td></tr><tr><td>リプレイ復活</td><td>偶数設定確定</td></tr><tr><td>ハズレ復活</td><td>設定4以上確定。成立時0.2%</td></tr><tr><td>強チェリー復活</td><td>弱特化なら強3種へ均等昇格、さらに3%で裏</td></tr><tr><td>スーパーノヴァ復活</td><td>裏3種均等</td></tr></tbody></table></div><h4>引き戻し・成立役ごとの復活率</h4><div class="novaGuideTableWrap"><table><thead><tr><th scope="col">設定</th><th scope="col">8ptベル</th><th scope="col">リプレイ</th><th scope="col">ハズレ</th></tr></thead><tbody><tr><td>1</td><td>10.9119%</td><td>0%</td><td>0%</td></tr><tr><td>2</td><td>0%</td><td>0.465%</td><td>0%</td></tr><tr><td>3</td><td>10.9119%</td><td>0%</td><td>0%</td></tr><tr><td>4</td><td>0%</td><td>0.465%</td><td>0.2%</td></tr><tr><td>5</td><td>10.9119%</td><td>0%</td><td>0.2%</td></tr><tr><td>6</td><td>0%</td><td>0.465%</td><td>0.2%</td></tr></tbody></table></div><h4>引き戻し専用の役確率</h4><div class="novaGuideTableWrap"><table><thead><tr><th scope="col">成立役</th><th scope="col">設定1</th><th scope="col">設定2</th><th scope="col">設定3</th><th scope="col">設定4</th><th scope="col">設定5</th><th scope="col">設定6</th></tr></thead><tbody><tr><td>スーパーノヴァ</td><td>0.0031% / 約1/32768</td><td>0.0031% / 約1/32768</td><td>0.0031% / 約1/32768</td><td>0.0031% / 約1/32768</td><td>0.0031% / 約1/32768</td><td>0.0031% / 約1/32768</td></tr><tr><td>スイカ</td><td>3.1127% / 約1/32.127</td><td>3.1127% / 約1/32.127</td><td>3.1127% / 約1/32.127</td><td>3.0421% / 約1/32.873</td><td>3.0421% / 約1/32.873</td><td>3.0421% / 約1/32.873</td></tr><tr><td>旧・強スイカ</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td></tr><tr><td>旧・チャンス目A</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td></tr><tr><td>旧・チャンス目B</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td></tr><tr><td>弱チェリー</td><td>0.9806% / 約1/101.982</td><td>0.9806% / 約1/101.982</td><td>0.9806% / 約1/101.982</td><td>0.9583% / 約1/104.35</td><td>0.9583% / 約1/104.35</td><td>0.9583% / 約1/104.35</td></tr><tr><td>強チェリー</td><td>0.0502% / 約1/1991.843</td><td>0.0502% / 約1/1991.843</td><td>0.0502% / 約1/1991.843</td><td>0.0491% / 約1/2038.095</td><td>0.0491% / 約1/2038.095</td><td>0.0491% / 約1/2038.095</td></tr><tr><td>リプレイ</td><td>46.9325% / 約1/2.131</td><td>46.9325% / 約1/2.131</td><td>46.9325% / 約1/2.131</td><td>46.9325% / 約1/2.131</td><td>46.9325% / 約1/2.131</td><td>46.9325% / 約1/2.131</td></tr><tr><td>8ptベル</td><td>2% / 約1/50</td><td>2% / 約1/50</td><td>2% / 約1/50</td><td>2% / 約1/50</td><td>2% / 約1/50</td><td>2% / 約1/50</td></tr><tr><td>ハズレ</td><td>46.921% / 約1/2.131</td><td>46.921% / 約1/2.131</td><td>46.921% / 約1/2.131</td><td>47.015% / 約1/2.127</td><td>47.015% / 約1/2.127</td><td>47.015% / 約1/2.127</td></tr></tbody></table></div></section>
+<section id="guide-analysis-zones" class="novaGuideSection novaGuideAnalysis" aria-labelledby="guide-analysis-zones-title"><h3 id="guide-analysis-zones-title" tabindex="-1">特化性能・段階・キャラ選択率</h3><h4>初回特化・基礎性能</h4><div class="novaGuideTableWrap"><table><thead><tr><th scope="col">特化</th><th scope="col">基本抽選</th><th scope="col">保証・獲得</th></tr></thead><tbody><tr><td>宗介</td><td>段階突破 40%</td><td>選択テーブルの先頭ptを確保</td></tr><tr><td>とと</td><td>7 35%／リセット 2%</td><td>7揃い1回保証</td></tr><tr><td>うらぴ</td><td>狙え成功 49%／フリーズ 10%</td><td>5G。50/100pt（裏逢魔100/200pt）</td></tr><tr><td>ギル</td><td>段階突破 50%</td><td>100ptまで保証</td></tr><tr><td>空</td><td>7 35%／リセット 15%</td><td>7揃い2回保証</td></tr><tr><td>逢魔</td><td>狙え成功 77%／フリーズ 25%</td><td>5G。50/100pt（裏逢魔100/200pt）</td></tr><tr><td>裏ギル</td><td>段階突破 66.6667%</td><td>テーブル⑥固定・300pt通過保証</td></tr><tr><td>裏空</td><td>7 35%／リセット 30%</td><td>500pt以上保証</td></tr><tr><td>裏逢魔</td><td>狙え成功 75%／フリーズ 35%</td><td>5G。50/100pt（裏逢魔100/200pt）</td></tr></tbody></table></div><p class="novaGuideNote">とと・空・裏空は7揃い＋100pt、ネビュラ＋10pt＆残り5Gへリセット。リセット抽選は補正後も上限30%。うらぴは50pt、逢魔100pt、裏逢魔500ptの最低獲得保証を持つ。フリーズ時は無料0G連。</p><div class="novaGuideTableWrap"><table><thead><tr><th scope="col">特化</th><th scope="col">通常当選時のpt振分</th></tr></thead><tbody><tr><td>うらぴ</td><td>50pt 70%／100pt 30%</td></tr><tr><td>逢魔</td><td>50pt 50%／100pt 50%</td></tr><tr><td>裏逢魔</td><td>100pt 30%／200pt 70%</td></tr></tbody></table></div><h4>宗介・段階テーブル選択率</h4><div class="novaGuideTableWrap"><table><thead><tr><th scope="col">表</th><th scope="col">段階pt</th><th scope="col">設定1</th><th scope="col">設定2</th><th scope="col">設定3</th><th scope="col">設定4</th><th scope="col">設定5</th><th scope="col">設定6</th></tr></thead><tbody><tr><td>1</td><td>50 → 100 → 200 → 300 → 500</td><td>41.6667%</td><td>41.2134%</td><td>40.7563%</td><td>40.2954%</td><td>39.8305%</td><td>39.3617%</td></tr><tr><td>2</td><td>50 → 50 → 500 → 500 → 1000</td><td>26.0417%</td><td>25.7322%</td><td>25.4202%</td><td>25.1055%</td><td>24.7881%</td><td>24.4681%</td></tr><tr><td>3</td><td>100 → 200 → 300 → 500 → 1000</td><td>18.75%</td><td>18.8285%</td><td>18.9076%</td><td>18.9873%</td><td>19.0678%</td><td>19.1489%</td></tr><tr><td>4</td><td>100 → 100 → 500 → 1000 → 2000</td><td>8.3333%</td><td>8.3682%</td><td>8.4034%</td><td>8.4388%</td><td>8.4746%</td><td>8.5106%</td></tr><tr><td>5</td><td>200 → 300 → 500 → 1000 → 2000</td><td>5.2083%</td><td>5.8577%</td><td>6.5126%</td><td>7.173%</td><td>7.839%</td><td>8.5106%</td></tr><tr><td>6</td><td>300 → 500 → 1000 → 2000 → 3000</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td></tr><tr><td>7</td><td>50 → 2000</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td></tr></tbody></table></div><h4>ギル・段階テーブル選択率</h4><div class="novaGuideTableWrap"><table><thead><tr><th scope="col">表</th><th scope="col">段階pt</th><th scope="col">設定1</th><th scope="col">設定2</th><th scope="col">設定3</th><th scope="col">設定4</th><th scope="col">設定5</th><th scope="col">設定6</th></tr></thead><tbody><tr><td>1</td><td>50 → 100 → 200 → 300 → 500</td><td>21.7391%</td><td>21.179%</td><td>20.614%</td><td>20.0441%</td><td>19.469%</td><td>18.8889%</td></tr><tr><td>2</td><td>50 → 50 → 500 → 500 → 1000</td><td>21.7391%</td><td>21.3974%</td><td>21.0526%</td><td>20.7048%</td><td>20.354%</td><td>20%</td></tr><tr><td>3</td><td>100 → 200 → 300 → 500 → 1000</td><td>27.1739%</td><td>27.2926%</td><td>27.4123%</td><td>27.533%</td><td>27.6549%</td><td>27.7778%</td></tr><tr><td>4</td><td>100 → 100 → 500 → 1000 → 2000</td><td>16.3043%</td><td>16.3755%</td><td>16.4474%</td><td>16.5198%</td><td>16.5929%</td><td>16.6667%</td></tr><tr><td>5</td><td>200 → 300 → 500 → 1000 → 2000</td><td>13.0435%</td><td>13.7555%</td><td>14.4737%</td><td>15.1982%</td><td>15.9292%</td><td>16.6667%</td></tr><tr><td>6</td><td>300 → 500 → 1000 → 2000 → 3000</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td></tr><tr><td>7</td><td>50 → 2000</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td></tr></tbody></table></div><h4>裏ギル・段階テーブル選択率</h4><div class="novaGuideTableWrap"><table><thead><tr><th scope="col">表</th><th scope="col">段階pt</th><th scope="col">設定1</th><th scope="col">設定2</th><th scope="col">設定3</th><th scope="col">設定4</th><th scope="col">設定5</th><th scope="col">設定6</th></tr></thead><tbody><tr><td>1</td><td>50 → 100 → 200 → 300 → 500</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td></tr><tr><td>2</td><td>50 → 50 → 500 → 500 → 1000</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td></tr><tr><td>3</td><td>100 → 200 → 300 → 500 → 1000</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td></tr><tr><td>4</td><td>100 → 100 → 500 → 1000 → 2000</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td></tr><tr><td>5</td><td>200 → 300 → 500 → 1000 → 2000</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td></tr><tr><td>6</td><td>300 → 500 → 1000 → 2000 → 3000</td><td>100%</td><td>100%</td><td>100%</td><td>100%</td><td>100%</td><td>100%</td></tr><tr><td>7</td><td>50 → 2000</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td></tr></tbody></table></div><p class="novaGuideNote">初回の通常キャラ特化は段階テーブル選択に設定3の重みを使用。2個目以降は設定別選択率。表⑥⑦は通常宗介・ギルでは自然選択されず、昇格時に使用。裏ギルは常に⑥。段階の同額区間も突破すれば次へ進む。</p><h4>ルーレット中のレア役昇格</h4><div class="novaGuideTableWrap"><table><thead><tr><th scope="col">役</th><th scope="col">昇格抽選</th></tr></thead><tbody><tr><td>スイカ／弱チェリー</td><td>20.5546%</td></tr><tr><td>強チェリー</td><td>100%</td></tr><tr><td>昇格先</td><td>80%で表⑥／20%で表⑦。⑥は通常ギル80%・裏ギル20%、⑦は宗介</td></tr></tbody></table></div><p class="novaGuideNote">50pt固定宗介・初期特化は昇格対象外。</p><h4>AT準備中・特化グループの選択率</h4><div class="novaGuideTableWrap"><table><thead><tr><th scope="col">設定</th><th scope="col">弱3種</th><th scope="col">強3種</th><th scope="col">裏3種</th></tr></thead><tbody><tr><td>1</td><td>81%</td><td>18.43%</td><td>0.57%</td></tr><tr><td>2</td><td>80.5%</td><td>18.915%</td><td>0.585%</td></tr><tr><td>3</td><td>80%</td><td>19.4%</td><td>0.6%</td></tr><tr><td>4</td><td>79.5%</td><td>19.885%</td><td>0.615%</td></tr><tr><td>5</td><td>79%</td><td>20.37%</td><td>0.63%</td></tr><tr><td>6</td><td>78%</td><td>21.34%</td><td>0.66%</td></tr></tbody></table></div><h4>通常のグループ選択表（各組内均等）</h4><div class="novaGuideTableWrap"><table><thead><tr><th scope="col">設定</th><th scope="col">弱3種</th><th scope="col">強3種</th><th scope="col">裏3種</th></tr></thead><tbody><tr><td>1</td><td>70%</td><td>29.1%</td><td>0.9%</td></tr><tr><td>2</td><td>70%</td><td>29.1%</td><td>0.9%</td></tr><tr><td>3</td><td>70%</td><td>29.1%</td><td>0.9%</td></tr><tr><td>4</td><td>70%</td><td>29.1%</td><td>0.9%</td></tr><tr><td>5</td><td>70%</td><td>29.1%</td><td>0.9%</td></tr><tr><td>6</td><td>70%</td><td>29.1%</td><td>0.9%</td></tr></tbody></table></div><h4>上位AT・グループ選択表</h4><div class="novaGuideTableWrap"><table><thead><tr><th scope="col">設定</th><th scope="col">弱3種</th><th scope="col">強3種</th><th scope="col">裏3種</th></tr></thead><tbody><tr><td>1</td><td>0%</td><td>55%</td><td>45%</td></tr><tr><td>2</td><td>0%</td><td>85%</td><td>15%</td></tr><tr><td>3</td><td>0%</td><td>50%</td><td>50%</td></tr><tr><td>4</td><td>0%</td><td>80%</td><td>20%</td></tr><tr><td>5</td><td>0%</td><td>40%</td><td>60%</td></tr><tr><td>6</td><td>0%</td><td>70%</td><td>30%</td></tr></tbody></table></div></section>
+<section id="guide-analysis-sortie" class="novaGuideSection novaGuideAnalysis" aria-labelledby="guide-analysis-sortie-title"><h3 id="guide-analysis-sortie-title" tabindex="-1">出陣・上位AT・差枚節目</h3><h4>レア役成立時の出陣当選率</h4><div class="novaGuideTableWrap"><table><thead><tr><th scope="col">設定</th><th scope="col">スイカ／弱チェリー</th><th scope="col">強チェリー</th></tr></thead><tbody><tr><td>1</td><td>0.397%</td><td>3.97%</td></tr><tr><td>2</td><td>0.276%</td><td>2.76%</td></tr><tr><td>3</td><td>0.39%</td><td>3.9%</td></tr><tr><td>4</td><td>0.272%</td><td>2.72%</td></tr><tr><td>5</td><td>0.383%</td><td>3.83%</td></tr><tr><td>6</td><td>0.212%</td><td>2.12%</td></tr></tbody></table></div><p class="novaGuideNote">これは成立役ごとの条件付き当選率であり、全ゲームの出陣確率ではありません。0G連・特定の失敗／入場処理・出陣中／チャレンジ中・節目カウント中などは対象外。現在の差枚補正は無効。</p><h4>出陣10G・毎Gのストック率を最初に選択</h4><div class="novaGuideTableWrap"><table><thead><tr><th scope="col">設定</th><th scope="col">10%</th><th scope="col">25%</th><th scope="col">40%</th><th scope="col">60%</th><th scope="col">80%</th></tr></thead><tbody><tr><td>1</td><td>32.5%</td><td>13.5%</td><td>13.5%</td><td>22.5%</td><td>18%</td></tr><tr><td>2</td><td>19%</td><td>18%</td><td>36%</td><td>22.5%</td><td>4.5%</td></tr><tr><td>3</td><td>32.5%</td><td>13.5%</td><td>13.5%</td><td>22.5%</td><td>18%</td></tr><tr><td>4</td><td>19%</td><td>18%</td><td>36%</td><td>22.5%</td><td>4.5%</td></tr><tr><td>5</td><td>52.3%</td><td>4.5%</td><td>4.5%</td><td>4.5%</td><td>34.2%</td></tr><tr><td>6</td><td>19%</td><td>18%</td><td>54%</td><td>8.1%</td><td>0.9%</td></tr></tbody></table></div><h4>出陣でストック獲得時のキャラ振分</h4><div class="novaGuideTableWrap"><table><thead><tr><th scope="col">設定</th><th scope="col">宗介</th><th scope="col">とと</th><th scope="col">うらぴ</th><th scope="col">ギル</th><th scope="col">空</th><th scope="col">逢魔</th><th scope="col">裏ギル</th><th scope="col">裏空</th><th scope="col">裏逢魔</th><th scope="col">くしゅり＆にと</th></tr></thead><tbody><tr><td>1</td><td>10%</td><td>10%</td><td>10%</td><td>15%</td><td>15%</td><td>15%</td><td>5%</td><td>5%</td><td>5%</td><td>10%</td></tr><tr><td>2</td><td>10%</td><td>10%</td><td>10%</td><td>15%</td><td>15%</td><td>15%</td><td>5%</td><td>5%</td><td>5%</td><td>10%</td></tr><tr><td>3</td><td>10%</td><td>10%</td><td>10%</td><td>15%</td><td>15%</td><td>15%</td><td>5%</td><td>5%</td><td>5%</td><td>10%</td></tr><tr><td>4</td><td>10%</td><td>10%</td><td>10%</td><td>15%</td><td>15%</td><td>15%</td><td>5%</td><td>5%</td><td>5%</td><td>10%</td></tr><tr><td>5</td><td>10%</td><td>10%</td><td>10%</td><td>19%</td><td>19%</td><td>19%</td><td>1%</td><td>1%</td><td>1%</td><td>10%</td></tr><tr><td>6</td><td>10%</td><td>10%</td><td>10%</td><td>19%</td><td>19%</td><td>19%</td><td>1%</td><td>1%</td><td>1%</td><td>10%</td></tr></tbody></table></div><p class="novaGuideNote">通常時からの出陣は出陣10G→初期特化→獲得ストックを消化する。初期チャレンジ選択に当たっていた場合は上位ATを確保して出陣へ進む。</p><p class="novaGuideNote">10Gで最低2ストックを保証するため、終盤は足りない分を強制当選。現在のコード上は強3種・裏だけに限定されておらず、上表の10種から選択します。</p><h4>スーパーノヴァチャレンジ入口</h4><div class="novaGuideTableWrap"><table><thead><tr><th scope="col">設定</th><th scope="col">初回AT入口</th><th scope="col">スイカ／弱チェリー成立時</th><th scope="col">強チェリー成立時</th></tr></thead><tbody><tr><td>1</td><td>1.75%</td><td>0.1247%</td><td>0.7875%</td></tr><tr><td>2</td><td>2.5%</td><td>0.2613%</td><td>1.65%</td></tr><tr><td>3</td><td>2%</td><td>0.2946%</td><td>1.86%</td></tr><tr><td>4</td><td>2.75%</td><td>0.5488%</td><td>3.465%</td></tr><tr><td>5</td><td>2.4%</td><td>0.4676%</td><td>2.952%</td></tr><tr><td>6</td><td>3.1%</td><td>0.2062%</td><td>1.302%</td></tr></tbody></table></div><div class="novaGuideTableWrap"><table><thead><tr><th scope="col">契機</th><th scope="col">成功目標・報酬</th></tr></thead><tbody><tr><td>初回AT入口</td><td>ハズレ10回分のカウント・成功目標50%。成功で上位ATの特化選択表、失敗でも通常特化を獲得</td></tr><tr><td>差枚＋2400ptごとの節目</td><td>ハズレ10回分のカウント・成功目標65%。成功で上位ATの特化選択表、失敗でも通常特化を獲得</td></tr><tr><td>ATレア役からのチャレンジ</td><td>ハズレ10回分のカウント・成功目標65%。成功報酬は裏ギル／裏空／裏逢魔を均等選択</td></tr></tbody></table></div><p class="novaGuideNote">チャレンジはベル5%・リプレイ5%とATレア役テーブルを使用。狙え待機中はカウントを減らさず、レア役で次の狙えを成功保証、ベル／リプレイで通常の狙えへ進む。上位AT中・使用済み等ではレア役からのチャレンジ新規抽選を行わない。</p><p class="novaGuideNote">初回・節目の成功報酬は「裏特化必ず」ではなく、設定別の上位ATグループ表を使用。節目到達時は持ち越しの残りpt・特化・セット・BBストックを清算して破棄し、上位AT状態も一度解除して再挑戦。節目までの確保済ptで到達が確定したカウントダウン中は新規報酬抽選を抑制。</p><h4>コンプリート</h4><div class="novaGuideTableWrap"><table><thead><tr><th scope="col">項目</th><th scope="col">標準値</th></tr></thead><tbody><tr><td>基準</td><td>MY（走行中の差枚最低点からの増加）</td></tr><tr><td>標準上限</td><td>19000pt。店舗指定があれば指定値を優先</td></tr><tr><td>連続試算</td><td>コンプリート停止を無効にした試算と区別</td></tr></tbody></table></div></section>
+<section id="guide-analysis-impurity" class="novaGuideSection novaGuideAnalysis" aria-labelledby="guide-analysis-impurity-title"><h3 id="guide-analysis-impurity-title" tabindex="-1">穢れの全数値・解放条件</h3><div class="novaGuideTableWrap"><table><thead><tr><th scope="col">加算契機</th><th scope="col">設定1・2・3・5・6</th><th scope="col">設定4</th></tr></thead><tbody><tr><td>CZ連続失敗1〜2回目</td><td>1pt</td><td>0.7pt</td></tr><tr><td>CZ連続失敗3〜4回目</td><td>5pt</td><td>3.5pt</td></tr><tr><td>CZ連続失敗5回目以降</td><td>10pt</td><td>7pt</td></tr><tr><td>BB連続AT非突入1〜2回目</td><td>3pt</td><td>2.1pt</td></tr><tr><td>BB連続AT非突入3〜4回目</td><td>8pt</td><td>5.6pt</td></tr><tr><td>BB連続AT非突入5回目以降</td><td>15pt</td><td>10.5pt</td></tr><tr><td>400G到達</td><td>2pt</td><td>1.4pt</td></tr><tr><td>600G到達</td><td>3pt</td><td>2.1pt</td></tr><tr><td>天井到達</td><td>5pt</td><td>3.5pt</td></tr><tr><td>AT駆け抜け</td><td>5pt</td><td>3.5pt</td></tr></tbody></table></div><p class="novaGuideNote">穢れ上限100pt。CZ連敗回数はBBで、BB非突入回数はAT突入でリセット。設定4だけ各加算70%。</p><h4>朝一リセット時の初期穢れ</h4><div class="novaGuideTableWrap"><table><thead><tr><th scope="col">設定</th><th scope="col">0pt</th><th scope="col">25pt</th><th scope="col">50pt</th><th scope="col">75pt</th><th scope="col">90pt</th><th scope="col">100pt</th></tr></thead><tbody><tr><td>1</td><td>20%</td><td>25%</td><td>35%</td><td>15%</td><td>4%</td><td>1%</td></tr><tr><td>2</td><td>19%</td><td>25%</td><td>35%</td><td>16%</td><td>4%</td><td>1%</td></tr><tr><td>3</td><td>18%</td><td>25%</td><td>35%</td><td>16%</td><td>5%</td><td>1%</td></tr><tr><td>4</td><td>17%</td><td>25%</td><td>35%</td><td>17%</td><td>5%</td><td>1%</td></tr><tr><td>5</td><td>16%</td><td>24%</td><td>35%</td><td>18%</td><td>5%</td><td>2%</td></tr><tr><td>6</td><td>15%</td><td>24%</td><td>35%</td><td>18%</td><td>6%</td><td>2%</td></tr></tbody></table></div><div class="novaGuideTableWrap"><table><thead><tr><th scope="col">解放・示唆</th><th scope="col">値</th></tr></thead><tbody><tr><td>解放条件</td><td>BB開始の回収処理時に100pt以上なら0ptへリセット</td></tr><tr><td>解放報酬</td><td>AT＋うらぴ／ギル／空／逢魔のいずれかを各25%。強3種は3%で裏へ</td></tr><tr><td>フリーズ時の追加報酬</td><td>ギル／空／逢魔を各1/3。強3種は3%で裏へ</td></tr><tr><td>穢れ小（青）</td><td>70〜89ptで示唆抽選20%</td></tr><tr><td>穢れ中（緑）</td><td>90〜99ptで示唆抽選30%</td></tr><tr><td>穢れ大（赤）</td><td>100ptで示唆抽選50%</td></tr></tbody></table></div><p class="novaGuideNote">穢れ示唆はCZ失敗・BB非AT・AT駆け抜け後に予約し、通常BETで表示。しきい値の高い示唆を優先し、出なかったことから未蓄積とは判断できません。</p></section>
+<section id="guide-analysis-hints" class="novaGuideSection novaGuideAnalysis" aria-labelledby="guide-analysis-hints-title"><h3 id="guide-analysis-hints-title" tabindex="-1">設定・モード示唆の全表</h3><h4>CZ点灯順：先頭3人の並び</h4><div class="novaGuideTableWrap"><table><thead><tr><th scope="col">先頭3人</th><th scope="col">意味</th><th scope="col">設定1</th><th scope="col">設定2</th><th scope="col">設定3</th><th scope="col">設定4</th><th scope="col">設定5</th><th scope="col">設定6</th></tr></thead><tbody><tr><td>にと → くしゅり → 宗介</td><td>設定2以上</td><td>0%</td><td>10%</td><td>10%</td><td>10%</td><td>10%</td><td>10%</td></tr><tr><td>とと → 空 → ギル</td><td>設定3以上</td><td>0%</td><td>0%</td><td>7%</td><td>7%</td><td>7%</td><td>7%</td></tr><tr><td>うらぴ → ギル → 逢魔</td><td>設定4以上</td><td>0%</td><td>0%</td><td>0%</td><td>3%</td><td>3%</td><td>3%</td></tr><tr><td>空 → とと → 宗介</td><td>設定5以上</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0.5%</td><td>0.5%</td></tr><tr><td>逢魔 → にと → くしゅり</td><td>設定6</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0.3%</td></tr><tr><td>宗介 → ギル → とと</td><td>奇数示唆</td><td>8%</td><td>3%</td><td>8%</td><td>3%</td><td>8%</td><td>3%</td></tr><tr><td>くしゅり → にと → 空</td><td>偶数示唆</td><td>3%</td><td>8%</td><td>3%</td><td>8%</td><td>3%</td><td>8%</td></tr><tr><td>ギル → うらぴ → 空</td><td>高設定弱示唆</td><td>1%</td><td>1.5%</td><td>2%</td><td>3%</td><td>4%</td><td>5%</td></tr><tr><td>くしゅり → 逢魔 → ギル</td><td>高設定強示唆</td><td>0.2%</td><td>0.3%</td><td>0.5%</td><td>1%</td><td>2%</td><td>3%</td></tr></tbody></table></div><h4>AT終了画面の設定確定示唆</h4><div class="novaGuideTableWrap"><table><thead><tr><th scope="col">画面</th><th scope="col">意味</th><th scope="col">設定1</th><th scope="col">設定2</th><th scope="col">設定3</th><th scope="col">設定4</th><th scope="col">設定5</th><th scope="col">設定6</th></tr></thead><tbody><tr><td>ボス集合</td><td>設定2以上</td><td>0%</td><td>10%</td><td>10%</td><td>10%</td><td>10%</td><td>10%</td></tr><tr><td>空（私服）</td><td>設定4以上</td><td>0%</td><td>0%</td><td>0%</td><td>3%</td><td>3%</td><td>3%</td></tr><tr><td>逢魔（私服）</td><td>設定5以上</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>2%</td><td>2%</td></tr><tr><td>全員集合</td><td>設定6以上</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>1%</td></tr></tbody></table></div><p class="novaGuideNote">上記に選ばれなかった分は通常6キャラ×赤青の12通りへ均等配分。特化終了画面の赤は奇数60%・偶数40%（青は逆）。AT終了の通常赤青とは抽選が異なります。</p><h4>BB終了後に通常へ戻る場合のモード示唆</h4><div class="novaGuideTableWrap"><table><thead><tr><th scope="col">ぬいぐるみ／意味</th><th scope="col">A</th><th scope="col">B</th><th scope="col">C</th><th scope="col">天国</th><th scope="col">天国ループ</th></tr></thead><tbody><tr><td>くしゅりぬい・ととぬい／デフォルト</td><td>85%</td><td>65%</td><td>50%</td><td>47%</td><td>47%</td></tr><tr><td>にとぬい・宗介ぬい／モードB以上示唆</td><td>10%</td><td>20%</td><td>20%</td><td>20%</td><td>20%</td></tr><tr><td>うらぴぬい・ねこぬい／モードC以上示唆</td><td>5%</td><td>5%</td><td>15%</td><td>15%</td><td>15%</td></tr><tr><td>やまだぬい／モードB以上確定</td><td>0%</td><td>10%</td><td>10%</td><td>10%</td><td>10%</td></tr><tr><td>にごぬい／モードC以上確定</td><td>0%</td><td>0%</td><td>5%</td><td>5%</td><td>5%</td></tr><tr><td>ギルぬい・そらぬい・おうまぬい／天国以上確定</td><td>0%</td><td>0%</td><td>0%</td><td>3%</td><td>3%</td></tr></tbody></table></div><p class="novaGuideNote">BBからATへ進む場合はモードを示さず、くしゅり／ととを各50%。BB終了ボイスによる設定確定は現行ATルールでは使用していません。</p><h4>狙えの色別期待度</h4><div class="novaGuideTableWrap"><table><thead><tr><th scope="col">演出</th><th scope="col">青</th><th scope="col">赤</th><th scope="col">虹</th></tr></thead><tbody><tr><td>赤7・ネビュラ・スーパーノヴァ・出陣狙えの最終表示</td><td>20%</td><td>90%</td><td>100%</td></tr><tr><td>7特化内部の元色テーブル</td><td>20%</td><td>80%</td><td>100%</td></tr></tbody></table></div><p class="novaGuideNote">元テーブルの色抽選と最終表示の色は別処理。実画面の最終色は共通表示の補正を使用。保証・強制演出・表示なし抽選は別扱い。出陣は実当選1：フェイク2のチケット比を基礎に表示する。</p></section>
+<section id="guide-analysis-reference" class="novaGuideSection novaGuideAnalysis" aria-labelledby="guide-analysis-reference-title"><h3 id="guide-analysis-reference-title" tabindex="-1">全パラメータ一覧・互換値</h3><p class="novaGuideNote">上の各表は現行処理に基づく実効値です。以下はルールモジュールが公開する定数の全一覧で、廃止された役・旧セーブ互換・計算用の基礎値も含みます。defaultsの数値がそのまま現行の成立確率・初期ptになるとは限りません。割合0〜1、重み0〜100、分母、ptなど単位は各キーによって異なります。</p><details class="novaGuideRaw"><summary>NovaNormal・公開定数一覧</summary><pre>{
+  &quot;modeSelection&quot;: {
+    &quot;initial&quot;: [
+      [
+        46.9,
+        25,
+        10.7,
+        13.7,
+        3.7
+      ],
+      [
+        48.9,
+        25,
+        10.3,
+        12.6,
+        3.2
+      ],
+      [
+        49.1,
+        25,
+        10.2,
+        12.5,
+        3.2
+      ],
+      [
+        49.8,
+        25,
+        10.1,
+        12.1,
+        3
+      ],
+      [
+        47.8,
+        24.5,
+        13.399999999999999,
+        12.3,
+        2
+      ],
+      [
+        50.4,
+        25,
+        9.9,
+        11.8,
+        2.9
+      ]
+    ],
+    &quot;afterHeaven&quot;: [
+      [
+        36.7,
+        24.5,
+        10.5,
+        22.3,
+        6
+      ],
+      [
+        38.7,
+        24.8,
+        10.2,
+        20.9,
+        5.4
+      ],
+      [
+        39,
+        24.9,
+        10.1,
+        20.7,
+        5.3
+      ],
+      [
+        39.7,
+        25,
+        10,
+        20.2,
+        5.1
+      ],
+      [
+        38.5,
+        25.5,
+        13.7,
+        18.9,
+        3.4
+      ],
+      [
+        40.4,
+        25.1,
+        9.9,
+        19.7,
+        4.9
+      ]
+    ],
+    &quot;afterLoop&quot;: [
+      [
+        8.1,
+        8.7,
+        4.7,
+        14.9,
+        63.6
+      ],
+      [
+        9.2,
+        9.5,
+        4.9,
+        15,
+        61.4
+      ],
+      [
+        9.4,
+        9.6,
+        4.9,
+        15,
+        61.1
+      ],
+      [
+        9.8,
+        9.9,
+        5,
+        15,
+        60.3
+      ],
+      [
+        6.699999999999999,
+        12.8,
+        10.399999999999999,
+        18,
+        52.1
+      ],
+      [
+        10.3,
+        10.2,
+        5.1,
+        15,
+        59.4
+      ]
+    ]
+  },
+  &quot;modeRules&quot;: {
+    &quot;modes&quot;: [
+      &quot;A&quot;,
+      &quot;B&quot;,
+      &quot;C&quot;,
+      &quot;天国&quot;,
+      &quot;天国ループ&quot;
+    ],
+    &quot;ceilings&quot;: [
+      800,
+      700,
+      400,
+      200,
+      200
+    ],
+    &quot;initial&quot;: [
+      50,
+      25,
+      10,
+      12,
+      3
+    ],
+    &quot;promotion&quot;: [
+      [
+        60,
+        25,
+        10,
+        4,
+        1
+      ],
+      [
+        0,
+        65,
+        20,
+        12,
+        3
+      ],
+      [
+        0,
+        0,
+        65,
+        30,
+        5
+      ],
+      [
+        0,
+        0,
+        0,
+        80,
+        20
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        100
+      ]
+    ],
+    &quot;afterHeaven&quot;: [
+      40,
+      25,
+      10,
+      20,
+      5
+    ],
+    &quot;afterLoop&quot;: [
+      10,
+      10,
+      5,
+      15,
+      60
+    ],
+    &quot;fiftyFake&quot;: {
+      &quot;heaven&quot;: 1,
+      &quot;other&quot;: 0.1
+    },
+    &quot;rates&quot;: {
+      &quot;A&quot;: {
+        &quot;100&quot;: 0.1,
+        &quot;200&quot;: 0.15,
+        &quot;300&quot;: 0.03,
+        &quot;400&quot;: 0.25,
+        &quot;500&quot;: 0.03,
+        &quot;600&quot;: 0.5,
+        &quot;700&quot;: 0.03
+      },
+      &quot;B&quot;: {
+        &quot;100&quot;: 0.2,
+        &quot;200&quot;: 0.03,
+        &quot;300&quot;: 0.25,
+        &quot;400&quot;: 0.03,
+        &quot;500&quot;: 0.45,
+        &quot;600&quot;: 0.03
+      },
+      &quot;C&quot;: {
+        &quot;100&quot;: 0.4,
+        &quot;200&quot;: 0.25,
+        &quot;300&quot;: 0.45
+      },
+      &quot;天国&quot;: {
+        &quot;100&quot;: 0.65
+      },
+      &quot;天国ループ&quot;: {
+        &quot;100&quot;: 0.65
+      }
+    }
+  },
+  &quot;normalLowPayoutRules&quot;: {
+    &quot;version&quot;: 2,
+    &quot;oneCoinChance&quot;: 0.1,
+    &quot;addedNaviBellChance&quot;: 0.0625,
+    &quot;missShare&quot;: 0.6666666666666666,
+    &quot;replayShare&quot;: 0.3333333333333333
+  },
+  &quot;lotteryRules&quot;: {
+    &quot;version&quot;: 140,
+    &quot;ceilingGames&quot;: 800,
+    &quot;czScale&quot;: [
+      0.502,
+      0.51,
+      0.522,
+      0.498,
+      0.552,
+      0.616
+    ]
+  },
+  &quot;czPreludeRules&quot;: {
+    &quot;minGames&quot;: 3,
+    &quot;maxGames&quot;: 10,
+    &quot;fakeOnMissRate&quot;: 0.5
+  },
+  &quot;czEntryFactors&quot;: [
+    0.5516519148129746,
+    0.7208975984965829,
+    0.6281660492320582,
+    0.7979815623975144,
+    0.44354968780320364,
+    0.6129111430899589
+  ],
+  &quot;gameZoneRates&quot;: {
+    &quot;A&quot;: {
+      &quot;100&quot;: 0.1,
+      &quot;200&quot;: 0.15,
+      &quot;300&quot;: 0.03,
+      &quot;400&quot;: 0.25,
+      &quot;500&quot;: 0.03,
+      &quot;600&quot;: 0.5,
+      &quot;700&quot;: 0.03
+    },
+    &quot;B&quot;: {
+      &quot;100&quot;: 0.2,
+      &quot;200&quot;: 0.03,
+      &quot;300&quot;: 0.25,
+      &quot;400&quot;: 0.03,
+      &quot;500&quot;: 0.45,
+      &quot;600&quot;: 0.03
+    },
+    &quot;C&quot;: {
+      &quot;100&quot;: 0.4,
+      &quot;200&quot;: 0.25,
+      &quot;300&quot;: 0.45
+    },
+    &quot;天国&quot;: {
+      &quot;100&quot;: 0.65
+    },
+    &quot;天国ループ&quot;: {
+      &quot;100&quot;: 0.65
+    }
+  },
+  &quot;gameZoneConfig&quot;: {
+    &quot;fakeRate&quot;: 0,
+    &quot;preludeMin&quot;: 3,
+    &quot;preludeMax&quot;: 8,
+    &quot;ceilingBonusRate&quot;: 0.5
+  },
+  &quot;atEndModeWeights&quot;: {
+    &quot;normal&quot;: [
+      50,
+      25,
+      10,
+      12,
+      3
+    ]
+  },
+  &quot;resetImpurityPoints&quot;: [
+    0,
+    25,
+    50,
+    75,
+    90,
+    100
+  ],
+  &quot;resetImpurityWeights&quot;: [
+    [
+      20,
+      25,
+      35,
+      15,
+      4,
+      1
+    ],
+    [
+      19,
+      25,
+      35,
+      16,
+      4,
+      1
+    ],
+    [
+      18,
+      25,
+      35,
+      16,
+      5,
+      1
+    ],
+    [
+      17,
+      25,
+      35,
+      17,
+      5,
+      1
+    ],
+    [
+      16,
+      24,
+      35,
+      18,
+      5,
+      2
+    ],
+    [
+      15,
+      24,
+      35,
+      18,
+      6,
+      2
+    ]
+  ],
+  &quot;modes&quot;: [
+    &quot;A&quot;,
+    &quot;B&quot;,
+    &quot;C&quot;,
+    &quot;天国&quot;,
+    &quot;天国ループ&quot;
+  ],
+  &quot;ceilings&quot;: [
+    800,
+    700,
+    400,
+    200,
+    200
+  ],
+  &quot;transitions&quot;: [
+    [
+      60,
+      25,
+      10,
+      4,
+      1
+    ],
+    [
+      0,
+      65,
+      20,
+      12,
+      3
+    ],
+    [
+      0,
+      0,
+      65,
+      30,
+      5
+    ],
+    [
+      0,
+      0,
+      0,
+      80,
+      20
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      100
+    ]
+  ],
+  &quot;rare&quot;: {
+    &quot;WEAK_SUICA&quot;: {
+      &quot;p&quot;: 0.0248,
+      &quot;up&quot;: 0.05,
+      &quot;cz&quot;: 0.06,
+      &quot;gain&quot;: 1,
+      &quot;pay&quot;: 3
+    },
+    &quot;WEAK_NOVA&quot;: {
+      &quot;p&quot;: 0.0078125,
+      &quot;up&quot;: 0.35,
+      &quot;cz&quot;: 0.3,
+      &quot;gain&quot;: 2,
+      &quot;pay&quot;: 2
+    },
+    &quot;STRONG_NOVA&quot;: {
+      &quot;p&quot;: 0.0004,
+      &quot;up&quot;: 0.75,
+      &quot;cz&quot;: 1,
+      &quot;gain&quot;: 4,
+      &quot;pay&quot;: 2
+    }
+  },
+  &quot;rareMean&quot;: 2.7512305944717905,
+  &quot;defaults&quot;: {
+    &quot;highMultiplier&quot;: 2,
+    &quot;bandMultiplier&quot;: 2,
+    &quot;downMiss&quot;: 0.08,
+    &quot;downReplay&quot;: 0.05,
+    &quot;czFailureGain&quot;: 1,
+    &quot;bonusFailureGain&quot;: 2,
+    &quot;atDryGain&quot;: 2,
+    &quot;ceilingGain&quot;: 10,
+    &quot;regChainGain&quot;: 2,
+    &quot;superDenom&quot;: 32768
+  }
+}</pre></details><details class="novaGuideRaw"><summary>NovaFlow・公開定数一覧</summary><pre>{
+  &quot;currentRuleVersion&quot;: 2,
+  &quot;rareTargets&quot;: [
+    0.58,
+    0.64,
+    0.62,
+    0.68,
+    0.66,
+    0.72
+  ],
+  &quot;rarePerGameRates&quot;: [
+    0.05619280018523898,
+    0.06584236711558278,
+    0.0624691375669002,
+    0.0731488384141773,
+    0.06939525813411285,
+    0.08136313703387277
+  ],
+  &quot;rareDirectPerGameRates&quot;: [
+    0.008,
+    0.006,
+    0.011,
+    0.007,
+    0.016,
+    0.01
+  ],
+  &quot;strongRareTargets&quot;: [
+    0.82,
+    0.84,
+    0.85,
+    0.87,
+    0.88,
+    0.9
+  ],
+  &quot;strongRarePerGameRates&quot;: [
+    0.10802742751148497,
+    0.1150039502851603,
+    0.11880352620736745,
+    0.12717021732019007,
+    0.13181538983438823,
+    0.14230410140910588
+  ],
+  &quot;gameRewriteRates&quot;: [
+    0.2,
+    0.15,
+    0.22,
+    0.17,
+    0.24,
+    0.19
+  ],
+  &quot;directZoneIds&quot;: [
+    &quot;toto&quot;,
+    &quot;urapi&quot;,
+    &quot;giru&quot;,
+    &quot;sora&quot;,
+    &quot;ouma&quot;,
+    &quot;ura_giru&quot;,
+    &quot;ura_sora&quot;,
+    &quot;ura_ouma&quot;
+  ],
+  &quot;defaults&quot;: {
+    &quot;czGames&quot;: 15,
+    &quot;strongGames&quot;: 15,
+    &quot;czMaxGames&quot;: 20,
+    &quot;strongMaxGames&quot;: 20,
+    &quot;czChance&quot;: 0.4,
+    &quot;strongChance&quot;: 0.7,
+    &quot;czDenom&quot;: 120,
+    &quot;strongDenom&quot;: 600
+  },
+  &quot;rewriteRates&quot;: {
+    &quot;WEAK_SUICA&quot;: 0.1782292065925642,
+    &quot;WEAK_NOVA&quot;: 0.1782292065925642,
+    &quot;STRONG_NOVA&quot;: 1
+  },
+  &quot;lampConfidence&quot;: [
+    0.01,
+    0.05,
+    0.3,
+    0.6,
+    0.8,
+    1
+  ],
+  &quot;lampCharacters&quot;: [
+    &quot;kushuri&quot;,
+    &quot;nito&quot;,
+    &quot;sosuke&quot;,
+    &quot;toto&quot;,
+    &quot;urapi&quot;,
+    &quot;giru1&quot;,
+    &quot;sora1&quot;,
+    &quot;ouma1&quot;
+  ],
+  &quot;lampHints&quot;: [
+    {
+      &quot;id&quot;: &quot;min2&quot;,
+      &quot;minimumSetting&quot;: 2,
+      &quot;prefix&quot;: [
+        &quot;nito&quot;,
+        &quot;kushuri&quot;,
+        &quot;sosuke&quot;
+      ],
+      &quot;rates&quot;: [
+        0,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;min3&quot;,
+      &quot;minimumSetting&quot;: 3,
+      &quot;prefix&quot;: [
+        &quot;toto&quot;,
+        &quot;sora1&quot;,
+        &quot;giru1&quot;
+      ],
+      &quot;rates&quot;: [
+        0,
+        0,
+        0.07,
+        0.07,
+        0.07,
+        0.07
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;min4&quot;,
+      &quot;minimumSetting&quot;: 4,
+      &quot;prefix&quot;: [
+        &quot;urapi&quot;,
+        &quot;giru1&quot;,
+        &quot;ouma1&quot;
+      ],
+      &quot;rates&quot;: [
+        0,
+        0,
+        0,
+        0.03,
+        0.03,
+        0.03
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;min5&quot;,
+      &quot;minimumSetting&quot;: 5,
+      &quot;prefix&quot;: [
+        &quot;sora1&quot;,
+        &quot;toto&quot;,
+        &quot;sosuke&quot;
+      ],
+      &quot;rates&quot;: [
+        0,
+        0,
+        0,
+        0,
+        0.005,
+        0.005
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;min6&quot;,
+      &quot;minimumSetting&quot;: 6,
+      &quot;prefix&quot;: [
+        &quot;ouma1&quot;,
+        &quot;nito&quot;,
+        &quot;kushuri&quot;
+      ],
+      &quot;rates&quot;: [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0.003
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;odd&quot;,
+      &quot;prefix&quot;: [
+        &quot;sosuke&quot;,
+        &quot;giru1&quot;,
+        &quot;toto&quot;
+      ],
+      &quot;rates&quot;: [
+        0.08,
+        0.03,
+        0.08,
+        0.03,
+        0.08,
+        0.03
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;even&quot;,
+      &quot;prefix&quot;: [
+        &quot;kushuri&quot;,
+        &quot;nito&quot;,
+        &quot;sora1&quot;
+      ],
+      &quot;rates&quot;: [
+        0.03,
+        0.08,
+        0.03,
+        0.08,
+        0.03,
+        0.08
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;highWeak&quot;,
+      &quot;prefix&quot;: [
+        &quot;giru1&quot;,
+        &quot;urapi&quot;,
+        &quot;sora1&quot;
+      ],
+      &quot;rates&quot;: [
+        0.01,
+        0.015,
+        0.02,
+        0.03,
+        0.04,
+        0.05
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;highStrong&quot;,
+      &quot;prefix&quot;: [
+        &quot;kushuri&quot;,
+        &quot;ouma1&quot;,
+        &quot;giru1&quot;
+      ],
+      &quot;rates&quot;: [
+        0.002,
+        0.003,
+        0.005,
+        0.01,
+        0.02,
+        0.03
+      ]
+    }
+  ],
+  &quot;rt&quot;: {
+    &quot;games&quot;: 50,
+    &quot;replay&quot;: 0.6,
+    &quot;bell&quot;: 0.3,
+    &quot;miss&quot;: 0.1,
+    &quot;netPerGame&quot;: 1.2
+  }
+}</pre></details><details class="novaGuideRaw"><summary>NovaArt・公開定数一覧</summary><pre>{
+  &quot;repeatZoneProbabilityFactors&quot;: [
+    0.8,
+    1.35,
+    1,
+    1.9,
+    1.95,
+    3.2
+  ],
+  &quot;atNetRules&quot;: {
+    &quot;normal&quot;: 4,
+    &quot;upper&quot;: 4,
+    &quot;checkpoint&quot;: 4
+  },
+  &quot;atLowPayoutRules&quot;: {
+    &quot;oneCoinChance&quot;: 0.1,
+    &quot;replayHighDownChance&quot;: 0.05
+  },
+  &quot;weakAtAwardScales&quot;: [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+  ],
+  &quot;upperAtRules&quot;: {
+    &quot;weakZoneMultiplier&quot;: 12,
+    &quot;weakZoneMultipliers&quot;: [
+      12,
+      12,
+      12,
+      12,
+      12,
+      12
+    ],
+    &quot;entryFactors&quot;: [
+      0.35,
+      0.5,
+      0.4,
+      0.55,
+      0.48,
+      0.62
+    ]
+  },
+  &quot;checkpointQuietRules&quot;: {
+    &quot;enabled&quot;: true
+  },
+  &quot;lowPayoutRoles&quot;: {
+    &quot;ONE_COIN&quot;: 1
+  },
+  &quot;freshInitialRules&quot;: {
+    &quot;version&quot;: 2026102702,
+    &quot;fixedVersion&quot;: 2026102701,
+    &quot;previousVersion&quot;: 20261027,
+    &quot;legacyVersion&quot;: 20261007,
+    &quot;bases&quot;: [
+      100,
+      100,
+      100,
+      100,
+      100,
+      100
+    ],
+    &quot;previousBases&quot;: [
+      100,
+      100,
+      100,
+      161,
+      214,
+      249
+    ],
+    &quot;quota&quot;: 300,
+    &quot;point&quot;: 100,
+    &quot;rareAwards&quot;: {
+      &quot;WEAK_SUICA&quot;: 150,
+      &quot;CHANCE_A&quot;: 150,
+      &quot;WEAK_NOVA&quot;: 150,
+      &quot;STRONG_SUICA&quot;: 200,
+      &quot;CHANCE_B&quot;: 200,
+      &quot;STRONG_NOVA&quot;: 200,
+      &quot;SUPER_NOVA&quot;: 200
+    }
+  },
+  &quot;freshInitialBases&quot;: [
+    100,
+    100,
+    100,
+    100,
+    100,
+    100
+  ],
+  &quot;previousFreshInitialBases&quot;: [
+    100,
+    100,
+    100,
+    161,
+    214,
+    249
+  ],
+  &quot;positiveNetZoneRules&quot;: [
+    {
+      &quot;start&quot;: 0,
+      &quot;end&quot;: 1500,
+      &quot;floor&quot;: 1,
+      &quot;boost&quot;: 1,
+      &quot;sortie&quot;: false
+    },
+    {
+      &quot;start&quot;: 0,
+      &quot;end&quot;: 1500,
+      &quot;floor&quot;: 1,
+      &quot;boost&quot;: 1,
+      &quot;sortie&quot;: false
+    },
+    {
+      &quot;start&quot;: 500,
+      &quot;end&quot;: 3000,
+      &quot;floor&quot;: 1,
+      &quot;boost&quot;: 1,
+      &quot;sortie&quot;: false
+    },
+    {
+      &quot;start&quot;: 500,
+      &quot;end&quot;: 3000,
+      &quot;floor&quot;: 1,
+      &quot;boost&quot;: 1,
+      &quot;sortie&quot;: false
+    },
+    {
+      &quot;start&quot;: 0,
+      &quot;end&quot;: 2000,
+      &quot;floor&quot;: 1,
+      &quot;boost&quot;: 1,
+      &quot;sortie&quot;: false
+    },
+    {
+      &quot;start&quot;: 3000,
+      &quot;end&quot;: 6500,
+      &quot;floor&quot;: 1,
+      &quot;boost&quot;: 1,
+      &quot;sortie&quot;: false
+    }
+  ],
+  &quot;entryWeights&quot;: [
+    [
+      0.6354105832966211,
+      0.3110670270748763,
+      0.05076124418701584,
+      0.0027611454414867057
+    ],
+    [
+      0.4827364503295663,
+      0.3979165543666842,
+      0.10933335303418432,
+      0.010013642269564929
+    ],
+    [
+      0.3746442278235266,
+      0.43514331313362564,
+      0.1684706795608236,
+      0.021741779482023913
+    ],
+    [
+      0.26914350346608706,
+      0.4431467349623512,
+      0.24321477350531298,
+      0.044494988066248714
+    ],
+    [
+      0.19722305399838924,
+      0.4247972702808942,
+      0.30498922781372345,
+      0.07299044790699304
+    ],
+    [
+      0.13019579613189197,
+      0.38005441300255294,
+      0.3698054804995187,
+      0.11994431036603637
+    ]
+  ],
+  &quot;atPreludeRules&quot;: {
+    &quot;minGames&quot;: 3,
+    &quot;maxGames&quot;: 5
+  },
+  &quot;initialRareAwards&quot;: {
+    &quot;WEAK_SUICA&quot;: 100,
+    &quot;CHANCE_A&quot;: 100,
+    &quot;WEAK_NOVA&quot;: 100,
+    &quot;STRONG_SUICA&quot;: 200,
+    &quot;CHANCE_B&quot;: 200,
+    &quot;STRONG_NOVA&quot;: 200,
+    &quot;SUPER_NOVA&quot;: 200
+  },
+  &quot;initialZoneIds&quot;: [
+    &quot;kushuri_nito&quot;
+  ],
+  &quot;initialBoostRules&quot;: {
+    &quot;version&quot;: 20261007,
+    &quot;values&quot;: [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    &quot;weights&quot;: [
+      [
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    ]
+  },
+  &quot;entryQuotaRules&quot;: {
+    &quot;version&quot;: 148,
+    &quot;waitGames&quot;: 3,
+    &quot;games&quot;: 3,
+    &quot;values&quot;: [
+      150,
+      200,
+      250,
+      300
+    ],
+    &quot;weights&quot;: [
+      8,
+      12,
+      6,
+      1
+    ],
+    &quot;pointValues&quot;: [
+      50,
+      100
+    ],
+    &quot;pointWeights&quot;: [
+      2,
+      1
+    ]
+  },
+  &quot;comebackRules&quot;: {
+    &quot;games&quot;: 5,
+    &quot;totalChance&quot;: 0.2,
+    &quot;guaranteedRoles&quot;: [
+      &quot;WEAK_SUICA&quot;,
+      &quot;STRONG_SUICA&quot;,
+      &quot;CHANCE_A&quot;,
+      &quot;CHANCE_B&quot;,
+      &quot;WEAK_NOVA&quot;,
+      &quot;STRONG_NOVA&quot;,
+      &quot;SUPER_NOVA&quot;
+    ],
+    &quot;bellRate&quot;: 0.02,
+    &quot;highMissChance&quot;: 0.002,
+    &quot;parityHintPerZone&quot;: 0.01,
+    &quot;superDenom&quot;: 32768
+  },
+  &quot;burstRules&quot;: {
+    &quot;version&quot;: 2,
+    &quot;games&quot;: 10,
+    &quot;success&quot;: 0.65,
+    &quot;initialSuccess&quot;: 0.5,
+    &quot;initialEntry&quot;: 0.05,
+    &quot;uraWeights&quot;: [
+      1,
+      1,
+      1
+    ],
+    &quot;entry&quot;: [
+      0.0225,
+      0.033,
+      0.0465,
+      0.063,
+      0.0615,
+      0.021
+    ],
+    &quot;roles&quot;: {
+      &quot;WEAK_SUICA&quot;: 0.15839316425977998,
+      &quot;WEAK_NOVA&quot;: 0.15839316425977998,
+      &quot;STRONG_NOVA&quot;: 1
+    }
+  },
+  &quot;commonAtRules&quot;: {
+    &quot;rare&quot;: 1,
+    &quot;direct&quot;: 0.6,
+    &quot;weakNova&quot;: 0.35,
+    &quot;groups&quot;: [
+      70,
+      29.1,
+      0.9
+    ]
+  },
+  &quot;bonusRules&quot;: {
+    &quot;normal&quot;: {
+      &quot;atChance&quot;: 0.52
+    },
+    &quot;upper&quot;: {
+      &quot;atChance&quot;: 0.8
+    },
+    &quot;upperRate&quot;: 0.1
+  },
+  &quot;aimColors&quot;: [
+    {
+      &quot;color&quot;: &quot;blue&quot;,
+      &quot;weight&quot;: 0.6,
+      &quot;hit&quot;: 0.2
+    },
+    {
+      &quot;color&quot;: &quot;red&quot;,
+      &quot;weight&quot;: 0.35,
+      &quot;hit&quot;: 0.8
+    },
+    {
+      &quot;color&quot;: &quot;rainbow&quot;,
+      &quot;weight&quot;: 0.05,
+      &quot;hit&quot;: 1
+    }
+  ],
+  &quot;lossRewardControl&quot;: {
+    &quot;enabled&quot;: false,
+    &quot;threshold&quot;: -2000,
+    &quot;multiplier&quot;: 1
+  },
+  &quot;zoneTailControl&quot;: {
+    &quot;threshold&quot;: 2000,
+    &quot;factor&quot;: 1
+  },
+  &quot;netRewardControl&quot;: {
+    &quot;enabled&quot;: false,
+    &quot;startRatio&quot;: 0,
+    &quot;floor&quot;: 1
+  },
+  &quot;netLimits&quot;: [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  &quot;superZoneChance&quot;: 0.03,
+  &quot;zoneGroups&quot;: {
+    &quot;weak&quot;: [
+      &quot;sosuke&quot;,
+      &quot;toto&quot;,
+      &quot;urapi&quot;
+    ],
+    &quot;strong&quot;: [
+      &quot;giru&quot;,
+      &quot;sora&quot;,
+      &quot;ouma&quot;
+    ],
+    &quot;super&quot;: [
+      &quot;ura_giru&quot;,
+      &quot;ura_sora&quot;,
+      &quot;ura_ouma&quot;
+    ]
+  },
+  &quot;bonusSpecialRates&quot;: [
+    0.04097535458947136,
+    0.04097535458947136,
+    0.04097535458947136,
+    0.04097535458947136,
+    0.04097535458947136,
+    0.04097535458947136
+  ],
+  &quot;ladderTables&quot;: {
+    &quot;sosuke&quot;: [
+      [
+        50,
+        100,
+        200,
+        300,
+        500
+      ],
+      [
+        50,
+        50,
+        500,
+        500,
+        1000
+      ],
+      [
+        100,
+        200,
+        300,
+        500,
+        1000
+      ],
+      [
+        100,
+        100,
+        500,
+        1000,
+        2000
+      ],
+      [
+        200,
+        300,
+        500,
+        1000,
+        2000
+      ],
+      [
+        300,
+        500,
+        1000,
+        2000,
+        3000
+      ],
+      [
+        50,
+        2000
+      ]
+    ],
+    &quot;giru&quot;: [
+      [
+        50,
+        100,
+        200,
+        300,
+        500
+      ],
+      [
+        50,
+        50,
+        500,
+        500,
+        1000
+      ],
+      [
+        100,
+        200,
+        300,
+        500,
+        1000
+      ],
+      [
+        100,
+        100,
+        500,
+        1000,
+        2000
+      ],
+      [
+        200,
+        300,
+        500,
+        1000,
+        2000
+      ],
+      [
+        300,
+        500,
+        1000,
+        2000,
+        3000
+      ],
+      [
+        50,
+        2000
+      ]
+    ],
+    &quot;ura_giru&quot;: [
+      [
+        50,
+        100,
+        200,
+        300,
+        500
+      ],
+      [
+        50,
+        50,
+        500,
+        500,
+        1000
+      ],
+      [
+        100,
+        200,
+        300,
+        500,
+        1000
+      ],
+      [
+        100,
+        100,
+        500,
+        1000,
+        2000
+      ],
+      [
+        200,
+        300,
+        500,
+        1000,
+        2000
+      ],
+      [
+        300,
+        500,
+        1000,
+        2000,
+        3000
+      ],
+      [
+        50,
+        2000
+      ]
+    ]
+  },
+  &quot;ladderValues&quot;: [
+    50,
+    100,
+    200,
+    300,
+    500,
+    1000,
+    2000,
+    3000
+  ],
+  &quot;sevenValues&quot;: [
+    100
+  ],
+  &quot;sevenWeights&quot;: {
+    &quot;toto&quot;: [
+      1
+    ],
+    &quot;sora&quot;: [
+      1
+    ],
+    &quot;ura_sora&quot;: [
+      1
+    ]
+  },
+  &quot;tuning&quot;: {
+    &quot;weak&quot;: 128,
+    &quot;strong&quot;: 1500,
+    &quot;other&quot;: 1.15,
+    &quot;tilts&quot;: [
+      -0.28,
+      -0.28,
+      -0.28,
+      0.1,
+      0.2,
+      0.38
+    ]
+  },
+  &quot;atRoleRules&quot;: {
+    &quot;WEAK_SUICA&quot;: {
+      &quot;up&quot;: 0.15,
+      &quot;hit&quot;: 0.1793235237913243,
+      &quot;values&quot;: [
+        10,
+        20,
+        30,
+        50,
+        100,
+        300
+      ],
+      &quot;weights&quot;: [
+        0.4012605042016807,
+        0.3993697478991597,
+        0.17205882352941176,
+        0.026764705882352944,
+        0.0004915966386554622,
+        0.0000546218487394958
+      ]
+    },
+    &quot;WEAK_NOVA&quot;: {
+      &quot;up&quot;: 0.15,
+      &quot;hit&quot;: 0.1793235237913243,
+      &quot;values&quot;: [
+        10,
+        20,
+        30,
+        50,
+        100,
+        300
+      ],
+      &quot;weights&quot;: [
+        0.4012605042016807,
+        0.3993697478991597,
+        0.17205882352941176,
+        0.026764705882352944,
+        0.0004915966386554622,
+        0.0000546218487394958
+      ]
+    }
+  },
+  &quot;rareRoles&quot;: {
+    &quot;WEAK_SUICA&quot;: {
+      &quot;p&quot;: 0.0265,
+      &quot;pay&quot;: 3,
+      &quot;preparation&quot;: 0.13189655172413794
+    },
+    &quot;STRONG_SUICA&quot;: {
+      &quot;p&quot;: 0,
+      &quot;pay&quot;: 3,
+      &quot;preparation&quot;: 0.3
+    },
+    &quot;CHANCE_A&quot;: {
+      &quot;p&quot;: 0,
+      &quot;pay&quot;: 0,
+      &quot;preparation&quot;: 0.15
+    },
+    &quot;CHANCE_B&quot;: {
+      &quot;p&quot;: 0,
+      &quot;pay&quot;: 0,
+      &quot;preparation&quot;: 0.15
+    },
+    &quot;WEAK_NOVA&quot;: {
+      &quot;p&quot;: 0.0025,
+      &quot;pay&quot;: 2,
+      &quot;preparation&quot;: 0.13189655172413794
+    },
+    &quot;STRONG_NOVA&quot;: {
+      &quot;p&quot;: 0.0005,
+      &quot;pay&quot;: 2,
+      &quot;preparation&quot;: 0.5
+    }
+  },
+  &quot;rareTotal&quot;: 0.0295,
+  &quot;rareMean&quot;: 2.898305084745763,
+  &quot;preparationRules&quot;: {
+    &quot;version&quot;: 20261027,
+    &quot;targetNet&quot;: 1.2,
+    &quot;startReplayChance&quot;: 0.3333333333333333,
+    &quot;startReplayProbability&quot;: 0.1111111111111111,
+    &quot;meanGames&quot;: 3,
+    &quot;ordinaryReplay&quot;: [
+      0.13311650015250695,
+      0.13365326023376708,
+      0.1341900203150272,
+      0.1347267803962873,
+      0.1352635404775474,
+      0.1358003005588075
+    ],
+    &quot;bell&quot;: [
+      0.3397358124428099,
+      0.33936352741233733,
+      0.33899124238186484,
+      0.3386189573513923,
+      0.3382466723209197,
+      0.3378743872904472
+    ],
+    &quot;miss&quot;: [
+      0.1652583540713498,
+      0.16462187902056213,
+      0.16398540396977482,
+      0.1633489289189873,
+      0.16271245386819957,
+      0.16207597881741195
+    ],
+    &quot;startReplayRoles&quot;: [
+      &quot;START_REPLAY_RIGHT&quot;,
+      &quot;START_REPLAY_MIDDLE&quot;,
+      &quot;START_REPLAY_LEFT&quot;
+    ],
+    &quot;startReplayOrders&quot;: {
+      &quot;START_REPLAY_RIGHT&quot;: &quot;right&quot;,
+      &quot;START_REPLAY_MIDDLE&quot;: &quot;middle&quot;,
+      &quot;START_REPLAY_LEFT&quot;: &quot;left&quot;
+    },
+    &quot;startReplayStops&quot;: {
+      &quot;right&quot;: [
+        &quot;right&quot;,
+        &quot;middle&quot;,
+        &quot;left&quot;
+      ],
+      &quot;middle&quot;: [
+        &quot;middle&quot;,
+        &quot;right&quot;,
+        &quot;left&quot;
+      ],
+      &quot;left&quot;: [
+        &quot;left&quot;,
+        &quot;middle&quot;,
+        &quot;right&quot;
+      ]
+    },
+    &quot;bonus&quot;: {
+      &quot;weak&quot;: {
+        &quot;upperBonus&quot;: 0.013189655172413795,
+        &quot;upperAt&quot;: 0.06594827586206897,
+        &quot;at&quot;: 0.13189655172413794
+      },
+      &quot;strong&quot;: {
+        &quot;upperBonus&quot;: 0.05,
+        &quot;upperAt&quot;: 0.25,
+        &quot;at&quot;: 0.5
+      },
+      &quot;stockWeights&quot;: [
+        0.9945,
+        0.005,
+        0.0005
+      ]
+    },
+    &quot;at&quot;: {
+      &quot;weakZone&quot;: 0.06594827586206897,
+      &quot;strongZone&quot;: 0.25
+    }
+  },
+  &quot;zoneRoleWeights&quot;: {
+    &quot;WEAK_SUICA&quot;: 1,
+    &quot;STRONG_SUICA&quot;: 10,
+    &quot;CHANCE_A&quot;: 2.6666666666666665,
+    &quot;CHANCE_B&quot;: 2.6666666666666665,
+    &quot;WEAK_NOVA&quot;: 1,
+    &quot;STRONG_NOVA&quot;: 10
+  },
+  &quot;zoneEntryScale&quot;: [
+    0.405,
+    0.475,
+    0.415,
+    0.5,
+    0.485,
+    0.485
+  ],
+  &quot;zoneIds&quot;: [
+    &quot;sosuke&quot;,
+    &quot;toto&quot;,
+    &quot;urapi&quot;,
+    &quot;giru&quot;,
+    &quot;sora&quot;,
+    &quot;ouma&quot;,
+    &quot;ura_giru&quot;,
+    &quot;ura_sora&quot;,
+    &quot;ura_ouma&quot;
+  ],
+  &quot;names&quot;: {
+    &quot;sosuke&quot;: &quot;宗介&quot;,
+    &quot;toto&quot;: &quot;とと&quot;,
+    &quot;urapi&quot;: &quot;うらぴ&quot;,
+    &quot;giru&quot;: &quot;ギル&quot;,
+    &quot;sora&quot;: &quot;空&quot;,
+    &quot;ouma&quot;: &quot;逢魔&quot;,
+    &quot;kushuri&quot;: &quot;くしゅり&quot;,
+    &quot;nito&quot;: &quot;にと&quot;,
+    &quot;kushuri_nito&quot;: &quot;くしゅり＆にと&quot;
+  },
+  &quot;defaults&quot;: {
+    &quot;initial&quot;: 200,
+    &quot;payoutVersion&quot;: 1,
+    &quot;ladderSosuke&quot;: 0.4,
+    &quot;ladderGiru&quot;: 0.5,
+    &quot;ladderUraGiru&quot;: 0.6666666666666666,
+    &quot;totoHit&quot;: 0.35,
+    &quot;totoReset&quot;: 0.02,
+    &quot;soraUraHit&quot;: 0.35,
+    &quot;soraUraRed&quot;: 0.715,
+    &quot;urapiSuper&quot;: 0.49,
+    &quot;oumaSuper&quot;: 0.77,
+    &quot;oumaUraSuper&quot;: 0.75,
+    &quot;rare&quot;: 0.03,
+    &quot;big&quot;: 0.12,
+    &quot;zone&quot;: 0.4,
+    &quot;czArt&quot;: 0.25,
+    &quot;soraHit&quot;: 0.35,
+    &quot;soraReset&quot;: 0.15,
+    &quot;soraUraReset&quot;: 0.3,
+    &quot;urapiFreeze&quot;: 0.1,
+    &quot;oumaFreeze&quot;: 0.25,
+    &quot;oumaUraFreeze&quot;: 0.35,
+    &quot;direct1&quot;: 1400,
+    &quot;direct2&quot;: 1320,
+    &quot;direct3&quot;: 1240,
+    &quot;direct4&quot;: 1160,
+    &quot;direct5&quot;: 1080,
+    &quot;direct6&quot;: 1000
+  },
+  &quot;direct&quot;: [
+    1400,
+    1320,
+    1240,
+    1160,
+    1080,
+    1000
+  ],
+  &quot;zoneWeights&quot;: [
+    [
+      35,
+      29,
+      17,
+      9,
+      7,
+      3
+    ],
+    [
+      34.5,
+      29,
+      17,
+      9.5,
+      7,
+      3
+    ],
+    [
+      34,
+      28.5,
+      17.5,
+      9.5,
+      7.25,
+      3.25
+    ],
+    [
+      33.5,
+      28.5,
+      17.5,
+      9.5,
+      7.5,
+      3.5
+    ],
+    [
+      33,
+      28,
+      18,
+      9.5,
+      7.75,
+      3.75
+    ],
+    [
+      32.5,
+      27.5,
+      18,
+      10,
+      8,
+      4
+    ]
+  ],
+  &quot;bonusSpecial&quot;: 0.04097535458947136,
+  &quot;settingBias&quot;: [
+    -2.7,
+    -2.55,
+    -2.27,
+    -2.13,
+    -1.8,
+    -1.46
+  ],
+  &quot;bonusExtraStockRules&quot;: {
+    &quot;version&quot;: 175,
+    &quot;weights&quot;: [
+      0.87,
+      0.1,
+      0.03
+    ]
+  },
+  &quot;bonusStockRules&quot;: {
+    &quot;version&quot;: 175,
+    &quot;weights&quot;: [
+      0.87,
+      0.1,
+      0.03
+    ]
+  }
+}</pre></details><details class="novaGuideRaw"><summary>NovaComplete・公開定数一覧</summary><pre>{
+  &quot;defaultNetLimitPt&quot;: 0,
+  &quot;defaultMyLimitPt&quot;: 19000
+}</pre></details><details class="novaGuideRaw"><summary>設定別プロファイル・計算済テーブル</summary><pre>{
+  &quot;settings&quot;: [
+    {
+      &quot;setting&quot;: 1,
+      &quot;tuning&quot;: {
+        &quot;cz&quot;: 1.85,
+        &quot;zone&quot;: 2.5,
+        &quot;direct&quot;: 0.8,
+        &quot;denominator&quot;: 7000,
+        &quot;tiers&quot;: [
+          0.325,
+          0.135,
+          0.135,
+          0.225,
+          0.18
+        ],
+        &quot;weights&quot;: [
+          0.1,
+          0.1,
+          0.1,
+          0.15,
+          0.15,
+          0.15,
+          0.05,
+          0.05,
+          0.05,
+          0.1
+        ],
+        &quot;base&quot;: 30,
+        &quot;replay&quot;: 0.4464,
+        &quot;normalReplayReduction&quot;: 0.01,
+        &quot;extraZone&quot;: 0.01,
+        &quot;upper&quot;: 1.5,
+        &quot;groups&quot;: [
+          70,
+          29.1,
+          0.9
+        ],
+        &quot;thresholdBands&quot;: []
+      },
+      &quot;balance&quot;: {
+        &quot;style&quot;: &quot;rough&quot;,
+        &quot;gameCzEntry&quot;: 0.9,
+        &quot;rareCzEntry&quot;: 0.9,
+        &quot;gameCzSuccess&quot;: 0.52,
+        &quot;rareCzSuccess&quot;: 0.58,
+        &quot;strongCzSuccess&quot;: 0.74,
+        &quot;strongRareSuccess&quot;: 0.82,
+        &quot;failureRecovery&quot;: 0.65,
+        &quot;bonusStock&quot;: 0.45,
+        &quot;preparationReward&quot;: 0.65,
+        &quot;upperEntry&quot;: 0.35,
+        &quot;upperGroups&quot;: [
+          0,
+          55,
+          45
+        ],
+        &quot;weakResponse&quot;: 0.15,
+        &quot;weakQuality&quot;: [
+          75,
+          15,
+          7,
+          2.5,
+          0.5
+        ],
+        &quot;repeatZone&quot;: {
+          &quot;values&quot;: [
+            0.48,
+            1.94,
+            5.83
+          ],
+          &quot;weights&quot;: [
+            0.76,
+            0.2,
+            0.04
+          ]
+        }
+      },
+      &quot;normalRoles&quot;: {
+        &quot;WEAK_SUICA&quot;: 0.0248,
+        &quot;STRONG_SUICA&quot;: 0,
+        &quot;CHANCE_A&quot;: 0,
+        &quot;CHANCE_B&quot;: 0,
+        &quot;WEAK_NOVA&quot;: 0.0078125,
+        &quot;STRONG_NOVA&quot;: 0.0004,
+        &quot;REPLAY&quot;: 0.1890885417117312,
+        &quot;BELL&quot;: 0.00505751243781094,
+        &quot;MISS&quot;: 0.6059936197635013,
+        &quot;NAVI_BELL&quot;: 0.06684782608695652,
+        &quot;ONE_COIN&quot;: 0.1
+      },
+      &quot;czRoles&quot;: {
+        &quot;WEAK_SUICA&quot;: 0.0248,
+        &quot;STRONG_SUICA&quot;: 0,
+        &quot;CHANCE_A&quot;: 0,
+        &quot;CHANCE_B&quot;: 0,
+        &quot;WEAK_NOVA&quot;: 0.0078125,
+        &quot;STRONG_NOVA&quot;: 0.0004,
+        &quot;REPLAY&quot;: 0.469325,
+        &quot;BELL&quot;: 0.00505751243781094,
+        &quot;MISS&quot;: 0.492604987562189
+      },
+      &quot;cz&quot;: {
+        &quot;czGames&quot;: 15,
+        &quot;strongGames&quot;: 15,
+        &quot;czMaxGames&quot;: 20,
+        &quot;strongMaxGames&quot;: 20,
+        &quot;setting&quot;: 1,
+        &quot;czChance&quot;: 0.52,
+        &quot;strongChance&quot;: 0.74,
+        &quot;czDenom&quot;: 120,
+        &quot;strongDenom&quot;: 600,
+        &quot;rewriteRates&quot;: {
+          &quot;WEAK_SUICA&quot;: 0.2,
+          &quot;WEAK_NOVA&quot;: 0.2,
+          &quot;STRONG_NOVA&quot;: 1
+        }
+      },
+      &quot;atRoles&quot;: {
+        &quot;WEAK_SUICA&quot;: 0.03099152542372881,
+        &quot;STRONG_SUICA&quot;: 0,
+        &quot;CHANCE_A&quot;: 0,
+        &quot;CHANCE_B&quot;: 0,
+        &quot;WEAK_NOVA&quot;: 0.0078125,
+        &quot;STRONG_NOVA&quot;: 0.0006666666666666666,
+        &quot;ONE_COIN&quot;: 0.1,
+        &quot;BELL&quot;: 0.2475575980392157,
+        &quot;BELL15&quot;: 0.2475575980392157,
+        &quot;REPLAY&quot;: 0.36541411183117317
+      },
+      &quot;upperRoles&quot;: {
+        &quot;WEAK_SUICA&quot;: 0.03099152542372881,
+        &quot;STRONG_SUICA&quot;: 0,
+        &quot;CHANCE_A&quot;: 0,
+        &quot;CHANCE_B&quot;: 0,
+        &quot;WEAK_NOVA&quot;: 0.0078125,
+        &quot;STRONG_NOVA&quot;: 0.0006666666666666666,
+        &quot;ONE_COIN&quot;: 0.1,
+        &quot;BELL&quot;: 0,
+        &quot;BELL15&quot;: 0.35070659722222225,
+        &quot;REPLAY&quot;: 0.5098227106873823
+      },
+      &quot;comebackRoles&quot;: {
+        &quot;SUPER_NOVA&quot;: 0.000030517578125,
+        &quot;WEAK_SUICA&quot;: 0.031126944915084533,
+        &quot;STRONG_SUICA&quot;: 0,
+        &quot;CHANCE_A&quot;: 0,
+        &quot;CHANCE_B&quot;: 0,
+        &quot;WEAK_NOVA&quot;: 0.009805615207624916,
+        &quot;STRONG_NOVA&quot;: 0.0005020474986303957,
+        &quot;REPLAY&quot;: 0.469325,
+        &quot;BELL&quot;: 0.02,
+        &quot;MISS&quot;: 0.4692098748005351
+      },
+      &quot;preparationRoles&quot;: {
+        &quot;WEAK_SUICA&quot;: 0.026499999999999996,
+        &quot;STRONG_SUICA&quot;: 0,
+        &quot;CHANCE_A&quot;: 0,
+        &quot;CHANCE_B&quot;: 0,
+        &quot;WEAK_NOVA&quot;: 0.0025,
+        &quot;STRONG_NOVA&quot;: 0.0005,
+        &quot;START_REPLAY_RIGHT&quot;: 0.1111111111111111,
+        &quot;START_REPLAY_MIDDLE&quot;: 0.1111111111111111,
+        &quot;START_REPLAY_LEFT&quot;: 0.1111111111111111,
+        &quot;REPLAY&quot;: 0.1341900203150272,
+        &quot;BELL&quot;: 0.33899124238186484,
+        &quot;MISS&quot;: 0.16398540396977482
+      },
+      &quot;decrement&quot;: {
+        &quot;enabled&quot;: false
+      }
+    },
+    {
+      &quot;setting&quot;: 2,
+      &quot;tuning&quot;: {
+        &quot;cz&quot;: 1.91,
+        &quot;zone&quot;: 3.5,
+        &quot;direct&quot;: 1.3,
+        &quot;denominator&quot;: 10000,
+        &quot;tiers&quot;: [
+          0.19,
+          0.18,
+          0.36,
+          0.225,
+          0.045
+        ],
+        &quot;weights&quot;: [
+          0.1,
+          0.1,
+          0.1,
+          0.15,
+          0.15,
+          0.15,
+          0.05,
+          0.05,
+          0.05,
+          0.1
+        ],
+        &quot;base&quot;: 30,
+        &quot;replay&quot;: 0.4482,
+        &quot;normalReplayReduction&quot;: 0.01,
+        &quot;extraZone&quot;: 0.01,
+        &quot;upper&quot;: 1.5,
+        &quot;groups&quot;: [
+          70,
+          29.1,
+          0.9
+        ],
+        &quot;thresholdBands&quot;: []
+      },
+      &quot;balance&quot;: {
+        &quot;style&quot;: &quot;steady&quot;,
+        &quot;gameCzEntry&quot;: 1.07,
+        &quot;rareCzEntry&quot;: 1.07,
+        &quot;gameCzSuccess&quot;: 0.6,
+        &quot;rareCzSuccess&quot;: 0.64,
+        &quot;strongCzSuccess&quot;: 0.76,
+        &quot;strongRareSuccess&quot;: 0.84,
+        &quot;failureRecovery&quot;: 0.8,
+        &quot;bonusStock&quot;: 0.58,
+        &quot;preparationReward&quot;: 0.8,
+        &quot;upperEntry&quot;: 0.5,
+        &quot;upperGroups&quot;: [
+          0,
+          85,
+          15
+        ],
+        &quot;weakResponse&quot;: 0.15,
+        &quot;weakQuality&quot;: [
+          50,
+          32,
+          16,
+          2,
+          0
+        ],
+        &quot;repeatZone&quot;: {
+          &quot;values&quot;: [
+            1.16,
+            1.29,
+            1.42
+          ],
+          &quot;weights&quot;: [
+            0.2,
+            0.6,
+            0.2
+          ]
+        }
+      },
+      &quot;normalRoles&quot;: {
+        &quot;WEAK_SUICA&quot;: 0.0248,
+        &quot;STRONG_SUICA&quot;: 0,
+        &quot;CHANCE_A&quot;: 0,
+        &quot;CHANCE_B&quot;: 0,
+        &quot;WEAK_NOVA&quot;: 0.0078125,
+        &quot;STRONG_NOVA&quot;: 0.0004,
+        &quot;REPLAY&quot;: 0.1890885417117312,
+        &quot;BELL&quot;: 0.00505751243781094,
+        &quot;MISS&quot;: 0.6059936197635013,
+        &quot;NAVI_BELL&quot;: 0.06684782608695652,
+        &quot;ONE_COIN&quot;: 0.1
+      },
+      &quot;czRoles&quot;: {
+        &quot;WEAK_SUICA&quot;: 0.0248,
+        &quot;STRONG_SUICA&quot;: 0,
+        &quot;CHANCE_A&quot;: 0,
+        &quot;CHANCE_B&quot;: 0,
+        &quot;WEAK_NOVA&quot;: 0.0078125,
+        &quot;STRONG_NOVA&quot;: 0.0004,
+        &quot;REPLAY&quot;: 0.469325,
+        &quot;BELL&quot;: 0.00505751243781094,
+        &quot;MISS&quot;: 0.492604987562189
+      },
+      &quot;cz&quot;: {
+        &quot;czGames&quot;: 15,
+        &quot;strongGames&quot;: 15,
+        &quot;czMaxGames&quot;: 20,
+        &quot;strongMaxGames&quot;: 20,
+        &quot;setting&quot;: 2,
+        &quot;czChance&quot;: 0.6,
+        &quot;strongChance&quot;: 0.76,
+        &quot;czDenom&quot;: 120,
+        &quot;strongDenom&quot;: 600,
+        &quot;rewriteRates&quot;: {
+          &quot;WEAK_SUICA&quot;: 0.15,
+          &quot;WEAK_NOVA&quot;: 0.15,
+          &quot;STRONG_NOVA&quot;: 1
+        }
+      },
+      &quot;atRoles&quot;: {
+        &quot;WEAK_SUICA&quot;: 0.03099152542372881,
+        &quot;STRONG_SUICA&quot;: 0,
+        &quot;CHANCE_A&quot;: 0,
+        &quot;CHANCE_B&quot;: 0,
+        &quot;WEAK_NOVA&quot;: 0.0078125,
+        &quot;STRONG_NOVA&quot;: 0.0006666666666666666,
+        &quot;ONE_COIN&quot;: 0.1,
+        &quot;BELL&quot;: 0.2475575980392157,
+        &quot;BELL15&quot;: 0.2475575980392157,
+        &quot;REPLAY&quot;: 0.36541411183117317
+      },
+      &quot;upperRoles&quot;: {
+        &quot;WEAK_SUICA&quot;: 0.03099152542372881,
+        &quot;STRONG_SUICA&quot;: 0,
+        &quot;CHANCE_A&quot;: 0,
+        &quot;CHANCE_B&quot;: 0,
+        &quot;WEAK_NOVA&quot;: 0.0078125,
+        &quot;STRONG_NOVA&quot;: 0.0006666666666666666,
+        &quot;ONE_COIN&quot;: 0.1,
+        &quot;BELL&quot;: 0,
+        &quot;BELL15&quot;: 0.35070659722222225,
+        &quot;REPLAY&quot;: 0.5098227106873823
+      },
+      &quot;comebackRoles&quot;: {
+        &quot;SUPER_NOVA&quot;: 0.000030517578125,
+        &quot;WEAK_SUICA&quot;: 0.031126944915084533,
+        &quot;STRONG_SUICA&quot;: 0,
+        &quot;CHANCE_A&quot;: 0,
+        &quot;CHANCE_B&quot;: 0,
+        &quot;WEAK_NOVA&quot;: 0.009805615207624916,
+        &quot;STRONG_NOVA&quot;: 0.0005020474986303957,
+        &quot;REPLAY&quot;: 0.469325,
+        &quot;BELL&quot;: 0.02,
+        &quot;MISS&quot;: 0.4692098748005351
+      },
+      &quot;preparationRoles&quot;: {
+        &quot;WEAK_SUICA&quot;: 0.026499999999999996,
+        &quot;STRONG_SUICA&quot;: 0,
+        &quot;CHANCE_A&quot;: 0,
+        &quot;CHANCE_B&quot;: 0,
+        &quot;WEAK_NOVA&quot;: 0.0025,
+        &quot;STRONG_NOVA&quot;: 0.0005,
+        &quot;START_REPLAY_RIGHT&quot;: 0.1111111111111111,
+        &quot;START_REPLAY_MIDDLE&quot;: 0.1111111111111111,
+        &quot;START_REPLAY_LEFT&quot;: 0.1111111111111111,
+        &quot;REPLAY&quot;: 0.1341900203150272,
+        &quot;BELL&quot;: 0.33899124238186484,
+        &quot;MISS&quot;: 0.16398540396977482
+      },
+      &quot;decrement&quot;: {
+        &quot;enabled&quot;: false
+      }
+    },
+    {
+      &quot;setting&quot;: 3,
+      &quot;tuning&quot;: {
+        &quot;cz&quot;: 1.78,
+        &quot;zone&quot;: 2.5,
+        &quot;direct&quot;: 0.8,
+        &quot;denominator&quot;: 7000,
+        &quot;tiers&quot;: [
+          0.325,
+          0.135,
+          0.135,
+          0.225,
+          0.18
+        ],
+        &quot;weights&quot;: [
+          0.1,
+          0.1,
+          0.1,
+          0.15,
+          0.15,
+          0.15,
+          0.05,
+          0.05,
+          0.05,
+          0.1
+        ],
+        &quot;base&quot;: 30,
+        &quot;replay&quot;: 0.45,
+        &quot;normalReplayReduction&quot;: 0.01,
+        &quot;extraZone&quot;: 0.01,
+        &quot;upper&quot;: 1.5,
+        &quot;groups&quot;: [
+          70,
+          29.1,
+          0.9
+        ],
+        &quot;thresholdBands&quot;: []
+      },
+      &quot;balance&quot;: {
+        &quot;style&quot;: &quot;rough&quot;,
+        &quot;gameCzEntry&quot;: 0.92,
+        &quot;rareCzEntry&quot;: 0.92,
+        &quot;gameCzSuccess&quot;: 0.56,
+        &quot;rareCzSuccess&quot;: 0.62,
+        &quot;strongCzSuccess&quot;: 0.78,
+        &quot;strongRareSuccess&quot;: 0.85,
+        &quot;failureRecovery&quot;: 0.85,
+        &quot;bonusStock&quot;: 0.68,
+        &quot;preparationReward&quot;: 0.85,
+        &quot;upperEntry&quot;: 0.4,
+        &quot;upperGroups&quot;: [
+          0,
+          50,
+          50
+        ],
+        &quot;weakResponse&quot;: 0.15,
+        &quot;weakQuality&quot;: [
+          62,
+          16,
+          13,
+          7,
+          2
+        ],
+        &quot;repeatZone&quot;: {
+          &quot;values&quot;: [
+            0.49,
+            1.4,
+            4.88
+          ],
+          &quot;weights&quot;: [
+            0.65,
+            0.27,
+            0.08
+          ]
+        }
+      },
+      &quot;normalRoles&quot;: {
+        &quot;WEAK_SUICA&quot;: 0.0248,
+        &quot;STRONG_SUICA&quot;: 0,
+        &quot;CHANCE_A&quot;: 0,
+        &quot;CHANCE_B&quot;: 0,
+        &quot;WEAK_NOVA&quot;: 0.0078125,
+        &quot;STRONG_NOVA&quot;: 0.0004,
+        &quot;REPLAY&quot;: 0.1890885417117312,
+        &quot;BELL&quot;: 0.00505751243781094,
+        &quot;MISS&quot;: 0.6059936197635013,
+        &quot;NAVI_BELL&quot;: 0.06684782608695652,
+        &quot;ONE_COIN&quot;: 0.1
+      },
+      &quot;czRoles&quot;: {
+        &quot;WEAK_SUICA&quot;: 0.0248,
+        &quot;STRONG_SUICA&quot;: 0,
+        &quot;CHANCE_A&quot;: 0,
+        &quot;CHANCE_B&quot;: 0,
+        &quot;WEAK_NOVA&quot;: 0.0078125,
+        &quot;STRONG_NOVA&quot;: 0.0004,
+        &quot;REPLAY&quot;: 0.469325,
+        &quot;BELL&quot;: 0.00505751243781094,
+        &quot;MISS&quot;: 0.492604987562189
+      },
+      &quot;cz&quot;: {
+        &quot;czGames&quot;: 15,
+        &quot;strongGames&quot;: 15,
+        &quot;czMaxGames&quot;: 20,
+        &quot;strongMaxGames&quot;: 20,
+        &quot;setting&quot;: 3,
+        &quot;czChance&quot;: 0.56,
+        &quot;strongChance&quot;: 0.78,
+        &quot;czDenom&quot;: 120,
+        &quot;strongDenom&quot;: 600,
+        &quot;rewriteRates&quot;: {
+          &quot;WEAK_SUICA&quot;: 0.22,
+          &quot;WEAK_NOVA&quot;: 0.22,
+          &quot;STRONG_NOVA&quot;: 1
+        }
+      },
+      &quot;atRoles&quot;: {
+        &quot;WEAK_SUICA&quot;: 0.03099152542372881,
+        &quot;STRONG_SUICA&quot;: 0,
+        &quot;CHANCE_A&quot;: 0,
+        &quot;CHANCE_B&quot;: 0,
+        &quot;WEAK_NOVA&quot;: 0.0078125,
+        &quot;STRONG_NOVA&quot;: 0.0006666666666666666,
+        &quot;ONE_COIN&quot;: 0.1,
+        &quot;BELL&quot;: 0.2475575980392157,
+        &quot;BELL15&quot;: 0.2475575980392157,
+        &quot;REPLAY&quot;: 0.36541411183117317
+      },
+      &quot;upperRoles&quot;: {
+        &quot;WEAK_SUICA&quot;: 0.03099152542372881,
+        &quot;STRONG_SUICA&quot;: 0,
+        &quot;CHANCE_A&quot;: 0,
+        &quot;CHANCE_B&quot;: 0,
+        &quot;WEAK_NOVA&quot;: 0.0078125,
+        &quot;STRONG_NOVA&quot;: 0.0006666666666666666,
+        &quot;ONE_COIN&quot;: 0.1,
+        &quot;BELL&quot;: 0,
+        &quot;BELL15&quot;: 0.35070659722222225,
+        &quot;REPLAY&quot;: 0.5098227106873823
+      },
+      &quot;comebackRoles&quot;: {
+        &quot;SUPER_NOVA&quot;: 0.000030517578125,
+        &quot;WEAK_SUICA&quot;: 0.031126944915084533,
+        &quot;STRONG_SUICA&quot;: 0,
+        &quot;CHANCE_A&quot;: 0,
+        &quot;CHANCE_B&quot;: 0,
+        &quot;WEAK_NOVA&quot;: 0.009805615207624916,
+        &quot;STRONG_NOVA&quot;: 0.0005020474986303957,
+        &quot;REPLAY&quot;: 0.469325,
+        &quot;BELL&quot;: 0.02,
+        &quot;MISS&quot;: 0.4692098748005351
+      },
+      &quot;preparationRoles&quot;: {
+        &quot;WEAK_SUICA&quot;: 0.026499999999999996,
+        &quot;STRONG_SUICA&quot;: 0,
+        &quot;CHANCE_A&quot;: 0,
+        &quot;CHANCE_B&quot;: 0,
+        &quot;WEAK_NOVA&quot;: 0.0025,
+        &quot;STRONG_NOVA&quot;: 0.0005,
+        &quot;START_REPLAY_RIGHT&quot;: 0.1111111111111111,
+        &quot;START_REPLAY_MIDDLE&quot;: 0.1111111111111111,
+        &quot;START_REPLAY_LEFT&quot;: 0.1111111111111111,
+        &quot;REPLAY&quot;: 0.1341900203150272,
+        &quot;BELL&quot;: 0.33899124238186484,
+        &quot;MISS&quot;: 0.16398540396977482
+      },
+      &quot;decrement&quot;: {
+        &quot;enabled&quot;: false
+      }
+    },
+    {
+      &quot;setting&quot;: 4,
+      &quot;tuning&quot;: {
+        &quot;cz&quot;: 1.92,
+        &quot;zone&quot;: 3.5,
+        &quot;direct&quot;: 1.3,
+        &quot;denominator&quot;: 10000,
+        &quot;tiers&quot;: [
+          0.19,
+          0.18,
+          0.36,
+          0.225,
+          0.045
+        ],
+        &quot;weights&quot;: [
+          0.1,
+          0.1,
+          0.1,
+          0.15,
+          0.15,
+          0.15,
+          0.05,
+          0.05,
+          0.05,
+          0.1
+        ],
+        &quot;base&quot;: 30,
+        &quot;replay&quot;: 0.45180000000000003,
+        &quot;normalReplayReduction&quot;: 0.01,
+        &quot;extraZone&quot;: 0.01,
+        &quot;upper&quot;: 1.5,
+        &quot;groups&quot;: [
+          70,
+          29.1,
+          0.9
+        ],
+        &quot;thresholdBands&quot;: []
+      },
+      &quot;balance&quot;: {
+        &quot;style&quot;: &quot;steady&quot;,
+        &quot;gameCzEntry&quot;: 1.1,
+        &quot;rareCzEntry&quot;: 1.1,
+        &quot;gameCzSuccess&quot;: 0.64,
+        &quot;rareCzSuccess&quot;: 0.68,
+        &quot;strongCzSuccess&quot;: 0.8,
+        &quot;strongRareSuccess&quot;: 0.87,
+        &quot;failureRecovery&quot;: 1.05,
+        &quot;bonusStock&quot;: 0.85,
+        &quot;preparationReward&quot;: 1.05,
+        &quot;upperEntry&quot;: 0.55,
+        &quot;upperGroups&quot;: [
+          0,
+          80,
+          20
+        ],
+        &quot;weakResponse&quot;: 0.15,
+        &quot;weakQuality&quot;: [
+          23,
+          34,
+          36,
+          7,
+          0
+        ],
+        &quot;repeatZone&quot;: {
+          &quot;values&quot;: [
+            1.45,
+            1.65,
+            1.85
+          ],
+          &quot;weights&quot;: [
+            0.2,
+            0.6,
+            0.2
+          ]
+        }
+      },
+      &quot;normalRoles&quot;: {
+        &quot;WEAK_SUICA&quot;: 0.0248,
+        &quot;STRONG_SUICA&quot;: 0,
+        &quot;CHANCE_A&quot;: 0,
+        &quot;CHANCE_B&quot;: 0,
+        &quot;WEAK_NOVA&quot;: 0.0078125,
+        &quot;STRONG_NOVA&quot;: 0.0004,
+        &quot;REPLAY&quot;: 0.1890885417117312,
+        &quot;BELL&quot;: 0.00505751243781094,
+        &quot;MISS&quot;: 0.6059936197635013,
+        &quot;NAVI_BELL&quot;: 0.06684782608695652,
+        &quot;ONE_COIN&quot;: 0.1
+      },
+      &quot;czRoles&quot;: {
+        &quot;WEAK_SUICA&quot;: 0.0248,
+        &quot;STRONG_SUICA&quot;: 0,
+        &quot;CHANCE_A&quot;: 0,
+        &quot;CHANCE_B&quot;: 0,
+        &quot;WEAK_NOVA&quot;: 0.0078125,
+        &quot;STRONG_NOVA&quot;: 0.0004,
+        &quot;REPLAY&quot;: 0.469325,
+        &quot;BELL&quot;: 0.00505751243781094,
+        &quot;MISS&quot;: 0.492604987562189
+      },
+      &quot;cz&quot;: {
+        &quot;czGames&quot;: 15,
+        &quot;strongGames&quot;: 15,
+        &quot;czMaxGames&quot;: 20,
+        &quot;strongMaxGames&quot;: 20,
+        &quot;setting&quot;: 4,
+        &quot;czChance&quot;: 0.64,
+        &quot;strongChance&quot;: 0.8,
+        &quot;czDenom&quot;: 120,
+        &quot;strongDenom&quot;: 600,
+        &quot;rewriteRates&quot;: {
+          &quot;WEAK_SUICA&quot;: 0.17,
+          &quot;WEAK_NOVA&quot;: 0.17,
+          &quot;STRONG_NOVA&quot;: 1
+        }
+      },
+      &quot;atRoles&quot;: {
+        &quot;WEAK_SUICA&quot;: 0.03099152542372881,
+        &quot;STRONG_SUICA&quot;: 0,
+        &quot;CHANCE_A&quot;: 0,
+        &quot;CHANCE_B&quot;: 0,
+        &quot;WEAK_NOVA&quot;: 0.0078125,
+        &quot;STRONG_NOVA&quot;: 0.0006666666666666666,
+        &quot;ONE_COIN&quot;: 0.1,
+        &quot;BELL&quot;: 0.2475575980392157,
+        &quot;BELL15&quot;: 0.2475575980392157,
+        &quot;REPLAY&quot;: 0.36541411183117317
+      },
+      &quot;upperRoles&quot;: {
+        &quot;WEAK_SUICA&quot;: 0.03099152542372881,
+        &quot;STRONG_SUICA&quot;: 0,
+        &quot;CHANCE_A&quot;: 0,
+        &quot;CHANCE_B&quot;: 0,
+        &quot;WEAK_NOVA&quot;: 0.0078125,
+        &quot;STRONG_NOVA&quot;: 0.0006666666666666666,
+        &quot;ONE_COIN&quot;: 0.1,
+        &quot;BELL&quot;: 0,
+        &quot;BELL15&quot;: 0.35070659722222225,
+        &quot;REPLAY&quot;: 0.5098227106873823
+      },
+      &quot;comebackRoles&quot;: {
+        &quot;SUPER_NOVA&quot;: 0.000030517578125,
+        &quot;WEAK_SUICA&quot;: 0.030420562523945375,
+        &quot;STRONG_SUICA&quot;: 0,
+        &quot;CHANCE_A&quot;: 0,
+        &quot;CHANCE_B&quot;: 0,
+        &quot;WEAK_NOVA&quot;: 0.009583090512835615,
+        &quot;STRONG_NOVA&quot;: 0.0004906542342571835,
+        &quot;REPLAY&quot;: 0.469325,
+        &quot;BELL&quot;: 0.02,
+        &quot;MISS&quot;: 0.4701501751508368
+      },
+      &quot;preparationRoles&quot;: {
+        &quot;WEAK_SUICA&quot;: 0.026499999999999996,
+        &quot;STRONG_SUICA&quot;: 0,
+        &quot;CHANCE_A&quot;: 0,
+        &quot;CHANCE_B&quot;: 0,
+        &quot;WEAK_NOVA&quot;: 0.0025,
+        &quot;STRONG_NOVA&quot;: 0.0005,
+        &quot;START_REPLAY_RIGHT&quot;: 0.1111111111111111,
+        &quot;START_REPLAY_MIDDLE&quot;: 0.1111111111111111,
+        &quot;START_REPLAY_LEFT&quot;: 0.1111111111111111,
+        &quot;REPLAY&quot;: 0.1341900203150272,
+        &quot;BELL&quot;: 0.33899124238186484,
+        &quot;MISS&quot;: 0.16398540396977482
+      },
+      &quot;decrement&quot;: {
+        &quot;enabled&quot;: false
+      }
+    },
+    {
+      &quot;setting&quot;: 5,
+      &quot;tuning&quot;: {
+        &quot;cz&quot;: 2.6,
+        &quot;zone&quot;: 1,
+        &quot;direct&quot;: 0.8,
+        &quot;denominator&quot;: 7000,
+        &quot;tiers&quot;: [
+          0.523,
+          0.045,
+          0.045,
+          0.045,
+          0.342
+        ],
+        &quot;weights&quot;: [
+          0.1,
+          0.1,
+          0.1,
+          0.19,
+          0.19,
+          0.19,
+          0.01,
+          0.01,
+          0.01,
+          0.1
+        ],
+        &quot;base&quot;: 30,
+        &quot;replay&quot;: 0.4536,
+        &quot;normalReplayReduction&quot;: 0.01,
+        &quot;extraZone&quot;: 0.04,
+        &quot;upper&quot;: 1.5,
+        &quot;groups&quot;: [
+          70,
+          29.1,
+          0.9
+        ],
+        &quot;thresholdBands&quot;: []
+      },
+      &quot;balance&quot;: {
+        &quot;style&quot;: &quot;rough&quot;,
+        &quot;gameCzEntry&quot;: 0.98,
+        &quot;rareCzEntry&quot;: 0.98,
+        &quot;gameCzSuccess&quot;: 0.6,
+        &quot;rareCzSuccess&quot;: 0.66,
+        &quot;strongCzSuccess&quot;: 0.82,
+        &quot;strongRareSuccess&quot;: 0.88,
+        &quot;failureRecovery&quot;: 1.1,
+        &quot;bonusStock&quot;: 1.05,
+        &quot;preparationReward&quot;: 1.2,
+        &quot;upperEntry&quot;: 0.48,
+        &quot;upperGroups&quot;: [
+          0,
+          40,
+          60
+        ],
+        &quot;weakResponse&quot;: 0.15,
+        &quot;weakQuality&quot;: [
+          47,
+          13,
+          18,
+          17,
+          5
+        ],
+        &quot;repeatZone&quot;: {
+          &quot;values&quot;: [
+            0.72,
+            1.73,
+            5.76
+          ],
+          &quot;weights&quot;: [
+            0.48,
+            0.37,
+            0.15
+          ]
+        }
+      },
+      &quot;normalRoles&quot;: {
+        &quot;WEAK_SUICA&quot;: 0.0248,
+        &quot;STRONG_SUICA&quot;: 0,
+        &quot;CHANCE_A&quot;: 0,
+        &quot;CHANCE_B&quot;: 0,
+        &quot;WEAK_NOVA&quot;: 0.0078125,
+        &quot;STRONG_NOVA&quot;: 0.0004,
+        &quot;REPLAY&quot;: 0.1890885417117312,
+        &quot;BELL&quot;: 0.00505751243781094,
+        &quot;MISS&quot;: 0.6059936197635013,
+        &quot;NAVI_BELL&quot;: 0.06684782608695652,
+        &quot;ONE_COIN&quot;: 0.1
+      },
+      &quot;czRoles&quot;: {
+        &quot;WEAK_SUICA&quot;: 0.0248,
+        &quot;STRONG_SUICA&quot;: 0,
+        &quot;CHANCE_A&quot;: 0,
+        &quot;CHANCE_B&quot;: 0,
+        &quot;WEAK_NOVA&quot;: 0.0078125,
+        &quot;STRONG_NOVA&quot;: 0.0004,
+        &quot;REPLAY&quot;: 0.469325,
+        &quot;BELL&quot;: 0.00505751243781094,
+        &quot;MISS&quot;: 0.492604987562189
+      },
+      &quot;cz&quot;: {
+        &quot;czGames&quot;: 15,
+        &quot;strongGames&quot;: 15,
+        &quot;czMaxGames&quot;: 20,
+        &quot;strongMaxGames&quot;: 20,
+        &quot;setting&quot;: 5,
+        &quot;czChance&quot;: 0.6,
+        &quot;strongChance&quot;: 0.82,
+        &quot;czDenom&quot;: 120,
+        &quot;strongDenom&quot;: 600,
+        &quot;rewriteRates&quot;: {
+          &quot;WEAK_SUICA&quot;: 0.24,
+          &quot;WEAK_NOVA&quot;: 0.24,
+          &quot;STRONG_NOVA&quot;: 1
+        }
+      },
+      &quot;atRoles&quot;: {
+        &quot;WEAK_SUICA&quot;: 0.03099152542372881,
+        &quot;STRONG_SUICA&quot;: 0,
+        &quot;CHANCE_A&quot;: 0,
+        &quot;CHANCE_B&quot;: 0,
+        &quot;WEAK_NOVA&quot;: 0.0078125,
+        &quot;STRONG_NOVA&quot;: 0.0006666666666666666,
+        &quot;ONE_COIN&quot;: 0.1,
+        &quot;BELL&quot;: 0.2475575980392157,
+        &quot;BELL15&quot;: 0.2475575980392157,
+        &quot;REPLAY&quot;: 0.36541411183117317
+      },
+      &quot;upperRoles&quot;: {
+        &quot;WEAK_SUICA&quot;: 0.03099152542372881,
+        &quot;STRONG_SUICA&quot;: 0,
+        &quot;CHANCE_A&quot;: 0,
+        &quot;CHANCE_B&quot;: 0,
+        &quot;WEAK_NOVA&quot;: 0.0078125,
+        &quot;STRONG_NOVA&quot;: 0.0006666666666666666,
+        &quot;ONE_COIN&quot;: 0.1,
+        &quot;BELL&quot;: 0,
+        &quot;BELL15&quot;: 0.35070659722222225,
+        &quot;REPLAY&quot;: 0.5098227106873823
+      },
+      &quot;comebackRoles&quot;: {
+        &quot;SUPER_NOVA&quot;: 0.000030517578125,
+        &quot;WEAK_SUICA&quot;: 0.030420562523945375,
+        &quot;STRONG_SUICA&quot;: 0,
+        &quot;CHANCE_A&quot;: 0,
+        &quot;CHANCE_B&quot;: 0,
+        &quot;WEAK_NOVA&quot;: 0.009583090512835615,
+        &quot;STRONG_NOVA&quot;: 0.0004906542342571835,
+        &quot;REPLAY&quot;: 0.469325,
+        &quot;BELL&quot;: 0.02,
+        &quot;MISS&quot;: 0.4701501751508368
+      },
+      &quot;preparationRoles&quot;: {
+        &quot;WEAK_SUICA&quot;: 0.026499999999999996,
+        &quot;STRONG_SUICA&quot;: 0,
+        &quot;CHANCE_A&quot;: 0,
+        &quot;CHANCE_B&quot;: 0,
+        &quot;WEAK_NOVA&quot;: 0.0025,
+        &quot;STRONG_NOVA&quot;: 0.0005,
+        &quot;START_REPLAY_RIGHT&quot;: 0.1111111111111111,
+        &quot;START_REPLAY_MIDDLE&quot;: 0.1111111111111111,
+        &quot;START_REPLAY_LEFT&quot;: 0.1111111111111111,
+        &quot;REPLAY&quot;: 0.1341900203150272,
+        &quot;BELL&quot;: 0.33899124238186484,
+        &quot;MISS&quot;: 0.16398540396977482
+      },
+      &quot;decrement&quot;: {
+        &quot;enabled&quot;: false,
+        &quot;initialLowChance&quot;: 0.53,
+        &quot;lowMean&quot;: 150000,
+        &quot;highMean&quot;: 183333.33333333334,
+        &quot;lowCz&quot;: 0.25,
+        &quot;highCz&quot;: 2.4,
+        &quot;lowAt&quot;: 0.25,
+        &quot;highAt&quot;: 0.25,
+        &quot;netEnter&quot;: 6000,
+        &quot;netExit&quot;: 4500,
+        &quot;netCz&quot;: 2.4,
+        &quot;netAt&quot;: 0.25
+      }
+    },
+    {
+      &quot;setting&quot;: 6,
+      &quot;tuning&quot;: {
+        &quot;cz&quot;: 1.607,
+        &quot;zone&quot;: 0.4,
+        &quot;direct&quot;: 1,
+        &quot;denominator&quot;: 10000,
+        &quot;tiers&quot;: [
+          0.19,
+          0.18,
+          0.54,
+          0.081,
+          0.009
+        ],
+        &quot;weights&quot;: [
+          0.1,
+          0.1,
+          0.1,
+          0.19,
+          0.19,
+          0.19,
+          0.01,
+          0.01,
+          0.01,
+          0.1
+        ],
+        &quot;base&quot;: 30,
+        &quot;replay&quot;: 0.54,
+        &quot;normalReplayReduction&quot;: 0.01,
+        &quot;extraZone&quot;: 0.04,
+        &quot;upper&quot;: 1.5,
+        &quot;groups&quot;: [
+          70,
+          29.1,
+          0.9
+        ],
+        &quot;thresholdBands&quot;: []
+      },
+      &quot;balance&quot;: {
+        &quot;style&quot;: &quot;steady&quot;,
+        &quot;gameCzEntry&quot;: 1.08,
+        &quot;rareCzEntry&quot;: 1.08,
+        &quot;gameCzSuccess&quot;: 0.68,
+        &quot;rareCzSuccess&quot;: 0.72,
+        &quot;strongCzSuccess&quot;: 0.84,
+        &quot;strongRareSuccess&quot;: 0.9,
+        &quot;failureRecovery&quot;: 1.3,
+        &quot;bonusStock&quot;: 1.25,
+        &quot;preparationReward&quot;: 1.4,
+        &quot;upperEntry&quot;: 0.62,
+        &quot;upperGroups&quot;: [
+          0,
+          70,
+          30
+        ],
+        &quot;weakResponse&quot;: 0.15,
+        &quot;weakQuality&quot;: [
+          13,
+          28,
+          45,
+          13,
+          1
+        ],
+        &quot;repeatZone&quot;: {
+          &quot;values&quot;: [
+            1.95,
+            2.25,
+            2.55
+          ],
+          &quot;weights&quot;: [
+            0.2,
+            0.6,
+            0.2
+          ]
+        }
+      },
+      &quot;normalRoles&quot;: {
+        &quot;WEAK_SUICA&quot;: 0.0248,
+        &quot;STRONG_SUICA&quot;: 0,
+        &quot;CHANCE_A&quot;: 0,
+        &quot;CHANCE_B&quot;: 0,
+        &quot;WEAK_NOVA&quot;: 0.0078125,
+        &quot;STRONG_NOVA&quot;: 0.0004,
+        &quot;REPLAY&quot;: 0.1890885417117312,
+        &quot;BELL&quot;: 0.00505751243781094,
+        &quot;MISS&quot;: 0.6059936197635013,
+        &quot;NAVI_BELL&quot;: 0.06684782608695652,
+        &quot;ONE_COIN&quot;: 0.1
+      },
+      &quot;czRoles&quot;: {
+        &quot;WEAK_SUICA&quot;: 0.0248,
+        &quot;STRONG_SUICA&quot;: 0,
+        &quot;CHANCE_A&quot;: 0,
+        &quot;CHANCE_B&quot;: 0,
+        &quot;WEAK_NOVA&quot;: 0.0078125,
+        &quot;STRONG_NOVA&quot;: 0.0004,
+        &quot;REPLAY&quot;: 0.469325,
+        &quot;BELL&quot;: 0.00505751243781094,
+        &quot;MISS&quot;: 0.492604987562189
+      },
+      &quot;cz&quot;: {
+        &quot;czGames&quot;: 15,
+        &quot;strongGames&quot;: 15,
+        &quot;czMaxGames&quot;: 20,
+        &quot;strongMaxGames&quot;: 20,
+        &quot;setting&quot;: 6,
+        &quot;czChance&quot;: 0.68,
+        &quot;strongChance&quot;: 0.84,
+        &quot;czDenom&quot;: 120,
+        &quot;strongDenom&quot;: 600,
+        &quot;rewriteRates&quot;: {
+          &quot;WEAK_SUICA&quot;: 0.19,
+          &quot;WEAK_NOVA&quot;: 0.19,
+          &quot;STRONG_NOVA&quot;: 1
+        }
+      },
+      &quot;atRoles&quot;: {
+        &quot;WEAK_SUICA&quot;: 0.03099152542372881,
+        &quot;STRONG_SUICA&quot;: 0,
+        &quot;CHANCE_A&quot;: 0,
+        &quot;CHANCE_B&quot;: 0,
+        &quot;WEAK_NOVA&quot;: 0.0078125,
+        &quot;STRONG_NOVA&quot;: 0.0006666666666666666,
+        &quot;ONE_COIN&quot;: 0.1,
+        &quot;BELL&quot;: 0.2475575980392157,
+        &quot;BELL15&quot;: 0.2475575980392157,
+        &quot;REPLAY&quot;: 0.36541411183117317
+      },
+      &quot;upperRoles&quot;: {
+        &quot;WEAK_SUICA&quot;: 0.03099152542372881,
+        &quot;STRONG_SUICA&quot;: 0,
+        &quot;CHANCE_A&quot;: 0,
+        &quot;CHANCE_B&quot;: 0,
+        &quot;WEAK_NOVA&quot;: 0.0078125,
+        &quot;STRONG_NOVA&quot;: 0.0006666666666666666,
+        &quot;ONE_COIN&quot;: 0.1,
+        &quot;BELL&quot;: 0,
+        &quot;BELL15&quot;: 0.35070659722222225,
+        &quot;REPLAY&quot;: 0.5098227106873823
+      },
+      &quot;comebackRoles&quot;: {
+        &quot;SUPER_NOVA&quot;: 0.000030517578125,
+        &quot;WEAK_SUICA&quot;: 0.030420562523945375,
+        &quot;STRONG_SUICA&quot;: 0,
+        &quot;CHANCE_A&quot;: 0,
+        &quot;CHANCE_B&quot;: 0,
+        &quot;WEAK_NOVA&quot;: 0.009583090512835615,
+        &quot;STRONG_NOVA&quot;: 0.0004906542342571835,
+        &quot;REPLAY&quot;: 0.469325,
+        &quot;BELL&quot;: 0.02,
+        &quot;MISS&quot;: 0.4701501751508368
+      },
+      &quot;preparationRoles&quot;: {
+        &quot;WEAK_SUICA&quot;: 0.026499999999999996,
+        &quot;STRONG_SUICA&quot;: 0,
+        &quot;CHANCE_A&quot;: 0,
+        &quot;CHANCE_B&quot;: 0,
+        &quot;WEAK_NOVA&quot;: 0.0025,
+        &quot;STRONG_NOVA&quot;: 0.0005,
+        &quot;START_REPLAY_RIGHT&quot;: 0.1111111111111111,
+        &quot;START_REPLAY_MIDDLE&quot;: 0.1111111111111111,
+        &quot;START_REPLAY_LEFT&quot;: 0.1111111111111111,
+        &quot;REPLAY&quot;: 0.1341900203150272,
+        &quot;BELL&quot;: 0.33899124238186484,
+        &quot;MISS&quot;: 0.16398540396977482
+      },
+      &quot;decrement&quot;: {
+        &quot;enabled&quot;: false,
+        &quot;lowMean&quot;: 60000,
+        &quot;highMean&quot;: 90000,
+        &quot;lowCz&quot;: 0.25,
+        &quot;highCz&quot;: 1.95,
+        &quot;lowAt&quot;: 0.25,
+        &quot;highAt&quot;: 0.25,
+        &quot;netEnter&quot;: 6500,
+        &quot;netExit&quot;: 5000,
+        &quot;netCz&quot;: 1.5,
+        &quot;netAt&quot;: 0.25
+      }
+    }
+  ],
+  &quot;resultHints&quot;: {
+    &quot;settingHints&quot;: [
+      {
+        &quot;character&quot;: &quot;boss&quot;,
+        &quot;color&quot;: &quot;blue&quot;,
+        &quot;minSetting&quot;: 2,
+        &quot;percent&quot;: 10
+      },
+      {
+        &quot;character&quot;: &quot;sora2&quot;,
+        &quot;color&quot;: &quot;purple&quot;,
+        &quot;minSetting&quot;: 4,
+        &quot;percent&quot;: 3
+      },
+      {
+        &quot;character&quot;: &quot;ouma2&quot;,
+        &quot;color&quot;: &quot;gold&quot;,
+        &quot;minSetting&quot;: 5,
+        &quot;percent&quot;: 2
+      },
+      {
+        &quot;character&quot;: &quot;group&quot;,
+        &quot;color&quot;: &quot;rainbow&quot;,
+        &quot;minSetting&quot;: 6,
+        &quot;percent&quot;: 1
+      }
+    ],
+    &quot;bonusModeHints&quot;: [
+      {
+        &quot;id&quot;: &quot;default&quot;,
+        &quot;label&quot;: &quot;デフォルト&quot;,
+        &quot;characters&quot;: [
+          &quot;plush_kushuri&quot;,
+          &quot;plush_toto&quot;
+        ]
+      },
+      {
+        &quot;id&quot;: &quot;b-hint&quot;,
+        &quot;label&quot;: &quot;モードB以上示唆&quot;,
+        &quot;characters&quot;: [
+          &quot;plush_nito&quot;,
+          &quot;plush_sosuke&quot;
+        ],
+        &quot;minimum&quot;: 1,
+        &quot;percent&quot;: 20,
+        &quot;otherPercent&quot;: 10
+      },
+      {
+        &quot;id&quot;: &quot;c-hint&quot;,
+        &quot;label&quot;: &quot;モードC以上示唆&quot;,
+        &quot;characters&quot;: [
+          &quot;plush_urapi&quot;,
+          &quot;plush_neko&quot;
+        ],
+        &quot;minimum&quot;: 2,
+        &quot;percent&quot;: 15,
+        &quot;otherPercent&quot;: 5
+      },
+      {
+        &quot;id&quot;: &quot;b-confirmed&quot;,
+        &quot;label&quot;: &quot;モードB以上確定&quot;,
+        &quot;characters&quot;: [
+          &quot;plush_yamada&quot;
+        ],
+        &quot;minimum&quot;: 1,
+        &quot;percent&quot;: 10,
+        &quot;otherPercent&quot;: 0
+      },
+      {
+        &quot;id&quot;: &quot;c-confirmed&quot;,
+        &quot;label&quot;: &quot;モードC以上確定&quot;,
+        &quot;characters&quot;: [
+          &quot;plush_nigo&quot;
+        ],
+        &quot;minimum&quot;: 2,
+        &quot;percent&quot;: 5,
+        &quot;otherPercent&quot;: 0
+      },
+      {
+        &quot;id&quot;: &quot;heaven-confirmed&quot;,
+        &quot;label&quot;: &quot;天国以上確定&quot;,
+        &quot;characters&quot;: [
+          &quot;plush_giru&quot;,
+          &quot;plush_sora&quot;,
+          &quot;plush_ouma&quot;
+        ],
+        &quot;minimum&quot;: 3,
+        &quot;percent&quot;: 3,
+        &quot;otherPercent&quot;: 0
+      }
+    ],
+    &quot;names&quot;: {
+      &quot;sosuke&quot;: &quot;宗介&quot;,
+      &quot;toto&quot;: &quot;とと&quot;,
+      &quot;urapi&quot;: &quot;うらぴ&quot;,
+      &quot;giru&quot;: &quot;ギル&quot;,
+      &quot;sora&quot;: &quot;空&quot;,
+      &quot;ouma&quot;: &quot;逢魔&quot;,
+      &quot;kushuri&quot;: &quot;くしゅり&quot;,
+      &quot;nito&quot;: &quot;にと&quot;,
+      &quot;kushuri_nito&quot;: &quot;くしゅり＆にと&quot;,
+      &quot;boss&quot;: &quot;ボス集合&quot;,
+      &quot;sora2&quot;: &quot;空（私服）&quot;,
+      &quot;ouma2&quot;: &quot;逢魔（私服）&quot;,
+      &quot;group&quot;: &quot;全員集合&quot;,
+      &quot;plush_kushuri&quot;: &quot;くしゅりぬい&quot;,
+      &quot;plush_toto&quot;: &quot;ととぬい&quot;,
+      &quot;plush_nito&quot;: &quot;にとぬい&quot;,
+      &quot;plush_sosuke&quot;: &quot;宗介ぬい&quot;,
+      &quot;plush_urapi&quot;: &quot;うらぴぬい&quot;,
+      &quot;plush_neko&quot;: &quot;ねこぬい&quot;,
+      &quot;plush_yamada&quot;: &quot;やまだぬい&quot;,
+      &quot;plush_nigo&quot;: &quot;にごぬい&quot;,
+      &quot;plush_giru&quot;: &quot;ギルぬい&quot;,
+      &quot;plush_sora&quot;: &quot;そらぬい&quot;,
+      &quot;plush_ouma&quot;: &quot;おうまぬい&quot;
+    }
+  }
+}</pre></details><p class="novaGuideNote">ゲーム本体の抽選・保存データは変更せず、標準ルールから読み取り専用で作成。旧値や無効な制御は現行の攻略数値に混ぜていません。</p></section>
+<!-- NOVA FULL ANALYSIS END -->
 <footer class="novaGuideFoot">NOVA 攻略ガイド · 2026.11.05 更新</footer>
 </article></div></dialog>
 <dialog id="autoStopOrderDialog" class="autoStopOrderDialog" aria-labelledby="autoStopOrderTitle">

@@ -1,0 +1,2795 @@
+{
+  "schema": "nova-strategy-values/v1",
+  "edition": "2026-11-05",
+  "scope": "Standard source rules; not per-machine overrides",
+  "sources": {
+    "nova-tuning.js": "d6ad9330f96569998db5217490d581f40347ff537861d164cdbbd235d69426a6",
+    "nova-normal.js": "56664e51b69c766aee4237b41807b0242caeaba27503d658c8b5d8ea52b3b63a",
+    "nova-flow.js": "67793f64fec69bb7e0a577356f6b2d0f727a5a6be6cdcc5d5f89ae23ac9d8379",
+    "nova-art.js": "bc76a0979f148299bbf289abd15fe8bce0cd9a5a467a0dd040375ac23a3b438d",
+    "nova-progress.js": "f638a11af2a5545c60ad2350b55485a0cea9641099df3166823fb3b2fc2545da",
+    "nova-decrement.js": "e1cda1eff88e32819c691ea9685c366ef4f9b0c8d9781c801dcb0a9b93fa0bc4",
+    "nova-results.js": "3451fbc57b0cdda8c4cbda322ffe76523c1e2a080007a85a03703e17415e3803",
+    "nova-complete.js": "219850e7bb73abe2ed77e7754a39afda37a2c389b202a5325240386c1c9380f8"
+  },
+  "current": {
+    "settings": [
+      {
+        "setting": 1,
+        "tuning": {
+          "cz": 1.85,
+          "zone": 2.5,
+          "direct": 0.8,
+          "denominator": 7000,
+          "tiers": [
+            0.325,
+            0.135,
+            0.135,
+            0.225,
+            0.18
+          ],
+          "weights": [
+            0.1,
+            0.1,
+            0.1,
+            0.15,
+            0.15,
+            0.15,
+            0.05,
+            0.05,
+            0.05,
+            0.1
+          ],
+          "base": 30,
+          "replay": 0.4464,
+          "normalReplayReduction": 0.01,
+          "extraZone": 0.01,
+          "upper": 1.5,
+          "groups": [
+            70,
+            29.1,
+            0.9
+          ],
+          "thresholdBands": []
+        },
+        "balance": {
+          "style": "rough",
+          "gameCzEntry": 0.9,
+          "rareCzEntry": 0.9,
+          "gameCzSuccess": 0.52,
+          "rareCzSuccess": 0.58,
+          "strongCzSuccess": 0.74,
+          "strongRareSuccess": 0.82,
+          "failureRecovery": 0.65,
+          "bonusStock": 0.45,
+          "preparationReward": 0.65,
+          "upperEntry": 0.35,
+          "upperGroups": [
+            0,
+            55,
+            45
+          ],
+          "weakResponse": 0.15,
+          "weakQuality": [
+            75,
+            15,
+            7,
+            2.5,
+            0.5
+          ],
+          "repeatZone": {
+            "values": [
+              0.48,
+              1.94,
+              5.83
+            ],
+            "weights": [
+              0.76,
+              0.2,
+              0.04
+            ]
+          }
+        },
+        "normalRoles": {
+          "WEAK_SUICA": 0.0248,
+          "STRONG_SUICA": 0,
+          "CHANCE_A": 0,
+          "CHANCE_B": 0,
+          "WEAK_NOVA": 0.0078125,
+          "STRONG_NOVA": 0.0004,
+          "REPLAY": 0.1890885417117312,
+          "BELL": 0.00505751243781094,
+          "MISS": 0.6059936197635013,
+          "NAVI_BELL": 0.06684782608695652,
+          "ONE_COIN": 0.1
+        },
+        "czRoles": {
+          "WEAK_SUICA": 0.0248,
+          "STRONG_SUICA": 0,
+          "CHANCE_A": 0,
+          "CHANCE_B": 0,
+          "WEAK_NOVA": 0.0078125,
+          "STRONG_NOVA": 0.0004,
+          "REPLAY": 0.469325,
+          "BELL": 0.00505751243781094,
+          "MISS": 0.492604987562189
+        },
+        "cz": {
+          "czGames": 15,
+          "strongGames": 15,
+          "czMaxGames": 20,
+          "strongMaxGames": 20,
+          "setting": 1,
+          "czChance": 0.52,
+          "strongChance": 0.74,
+          "czDenom": 120,
+          "strongDenom": 600,
+          "rewriteRates": {
+            "WEAK_SUICA": 0.2,
+            "WEAK_NOVA": 0.2,
+            "STRONG_NOVA": 1
+          }
+        },
+        "atRoles": {
+          "WEAK_SUICA": 0.03099152542372881,
+          "STRONG_SUICA": 0,
+          "CHANCE_A": 0,
+          "CHANCE_B": 0,
+          "WEAK_NOVA": 0.0078125,
+          "STRONG_NOVA": 0.0006666666666666666,
+          "ONE_COIN": 0.1,
+          "BELL": 0.2475575980392157,
+          "BELL15": 0.2475575980392157,
+          "REPLAY": 0.36541411183117317
+        },
+        "upperRoles": {
+          "WEAK_SUICA": 0.03099152542372881,
+          "STRONG_SUICA": 0,
+          "CHANCE_A": 0,
+          "CHANCE_B": 0,
+          "WEAK_NOVA": 0.0078125,
+          "STRONG_NOVA": 0.0006666666666666666,
+          "ONE_COIN": 0.1,
+          "BELL": 0,
+          "BELL15": 0.35070659722222225,
+          "REPLAY": 0.5098227106873823
+        },
+        "comebackRoles": {
+          "SUPER_NOVA": 0.000030517578125,
+          "WEAK_SUICA": 0.031126944915084533,
+          "STRONG_SUICA": 0,
+          "CHANCE_A": 0,
+          "CHANCE_B": 0,
+          "WEAK_NOVA": 0.009805615207624916,
+          "STRONG_NOVA": 0.0005020474986303957,
+          "REPLAY": 0.469325,
+          "BELL": 0.02,
+          "MISS": 0.4692098748005351
+        },
+        "preparationRoles": {
+          "WEAK_SUICA": 0.026499999999999996,
+          "STRONG_SUICA": 0,
+          "CHANCE_A": 0,
+          "CHANCE_B": 0,
+          "WEAK_NOVA": 0.0025,
+          "STRONG_NOVA": 0.0005,
+          "START_REPLAY_RIGHT": 0.1111111111111111,
+          "START_REPLAY_MIDDLE": 0.1111111111111111,
+          "START_REPLAY_LEFT": 0.1111111111111111,
+          "REPLAY": 0.1341900203150272,
+          "BELL": 0.33899124238186484,
+          "MISS": 0.16398540396977482
+        },
+        "decrement": {
+          "enabled": false
+        }
+      },
+      {
+        "setting": 2,
+        "tuning": {
+          "cz": 1.91,
+          "zone": 3.5,
+          "direct": 1.3,
+          "denominator": 10000,
+          "tiers": [
+            0.19,
+            0.18,
+            0.36,
+            0.225,
+            0.045
+          ],
+          "weights": [
+            0.1,
+            0.1,
+            0.1,
+            0.15,
+            0.15,
+            0.15,
+            0.05,
+            0.05,
+            0.05,
+            0.1
+          ],
+          "base": 30,
+          "replay": 0.4482,
+          "normalReplayReduction": 0.01,
+          "extraZone": 0.01,
+          "upper": 1.5,
+          "groups": [
+            70,
+            29.1,
+            0.9
+          ],
+          "thresholdBands": []
+        },
+        "balance": {
+          "style": "steady",
+          "gameCzEntry": 1.07,
+          "rareCzEntry": 1.07,
+          "gameCzSuccess": 0.6,
+          "rareCzSuccess": 0.64,
+          "strongCzSuccess": 0.76,
+          "strongRareSuccess": 0.84,
+          "failureRecovery": 0.8,
+          "bonusStock": 0.58,
+          "preparationReward": 0.8,
+          "upperEntry": 0.5,
+          "upperGroups": [
+            0,
+            85,
+            15
+          ],
+          "weakResponse": 0.15,
+          "weakQuality": [
+            50,
+            32,
+            16,
+            2,
+            0
+          ],
+          "repeatZone": {
+            "values": [
+              1.16,
+              1.29,
+              1.42
+            ],
+            "weights": [
+              0.2,
+              0.6,
+              0.2
+            ]
+          }
+        },
+        "normalRoles": {
+          "WEAK_SUICA": 0.0248,
+          "STRONG_SUICA": 0,
+          "CHANCE_A": 0,
+          "CHANCE_B": 0,
+          "WEAK_NOVA": 0.0078125,
+          "STRONG_NOVA": 0.0004,
+          "REPLAY": 0.1890885417117312,
+          "BELL": 0.00505751243781094,
+          "MISS": 0.6059936197635013,
+          "NAVI_BELL": 0.06684782608695652,
+          "ONE_COIN": 0.1
+        },
+        "czRoles": {
+          "WEAK_SUICA": 0.0248,
+          "STRONG_SUICA": 0,
+          "CHANCE_A": 0,
+          "CHANCE_B": 0,
+          "WEAK_NOVA": 0.0078125,
+          "STRONG_NOVA": 0.0004,
+          "REPLAY": 0.469325,
+          "BELL": 0.00505751243781094,
+          "MISS": 0.492604987562189
+        },
+        "cz": {
+          "czGames": 15,
+          "strongGames": 15,
+          "czMaxGames": 20,
+          "strongMaxGames": 20,
+          "setting": 2,
+          "czChance": 0.6,
+          "strongChance": 0.76,
+          "czDenom": 120,
+          "strongDenom": 600,
+          "rewriteRates": {
+            "WEAK_SUICA": 0.15,
+            "WEAK_NOVA": 0.15,
+            "STRONG_NOVA": 1
+          }
+        },
+        "atRoles": {
+          "WEAK_SUICA": 0.03099152542372881,
+          "STRONG_SUICA": 0,
+          "CHANCE_A": 0,
+          "CHANCE_B": 0,
+          "WEAK_NOVA": 0.0078125,
+          "STRONG_NOVA": 0.0006666666666666666,
+          "ONE_COIN": 0.1,
+          "BELL": 0.2475575980392157,
+          "BELL15": 0.2475575980392157,
+          "REPLAY": 0.36541411183117317
+        },
+        "upperRoles": {
+          "WEAK_SUICA": 0.03099152542372881,
+          "STRONG_SUICA": 0,
+          "CHANCE_A": 0,
+          "CHANCE_B": 0,
+          "WEAK_NOVA": 0.0078125,
+          "STRONG_NOVA": 0.0006666666666666666,
+          "ONE_COIN": 0.1,
+          "BELL": 0,
+          "BELL15": 0.35070659722222225,
+          "REPLAY": 0.5098227106873823
+        },
+        "comebackRoles": {
+          "SUPER_NOVA": 0.000030517578125,
+          "WEAK_SUICA": 0.031126944915084533,
+          "STRONG_SUICA": 0,
+          "CHANCE_A": 0,
+          "CHANCE_B": 0,
+          "WEAK_NOVA": 0.009805615207624916,
+          "STRONG_NOVA": 0.0005020474986303957,
+          "REPLAY": 0.469325,
+          "BELL": 0.02,
+          "MISS": 0.4692098748005351
+        },
+        "preparationRoles": {
+          "WEAK_SUICA": 0.026499999999999996,
+          "STRONG_SUICA": 0,
+          "CHANCE_A": 0,
+          "CHANCE_B": 0,
+          "WEAK_NOVA": 0.0025,
+          "STRONG_NOVA": 0.0005,
+          "START_REPLAY_RIGHT": 0.1111111111111111,
+          "START_REPLAY_MIDDLE": 0.1111111111111111,
+          "START_REPLAY_LEFT": 0.1111111111111111,
+          "REPLAY": 0.1341900203150272,
+          "BELL": 0.33899124238186484,
+          "MISS": 0.16398540396977482
+        },
+        "decrement": {
+          "enabled": false
+        }
+      },
+      {
+        "setting": 3,
+        "tuning": {
+          "cz": 1.78,
+          "zone": 2.5,
+          "direct": 0.8,
+          "denominator": 7000,
+          "tiers": [
+            0.325,
+            0.135,
+            0.135,
+            0.225,
+            0.18
+          ],
+          "weights": [
+            0.1,
+            0.1,
+            0.1,
+            0.15,
+            0.15,
+            0.15,
+            0.05,
+            0.05,
+            0.05,
+            0.1
+          ],
+          "base": 30,
+          "replay": 0.45,
+          "normalReplayReduction": 0.01,
+          "extraZone": 0.01,
+          "upper": 1.5,
+          "groups": [
+            70,
+            29.1,
+            0.9
+          ],
+          "thresholdBands": []
+        },
+        "balance": {
+          "style": "rough",
+          "gameCzEntry": 0.92,
+          "rareCzEntry": 0.92,
+          "gameCzSuccess": 0.56,
+          "rareCzSuccess": 0.62,
+          "strongCzSuccess": 0.78,
+          "strongRareSuccess": 0.85,
+          "failureRecovery": 0.85,
+          "bonusStock": 0.68,
+          "preparationReward": 0.85,
+          "upperEntry": 0.4,
+          "upperGroups": [
+            0,
+            50,
+            50
+          ],
+          "weakResponse": 0.15,
+          "weakQuality": [
+            62,
+            16,
+            13,
+            7,
+            2
+          ],
+          "repeatZone": {
+            "values": [
+              0.49,
+              1.4,
+              4.88
+            ],
+            "weights": [
+              0.65,
+              0.27,
+              0.08
+            ]
+          }
+        },
+        "normalRoles": {
+          "WEAK_SUICA": 0.0248,
+          "STRONG_SUICA": 0,
+          "CHANCE_A": 0,
+          "CHANCE_B": 0,
+          "WEAK_NOVA": 0.0078125,
+          "STRONG_NOVA": 0.0004,
+          "REPLAY": 0.1890885417117312,
+          "BELL": 0.00505751243781094,
+          "MISS": 0.6059936197635013,
+          "NAVI_BELL": 0.06684782608695652,
+          "ONE_COIN": 0.1
+        },
+        "czRoles": {
+          "WEAK_SUICA": 0.0248,
+          "STRONG_SUICA": 0,
+          "CHANCE_A": 0,
+          "CHANCE_B": 0,
+          "WEAK_NOVA": 0.0078125,
+          "STRONG_NOVA": 0.0004,
+          "REPLAY": 0.469325,
+          "BELL": 0.00505751243781094,
+          "MISS": 0.492604987562189
+        },
+        "cz": {
+          "czGames": 15,
+          "strongGames": 15,
+          "czMaxGames": 20,
+          "strongMaxGames": 20,
+          "setting": 3,
+          "czChance": 0.56,
+          "strongChance": 0.78,
+          "czDenom": 120,
+          "strongDenom": 600,
+          "rewriteRates": {
+            "WEAK_SUICA": 0.22,
+            "WEAK_NOVA": 0.22,
+            "STRONG_NOVA": 1
+          }
+        },
+        "atRoles": {
+          "WEAK_SUICA": 0.03099152542372881,
+          "STRONG_SUICA": 0,
+          "CHANCE_A": 0,
+          "CHANCE_B": 0,
+          "WEAK_NOVA": 0.0078125,
+          "STRONG_NOVA": 0.0006666666666666666,
+          "ONE_COIN": 0.1,
+          "BELL": 0.2475575980392157,
+          "BELL15": 0.2475575980392157,
+          "REPLAY": 0.36541411183117317
+        },
+        "upperRoles": {
+          "WEAK_SUICA": 0.03099152542372881,
+          "STRONG_SUICA": 0,
+          "CHANCE_A": 0,
+          "CHANCE_B": 0,
+          "WEAK_NOVA": 0.0078125,
+          "STRONG_NOVA": 0.0006666666666666666,
+          "ONE_COIN": 0.1,
+          "BELL": 0,
+          "BELL15": 0.35070659722222225,
+          "REPLAY": 0.5098227106873823
+        },
+        "comebackRoles": {
+          "SUPER_NOVA": 0.000030517578125,
+          "WEAK_SUICA": 0.031126944915084533,
+          "STRONG_SUICA": 0,
+          "CHANCE_A": 0,
+          "CHANCE_B": 0,
+          "WEAK_NOVA": 0.009805615207624916,
+          "STRONG_NOVA": 0.0005020474986303957,
+          "REPLAY": 0.469325,
+          "BELL": 0.02,
+          "MISS": 0.4692098748005351
+        },
+        "preparationRoles": {
+          "WEAK_SUICA": 0.026499999999999996,
+          "STRONG_SUICA": 0,
+          "CHANCE_A": 0,
+          "CHANCE_B": 0,
+          "WEAK_NOVA": 0.0025,
+          "STRONG_NOVA": 0.0005,
+          "START_REPLAY_RIGHT": 0.1111111111111111,
+          "START_REPLAY_MIDDLE": 0.1111111111111111,
+          "START_REPLAY_LEFT": 0.1111111111111111,
+          "REPLAY": 0.1341900203150272,
+          "BELL": 0.33899124238186484,
+          "MISS": 0.16398540396977482
+        },
+        "decrement": {
+          "enabled": false
+        }
+      },
+      {
+        "setting": 4,
+        "tuning": {
+          "cz": 1.92,
+          "zone": 3.5,
+          "direct": 1.3,
+          "denominator": 10000,
+          "tiers": [
+            0.19,
+            0.18,
+            0.36,
+            0.225,
+            0.045
+          ],
+          "weights": [
+            0.1,
+            0.1,
+            0.1,
+            0.15,
+            0.15,
+            0.15,
+            0.05,
+            0.05,
+            0.05,
+            0.1
+          ],
+          "base": 30,
+          "replay": 0.45180000000000003,
+          "normalReplayReduction": 0.01,
+          "extraZone": 0.01,
+          "upper": 1.5,
+          "groups": [
+            70,
+            29.1,
+            0.9
+          ],
+          "thresholdBands": []
+        },
+        "balance": {
+          "style": "steady",
+          "gameCzEntry": 1.1,
+          "rareCzEntry": 1.1,
+          "gameCzSuccess": 0.64,
+          "rareCzSuccess": 0.68,
+          "strongCzSuccess": 0.8,
+          "strongRareSuccess": 0.87,
+          "failureRecovery": 1.05,
+          "bonusStock": 0.85,
+          "preparationReward": 1.05,
+          "upperEntry": 0.55,
+          "upperGroups": [
+            0,
+            80,
+            20
+          ],
+          "weakResponse": 0.15,
+          "weakQuality": [
+            23,
+            34,
+            36,
+            7,
+            0
+          ],
+          "repeatZone": {
+            "values": [
+              1.45,
+              1.65,
+              1.85
+            ],
+            "weights": [
+              0.2,
+              0.6,
+              0.2
+            ]
+          }
+        },
+        "normalRoles": {
+          "WEAK_SUICA": 0.0248,
+          "STRONG_SUICA": 0,
+          "CHANCE_A": 0,
+          "CHANCE_B": 0,
+          "WEAK_NOVA": 0.0078125,
+          "STRONG_NOVA": 0.0004,
+          "REPLAY": 0.1890885417117312,
+          "BELL": 0.00505751243781094,
+          "MISS": 0.6059936197635013,
+          "NAVI_BELL": 0.06684782608695652,
+          "ONE_COIN": 0.1
+        },
+        "czRoles": {
+          "WEAK_SUICA": 0.0248,
+          "STRONG_SUICA": 0,
+          "CHANCE_A": 0,
+          "CHANCE_B": 0,
+          "WEAK_NOVA": 0.0078125,
+          "STRONG_NOVA": 0.0004,
+          "REPLAY": 0.469325,
+          "BELL": 0.00505751243781094,
+          "MISS": 0.492604987562189
+        },
+        "cz": {
+          "czGames": 15,
+          "strongGames": 15,
+          "czMaxGames": 20,
+          "strongMaxGames": 20,
+          "setting": 4,
+          "czChance": 0.64,
+          "strongChance": 0.8,
+          "czDenom": 120,
+          "strongDenom": 600,
+          "rewriteRates": {
+            "WEAK_SUICA": 0.17,
+            "WEAK_NOVA": 0.17,
+            "STRONG_NOVA": 1
+          }
+        },
+        "atRoles": {
+          "WEAK_SUICA": 0.03099152542372881,
+          "STRONG_SUICA": 0,
+          "CHANCE_A": 0,
+          "CHANCE_B": 0,
+          "WEAK_NOVA": 0.0078125,
+          "STRONG_NOVA": 0.0006666666666666666,
+          "ONE_COIN": 0.1,
+          "BELL": 0.2475575980392157,
+          "BELL15": 0.2475575980392157,
+          "REPLAY": 0.36541411183117317
+        },
+        "upperRoles": {
+          "WEAK_SUICA": 0.03099152542372881,
+          "STRONG_SUICA": 0,
+          "CHANCE_A": 0,
+          "CHANCE_B": 0,
+          "WEAK_NOVA": 0.0078125,
+          "STRONG_NOVA": 0.0006666666666666666,
+          "ONE_COIN": 0.1,
+          "BELL": 0,
+          "BELL15": 0.35070659722222225,
+          "REPLAY": 0.5098227106873823
+        },
+        "comebackRoles": {
+          "SUPER_NOVA": 0.000030517578125,
+          "WEAK_SUICA": 0.030420562523945375,
+          "STRONG_SUICA": 0,
+          "CHANCE_A": 0,
+          "CHANCE_B": 0,
+          "WEAK_NOVA": 0.009583090512835615,
+          "STRONG_NOVA": 0.0004906542342571835,
+          "REPLAY": 0.469325,
+          "BELL": 0.02,
+          "MISS": 0.4701501751508368
+        },
+        "preparationRoles": {
+          "WEAK_SUICA": 0.026499999999999996,
+          "STRONG_SUICA": 0,
+          "CHANCE_A": 0,
+          "CHANCE_B": 0,
+          "WEAK_NOVA": 0.0025,
+          "STRONG_NOVA": 0.0005,
+          "START_REPLAY_RIGHT": 0.1111111111111111,
+          "START_REPLAY_MIDDLE": 0.1111111111111111,
+          "START_REPLAY_LEFT": 0.1111111111111111,
+          "REPLAY": 0.1341900203150272,
+          "BELL": 0.33899124238186484,
+          "MISS": 0.16398540396977482
+        },
+        "decrement": {
+          "enabled": false
+        }
+      },
+      {
+        "setting": 5,
+        "tuning": {
+          "cz": 2.6,
+          "zone": 1,
+          "direct": 0.8,
+          "denominator": 7000,
+          "tiers": [
+            0.523,
+            0.045,
+            0.045,
+            0.045,
+            0.342
+          ],
+          "weights": [
+            0.1,
+            0.1,
+            0.1,
+            0.19,
+            0.19,
+            0.19,
+            0.01,
+            0.01,
+            0.01,
+            0.1
+          ],
+          "base": 30,
+          "replay": 0.4536,
+          "normalReplayReduction": 0.01,
+          "extraZone": 0.04,
+          "upper": 1.5,
+          "groups": [
+            70,
+            29.1,
+            0.9
+          ],
+          "thresholdBands": []
+        },
+        "balance": {
+          "style": "rough",
+          "gameCzEntry": 0.98,
+          "rareCzEntry": 0.98,
+          "gameCzSuccess": 0.6,
+          "rareCzSuccess": 0.66,
+          "strongCzSuccess": 0.82,
+          "strongRareSuccess": 0.88,
+          "failureRecovery": 1.1,
+          "bonusStock": 1.05,
+          "preparationReward": 1.2,
+          "upperEntry": 0.48,
+          "upperGroups": [
+            0,
+            40,
+            60
+          ],
+          "weakResponse": 0.15,
+          "weakQuality": [
+            47,
+            13,
+            18,
+            17,
+            5
+          ],
+          "repeatZone": {
+            "values": [
+              0.72,
+              1.73,
+              5.76
+            ],
+            "weights": [
+              0.48,
+              0.37,
+              0.15
+            ]
+          }
+        },
+        "normalRoles": {
+          "WEAK_SUICA": 0.0248,
+          "STRONG_SUICA": 0,
+          "CHANCE_A": 0,
+          "CHANCE_B": 0,
+          "WEAK_NOVA": 0.0078125,
+          "STRONG_NOVA": 0.0004,
+          "REPLAY": 0.1890885417117312,
+          "BELL": 0.00505751243781094,
+          "MISS": 0.6059936197635013,
+          "NAVI_BELL": 0.06684782608695652,
+          "ONE_COIN": 0.1
+        },
+        "czRoles": {
+          "WEAK_SUICA": 0.0248,
+          "STRONG_SUICA": 0,
+          "CHANCE_A": 0,
+          "CHANCE_B": 0,
+          "WEAK_NOVA": 0.0078125,
+          "STRONG_NOVA": 0.0004,
+          "REPLAY": 0.469325,
+          "BELL": 0.00505751243781094,
+          "MISS": 0.492604987562189
+        },
+        "cz": {
+          "czGames": 15,
+          "strongGames": 15,
+          "czMaxGames": 20,
+          "strongMaxGames": 20,
+          "setting": 5,
+          "czChance": 0.6,
+          "strongChance": 0.82,
+          "czDenom": 120,
+          "strongDenom": 600,
+          "rewriteRates": {
+            "WEAK_SUICA": 0.24,
+            "WEAK_NOVA": 0.24,
+            "STRONG_NOVA": 1
+          }
+        },
+        "atRoles": {
+          "WEAK_SUICA": 0.03099152542372881,
+          "STRONG_SUICA": 0,
+          "CHANCE_A": 0,
+          "CHANCE_B": 0,
+          "WEAK_NOVA": 0.0078125,
+          "STRONG_NOVA": 0.0006666666666666666,
+          "ONE_COIN": 0.1,
+          "BELL": 0.2475575980392157,
+          "BELL15": 0.2475575980392157,
+          "REPLAY": 0.36541411183117317
+        },
+        "upperRoles": {
+          "WEAK_SUICA": 0.03099152542372881,
+          "STRONG_SUICA": 0,
+          "CHANCE_A": 0,
+          "CHANCE_B": 0,
+          "WEAK_NOVA": 0.0078125,
+          "STRONG_NOVA": 0.0006666666666666666,
+          "ONE_COIN": 0.1,
+          "BELL": 0,
+          "BELL15": 0.35070659722222225,
+          "REPLAY": 0.5098227106873823
+        },
+        "comebackRoles": {
+          "SUPER_NOVA": 0.000030517578125,
+          "WEAK_SUICA": 0.030420562523945375,
+          "STRONG_SUICA": 0,
+          "CHANCE_A": 0,
+          "CHANCE_B": 0,
+          "WEAK_NOVA": 0.009583090512835615,
+          "STRONG_NOVA": 0.0004906542342571835,
+          "REPLAY": 0.469325,
+          "BELL": 0.02,
+          "MISS": 0.4701501751508368
+        },
+        "preparationRoles": {
+          "WEAK_SUICA": 0.026499999999999996,
+          "STRONG_SUICA": 0,
+          "CHANCE_A": 0,
+          "CHANCE_B": 0,
+          "WEAK_NOVA": 0.0025,
+          "STRONG_NOVA": 0.0005,
+          "START_REPLAY_RIGHT": 0.1111111111111111,
+          "START_REPLAY_MIDDLE": 0.1111111111111111,
+          "START_REPLAY_LEFT": 0.1111111111111111,
+          "REPLAY": 0.1341900203150272,
+          "BELL": 0.33899124238186484,
+          "MISS": 0.16398540396977482
+        },
+        "decrement": {
+          "enabled": false,
+          "initialLowChance": 0.53,
+          "lowMean": 150000,
+          "highMean": 183333.33333333334,
+          "lowCz": 0.25,
+          "highCz": 2.4,
+          "lowAt": 0.25,
+          "highAt": 0.25,
+          "netEnter": 6000,
+          "netExit": 4500,
+          "netCz": 2.4,
+          "netAt": 0.25
+        }
+      },
+      {
+        "setting": 6,
+        "tuning": {
+          "cz": 1.607,
+          "zone": 0.4,
+          "direct": 1,
+          "denominator": 10000,
+          "tiers": [
+            0.19,
+            0.18,
+            0.54,
+            0.081,
+            0.009
+          ],
+          "weights": [
+            0.1,
+            0.1,
+            0.1,
+            0.19,
+            0.19,
+            0.19,
+            0.01,
+            0.01,
+            0.01,
+            0.1
+          ],
+          "base": 30,
+          "replay": 0.54,
+          "normalReplayReduction": 0.01,
+          "extraZone": 0.04,
+          "upper": 1.5,
+          "groups": [
+            70,
+            29.1,
+            0.9
+          ],
+          "thresholdBands": []
+        },
+        "balance": {
+          "style": "steady",
+          "gameCzEntry": 1.08,
+          "rareCzEntry": 1.08,
+          "gameCzSuccess": 0.68,
+          "rareCzSuccess": 0.72,
+          "strongCzSuccess": 0.84,
+          "strongRareSuccess": 0.9,
+          "failureRecovery": 1.3,
+          "bonusStock": 1.25,
+          "preparationReward": 1.4,
+          "upperEntry": 0.62,
+          "upperGroups": [
+            0,
+            70,
+            30
+          ],
+          "weakResponse": 0.15,
+          "weakQuality": [
+            13,
+            28,
+            45,
+            13,
+            1
+          ],
+          "repeatZone": {
+            "values": [
+              1.95,
+              2.25,
+              2.55
+            ],
+            "weights": [
+              0.2,
+              0.6,
+              0.2
+            ]
+          }
+        },
+        "normalRoles": {
+          "WEAK_SUICA": 0.0248,
+          "STRONG_SUICA": 0,
+          "CHANCE_A": 0,
+          "CHANCE_B": 0,
+          "WEAK_NOVA": 0.0078125,
+          "STRONG_NOVA": 0.0004,
+          "REPLAY": 0.1890885417117312,
+          "BELL": 0.00505751243781094,
+          "MISS": 0.6059936197635013,
+          "NAVI_BELL": 0.06684782608695652,
+          "ONE_COIN": 0.1
+        },
+        "czRoles": {
+          "WEAK_SUICA": 0.0248,
+          "STRONG_SUICA": 0,
+          "CHANCE_A": 0,
+          "CHANCE_B": 0,
+          "WEAK_NOVA": 0.0078125,
+          "STRONG_NOVA": 0.0004,
+          "REPLAY": 0.469325,
+          "BELL": 0.00505751243781094,
+          "MISS": 0.492604987562189
+        },
+        "cz": {
+          "czGames": 15,
+          "strongGames": 15,
+          "czMaxGames": 20,
+          "strongMaxGames": 20,
+          "setting": 6,
+          "czChance": 0.68,
+          "strongChance": 0.84,
+          "czDenom": 120,
+          "strongDenom": 600,
+          "rewriteRates": {
+            "WEAK_SUICA": 0.19,
+            "WEAK_NOVA": 0.19,
+            "STRONG_NOVA": 1
+          }
+        },
+        "atRoles": {
+          "WEAK_SUICA": 0.03099152542372881,
+          "STRONG_SUICA": 0,
+          "CHANCE_A": 0,
+          "CHANCE_B": 0,
+          "WEAK_NOVA": 0.0078125,
+          "STRONG_NOVA": 0.0006666666666666666,
+          "ONE_COIN": 0.1,
+          "BELL": 0.2475575980392157,
+          "BELL15": 0.2475575980392157,
+          "REPLAY": 0.36541411183117317
+        },
+        "upperRoles": {
+          "WEAK_SUICA": 0.03099152542372881,
+          "STRONG_SUICA": 0,
+          "CHANCE_A": 0,
+          "CHANCE_B": 0,
+          "WEAK_NOVA": 0.0078125,
+          "STRONG_NOVA": 0.0006666666666666666,
+          "ONE_COIN": 0.1,
+          "BELL": 0,
+          "BELL15": 0.35070659722222225,
+          "REPLAY": 0.5098227106873823
+        },
+        "comebackRoles": {
+          "SUPER_NOVA": 0.000030517578125,
+          "WEAK_SUICA": 0.030420562523945375,
+          "STRONG_SUICA": 0,
+          "CHANCE_A": 0,
+          "CHANCE_B": 0,
+          "WEAK_NOVA": 0.009583090512835615,
+          "STRONG_NOVA": 0.0004906542342571835,
+          "REPLAY": 0.469325,
+          "BELL": 0.02,
+          "MISS": 0.4701501751508368
+        },
+        "preparationRoles": {
+          "WEAK_SUICA": 0.026499999999999996,
+          "STRONG_SUICA": 0,
+          "CHANCE_A": 0,
+          "CHANCE_B": 0,
+          "WEAK_NOVA": 0.0025,
+          "STRONG_NOVA": 0.0005,
+          "START_REPLAY_RIGHT": 0.1111111111111111,
+          "START_REPLAY_MIDDLE": 0.1111111111111111,
+          "START_REPLAY_LEFT": 0.1111111111111111,
+          "REPLAY": 0.1341900203150272,
+          "BELL": 0.33899124238186484,
+          "MISS": 0.16398540396977482
+        },
+        "decrement": {
+          "enabled": false,
+          "lowMean": 60000,
+          "highMean": 90000,
+          "lowCz": 0.25,
+          "highCz": 1.95,
+          "lowAt": 0.25,
+          "highAt": 0.25,
+          "netEnter": 6500,
+          "netExit": 5000,
+          "netCz": 1.5,
+          "netAt": 0.25
+        }
+      }
+    ],
+    "resultHints": {
+      "settingHints": [
+        {
+          "character": "boss",
+          "color": "blue",
+          "minSetting": 2,
+          "percent": 10
+        },
+        {
+          "character": "sora2",
+          "color": "purple",
+          "minSetting": 4,
+          "percent": 3
+        },
+        {
+          "character": "ouma2",
+          "color": "gold",
+          "minSetting": 5,
+          "percent": 2
+        },
+        {
+          "character": "group",
+          "color": "rainbow",
+          "minSetting": 6,
+          "percent": 1
+        }
+      ],
+      "bonusModeHints": [
+        {
+          "id": "default",
+          "label": "デフォルト",
+          "characters": [
+            "plush_kushuri",
+            "plush_toto"
+          ]
+        },
+        {
+          "id": "b-hint",
+          "label": "モードB以上示唆",
+          "characters": [
+            "plush_nito",
+            "plush_sosuke"
+          ],
+          "minimum": 1,
+          "percent": 20,
+          "otherPercent": 10
+        },
+        {
+          "id": "c-hint",
+          "label": "モードC以上示唆",
+          "characters": [
+            "plush_urapi",
+            "plush_neko"
+          ],
+          "minimum": 2,
+          "percent": 15,
+          "otherPercent": 5
+        },
+        {
+          "id": "b-confirmed",
+          "label": "モードB以上確定",
+          "characters": [
+            "plush_yamada"
+          ],
+          "minimum": 1,
+          "percent": 10,
+          "otherPercent": 0
+        },
+        {
+          "id": "c-confirmed",
+          "label": "モードC以上確定",
+          "characters": [
+            "plush_nigo"
+          ],
+          "minimum": 2,
+          "percent": 5,
+          "otherPercent": 0
+        },
+        {
+          "id": "heaven-confirmed",
+          "label": "天国以上確定",
+          "characters": [
+            "plush_giru",
+            "plush_sora",
+            "plush_ouma"
+          ],
+          "minimum": 3,
+          "percent": 3,
+          "otherPercent": 0
+        }
+      ],
+      "names": {
+        "sosuke": "宗介",
+        "toto": "とと",
+        "urapi": "うらぴ",
+        "giru": "ギル",
+        "sora": "空",
+        "ouma": "逢魔",
+        "kushuri": "くしゅり",
+        "nito": "にと",
+        "kushuri_nito": "くしゅり＆にと",
+        "boss": "ボス集合",
+        "sora2": "空（私服）",
+        "ouma2": "逢魔（私服）",
+        "group": "全員集合",
+        "plush_kushuri": "くしゅりぬい",
+        "plush_toto": "ととぬい",
+        "plush_nito": "にとぬい",
+        "plush_sosuke": "宗介ぬい",
+        "plush_urapi": "うらぴぬい",
+        "plush_neko": "ねこぬい",
+        "plush_yamada": "やまだぬい",
+        "plush_nigo": "にごぬい",
+        "plush_giru": "ギルぬい",
+        "plush_sora": "そらぬい",
+        "plush_ouma": "おうまぬい"
+      }
+    }
+  },
+  "exportedReference": {
+    "NovaNormal": {
+      "modeSelection": {
+        "initial": [
+          [
+            46.9,
+            25,
+            10.7,
+            13.7,
+            3.7
+          ],
+          [
+            48.9,
+            25,
+            10.3,
+            12.6,
+            3.2
+          ],
+          [
+            49.1,
+            25,
+            10.2,
+            12.5,
+            3.2
+          ],
+          [
+            49.8,
+            25,
+            10.1,
+            12.1,
+            3
+          ],
+          [
+            47.8,
+            24.5,
+            13.399999999999999,
+            12.3,
+            2
+          ],
+          [
+            50.4,
+            25,
+            9.9,
+            11.8,
+            2.9
+          ]
+        ],
+        "afterHeaven": [
+          [
+            36.7,
+            24.5,
+            10.5,
+            22.3,
+            6
+          ],
+          [
+            38.7,
+            24.8,
+            10.2,
+            20.9,
+            5.4
+          ],
+          [
+            39,
+            24.9,
+            10.1,
+            20.7,
+            5.3
+          ],
+          [
+            39.7,
+            25,
+            10,
+            20.2,
+            5.1
+          ],
+          [
+            38.5,
+            25.5,
+            13.7,
+            18.9,
+            3.4
+          ],
+          [
+            40.4,
+            25.1,
+            9.9,
+            19.7,
+            4.9
+          ]
+        ],
+        "afterLoop": [
+          [
+            8.1,
+            8.7,
+            4.7,
+            14.9,
+            63.6
+          ],
+          [
+            9.2,
+            9.5,
+            4.9,
+            15,
+            61.4
+          ],
+          [
+            9.4,
+            9.6,
+            4.9,
+            15,
+            61.1
+          ],
+          [
+            9.8,
+            9.9,
+            5,
+            15,
+            60.3
+          ],
+          [
+            6.699999999999999,
+            12.8,
+            10.399999999999999,
+            18,
+            52.1
+          ],
+          [
+            10.3,
+            10.2,
+            5.1,
+            15,
+            59.4
+          ]
+        ]
+      },
+      "modeRules": {
+        "modes": [
+          "A",
+          "B",
+          "C",
+          "天国",
+          "天国ループ"
+        ],
+        "ceilings": [
+          800,
+          700,
+          400,
+          200,
+          200
+        ],
+        "initial": [
+          50,
+          25,
+          10,
+          12,
+          3
+        ],
+        "promotion": [
+          [
+            60,
+            25,
+            10,
+            4,
+            1
+          ],
+          [
+            0,
+            65,
+            20,
+            12,
+            3
+          ],
+          [
+            0,
+            0,
+            65,
+            30,
+            5
+          ],
+          [
+            0,
+            0,
+            0,
+            80,
+            20
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            100
+          ]
+        ],
+        "afterHeaven": [
+          40,
+          25,
+          10,
+          20,
+          5
+        ],
+        "afterLoop": [
+          10,
+          10,
+          5,
+          15,
+          60
+        ],
+        "fiftyFake": {
+          "heaven": 1,
+          "other": 0.1
+        },
+        "rates": {
+          "A": {
+            "100": 0.1,
+            "200": 0.15,
+            "300": 0.03,
+            "400": 0.25,
+            "500": 0.03,
+            "600": 0.5,
+            "700": 0.03
+          },
+          "B": {
+            "100": 0.2,
+            "200": 0.03,
+            "300": 0.25,
+            "400": 0.03,
+            "500": 0.45,
+            "600": 0.03
+          },
+          "C": {
+            "100": 0.4,
+            "200": 0.25,
+            "300": 0.45
+          },
+          "天国": {
+            "100": 0.65
+          },
+          "天国ループ": {
+            "100": 0.65
+          }
+        }
+      },
+      "normalLowPayoutRules": {
+        "version": 2,
+        "oneCoinChance": 0.1,
+        "addedNaviBellChance": 0.0625,
+        "missShare": 0.6666666666666666,
+        "replayShare": 0.3333333333333333
+      },
+      "lotteryRules": {
+        "version": 140,
+        "ceilingGames": 800,
+        "czScale": [
+          0.502,
+          0.51,
+          0.522,
+          0.498,
+          0.552,
+          0.616
+        ]
+      },
+      "czPreludeRules": {
+        "minGames": 3,
+        "maxGames": 10,
+        "fakeOnMissRate": 0.5
+      },
+      "czEntryFactors": [
+        0.5516519148129746,
+        0.7208975984965829,
+        0.6281660492320582,
+        0.7979815623975144,
+        0.44354968780320364,
+        0.6129111430899589
+      ],
+      "gameZoneRates": {
+        "A": {
+          "100": 0.1,
+          "200": 0.15,
+          "300": 0.03,
+          "400": 0.25,
+          "500": 0.03,
+          "600": 0.5,
+          "700": 0.03
+        },
+        "B": {
+          "100": 0.2,
+          "200": 0.03,
+          "300": 0.25,
+          "400": 0.03,
+          "500": 0.45,
+          "600": 0.03
+        },
+        "C": {
+          "100": 0.4,
+          "200": 0.25,
+          "300": 0.45
+        },
+        "天国": {
+          "100": 0.65
+        },
+        "天国ループ": {
+          "100": 0.65
+        }
+      },
+      "gameZoneConfig": {
+        "fakeRate": 0,
+        "preludeMin": 3,
+        "preludeMax": 8,
+        "ceilingBonusRate": 0.5
+      },
+      "atEndModeWeights": {
+        "normal": [
+          50,
+          25,
+          10,
+          12,
+          3
+        ]
+      },
+      "resetImpurityPoints": [
+        0,
+        25,
+        50,
+        75,
+        90,
+        100
+      ],
+      "resetImpurityWeights": [
+        [
+          20,
+          25,
+          35,
+          15,
+          4,
+          1
+        ],
+        [
+          19,
+          25,
+          35,
+          16,
+          4,
+          1
+        ],
+        [
+          18,
+          25,
+          35,
+          16,
+          5,
+          1
+        ],
+        [
+          17,
+          25,
+          35,
+          17,
+          5,
+          1
+        ],
+        [
+          16,
+          24,
+          35,
+          18,
+          5,
+          2
+        ],
+        [
+          15,
+          24,
+          35,
+          18,
+          6,
+          2
+        ]
+      ],
+      "modes": [
+        "A",
+        "B",
+        "C",
+        "天国",
+        "天国ループ"
+      ],
+      "ceilings": [
+        800,
+        700,
+        400,
+        200,
+        200
+      ],
+      "transitions": [
+        [
+          60,
+          25,
+          10,
+          4,
+          1
+        ],
+        [
+          0,
+          65,
+          20,
+          12,
+          3
+        ],
+        [
+          0,
+          0,
+          65,
+          30,
+          5
+        ],
+        [
+          0,
+          0,
+          0,
+          80,
+          20
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          100
+        ]
+      ],
+      "rare": {
+        "WEAK_SUICA": {
+          "p": 0.0248,
+          "up": 0.05,
+          "cz": 0.06,
+          "gain": 1,
+          "pay": 3
+        },
+        "WEAK_NOVA": {
+          "p": 0.0078125,
+          "up": 0.35,
+          "cz": 0.3,
+          "gain": 2,
+          "pay": 2
+        },
+        "STRONG_NOVA": {
+          "p": 0.0004,
+          "up": 0.75,
+          "cz": 1,
+          "gain": 4,
+          "pay": 2
+        }
+      },
+      "rareMean": 2.7512305944717905,
+      "defaults": {
+        "highMultiplier": 2,
+        "bandMultiplier": 2,
+        "downMiss": 0.08,
+        "downReplay": 0.05,
+        "czFailureGain": 1,
+        "bonusFailureGain": 2,
+        "atDryGain": 2,
+        "ceilingGain": 10,
+        "regChainGain": 2,
+        "superDenom": 32768
+      }
+    },
+    "NovaFlow": {
+      "currentRuleVersion": 2,
+      "rareTargets": [
+        0.58,
+        0.64,
+        0.62,
+        0.68,
+        0.66,
+        0.72
+      ],
+      "rarePerGameRates": [
+        0.05619280018523898,
+        0.06584236711558278,
+        0.0624691375669002,
+        0.0731488384141773,
+        0.06939525813411285,
+        0.08136313703387277
+      ],
+      "rareDirectPerGameRates": [
+        0.008,
+        0.006,
+        0.011,
+        0.007,
+        0.016,
+        0.01
+      ],
+      "strongRareTargets": [
+        0.82,
+        0.84,
+        0.85,
+        0.87,
+        0.88,
+        0.9
+      ],
+      "strongRarePerGameRates": [
+        0.10802742751148497,
+        0.1150039502851603,
+        0.11880352620736745,
+        0.12717021732019007,
+        0.13181538983438823,
+        0.14230410140910588
+      ],
+      "gameRewriteRates": [
+        0.2,
+        0.15,
+        0.22,
+        0.17,
+        0.24,
+        0.19
+      ],
+      "directZoneIds": [
+        "toto",
+        "urapi",
+        "giru",
+        "sora",
+        "ouma",
+        "ura_giru",
+        "ura_sora",
+        "ura_ouma"
+      ],
+      "defaults": {
+        "czGames": 15,
+        "strongGames": 15,
+        "czMaxGames": 20,
+        "strongMaxGames": 20,
+        "czChance": 0.4,
+        "strongChance": 0.7,
+        "czDenom": 120,
+        "strongDenom": 600
+      },
+      "rewriteRates": {
+        "WEAK_SUICA": 0.1782292065925642,
+        "WEAK_NOVA": 0.1782292065925642,
+        "STRONG_NOVA": 1
+      },
+      "lampConfidence": [
+        0.01,
+        0.05,
+        0.3,
+        0.6,
+        0.8,
+        1
+      ],
+      "lampCharacters": [
+        "kushuri",
+        "nito",
+        "sosuke",
+        "toto",
+        "urapi",
+        "giru1",
+        "sora1",
+        "ouma1"
+      ],
+      "lampHints": [
+        {
+          "id": "min2",
+          "minimumSetting": 2,
+          "prefix": [
+            "nito",
+            "kushuri",
+            "sosuke"
+          ],
+          "rates": [
+            0,
+            0.1,
+            0.1,
+            0.1,
+            0.1,
+            0.1
+          ]
+        },
+        {
+          "id": "min3",
+          "minimumSetting": 3,
+          "prefix": [
+            "toto",
+            "sora1",
+            "giru1"
+          ],
+          "rates": [
+            0,
+            0,
+            0.07,
+            0.07,
+            0.07,
+            0.07
+          ]
+        },
+        {
+          "id": "min4",
+          "minimumSetting": 4,
+          "prefix": [
+            "urapi",
+            "giru1",
+            "ouma1"
+          ],
+          "rates": [
+            0,
+            0,
+            0,
+            0.03,
+            0.03,
+            0.03
+          ]
+        },
+        {
+          "id": "min5",
+          "minimumSetting": 5,
+          "prefix": [
+            "sora1",
+            "toto",
+            "sosuke"
+          ],
+          "rates": [
+            0,
+            0,
+            0,
+            0,
+            0.005,
+            0.005
+          ]
+        },
+        {
+          "id": "min6",
+          "minimumSetting": 6,
+          "prefix": [
+            "ouma1",
+            "nito",
+            "kushuri"
+          ],
+          "rates": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0.003
+          ]
+        },
+        {
+          "id": "odd",
+          "prefix": [
+            "sosuke",
+            "giru1",
+            "toto"
+          ],
+          "rates": [
+            0.08,
+            0.03,
+            0.08,
+            0.03,
+            0.08,
+            0.03
+          ]
+        },
+        {
+          "id": "even",
+          "prefix": [
+            "kushuri",
+            "nito",
+            "sora1"
+          ],
+          "rates": [
+            0.03,
+            0.08,
+            0.03,
+            0.08,
+            0.03,
+            0.08
+          ]
+        },
+        {
+          "id": "highWeak",
+          "prefix": [
+            "giru1",
+            "urapi",
+            "sora1"
+          ],
+          "rates": [
+            0.01,
+            0.015,
+            0.02,
+            0.03,
+            0.04,
+            0.05
+          ]
+        },
+        {
+          "id": "highStrong",
+          "prefix": [
+            "kushuri",
+            "ouma1",
+            "giru1"
+          ],
+          "rates": [
+            0.002,
+            0.003,
+            0.005,
+            0.01,
+            0.02,
+            0.03
+          ]
+        }
+      ],
+      "rt": {
+        "games": 50,
+        "replay": 0.6,
+        "bell": 0.3,
+        "miss": 0.1,
+        "netPerGame": 1.2
+      }
+    },
+    "NovaArt": {
+      "repeatZoneProbabilityFactors": [
+        0.8,
+        1.35,
+        1,
+        1.9,
+        1.95,
+        3.2
+      ],
+      "atNetRules": {
+        "normal": 4,
+        "upper": 4,
+        "checkpoint": 4
+      },
+      "atLowPayoutRules": {
+        "oneCoinChance": 0.1,
+        "replayHighDownChance": 0.05
+      },
+      "weakAtAwardScales": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "upperAtRules": {
+        "weakZoneMultiplier": 12,
+        "weakZoneMultipliers": [
+          12,
+          12,
+          12,
+          12,
+          12,
+          12
+        ],
+        "entryFactors": [
+          0.35,
+          0.5,
+          0.4,
+          0.55,
+          0.48,
+          0.62
+        ]
+      },
+      "checkpointQuietRules": {
+        "enabled": true
+      },
+      "lowPayoutRoles": {
+        "ONE_COIN": 1
+      },
+      "freshInitialRules": {
+        "version": 2026102702,
+        "fixedVersion": 2026102701,
+        "previousVersion": 20261027,
+        "legacyVersion": 20261007,
+        "bases": [
+          100,
+          100,
+          100,
+          100,
+          100,
+          100
+        ],
+        "previousBases": [
+          100,
+          100,
+          100,
+          161,
+          214,
+          249
+        ],
+        "quota": 300,
+        "point": 100,
+        "rareAwards": {
+          "WEAK_SUICA": 150,
+          "CHANCE_A": 150,
+          "WEAK_NOVA": 150,
+          "STRONG_SUICA": 200,
+          "CHANCE_B": 200,
+          "STRONG_NOVA": 200,
+          "SUPER_NOVA": 200
+        }
+      },
+      "freshInitialBases": [
+        100,
+        100,
+        100,
+        100,
+        100,
+        100
+      ],
+      "previousFreshInitialBases": [
+        100,
+        100,
+        100,
+        161,
+        214,
+        249
+      ],
+      "positiveNetZoneRules": [
+        {
+          "start": 0,
+          "end": 1500,
+          "floor": 1,
+          "boost": 1,
+          "sortie": false
+        },
+        {
+          "start": 0,
+          "end": 1500,
+          "floor": 1,
+          "boost": 1,
+          "sortie": false
+        },
+        {
+          "start": 500,
+          "end": 3000,
+          "floor": 1,
+          "boost": 1,
+          "sortie": false
+        },
+        {
+          "start": 500,
+          "end": 3000,
+          "floor": 1,
+          "boost": 1,
+          "sortie": false
+        },
+        {
+          "start": 0,
+          "end": 2000,
+          "floor": 1,
+          "boost": 1,
+          "sortie": false
+        },
+        {
+          "start": 3000,
+          "end": 6500,
+          "floor": 1,
+          "boost": 1,
+          "sortie": false
+        }
+      ],
+      "entryWeights": [
+        [
+          0.6354105832966211,
+          0.3110670270748763,
+          0.05076124418701584,
+          0.0027611454414867057
+        ],
+        [
+          0.4827364503295663,
+          0.3979165543666842,
+          0.10933335303418432,
+          0.010013642269564929
+        ],
+        [
+          0.3746442278235266,
+          0.43514331313362564,
+          0.1684706795608236,
+          0.021741779482023913
+        ],
+        [
+          0.26914350346608706,
+          0.4431467349623512,
+          0.24321477350531298,
+          0.044494988066248714
+        ],
+        [
+          0.19722305399838924,
+          0.4247972702808942,
+          0.30498922781372345,
+          0.07299044790699304
+        ],
+        [
+          0.13019579613189197,
+          0.38005441300255294,
+          0.3698054804995187,
+          0.11994431036603637
+        ]
+      ],
+      "atPreludeRules": {
+        "minGames": 3,
+        "maxGames": 5
+      },
+      "initialRareAwards": {
+        "WEAK_SUICA": 100,
+        "CHANCE_A": 100,
+        "WEAK_NOVA": 100,
+        "STRONG_SUICA": 200,
+        "CHANCE_B": 200,
+        "STRONG_NOVA": 200,
+        "SUPER_NOVA": 200
+      },
+      "initialZoneIds": [
+        "kushuri_nito"
+      ],
+      "initialBoostRules": {
+        "version": 20261007,
+        "values": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "weights": [
+          [
+            1,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            1,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            1,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            1,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            1,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            1,
+            0,
+            0,
+            0,
+            0
+          ]
+        ]
+      },
+      "entryQuotaRules": {
+        "version": 148,
+        "waitGames": 3,
+        "games": 3,
+        "values": [
+          150,
+          200,
+          250,
+          300
+        ],
+        "weights": [
+          8,
+          12,
+          6,
+          1
+        ],
+        "pointValues": [
+          50,
+          100
+        ],
+        "pointWeights": [
+          2,
+          1
+        ]
+      },
+      "comebackRules": {
+        "games": 5,
+        "totalChance": 0.2,
+        "guaranteedRoles": [
+          "WEAK_SUICA",
+          "STRONG_SUICA",
+          "CHANCE_A",
+          "CHANCE_B",
+          "WEAK_NOVA",
+          "STRONG_NOVA",
+          "SUPER_NOVA"
+        ],
+        "bellRate": 0.02,
+        "highMissChance": 0.002,
+        "parityHintPerZone": 0.01,
+        "superDenom": 32768
+      },
+      "burstRules": {
+        "version": 2,
+        "games": 10,
+        "success": 0.65,
+        "initialSuccess": 0.5,
+        "initialEntry": 0.05,
+        "uraWeights": [
+          1,
+          1,
+          1
+        ],
+        "entry": [
+          0.0225,
+          0.033,
+          0.0465,
+          0.063,
+          0.0615,
+          0.021
+        ],
+        "roles": {
+          "WEAK_SUICA": 0.15839316425977998,
+          "WEAK_NOVA": 0.15839316425977998,
+          "STRONG_NOVA": 1
+        }
+      },
+      "commonAtRules": {
+        "rare": 1,
+        "direct": 0.6,
+        "weakNova": 0.35,
+        "groups": [
+          70,
+          29.1,
+          0.9
+        ]
+      },
+      "bonusRules": {
+        "normal": {
+          "atChance": 0.52
+        },
+        "upper": {
+          "atChance": 0.8
+        },
+        "upperRate": 0.1
+      },
+      "aimColors": [
+        {
+          "color": "blue",
+          "weight": 0.6,
+          "hit": 0.2
+        },
+        {
+          "color": "red",
+          "weight": 0.35,
+          "hit": 0.8
+        },
+        {
+          "color": "rainbow",
+          "weight": 0.05,
+          "hit": 1
+        }
+      ],
+      "lossRewardControl": {
+        "enabled": false,
+        "threshold": -2000,
+        "multiplier": 1
+      },
+      "zoneTailControl": {
+        "threshold": 2000,
+        "factor": 1
+      },
+      "netRewardControl": {
+        "enabled": false,
+        "startRatio": 0,
+        "floor": 1
+      },
+      "netLimits": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "superZoneChance": 0.03,
+      "zoneGroups": {
+        "weak": [
+          "sosuke",
+          "toto",
+          "urapi"
+        ],
+        "strong": [
+          "giru",
+          "sora",
+          "ouma"
+        ],
+        "super": [
+          "ura_giru",
+          "ura_sora",
+          "ura_ouma"
+        ]
+      },
+      "bonusSpecialRates": [
+        0.04097535458947136,
+        0.04097535458947136,
+        0.04097535458947136,
+        0.04097535458947136,
+        0.04097535458947136,
+        0.04097535458947136
+      ],
+      "ladderTables": {
+        "sosuke": [
+          [
+            50,
+            100,
+            200,
+            300,
+            500
+          ],
+          [
+            50,
+            50,
+            500,
+            500,
+            1000
+          ],
+          [
+            100,
+            200,
+            300,
+            500,
+            1000
+          ],
+          [
+            100,
+            100,
+            500,
+            1000,
+            2000
+          ],
+          [
+            200,
+            300,
+            500,
+            1000,
+            2000
+          ],
+          [
+            300,
+            500,
+            1000,
+            2000,
+            3000
+          ],
+          [
+            50,
+            2000
+          ]
+        ],
+        "giru": [
+          [
+            50,
+            100,
+            200,
+            300,
+            500
+          ],
+          [
+            50,
+            50,
+            500,
+            500,
+            1000
+          ],
+          [
+            100,
+            200,
+            300,
+            500,
+            1000
+          ],
+          [
+            100,
+            100,
+            500,
+            1000,
+            2000
+          ],
+          [
+            200,
+            300,
+            500,
+            1000,
+            2000
+          ],
+          [
+            300,
+            500,
+            1000,
+            2000,
+            3000
+          ],
+          [
+            50,
+            2000
+          ]
+        ],
+        "ura_giru": [
+          [
+            50,
+            100,
+            200,
+            300,
+            500
+          ],
+          [
+            50,
+            50,
+            500,
+            500,
+            1000
+          ],
+          [
+            100,
+            200,
+            300,
+            500,
+            1000
+          ],
+          [
+            100,
+            100,
+            500,
+            1000,
+            2000
+          ],
+          [
+            200,
+            300,
+            500,
+            1000,
+            2000
+          ],
+          [
+            300,
+            500,
+            1000,
+            2000,
+            3000
+          ],
+          [
+            50,
+            2000
+          ]
+        ]
+      },
+      "ladderValues": [
+        50,
+        100,
+        200,
+        300,
+        500,
+        1000,
+        2000,
+        3000
+      ],
+      "sevenValues": [
+        100
+      ],
+      "sevenWeights": {
+        "toto": [
+          1
+        ],
+        "sora": [
+          1
+        ],
+        "ura_sora": [
+          1
+        ]
+      },
+      "tuning": {
+        "weak": 128,
+        "strong": 1500,
+        "other": 1.15,
+        "tilts": [
+          -0.28,
+          -0.28,
+          -0.28,
+          0.1,
+          0.2,
+          0.38
+        ]
+      },
+      "atRoleRules": {
+        "WEAK_SUICA": {
+          "up": 0.15,
+          "hit": 0.1793235237913243,
+          "values": [
+            10,
+            20,
+            30,
+            50,
+            100,
+            300
+          ],
+          "weights": [
+            0.4012605042016807,
+            0.3993697478991597,
+            0.17205882352941176,
+            0.026764705882352944,
+            0.0004915966386554622,
+            0.0000546218487394958
+          ]
+        },
+        "WEAK_NOVA": {
+          "up": 0.15,
+          "hit": 0.1793235237913243,
+          "values": [
+            10,
+            20,
+            30,
+            50,
+            100,
+            300
+          ],
+          "weights": [
+            0.4012605042016807,
+            0.3993697478991597,
+            0.17205882352941176,
+            0.026764705882352944,
+            0.0004915966386554622,
+            0.0000546218487394958
+          ]
+        }
+      },
+      "rareRoles": {
+        "WEAK_SUICA": {
+          "p": 0.0265,
+          "pay": 3,
+          "preparation": 0.13189655172413794
+        },
+        "STRONG_SUICA": {
+          "p": 0,
+          "pay": 3,
+          "preparation": 0.3
+        },
+        "CHANCE_A": {
+          "p": 0,
+          "pay": 0,
+          "preparation": 0.15
+        },
+        "CHANCE_B": {
+          "p": 0,
+          "pay": 0,
+          "preparation": 0.15
+        },
+        "WEAK_NOVA": {
+          "p": 0.0025,
+          "pay": 2,
+          "preparation": 0.13189655172413794
+        },
+        "STRONG_NOVA": {
+          "p": 0.0005,
+          "pay": 2,
+          "preparation": 0.5
+        }
+      },
+      "rareTotal": 0.0295,
+      "rareMean": 2.898305084745763,
+      "preparationRules": {
+        "version": 20261027,
+        "targetNet": 1.2,
+        "startReplayChance": 0.3333333333333333,
+        "startReplayProbability": 0.1111111111111111,
+        "meanGames": 3,
+        "ordinaryReplay": [
+          0.13311650015250695,
+          0.13365326023376708,
+          0.1341900203150272,
+          0.1347267803962873,
+          0.1352635404775474,
+          0.1358003005588075
+        ],
+        "bell": [
+          0.3397358124428099,
+          0.33936352741233733,
+          0.33899124238186484,
+          0.3386189573513923,
+          0.3382466723209197,
+          0.3378743872904472
+        ],
+        "miss": [
+          0.1652583540713498,
+          0.16462187902056213,
+          0.16398540396977482,
+          0.1633489289189873,
+          0.16271245386819957,
+          0.16207597881741195
+        ],
+        "startReplayRoles": [
+          "START_REPLAY_RIGHT",
+          "START_REPLAY_MIDDLE",
+          "START_REPLAY_LEFT"
+        ],
+        "startReplayOrders": {
+          "START_REPLAY_RIGHT": "right",
+          "START_REPLAY_MIDDLE": "middle",
+          "START_REPLAY_LEFT": "left"
+        },
+        "startReplayStops": {
+          "right": [
+            "right",
+            "middle",
+            "left"
+          ],
+          "middle": [
+            "middle",
+            "right",
+            "left"
+          ],
+          "left": [
+            "left",
+            "middle",
+            "right"
+          ]
+        },
+        "bonus": {
+          "weak": {
+            "upperBonus": 0.013189655172413795,
+            "upperAt": 0.06594827586206897,
+            "at": 0.13189655172413794
+          },
+          "strong": {
+            "upperBonus": 0.05,
+            "upperAt": 0.25,
+            "at": 0.5
+          },
+          "stockWeights": [
+            0.9945,
+            0.005,
+            0.0005
+          ]
+        },
+        "at": {
+          "weakZone": 0.06594827586206897,
+          "strongZone": 0.25
+        }
+      },
+      "zoneRoleWeights": {
+        "WEAK_SUICA": 1,
+        "STRONG_SUICA": 10,
+        "CHANCE_A": 2.6666666666666665,
+        "CHANCE_B": 2.6666666666666665,
+        "WEAK_NOVA": 1,
+        "STRONG_NOVA": 10
+      },
+      "zoneEntryScale": [
+        0.405,
+        0.475,
+        0.415,
+        0.5,
+        0.485,
+        0.485
+      ],
+      "zoneIds": [
+        "sosuke",
+        "toto",
+        "urapi",
+        "giru",
+        "sora",
+        "ouma",
+        "ura_giru",
+        "ura_sora",
+        "ura_ouma"
+      ],
+      "names": {
+        "sosuke": "宗介",
+        "toto": "とと",
+        "urapi": "うらぴ",
+        "giru": "ギル",
+        "sora": "空",
+        "ouma": "逢魔",
+        "kushuri": "くしゅり",
+        "nito": "にと",
+        "kushuri_nito": "くしゅり＆にと"
+      },
+      "defaults": {
+        "initial": 200,
+        "payoutVersion": 1,
+        "ladderSosuke": 0.4,
+        "ladderGiru": 0.5,
+        "ladderUraGiru": 0.6666666666666666,
+        "totoHit": 0.35,
+        "totoReset": 0.02,
+        "soraUraHit": 0.35,
+        "soraUraRed": 0.715,
+        "urapiSuper": 0.49,
+        "oumaSuper": 0.77,
+        "oumaUraSuper": 0.75,
+        "rare": 0.03,
+        "big": 0.12,
+        "zone": 0.4,
+        "czArt": 0.25,
+        "soraHit": 0.35,
+        "soraReset": 0.15,
+        "soraUraReset": 0.3,
+        "urapiFreeze": 0.1,
+        "oumaFreeze": 0.25,
+        "oumaUraFreeze": 0.35,
+        "direct1": 1400,
+        "direct2": 1320,
+        "direct3": 1240,
+        "direct4": 1160,
+        "direct5": 1080,
+        "direct6": 1000
+      },
+      "direct": [
+        1400,
+        1320,
+        1240,
+        1160,
+        1080,
+        1000
+      ],
+      "zoneWeights": [
+        [
+          35,
+          29,
+          17,
+          9,
+          7,
+          3
+        ],
+        [
+          34.5,
+          29,
+          17,
+          9.5,
+          7,
+          3
+        ],
+        [
+          34,
+          28.5,
+          17.5,
+          9.5,
+          7.25,
+          3.25
+        ],
+        [
+          33.5,
+          28.5,
+          17.5,
+          9.5,
+          7.5,
+          3.5
+        ],
+        [
+          33,
+          28,
+          18,
+          9.5,
+          7.75,
+          3.75
+        ],
+        [
+          32.5,
+          27.5,
+          18,
+          10,
+          8,
+          4
+        ]
+      ],
+      "bonusSpecial": 0.04097535458947136,
+      "settingBias": [
+        -2.7,
+        -2.55,
+        -2.27,
+        -2.13,
+        -1.8,
+        -1.46
+      ],
+      "bonusExtraStockRules": {
+        "version": 175,
+        "weights": [
+          0.87,
+          0.1,
+          0.03
+        ]
+      },
+      "bonusStockRules": {
+        "version": 175,
+        "weights": [
+          0.87,
+          0.1,
+          0.03
+        ]
+      }
+    },
+    "NovaComplete": {
+      "defaultNetLimitPt": 0,
+      "defaultMyLimitPt": 19000
+    }
+  }
+}

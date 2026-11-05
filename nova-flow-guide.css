@@ -99,3 +99,16 @@
   .novaGuideZone > div { min-width:0; }
 }
 @media (prefers-reduced-motion:reduce) { #novaFlowGuide * { scroll-behavior:auto; } }
+/* Full-analysis tables remain scoped to the read-only guide. */
+.novaGuideIndexLabel { display:block;margin:18px 10px 5px;font-size:11px;font-weight:800;color:#936634; }
+#novaFlowGuide .novaGuideIndex a { flex-shrink:0; }
+#novaFlowGuide .novaGuideAnalysis h4 { margin-top:26px; }
+.novaGuideAnalysis table:has(th:nth-child(3)) { min-width:480px; }
+.novaGuideAnalysis table:has(th:nth-child(4)) { min-width:640px; }
+.novaGuideAnalysis table:has(th:nth-child(7)) { min-width:780px; }
+.novaGuideAnalysis table:has(th:nth-child(10)) { min-width:1100px; }
+.novaGuideAnalysis td { font-variant-numeric:tabular-nums; }
+.novaGuideRaw { border:1px solid #d8cbb8;border-radius:5px;margin:14px 0;background:#fff; }
+.novaGuideRaw summary { padding:12px 16px;cursor:pointer;font-weight:700;color:#644566; }
+.novaGuideRaw pre { margin:0;padding:18px;max-height:460px;overflow:auto;overscroll-behavior:contain;background:#f0ece6;font:12px/1.7 ui-monospace,monospace;white-space:pre;color:#302737; }
+@media (max-width:720px) { .novaGuideIndexLabel { grid-column:1/-1; } }
