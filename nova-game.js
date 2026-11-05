@@ -350,7 +350,7 @@
     if(!Number.isFinite(raw) || raw <= 0) return 0;
     const masterRaw = typeof settings !== "undefined" ? Number(settings.masterVolume) : DEFAULT_MASTER_VOLUME;
     const master = Number.isFinite(masterRaw) ? clamp(masterRaw, 0, 1) : DEFAULT_MASTER_VOLUME;
-    return Math.max(0, Math.min(1, raw * scale * master * 0.5 * (superSpeedActive ? 0.5 : 1)));
+    return Math.max(0, Math.min(1, raw * scale * master * 0.5));
   }
 
   let settings = {
@@ -9845,8 +9845,6 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     if(superSpeedActive === active) return;
     superSpeedActive = active;
     globalThis.NovaSuperSpeedReels && syncSuperSpeedReelDisplay();
-    // Refresh playing audio too, without changing the user's saved master slider.
-    applyAudioOutputVolumes();
   }
 
   function startSuperSpeed(mode){

@@ -180,14 +180,15 @@ test('ordinary AUTO never enables sixfold speed by itself after AT',()=>{
  for(const phase of ['art','normal']){c.normalState.flow={phase};c.stopSuperSpeedIfNeeded();assert.equal(c.superFullAuto,false);assert.equal(c.superSpeedActive,false);assert.equal(c.superSpeedPending,false);}
 });
 
-test('playing audio refreshes once per speed transition, including AT handoff and return',()=>{
+test('speed transitions preserve playing audio and fades through AT handoff and return',()=>{
  const {c}=setup();c.setSuperSpeedDebugPermission(true);c.isSpinning=true;c.startSuperSpeed();
- assert.equal(c.audioRefreshes||0,0,'pending mode keeps current volume');
- c.isSpinning=false;c.stopSuperSpeedIfNeeded();assert.equal(c.audioRefreshes,1);
- c.stopSuperSpeedIfNeeded();assert.equal(c.audioRefreshes,1,'polling must not reset fades');
- c.normalState.flow.phase='art';c.stopSuperSpeedIfNeeded();assert.equal(c.audioRefreshes,2);
- c.normalState.flow.phase='normal';c.stopSuperSpeedIfNeeded();assert.equal(c.audioRefreshes,3);
- c.setSuperSpeedDebugPermission(false);assert.equal(c.audioRefreshes,4);
+ assert.equal(c.superSpeedActive,false);
+ c.isSpinning=false;c.stopSuperSpeedIfNeeded();assert.equal(c.superSpeedActive,true);
+ c.stopSuperSpeedIfNeeded();
+ c.normalState.flow.phase='art';c.stopSuperSpeedIfNeeded();assert.equal(c.superSpeedActive,false);
+ c.normalState.flow.phase='normal';c.stopSuperSpeedIfNeeded();assert.equal(c.superSpeedActive,true);
+ c.setSuperSpeedDebugPermission(false);assert.equal(c.superSpeedActive,false);
+ assert.equal(c.audioRefreshes||0,0);
 });
 
 test('user STOP, super button, permission loss and COMPLETE cancel the pending return during AT',()=>{

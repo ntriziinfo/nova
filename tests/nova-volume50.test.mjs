@@ -32,7 +32,7 @@ test('50 on each category reproduces its screenshot level at any master and in s
     c.settings.masterVolume = master;
     c.superSpeedActive = fast;
     for(const [key,fn,oldLevel,gain] of channels){
-      near(c[fn](), oldLevel * gain * master * .5 * (fast ? .5 : 1));
+      near(c[fn](), oldLevel * gain * master * .5);
       assert.equal(c.settings[key], .5);
     }
   }
