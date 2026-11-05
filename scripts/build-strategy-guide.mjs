@@ -51,26 +51,10 @@ const specs = st(['BB初当たり確率','AT初当たり確率','機械割（掲
 }) + text('本機は純増約4pt/Gの「ノヴァラッシュ」を搭載したAT機。ノヴァラッシュへはビッグボーナス（50pt）中のネビュラ揃いを経由して突入する。さらに、爆発契機の「出陣チャレンジ」を搭載。')
    + note(initialBasis + ' 各設定の試算はBBが' + cues.gamesPerSetting.toLocaleString('ja-JP') + 'G、ATが' + (report.gamesPerSetting ?? report.totalGamesPerSetting).toLocaleString('ja-JP') + 'Gです。');
 const atSevens = tier => frequency(tier?.games, tier && tier.directSevens + tier.stockSevens);
-const comparisonSettings = [4,5,6];
-const countdownShare = setting => {
-  const tier = cueRow(setting)?.atByTier?.normal;
-  if (!Number.isSafeInteger(tier?.countdownGames) || !(tier.games > 0)) return null;
-  return '設定' + setting + 'で' + num(100 * tier.countdownGames / tier.games, 1) + '%';
-};
-const countdownShares = comparisonSettings.map(countdownShare);
-const bonusRates = st(['BB初当たり（通常＋CZ）','赤7出現頻度（通常AT全体）','赤7出現頻度（上位AT全体）'], setting => {
+const bonusRates = st(['BB初当たり（通常＋CZ）','赤7を見る頻度（通常AT全体）','赤7を見る頻度（上位AT全体）'], setting => {
   const row = cueRow(setting);
   return [bbFrequency(row), atSevens(row?.atByTier?.normal), atSevens(row?.atByTier?.upper)];
-}) + note('BB初当たりは通常G＋CZ消化Gが分母。赤7は、初期特化・ストック放出を含め、特化ゾーンへの突入を告知した回数です。各ATの全消化G（準備・特化・完走確定後も含む、0G連を除く）あたりで、実際に赤7を何Gに1回見るかを示します。')
-   + bySetting('AT消化中に新しく特化ゾーンに当選する確率',['通常AT（抽選対象G）','上位AT（抽選対象G）'], setting => {
-     const tiers = cueRow(setting)?.atByTier;
-     return [tiers?.normal, tiers?.upper].map(tier => frequency(tier?.specialDrawGames, tier?.specialHitGames));
-   })
-   + note('分母は新規の特化抽選を受けられるAT消化G（前兆中も含む）。準備・特化中・引き戻し・出陣・上位チャレンジ・完走確定後の消化Gは除きます。分子はそのGで特化を1個以上獲得した回数です。すでに持っているストックを放出したときは加算しません。')
-   + text('例えば通常ATの低確でスイカ・弱チェリーを引いたときの特化当選率は、' +
-     comparisonSettings.map(setting => '設定' + setting + 'で' + pct(A.extraZoneChance(setting,'WEAK_SUICA',false,false))).join('、') +
-     'です。' + (countdownShares.every(Boolean) ? '今回の試算で、通常ATの全消化Gのうち完走確定後に新規抽選が止まっていた割合は、' +
-       countdownShares.join('、') + 'でした。' : ''))
+}) + note('赤7は、初期特化・ストック放出を含む特化ゾーン突入告知を集計。各ATの全消化G（0G連を除く）あたりの出現頻度です。')
    + bySetting('出陣揃い確率（出陣を開始した状態別）',['通常時','通常AT中','上位AT中（回数）'], setting => {
      const row = cueRow(setting);
      const tiers = row?.atByTier;

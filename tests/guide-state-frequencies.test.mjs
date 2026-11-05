@@ -32,15 +32,15 @@ test('ordinary and upper AT counters account for every recorded red seven, sorti
 });
 
 test('guide uses the eligible game count for each published BB, special-entry seven and sortie frequency', () => {
-  assert.equal(tables.length, 4);
-  assert.match(section,/赤7出現頻度（通常AT全体）/);
-  assert.match(section,/上位AT（抽選対象G）/);
+  assert.equal(tables.length, 3);
+  assert.match(section,/赤7を見る頻度（通常AT全体）/);
+  assert.match(section,/赤7を見る頻度（上位AT全体）/);
+  assert.doesNotMatch(section,/新しく特化ゾーンに当選する確率|抽選対象G/);
   const currentModel = modelHash(hashes());
   for (const [i,row] of evidence.settings.entries()) {
     if (evidence.modelHash !== currentModel) {
       assert.deepEqual(tables[0][i].slice(1), Array(3).fill('未集計'));
-      assert.deepEqual(tables[1][i].slice(1), Array(2).fill('未集計'));
-      assert.deepEqual(tables[2][i].slice(1), Array(3).fill('未集計'));
+      assert.deepEqual(tables[1][i].slice(1), Array(3).fill('未集計'));
       continue;
     }
     const {normal, upper} = row.atByTier;
@@ -49,10 +49,6 @@ test('guide uses the eligible game count for each published BB, special-entry se
       odds(normal.games, normal.directSevens + normal.stockSevens), odds(upper.games, upper.directSevens + upper.stockSevens)
     ]);
     assert.deepEqual(tables[1][i], [
-      String(row.setting), odds(normal.specialDrawGames,normal.specialHitGames),
-      odds(upper.specialDrawGames,upper.specialHitGames)
-    ]);
-    assert.deepEqual(tables[2][i], [
       String(row.setting), odds(row.normalGames,row.normalSortieStarts), odds(normal.games,normal.sortieStarts),
       odds(upper.games,upper.sortieStarts) + '（' + upper.sortieStarts + '回）'
     ]);
