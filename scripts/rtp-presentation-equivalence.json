@@ -459,6 +459,20 @@
         "tests/nova-super-speed.test.mjs",
         "tests/nova-voice-volume.test.mjs"
       ]
+    },
+    {
+      "file": "nova-game.js",
+      "sourceHash": "b2c2a90e6edf4bea490bc7cd19df55db0131f0fd1ca0a8c77641b298d0c5cc6c",
+      "presentationHash": "11f2ddc542ba4001a16ade4f236d66a4ce384c45e1a73c411ef3a174cf331e80",
+      "sourceCommit": "44d96c5caf9bee17e17e2aede939f9115e354a93",
+      "presentationCommit": "524e995db79a3313503174615dde2a0fc248b96d",
+      "reason": "通常時の専用BGMにだけ−5dBを適用。BGMの音量計算だけの変更であることを差分の逆適用で照合。",
+      "tests": [
+        "tests/nova-audio-defaults-equivalence.test.mjs",
+        "tests/nova-volume50.test.mjs",
+        "tests/nova-cz-bgm.test.mjs",
+        "tests/nova-checkpoint-bgm.test.mjs"
+      ]
     }
   ]
 }
