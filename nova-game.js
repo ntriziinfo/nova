@@ -6095,7 +6095,7 @@
   function updateDisplay(){
     globalThis.NovaSuperSpeedReels && syncSuperSpeedReelDisplay();
     globalThis.NovaResultRecall?.sync({state:normalState,
-      eligible:canUsePlayState()&&!isSpinning&&!autoPlay&&!speedToBonusActive&&!debugFastSpinActive&&!isCompleteTrialLocked()&&!(globalThis.NovaPlayLimit&&isPlayLimitLocked())&&!bonusConfirmSoundPlaying&&!bonusEndBgmPlaying&&!pendingAtStartTimer&&!NovaSortie.busy&&!NovaAim.busy&&!NovaLadder.busy&&!NovaDirectAward.busy&&!NovaResults.editing&&!NovaCzPresentation.failureActive&&!document.getElementById('novaCzPush')?.matches(':not([hidden])'),
+      eligible:canUsePlayState()&&!isSpinning&&!autoPlay&&!speedToBonusActive&&!debugFastSpinActive&&!isCompleteTrialLocked()&&!(globalThis.NovaPlayLimit&&isPlayLimitLocked())&&!bonusConfirmSoundPlaying&&!bonusEndBgmPlaying&&!pendingAtStartTimer&&!NovaSortie.busy&&!NovaAim.busy&&!NovaLadder.busy&&!NovaDirectAward.busy&&!NovaResults.editing&&!oumaPresentation&&!NovaCzPresentation.failureActive&&!document.getElementById('novaCzPush')?.matches(':not([hidden])'),
       makeInitial:()=>NovaResults.bonus('0',{phase:'normal'},normalState.internal?.mode),
       save:()=>persistState(),sound:()=>playOneShotSound('assets/media/nova/result-recall-push.mp3',sfxOutputVolume())});
     NovaImpurityHint.syncRelease(session);
@@ -9251,11 +9251,12 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
   var oumaFailDimTimer=null;
   var oumaPresentation=null;
   function clearOumaPresentation(keepNovaShake=false,keepReelMotion=false){
+    NovaOumaPush.reset();
     if(!keepNovaShake)document.getElementById('machine').dataset.oumaNovaShake='';
     clearTimeout(oumaFailDimTimer);oumaFailDimTimer=null;
     document.getElementById('machine').dataset.oumaFailDim='';
     clearTimeout(oumaChainTimer);oumaChainTimer=null;
-    if(!keepReelMotion&&['lift','fail'].includes(oumaPresentation?.stage))NovaReelMotion.clearAll();
+    if(!keepReelMotion&&['lift','push','fail'].includes(oumaPresentation?.stage))NovaReelMotion.clearAll();
     if(oumaIntroAudio){oumaIntroAudio.pause();oumaIntroAudio=null;}
     if(oumaReverseAudio)oumaReverseAudio.onended=null;
     oumaPresentation=null;
@@ -9296,20 +9297,30 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     audio.volume=sfxOutputVolumeForSource(SFX_OUTPUT_SCALE,'assets/media/nova/uuufa.wav');
     audio.play()?.then(()=>{if(oumaIntroAudio!==audio)audio.pause();}).catch(()=>{});
     const started=performance.now(),tops=oumaStoppedTops.map(top=>Math.max(0,top));
-    // Both outcomes use the same one-cell lift and hold. Only the reverse
-    // after the four-second cue reveals success; retain its completed layer
-    // so the synced reverse can replace it at the same top.
-    reels.forEach((reel,i)=>NovaReelMotion.start(i,reel,REEL_STRIPS[i],tops[i],true,cellHtml,{
-       clock:()=>Math.min(500,Math.max(0,performance.now()-started-[0,65,120][i]))/1000,
-       duration:500,steps:1,done:()=>{}
-     }));
-    oumaChainTimer=setTimeout(()=>{
-      if(oumaPresentation!==presentation)return;
+    const preparedFlow=normalState.flow;
+    // Both outcomes lift one cell identically. Reveal only after a PUSH, with
+    // no new draw, BET or payout while waiting for the player's input.
+    const valid=()=>oumaPresentation===presentation&&normalState.flow===preparedFlow&&canUsePlayState();
+    const reveal=()=>{
+      if(!valid()){clearOumaPresentation();return;}
       if(oumaFailed)reels.forEach((_,i)=>{NovaReelMotion.clear(i);setReelColumn(i,reelWindowFromTopIndex(i,tops[i]+1),'','',null);});
       else oumaStoppedTops=tops.map((top,i)=>mod(top+1,REEL_STRIPS[i].length));
       clearOumaPresentation(false,!oumaFailed);spin({oumaFailed});
       if(!oumaFailed&&!isSpinning)NovaReelMotion.clearAll();
-    },4000);
+    };
+    let landed=0;
+    const ready=()=>{
+      if(oumaPresentation!==presentation||presentation.stage!=='lift')return;
+      if(++landed!==3)return;
+      if(!valid()){clearOumaPresentation();return;}
+      if(oumaIntroAudio){oumaIntroAudio.pause();oumaIntroAudio=null;}
+      presentation.stage='push';machine.dataset.oumaFreeze='push';
+      NovaOumaPush.show({valid,auto:()=>!!autoPlay,onOffer:playCzPushPromptVoice,reveal});
+    };
+    reels.forEach((reel,i)=>NovaReelMotion.start(i,reel,REEL_STRIPS[i],tops[i],true,cellHtml,{
+       clock:()=>Math.min(500,Math.max(0,performance.now()-started-[0,65,120][i]))/1000,
+       duration:500,steps:1,done:ready
+     }));
   }
 
   function finishSpin(result, resolved, lineRow=1){
@@ -9734,6 +9745,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
     if(!canPlayCompleteTrial({allowOumaPresentation:true})) return;
     if(oumaPresentation){
       if(oumaPresentation.stage==='bet')resolveOumaChallenge();
+      else if(oumaPresentation.stage==='push')NovaOumaPush.autoPress();
       queueAutoStep(autoPollDelayMs());
       return;
     }

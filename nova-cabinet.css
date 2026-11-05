@@ -380,3 +380,7 @@ body[data-bonus-at-confirmed="true"] .reels{animation:novaBonusAtRainbow 1.4s li
 .novaAimArtwork-caption img{position:absolute;width:289.4737%;max-width:none;left:-184.2105%;top:-24.1667%;}
 @keyframes novaSharedAimPulse{0%,100%{transform:scale(.96)}50%{transform:scale(1)}}
 .novaAimPresentation[data-failed="true"] .novaBarAimTitle{filter:grayscale(1) brightness(.45);}
+
+/* Reverse continuation waits for its own PUSH, not another BET/STOP. */
+#machine[data-ouma-freeze=push] button:not(#novaOumaPush),
+#novaCabinetStage:has(#machine[data-ouma-freeze=push])>.playControls button{pointer-events:none}
