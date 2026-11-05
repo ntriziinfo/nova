@@ -9,7 +9,11 @@
       "atGames": 2622276,
       "directSevens": 19554,
       "stockSevens": 7924,
-      "sortieStarts": 1446
+      "sortieStarts": 1446,
+      "normalGames": 6291530,
+      "czGames": 618555,
+      "bbInitials": 20655,
+      "atInitials": 13318
     },
     {
       "games": 10000000,
@@ -18,7 +22,11 @@
       "atGames": 2688254,
       "directSevens": 23495,
       "stockSevens": 6007,
-      "sortieStarts": 1002
+      "sortieStarts": 1002,
+      "normalGames": 6177818,
+      "czGames": 645975,
+      "bbInitials": 21560,
+      "atInitials": 13436
     },
     {
       "games": 10000000,
@@ -27,7 +35,11 @@
       "atGames": 2887956,
       "directSevens": 21691,
       "stockSevens": 7873,
-      "sortieStarts": 1435
+      "sortieStarts": 1435,
+      "normalGames": 6082736,
+      "czGames": 583020,
+      "bbInitials": 19662,
+      "atInitials": 12928
     },
     {
       "games": 10000000,
@@ -36,7 +48,11 @@
       "atGames": 3173123,
       "directSevens": 28394,
       "stockSevens": 5631,
-      "sortieStarts": 1046
+      "sortieStarts": 1046,
+      "normalGames": 5755022,
+      "czGames": 606795,
+      "bbInitials": 20559,
+      "atInitials": 12856
     },
     {
       "games": 10000000,
@@ -45,7 +61,11 @@
       "atGames": 3574563,
       "directSevens": 24420,
       "stockSevens": 6838,
-      "sortieStarts": 1369
+      "sortieStarts": 1369,
+      "normalGames": 5478616,
+      "czGames": 534362,
+      "bbInitials": 18203,
+      "atInitials": 12040
     },
     {
       "games": 10000000,
@@ -54,7 +74,11 @@
       "atGames": 3847491,
       "directSevens": 30570,
       "stockSevens": 4496,
-      "sortieStarts": 729
+      "sortieStarts": 729,
+      "normalGames": 5193758,
+      "czGames": 538065,
+      "bbInitials": 18515,
+      "atInitials": 11785
     }
   ]
 }

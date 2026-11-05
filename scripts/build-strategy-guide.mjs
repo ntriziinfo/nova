@@ -33,30 +33,32 @@ function add(id,title,body){sections.push({id,title,html:'<section id="guide-ana
 const rtp=JSON.parse(fs.readFileSync(path.join(root,'nova-rtp-current.json'),'utf8'));
 // Keep the guide's published PAY column distinct from the continuous model results.
 const publishedPay = [95, 97, 99, 103, 111, 116];
-const report = JSON.parse(fs.readFileSync(path.join(root, EVIDENCE), 'utf8'));
 const cues = JSON.parse(fs.readFileSync(path.join(root, 'docs/guide-bonus-frequencies.json'), 'utf8'));
 const currentHashes = hashes(root);
+const report = JSON.parse(fs.readFileSync(path.join(root, EVIDENCE), 'utf8'));
 const verifiedRows = valid(report, currentHashes) ? evidenceRows(report) : [];
 const cueRows = cues.modelHash === modelHash(currentHashes) ? cues.settings : [];
 const frequency = (games, hits) => Number.isSafeInteger(games) && Number.isSafeInteger(hits) && hits > 0 && games >= hits
   ? '1/' + (games / hits).toLocaleString('ja-JP', {minimumFractionDigits:1, maximumFractionDigits:1})
   : '未集計';
-const summaryRow = setting => verifiedRows.find(row => row.setting === setting);
-const bbFrequency = row => frequency(row?.games, row?.counts?.BIG);
-const specs = st(['ボーナス確率','AT初当たり確率','機械割（掲載値）'], setting => {
-  const row = summaryRow(setting);
-  return [bbFrequency(row), frequency(row?.games, row?.counts?.artEntries), publishedPay[setting - 1] + '%'];
+const cueRow = setting => cueRows.find(row => row.setting === setting);
+const bbFrequency = row => frequency(row?.normalGames + row?.czGames, row?.bbInitials);
+const initialBasis = 'BB・AT初当たりの分母は、通常G＋通常時に入ったCZの消化G（成功・失敗ともに加算）。BBは通常・CZからの当選、ATは新たに始まった初当たりを数えます。BB・準備中・AT・特化ゾーンの消化Gは分母から除きます。';
+const specs = st(['BB初当たり確率','AT初当たり確率','機械割（掲載値）'], setting => {
+  const row = cueRow(setting);
+  const counts = verifiedRows.find(entry => entry.setting === setting)?.counts;
+  return [bbFrequency(row), frequency(counts?.normal + counts?.cz, counts?.artEntries), publishedPay[setting - 1] + '%'];
 }) + text('本機は純増約4pt/Gの「ノヴァラッシュ」を搭載したAT機。ノヴァラッシュへはビッグボーナス（50pt）中のネビュラ揃いを経由して突入する。さらに、爆発契機の「出陣チャレンジ」を搭載。')
-   + note('ボーナスとAT初当たりの確率は、筐体のカウンターと同じく総ゲーム数を各当選回数で割った試算値。機械割の連続試算値は「詳細解析・全数値」の「全情報版・数値の見方」に掲載。');
-const bonusRates = st(['ビッグボーナス','AT中赤7揃い','出陣揃い'], setting => {
-  const row = cueRows.find(row => row.setting === setting);
-  return [bbFrequency(summaryRow(setting)), frequency(row?.atGames, row && row.directSevens + row.stockSevens), frequency(row?.games, row?.sortieStarts)];
+   + note(initialBasis + ' 各設定の試算はBBが' + cues.gamesPerSetting.toLocaleString('ja-JP') + 'G、ATが' + (report.gamesPerSetting ?? report.totalGamesPerSetting).toLocaleString('ja-JP') + 'Gです。');
+const bonusRates = st(['BB初当たり（通常＋CZ）','AT中赤7揃い','出陣揃い（全G）'], setting => {
+  const row = cueRow(setting);
+  return [bbFrequency(row), frequency(row?.atGames, row && row.directSevens + row.stockSevens), frequency(row?.games, row?.sortieStarts)];
 }) + h('出陣揃いの抽選内訳')
    + st(['スイカ成立時','弱チェリー成立時','強チェリー成立時'], setting =>
      ['WEAK_SUICA','WEAK_NOVA','STRONG_NOVA'].map(role => pct(P.sortieChance(setting, role))))
    + text('抽選対象のゲームで各小役を引いたときの出陣当選率。当選すると「中リールにNOVAを狙え！」でNOVA・チェリー・NOVAが止まり、出陣チャレンジへ。狙え演出の抽選比率は本前兆1に対してフェイク2。')
-   + note('ビッグボーナスは総ゲーム数あたり（通常BIG・上位BIGの合算）。赤7はAT中のゲーム数あたりで、初期特化・ストック放出を含む特化突入告知だけを集計。特化中の上乗せ7揃いは除外。出陣揃いは総ゲーム数あたりの成功回数で、フェイクを除く。')
-   + note('ビッグボーナス・AT初当たりは各設定' + (report.gamesPerSetting ?? report.totalGamesPerSetting).toLocaleString('ja-JP') + 'G、赤7・出陣揃いは各設定' + cues.gamesPerSetting.toLocaleString('ja-JP') + 'Gの連続試算。いずれもコンプリートによる打ち切りなし。');
+   + note('上表は小役成立後の当選率です。小役自体の出現率は「小役確率・払い出しの全表」に通常時・CZ中・通常AT中・上位AT中の別表で掲載しています。')
+   + note('赤7は初期特化・ストック放出を含む特化突入告知の回数を、AT・特化の消化G数に対して集計。出陣揃いは全Gに対する出陣チャレンジ開始回数で、フェイクを除きます。各設定' + cues.gamesPerSetting.toLocaleString('ja-JP') + 'Gの連続試算（コンプリート打ち切りなし）。');
 function guideRatesSection(id, title, body) {
   return '<section id="guide-' + id + '" class="novaGuideSection novaGuideRates" aria-labelledby="guide-' + id + '-title">\n<h3 id="guide-' + id + '-title" tabindex="-1">' + title + '</h3>\n' + body + '\n</section>';
 }
@@ -65,7 +67,15 @@ const rateSections = [
   guideRatesSection('bonus-rates', 'ボーナス確率', bonusRates)
 ];
 add('overview','全情報版・数値の見方',text('現行ルールの標準設定を掲載。横長の表は左右にスクロールできます。設定1〜6の差・共通確率・保証・設定示唆・補正まで確認できます。管理画面で個別に変更された値は含みません。表中の確率は小数点以下を丸めているため、合計が100%と一致しない場合があります。')+table(['設定','指定の機械割表記','現行モデルの連続試算値'],settings.map((s,i)=>[s,publishedPay[i]+'%',num(rtp.settings[i].rtpPct,5)+'%']))+note('掲載用の指定表記と試算値は別の指標です。連続試算は各設定1億G・日次リセットなし・コンプリート打ち切りなし。試算値は勝率や1日1万Gの収支を保証しません。以下は現行標準ルールの値であり、台の設定番号を開示する機能ではありません。'));
-add('roles','小役確率・払い出しの全表',roleTable('通常時（CZ前兆を含む）',s=>N.normalRoleProbabilities(s))+note('通常スーパーノヴァは、通常小役の後段で1/32768の別抽選。前兆・ゲーム数契機・天井などの先行処理で抽選に到達しないゲームがあるため、全ゲーム実測の出現率をそのまま1/32768と断定しないこと。')+roleTable('CZ中の基礎小役テーブル',s=>N.roleProbabilities(s))+note('CZ中の内部スイカは見た目と払い出しをリプレイへ置換。通常時用の押し順ベル・1pt役はこの共通テーブルに含まれません。')+roleTable('通常AT中',s=>A.roleProbabilities(s,false))+roleTable('上位AT中',s=>A.roleProbabilities(s,true))+roleTable('初期特化・出陣の払い出し役',s=>{const r={...A.initialRoleProbabilities(s)};r.BELL+=r.BELL15;delete r.BELL15;return r;})+roleTable('BB・AT準備中',s=>A.preparationProbabilities(s))+table(['役','基礎払い出し'],['WEAK_SUICA','WEAK_NOVA','STRONG_NOVA','BELL','BELL15','ONE_COIN','REPLAY'].map(role=>[names[role],role==='ONE_COIN'?'1pt':A.payout(role)+'pt']))+note('BETは3pt。リプレイのBET返却、AT通常区間のBET消費分補填、BB残り規定ptによる払い出し上限、押し順ミスの扱いは別処理。通常ベースは全設定30G/50pt設計。'));
+add('roles','小役確率・払い出しの全表',
+  note('各表はその状態で小役を1回抽選したときの基礎確率です。通常時・通常AT・上位AT・CZはそれぞれ別に集計します。')
+  + roleTable('通常時の小役（CZ前兆を含む）',s=>N.normalRoleProbabilities(s))
+  + note('通常スーパーノヴァは、通常小役の後段で1/32768の別抽選。前兆・ゲーム数契機・天井などの先行処理で抽選に到達しないゲームがあります。')
+  + roleTable('通常AT中の小役',s=>A.roleProbabilities(s,false))
+  + roleTable('上位AT中の小役',s=>A.roleProbabilities(s,true))
+  + roleTable('CZ中の基礎小役テーブル',s=>N.roleProbabilities(s))
+  + note('CZ中の内部スイカはリプレイの出目と払い出しになります。')
+  +roleTable('初期特化・出陣の払い出し役',s=>{const r={...A.initialRoleProbabilities(s)};r.BELL+=r.BELL15;delete r.BELL15;return r;})+roleTable('BB・AT準備中',s=>A.preparationProbabilities(s))+table(['役','基礎払い出し'],['WEAK_SUICA','WEAK_NOVA','STRONG_NOVA','BELL','BELL15','ONE_COIN','REPLAY'].map(role=>[names[role],role==='ONE_COIN'?'1pt':A.payout(role)+'pt']))+note('BETは3pt。リプレイのBET返却、AT通常区間のBET消費分補填、BB残り規定ptによる払い出し上限、押し順ミスの扱いは別処理。通常ベースは全設定30G/50pt設計。'));
 let mode=h('モード別天井')+table(['モード','天井G'],N.modes.map((x,i)=>[x,N.ceilings[i]]))+note('朝一リセットは上表と600Gの小さい方。通常＋CZの内部ゲーム数を使用。天井到達時はBB、継続中CZでは成功を確保して最終決着まで進む場合があります。');
 for(const [key,title] of [['initial','リセット・通常系AT終了後'],['afterHeaven','天国でAT終了後'],['afterLoop','天国ループでAT終了後']])mode+=bySetting(title,N.modes,s=>N.modeSelection[key][s-1].map(x=>num(x)+'%'));
 mode+=h('BB後のモード移行（現モードを起点）')+table(['移行元',...N.modes],N.modes.map((m,i)=>[m,...N.transitions[i].map(x=>x+'%')]))+h('100G単位のCZ入口抽選・基礎値')+table(['モード',...Array.from({length:7},(_,i)=>(i+1)*100+'G')],N.modes.map(m=>[m,...Array.from({length:7},(_,i)=>N.gameZoneRates[m][(i+1)*100]===undefined?'—':pct(N.gameZoneRates[m][(i+1)*100]))]))+st(['入口補正'],s=>['×'+T.balanceProfile(s).gameCzEntry])+note('実際の入口率＝基礎値×設定別入口補正（上限100%）。天井を優先。50GのフェイクCZは天国系100%・その他10%。100Gの実抽選に外れてもフェイクCZへ入る。フェイクCZは成功・書き換えなし。')+h('通常高確・前兆')+table(['項目','標準値'],[['スイカ・弱チェリーで低確→高確',pct(0.16711383671904942)],['高確の最低保持','10G。保持中はハズレ等による降格を停止'],['ハズレで降格','8%（最低保持後）'],['リプレイで降格','5%（最低保持後）'],['1pt役で降格',pct(N.oneCoinDownChance())],['高確のレア役CZ入口倍率','基礎抽選計算内の倍率×2'],['レア役からCZ前兆','3〜10G、外れ時のフェイク前兆抽選50%']] );
