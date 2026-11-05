@@ -341,6 +341,22 @@
         "tests/nova-super-speed-reels.test.mjs",
         "tests/nova-impurity-voice-equivalence.test.mjs"
       ]
+    },
+    {
+      "file": "nova-game.js",
+      "sourceHash": "b2c2a90e6edf4bea490bc7cd19df55db0131f0fd1ca0a8c77641b298d0c5cc6c",
+      "presentationHash": "c93dfee7761d3c06384a7fc443d80a22ca738edf2c5fe790858340a788760824",
+      "sourceCommit": "44d96c5caf9bee17e17e2aede939f9115e354a93",
+      "presentationCommit": "769ec1c0a777d9c109df35855245ac55dccc89b8",
+      "reason": "音量50校正に続き、通常レバー音spin_start.wavとリール停止音reel-stop.wavの出力だけ0.7倍。再生中の音量更新でも比率を保持。音量変更を逆適用すると試算元44d96c5の全文SHA256と完全一致。抽選・乱数・払い出し・獲得pt・ストック・停止結果・ゲーム進行を変えず、既存の1億G証跡を保持する。",
+      "tests": [
+        "tests/nova-audio-defaults-equivalence.test.mjs",
+        "tests/nova-voice-volume.test.mjs",
+        "tests/nova-volume50.test.mjs",
+        "tests/nova-result-audio.test.mjs",
+        "tests/nova-super-speed-reels.test.mjs",
+        "tests/nova-impurity-voice-equivalence.test.mjs"
+      ]
     }
   ]
 }
