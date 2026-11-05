@@ -56,7 +56,7 @@ const plain=x=>JSON.parse(JSON.stringify(x,(_k,v)=>typeof v==='bigint'?v.toStrin
 const data={schema:'nova-strategy-values/v1',edition:'2026-11-05',scope:'Standard source rules; not per-machine overrides',sources:Object.fromEntries(sources.map(f=>[f,createHash('sha256').update(fs.readFileSync(path.join(root,f))).digest('hex')])),current:{settings:settings.map(s=>({setting:s,tuning:T.profile(s),balance:T.balanceProfile(s),normalRoles:N.normalRoleProbabilities(s),czRoles:N.roleProbabilities(s),cz:F.forSetting({},s),atRoles:A.roleProbabilities(s),upperRoles:A.roleProbabilities(s,true),comebackRoles:A.comebackRoleProbabilities(s),preparationRoles:A.preparationProbabilities(s),decrement:c.NovaDecrement.rules(s)})),resultHints:hints},exportedReference:{NovaNormal:plain(N),NovaFlow:plain(F),NovaArt:plain(A),NovaComplete:plain(c.NovaComplete)}};
 const raw=Object.entries(data.exportedReference).map(([module,values])=>'<details class="novaGuideRaw"><summary>'+esc(module)+'・公開定数一覧</summary><pre>'+esc(JSON.stringify(values,null,2))+'</pre></details>').join('');
 add('reference','全パラメータ一覧・互換値',note('上の各表は現行処理に基づく実効値です。以下はルールモジュールが公開する定数の全一覧で、廃止された役・旧セーブ互換・計算用の基礎値も含みます。defaultsの数値がそのまま現行の成立確率・初期ptになるとは限りません。割合0〜1、重み0〜100、分母、ptなど単位は各キーによって異なります。')+raw+'<details class="novaGuideRaw"><summary>設定別プロファイル・計算済テーブル</summary><pre>'+esc(JSON.stringify(data.current,null,2))+'</pre></details>'+note('ゲーム本体の抽選・保存データは変更せず、標準ルールから読み取り専用で作成。旧値や無効な制御は現行の攻略数値に混ぜていません。'));
-const file=path.join(root,'jag.html');let html=fs.readFileSync(file,'utf8');
+const file=path.join(root,'jag.html');const originalHtml=fs.readFileSync(file,'utf8');let html=originalHtml;
 html=html.replace(/\n?<!-- NOVA FULL ANALYSIS START -->[\s\S]*?<!-- NOVA FULL ANALYSIS END -->/,'');
 html=html.replace(/<!-- NOVA FULL INDEX START -->[\s\S]*?<!-- NOVA FULL INDEX END -->/,'');
 const end=html.indexOf('<footer class="novaGuideFoot">');if(end<0)throw Error('Guide footer missing');
@@ -66,6 +66,6 @@ html=html.slice(0,navEnd)+'<!-- NOVA FULL INDEX START --><span class="novaGuideI
 html=html.replace('内部振分・穢れの具体的な数値・細かな設定差は非掲載。','内部振分・穢れ・設定差の全数値は、目次の「詳細解析・全数値」に掲載。');
 html=html.replace('成功で裏ギル・裏空・裏逢魔のいずれかを獲得し、上位ATにつながる。','成功報酬は契機で異なり、上位ATにつながる。初回・差枚節目の報酬は上位ATの特化選択表、レア役契機は裏3種均等。');
 html=html.replace(/nova-flow-guide\.(css|js)\?v=20261105-strategy/g,'nova-flow-guide.$1?v=20261105-full-analysis');
-fs.writeFileSync(file,html);fs.writeFileSync(path.join(root,'nova-strategy-values.json'),JSON.stringify(data,null,2)+'\n');
+if(html.replace(/\r/g,'')!==originalHtml.replace(/\r/g,''))fs.writeFileSync(file,html);fs.writeFileSync(path.join(root,'nova-strategy-values.json'),JSON.stringify(data,null,2)+'\n');
 if(sections.length!==11||settings.some(s=>Math.abs(Object.values(N.normalRoleProbabilities(s)).reduce((a,b)=>a+b,0)-1)>1e-9))throw Error('Invalid guide tables');
 console.log(JSON.stringify({analysisSections:sections.length,sourceModules:sources.length,htmlBytes:Buffer.byteLength(html),dataBytes:fs.statSync(path.join(root,'nova-strategy-values.json')).size}));
