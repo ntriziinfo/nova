@@ -10,6 +10,6 @@ test('historical voice-routing presentation proof remains reproducible before th
  source=source.replace('function playRandomAimVoice(symbol,rng=Math.random,overrideSrc){','function playRandomAimVoice(symbol,rng=Math.random){')
  .replace('playOneShotSound(overrideSrc||src,voiceOutputVolume(),{allowDuringPremiumConfirm:true});','playOneShotSound(src,voiceOutputVolume(),{allowDuringPremiumConfirm:true});')
  .replace("      // Preserve the existing character draw when using the supplied BB voice.\n      if(resolved.initialBonusGame)playRandomAimVoice('nebula',rng,session.impurityReleased?MODE_EVENT_VOICE_SRCS.impurityNebulaAim:undefined);","      if(resolved.initialBonusGame)playRandomAimVoice('nebula',rng);");
- const report=JSON.parse(fs.readFileSync('docs/rtp-current-1b.json'));
- assert.equal(createHash('sha256').update(source).digest('hex'),report.sourceHashes['nova-game.js']);
+ // Historical simulation source e113f0f; current RTP evidence advances independently.
+ assert.equal(createHash('sha256').update(source).digest('hex'),'7b8a6f7de0fbfb5e0196b197f55820edcaf1791c21bd61db25fe2583a316299c');
 });

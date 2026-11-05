@@ -446,29 +446,29 @@
           <div class="field">
             <label>BGM音量</label>
             <div class="audioVolumeControl">
-              <input id="bgmVolume" type="range" min="0" max="1" step="0.01" value="1.00" />
-              <input id="bgmVolumeNumber" class="audioVolumeNumber" type="number" min="0" max="100" step="1" value="100" inputmode="numeric" aria-label="BGM音量 %" />
+              <input id="bgmVolume" type="range" min="0" max="1" step="0.01" value="0.50" />
+              <input id="bgmVolumeNumber" class="audioVolumeNumber" type="number" min="0" max="100" step="1" value="50" inputmode="numeric" aria-label="BGM音量 %" />
             </div>
           </div>
           <div class="field">
             <label>効果音音量</label>
             <div class="audioVolumeControl">
-              <input id="sfxVolume" type="range" min="0" max="1" step="0.01" value="1.00" />
-              <input id="sfxVolumeNumber" class="audioVolumeNumber" type="number" min="0" max="100" step="1" value="100" inputmode="numeric" aria-label="効果音音量 %" />
+              <input id="sfxVolume" type="range" min="0" max="1" step="0.01" value="0.50" />
+              <input id="sfxVolumeNumber" class="audioVolumeNumber" type="number" min="0" max="100" step="1" value="50" inputmode="numeric" aria-label="効果音音量 %" />
             </div>
           </div>
           <div class="field">
             <label for="voiceVolume">ボイス音量（全キャラ共通）</label>
             <div class="audioVolumeControl">
-              <input id="voiceVolume" type="range" min="0" max="1" step="0.01" value="0.57" title="押し順・狙え・ゾーン開始・継続・確定ボイスをまとめて調整" />
-              <input id="voiceVolumeNumber" class="audioVolumeNumber" type="number" min="0" max="100" step="1" value="57" inputmode="numeric" aria-label="ボイス音量 %" />
+              <input id="voiceVolume" type="range" min="0" max="1" step="0.01" value="0.50" title="押し順・狙え・ゾーン開始・継続・確定ボイスをまとめて調整" />
+              <input id="voiceVolumeNumber" class="audioVolumeNumber" type="number" min="0" max="100" step="1" value="50" inputmode="numeric" aria-label="ボイス音量 %" />
             </div>
           </div>
           <div class="field">
             <label>払い出し音量</label>
             <div class="audioVolumeControl">
-              <input id="payoutVolume" type="range" min="0" max="1" step="0.01" value="0.37" />
-              <input id="payoutVolumeNumber" class="audioVolumeNumber" type="number" min="0" max="100" step="1" value="37" inputmode="numeric" aria-label="払い出し音量 %" />
+              <input id="payoutVolume" type="range" min="0" max="1" step="0.01" value="0.50" />
+              <input id="payoutVolumeNumber" class="audioVolumeNumber" type="number" min="0" max="100" step="1" value="50" inputmode="numeric" aria-label="払い出し音量 %" />
             </div>
           </div>
         </div>
@@ -918,7 +918,7 @@
 <script src="nova-result-recall.js?v=20261030-result-recall"></script>
 <script src="nova-state-storage.js?v=20261104-reliability"></script>
 <script src="nova-runtime-gates.js?v=20261104-reliability"></script>
-<script src="nova-game.js?v=20261105-checkpoint-interrupt-audio-defaults"></script>
+<script src="nova-game.js?v=20261105-checkpoint-interrupt-audio-calibration50"></script>
 <button type="button" id="novaSymbolPreviewOpen">チェリー・ノヴァ（BAR）停止形を確認</button>
 <dialog id="novaSymbolPreview"><h2>チェリー・ノヴァ（BAR）停止形</h2><label>出目<select id="novaPatternSelect"><option value="WEAK_NOVA">弱チェリー：左上段・下段</option><option value="STRONG_MIDDLE">強チェリー：右下がり</option><option value="STRONG_RIGHT">強チェリー：右上がり</option><option value="SUPER_NOVA" selected>ノヴァ（BAR）揃い</option></select></label><p id="novaPatternDescription"></p><div id="novaSymbolPreviewGrid"></div><p>出目の確認用です。通常時のノヴァ（BAR）揃いはBIG・フリーズ各50%。ボーナス中は対象外。弱チェリー・強チェリーはそれぞれ既存の抽選を維持します。</p><button type="button" id="novaSymbolPreviewClose">閉じる</button></dialog>
 </body>

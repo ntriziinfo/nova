@@ -254,10 +254,10 @@
   const AUDIO_BALANCE_VERSION = 9;
   const ROLE_STAT_COUNTER_VERSION = 2;
   const DEFAULT_MASTER_VOLUME = 0.50;
-  const DEFAULT_BGM_VOLUME = 1.00;
-  const DEFAULT_SFX_VOLUME = 1.00;
-  const DEFAULT_VOICE_VOLUME = 0.57;
-  const DEFAULT_PAYOUT_VOLUME = 0.37;
+  const DEFAULT_BGM_VOLUME = 0.50;
+  const DEFAULT_SFX_VOLUME = 0.50;
+  const DEFAULT_VOICE_VOLUME = 0.50;
+  const DEFAULT_PAYOUT_VOLUME = 0.50;
   const DEFAULT_MOVIE_VOLUME = 0.50;
   const DEFAULT_ROGI_MOVIE_VOLUME = 0.50;
   const MATCHED_BGM_GAIN_DB = 0;
@@ -337,7 +337,20 @@
     return Math.max(0, Math.min(1, raw * audioSourceOutputScale(src)));
   }
 
-  // Reference mix at all50: old master25, BGM34, SFX50, voice64, payout50.
+  // All50 reproduces calibration v1 sliders 50/100/100/57/37.
+  function migrateAudioCalibration(target, previousVersion=0){
+    if(Number(previousVersion)>=2)return;
+    if(Number(previousVersion)>=1){
+      for(const [key,ratio] of [['bgmVolume',2],['sfxVolume',2],['voiceVolume',1.14],['payoutVolume',0.74]]){
+        const value=Number(target[key]);
+        target[key]=Number.isFinite(value)?clamp(value/ratio,0,1):0.5;
+      }
+    }else{
+      for(const key of ['masterVolume','bgmVolume','sfxVolume','voiceVolume','payoutVolume'])target[key]=0.5;
+    }
+    target.audioCalibrationVersion=2;
+  }
+
   function audioOutputVolume(value, scale=1){
     if(typeof settings !== "undefined" && settings.audioMuted) return 0;
     const raw = Number(value);
@@ -374,7 +387,7 @@
     rogiMovieVolume:DEFAULT_ROGI_MOVIE_VOLUME,
     audioMuted:false,
     audioBalanceVersion:AUDIO_BALANCE_VERSION,
-    audioCalibrationVersion:1,
+    audioCalibrationVersion:2,
     completeEnabled:false,
     completeBasis:"none",
     completeLimitPt:0,
@@ -1328,7 +1341,7 @@
   }
 
   function bgmOutputVolume(scale=1){
-    return audioOutputVolume(settings.bgmVolume, scale * 0.68);
+    return audioOutputVolume(settings.bgmVolume, scale * 1.36);
   }
 
   function bgmOutputVolumeForSource(scale, src=""){
@@ -1336,11 +1349,11 @@
   }
 
   function sfxOutputVolume(scale=SFX_OUTPUT_SCALE){
-    return audioOutputVolume(settings.sfxVolume, scale);
+    return audioOutputVolume(settings.sfxVolume, scale * 2);
   }
 
   function voiceOutputVolume(scale=1){
-    return audioOutputVolume(settings.voiceVolume, scale * 1.28);
+    return audioOutputVolume(settings.voiceVolume, scale * 1.4592);
   }
 
   function resumeCharacterVoiceAudio(){
@@ -1415,7 +1428,7 @@
   }
 
   function payoutOutputVolume(scale=PAYOUT_SOUND_OUTPUT_SCALE){
-    return audioOutputVolume(settings.payoutVolume, scale);
+    return audioOutputVolume(settings.payoutVolume, scale * 0.74);
   }
 
   function payoutOutputVolumeForSource(scale=PAYOUT_SOUND_OUTPUT_SCALE, src=""){
@@ -3960,11 +3973,7 @@
         const savedMasterVolume = Number(settings.masterVolume);
         settings.masterVolume = Object.prototype.hasOwnProperty.call(data.settings, "masterVolume") && Number.isFinite(savedMasterVolume) ? clamp(savedMasterVolume, 0, 1) : DEFAULT_MASTER_VOLUME;
         settings.audioBalanceVersion = AUDIO_BALANCE_VERSION;
-        // Display 50/50/50/50/50 as the supplied 25/34/50/64/50 reference mix.
-        if((Number(data.settings.audioCalibrationVersion)||0)<1){
-          for(const key of ['masterVolume','bgmVolume','sfxVolume','voiceVolume','payoutVolume'])settings[key]=0.5;
-          settings.audioCalibrationVersion=1;
-        }
+        migrateAudioCalibration(settings,data.settings.audioCalibrationVersion);
       }
       // Fresh and saved browsers must finish the same migrations before persisting settings.
       if(settings.balanceVersion!=='cz-lamps10'){settings.novaArt={...settings.novaArt,...Object.fromEntries([1,2,3,4,5,6].map(i=>['direct'+i,NovaArt.defaults['direct'+i]])),soraHit:NovaArt.defaults.soraHit,oumaHit:NovaArt.defaults.oumaHit};settings.balanceVersion='cz-lamps10';}
