@@ -487,6 +487,19 @@
         "tests/nova-bell-navi.test.mjs",
         "tests/nova-ladder-stops.test.mjs"
       ]
+    },
+    {
+      "file": "nova-game.js",
+      "sourceHash": "b2c2a90e6edf4bea490bc7cd19df55db0131f0fd1ca0a8c77641b298d0c5cc6c",
+      "presentationHash": "fbda6f0cb96c8f052de291f84b15d563c56933050e375d06c33f5b378d98b7e4",
+      "sourceCommit": "44d96c5caf9bee17e17e2aede939f9115e354a93",
+      "presentationCommit": "637da3a2db7a4f0b1c4c17cdf401bd7b8636b1da",
+      "reason": "実機役カウンターの通常＋CZ初当たり集計・表示のみ。追加統計と表示差分の逆適用で試算元への一致を検証。",
+      "tests": [
+        "tests/nova-role-counter.test.mjs",
+        "tests/nova-customer-stats.test.mjs",
+        "tests/nova-audio-defaults-equivalence.test.mjs"
+      ]
     }
   ]
 }
