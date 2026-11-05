@@ -63,6 +63,7 @@ const end=html.indexOf('<footer class="novaGuideFoot">');if(end<0)throw Error('G
 html=html.slice(0,end)+'<!-- NOVA FULL ANALYSIS START -->\n'+sections.map(s=>s.html).join('\n')+'\n<!-- NOVA FULL ANALYSIS END -->\n'+html.slice(end);
 const navEnd=html.indexOf('</nav>',html.indexOf('aria-label="攻略情報の目次"'));
 html=html.slice(0,navEnd)+'<!-- NOVA FULL INDEX START --><span class="novaGuideIndexLabel">詳細解析・全数値</span>'+sections.map(s=>'<a href="#guide-analysis-'+s.id+'">'+esc(s.title)+'</a>').join('')+'<!-- NOVA FULL INDEX END -->'+html.slice(navEnd);
+html=html.replace('NOVA / PLAY GUIDE','全情報版 / COMPLETE DATA').replace('基本スペックから特化ゾーンまで。<br>気になる項目を目次からチェック。','設定別の確率・振分・穢れ・示唆まで掲載。<br>目次の「詳細解析・全数値」からチェック。');
 html=html.replace('内部振分・穢れの具体的な数値・細かな設定差は非掲載。','内部振分・穢れ・設定差の全数値は、目次の「詳細解析・全数値」に掲載。');
 html=html.replace('成功で裏ギル・裏空・裏逢魔のいずれかを獲得し、上位ATにつながる。','成功報酬は契機で異なり、上位ATにつながる。初回・差枚節目の報酬は上位ATの特化選択表、レア役契機は裏3種均等。');
 html=html.replace(/nova-flow-guide\.(css|js)\?v=20261105-strategy/g,'nova-flow-guide.$1?v=20261105-full-analysis');
