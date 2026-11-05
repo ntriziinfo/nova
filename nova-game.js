@@ -1331,7 +1331,8 @@
   }
 
   function bgmOutputVolumeForSource(scale, src=""){
-    return bgmOutputVolume(scale * audioSourceOutputScale(src));
+    const volume = bgmOutputVolume(scale * audioSourceOutputScale(src));
+    return normalizedAudioSourceKey(src) === DEFAULT_NORMAL_BGM_SRC ? volume * dbToGain(-5) : volume;
   }
 
   function sfxOutputVolume(scale=SFX_OUTPUT_SCALE){
