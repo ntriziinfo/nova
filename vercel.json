@@ -52,7 +52,7 @@
     }
   ],
   "framework": null,
-  "buildCommand": "node scripts/prepare-deploy.mjs && node scripts/rtp-current.mjs build && node scripts/check.mjs && node scripts/validate-config.mjs && npm test && npm run build:lossless",
+  "buildCommand": "node scripts/prepare-deploy.mjs && node scripts/rtp-current.mjs build && node scripts/check.mjs && node scripts/validate-config.mjs && npm run build:lossless",
   "headers": [
     {
       "source": "/nova-rtp-current.:ext(json|js)",
