@@ -33,24 +33,24 @@ test('ordinary and upper AT counters account for every recorded red seven, sorti
 
 test('guide uses the eligible game count for each published BB, special-entry seven and sortie frequency', () => {
   assert.equal(tables.length, 3);
-  assert.match(section,/赤7を見る頻度（通常AT全体）/);
-  assert.match(section,/赤7を見る頻度（上位AT全体）/);
+  assert.match(section,/赤７揃い（上乗せ特化ゾーン）確率/);
+  assert.match(section,/通常・AT合算/);
   assert.doesNotMatch(section,/新しく特化ゾーンに当選する確率|抽選対象G/);
   const currentModel = modelHash(hashes());
   for (const [i,row] of evidence.settings.entries()) {
     if (evidence.modelHash !== currentModel) {
-      assert.deepEqual(tables[0][i].slice(1), Array(3).fill('未集計'));
-      assert.deepEqual(tables[1][i].slice(1), Array(3).fill('未集計'));
+      assert.deepEqual(tables[0][i].slice(1), Array(2).fill('未集計'));
+      assert.deepEqual(tables[1][i].slice(1), ['未集計']);
       continue;
     }
     const {normal, upper} = row.atByTier;
     assert.deepEqual(tables[0][i], [
       String(row.setting), odds(row.normalGames + row.czGames, row.bbInitials),
-      odds(normal.games, normal.directSevens + normal.stockSevens), odds(upper.games, upper.directSevens + upper.stockSevens)
+      odds(normal.games + upper.games, normal.directSevens + normal.stockSevens + upper.directSevens + upper.stockSevens)
     ]);
     assert.deepEqual(tables[1][i], [
-      String(row.setting), odds(row.normalGames,row.normalSortieStarts), odds(normal.games,normal.sortieStarts),
-      odds(upper.games,upper.sortieStarts) + '（' + upper.sortieStarts + '回）'
+      String(row.setting), odds(row.normalGames + normal.games + upper.games,
+        row.normalSortieStarts + normal.sortieStarts + upper.sortieStarts)
     ]);
   }
 });

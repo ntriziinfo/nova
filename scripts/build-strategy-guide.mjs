@@ -50,19 +50,15 @@ const specs = st(['BB初当たり確率','AT初当たり確率','機械割（掲
   return [bbFrequency(row), frequency(counts?.normal + counts?.cz, counts?.artEntries), publishedPay[setting - 1] + '%'];
 }) + text('本機は純増約4pt/Gの「ノヴァラッシュ」を搭載したAT機。ノヴァラッシュへはビッグボーナス（50pt）中のネビュラ揃いを経由して突入する。さらに、爆発契機の「出陣チャレンジ」を搭載。')
    + note(initialBasis + ' 各設定の試算はBBが' + cues.gamesPerSetting.toLocaleString('ja-JP') + 'G、ATが' + (report.gamesPerSetting ?? report.totalGamesPerSetting).toLocaleString('ja-JP') + 'Gです。');
-const atSevens = tier => frequency(tier?.games, tier && tier.directSevens + tier.stockSevens);
-const bonusRates = st(['BB初当たり（通常＋CZ）','赤7を見る頻度（通常AT全体）','赤7を見る頻度（上位AT全体）'], setting => {
+const bonusRates = st(['BB初当たり（通常＋CZ）','赤７揃い（上乗せ特化ゾーン）確率'], setting => {
   const row = cueRow(setting);
-  return [bbFrequency(row), atSevens(row?.atByTier?.normal), atSevens(row?.atByTier?.upper)];
-}) + note('赤7は、初期特化・ストック放出を含む特化ゾーン突入告知を集計。各ATの全消化G（0G連を除く）あたりの出現頻度です。')
-   + bySetting('出陣揃い確率（出陣を開始した状態別）',['通常時','通常AT中','上位AT中（回数）'], setting => {
+  return [bbFrequency(row), frequency(row?.atGames, row && row.directSevens + row.stockSevens)];
+}) + note('赤７は、通常AT・上位ATの全消化G（0G連を除く）を合算し、初期特化・ストック放出を含む特化ゾーン突入告知の回数で割った値です。')
+   + bySetting('出陣揃い確率',['通常・AT合算'], setting => {
      const row = cueRow(setting);
-     const tiers = row?.atByTier;
-     return [frequency(row?.normalGames, row?.normalSortieStarts),
-       frequency(tiers?.normal?.games, tiers?.normal?.sortieStarts),
-       tiers?.upper ? frequency(tiers.upper.games, tiers.upper.sortieStarts) + '（' + tiers.upper.sortieStarts + '回）' : '未集計'];
+     return [frequency(row?.normalGames + row?.atGames, row?.sortieStarts)];
    })
-   + note('それぞれの状態の消化G数 ÷ その状態から始まった出陣の回数。通常時は通常ゲームだけを数えます。CZ・BB中などに予約された出陣は、実際に開始した状態に1回計上します。フェイクは除きます。')
+   + note('通常時・通常AT・上位ATの消化G数の合計 ÷ 出陣開始回数の合計。CZ・BBの消化Gと0G連、フェイクは除きます。CZ・BB中などに予約された出陣は、実際に開始したときに1回計上します。')
    + h('出陣揃いの抽選内訳')
    + st(['スイカ成立時','弱チェリー成立時','強チェリー成立時'], setting =>
      ['WEAK_SUICA','WEAK_NOVA','STRONG_NOVA'].map(role => pct(P.sortieChance(setting, role))))
