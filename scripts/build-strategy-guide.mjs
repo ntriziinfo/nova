@@ -76,7 +76,25 @@ const plain=x=>JSON.parse(JSON.stringify(x,(_k,v)=>typeof v==='bigint'?v.toStrin
 const hints=c.GuideResultHints;
 const data={schema:'nova-strategy-values/v1',edition:'2026-11-05',scope:'Standard source rules; not per-machine overrides',sources:Object.fromEntries(sources.map(f=>[f,createHash('sha256').update(fs.readFileSync(path.join(root,f))).digest('hex')])),current:{settings:settings.map(s=>({setting:s,tuning:T.profile(s),balance:T.balanceProfile(s),normalRoles:N.normalRoleProbabilities(s),czRoles:N.roleProbabilities(s),cz:F.forSetting({},s),atRoles:A.roleProbabilities(s),upperRoles:A.roleProbabilities(s,true),comebackRoles:A.comebackRoleProbabilities(s),preparationRoles:A.preparationProbabilities(s),decrement:c.NovaDecrement.rules(s)})),resultHints:hints},exportedReference:{NovaNormal:plain(N),NovaFlow:plain(F),NovaArt:plain(A),NovaComplete:plain(c.NovaComplete)}};
 const file=path.join(root,'jag.html');const originalHtml=fs.readFileSync(file,'utf8');let html=originalHtml;
+const settingIntro=html.match(/<section id="guide-setting"[\s\S]*?<\/section>/)?.[0];
+if(!settingIntro)throw Error('Setting guide missing');
+html=html.replace(settingIntro+'\n','').replace(settingIntro,'');
 html=html.replace(/(<!-- NOVA GUIDE RATES START -->)[\s\S]*?(<!-- NOVA GUIDE RATES END -->)/, (_match,start,end)=>[start,...rateSections,end].join('\n'));
+// Keep the introductory index and reading order aligned.
+const introOrder=['spec','features','setting','bonus-rates','play','flow','normal','cz','bb','at','zones','premium'];
+const introLabels=['基本スペック','スロットノヴァのスペックと特徴','設定推測・やめどき','ボーナス確率','打ち方・狙え','ゲームフロー','通常時・天井・ゾーン','CZ・強CZ','BB・穢れ解放','AT・引き戻し','キャラ特化ゾーン','出陣・上位AT'];
+html=html.replace('<section id="guide-bonus-rates"',settingIntro+'\n<section id="guide-bonus-rates"');
+let normalIntro=html.match(/<section id="guide-normal"[\s\S]*?<\/section>/)?.[0];
+const originalNormalIntro=normalIntro;
+normalIntro=normalIntro.replace('通常時・モード・天井','通常時・天井・ゾーン');
+normalIntro=normalIntro.replace(/<!-- NOVA ZONE GUIDE START -->[\s\S]*?<!-- NOVA ZONE GUIDE END -->/,'');
+const zones=h('モード別のCZゾーン・天井')+table(['モード','100G','200G','300G','400G','500G','600G','700G','天井'],N.modes.map((mode,i)=>[mode,...Array.from({length:7},(_,j)=>{const g=(j+1)*100;return g>=N.ceilings[i]?'—':pct(N.gameZoneRates[mode][g]||0);}),N.ceilings[i]+'G']))+note('表はCZ入口の基礎抽選率。実際は設定別入口補正を掛け、上限100%。BB当選率ではありません。天井が優先され、朝一リセット後の初回BBまではA・Bの天井が600Gになります。通常＋CZの内部ゲーム数が基準です。')+h('ゾーン前後の挙動で分かること')+table(['挙動','示唆・読み取り方'],[['50G付近のCZ','天国・天国ループは100%、A・B・Cは10%でフェイクCZへ。天国系に期待できるが確定ではない'],['100GのCZ','実抽選に外れてもフェイクCZへ入るため、突入だけではモードを判別できない'],['200G以降のCZ','モード別の入口率に差あり。レア役契機もあるため、CZ出現だけでモード確定とはしない'],['フェイクCZ','成功・書き換えなし。CZに入ったこととBB当選は分けて判断']])+h('終了画面のぬいぐるみで次のゾーンを確認')+table(['ぬいぐるみ','モード示唆','次の確認ポイント'],[['くしゅり・とと','デフォルト','モードを絞り込めない'],['にと・宗介','B以上示唆','Bの300G・500Gなどに注目。Aの可能性も残る'],['うらぴ・ねこ','C以上示唆','Cの100G・300Gなどに注目。A・Bの可能性も残る'],['やまだ','B以上確定','天井は通常時最大700G。朝一の短縮は別途適用'],['にご','C以上確定','天井は400G以内'],['ギル・そら・おうま','天国以上確定','天井は200G以内']])+note('通常へ戻るBB終了画面、および通常へ戻るAT終了画面の次回モード示唆です。BBからATへ進む画面は次回モードを示しません。「示唆」と「確定」は区別し、示唆を確認したら、<a href="#guide-setting">設定推測・やめどき</a>もあわせて確認しましょう。');
+normalIntro=normalIntro.replace('</section>','<!-- NOVA ZONE GUIDE START -->'+zones+'<!-- NOVA ZONE GUIDE END --></section>');
+html=html.replace(originalNormalIntro,normalIntro);
+const introNavStart=html.indexOf('<nav aria-label="攻略情報の目次">');
+const introNavEnd=html.indexOf('</nav>',introNavStart);
+if(introNavStart<0||introNavEnd<0)throw Error('Intro index missing');
+html=html.slice(0,introNavStart)+'<nav aria-label="攻略情報の目次">'+introOrder.map((id,i)=>'<a href="#guide-'+id+'"><span>'+String(i+1).padStart(2,'0')+'</span>'+introLabels[i]+'</a>').join('')+html.slice(introNavEnd);
 html=html.replace(/\n?<!-- NOVA FULL ANALYSIS START -->[\s\S]*?<!-- NOVA FULL ANALYSIS END -->/,'');
 html=html.replace(/<!-- NOVA FULL INDEX START -->[\s\S]*?<!-- NOVA FULL INDEX END -->/,'');
 // Detailed analysis appendix is intentionally removed from the player guide.
