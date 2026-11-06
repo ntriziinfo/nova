@@ -7,7 +7,7 @@ test('rare roles and hundred boundary never add impurity',()=>{
 test('ceiling rescue reaches cap before bonus claim',()=>{
  for(const mode of ['特殊','天国','天国準備','通常A'])assert.equal(n.spin({mode,games:799},{phase:'normal'},1,{},()=>.99,'MISS').state.impurity,5);
  const t=n.spin({games:799,impurity:95},{phase:'normal'},1,{},()=>.99,'MISS');
- assert.equal(t.state.impurity,100);assert.equal(n.claim(t.state,false,()=>.5).sets,1);
+ assert.equal(t.state.impurity,100);assert.equal(n.claim(t.state,()=>.5).sets,1);
 });
 test('bonus failure rescue remains; retired REG streaks no longer add points',()=>{
  const gain=3;

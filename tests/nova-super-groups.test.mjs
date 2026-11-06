@@ -20,7 +20,7 @@ test('selected super zones survive roulette and queued start without re-rolling'
   assert.equal(a.startZone(a.enter(),chosen,{allowUra:true},()=>.99).ura,true);
  }
  assert.equal(a.upgradeGuaranteedZone('urapi',()=>0),'urapi');
- const claim=n.claim({impurity:100},true,()=>0);assert.deepEqual(Array.from(claim.zones),['urapi','ura_giru']);
+ const claim=n.claim({impurity:100},()=>0);assert.deepEqual(Array.from(claim.zones),['urapi']);
 });
 test('Ura Ouma awards 100 or 200 on paid and free spins, normal Ouma stays 50 or100',()=>{
  for(const id of ['ouma','ura_ouma'])for(const zero of [false,true])for(const [roll,base]of [[0,100],[.99,50]]){

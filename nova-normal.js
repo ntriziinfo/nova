@@ -157,7 +157,6 @@ globalThis.NovaNormal=(()=>{
    }
   }
   
-  if(forced==='FREEZE'){state.prelude=null;token.result='MISS';token.internalBonus={...bonus('フリーズ'),premiumBonus:true};return token;}
   if(flow.phase==='normal'){
    if(before.prelude?.presentation==='reel'){
     const p=state.prelude;
@@ -218,7 +217,7 @@ globalThis.NovaNormal=(()=>{
   }
   return token;
  }
- function claim(value,freeze=false,rng=Math.random){const state=normalize(value),zones=[];if(state.impurity>=100){state.impurity=0;zones.push(['urapi','giru','sora','ouma'][Math.min(3,Math.floor(rng()*4))]);}if(freeze)zones.push(['giru','sora','ouma'][Math.min(2,Math.floor(rng()*3))]);return {state,zones:zones.map(z=>NovaArt.upgradeGuaranteedZone(z,rng)),sets:zones.length?1:0};}
+ function claim(value,rng=Math.random){const state=normalize(value),zones=[];if(state.impurity>=100){state.impurity=0;zones.push(['urapi','giru','sora','ouma'][Math.min(3,Math.floor(rng()*4))]);}return {state,zones:zones.map(z=>NovaArt.upgradeGuaranteedZone(z,rng)),sets:zones.length?1:0};}
  function afterArt(value,before,after,options={},rng=Math.random){const s=normalize(value);if(before?.phase==='art'&&after?.phase==='normal'){s.impurityBbFailures=0;s.impurityCzFailures=0;const p=NovaTuning.balanceProfile?.(options.setting)||{failureRecovery:1};s.morningCeiling=false;s.games=0;s.modeChecked=0;s.fiftyChecked=false;s.mode=modes[weighted(modeWeights(options.setting,s.mode),rng)];s.prelude=null;s.ceilingHandled=false;s.level='low';s.highLeft=0;if(after.dryAtEnd===true)s.impurity=Math.min(100,s.impurity+5*(Number(options.setting)===4?0.7:1));}return s;}
  function bonusEnd(value,kind,after,options={}){const s=normalize(value),c=config(options),p=NovaTuning.balanceProfile?.(options.setting)||{failureRecovery:1};s.regStreak=0;if(after?.phase!=='art'){s.impurityBbFailures++;s.impurity=Math.min(100,s.impurity+(s.impurityBbFailures>=5?15:s.impurityBbFailures>=3?8:3)*(Number(options.setting)===4?0.7:1));}else{s.impurityBbFailures=0;}return s;}
  function afterBonus(value,rng=Math.random,setting){const s=normalize(value);return {...s,impurityCzFailures:0,prelude:null,ceilingHandled:false,morningCeiling:false,games:0,modeChecked:0,fiftyChecked:false,mode:modes[weighted(transitions[modes.indexOf(s.mode)],rng)],level:'low',highLeft:0};}

@@ -75,9 +75,9 @@ test('fake hints do not count as a guaranteed win or postpone the ceiling',()=>{
 
 test('premium outcomes and state exits discard fake preludes',()=>{
  const s=fake().state;
- for(const role of ['FREEZE','SUPER_NOVA']){
+ for(const role of ['SUPER_NOVA']){
   const t=spin(saved(s),role);assert.equal(t.state.prelude,null);
-  assert(role==='FREEZE'?t.internalBonus.premiumBonus:t.result==='SUPER_NOVA');
+  assert.equal(t.result,'SUPER_NOVA');
  }
  assert.equal(n.afterBonus(s).prelude,null);
  assert.equal(n.afterArt(s,{phase:'art'},{phase:'normal'}).prelude,null);

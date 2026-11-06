@@ -50,7 +50,7 @@ export function simulate(setting,games,seed,options={}){
  if(options.initialModeWeights){let r=rng()*options.initialModeWeights.reduce((s,w)=>s+w,0);state.mode=n.modes[options.initialModeWeights.findIndex(w=>(r-=w)<0)];}
  const initialMode=state.mode;let cutoff=null;
  let paid=0,count=0,fee=0,replay=false,peak=0,maxDrawdown=0,maxNormalGames=0,artStart=null,maxArtNet=0;
- let bonusG=0,bonusP=0,bonusFee=0,freezes=0,ceilings=0,release=0,normalGap=0,maxBonusGap=0;
+ let bonusG=0,bonusP=0,bonusFee=0,ceilings=0,release=0,normalGap=0,maxBonusGap=0;
  const counts={normal:0,cz:0,prep:0,align:0,bonus:0,at:0,zone:0,zero:0,BIG:0,REG:0,czEntries:0,strongEntries:0,czWins:0,artEntries:0,zoneEntries:0,gameCzEntries:0,ceilingCzEntries:0,rareCzEntries:0,backgroundCzEntries:0,highNormalG:0,favoredNormalG:0};
  const preparationMetrics={bonus:{entries:0,games:0,bet:0,paid:0,startOrders:{right:0,middle:0,left:0}},at:{entries:0,games:0,bet:0,paid:0,startOrders:{right:0,middle:0,left:0}}};let atPreparationActive=false;
  const bonusMetrics={normal:{completed:0,nebulaWins:0},upper:{completed:0,nebulaWins:0},extraStockPlans:0,extraStockHist:{0:0,1:0,2:0},extraStocks:0};
@@ -71,7 +71,7 @@ export function simulate(setting,games,seed,options={}){
  const bet=phase=>{track();if(options.stopAtComplete!==false&&completion.locked&&((replayRefund?completeNetLimit:options.completeLimitPt)||completeMyLimit))throw sessionEnd;if(count>=games&&!cutoff)cutoff={games:count,totalBet:fee,totalPaid:paid,net:paid-fee,peak,phase};if(options.exactGames!==false&&!options.settleEnd&&count>=games)throw sessionEnd;if(options.recordBlocks&&count>0&&count%options.recordBlocks===0)saveBlock();count++;globalThis.NovaDecrement?.beforeBet(phase);counts[phase]++;normalGap++;
  if(options.rareSortie){rare.draws++;const hit=forcedRare?forcedRare.has(count):roleSortieRates?false:entryRng()<1/(options.rareDenominator||10000);if(hit){rare.triggered++;rare.pending++;rare.byPhase[phase]=(rare.byPhase[phase]||0)+1;if(rare.audit)rare.audit.push({type:'trigger',game:count,phase});}}const charged=!replayRefund&&replay?0:3;fee+=charged;replay=false;completion.lowestNet=Math.min(completion.lowestNet||0,paid-fee);return charged;};
  const zoneEntry=f=>{if(f.zone){counts.zoneEntries++;const name=(f.ura?'ura_':'')+f.zone;zones[name]=(zones[name]||0)+1;}};
- function bonus(kind,freeze=false,award={}){
+ function bonus(kind,award={}){
   if(a.drawBonusTier)kind='BIG';counts[kind==='MID'?'REG':'BIG']++;maxBonusGap=Math.max(maxBonusGap,normalGap);normalGap=0;
   const prep={sets:0,zones:[],upperBonus:false,upperAt:false};preparationMetrics.bonus.entries++;
   if(a.isPreparationStartReplay){
@@ -83,7 +83,7 @@ export function simulate(setting,games,seed,options={}){
   }else for(let i=0,total=2+Math.floor(rng()*4);i<total;i++){
    const role=(a.drawPreparationRole||n.drawRole)(setting,rng),won=a.drawPreparation(role,setting,rng),charged=bet('prep'),spinPaid=cash(role);preparationMetrics.bonus.games++;preparationMetrics.bonus.bet+=charged;preparationMetrics.bonus.paid+=spinPaid;roleSortie(role,'prep');paid+=spinPaid;replay=role==='REPLAY';prep.sets+=won.sets;prep.zones.push(...won.zones);
   }
-  bet('align');const claim=n.claim(state,freeze,rng);if(state.impurity===100)release++;
+  bet('align');const claim=n.claim(state,rng);if(state.impurity===100)release++;
   state=flow.phase==='art'?claim.state:n.afterBonus(claim.state,rng,setting);claim.zones.push(...prep.zones);if(award.directZone)claim.zones.push(award.directZone);let sets=claim.sets+prep.sets+(award.direct?1:0);
   const tier=prep.upperBonus?'upper':a.drawBonusTier?.(rng)||'normal';let nebula=false;
   if(a.drawBonusWithPlan&&a.ensureBonusExtraStockPlan){
@@ -140,11 +140,11 @@ export function simulate(setting,games,seed,options={}){
   if(normal){counts.highNormalG+=state.level==='high';counts.favoredNormalG+=n.favored(state);}
   const t=n.spin(state,flow,setting,{scale,normal:options.normal,cz:options.cz,art:c},rng);roleSortie(t.internalResult??t.result,normal?'normal':'cz');state=t.state;maxNormalGames=Math.max(maxNormalGames,state.games);paid+=cash(t.result);replay=t.result==='REPLAY';
   if(normal){normalRoles[t.result]=(normalRoles[t.result]||0)+1;normalPayout.bet+=charged;normalPayout.paid+=cash(t.result);normalPayout.games++;}
-  if(t.result==='SUPER_NOVA'){const freeze=rng()<.5;if(freeze)freezes++;flow={phase:'normal'};bonus('BIG',freeze);}
-  else if(t.internalBonus){if(t.internalBonus.source.includes('天井'))ceilings++;else counts.czWins++;flow={phase:'normal'};bonus(t.internalBonus.kind,false,t.internalBonus);}
+  if(t.result==='SUPER_NOVA'){flow={phase:'normal'};bonus('BIG');}
+  else if(t.internalBonus){if(t.internalBonus.source.includes('天井'))ceilings++;else counts.czWins++;flow={phase:'normal'};bonus(t.internalBonus.kind,t.internalBonus);}
   else if(t.entry){if(t.entry==='STRONG_CZ')counts.strongEntries++;else counts.czEntries++;if(t.entrySource==='game')counts.gameCzEntries++;if(t.entrySource==='ceiling')counts.ceilingCzEntries++;if(t.entrySource==='rare')counts.rareCzEntries++;else if(t.entrySource==='background')counts.backgroundCzEntries++;const czOptions=t.czOptions??(NovaFlow.forSetting?NovaFlow.forSetting(options.cz,setting):options.cz);flow=NovaFlow.enterCZ(t.entry==='STRONG_CZ',czOptions,rng,t.entrySource);}
   else flow=NovaFlow.advance(t.czFlow);
  }}catch(e){if(e!==sessionEnd)throw e;}
  track();maxBonusGap=Math.max(maxBonusGap,normalGap);if(options.recordBlocks)saveBlock();
- return {lowestNet:completion.lowestNet||0,maxMy:completion.maxMy||0,completeReason:firstComplete?(completion.reason||'net'):null,...(options.decrementAudit?{decrement:globalThis.NovaDecrement?.metrics()}:{}),checkpointStats:a.researchCheckpointStats?.(),atPayoutBins,actualAtZone,upper,rare,preparationMetrics,atLevelMetrics,bonusMetrics,atMetrics,seed,setting,initialMode,cutoff:cutoff||{games:count,totalBet:fee,totalPaid:paid,net:paid-fee,peak,phase:flow.phase},games:count,totalBet:fee,totalPaid:paid,rtp:paid/fee,net:paid-fee,peak,maxDrawdown,maxNormalGames,maxBonusGap,maxArtNet,freezes,ceilings,release,bonusNet:(bonusP-bonusFee)/bonusG,counts,zones,normalRoles,normalPayout,endPhase:flow.phase,firstComplete,blocks:options.recordBlocks?blocks:undefined,unspentZoneStocks:flow.phase==='art'?Number(flow.sets||0)+(flow.queuedZones?.length||0):0,unspentAtQuota:flow.phase==='art'?Number(flow.remaining||0)+(flow.zone?Number(flow.award||0):0):0};
+ return {lowestNet:completion.lowestNet||0,maxMy:completion.maxMy||0,completeReason:firstComplete?(completion.reason||'net'):null,...(options.decrementAudit?{decrement:globalThis.NovaDecrement?.metrics()}:{}),checkpointStats:a.researchCheckpointStats?.(),atPayoutBins,actualAtZone,upper,rare,preparationMetrics,atLevelMetrics,bonusMetrics,atMetrics,seed,setting,initialMode,cutoff:cutoff||{games:count,totalBet:fee,totalPaid:paid,net:paid-fee,peak,phase:flow.phase},games:count,totalBet:fee,totalPaid:paid,rtp:paid/fee,net:paid-fee,peak,maxDrawdown,maxNormalGames,maxBonusGap,maxArtNet,ceilings,release,bonusNet:(bonusP-bonusFee)/bonusG,counts,zones,normalRoles,normalPayout,endPhase:flow.phase,firstComplete,blocks:options.recordBlocks?blocks:undefined,unspentZoneStocks:flow.phase==='art'?Number(flow.sets||0)+(flow.queuedZones?.length||0):0,unspentAtQuota:flow.phase==='art'?Number(flow.remaining||0)+(flow.zone?Number(flow.award||0):0):0};
 }

@@ -110,7 +110,7 @@ test('CZ and non-winning bonus stay fast; AT win returns to normal AUTO before a
  c.session={active:true,bonusArtSets:0};assert.equal(c.stopSuperSpeedIfNeeded(),false);
  c.session.bonusArtSets=1;assert.equal(c.stopSuperSpeedIfNeeded(),false);assert.equal(c.autoPlay,true);assert.equal(c.superSpeedActive,false);
  assert.equal(c.NovaSuperSpeed.atConfirmed({phase:'art'}),true);
- assert.equal(c.NovaSuperSpeed.atConfirmed({phase:'normal'},{},{bonusPending:true,premiumBonus:true}),true);
+ assert.equal(c.NovaSuperSpeed.atConfirmed({phase:'normal'},{},{bonusPending:true,prepSets:1}),true);
  assert.equal(c.NovaSuperSpeed.atConfirmed({phase:'normal'},{},{bonusPending:true,prepSets:1}),true);
  assert.equal(c.NovaSuperSpeed.atConfirmed({phase:'normal'},{active:false,bonusArtSets:2}),false,'past bonus wins must not block normal play');
 });
@@ -131,7 +131,7 @@ test('every AT confirmation route schedules the next BET at paid AT speed withou
   const normalDelay=c.autoDelayMs();c.setSuperSpeedDebugPermission(true);c.startSuperSpeed();
   if(route==='art')c.normalState.flow={phase:'art',remaining:'750',sets:'2'};
   if(route==='bonus')c.session={active:true,bonusArtSets:1};
-  if(route==='premium')Object.assign(c.normalState,{bonusPending:true,premiumBonus:true});
+  if(route==='premium')Object.assign(c.normalState,{bonusPending:true,prepSets:1});
   if(route==='prep')Object.assign(c.normalState,{bonusPending:true,prepSets:1});
   const state=JSON.stringify([c.normalState,c.session]);
   vm.runInContext('Math.random=()=>{throw Error("mode switch must not draw");}',c);
@@ -247,7 +247,7 @@ test('selected targets stop before another BET, without changing the settled gam
   ['cz',{flow:{phase:'cz'}},{}],['cz',{flow:{phase:'strong_cz'}},{}],
   ['bonus',{flow:{phase:'normal'},bonusPending:true},{}],
   ['at',{flow:{phase:'normal'}},{active:true,bonusArtSets:1}],
-  ['at',{flow:{phase:'normal'},bonusPending:true,premiumBonus:true},{}],
+  ['at',{flow:{phase:'normal'},bonusPending:true,prepSets:1},{}],
   ['at',{flow:{phase:'art',remaining:300}},{}],
   ['cz',{flow:{phase:'art',remaining:300}},{}],['bonus',{flow:{phase:'art',remaining:300}},{}]
  ]){
@@ -351,7 +351,7 @@ test('free AUTO follows all AT confirmation routes and returns to ordinary timin
   const {c}=setup();c.autoPlay=true;c.autoLastBetAt=1000;c.performance.now=()=>1200;
   if(route==='art')c.normalState.flow={phase:'art'};
   if(route==='bonus')c.session={active:true,bonusArtSets:1};
-  if(route==='premium')Object.assign(c.normalState,{bonusPending:true,premiumBonus:true});
+  if(route==='premium')Object.assign(c.normalState,{bonusPending:true,prepSets:1});
   if(route==='prep')Object.assign(c.normalState,{bonusPending:true,prepSets:1});
   const before=JSON.stringify([c.normalState,c.session]);
   vm.runInContext('Math.random=()=>{throw Error("timing consumed a draw");}',c);

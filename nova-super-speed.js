@@ -38,7 +38,7 @@ globalThis.NovaSuperSpeed=Object.freeze({
   },
   atConfirmed(flow,session={},normal={}){
     return flow?.phase==='art' || (session.active && Number(session.bonusArtSets)>0) ||
-      (!!normal.bonusPending && (normal.premiumBonus===true || Number(normal.prepSets)>0));
+      (!!normal.bonusPending && Number(normal.prepSets)>0);
   },
   delay(ms,active){return active ? ms/6 : ms;}
 });

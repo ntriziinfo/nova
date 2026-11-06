@@ -174,15 +174,15 @@ test('forced NOVA outcomes survive normalization, keep their strength and settle
   assert.equal(run(`remaining=96;session.paid=0;resolveATypeBonusOutcome('${result}').reward`),payout);
  }
 });
-test('Super NOVA retains one 50:50 BIG or premium-BIG outcome without using the sortie-freeze name',()=>{
- for(const [roll,expected] of [[0,'PREMIUM_BIG'],[.499999,'PREMIUM_BIG'],[.5,'BIG'],[.999999,'BIG']]){
+test('Super NOVA always awards ordinary BIG without a premium lottery',()=>{
+ for(const [roll,expected] of [[0,'BIG'],[.499999,'BIG'],[.5,'BIG'],[.999999,'BIG']]){
   run(`globalThis.drawCount=0; Math.random=()=>{drawCount++;return ${roll}}; globalThis.outcome=resolveNormalOutcome('SUPER_NOVA');`);
   assert.equal(run('outcome.superNovaOutcome'),expected);
   assert.equal(run('outcome.bonusHit'),true);
   assert.equal(run('outcome.bonusKind'),'BIG');
-  assert.equal(run('outcome.premiumBonus'),expected==='PREMIUM_BIG');
+  assert.equal(run('outcome.premiumBonus'),undefined);
   assert.equal(run('decideBigPremiumEffect("SUPER_NOVA",outcome,true)'),expected==='PREMIUM_BIG');
-  assert.equal(run('drawCount'),1);
+  assert.equal(run('drawCount'),0);
  }
  run('drawCount=0; remaining=96; globalThis.bonusOutcome=resolveATypeBonusOutcome("SUPER_NOVA");');
  assert.equal(run('drawCount'),0);
@@ -220,7 +220,7 @@ test('freeze pending bonus aligns 777 and is ready without a BAR or second bonus
  assert.equal(run('drawNormalResult()'),'BIG');
  run('globalThis.freezeReady=resolveNormalOutcome("BIG");');
  assert.equal(run('freezeReady.aTypeBonusReady'),true);
- assert.equal(run('freezeReady.premiumBonus'),true);
+ assert.equal(run('freezeReady.premiumBonus'),undefined);
  assert.equal(run('freezeReady.oneGameRenBonus'),false);
 });
 

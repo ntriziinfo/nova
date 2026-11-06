@@ -13,6 +13,6 @@ test('reset lottery exhaustively matches impurity and initial mode allocation',(
   assert.deepEqual(modes,Object.fromEntries(n.modes.map((mode,i)=>[mode,Math.round(approved[i]*100)])));
  }
 });
-test('load normalization and bonus release do not redraw reset points',()=>{for(const pt of [0,25,50,75,90,100]){assert.equal(n.normalize(JSON.parse(JSON.stringify({impurity:pt}))).impurity,pt);}const s=n.claim(n.reset(()=>.999),false,()=>0);assert.equal(s.state.impurity,0);assert.equal(s.sets,1);assert.equal(s.zones[0],'urapi');assert.equal(n.claim(s.state).sets,0);});
+test('load normalization and bonus release do not redraw reset points',()=>{for(const pt of [0,25,50,75,90,100]){assert.equal(n.normalize(JSON.parse(JSON.stringify({impurity:pt}))).impurity,pt);}const s=n.claim(n.reset(()=>.999),()=>0);assert.equal(s.state.impurity,0);assert.equal(s.sets,1);assert.equal(s.zones[0],'urapi');assert.equal(n.claim(s.state).sets,0);});
 
 test('reset distribution peaks at50, leans low and improves gradually with setting',()=>{let previous=0;for(let setting=1;setting<=6;setting++){const row=n.resetDistribution(setting),at=pt=>row.find(x=>x.pt===pt).weight;assert.equal(row.reduce((v,x)=>v+x.weight,0),100);assert.ok(row.every(x=>x.pt===50||x.weight<at(50)));assert.ok(at(0)+at(25)>at(75)+at(90)+at(100));const mean=row.reduce((v,x)=>v+x.pt*x.weight/100,0);assert.ok(mean>previous&&mean<50);previous=mean;}});
