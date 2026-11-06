@@ -33,6 +33,7 @@ globalThis.NovaCompletePresentation=(()=>{
  }
  function sync(locked){
   active=!!locked;
+  document.querySelectorAll?.('[data-nova-complete-notice]').forEach(notice=>{notice.hidden=!active;});
   if(!active){if(root)root.hidden=true;stopAudio();if(frame){cancelAnimationFrame(frame);frame=0;}return;}
   document.getElementById('overlay')?.classList?.remove('show');
   if(init()){root.hidden=false;layout();}

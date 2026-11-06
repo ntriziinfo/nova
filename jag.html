@@ -69,8 +69,8 @@
 <script src="nova-decrement.js?v=20261013-smartslot"></script>
 <script src="nova-art.js?v=20261105-checkpoint-interrupt"></script>
 <script src="nova-complete.js?v=20261027-live-my-20261106-dual-complete"></script>
-<link rel="stylesheet" href="nova-complete-presentation.css?v=20261012-complete-screen">
-<script src="nova-complete-presentation.js?v=20261012-complete-screen"></script>
+<link rel="stylesheet" href="nova-complete-presentation.css?v=20261107-data-complete">
+<script src="nova-complete-presentation.js?v=20261107-data-complete"></script>
 <script src="nova-play-limit.js?v=20261102-10000g"></script>
 <link rel="stylesheet" href="nova-play-limit-presentation.css?v=20261102-10000g">
 <script src="nova-play-limit-presentation.js?v=20261102-10000g"></script>
@@ -528,6 +528,7 @@
           </div>
           <div id="slumpPanelBody">
             <section id="novaDataCounter" aria-label="台のデータカウンター">
+<div class="novaCompleteDataNotice" data-nova-complete-notice role="status" aria-live="polite" hidden><strong>コンプリート</strong><span>コンプリート機能が発動しました</span></div>
               <div class="novaDataHead">
                 <button type="button" class="novaDataGraphButton" id="novaDataGraphToggle" aria-expanded="false"><span>グラフ</span><svg viewBox="0 0 32 25" aria-hidden="true"><path d="M1 1v23h30M3 19l6-7 6 3 7-10 7 5" fill="none" stroke="currentColor" stroke-width="2"/></svg></button>
                 <div class="novaDataNumber"><span data-counter="current-label">現在回転数</span><b data-counter="current">0</b></div>
@@ -776,6 +777,7 @@
       </div>
       <div class="card slumpCard slumpPublic">
         <h2>スランプグラフ</h2>
+<div class="novaCompleteDataNotice" data-nova-complete-notice role="status" aria-live="polite" hidden><strong>コンプリート</strong><span>コンプリート機能が発動しました</span></div>
         <div class="slumpCanvasWrap">
           <canvas id="slumpGraph" width="720" height="260" aria-label="差pt推移グラフ"></canvas>
         </div>

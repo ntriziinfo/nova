@@ -66,3 +66,16 @@ test('manual COMPLETE lever repeats voice while blocking BET and all gameplay',a
  c.autoPlay=false;c.canUsePlayState=()=>false;await c.spin();assert.equal(h.played.length,2);
  assert.match(source,/spinButton.textContent = "COMPLETE";\s*spinButton.disabled = false/);
 });
+
+test('customer counter and graph completion notices follow lock, reload and reset without changing data',()=>{
+ const h=setup(),notices=[{hidden:true},{hidden:true}];
+ h.c.document.querySelectorAll=selector=>{assert.equal(selector,'[data-nova-complete-notice]');return notices;};
+ h.c.NovaCompletePresentation.sync(false);assert(notices.every(n=>n.hidden));
+ h.c.NovaCompletePresentation.sync(true);assert(notices.every(n=>!n.hidden));
+ h.c.NovaCompletePresentation.sync(true);assert(notices.every(n=>!n.hidden));
+ h.c.NovaCompletePresentation.sync(false);assert(notices.every(n=>n.hidden));
+ const html=fs.readFileSync('jag.html','utf8');
+ assert.equal((html.match(/data-nova-complete-notice role="status"/g)||[]).length,2);
+ assert.match(html,/<section id="novaDataCounter"[^>]*>\s*<div[^>]*data-nova-complete-notice/);
+ assert.match(html,/<h2>スランプグラフ<\/h2>\s*<div[^>]*data-nova-complete-notice/);
+});
