@@ -124,14 +124,8 @@ const file=path.join(root,'jag.html');const originalHtml=fs.readFileSync(file,'u
 html=html.replace(/(<!-- NOVA GUIDE RATES START -->)[\s\S]*?(<!-- NOVA GUIDE RATES END -->)/, (_match,start,end)=>[start,...rateSections,end].join('\n'));
 html=html.replace(/\n?<!-- NOVA FULL ANALYSIS START -->[\s\S]*?<!-- NOVA FULL ANALYSIS END -->/,'');
 html=html.replace(/<!-- NOVA FULL INDEX START -->[\s\S]*?<!-- NOVA FULL INDEX END -->/,'');
-const end=html.indexOf('<footer class="novaGuideFoot">');if(end<0)throw Error('Guide footer missing');
-html=html.slice(0,end)+'<!-- NOVA FULL ANALYSIS START -->\n'+sections.map(s=>s.html).join('\n')+'\n<!-- NOVA FULL ANALYSIS END -->\n'+html.slice(end);
-const navEnd=html.indexOf('</nav>',html.indexOf('aria-label="攻略情報の目次"'));
-html=html.slice(0,navEnd)+'<!-- NOVA FULL INDEX START --><span class="novaGuideIndexLabel">詳細解析・全数値</span>'+sections.map(s=>'<a href="#guide-analysis-'+s.id+'">'+esc(s.title)+'</a>').join('')+'<!-- NOVA FULL INDEX END -->'+html.slice(navEnd);
-html=html.replace('NOVA / PLAY GUIDE','全情報版 / COMPLETE DATA').replace('基本スペックから特化ゾーンまで。<br>気になる項目を目次からチェック。','設定別の確率・振分・穢れ・示唆まで掲載。<br>目次の「詳細解析・全数値」からチェック。');
-html=html.replace('内部振分・穢れの具体的な数値・細かな設定差は非掲載。','内部振分・穢れ・設定差の全数値は、目次の「詳細解析・全数値」に掲載。');
+// Detailed analysis appendix is intentionally removed from the player guide.
 html=html.replace('成功で裏ギル・裏空・裏逢魔のいずれかを獲得し、上位ATにつながる。','成功報酬は契機で異なり、上位ATにつながる。初回・差枚節目から成功した場合は、上位ATの特化選択表を使用。');
-html=html.replace(/nova-flow-guide\.(css|js)\?v=20261105-strategy/g,'nova-flow-guide.$1?v=20261105-full-analysis');
 if(html.replace(/\r/g,'')!==originalHtml.replace(/\r/g,''))fs.writeFileSync(file,html);fs.writeFileSync(path.join(root,'nova-strategy-values.json'),JSON.stringify(data,null,2)+'\n');
 if(sections.length!==11||settings.some(s=>Math.abs(Object.values(N.normalRoleProbabilities(s)).reduce((a,b)=>a+b,0)-1)>1e-9))throw Error('Invalid guide tables');
 console.log(JSON.stringify({analysisSections:sections.length,sourceModules:sources.length,htmlBytes:Buffer.byteLength(html),dataBytes:fs.statSync(path.join(root,'nova-strategy-values.json')).size}));
