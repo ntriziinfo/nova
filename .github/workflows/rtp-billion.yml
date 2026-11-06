@@ -45,10 +45,14 @@ jobs:
           node-version: '24'
       - name: One continuous 100-million-game trial without COMPLETE
         run: node scripts/report-rtp-parallel.mjs --games 100000000 --setting "${{ matrix.setting }}" --seed "nova-current-${GITHUB_SHA}" > "setting-${{ matrix.setting }}.json"
+      - name: Measure guide frequencies from the same source
+        run: node scripts/measure-guide-cues.mjs "${{ matrix.setting }}" > "guide-${{ matrix.setting }}.json"
       - uses: actions/upload-artifact@v4
         with:
           name: rtp-setting-${{ matrix.setting }}
-          path: setting-${{ matrix.setting }}.json
+          path: |
+            setting-${{ matrix.setting }}.json
+            guide-${{ matrix.setting }}.json
           retention-days: 30
   publish:
     needs: simulate
@@ -72,11 +76,13 @@ jobs:
         run: |
           node scripts/merge-rtp-current.mjs /tmp/rtp-settings /tmp/rtp-result.json
           node scripts/rtp-current.mjs adopt /tmp/rtp-result.json "$GITHUB_SHA"
-          node --test tests/rtp-current.test.mjs tests/nova-rtp-client.test.mjs
+          node scripts/merge-guide-cues.mjs /tmp/rtp-settings
+          node scripts/build-strategy-guide.mjs
+          node --test tests/rtp-current.test.mjs tests/nova-rtp-client.test.mjs tests/guide-state-frequencies.test.mjs
       - name: Publish verified values (triggers production deployment)
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add docs/rtp-current-1b.json nova-rtp-current.json nova-rtp-current.js
+          git add docs/rtp-current-1b.json nova-rtp-current.json nova-rtp-current.js docs/guide-bonus-frequencies.json jag.html nova-strategy-values.json
           git commit -m 'Update verified 100-million-game RTP evidence'
           git push origin HEAD:main
