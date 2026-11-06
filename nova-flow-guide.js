@@ -39,6 +39,7 @@
     article.scrollTo({top:top - 16, behavior:'instant'});
     sections[i].querySelector('h3').focus({preventScroll:true});
     setActive(sections[i]);
+    if (sections[i].id === 'guide-flow') select(current);
   }));
   article.addEventListener('scroll', () => {
     const edge = article.getBoundingClientRect().top + 64;
@@ -61,8 +62,10 @@
     image.hidden = true; status.hidden = false;
     status.textContent = '画像を読み込めませんでした。再読み込みしてください。'; retry.hidden = false;
   });
-  // The large diagrams load only when expanded, not when starting the game.
-  diagram.addEventListener('toggle', () => { if (diagram.open) select(current); });
+  const observer = new IntersectionObserver(entries => {
+    if (dialog.open && entries.some(entry => entry.isIntersecting)) select(current);
+  }, {root:article});
+  observer.observe(diagram);
   button.addEventListener('click', () => {
     if (dialog.open) return;
     syncLayout();
