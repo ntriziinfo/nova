@@ -30,7 +30,15 @@ export function presentationAliases(registry){
  return aliases;
 }
 const aliases=presentationAliases(JSON.parse(fs.readFileSync(new URL('./rtp-presentation-equivalence.json',import.meta.url),'utf8')));
-function behaviorHash(file,hash){return aliases.get(file+':'+hash)??hash;}
+// These aliases apply only to this report's mandatory uncapped simulation options.
+const completionRegistry=JSON.parse(fs.readFileSync(new URL('./rtp-uncapped-completion-equivalence.json',import.meta.url),'utf8'));
+if(completionRegistry.schema!=='nova-rtp-uncapped-completion-equivalence/v1'||Object.entries(completionRegistry.requiredOptions).some(([key,value])=>REQUIRED_OPTIONS[key]!==value))throw Error('Invalid uncapped completion review');
+const completionAliases=new Map();
+for(const change of completionRegistry.changes){
+ if(!['nova-complete.js','nova-game.js'].includes(change.file)||![change.sourceHash,change.currentHash].every(hash=>/^[a-f0-9]{64}$/.test(hash))||!change.reason||!change.tests?.length)throw Error('Incomplete uncapped completion review');
+ completionAliases.set(change.file+':'+change.currentHash,change.sourceHash);
+}
+function behaviorHash(file,hash){const original=completionAliases.get(file+':'+hash)??hash;return aliases.get(file+':'+original)??original;}
 export function sameSources(expected,current){
  return INPUTS.every(file=>typeof expected?.[file]==='string'&&expected[file].length>0&&typeof current?.[file]==='string'&&current[file].length>0&&behaviorHash(file,expected[file])===behaviorHash(file,current[file]));
 }
@@ -94,7 +102,7 @@ export function currentReport(report,current,commit){
  const games=ready?(report.gamesPerSetting??report.totalGamesPerSetting):GAMES_PER_SETTING;
  const rows=evidence.toSorted((a,b)=>a.setting-b.setting);
  const presentationChanges=ready?INPUTS.filter(file=>report.sourceHashes[file]!==current[file]).map(file=>({file,simulationHash:report.sourceHashes[file],currentHash:current[file]})):[];
- return {schema:'nova-current-rtp/v1',status:ready?'ready':'pending',modelHash:modelHash(current),commit,sourceCommit:ready?report.sourceCommit:null,generatedAt:ready?report.generatedAt:null,sourceVerification:ready?{kind:presentationChanges.length?'reviewed-presentation-only':'identical',presentationChanges}:null,gamesPerSetting:games,conditions:pooled?'2.5億G×4系列合算・MY／差枚停止なし':`${games/100_000_000}億G連続・MY／差枚停止なし`,settings:rows.map(r=>({setting:r.setting,rtp:r.totalPaid/r.totalBet,rtpPct:r.totalPaid/r.totalBet*100,ci95:r.ci95}))};
+ return {schema:'nova-current-rtp/v1',status:ready?'ready':'pending',modelHash:modelHash(current),commit,sourceCommit:ready?report.sourceCommit:null,generatedAt:ready?report.generatedAt:null,sourceVerification:ready?{kind:presentationChanges.some(change=>completionAliases.has(change.file+':'+change.currentHash))?'reviewed-uncapped-completion':presentationChanges.length?'reviewed-presentation-only':'identical',presentationChanges}:null,gamesPerSetting:games,conditions:pooled?'2.5億G×4系列合算・MY／差枚停止なし':`${games/100_000_000}億G連続・MY／差枚停止なし`,settings:rows.map(r=>({setting:r.setting,rtp:r.totalPaid/r.totalBet,rtpPct:r.totalPaid/r.totalBet*100,ci95:r.ci95}))};
 }
 function main(){
  const command=process.argv[2]||'build';

@@ -35,13 +35,27 @@ test('disabled policy unlocks a saved COMPLETE state and cannot immediately relo
  assert.equal(state.locked,false);
 });
 
-test('live store and standalone both use MY, including legacy net settings',()=>{
+test('store net-zero threshold and fixed MY19000 are independent',()=>{
  const complete=loadComplete();
  const standalone=complete.configure({setting:1});
- const store=complete.configure({setting:2,completeMyLimitPt:12000},true);
+ const store=complete.configure({setting:2,completeLimitPt:10000,completeMyLimitPt:10000},true);
  assert.equal(standalone.completeLimitPt,0);
  assert.equal(complete.myLimit(standalone),19000);
- assert.equal(store.completeBasis,'my');
- assert.equal(store.completeLimitPt,0);
- assert.equal(complete.myLimit(store),12000);
+ assert.equal(store.completeBasis,'dual');
+ assert.equal(store.completeLimitPt,10000);
+ assert.equal(complete.myLimit(store),19000);
+});
+
+test('obsolete MY10000 completion unlocks with net below 10000 and MY below 19000, retaining AT',()=>{
+ const complete=loadComplete(),settings=complete.configure({completeLimitPt:10000},true);
+ const state={locked:true,reason:'my',lowestNet:-1114,maxMy:10000,lockedSetting:6,completeProfit:8886,completeMy:10000};
+ const flow={remaining:'777',queuedZones:['ura_ouma'],stock:'2'};
+ const snapshot={completeTrialState:state,normalState:{flow},stats:{totalFee:20000,totalPaid:28886}};
+ const preserved=JSON.stringify({flow,stats:snapshot.stats});
+ complete.restore(state,8886,settings.completeLimitPt,complete.myLimit(settings));
+ assert.equal(state.locked,false);assert.equal(JSON.stringify({flow,stats:snapshot.stats}),preserved);
+ complete.observe(state,9999,10000,19000);assert.equal(state.locked,false);
+ complete.observe(state,10000,10000,19000);assert.equal(state.reason,'net');
+ const my={lowestNet:-12000};complete.observe(my,6999,10000,19000);assert(!my.locked);
+ complete.observe(my,7000,10000,19000);assert.equal(my.reason,'my');
 });

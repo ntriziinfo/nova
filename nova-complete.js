@@ -1,14 +1,13 @@
-/* Live completion uses MY from the running low-water mark. Simulation caps are explicit. */
+/* Store completion has independent net-zero and fixed MY19000 limits. */
 globalThis.NovaComplete=(()=>{
  const finite=n=>Number.isFinite(Number(n))?Number(n):0;
  const defaultNetLimitPt=0,defaultMyLimitPt=19000;
  const validLimit=n=>Number.isInteger(Number(n))&&Number(n)>=1&&Number(n)<=999999;
- function myLimit(settings){if(settings?.completeBasis==='net'||settings?.completeBasis==='none')return 0;const n=Number(settings?.completeMyLimitPt);return validLimit(n)?n:defaultMyLimitPt;}
+ function myLimit(settings){if(settings?.completeBasis==='none')return 0;const n=Number(settings?.completeMyLimitPt);return validLimit(n)?n:defaultMyLimitPt;}
  function configure(settings={},store=false,enabled=true){
   if(enabled===false)return {...settings,completeEnabled:false,completeBasis:'none',completeLimitPt:0,completeMyLimitPt:0};
-  // Admin completeLimitPt is a transport alias, never a net-zero cap in live play.
-  const limit=store&&validLimit(settings.completeLimitPt)?Number(settings.completeLimitPt):validLimit(settings.completeMyLimitPt)?Number(settings.completeMyLimitPt):defaultMyLimitPt;
-  return {...settings,completeEnabled:true,completeBasis:'my',completeLimitPt:0,completeMyLimitPt:limit};
+  if(store)return {...settings,completeEnabled:true,completeBasis:'dual',completeLimitPt:validLimit(settings.completeLimitPt)?Number(settings.completeLimitPt):defaultMyLimitPt,completeMyLimitPt:defaultMyLimitPt};
+  return {...settings,completeEnabled:true,completeBasis:'my',completeLimitPt:0,completeMyLimitPt:defaultMyLimitPt};
  }
  function label(settings,reason){return reason==='net'?`累計差枚＋${Number(settings.completeLimitPt).toLocaleString()}pt`:`MY${myLimit(settings).toLocaleString()}pt`;}
  function observe(state,net,netLimit=defaultNetLimitPt,myLimit=defaultMyLimitPt){

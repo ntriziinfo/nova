@@ -6,11 +6,11 @@ import vm from 'node:vm';
 const source=fs.readFileSync('nova-game.js','utf8');
 const fn=name=>source.match(new RegExp('  function '+name+'\\([^]*?\\n  }'))[0];
 
-test('admin COMPLETE patches configure MY and save unrelated settings',()=>{
+test('admin COMPLETE patches keep independent net and MY caps and save unrelated settings',()=>{
  let saved;
  const c=vm.createContext({
   settings:{setting:6,audioMuted:false,completeEnabled:false,completeBasis:'none',completeLimitPt:0,completeMyLimitPt:0},
-  VERTEX_CONTROLLER_ENABLED:false,COMPLETE_TRIAL_ENABLED:true,
+  VERTEX_CONTROLLER_ENABLED:true,COMPLETE_TRIAL_ENABLED:true,
   updateCompleteTrialState(){},$:()=>null,canUsePlayState:()=>true,readSettings(){},persistState(){saved=JSON.parse(JSON.stringify(c.settings));return true;},updateDisplay(){},log(){}
  });
  vm.runInContext(fs.readFileSync('nova-complete.js','utf8'),c);
@@ -21,17 +21,17 @@ test('admin COMPLETE patches configure MY and save unrelated settings',()=>{
  assert.equal(c.settings.audioMuted,true);
  assert.deepEqual(
   {enabled:c.settings.completeEnabled,basis:c.settings.completeBasis,net:c.settings.completeLimitPt,my:c.settings.completeMyLimitPt},
-  {enabled:true,basis:'my',net:0,my:19000}
+  {enabled:true,basis:'dual',net:10000,my:19000}
  );
  assert.deepEqual(
   {enabled:saved.completeEnabled,basis:saved.completeBasis,net:saved.completeLimitPt,my:saved.completeMyLimitPt},
-  {enabled:true,basis:'my',net:0,my:19000}
+  {enabled:true,basis:'dual',net:10000,my:19000}
  );
 });
 
 test('admin snapshots retain MY configuration and lock state',()=>{
  const c=vm.createContext({
-  settings:{title:'NOVA',setting:4,completeEnabled:true,completeBasis:'my',completeLimitPt:0,completeMyLimitPt:19000},
+  settings:{title:'NOVA',setting:4,completeEnabled:true,completeBasis:'dual',completeLimitPt:10000,completeMyLimitPt:19000},
   stats:{totalFee:300,totalPaid:420},normalState:{},session:{},completeTrialState:{locked:true,reason:'net'},
   machineId:'nova-4',PLAY_SESSION_ID:'play',adminCommandLastId:0,playSessionStartStats:null,
   machineDisplayStats:()=>({}),compactStatsForResume:()=>({totalFee:300,totalPaid:420}),runtimeStateForStorage:()=>({}),
@@ -43,7 +43,7 @@ test('admin snapshots retain MY configuration and lock state',()=>{
  const snapshot=c.adminSnapshot();
  assert.deepEqual(
   {enabled:snapshot.settings.completeEnabled,basis:snapshot.settings.completeBasis,net:snapshot.settings.completeLimitPt,my:snapshot.settings.completeMyLimitPt},
-  {enabled:true,basis:'my',net:19000,my:19000}
+  {enabled:true,basis:'dual',net:10000,my:19000}
  );
 });
 
@@ -53,9 +53,9 @@ test('store polling accepts legacy limit fields, deduplicates and never overwrit
  vm.runInContext(fs.readFileSync('nova-complete.js','utf8'),c);
  vm.runInContext(fn('applyStoreCompleteSettings'),c);
  assert.equal(c.applyStoreCompleteSettings({completeBasis:'net',completeLimitPt:10000}),true);
- assert.equal(c.applyStoreCompleteSettings({completeBasis:'my',completeMyLimitPt:19000}),false);
+ assert.equal(c.applyStoreCompleteSettings({completeLimitPt:0,completeMyLimitPt:19000}),false);
  assert.equal(c.applyStoreCompleteSettings({completeLimitPt:0}),false);
- assert.deepEqual(calls,[{completeMyLimitPt:10000}]);
+ assert.deepEqual(calls,[{completeLimitPt:10000}]);
  assert.equal(c.settings.setting,6);
 });
 

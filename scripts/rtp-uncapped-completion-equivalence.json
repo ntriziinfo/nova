@@ -1,0 +1,34 @@
+{
+  "schema": "nova-rtp-uncapped-completion-equivalence/v1",
+  "requiredOptions": {
+    "completeLimitPt": 0,
+    "completeMyLimitPt": 0,
+    "stopAtComplete": false
+  },
+  "changes": [
+    {
+      "file": "nova-complete.js",
+      "sourceHash": "02e400ed22e424827fd05038bc574f21282ecb723c8f2fffc1516d16d7cbb69d",
+      "currentHash": "a776f1984a734d345093060f08f07f85308c02debdfba273e5233edc37ac0c2c",
+      "sourceCommit": "791c8b30fc10306ddc147266a41c5ed091b8888b",
+      "reason": "Live store completion policy only: net-zero configured threshold plus MY19000. The continuous RTP evidence explicitly disables both completion caps; lottery, RNG, payout and uncapped simulation progression are unchanged.",
+      "tests": [
+        "tests/nova-uncapped-completion.test.mjs",
+        "tests/nova-complete-policy.test.mjs",
+        "tests/nova-admin-complete.test.mjs"
+      ]
+    },
+    {
+      "file": "nova-game.js",
+      "sourceHash": "41a0f6b15fd446d03f8473efff069d56bbec0a45725fbc4d1b1c317866c67a0c",
+      "currentHash": "c2c863afbc7641454c5e82f3dad6d1b87407a9ccf495f9f0fd1e71bf7bd9dbae",
+      "sourceCommit": "791c8b30fc10306ddc147266a41c5ed091b8888b",
+      "reason": "Live store completion policy only: net-zero configured threshold plus MY19000. The continuous RTP evidence explicitly disables both completion caps; lottery, RNG, payout and uncapped simulation progression are unchanged.",
+      "tests": [
+        "tests/nova-uncapped-completion.test.mjs",
+        "tests/nova-complete-policy.test.mjs",
+        "tests/nova-admin-complete.test.mjs"
+      ]
+    }
+  ]
+}

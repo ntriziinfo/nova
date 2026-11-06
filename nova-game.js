@@ -3910,6 +3910,7 @@
       if(settings.smartslotBalanceVersion!==20261013){
         settings.novaArt={...NovaArt.defaults};settings.novaNormal={...NovaNormal.defaults};settings.novaFlow={...NovaFlow.defaults};settings.smartslotBalanceVersion=20261013;
       }
+      if(VERTEX_CONTROLLER_ENABLED&&Number(storeResumeState?.state?.settings?.completeLimitPt)>0)settings.completeLimitPt=Number(storeResumeState.state.settings.completeLimitPt);
       settings=NovaComplete.configure(settings,VERTEX_CONTROLLER_ENABLED,COMPLETE_TRIAL_ENABLED);
       settings.title = normalizeMachineTitle(settings.title);
       if(!SETTING[settings.setting]) settings.setting = 1;
@@ -3994,7 +3995,14 @@
         }
       }
       completeTrialState.lowestNet=Math.min(0,Number(completeTrialState.lowestNet)||0,Number(stats.slumpLow)||0);
-      if(isCompleteLockEnabled())NovaComplete.restore(completeTrialState,(Number(stats.totalPaid)||0)-(Number(stats.totalFee)||0),settings.completeLimitPt,NovaComplete.myLimit(settings));
+      if(isCompleteLockEnabled()){
+        const beforeRecovery={...completeTrialState};
+        NovaComplete.restore(completeTrialState,(Number(stats.totalPaid)||0)-(Number(stats.totalFee)||0),settings.completeLimitPt,NovaComplete.myLimit(settings));
+        if(beforeRecovery.locked&&!completeTrialState.locked&&!normalState.completeRecoveryBackup){
+          // Preserve the exact saved cabinet state before correcting an obsolete MY lock.
+          normalState.completeRecoveryBackup={recoveredAt:Date.now(),savedAt:data.savedAt,settings:data.settings,stats:data.stats,normalState:data.normalState,runtimeState:data.runtimeState,completeTrialState:beforeRecovery};
+        }
+      }
       const runtime = data?.runtimeState || {};
       if(runtime.session && typeof runtime.session === "object"){
         session = {
@@ -4247,9 +4255,9 @@
         rogiMovieVolume: settings.rogiMovieVolume,
         audioMuted: settings.audioMuted,
         completeEnabled:true,
-        completeBasis:'my',
+        completeBasis:settings.completeBasis,
         completeMyLimitPt:NovaComplete.myLimit(settings),
-        completeLimitPt:NovaComplete.myLimit(settings) // Admin transport field; gameplay net cap remains zero.
+        completeLimitPt:settings.completeLimitPt
       },
       stats:{...adminStats, profit},
       normalState:{...normalState},
@@ -4379,10 +4387,9 @@
     setValue("rogiMovieVolume", nextSettings.rogiMovieVolume);
     if(nextSettings.audioMuted !== undefined) settings.audioMuted = !!nextSettings.audioMuted;
     readSettings();
-    const requestedLimit=nextSettings.completeMyLimitPt>0?nextSettings.completeMyLimitPt:nextSettings.completeLimitPt;
+    const requestedLimit=nextSettings.completeLimitPt;
     if(Number.isInteger(Number(requestedLimit))&&Number(requestedLimit)>0&&Number(requestedLimit)<=999999){
-      settings.completeMyLimitPt=Number(requestedLimit);
-      settings.completeLimitPt=0;
+      settings.completeLimitPt=Number(requestedLimit);
     }
     settings=NovaComplete.configure(settings,VERTEX_CONTROLLER_ENABLED,COMPLETE_TRIAL_ENABLED);
     // A limit update never clears an already completed machine.
@@ -4472,9 +4479,9 @@
   }
 
   function applyStoreCompleteSettings(controls){
-    const limit=Number(controls?.completeMyLimitPt)>0?Number(controls.completeMyLimitPt):Number(controls?.completeLimitPt);
-    if(!Number.isInteger(limit)||limit<1||limit>999999||limit===NovaComplete.myLimit(settings))return false;
-    applyAdminSettings({completeMyLimitPt:limit});
+    const limit=Number(controls?.completeLimitPt);
+    if(!Number.isInteger(limit)||limit<1||limit>999999||limit===Number(settings.completeLimitPt))return false;
+    applyAdminSettings({completeLimitPt:limit});
     return true;
   }
 
