@@ -1,0 +1,11067 @@
+
+(function(){
+  "use strict";
+  const {setTimeout,clearTimeout,setInterval,clearInterval}=NovaClock;
+
+  const bootParams = new URLSearchParams(location.search);
+  const bootMachineId = bootParams.get("machine") || "standalone";
+  const bootPlaySessionId = String(bootParams.get("playSessionId") || "");
+  // Display baselines keep cabinet totals separate from the current player settlement.
+  let machineDisplayBase = readMachineDisplayBase();
+  const MACHINE_STORAGE_KEY = "nova_slot_state_v1_" + bootMachineId;
+  const STORAGE_KEY = bootPlaySessionId ? `${MACHINE_STORAGE_KEY}_session_${bootPlaySessionId}` : MACHINE_STORAGE_KEY;
+  const STORAGE_RESUME_KEY = STORAGE_KEY + "_resume";
+  const PREFERENCES_STORAGE_KEY = "nova_slot_preferences_v1_" + bootMachineId;
+  let storageRestoreBlocked = false;
+  let storeResumeState=null, storeBootReady=false, storeEndSnapshot=null;
+  let displaySinceBonusOffset=null;
+  let playAccess = null;
+
+  function canUsePlayState(){
+    return !storageRestoreBlocked && !storeEndSnapshot && !!playAccess?.owned();
+  }
+
+  function showPlayBlocked(reason){
+    const panel=$('playAccessStatus');
+    if(!panel)return;
+    const messages={
+      occupied:'別のタブでこの台が開いています。先に開いたタブを閉じてから再読み込みしてください。',
+      unsupported:'このブラウザでは台の重複起動を確認できません。最新のブラウザでHTTPSの公開ページを開いてください。',
+      restore:'保存データを復旧できませんでした。上書きを防ぐため遊技を停止しています。保存データを削除せず、管理者へ連絡してください。',
+      ending:'遊技状態を保存して終了しています。終了処理に失敗した場合は、再読み込みで同じ状態から再開できます。',
+      error:'台の起動を確認できませんでした。再読み込みしてください。'
+    };
+    $('playAccessMessage').textContent=messages[reason] || messages.error;
+    panel.hidden=false;
+    for(const child of document.body.children)if(child!==panel)child.inert=true;
+    $('reloadPlayAccess').onclick=()=>location.reload();
+    $('reloadPlayAccess').focus();
+  }
+
+  const SOSUKE_ZONE_BGM_SRC = "assets/media/nova/sosuke-bgm.wav";
+  const TOTO_ZONE_BGM_SRC = "assets/media/nova/toto-bgm.wav";
+  const URAPI_ZONE_BGM_SRC = "assets/media/nova/urapi-bgm.wav";
+  const SORA_ZONE_BGM_SRC = "assets/media/nova/sora-bgm.wav";
+  const GIRU_ZONE_BGM_SRC = "assets/media/nova/giru-bgm.wav";
+  const OUMA_ZONE_BGM_SRC = "assets/media/nova/oumafreez.wav";
+  const INITIAL_DUO_ZONE_BGM_SRC = "assets/media/nova/initial-duo-bgm.mp3";
+  const SORTIE_ZONE_BGM_SRC = "assets/media/nova/sortie-bgm.mp3";
+  const SORTIE_SANDWICH_AIM_SOUND_SRC = "assets/media/nova/sortie-sandwich-aim.wav";
+  const SORTIE_SANDWICH_HIT_SOUND_SRC = "assets/media/nova/sortie-sandwich-hit.wav";
+  const NOVA_ART_BGM_SRC = "assets/media/nova/RUSH.wav";
+  const NOVA_UPPER_ART_BGM_SRC = "assets/media/nova/upper-at-bgm.mp3";
+  const NOVA_CHECKPOINT_BGM_SRC = "assets/media/nova/checkpoint-bgm.mp3";
+  const NOVA_BIG_BGM_SRC = "assets/media/nova/BIG.wav";
+  const NOVA_IMPURITY_BGM_SRC = "assets/media/nova/impurity-release-bgm-1143035-20261030.mp3";
+
+  const CZ_BGM_SRC = "assets/media/nova/audiostock_860274.mp3";
+  const DEFAULT_NORMAL_BGM_SRC = "assets/media/nova/audiostock_1117081.wav";
+  const HIGH_MODE_BGM_SRC = "";
+
+  const AT_BGM_SRC = "";
+  const BAR_BGM_SRC = "";
+  const BGM_ASSET_VERSION = "?v=20260706_bgm_minus083";
+  const BIG_BONUS_BGM_SRCS = Object.freeze([
+    "assets/media/jag/big_1.wav" + BGM_ASSET_VERSION,
+    "assets/media/jag/big_2.wav" + BGM_ASSET_VERSION
+  ]);
+  const BIG_50G_BONUS_BGM_SRC = "assets/media/jag/big_50g.wav" + BGM_ASSET_VERSION;
+  const REG_BONUS_BGM_SRC = "assets/media/jag/reg_bonus.wav" + BGM_ASSET_VERSION;
+
+  const BIG_SOUND_SRC = "assets/media/jag/big_confirm.mp3";
+
+  const KOATARI_SOUND_SRC = "";
+  const PAYOUT_SOUND_SRC = "assets/media/jag/bell.wav";
+  const PAYOUT_3PT_BELL_SOUND_SRC = "assets/media/nova/bell_payout.wav";
+  const REPLAY_SOUND_SRC = "assets/media/nova/replay.wav";
+  const CHERRY_SOUND_SRC = "assets/media/jag/cherry.wav";
+  const SPECIAL_SYMBOL_SOUND_SRC = "assets/media/jag/special_symbol.wav";
+  const SPIN_SOUND_SRC = "assets/media/nova/spin_start.wav";
+  const STOP_SOUND_SRC = "assets/media/nova/reel-stop.wav";
+  const PEKA_SOUND_SRC = "assets/media/jag/peka_1.wav";
+  const PEKA_SOUND_SRCS = Object.freeze([
+    PEKA_SOUND_SRC,
+    "assets/media/jag/peka_kyuin.wav",
+    "assets/media/jag/peka_atari.wav",
+    "assets/media/jag/peka_kyuin_triple.wav"
+  ]);
+  const PEKA_PRIMARY_RATE = 0.5;
+  const PEKA_BIG_ATSU_SOUND_SRC = "assets/media/jag/peka_atsu.wav";
+  const PEKA_BIG_ATSU_RATE = 0.1;
+  const SEVEN_CONFIRM_SOUND_SRC = "assets/media/jag/big_kakutei.wav";
+  const REG_CONFIRM_SOUND_SRC = "assets/media/jag/reg_kakutei.wav";
+  const BONUS_CONFIRM_SOUND_SRC = "assets/media/jag/big_confirm.mp3";
+  const BONUS_END_BGM_SRC = "assets/media/nova/bonus_art_end.wav";
+
+
+  const BAR_AIM_VOICE_SRC = "assets/media/jag/bar_wo_nerae.mp3";
+  const CZ_FAILURE_PUSH_SOUND_SRC = "assets/media/nova/cz-failure-blackout-20261027.mp3";
+  const CZ_SUCCESS_PUSH_SOUND_SRC = "assets/media/nova/cz-success-push-20261027.mp3";
+  const SETTING_BONUS_END_VOICE_SRCS = Object.freeze({
+    2:"assets/media/jag/setting_voice_2plus.wav",
+    4:"assets/media/jag/setting_voice_4plus.wav",
+    5:"assets/media/jag/setting_voice_5plus.wav",
+    6:"assets/media/jag/setting_voice_6plus.wav"
+  });
+  const BATTLE_BGM_SRC = "";
+  const SPEED_BGM_SRC = "";
+
+  const SETTING = {
+    1:{target:0.900},
+    2:{target:0.930},
+    3:{target:0.960},
+    4:{target:1.010},
+    5:{target:1.040},
+    6:{target:1.080}
+  };
+
+  const A_TYPE_MODE = true;
+
+  const NOVA_RISING_GAMES = 32;
+
+
+  const A_TYPE_REACH_ME_ANNOUNCE_RATE = 0;
+
+  const A_TYPE_PAYOUTS = Object.freeze({
+    BIG:252,
+    MID:96,
+    SMALL:0,
+    ONE_COIN:1,
+    GRAPE:8,
+    BELL:8,
+    BELL15:15,
+    REPLAY:0
+  });
+
+  const A_TYPE_BONUS_MAIN_RESULT = "BELL";
+
+  const USER_FACE = "__USER_FACE__";
+  const REPLAY_SYMBOL = "REPLAY";
+  const CHERRY_SYMBOL = "🍒";
+  const BELL_SYMBOL = "🔔";
+  const BLANK_SYMBOL = "__BLANK__";
+  const SUICA_SYMBOL = "🍋";
+  const NEBULA_SYMBOL = 'NEBULA';
+  const NEBULA_IMAGE_SRC = 'assets/symbols/nebula-original.png';
+  const SUICA_IMAGE_SRC = (globalThis.NovaMedia?.imageSource("assets/lossless-20261027/suika.webp")||"assets/lossless-20261027/suika.webp");
+  const CHERRY_IMAGE_SRC = "assets/lossless-20261027/cherry-20261027.webp";
+  const BELL_IMAGE_SRC = (globalThis.NovaMedia?.imageSource("assets/lossless-20261027/bell.webp")||"assets/lossless-20261027/bell.webp");
+  const SEVEN_IMAGE_SRC = "assets/lossless-20261027/seven-nebula-original.webp";
+  const MISS_IMAGE_SRC = (globalThis.NovaMedia?.imageSource("assets/lossless-20261027/miss.webp")||"assets/lossless-20261027/miss.webp");
+  const BAR_IMAGE_SRC = (globalThis.NovaMedia?.imageSource("assets/lossless-20261027/nova-only-20261027.webp")||"assets/lossless-20261027/nova-only-20261027.webp");
+  const USER_FACE_SRC = (globalThis.NovaMedia?.imageSource("assets/lossless-20261027/miss.webp")||"assets/lossless-20261027/miss.webp");
+  const REPLAY_IMAGE_SRC = (globalThis.NovaMedia?.imageSource("assets/lossless-20261027/replay.webp")||"assets/lossless-20261027/replay.webp");
+  const BLANK_IMAGE_SRC = "assets/lossless-20261027/blank-supernova-20261028-v1.webp";
+  const SYMBOL_IMAGE_SRCS = Object.freeze([
+    SUICA_IMAGE_SRC,
+    NEBULA_IMAGE_SRC,
+    CHERRY_IMAGE_SRC,
+    BELL_IMAGE_SRC,
+    SEVEN_IMAGE_SRC,
+    MISS_IMAGE_SRC,
+    BAR_IMAGE_SRC,
+    USER_FACE_SRC,
+    REPLAY_IMAGE_SRC,
+    BLANK_IMAGE_SRC
+  ]);
+  const REEL_SYMBOL_IMAGES=Object.freeze({
+      [CHERRY_SYMBOL]:[CHERRY_IMAGE_SRC,'cherrySymImg','チェリー'],
+      [BELL_SYMBOL]:[BELL_IMAGE_SRC,'bellSymImg','ベル'],
+      [REPLAY_SYMBOL]:[REPLAY_IMAGE_SRC,'replaySymImg','リプレイ'],
+      [SUICA_SYMBOL]:[SUICA_IMAGE_SRC,'suikaSymImg','スイカ'],
+      [BLANK_SYMBOL]:[BLANK_IMAGE_SRC,'blankSymImg','ブランク'],
+      [USER_FACE]:[USER_FACE_SRC,'missSymImg','特殊役'],
+      '⭐':[MISS_IMAGE_SRC,'missSymImg','ハズレ']
+  });
+  const symbolImagePreloads = new Map();
+
+  function preloadSymbolImages(){
+    SYMBOL_IMAGE_SRCS.forEach(src=>{
+      if(globalThis.NovaMedia?.compact&&src===NEBULA_IMAGE_SRC)return;
+      if(!src || symbolImagePreloads.has(src)) return;
+      const img = new Image();
+      img.loading = "eager";
+      img.decoding = "async";
+      if("fetchPriority" in img) img.fetchPriority = "high";
+      img.src = src;
+      const ready = img.decode ? img.decode().catch(()=>null) : Promise.resolve(null);
+      symbolImagePreloads.set(src, {img, ready});
+    });
+  }
+  preloadSymbolImages();
+
+  const RESULT = {
+    NEBULA:{name:'nebula特殊図柄揃い',label:'NEBULA',reel:[NEBULA_SYMBOL,NEBULA_SYMBOL,NEBULA_SYMBOL],cls:'purple',kind:'miss'},
+    WEAK_SUICA:{name:'スイカ',label:'スイカ',reel:[SUICA_SYMBOL,SUICA_SYMBOL,SUICA_SYMBOL],cls:'green',kind:'rare'},
+    STRONG_SUICA:{name:'強スイカ',label:'強スイカ',reel:[SUICA_SYMBOL,SUICA_SYMBOL,SUICA_SYMBOL],cls:'green',kind:'rare'},
+    CHANCE_A:{name:'チャンス目A',label:'チャンス目A',reel:['7','BAR','BAR'],cls:'purple',kind:'rare'},
+    CHANCE_B:{name:'チャンス目B',label:'チャンス目B',reel:['7',NEBULA_SYMBOL,'BAR'],cls:'purple',kind:'rare'},
+    CZ:{name:"CZ突入",reel:["7","BAR","7"],label:"CZ",cls:"purple",kind:"miss"},
+    STRONG_CZ:{name:"強CZ突入",reel:["7","BAR","7"],label:"強CZ",cls:"gold",kind:"miss"},
+    WEAK_NOVA:{name:"弱チェリー",reel:[CHERRY_SYMBOL,"ANY","ANY"],label:"弱チェリー",cls:"purple",kind:"rare"},
+    STRONG_NOVA:{name:"強チェリー",reel:[CHERRY_SYMBOL,CHERRY_SYMBOL,CHERRY_SYMBOL],label:"強チェリー",cls:"purple",kind:"rare"},
+    SUPER_NOVA:{name:"スーパーノヴァ目",reel:["BAR","BAR","BAR"],label:"スーパーノヴァ目",cls:"gold",kind:"miss"},
+    // The visible stop is selected from the approved sheet MISS patterns; payout remains 1pt.
+    ONE_COIN:{name:"1枚役",label:"1枚",reel:[BELL_SYMBOL,BLANK_SYMBOL,REPLAY_SYMBOL],cls:"blue",kind:"pay"},
+    MISS:{name:"ハズレ", reel:[REPLAY_SYMBOL,REPLAY_SYMBOL,BELL_SYMBOL], label:"MISS", cls:"", kind:"miss"},
+    SMALL:{name:"特殊役", reel:[REPLAY_SYMBOL,REPLAY_SYMBOL,REPLAY_SYMBOL], label:"SPECIAL", cls:"blue", kind:"payadd"},
+    MID:{name:"RB", reel:["7","7","BAR"], label:"RB", cls:"purple", kind:"payadd"},
+    MID_CHERRY:{name:"RB（チェリー同時）", reel:["7","7","BAR"], label:"RB", cls:"purple", kind:"payadd"},
+    GRAPE:{name:"ブドウ", reel:[BELL_SYMBOL,BELL_SYMBOL,BELL_SYMBOL], label:"ブドウ", cls:"green", kind:"pay"},
+    BAR3:{name:"BAR揃い", reel:["BAR","BAR","BAR"], label:"BAR", cls:"purple", kind:"add"},
+    BIG:{name:"BB", reel:["7","7","7"], label:"BB", cls:"red", kind:"payadd"},
+    DEVIL_ZONE:{name:"DEVIL ZONE", reel:["7","7","BAR"], label:"DZ", cls:"purple", kind:"payadd"},
+    SUPER_DEVIL_ZONE:{name:"SUPER DEVIL ZONE", reel:["7","7","7"], label:"SUPER DZ", cls:"red", kind:"payadd"},
+    BELL:{name:"8ptベル", reel:[BELL_SYMBOL,BELL_SYMBOL,BELL_SYMBOL], label:"8pt BELL", cls:"gold", kind:"pay"},
+    BELL15:{name:"15ptベル", reel:[BELL_SYMBOL,BELL_SYMBOL,BELL_SYMBOL], label:"15pt BELL", cls:"gold", kind:"pay"},
+    BELL3:{name:"斜めベル", reel:[BELL_SYMBOL,BELL_SYMBOL,BELL_SYMBOL], label:"", cls:"gold", kind:"pay"},
+    REPLAY:{name:"リプレイ", reel:[REPLAY_SYMBOL,REPLAY_SYMBOL,REPLAY_SYMBOL], label:"REPLAY", cls:"blue", kind:"pay"},
+    SUICA:{name:"スイカ揃い", reel:["🍋","🍋","🍋"], label:"SUICA", cls:"green", kind:"pay"},
+    CHERRY_ANY:{name:"チェリー", reel:[CHERRY_SYMBOL,REPLAY_SYMBOL,BELL_SYMBOL], label:"CHERRY", cls:"red", kind:"payadd"},
+    CHERRY_DOUBLE:{name:"チェリー2連", reel:[CHERRY_SYMBOL,CHERRY_SYMBOL,REPLAY_SYMBOL], label:"CHERRY×2", cls:"red", kind:"add"},
+    CHERRY_TRIPLE:{name:"チェリー3つ", reel:[CHERRY_SYMBOL,CHERRY_SYMBOL,CHERRY_SYMBOL], label:"CHERRY×3", cls:"red", kind:"payadd"}
+  };
+
+  const SETTING_PROFILE = {
+    // 実抽選は下の共通ATテーブルで運用。左のみチェリーは廃止し、AT中はSET上乗せ抽選へ統一。
+    1:{weights:[{result:"SMALL",w:4},{result:"MID",w:3},{result:"BIG",w:0.397},{result:"BELL",w:300},{result:"BELL3",w:70},{result:"REPLAY",w:366},{result:"SUICA",w:3},{result:"CHERRY_DOUBLE",w:2},{result:"CHERRY_TRIPLE",w:1}]},
+    2:{weights:[{result:"SMALL",w:4},{result:"MID",w:3},{result:"BIG",w:0.397},{result:"BELL",w:300},{result:"BELL3",w:70},{result:"REPLAY",w:366},{result:"SUICA",w:3},{result:"CHERRY_DOUBLE",w:2},{result:"CHERRY_TRIPLE",w:1}]},
+    3:{weights:[{result:"SMALL",w:4},{result:"MID",w:3},{result:"BIG",w:0.397},{result:"BELL",w:300},{result:"BELL3",w:70},{result:"REPLAY",w:366},{result:"SUICA",w:3},{result:"CHERRY_DOUBLE",w:2},{result:"CHERRY_TRIPLE",w:1}]},
+    4:{weights:[{result:"SMALL",w:4},{result:"MID",w:3},{result:"BIG",w:0.397},{result:"BELL",w:300},{result:"BELL3",w:70},{result:"REPLAY",w:366},{result:"SUICA",w:3},{result:"CHERRY_DOUBLE",w:2},{result:"CHERRY_TRIPLE",w:1}]},
+    5:{weights:[{result:"SMALL",w:4},{result:"MID",w:3},{result:"BIG",w:0.397},{result:"BELL",w:300},{result:"BELL3",w:70},{result:"REPLAY",w:366},{result:"SUICA",w:3},{result:"CHERRY_DOUBLE",w:2},{result:"CHERRY_TRIPLE",w:1}]},
+    6:{weights:[{result:"SMALL",w:4},{result:"MID",w:3},{result:"BIG",w:0.397},{result:"BELL",w:300},{result:"BELL3",w:70},{result:"REPLAY",w:366},{result:"SUICA",w:3},{result:"CHERRY_DOUBLE",w:2},{result:"CHERRY_TRIPLE",w:1}]}
+  };
+
+  Object.assign(SETTING_PROFILE, {
+    1:{weights:[{result:"SMALL",w:4},{result:"MID",w:3},{result:"BIG",w:0.397},{result:"BELL",w:300},{result:"BELL3",w:70},{result:"REPLAY",w:366},{result:"SUICA",w:3},{result:"CHERRY_DOUBLE",w:2},{result:"CHERRY_TRIPLE",w:1}]},
+    2:{weights:[{result:"SMALL",w:4},{result:"MID",w:3},{result:"BIG",w:0.397},{result:"BELL",w:300},{result:"BELL3",w:70},{result:"REPLAY",w:366},{result:"SUICA",w:3},{result:"CHERRY_DOUBLE",w:2},{result:"CHERRY_TRIPLE",w:1}]},
+    3:{weights:[{result:"SMALL",w:4},{result:"MID",w:3},{result:"BIG",w:0.397},{result:"BELL",w:300},{result:"BELL3",w:70},{result:"REPLAY",w:366},{result:"SUICA",w:3},{result:"CHERRY_DOUBLE",w:2},{result:"CHERRY_TRIPLE",w:1}]},
+    4:{weights:[{result:"SMALL",w:4},{result:"MID",w:3},{result:"BIG",w:0.397},{result:"BELL",w:300},{result:"BELL3",w:70},{result:"REPLAY",w:366},{result:"SUICA",w:3},{result:"CHERRY_DOUBLE",w:2},{result:"CHERRY_TRIPLE",w:1}]},
+    5:{weights:[{result:"SMALL",w:4},{result:"MID",w:3},{result:"BIG",w:0.397},{result:"BELL",w:300},{result:"BELL3",w:70},{result:"REPLAY",w:366},{result:"SUICA",w:3},{result:"CHERRY_DOUBLE",w:2},{result:"CHERRY_TRIPLE",w:1}]},
+    6:{weights:[{result:"SMALL",w:4},{result:"MID",w:3},{result:"BIG",w:0.397},{result:"BELL",w:300},{result:"BELL3",w:70},{result:"REPLAY",w:366},{result:"SUICA",w:3},{result:"CHERRY_DOUBLE",w:2},{result:"CHERRY_TRIPLE",w:1}]}
+  });
+
+  const symbols = ["7","BAR",REPLAY_SYMBOL,BELL_SYMBOL];
+  const AUDIO_BALANCE_VERSION = 9;
+  const ROLE_STAT_COUNTER_VERSION = 2;
+  const DEFAULT_MASTER_VOLUME = 0.50;
+  const DEFAULT_BGM_VOLUME = 0.50;
+  const DEFAULT_SFX_VOLUME = 0.50;
+  const DEFAULT_VOICE_VOLUME = 0.50;
+  const DEFAULT_PAYOUT_VOLUME = 0.50;
+  const DEFAULT_MOVIE_VOLUME = 0.50;
+  const DEFAULT_ROGI_MOVIE_VOLUME = 0.50;
+  const MATCHED_BGM_GAIN_DB = 0;
+  const NORMALIZED_AUDIO_OUTPUT_SCALE = 1;
+  const BGM_OUTPUT_SCALE = dbToGain(MATCHED_BGM_GAIN_DB);
+  const BAR_BGM_OUTPUT_SCALE = dbToGain(MATCHED_BGM_GAIN_DB);
+  const SFX_OUTPUT_SCALE = NORMALIZED_AUDIO_OUTPUT_SCALE;
+  const SETTING_VOICE_OUTPUT_SCALE = 1;
+  const CONFIRM_SOUND_OUTPUT_SCALE = NORMALIZED_AUDIO_OUTPUT_SCALE;
+  const LINEUP_CONFIRM_SOUND_OUTPUT_SCALE = 1;
+
+  const PAYOUT_SOUND_OUTPUT_SCALE = 1;
+  const BELL_PAYOUT_SOUND_OUTPUT_SCALE = 1;
+  const BATTLE_BGM_OUTPUT_SCALE = dbToGain(MATCHED_BGM_GAIN_DB);
+  const MOVIE_OUTPUT_SCALE = NORMALIZED_AUDIO_OUTPUT_SCALE;
+  const ROGI_MOVIE_OUTPUT_SCALE = NORMALIZED_AUDIO_OUTPUT_SCALE;
+
+  function dbToGain(db){
+    return Math.pow(10, Number(db) / 20);
+  }
+
+  const AUDIO_SOURCE_OUTPUT_SCALE = Object.freeze({
+    ['assets/media/nova/shutter.wav']: dbToGain(-11),
+    ['assets/media/nova/shutter-close.wav']: dbToGain(-3),
+    ['assets/media/nova/ouma-reverse-v2.wav']: dbToGain(5),
+
+    [BIG_BONUS_BGM_SRCS[0]]: dbToGain(0),
+    [BIG_BONUS_BGM_SRCS[1]]: dbToGain(-2),
+    [BIG_50G_BONUS_BGM_SRC]: dbToGain(-3.5),
+    [REG_BONUS_BGM_SRC]: dbToGain(-2),
+    [BONUS_END_BGM_SRC]: dbToGain(0),
+    [PAYOUT_SOUND_SRC]: dbToGain(-0.5),
+    [REPLAY_SOUND_SRC]: dbToGain(0),
+    [CHERRY_SOUND_SRC]: dbToGain(1),
+    [SPECIAL_SYMBOL_SOUND_SRC]: dbToGain(-1.5),
+    [SPIN_SOUND_SRC]: dbToGain(-1),
+    [STOP_SOUND_SRC]: dbToGain(-1),
+    [PEKA_SOUND_SRC]: dbToGain(-1),
+    ["assets/media/jag/peka_kyuin.wav"]: dbToGain(1),
+    ["assets/media/jag/peka_atari.wav"]: dbToGain(3),
+    ["assets/media/jag/peka_kyuin_triple.wav"]: dbToGain(2),
+    [PEKA_BIG_ATSU_SOUND_SRC]: dbToGain(3),
+    [SEVEN_CONFIRM_SOUND_SRC]: dbToGain(-1),
+    [REG_CONFIRM_SOUND_SRC]: dbToGain(0),
+    [BONUS_CONFIRM_SOUND_SRC]: dbToGain(-8),
+    [BAR_AIM_VOICE_SRC]: dbToGain(4),
+    [SETTING_BONUS_END_VOICE_SRCS[2]]: dbToGain(3),
+    [SETTING_BONUS_END_VOICE_SRCS[4]]: dbToGain(3),
+    [SETTING_BONUS_END_VOICE_SRCS[5]]: dbToGain(3),
+    [SETTING_BONUS_END_VOICE_SRCS[6]]: dbToGain(3),
+  });
+
+  function normalizedAudioSourceKey(src=""){
+    return String(src || "").split("?")[0];
+  }
+
+  function audioSourceOutputScale(src=""){
+    const key = String(src || "");
+    // Mastered copies bypass historical trims, except the requested +5 dB
+    // emphasis for the reverse-reel SE shared by Urapi and Ouma.
+    if(globalThis.NovaAudioAssets?.entry(src)&&normalizedAudioSourceKey(key)!=='assets/media/nova/ouma-reverse-v2.wav')return 1;
+    return AUDIO_SOURCE_OUTPUT_SCALE[key] || AUDIO_SOURCE_OUTPUT_SCALE[normalizedAudioSourceKey(key)] || 1;
+  }
+
+  function applyAudioSourceOutputScale(volume=0, src=""){
+    const raw = Number(volume);
+    if(!Number.isFinite(raw) || raw <= 0) return 0;
+    return Math.max(0, Math.min(1, raw * audioSourceOutputScale(src)));
+  }
+
+  // Slider 50 reproduces these v2 category levels; both ends retain their full range.
+  const AUDIO_MIX_CENTER = Object.freeze({
+    bgmVolume: 0.69, sfxVolume: 0.46, voiceVolume: 0.55, payoutVolume: 0.52
+  });
+
+  function remapVolumeSlider(value, fromCenter, toCenter){
+    if(value <= fromCenter) return value * toCenter / fromCenter;
+    return toCenter + (value - fromCenter) * (1 - toCenter) / (1 - fromCenter);
+  }
+
+  function migrateAudioCalibration(target, previousVersion=0){
+    if(Number(previousVersion) >= 3) return;
+    const v1Scale = {bgmVolume: 2, sfxVolume: 2, voiceVolume: 1.14, payoutVolume: 0.74};
+    for(const [key, center] of Object.entries(AUDIO_MIX_CENTER)){
+      const value = Number(target[key]);
+      if(!(Number(previousVersion) >= 1) || !Number.isFinite(value)){
+        target[key] = 0.5;
+        continue;
+      }
+      const previousLevel = Number(previousVersion) < 2 ? value / v1Scale[key] : value;
+      target[key] = remapVolumeSlider(clamp(previousLevel, 0, 1), center, 0.5);
+    }
+    target.audioCalibrationVersion = 3;
+  }
+
+  function audioOutputVolume(value, scale=1){
+    if(typeof settings !== "undefined" && settings.audioMuted) return 0;
+    const raw = Number(value);
+    if(!Number.isFinite(raw) || raw <= 0) return 0;
+    const masterRaw = typeof settings !== "undefined" ? Number(settings.masterVolume) : DEFAULT_MASTER_VOLUME;
+    const master = Number.isFinite(masterRaw) ? clamp(masterRaw, 0, 1) : DEFAULT_MASTER_VOLUME;
+    return Math.max(0, Math.min(1, raw * scale * master * 0.5));
+  }
+
+  let settings = {
+    title:"NOVA",
+    setting:1,
+    fee:100,
+    stSpins:10,
+    oddsMultiplier:1,
+    smallMul:0.15,
+    midMul:0.15,
+    crownMul:0.0,
+    cherryMul:0.05,
+    bellMul:0.15,
+    suikaMul:0.03,
+    bigMul:0.15,
+    bigAdd:5,
+    bellAdd:0,
+
+    autoDelay:0.5,
+    autoStopOrderMode:"normal",
+    masterVolume:DEFAULT_MASTER_VOLUME,
+    bgmVolume:DEFAULT_BGM_VOLUME,
+    sfxVolume:DEFAULT_SFX_VOLUME,
+    voiceVolume:DEFAULT_VOICE_VOLUME,
+    payoutVolume:DEFAULT_PAYOUT_VOLUME,
+    movieVolume:DEFAULT_MOVIE_VOLUME,
+    rogiMovieVolume:DEFAULT_ROGI_MOVIE_VOLUME,
+    audioMuted:false,
+    audioBalanceVersion:AUDIO_BALANCE_VERSION,
+    audioCalibrationVersion:3,
+    completeEnabled:false,
+    completeBasis:"none",
+    completeLimitPt:0,
+    completeMyLimitPt:0
+  };
+
+  let stats = {
+    totalSessions:0,
+    atFirstCount:0,
+    atFirstCountPartial:false,
+    totalFee:0,
+    totalPaid:0,
+    totalSpins:0,
+    normalSpins:0,
+    highSpins:0,
+    roleStatVersion:ROLE_STAT_COUNTER_VERSION,
+    bigCount:0,
+    midCount:0,upperBigCount:0,
+    premiumBigCount:0,
+    grapeCount:0,
+    smallCount:0,
+    bellCount:0,
+    diagonalBellCount:0,
+    replayCount:0,
+    suikaCount:0,
+    cherryCount:0,
+    slumpHigh:0,
+    slumpLow:0,
+    slumpHistory:[{spin:0, profit:0}]
+  };
+
+  let normalState = {
+    mode:"normal",
+    highRemain:0,
+    risingRemain:0,
+    risingBonusOrigin:false,
+    sinceBonus:0,
+    bonusPending:false,
+    bonusKind:"",
+    bonusSource:"",
+    premiumBonus:false,
+    oneGameRenBonus:false,
+    bonusWaitGames:0,
+    bonusHitGamesSince:0,
+    prepVersion:0,
+    prepReady:false,
+    prepGames:0,
+    prepLeft:0,
+    prepSets:0,
+    prepZones:[],
+    prepUpperBonus:false,
+    prepUpperAt:false,
+    reachMePending:false,
+    reachMeBonusKind:"",
+    reachMeBonusSource:"",
+    reachMeHitGamesSince:0,
+    reachMePrepSets:0,
+    reachMePrepZones:[],
+    pendingSettingVoiceSrc:"",
+    pendingPremiumVoiceSrc:"",
+    morningCeilingActive:false
+  };
+
+  function currentPreparationVersion(){
+    return Math.max(0,Math.floor(Number(NovaArt.preparationRules?.version)||0));
+  }
+
+  function replayGatedBonusPreparation(value=normalState){
+    const version=currentPreparationVersion();
+    return !!version&&Math.floor(Number(value?.prepVersion)||0)===version;
+  }
+
+  function preparationStopOrder(order){
+    return order==='right'?[2,1,0]:order==='middle'?[1,2,0]:order==='left'?[0,1,2]:[];
+  }
+
+  function clearBonusPreparationState(){
+    normalState.prepVersion=0;
+    normalState.prepReady=false;
+    normalState.prepGames=0;
+    normalState.prepLeft=0;
+    normalState.prepSets=0;
+    normalState.prepZones=[];
+    normalState.prepUpperBonus=false;
+    normalState.prepUpperAt=false;
+  }
+
+  function beginBonusPreparation(award={}){
+    const zoneIds=Array.isArray(NovaArt.zoneIds)?NovaArt.zoneIds:[];
+    normalState.prepVersion=currentPreparationVersion();
+    normalState.prepReady=false;
+    normalState.prepGames=0;
+    normalState.prepLeft=0;
+    normalState.prepSets=Math.max(0,Math.floor(Number(award.sets)||0));
+    normalState.prepZones=Array.isArray(award.zones)?award.zones.filter(zone=>zoneIds.includes(zone)&&zone!=='sosuke'):[];
+    normalState.prepUpperBonus=!!award.upperBonus;
+    normalState.prepUpperAt=!!award.upperAt;
+  }
+
+  let session = {
+    active:false,
+    remain:0,
+    fee:0,
+    cost:0,
+    paid:0,
+    hits:0,
+    added:0,
+    addedGames:0,
+    setNo:0,
+    stockSets:0,
+    barBgmSets:0,
+    nextSetBarBgm:false,
+    currentSetBarBgm:false,
+    continuationRate:0,
+    bigZone:0,
+    bigZoneType:"",
+    phase:"idle",
+    bonusKind:"",
+    bonusTarget:0,
+    bonusExtraStockVersion:NovaArt.bonusExtraStockRules.version,
+    bonusExtraStockReady:false,
+    bonusExtraStockTarget:0,
+    bonusExtraStockRemaining:0,
+    bonusExtraStockOffered:false,
+    bonusStartGames:0,
+    risingResumeRemain:0,
+    risingBonusOrigin:false,
+    premiumBonus:false,
+    oneGameRenBonus:false,
+    bonusUpperAt:false,
+    premiumChainEligible:false,
+    bonusBgmSrc:"",
+    battleRemain:0,
+    battleWin:false,
+    battleSource:"",
+    resultPayout:null,
+    endSignal:null
+  };
+
+  let isSpinning = false;
+  let jagChainCount = null;
+  let jagChainBonusHandoff = false;
+  let jagLastGamePayout = 0;
+  let jagLastBonusPayout = 0;
+  let jagChanceHold = false;
+  let pendingATypeInternalBonus = null;
+  let currentSpin = null;
+  let spinCanStop = false;
+  let spinWaitTimer = null;
+  let bonusEndBgmPlaying = false;
+  let bonusEndBgmAudio = null;
+  let bonusEndVoiceAudio = null;
+  let bonusEndBgmTimer = null;
+  let bonusConfirmSoundPlaying = false;
+  let bonusConfirmSoundAudio = null;
+  let bonusConfirmSoundTimer = null;
+  const MIN_SPIN_WAIT_MS = 500;
+  const RESULT_WAIT_MS = 1000;
+  const KEYBOARD_STOP_TURBO_MULTIPLIER = 3;
+  const REEL_FULL_ROTATION_MS = NovaReelMotion.rotationMs;
+  const SPIN_COST = 3;
+  const BONUS_ANNOUNCE_THIRD_STOP_RATE = 0.70;
+  const BONUS_ANNOUNCE_EARLY_TIMINGS = Object.freeze(["lever", "stop1", "stop2"]);
+  const PAYOUT_BASE = 100;
+  const ROLE_PAYOUTS = Object.freeze({
+    SMALL:14,
+    MID:15,
+    BAR3:0,
+    BIG:15,
+    DEVIL_ZONE:15,
+    SUPER_DEVIL_ZONE:15,
+    BELL:10,
+    BELL3:3,
+    REPLAY:3,
+    SUICA:3,
+    CHERRY_ANY:5,
+    CHERRY_DOUBLE:5,
+    CHERRY_TRIPLE:5
+  });
+  const NORMAL_ROLE_PAYOUTS = Object.freeze({
+    BIG:0,
+    MID:50,
+    BAR3:0,
+    BELL:10,
+    REPLAY:3,
+    SUICA:3,
+    CHERRY_ANY:3,
+    CHERRY_DOUBLE:3,
+    CHERRY_TRIPLE:3
+  });
+
+  const HIGH_MODE_GAMES = 10;
+
+  const BAR3_PREMIUM_DENOM = 8192;
+  const BAR3_CONTINUATION_RATE = 0.80;
+  const BELL_REEL_READY_VIDEO_SRC = "";
+  const BELL_REEL_STOP_VIDEO_SRC = "";
+  const DEVIL_ZONE_FIRE_VIDEO_SRC = "";
+  const DEVIL_ZONE_CONFIRM_IMAGE_SRC = "";
+  const SUPER_DEVIL_ZONE_CONFIRM_IMAGE_SRC = "";
+  const REVERSE_PUSH_GUIDE_IMAGE_SRCS = Object.freeze({
+    blue:"",
+    red:""
+  });
+  const DEVIL_RUSH_ENTRY_IMAGE_SRCS = Object.freeze({
+    start:"",
+    continue:""
+  });
+  const REVERSE_PUSH_RED_EXPECTATION = 0.80;
+  const REVERSE_PUSH_BLUE_EXPECTATION = 0.30;
+  const REVERSE_PUSH_HIT_RED_RATE = 0.70;
+  const GEKIATSU_VIDEO_SRC = "";
+  const ROGI_STOP_VIDEO_SRCS = Object.freeze({
+    1:"",
+    2:"",
+    3:""
+  });
+
+  const GEKIATSU_CHANCE_ON_BIG = 0.03;
+  const CONTROL_SIGNATURES = Object.freeze({
+    PBB:Object.freeze([
+      0xd50c118f, 0x0bffce9e, 0x9cb26d3b,
+      0xcae1c63a, 0x7e6adfa7, 0x833dd813,
+      0xcf5b5b6f, 0xb3d0b0c5, 0xfe868517
+    ]),
+    BIG:Object.freeze([
+      0xc70bfb85, 0xf7dd1ce0, 0xf8144d45,
+      0xe7f5ce20, 0x2ef35505, 0x0c0f0619,
+      0x3aa6d52d, 0x59a156df, 0x0ffbe6d5
+    ]),
+    REG:Object.freeze([
+      0xd70c14b5, 0x18045eb0, 0x65e0e7b5,
+      0xf10c87b0, 0x0db972b5, 0x2def5d69,
+      0x9ecfe35d, 0x7643112f, 0x3293ce05
+    ])
+  });
+  const CONTROL_RESULTS = Object.freeze({
+    PBB:Object.freeze({result:"BAR3", premium:true}),
+    BIG:Object.freeze({result:"BIG", premium:false}),
+    REG:Object.freeze({result:"MID", premium:false})
+  });
+  const CONTROL_SIGNATURE_SEED = 0x811c9dc5;
+  const CONTROL_INPUT_TIMEOUT_MS = 5000;
+  const BATTLE_INTRO_LOGO_SRC = "";
+  const BATTLE_ROUND_IMAGE_SRCS = Array.from({length:10}, ()=>"");
+  const BATTLE_CHARACTER_SRCS = [];
+
+  const GORAI_HIT_RATE = {
+    1:0.945,
+    2:0.945,
+    3:0.945,
+    4:0.945,
+    5:0.945,
+    6:0.945
+  };
+
+  const BIG_STOCK_ZONE_GAMES = 5;
+  const SUPER_DEVIL_ZONE_GAMES = 5;
+  const ZONE_CHALLENGE_PAYOUT = 3;
+  const DEVIL_ZONE_SEVEN_CHANCE = 1 / 12;
+  const SUPER_DEVIL_ZONE_SEVEN_CHANCE = 0.50;
+
+  const AT_SET_STOCK_RATES_BY_SETTING = Object.freeze({
+    SMALL:{1:0.35,2:0.38,3:0.41,4:0.44,5:0.47,6:0.50},
+    CHERRY_DOUBLE:{1:0.03,2:0.04,3:0.055,4:0.07,5:0.085,6:0.10},
+    CHERRY_TRIPLE:{1:0.35,2:0.40,3:0.45,4:0.50,5:0.55,6:0.60},
+    SUICA:{1:0.005,2:0.008,3:0.011,4:0.014,5:0.017,6:0.02}
+  });
+  const CONTINUATION_BATTLE_GAMES = 4;
+  const DEBUG_FAST_SPINS_PER_SECOND = 1000;
+  const DEBUG_FAST_INTERVAL_MS = 100;
+  const DEBUG_FAST_BATCH_SIZE = Math.max(1, Math.round(DEBUG_FAST_SPINS_PER_SECOND * DEBUG_FAST_INTERVAL_MS / 1000));
+  const DEBUG_ONE_CLICK_SIM_SPINS = 10000;
+  const AUTO_SPEED_MULTIPLIER = 2;
+  const SPEED_MODE_MAX_SPINS_PER_SECOND = 10;
+  const SPEED_MODE_MULTIPLIER = 3;
+  const COMPLETE_TRIAL_ENABLED = true; // Live play only; simulations set their own uncapped policy.
+  const SLUMP_MAX_HISTORY_POINTS = 20000;
+  const SLUMP_MAX_DRAW_POINTS = 1400;
+  const AUTO_STOP_ORDERS = Object.freeze({
+    normal:Object.freeze([0,1,2]),
+    middle:Object.freeze([1,0,2]),
+    scissors:Object.freeze([0,2,1])
+  });
+  const AUTO_STOP_ORDER_LABELS = Object.freeze({normal:"順押し",middle:"中押し",scissors:"はさみ打ち"});
+  let autoPlay = false;
+  let autoStopOrderMode = "normal";
+  let pendingAutoSuperSpeedMode = "";
+  function normalizeAutoStopOrderMode(mode){return Object.hasOwn(AUTO_STOP_ORDERS,mode)?mode:"normal";}
+  function autoStopOrderForMode(mode=autoStopOrderMode){return AUTO_STOP_ORDERS[normalizeAutoStopOrderMode(mode)].slice();}
+  let autoTimer = null;
+  let autoWatchdogTimer = null;
+  let czIntroVoiceHold = null;
+  let comebackIntroVoiceHold = null;
+  let superSpeedActive = false;
+  let superFullAuto = false; // Keep paid AUTO selected while AT uses its own presentation pace.
+  let superSpeedMode = 'nonstop';
+  let superSpeedMenu = null;
+  let superSpeedPending = false; // Finish the current spin before switching presentation speed.
+  let superSpeedAllowed = false; // Authoritative server permission; never restored from local storage.
+  let superSpeedDebugAllowed = false; // Standalone debugging only; cleared by page reload.
+  let superSpeedPermissionTimer = null;
+  let superSpeedNextBetAt = 0;
+  let autoLastBetAt = null; // Monotonic, runtime-only; never persisted or used by a lottery.
+  let autoPacingBudget = null; // AUTO-only elapsed-time target; cleared on STOP/reset.
+  let speedToBonusActive = false;
+  let speedToBonusTimer = null;
+  let speedToBonusCount = 0;
+  let completeTrialState = {
+    locked:false,
+    lockedSetting:0,
+    rescueActive:false,
+    completeProfit:0
+  };
+  let speedModeMenuOpen = false;
+  let speedModeSpinRequest = false;
+  let speedFrameOffHold = false;
+  let debugFastSpinActive = false;
+  let debugFastTimer = null;
+  let debugFastSpinCount = 0;
+  let debugOneClickSimActive = false;
+  let slumpView = {
+    xZoom:1,
+    yZoom:1,
+    seekStart:0,
+    followEnd:true
+  };
+  let slumpRenderRequest = 0;
+  let forceResult = "";
+  let forcePremiumEffect = false;
+  let pendingForceResult = "";
+  let pendingArtStep = null;
+  let pendingPreparationRole = "";
+  let controlInputIndex = 0;
+  let controlInputHash = CONTROL_SIGNATURE_SEED;
+  let controlInputCommand = "";
+  let controlInputReady = "";
+  let controlInputLastAt = 0;
+  let sessionStartGuard = false;
+  let pendingAtStartTimer = null;
+  let pendingBonusStartOptions = null;
+  let devilZoneConfirmIntroPending = false;
+  let pendingDevilRushEntryEffect = "";
+  let audioCtx = null;
+  const Audio = globalThis.NovaAudio?.Audio || window.Audio;
+  for(const audio of document.querySelectorAll('audio'))globalThis.NovaAudio?.adopt(audio);
+  let spinIntervals = [];
+  let reelSpinOffsets = [0, 0, 0];
+  let rogiBlackoutTimer = null;
+  let clickCount = 0;
+  let clickTimer = null;
+
+  const $ = id => document.getElementById(id);
+  const AUDIO_VOLUME_FIELDS = Object.freeze([
+    {rangeId:"masterVolume", numberId:"masterVolumeNumber"},
+    {rangeId:"bgmVolume", numberId:"bgmVolumeNumber"},
+    {rangeId:"sfxVolume", numberId:"sfxVolumeNumber"},
+    {rangeId:"voiceVolume", numberId:"voiceVolumeNumber"},
+    {rangeId:"payoutVolume", numberId:"payoutVolumeNumber"}
+  ]);
+  const machine = $("machine");
+  const reels = [...document.querySelectorAll(".reel")];
+  const stopBtns = [0,1,2].map(i => $("stop"+i));
+  const bgm = $("bgm");
+  const koatariSound = $("koatariSound");
+  const bigSound = $("bigSound");
+  const payoutSound = $("payoutSound");
+  const barBgm = $("barBgm");
+  const battleBgm = $("battleBgm");
+  const voiceSound = $("voiceSound");
+  if(globalThis.NovaMedia?.compact)for(const audio of [bgm,koatariSound,bigSound,payoutSound,barBgm,battleBgm,voiceSound])if(audio)audio.preload='none';
+  const gekiatsuLayer = $("gekiatsuLayer");
+  const gekiatsuVideo = $("gekiatsuVideo");
+  globalThis.NovaAudioAssets?.adopt(gekiatsuVideo);
+  const bonusConfirmLayer = $("bonusConfirmLayer");
+  const devilZoneConfirmLayer = $("devilZoneConfirmLayer");
+  const reversePushGuideLayer = $("reversePushGuideLayer");
+  const devilRushEntryLayer = $("devilRushEntryLayer");
+  const devilRushEntryImage = $("devilRushEntryImage");
+  const rogiBlackoutLayer = $("rogiBlackoutLayer");
+  const battleIntroLayer = $("battleIntroLayer");
+  const battleIntroLogo = $("battleIntroLogo");
+  const battleIntroCharacter = $("battleIntroCharacter");
+  const battleIntroRound = $("battleIntroRound");
+  const sessionResultLayer = $("sessionResultLayer");
+  const resultSetCountView = $("resultSetCountView");
+  const resultPayoutView = $("resultPayoutView");
+  const sessionResultSignal = $("sessionResultSignal");
+  const sessionResultSignalImage = $("sessionResultSignalImage");
+  const slumpGraph = $("slumpGraph");
+  const slumpSeekRange = $("slumpSeekRange");
+  const slumpZoomInput = $("slumpZoomInput");
+  const slumpYZoomInput = $("slumpYZoomInput");
+  const slumpRangeView = $("slumpRangeView");
+  const slumpZoomView = $("slumpZoomView");
+  const slumpYZoomView = $("slumpYZoomView");
+  const slumpCurrentView = $("slumpCurrentView");
+  const slumpHighView = $("slumpHighView");
+  const slumpLowView = $("slumpLowView");
+  const audioDock = $("audioDock");
+  const slumpToggleBtn = $("slumpToggleBtn");
+  const oddsToggleBtn = $("oddsToggleBtn");
+  const roleCounterToggleBtn = $("roleCounterToggleBtn");
+  const reelSlumpToggleBtn = $("reelSlumpToggleBtn");
+  const reelOddsToggleBtn = $("reelOddsToggleBtn");
+  const reelDataToggleBtn = $("reelDataToggleBtn");
+  const reelDataCounterPanel = $("reelDataCounter");
+  const audioToggleBtn = $("audioToggleBtn");
+  const audioCloseBtn = $("audioCloseBtn");
+  const slumpCloseBtn = $("slumpCloseBtn");
+  const oddsCloseBtn = $("oddsCloseBtn");
+  const roleCounterCloseBtn = $("roleCounterCloseBtn");
+  const pageZoomOutBtn = $("pageZoomOutBtn");
+  const pageZoomResetBtn = $("pageZoomResetBtn");
+  const pageZoomInBtn = $("pageZoomInBtn");
+  const pageZoomView = $("pageZoomView");
+  const pagePanRange = $("pagePanRange");
+  const pagePanResetBtn = $("pagePanResetBtn");
+  const pagePanView = $("pagePanView");
+  const layoutEditToggleBtn = $("layoutEditToggleBtn");
+  const layoutEditorPanel = $("layoutEditorPanel");
+  const layoutEditSaveDefaultBtn = $("layoutEditSaveDefaultBtn");
+  const layoutEditResetBtn = $("layoutEditResetBtn");
+  const layoutEditCloseBtn = $("layoutEditCloseBtn");
+  NovaRemainingCounters.addLayoutControls(document.querySelector('.layoutEditorGroups'));
+  const layoutEditInputs = [...document.querySelectorAll(".layoutEditInput")];
+  const effectSkipBtn = $("effectSkipBtn");
+
+  if(audioDock && audioDock.parentElement !== document.body){
+    document.body.appendChild(audioDock);
+  }
+
+  const reelArea = document.querySelector(".reelArea");
+  if(sessionResultLayer && reelArea && sessionResultLayer.parentElement !== reelArea){
+    reelArea.appendChild(sessionResultLayer);
+  }
+  let reelLightTimer = null;
+  let barRainbowHold = false;
+  let guaranteedSetStartLight = false;
+  let guaranteedSetLightTimer = null;
+  let barBgmActive = false;
+  let bonusConfirmBgmHold = false;
+  let barBgmMode = "";
+  let battleBgmActive = false;
+  let rogiBgmMuted = false;
+  let rogiThirdStopHold = false;
+  let bellReadyVideoKeepAliveTimer = null;
+  let bellZakoLayer = null;
+  const bellZakoTimers = [null, null, null];
+  const aimWinAudios=new Set();
+  const oneShotSoundCache = new Map();
+  NovaSortie.setSoundPlayer(src=>playOneShotSound(src,sfxOutputVolume(),{allowDuringPremiumConfirm:true}));
+  preloadOneShotSound('assets/media/nova/sortie-award.mp3');
+  preloadOneShotSound('assets/media/nova/sortie-award-duo.wav');
+  preloadOneShotSound('assets/media/nova/sortie-nebula-cue.mp3');
+  preloadOneShotSound(SORTIE_SANDWICH_AIM_SOUND_SRC);
+  preloadOneShotSound(SORTIE_SANDWICH_HIT_SOUND_SRC);
+  const BELL_NAVI_VOICE_SRCS=NovaVoiceCatalog.BELL_NAVI_VOICE_SRCS;
+  const BELL_NAVI_COMPLETE_VOICE_SRCS=NovaVoiceCatalog.BELL_NAVI_COMPLETE_VOICE_SRCS;
+  const KUSHURI_NAVI_VOICE_KEYS = new Set([...BELL_NAVI_VOICE_SRCS.kushuri, BELL_NAVI_COMPLETE_VOICE_SRCS.kushuri].map(normalizedAudioSourceKey));
+  const BELL_NAVI_FAILURE_VOICE_SRC=NovaVoiceCatalog.BELL_NAVI_FAILURE_VOICE_SRC;
+  const AIM_VOICE_SRCS=NovaVoiceCatalog.AIM_VOICE_SRCS;
+  const SEVEN_ZONE_VOICE_SRCS=NovaVoiceCatalog.SEVEN_ZONE_VOICE_SRCS;
+  const NEBULA_ZONE_VOICE_SRCS=NovaVoiceCatalog.NEBULA_ZONE_VOICE_SRCS;
+  const ZONE_START_VOICE_SRCS=NovaVoiceCatalog.ZONE_START_VOICE_SRCS;
+  const ZONE_CONTINUE_VOICE_SRCS=NovaVoiceCatalog.ZONE_CONTINUE_VOICE_SRCS;
+  const MODE_EVENT_VOICE_SRCS=NovaVoiceCatalog.MODE_EVENT_VOICE_SRCS;
+  const SORTIE_AWARD_VOICE_SRCS=NovaVoiceCatalog.SORTIE_AWARD_VOICE_SRCS;
+  const OUMA_NOVA_VOICE_SRCS=NovaVoiceCatalog.OUMA_NOVA_VOICE_SRCS;
+  const GIRU_LADDER_VOICE_SRCS=NovaVoiceCatalog.GIRU_LADDER_VOICE_SRCS;
+  const SOSUKE_LADDER_VOICE_SRCS=NovaVoiceCatalog.SOSUKE_LADDER_VOICE_SRCS;
+  const RARE_CUE_VOICE_SRCS=NovaVoiceCatalog.RARE_CUE_VOICE_SRCS;
+  const CZ_PUSH_PROMPT_VOICE_SRCS=NovaVoiceCatalog.CZ_PUSH_PROMPT_VOICE_SRCS;
+  const CHARACTER_VOICE_SRCS=NovaVoiceCatalog.CHARACTER_VOICE_SRCS;
+  const CHARACTER_VOICE_KEYS=new Set(CHARACTER_VOICE_SRCS.map(normalizedAudioSourceKey));
+  // Voice loudness is now mastered in the files; the bus must stay at unity.
+  const CHARACTER_VOICE_BOOST_DB=0;
+  const characterVoiceConnections=new WeakMap();
+  let characterVoiceBus=null;
+  for(const src of CHARACTER_VOICE_SRCS)preloadOneShotSound(src);
+  preloadOneShotSound('assets/media/nova/rare-navi.mp3');
+  for(const src of ['assets/media/nova/initial-duo-stop.mp3','assets/media/nova/initial-duo-final-stop.mp3','assets/media/nova/sortie-stop-1.mp3','assets/media/nova/sortie-stop-2.mp3'])preloadOneShotSound(src);
+  for(const src of ['assets/media/jag/cz_third_success.wav','assets/media/jag/cz_third_failure.wav','assets/media/nova/cz_stop_12.wav',CZ_FAILURE_PUSH_SOUND_SRC,CZ_SUCCESS_PUSH_SOUND_SRC])preloadOneShotSound(src);
+  for(const src of ['assets/media/nova/bell-navi.wav','assets/media/nova/direct-award.wav','assets/media/nova/weak-nova.wav','assets/media/nova/aim/nebula-win.wav','assets/media/nova/aim/seven-win.wav','assets/media/nova/aim/cue-blue.wav','assets/media/nova/aim/cue-red.wav','assets/media/nova/aim/cue-rainbow.wav','assets/media/nova/shutter.wav','assets/media/nova/shutter-close.wav','assets/media/nova/ladder-final-award.wav','assets/media/nova/ladder-final-award-under1000.wav'])preloadOneShotSound(src);
+  const initialDuoBgmPreload = new Audio(INITIAL_DUO_ZONE_BGM_SRC);
+  initialDuoBgmPreload.preload=globalThis.NovaMedia?.compact?'none':'auto';if(!globalThis.NovaMedia?.compact)initialDuoBgmPreload.load();
+  const sortieBgmPreload = new Audio(SORTIE_ZONE_BGM_SRC);
+  sortieBgmPreload.preload=globalThis.NovaMedia?.compact?'none':'auto';if(!globalThis.NovaMedia?.compact)sortieBgmPreload.load();
+  preloadOneShotSound('assets/media/nova/result-eyecatch.wav');
+  preloadOneShotSound('assets/media/nova/ouma-fail.wav');
+  preloadOneShotSound('assets/media/nova/super-nova-stop.wav');
+  let gekiatsuActive = false;
+  let gekiatsuHideTimer = null;
+  let speedBonusRogiHoldActive = false;
+  let battleIntroHideTimer = null;
+  let overlayHideTimer = null;
+  let overlayEpoch = 0;
+  const adminParams = bootParams;
+
+  function safeStorageGet(key){
+    try{ return window.localStorage ? localStorage.getItem(key) : null; }
+    catch(e){ return null; }
+  }
+
+  function safeStorageSet(key, value){
+    try{
+      if(!window.localStorage) return false;
+      localStorage.setItem(key, value);
+      return true;
+    }catch(e){
+      return false;
+    }
+  }
+
+  const VERTEX_CONTROLLER_ENABLED = adminParams.get("controller") === "vertex";
+  settings=NovaComplete.configure(settings,VERTEX_CONTROLLER_ENABLED,COMPLETE_TRIAL_ENABLED);
+  const VERTEX_STORE_ID = String(adminParams.get("storeId") || "").trim();
+  const ADMIN_SERVER = (VERTEX_CONTROLLER_ENABLED ? adminParams.get("server") || "" : "").replace(/\/$/, "");
+  let machineId = adminParams.get("machine") || bootMachineId;
+  let adminPushTimer = null;
+  let adminPushDueAt = 0;
+
+  let adminCommandPollTimer = null;
+  let adminCommandPollInFlight = false;
+  let adminCommandPollRequested = false;
+  const ADMIN_COMMAND_LAST_ID_KEY = "nova_admin_command_last_id_" + machineId;
+  let adminCommandLastId = Number(safeStorageGet(ADMIN_COMMAND_LAST_ID_KEY) || 0) || 0;
+  const ADMIN_STATE_PUSH_INTERVAL_MS = 5000;
+  const SLOT_DEBUG_ENABLED = globalThis.NovaUiAccess?.canEdit === true;
+  const CREDIT_BASELINE_PROFIT = Number(adminParams.get("creditBaseline") || 0) || 0;
+  const PLAY_SESSION_ID = bootPlaySessionId;
+  const SLOT_PLAY_SESSION = adminParams.has("creditBaseline") || !!PLAY_SESSION_ID;
+  const PLAY_SESSION_BASELINE_STORAGE_KEY = PLAY_SESSION_ID ? `nova_play_session_baseline_${PLAY_SESSION_ID}` : "";
+  let playSessionStartStats = null;
+  function setAdminConnectionState(state){
+    const badge = $("vertexConnectionBadge");
+    if(!badge) return;
+    badge.className = "vertexConnectionBadge";
+    if(VERTEX_CONTROLLER_ENABLED){
+      const normalized = state === "online" ? "online" : state === "offline" ? "offline" : "connecting";
+      badge.classList.add(normalized);
+      badge.textContent = normalized === "online"
+        ? `VERTEX 接続: ONLINE${VERTEX_STORE_ID ? ` / ${VERTEX_STORE_ID}` : ""}`
+        : normalized === "offline" ? "VERTEX 接続: OFFLINE" : "VERTEX 接続: 確認中";
+    }else{
+      badge.textContent = "管理接続: 単独動作";
+    }
+  }
+  setAdminConnectionState("connecting");
+  if(SLOT_DEBUG_ENABLED) document.body.classList.add("debugMode");
+  const PAGE_ZOOM_STORAGE_KEY = "nova_unified_page_zoom_v5";
+  const PAGE_PAN_STORAGE_KEY = "nova_unified_page_pan_x_v5";
+  const LAYOUT_EDIT_STORAGE_KEY = "nova_layout_editor_locked_20261027d";
+  const LAYOUT_DEFAULT_STORAGE_KEY = "nova_layout_default_locked_20261027d";
+  const LAYOUT_EDITOR_ENABLED = SLOT_DEBUG_ENABLED;
+  const PAGE_STAGE_WIDTH = 1360;
+  const PAGE_ZOOM_MIN = 0.05;
+  const PAGE_ZOOM_MAX = 2.00;
+  const PAGE_ZOOM_STEP = 0.05;
+  const PAGE_ZOOM_DEFAULT = 0.55;
+  const PAGE_PAN_MIN = -260;
+  const PAGE_PAN_MAX = 260;
+  const PAGE_ZOOM_BASE = 1.00;
+  const CABINET_X_OFFSET_AT_75 = 0;
+  const CABINET_X_OFFSET_AT_100 = 0;
+  const CABINET_X_OFFSET_AT_130 = 0;
+  const PAGE_PAN_DEFAULT = -260;
+  const SLOT_ZOOM_ANCHOR_X = 680;
+  const SLOT_ZOOM_ANCHOR_Y = 500;
+
+  const LAYOUT_DEFAULTS = Object.freeze({
+    ...NovaRemainingCounters.defaults,
+    navi:{...NovaBellNavi.defaults},
+    flowstatus:{x:38,y:92.6,w:40},
+    reels:{x:22.3, y:35.6, w:55.7, h:36.9, gap:1.6},
+    credit:{x:38.8, y:87.7, w:21.2, h:7.6},
+    count:{x:21.8, y:24.1, w:15.2, h:13.7},
+    payout:{x:63.7, y:87.7, w:13.6, h:7.6},
+    playdata:{x:19.8,y:13.5,w:60.5,h:11.5},
+    cabinetmask:{x:20.3,y:29.5,w:58.9,h:25.7},
+    lampmovie:{x:20.4,y:29.6,w:59.1,h:10.7},
+    backgroundmovie:{x:20.4,y:29.4,w:58.9,h:25.7},
+    sortievideo:{x:32.7,y:29.4,w:35.6,h:11.4},
+    zonepresentation:{x:22.3,y:31.8,w:55.7,h:8.3},
+    sortieaimbg:{"x":20.3,"y":29.4,"w":59.1,"h":25.4},
+    sortieaimmiddle:{"x":21.5,"y":32.7,"w":19.4,"h":5.8},
+    sortieaimsymbol:{"x":41.5,"y":28,"w":16.7,"h":14.4,"compact":37.6},
+    sortieaimaim:{"x":58.7,"y":32.6,"w":20,"h":5.5},
+    supertitle:{x:21.5,y:29.6,w:56.7,h:10.7},
+    displaygroup:{x:0.1,y:-0.5,s:122.4}
+  });
+  let pageZoom = PAGE_ZOOM_DEFAULT;
+  let pagePanX = PAGE_PAN_DEFAULT;
+  let layoutEditOpen = false;
+  let layoutDefaultState = JSON.parse(JSON.stringify(LAYOUT_DEFAULTS));
+  let layoutEditState = JSON.parse(JSON.stringify(layoutDefaultState));
+  let backgroundSyncRaf = 0;
+  let pageScrollBoundsRaf = 0;
+
+  function renderedPageZoom(){
+    if(window.NovaMobile?.active()) return window.NovaMobile.scale();
+    return pageZoom * PAGE_ZOOM_BASE;
+  }
+
+  function cabinetXOffsetForPageZoom(){
+    if(pageZoom <= 1){
+      const progress = clamp((pageZoom - PAGE_ZOOM_MIN) / (1 - PAGE_ZOOM_MIN), 0, 1);
+      return CABINET_X_OFFSET_AT_75 + (CABINET_X_OFFSET_AT_100 - CABINET_X_OFFSET_AT_75) * progress;
+    }
+    const progress = clamp((pageZoom - 1) / (PAGE_ZOOM_MAX - 1), 0, 1);
+    return CABINET_X_OFFSET_AT_100 + (CABINET_X_OFFSET_AT_130 - CABINET_X_OFFSET_AT_100) * progress;
+  }
+
+  function totalCabinetXOffset(){
+    return cabinetXOffsetForPageZoom() + pagePanX;
+  }
+
+  function formatPagePanValue(value){
+    const rounded = Math.round(value);
+    return rounded > 0 ? `+${rounded}` : String(rounded);
+  }
+
+  function applyCabinetXOffset(){
+    document.documentElement.style.setProperty("--wd-cabinet-x-offset", `${Math.round(totalCabinetXOffset() * 100) / 100}px`);
+    requestBackgroundLogoSync();
+  }
+
+  function syncZoomAnchorToSlotTop(){
+    if(window.NovaMobile?.active()) return;
+    const root = document.documentElement;
+    if(!root) return;
+    const wrapEl = document.querySelector(".wrap");
+    const reelWindow = document.querySelector(".reelArea") || document.querySelector(".jagCabinetShell") || machine;
+    if(wrapEl && reelWindow){
+      const wrapRect = wrapEl.getBoundingClientRect();
+      const reelRect = reelWindow.getBoundingClientRect();
+      const zoom = Number.isFinite(renderedPageZoom()) && renderedPageZoom() > 0 ? renderedPageZoom() : 1;
+      const layoutLeft = wrapRect.left - (1 - zoom) * SLOT_ZOOM_ANCHOR_X;
+      const layoutTop = wrapRect.top - (1 - zoom) * SLOT_ZOOM_ANCHOR_Y;
+      const x = (reelRect.left + reelRect.width / 2 - layoutLeft) / zoom;
+      const y = (reelRect.top - layoutTop) / zoom;
+      if(Number.isFinite(x)) root.style.setProperty("--wd-stage-focus-x", `${Math.round(x * 100) / 100}px`);
+      if(Number.isFinite(y)) root.style.setProperty("--wd-reel-top-anchor-y", `${Math.round(y * 100) / 100}px`);
+      return;
+    }
+    root.style.setProperty("--wd-stage-focus-x", `${SLOT_ZOOM_ANCHOR_X}px`);
+    root.style.setProperty("--wd-reel-top-anchor-y", `${SLOT_ZOOM_ANCHOR_Y}px`);
+  }
+
+  function reelCenterScreenX(){
+    const reelWindow = document.querySelector(".reels") || document.querySelector(".reelArea") || machine;
+    if(!reelWindow) return (window.innerWidth || document.documentElement.clientWidth || PAGE_STAGE_WIDTH) / 2;
+    const rect = reelWindow.getBoundingClientRect();
+    return rect.left + rect.width / 2;
+  }
+
+  function syncBackgroundLogoToReelCenter(){
+    const root = document.documentElement;
+    const viewW = window.innerWidth || document.documentElement.clientWidth || PAGE_STAGE_WIDTH;
+    const wrapEl = document.querySelector(".wrap");
+    const wrapRect = wrapEl ? wrapEl.getBoundingClientRect() : null;
+    const bgWidth = wrapRect && Number.isFinite(wrapRect.width) && wrapRect.width > 0 ? wrapRect.width : viewW;
+    const cabinetWindow = document.querySelector(".jagCabinetShell") || machine || document.querySelector(".reelArea");
+    const cabinetRect = cabinetWindow ? cabinetWindow.getBoundingClientRect() : null;
+    const cabinetCenter = cabinetRect ? cabinetRect.left + cabinetRect.width / 2 : NaN;
+    const reelCenter = reelCenterScreenX();
+    const centerX = Number.isFinite(cabinetCenter) ? cabinetCenter : Number.isFinite(reelCenter) ? reelCenter : viewW / 2;
+    const bgLeft = Math.round((centerX - bgWidth / 2) * 100) / 100;
+    root.style.setProperty("--wd-bg-sync-size", `${Math.round(bgWidth * 100) / 100}px auto`);
+    root.style.setProperty("--wd-bg-sync-x", `${bgLeft}px top`);
+  }
+
+  function requestBackgroundLogoSync(){
+    if(backgroundSyncRaf) return;
+    backgroundSyncRaf = requestAnimationFrame(()=>{
+      backgroundSyncRaf = 0;
+      syncBackgroundLogoToReelCenter();
+    });
+  }
+
+  function updatePageScrollBounds(){
+    if(window.NovaMobile?.active()){
+      const spacer = $("pageScrollSpacer");
+      if(spacer) spacer.style.height = "0px";
+      return;
+    }
+    const targets = [".wrap", ".main", ".machine", ".reelArea", ".buttonRow", ".autoStack"]
+      .flatMap(selector=>Array.from(document.querySelectorAll(selector)));
+    const wrapEl = document.querySelector(".wrap");
+    const spacer = $("pageScrollSpacer");
+    if(!targets.length || !wrapEl || !spacer) return;
+    const scrollY = window.scrollY || document.documentElement.scrollTop || 0;
+    const visualBottom = targets.reduce((max, el)=>Math.max(max, scrollY + el.getBoundingClientRect().bottom), 0);
+    const layoutBottom = wrapEl.offsetTop + wrapEl.offsetHeight;
+    const extraHeight = Math.max(0, Math.ceil(visualBottom - layoutBottom + 100));
+    spacer.style.height = `${extraHeight}px`;
+    document.body.style.minHeight = "100%";
+  }
+
+  function requestPageScrollBoundsUpdate(){
+    if(pageScrollBoundsRaf) return;
+    pageScrollBoundsRaf = requestAnimationFrame(()=>{
+      pageScrollBoundsRaf = 0;
+      updatePageScrollBounds();
+    });
+  }
+
+  function applyPageZoom(saveValue=false){
+    pageZoom = clamp(Math.round(pageZoom * 100) / 100, PAGE_ZOOM_MIN, PAGE_ZOOM_MAX);
+    const visualZoom = renderedPageZoom();
+    document.documentElement.style.setProperty("--wd-page-zoom", String(visualZoom));
+    applyCabinetXOffset();
+    document.body.style.minWidth = "100%";
+    requestPageScrollBoundsUpdate();
+    if(pageZoomView) pageZoomView.textContent = `${Math.round(pageZoom * 100)}%`;
+    if($('pageZoomRange'))$('pageZoomRange').value=String(Math.round(pageZoom*100));
+    if(pageZoomOutBtn) pageZoomOutBtn.disabled = pageZoom <= PAGE_ZOOM_MIN + 0.001;
+    if(pageZoomInBtn) pageZoomInBtn.disabled = pageZoom >= PAGE_ZOOM_MAX - 0.001;
+    if(saveValue) safeStorageSet(PAGE_ZOOM_STORAGE_KEY, String(pageZoom));
+  }
+
+  function applyPagePan(saveValue=false){
+    pagePanX = clamp(Math.round(Number(pagePanX) || 0), PAGE_PAN_MIN, PAGE_PAN_MAX);
+    if(pagePanRange) pagePanRange.value = String(pagePanX);
+    if(pagePanView) pagePanView.textContent = formatPagePanValue(pagePanX);
+    applyCabinetXOffset();
+    requestPageScrollBoundsUpdate();
+    if(saveValue) safeStorageSet(PAGE_PAN_STORAGE_KEY, String(pagePanX));
+  }
+
+  function loadPageZoom(){
+    const saved = Number(safeStorageGet(PAGE_ZOOM_STORAGE_KEY));
+    if(Number.isFinite(saved) && saved > 0) pageZoom = saved;
+    applyPageZoom(false);
+  }
+
+  function loadPagePan(){
+    const savedRaw = safeStorageGet(PAGE_PAN_STORAGE_KEY);
+    const saved = savedRaw == null ? NaN : Number(savedRaw);
+    pagePanX = Number.isFinite(saved) ? saved : PAGE_PAN_DEFAULT;
+    applyPagePan(false);
+  }
+
+  function cloneLayoutDefaults(){
+    return JSON.parse(JSON.stringify(layoutDefaultState || LAYOUT_DEFAULTS));
+  }
+
+  function cloneFactoryLayoutDefaults(){
+    return JSON.parse(JSON.stringify(LAYOUT_DEFAULTS));
+  }
+
+  function layoutInputFor(target, prop){
+    return layoutEditInputs.find(input => input.dataset.layoutTarget === target && input.dataset.layoutProp === prop);
+  }
+
+  function layoutValueLimit(target, prop, value){
+    const input = layoutInputFor(target, prop);
+    if(!input) return Number(value);
+    const min = Number(input.min);
+    const max = Number(input.max);
+    const numeric = Number(value);
+    return clamp(
+      Number.isFinite(numeric) ? numeric : LAYOUT_DEFAULTS[target][prop],
+      Number.isFinite(min) ? min : -999,
+      Number.isFinite(max) ? max : 999
+    );
+  }
+
+  function migrateLegacySevenSegState(raw){
+    if(!raw || typeof raw !== "object" || !raw.sevenseg || typeof raw.sevenseg !== "object") return raw;
+    const next = {...raw};
+    const legacy = raw.sevenseg;
+    const legacyX = Number(legacy.x);
+    const legacyY = Number(legacy.y);
+    const legacyW = Number(legacy.w);
+    const legacyH = Number(legacy.h);
+    if(!Number.isFinite(legacyX) || !Number.isFinite(legacyY) || !Number.isFinite(legacyW) || !Number.isFinite(legacyH)) return next;
+    const gap = legacyW * 0.07;
+    const meterW = Math.max(4, (legacyW - gap * 2) / 3);
+    const makeMeter = index => ({
+      x:legacyX + (meterW + gap) * index,
+      y:legacyY,
+      w:meterW,
+      h:legacyH
+    });
+    if(!next.credit) next.credit = makeMeter(0);
+    if(!next.count) next.count = makeMeter(1);
+    if(!next.payout) next.payout = makeMeter(2);
+    return next;
+  }
+
+  function normalizeLayoutState(raw){
+    const next = cloneLayoutDefaults();
+    raw = migrateLegacySevenSegState(raw);
+    raw = NovaRemainingCounters.migrateLayout?.(raw) || raw;
+    if(!raw || typeof raw !== "object") return next;
+    // Preserve the tuned position from layouts saved before the Sortie movie
+    // received its own independent controls.
+    if((!raw.sortievideo || typeof raw.sortievideo !== "object") && raw.backgroundmovie && typeof raw.backgroundmovie === "object"){
+      raw = {...raw, sortievideo:{...raw.backgroundmovie}};
+    }
+    Object.keys(next).forEach(target=>{
+      if(!raw[target] || typeof raw[target] !== "object") return;
+      Object.keys(next[target]).forEach(prop=>{
+        next[target][prop] = Math.round(layoutValueLimit(target, prop, raw[target][prop]) * 10) / 10;
+      });
+    });
+    return next;
+  }
+
+  function setLayoutCssVariable(target, prop, value){
+    document.documentElement.style.setProperty(`--layout-${target}-${prop}`, `${Math.round(value * 10) / 10}${NovaRemainingCounters.unit?.(target,prop)||'%'}`);
+    if(target==="displaygroup"&&prop==="s")document.documentElement.style.setProperty("--displaygroup-scale",String(value/100));
+  }
+
+  function syncLayoutEditInputs(){
+    layoutEditInputs.forEach(input=>{
+      const target = input.dataset.layoutTarget;
+      const prop = input.dataset.layoutProp;
+      if(!layoutEditState[target] || !Object.prototype.hasOwnProperty.call(layoutEditState[target], prop)) return;
+      const value = Math.round(layoutEditState[target][prop] * 10) / 10;
+      input.value = String(value);
+      const view = document.querySelector(`[data-layout-view="${target}-${prop}"]`);
+      if(view) view.textContent = `${value.toFixed(1)}${NovaRemainingCounters.unit?.(target,prop)||'%'}`;
+    });
+  }
+
+  function applyLayoutEdit(saveValue=false){
+    layoutEditState = normalizeLayoutState(layoutEditState);
+    Object.keys(layoutEditState).forEach(target=>{
+      Object.keys(layoutEditState[target]).forEach(prop=>{
+        setLayoutCssVariable(target, prop, layoutEditState[target][prop]);
+      });
+    });
+    syncLayoutEditInputs();
+    NovaBellNavi.layout();
+    NovaRemainingCounters.measure();
+    scheduleSlumpGraphRender();
+    if(saveValue && LAYOUT_EDITOR_ENABLED) safeStorageSet(LAYOUT_EDIT_STORAGE_KEY, JSON.stringify(layoutEditState));
+  }
+
+  function loadLayoutEdit(){
+    try{
+      const saved = safeStorageGet(LAYOUT_EDIT_STORAGE_KEY);
+      layoutEditState = saved ? normalizeLayoutState(JSON.parse(saved)) : cloneLayoutDefaults();
+    }catch(e){
+      layoutEditState = cloneLayoutDefaults();
+    }
+    applyLayoutEdit(false);
+  }
+
+  function migrateSortieAimLayout(){
+    const key='nova_sortie_aim_layout_20261028b';
+    if(safeStorageGet(key)==='1')return;
+    for(const storageKey of [LAYOUT_DEFAULT_STORAGE_KEY,LAYOUT_EDIT_STORAGE_KEY]){
+      try{
+        const saved=safeStorageGet(storageKey);if(!saved)continue;
+        const state=JSON.parse(saved);
+        for(const target of ['sortieaimbg','sortieaimmiddle','sortieaimsymbol','sortieaimaim'])state[target]={...LAYOUT_DEFAULTS[target]};
+        safeStorageSet(storageKey,JSON.stringify(state));
+      }catch(e){/* Invalid saved layouts use the factory defaults below. */}
+    }
+    safeStorageSet(key,'1');
+  }
+
+  function migrateSortieFireLayout(){
+    const key='nova_sortie_fire_layout_20261030a';
+    if(safeStorageGet(key)==='1')return;
+    for(const storageKey of [LAYOUT_DEFAULT_STORAGE_KEY,LAYOUT_EDIT_STORAGE_KEY]){
+      try{
+        const saved=safeStorageGet(storageKey);if(!saved)continue;
+        const state=JSON.parse(saved);
+        state.sortievideo={...LAYOUT_DEFAULTS.sortievideo};
+        safeStorageSet(storageKey,JSON.stringify(state));
+      }catch(e){/* Invalid saved layouts use the factory defaults below. */}
+    }
+    safeStorageSet(key,'1');
+  }
+
+  function migrateAtCountLayout(){
+    const key='nova_meter_layout_20261030d';
+    if(safeStorageGet(key)==='1')return;
+    const targets=safeStorageGet('nova_meter_layout_20261030b')==='1'?['credit','count','payout']:['reels','credit','count','payout'];
+    for(const storageKey of [LAYOUT_DEFAULT_STORAGE_KEY,LAYOUT_EDIT_STORAGE_KEY]){
+      try{
+        const saved=safeStorageGet(storageKey);if(!saved)continue;
+        const state=JSON.parse(saved);
+        for(const target of targets)state[target]={...LAYOUT_DEFAULTS[target]};
+        safeStorageSet(storageKey,JSON.stringify(state));
+      }catch(e){/* Invalid saved layouts use the factory defaults below. */}
+    }
+    safeStorageSet(key,'1');
+  }
+
+  function loadLayoutDefaultState(){
+    migrateSortieAimLayout();
+    migrateSortieFireLayout();
+    migrateAtCountLayout();
+    try{
+      const saved = safeStorageGet(LAYOUT_DEFAULT_STORAGE_KEY);
+      layoutDefaultState = saved ? normalizeLayoutState(JSON.parse(saved)) : cloneFactoryLayoutDefaults();
+    }catch(e){
+      layoutDefaultState = cloneFactoryLayoutDefaults();
+    }
+  }
+
+  function saveLayoutAsDefault(){
+    if(!LAYOUT_EDITOR_ENABLED)return;
+    layoutEditState = normalizeLayoutState(layoutEditState);
+    layoutDefaultState = JSON.parse(JSON.stringify(layoutEditState));
+    safeStorageSet(LAYOUT_DEFAULT_STORAGE_KEY, JSON.stringify(layoutDefaultState));
+    applyLayoutEdit(true);
+    if(layoutEditSaveDefaultBtn){
+      layoutEditSaveDefaultBtn.textContent = "保存済";
+      clearTimeout(layoutEditSaveDefaultBtn._layoutFeedbackTimer);
+      layoutEditSaveDefaultBtn._layoutFeedbackTimer = setTimeout(()=>{
+        layoutEditSaveDefaultBtn.textContent = "今を標準";
+      }, 1000);
+    }
+  }
+
+  function resetLayoutEdit(){
+    if(!LAYOUT_EDITOR_ENABLED)return;
+    layoutEditState = cloneLayoutDefaults();
+    applyLayoutEdit(true);
+  }
+
+  function setLayoutEditorOpen(open){
+    if(!LAYOUT_EDITOR_ENABLED) open = false;
+    layoutEditOpen = !!open;
+    if(layoutEditorPanel) layoutEditorPanel.classList.toggle("open", layoutEditOpen);
+    if(layoutEditToggleBtn){
+      layoutEditToggleBtn.classList.toggle("active", layoutEditOpen);
+      layoutEditToggleBtn.setAttribute("aria-expanded", layoutEditOpen ? "true" : "false");
+    }
+    document.body.classList.toggle("layoutEditOpen", layoutEditOpen);
+    NovaBellNavi.preview(layoutEditOpen);
+    if(layoutEditOpen)NovaRemainingCounters.measure();
+  }
+
+  function changePageZoom(delta){
+    syncZoomAnchorToSlotTop();
+    pageZoom = clamp(pageZoom + delta, PAGE_ZOOM_MIN, PAGE_ZOOM_MAX);
+    applyPageZoom(true);
+  }
+
+  function bgmOutputVolume(scale=1){
+    return audioOutputVolume(remapVolumeSlider(settings.bgmVolume, 0.5, AUDIO_MIX_CENTER.bgmVolume), scale * 1.36);
+  }
+
+  function bgmOutputVolumeForSource(scale, src=""){
+    const volume = bgmOutputVolume(scale * audioSourceOutputScale(src));
+    return normalizedAudioSourceKey(src) === DEFAULT_NORMAL_BGM_SRC ? volume * dbToGain(-5) : volume;
+  }
+
+  function sfxOutputVolume(scale=SFX_OUTPUT_SCALE){
+    return audioOutputVolume(remapVolumeSlider(settings.sfxVolume, 0.5, AUDIO_MIX_CENTER.sfxVolume), scale * 2);
+  }
+
+  function voiceOutputVolume(scale=1, src=""){
+    const volume = audioOutputVolume(remapVolumeSlider(settings.voiceVolume, 0.5, AUDIO_MIX_CENTER.voiceVolume), scale * 1.4592);
+    return src && KUSHURI_NAVI_VOICE_KEYS.has(normalizedAudioSourceKey(src)) ? volume * dbToGain(-1) : volume;
+  }
+
+  function resumeCharacterVoiceAudio(){
+    const ctx=getAudio();
+    if(ctx.state!=="running")ctx.resume().catch(()=>{});
+    return ctx;
+  }
+
+  function prepareCharacterVoiceAudio(audio,src){
+    if(!CHARACTER_VOICE_KEYS.has(normalizedAudioSourceKey(src)))return;
+    const ctx=resumeCharacterVoiceAudio();
+    if(!characterVoiceBus){
+      const gain=ctx.createGain(),limiter=ctx.createDynamicsCompressor();
+      gain.gain.value=10**(CHARACTER_VOICE_BOOST_DB/20);
+      limiter.threshold.value=-1;limiter.knee.value=0;limiter.ratio.value=20;
+      limiter.attack.value=0;limiter.release.value=.05;
+      gain.connect(limiter);limiter.connect(ctx.destination);
+      characterVoiceBus=gain;
+    }
+    let connection=characterVoiceConnections.get(audio);
+    if(globalThis.NovaAudio?.connect(audio,characterVoiceBus))return;
+    if(!connection){
+      connection={source:ctx.createMediaElementSource(audio),connected:false};
+      characterVoiceConnections.set(audio,connection);
+    }
+    if(!connection.connected){connection.source.connect(characterVoiceBus);connection.connected=true;}
+  }
+
+  function releaseCharacterVoiceAudio(audio){
+    if(globalThis.NovaAudio?.enabled){globalThis.NovaAudio.disconnect(audio);return;}
+    const connection=characterVoiceConnections.get(audio);
+    if(connection?.connected){connection.source.disconnect();connection.connected=false;}
+  }
+
+  // Unlock during user input so AUTO and delayed continuation lines use the same bus.
+  window.addEventListener('pointerdown',resumeCharacterVoiceAudio,{capture:true,passive:true});
+  window.addEventListener('keydown',resumeCharacterVoiceAudio,{capture:true});
+  window.addEventListener('touchend',resumeCharacterVoiceAudio,{capture:true,passive:true});
+  window.addEventListener('click',resumeCharacterVoiceAudio,{capture:true,passive:true});
+  window.addEventListener('nova-enable-audio',()=>{
+    settings.audioMuted=false;applyAudioOutputVolumes();persistState();
+    if(session.active)resumeSessionBgm();else playNormalBgm();
+  });
+
+  function soundOutputVolume(src, volume){
+    const category=globalThis.NovaAudioAssets?.entry(src)?.category;
+    if(category==='voice')return voiceOutputVolume(1,src);
+    if(category==='bgm')return bgmOutputVolume();
+    if(category==='sfx'){
+      const key = normalizedAudioSourceKey(src);
+      let gain = sfxOutputVolume();
+      if(key === SPIN_SOUND_SRC || key === STOP_SOUND_SRC) gain *= 0.7 * dbToGain(-3);
+      if(src === SORTIE_SANDWICH_AIM_SOUND_SRC) gain *= dbToGain(8);
+      return Math.min(1, gain);
+    }
+    if(category==='payout')return payoutOutputVolume(undefined,src);
+    return CHARACTER_VOICE_KEYS.has(normalizedAudioSourceKey(src))?voiceOutputVolume(1,src):applyAudioSourceOutputScale(volume,src);
+  }
+
+  function aimWinOutputVolume(audio){
+    return soundOutputVolume(audio.aimSoundSrc,sfxOutputVolume())*(audio.aimFadeGain??1);
+  }
+
+  function applyCharacterVoiceOutputVolumes(){
+    for(const [src,audio] of oneShotSoundCache){
+      if(globalThis.NovaAudioAssets?.entry(src)){audio.volume=soundOutputVolume(src,audio.volume);continue;}
+      if(CHARACTER_VOICE_KEYS.has(normalizedAudioSourceKey(src)))audio.volume=voiceOutputVolume(1,src);
+    }
+    for(const audio of aimWinAudios)audio.volume=aimWinOutputVolume(audio);
+  }
+
+  function voiceOutputVolumeForSource(scale=1, src=""){
+    return voiceOutputVolume(scale * audioSourceOutputScale(src),src);
+  }
+
+  function sfxOutputVolumeForSource(scale=SFX_OUTPUT_SCALE, src=""){
+    return sfxOutputVolume(scale * audioSourceOutputScale(src));
+  }
+
+  function payoutOutputVolume(scale=PAYOUT_SOUND_OUTPUT_SCALE, src=""){
+    const volume = audioOutputVolume(remapVolumeSlider(settings.payoutVolume, 0.5, AUDIO_MIX_CENTER.payoutVolume), scale * 0.74);
+    return src && normalizedAudioSourceKey(src) === REPLAY_SOUND_SRC ? volume * dbToGain(-3) : volume;
+  }
+
+  function payoutOutputVolumeForSource(scale=PAYOUT_SOUND_OUTPUT_SCALE, src=""){
+    return payoutOutputVolume(scale * audioSourceOutputScale(src),src);
+  }
+
+  function clearBonusEndBgmLock(){
+    bonusEndBgmPlaying = false;
+    if(bonusEndBgmTimer){
+      clearTimeout(bonusEndBgmTimer);
+      bonusEndBgmTimer = null;
+    }
+    if(bonusEndBgmAudio){
+      bonusEndBgmAudio.novaCancelPlaybackWatch?.();
+      bonusEndBgmAudio.onended = null;
+      bonusEndBgmAudio.onerror = null;
+      try{ bonusEndBgmAudio.pause(); }catch(e){}
+      bonusEndBgmAudio = null;
+    }
+    if(bonusEndVoiceAudio){
+      bonusEndVoiceAudio.onended = null;
+      bonusEndVoiceAudio.onerror = null;
+      try{ bonusEndVoiceAudio.pause(); }catch(e){}
+      bonusEndVoiceAudio = null;
+    }
+    updateAutoUi();
+  }
+
+  function pickSettingBonusEndVoiceSrc(settingNo = settings.setting){
+    if(A_TYPE_MODE)return ""; // No setting-identifying voice in ordinary play.
+  }
+
+  function completeBonusEndBgmSequence(callback){
+    const cb = callback;
+    clearBonusEndBgmLock();
+    if(typeof cb === "function") cb();
+  }
+
+  function playCzCountdownOnLever(resolved){
+    if(resolved?.bonusPendingAtStart)return;
+    const flow=resolved?.flowBefore;
+    const before=['cz','strong_cz'].includes(flow?.phase)?Number(flow.remaining)
+      :flow?.phase==='art'&&['continue','success','failure'].includes(resolved.comebackEvent)?Number(flow.comebackLeft):NaN;
+    if(!Number.isFinite(before)||before<1)return;
+    const remaining=before-1;
+    const src={3:'assets/media/jag/cz_remaining_3.wav?v=count2',2:'assets/media/jag/cz_remaining_2.wav?v=count2',1:'assets/media/nova/cz_remaining_1.wav',0:'assets/media/jag/cz_last.wav?v=count2'}[remaining];
+    if(src)playOneShotSound(src,voiceOutputVolume());
+  }
+
+  function playPendingSettingVoiceOnLever(){
+    // Discard legacy voice paths from old saves; they are not NOVA assets.
+    normalState.pendingPremiumVoiceSrc = "";
+    const settingSrc = String(normalState.pendingSettingVoiceSrc || "");
+    if(!settingSrc) return false;
+    normalState.pendingSettingVoiceSrc = "";
+    playOneShotSound(settingSrc, voiceOutputVolume(SETTING_VOICE_OUTPUT_SCALE));
+    log("設定示唆ボイス：ボーナス後1G目レバーON");
+    return true;
+  }
+
+  function playArtEndSound(resolved){
+    if(normalState.resultCard)return; // The result eyecatch owns the ending sound and playback lock.
+    if(resolved?.flowBefore?.phase!=='art'||resolved.flowAfter?.phase!=='normal'||resolved.bonusHit||resolved.artEndSoundPlayed)return;
+    resolved.artEndSoundPlayed=true;
+    playLockedBonusConfirmSound(BONUS_END_BGM_SRC,bgmOutputVolume(BGM_OUTPUT_SCALE));
+  }
+
+  function playBonusEndBgmThen(callback){
+    clearBonusEndBgmLock();
+    bonusEndBgmPlaying = true;
+    updateAutoUi();
+    if($("resultText")) $("resultText").textContent = "ボーナス終了BGM中...";
+    stopBattleBgm(false);
+    stopBarBgm(false);
+    if(bgm){
+      try{
+        bgm.pause();
+        bgm.currentTime = 0;
+      }catch(e){}
+    }
+    const finish = ()=>{
+      if(!bonusEndBgmPlaying || bonusEndBgmAudio !== audio) return;
+      if(bonusEndBgmTimer){
+        clearTimeout(bonusEndBgmTimer);
+        bonusEndBgmTimer = null;
+      }
+      if(bonusEndBgmAudio){
+        bonusEndBgmAudio.novaCancelPlaybackWatch?.();
+        bonusEndBgmAudio.onended = null;
+        bonusEndBgmAudio.onerror = null;
+        try{ bonusEndBgmAudio.pause(); }catch(e){}
+        bonusEndBgmAudio = null;
+      }
+      completeBonusEndBgmSequence(callback);
+    };
+    const audio = new Audio(BONUS_END_BGM_SRC);
+    audio.playbackRate=superSpeedActive?6:1;
+    bonusEndBgmAudio = audio;
+    audio.volume = bgmOutputVolumeForSource(BGM_OUTPUT_SCALE, BONUS_END_BGM_SRC);
+    audio.onended = finish;
+    audio.onerror = finish;
+    audio.novaCancelPlaybackWatch = watchPlaybackProgress(audio,finish);
+
+    try{
+      const p = audio.play();
+      if(p && typeof p.catch === "function") p.catch(()=>setTimeout(finish, 500));
+    }catch(e){
+      setTimeout(finish, 500);
+    }
+  }
+
+  function movieOutputVolume(scale=MOVIE_OUTPUT_SCALE){
+    return audioOutputVolume(settings.movieVolume, scale);
+  }
+
+  function movieOutputVolumeForSource(scale=MOVIE_OUTPUT_SCALE, src=""){
+    return movieOutputVolume(scale * audioSourceOutputScale(src));
+  }
+
+  function rogiMovieOutputVolume(scale=ROGI_MOVIE_OUTPUT_SCALE){
+    return audioOutputVolume(settings.rogiMovieVolume, scale);
+  }
+
+  function rogiMovieOutputVolumeForSource(scale=ROGI_MOVIE_OUTPUT_SCALE, src=""){
+    return rogiMovieOutputVolume(scale * audioSourceOutputScale(src));
+  }
+
+  function updateAudioMuteButton(){
+    const btn = $("audioMuteBtn");
+    if(!btn) return;
+    btn.textContent = settings.audioMuted ? "ミュート解除" : "ミュート";
+    btn.classList.toggle("active", !!settings.audioMuted);
+    btn.setAttribute("aria-pressed", settings.audioMuted ? "true" : "false");
+  }
+
+  function currentGekiatsuVideoOutputVolume(){
+    if(!gekiatsuVideo) return 0;
+    const src = gekiatsuVideo.getAttribute("src") || "";
+    const isRogi = Object.values(ROGI_STOP_VIDEO_SRCS).some(rogiSrc => src === rogiSrc || src.endsWith(rogiSrc));
+    return isRogi
+      ? rogiMovieOutputVolumeForSource(ROGI_MOVIE_OUTPUT_SCALE, src)
+      : movieOutputVolumeForSource(MOVIE_OUTPUT_SCALE, src);
+  }
+
+  function applyOumaAudioOutputVolumes(){
+    if(oumaIntroAudio)oumaIntroAudio.volume=sfxOutputVolumeForSource(SFX_OUTPUT_SCALE,'assets/media/nova/uuufa.wav');
+    if(oumaReverseAudio)oumaReverseAudio.volume=sfxOutputVolumeForSource(SFX_OUTPUT_SCALE,"assets/media/nova/ouma-reverse-v2.wav");
+  }
+
+  function applyAudioOutputVolumes(){
+    NovaSortie.updateVolume(sfxOutputVolume());
+    globalThis.NovaRushConfirm?.updateVolumes(bgmOutputVolume(BGM_OUTPUT_SCALE),sfxOutputVolume());
+    applyCharacterVoiceOutputVolumes();
+    applyOumaAudioOutputVolumes();
+    applyBgmOutputVolumes();
+    if(koatariSound) koatariSound.volume = sfxOutputVolumeForSource(SFX_OUTPUT_SCALE, KOATARI_SOUND_SRC);
+    if(bigSound) bigSound.volume = sfxOutputVolumeForSource(SFX_OUTPUT_SCALE, BIG_SOUND_SRC);
+    if(payoutSound) payoutSound.volume = payoutOutputVolumeForSource(PAYOUT_SOUND_OUTPUT_SCALE, payoutSound.getAttribute("src") || PAYOUT_SOUND_SRC);
+    if(voiceSound) voiceSound.volume = voiceOutputVolume();
+    if(gekiatsuVideo) gekiatsuVideo.volume = currentGekiatsuVideoOutputVolume();
+    updateAudioMuteButton();
+  }
+
+  function toggleAudioMute(){
+    settings.audioMuted = !settings.audioMuted;
+    applyAudioOutputVolumes();
+    updateDisplay();
+    persistState();
+    log(settings.audioMuted ? "音量をミュートしました" : "ミュートを解除しました");
+  }
+
+  function applyBgmOutputVolumes(){
+    const resultEyecatchAudio=oneShotSoundCache.get('assets/media/nova/result-eyecatch.wav');
+    if(resultEyecatchAudio)resultEyecatchAudio.volume = bgmOutputVolumeForSource(BGM_OUTPUT_SCALE,'assets/media/nova/result-eyecatch.wav');
+    if(bgm) bgm.volume = bgmOutputVolumeForSource(BGM_OUTPUT_SCALE, bgm.getAttribute("src") || normalBgmSrc());
+    if(barBgm) barBgm.volume = bgmOutputVolumeForSource(BAR_BGM_OUTPUT_SCALE, activeBarBgmSrc());
+    if(battleBgm) battleBgm.volume = bgmOutputVolumeForSource(BATTLE_BGM_OUTPUT_SCALE, BATTLE_BGM_SRC);
+  }
+
+  function muteBgmForRogiStopEffect(){
+    rogiBgmMuted = true;
+    if(bgm) bgm.volume = 0;
+    if(barBgm) barBgm.volume = 0;
+    if(battleBgm) battleBgm.volume = 0;
+  }
+
+  function restoreBgmAfterRogiStopEffect(){
+    if(!rogiBgmMuted) return;
+    rogiBgmMuted = false;
+    applyBgmOutputVolumes();
+  }
+
+  function isRogiThirdStopHoldActive(){
+    return !!rogiThirdStopHold;
+  }
+
+  function shouldHoldRogiThirdStopEffect(spin=currentSpin){
+    return !!(
+      spin &&
+      !spin.effectsSkipped &&
+      spin.rogiStopEffectStarted &&
+      Number(spin.rogiLastStopEffectOrder) === 3
+    );
+  }
+
+  function startRogiThirdStopHold(){
+    if(rogiThirdStopHold) return;
+    rogiThirdStopHold = true;
+  }
+
+  function clearRogiThirdStopHold(){
+    rogiThirdStopHold = false;
+  }
+
+  function isRogiThirdStopMoviePlaying(){
+    return !!(
+      isRogiThirdStopHoldActive() &&
+      gekiatsuVideo &&
+      !gekiatsuVideo.paused &&
+      !gekiatsuVideo.ended
+    );
+  }
+
+  function clearRogiThirdStopHoldForNextGame(){
+    if(!isRogiThirdStopHoldActive()) return;
+    clearRogiThirdStopHold();
+    stopGekiatsuEffect(true);
+  }
+
+  function updateDevilStatusLamp(){
+    const stEmblem = $("wdStEmblem");
+    if(!stEmblem) return;
+    const barActive = !!barBgmActive;
+    const atActive = !!session.active;
+    const atConfirmed = !atActive && !!(
+      pendingAtStartTimer ||
+      (normalState.bonusPending && normalState.bonusKind !== "MID")
+    );
+
+    stEmblem.classList.toggle("status-rainbow", barActive);
+    stEmblem.classList.toggle("status-blink", !barActive && atActive);
+    stEmblem.classList.toggle("status-lit", barActive || atActive || atConfirmed);
+    stEmblem.classList.toggle("status-confirmed", !barActive && !atActive && atConfirmed);
+    stEmblem.setAttribute("data-state", barActive ? "bar" : atActive ? "at" : atConfirmed ? "confirmed" : "normal");
+  }
+
+  function updateReelFrameMode(){
+    if(!reelArea) return;
+    const frameOn = !!(
+      session.active ||
+      normalState.bonusPending ||
+      pendingAtStartTimer ||
+      speedBonusRogiHoldActive
+    );
+    reelArea.classList.toggle("reelFrameOn", frameOn);
+    reelArea.classList.remove("speedFrameOff");
+  }
+
+  function setSpeedFrameOffHold(active){
+    speedFrameOffHold = !!active;
+    updateReelFrameMode();
+  }
+
+  function setAudioPanelOpen(open){
+    if(!audioDock || !audioToggleBtn) return;
+    audioDock.classList.toggle("open", !!open);
+    audioToggleBtn.setAttribute("aria-expanded", open ? "true" : "false");
+    audioToggleBtn.setAttribute("aria-label", open ? "音量を閉じる" : "音量を開く");
+  }
+
+  function infoPanelClassForType(type){
+    if(type === "slump") return "slumpOpen";
+    if(type === "counter") return "counterOpen";
+    return "oddsOpen";
+  }
+
+  function infoPanelButtonForType(type){
+    if(type === "slump") return slumpToggleBtn;
+    if(type === "counter") return roleCounterToggleBtn;
+    return oddsToggleBtn;
+  }
+
+  function closeInfoPanels(){
+    if(!audioDock) return;
+    audioDock.classList.remove("slumpOpen","oddsOpen","counterOpen");
+    if(slumpToggleBtn) slumpToggleBtn.setAttribute("aria-expanded", "false");
+    if(oddsToggleBtn) oddsToggleBtn.setAttribute("aria-expanded", "false");
+    if(roleCounterToggleBtn) roleCounterToggleBtn.setAttribute("aria-expanded", "false");
+    updateReelInfoButtons();
+  }
+
+  function isInfoPanelOpen(type){
+    if(!audioDock) return false;
+    return audioDock.classList.contains(infoPanelClassForType(type));
+  }
+
+  function updateReelInfoButtons(){
+    const slumpOpen = isInfoPanelOpen("slump");
+    const oddsOpen = isInfoPanelOpen("odds");
+    if(reelSlumpToggleBtn){
+      reelSlumpToggleBtn.textContent = slumpOpen ? "とじる" : "スランプグラフ";
+      reelSlumpToggleBtn.classList.toggle("is-open", slumpOpen);
+      reelSlumpToggleBtn.setAttribute("aria-expanded", slumpOpen ? "true" : "false");
+    }
+    if(reelOddsToggleBtn){
+      reelOddsToggleBtn.textContent = oddsOpen ? "とじる" : "設定別確率";
+      reelOddsToggleBtn.classList.toggle("is-open", oddsOpen);
+      reelOddsToggleBtn.setAttribute("aria-expanded", oddsOpen ? "true" : "false");
+    }
+  }
+
+  function isReelDataCounterOpen(){
+    return !!(reelDataCounterPanel && reelDataCounterPanel.classList.contains("is-counter-open"));
+  }
+
+  function updateReelDataCounterMenu(){
+    const open = isReelDataCounterOpen();
+    if(reelDataToggleBtn){
+      reelDataToggleBtn.textContent = open ? "とじる" : "データカウンター";
+      reelDataToggleBtn.classList.toggle("is-open", open);
+      reelDataToggleBtn.setAttribute("aria-expanded", open ? "true" : "false");
+    }
+  }
+
+  function setReelDataCounterOpen(open){
+    if(!reelDataCounterPanel) return;
+    reelDataCounterPanel.classList.toggle("is-counter-open", !!open);
+    updateReelDataCounterMenu();
+  }
+
+  function syncInfoPanelPosition(){
+    const root = document.documentElement;
+    const reelWindow = document.querySelector(".reels") || reelArea || machine;
+    const regWindow = document.querySelector(".wd-info-strip div:nth-child(3)");
+    const activePanel = audioDock && audioDock.classList.contains("slumpOpen")
+      ? $("slumpPanel")
+      : audioDock && audioDock.classList.contains("oddsOpen")
+        ? $("oddsPanel")
+        : audioDock && audioDock.classList.contains("counterOpen")
+          ? $("roleCounterPanel")
+          : null;
+    const viewW = root.clientWidth || window.innerWidth || PAGE_STAGE_WIDTH;
+    let left = viewW / 2;
+    let top = 16;
+    let maxHeight = 620;
+    if(reelWindow || regWindow){
+      const reelRect = reelWindow ? reelWindow.getBoundingClientRect() : null;
+      const regRect = regWindow ? regWindow.getBoundingClientRect() : null;
+      const gap = 20;
+      const topMargin = 16;
+      const anchorRect = regRect || reelRect;
+      left = anchorRect.left + anchorRect.width / 2;
+      const anchorTop = regRect ? regRect.top : reelRect.top;
+      maxHeight = Math.max(40, anchorTop - gap - topMargin);
+      const panelHeight = activePanel
+        ? Math.min(activePanel.scrollHeight || activePanel.getBoundingClientRect().height || maxHeight, maxHeight)
+        : maxHeight;
+      top = anchorTop - gap - panelHeight;
+    }
+    if(maxHeight < 260){
+      top = 84;
+      maxHeight = Math.max(260, (window.innerHeight || document.documentElement.clientHeight || 720) - top - 18);
+    }
+    const panelWidth = activePanel
+      ? Math.min(activePanel.scrollWidth || activePanel.getBoundingClientRect().width || 760, viewW - 32)
+      : Math.min(760, viewW - 32);
+    const halfPanelWidth = Math.max(16, panelWidth / 2);
+    left = clamp(left, halfPanelWidth + 16, Math.max(halfPanelWidth + 16, viewW - halfPanelWidth - 16));
+    top = Math.max(8, top);
+    root.style.setProperty("--wd-info-panel-left", `${Math.round(left * 100) / 100}px`);
+    root.style.setProperty("--wd-info-panel-top", `${Math.round(top * 100) / 100}px`);
+    root.style.setProperty("--wd-info-panel-max-height", `${Math.round(maxHeight * 100) / 100}px`);
+  }
+
+  function syncInfoPanelPositionIfOpen(){
+    if(audioDock && (audioDock.classList.contains("slumpOpen") || audioDock.classList.contains("oddsOpen") || audioDock.classList.contains("counterOpen"))){
+      syncInfoPanelPosition();
+    }
+  }
+
+  function setInfoPanelOpen(type, open){
+    if(!audioDock) return;
+    setAudioPanelOpen(false);
+    closeInfoPanels();
+    if(!open){
+      updateReelInfoButtons();
+      return;
+    }
+    const isSlump = type === "slump";
+    if(isSlump)setDataGraphView(false);
+    audioDock.classList.add(infoPanelClassForType(type));
+    if(isSlump)updateDataCounter();
+    const btn = infoPanelButtonForType(type);
+    if(btn) btn.setAttribute("aria-expanded", "true");
+    syncInfoPanelPosition();
+    updateReelInfoButtons();
+    requestAnimationFrame(()=>{
+      syncInfoPanelPosition();
+      if(isSlump) renderSlumpGraph();
+    });
+  }
+
+  function closeUtilityPanels(){
+    setAudioPanelOpen(false);
+  }
+
+  function clearReelLight(keepBarHold=false){
+    if(!reelArea) return;
+    if(reelLightTimer){
+      clearTimeout(reelLightTimer);
+      reelLightTimer = null;
+    }
+    reelArea.classList.remove("lightYellow","lightGreen","lightRed","lightRainbow","lightRainbowHold");
+    if(keepBarHold && barRainbowHold){
+      reelArea.classList.add("lightRainbowHold");
+    }
+  }
+
+  function speedModeVisualsSuppressed(spin=currentSpin){
+    return !!(spin && spin.speedModeAtStart);
+  }
+
+  function flashReelLight(type, duration=1800){
+    if(debugFastSpinActive) return;
+    if(speedModeVisualsSuppressed()) return;
+    if(isRogiThirdStopHoldActive()) return;
+    if(!reelArea) return;
+    clearReelLight(false);
+
+    const map = {
+      yellow:"lightYellow",
+      green:"lightGreen",
+      red:"lightRed",
+      rainbow:"lightRainbow",
+      rainbowHold:"lightRainbowHold"
+    };
+
+    const cls = map[type];
+    if(!cls) return;
+
+    reelArea.classList.add(cls);
+
+    if(type !== "rainbowHold"){
+      reelLightTimer = setTimeout(()=>{
+        clearReelLight(true);
+      }, duration);
+    }
+  }
+
+  function startBarRainbowHold(){
+    if(debugFastSpinActive) return;
+    barRainbowHold = true;
+    flashReelLight("rainbowHold");
+    ensureBarBgmContinuing();
+    updateDevilStatusLamp();
+    updateDisplay();
+  }
+
+  function stopBarRainbowHold(){
+    barRainbowHold = false;
+    clearReelLight(false);
+    updateDevilStatusLamp();
+    updateDisplay();
+  }
+
+  function flashGuaranteedSetStart(){
+    if(debugFastSpinActive) return;
+    guaranteedSetStartLight = true;
+    if(guaranteedSetLightTimer){
+      clearTimeout(guaranteedSetLightTimer);
+      guaranteedSetLightTimer = null;
+    }
+    flashReelLight("rainbowHold");
+    guaranteedSetLightTimer = setTimeout(()=>{
+      guaranteedSetStartLight = false;
+      guaranteedSetLightTimer = null;
+      clearReelLight(true);
+    }, 3200);
+  }
+
+  function stopGuaranteedSetStartLight(){
+    guaranteedSetStartLight = false;
+    if(guaranteedSetLightTimer){
+      clearTimeout(guaranteedSetLightTimer);
+      guaranteedSetLightTimer = null;
+    }
+    clearReelLight(true);
+  }
+
+  function isGoraiZoneActive(){
+    return !!(session.active && session.bigZone > 0);
+  }
+
+  function currentGoraiZoneType(){
+    return session.bigZoneType === "super" ? "super" : "devil";
+  }
+
+  function atInternalResult(result){
+    if(result === "MID") return "DEVIL_ZONE";
+    if(result === "BIG") return "SUPER_DEVIL_ZONE";
+    return result;
+  }
+
+  function displayResultFor(result){
+    if(result === "MID_CHERRY") return "MID";
+    if(result === "DEVIL_ZONE") return "MID";
+    if(result === "SUPER_DEVIL_ZONE") return "BIG";
+    return result;
+  }
+
+  function isZoneEntryResult(result){
+    return result === "DEVIL_ZONE" || result === "SUPER_DEVIL_ZONE";
+  }
+
+  function zoneSevenChance(type=currentGoraiZoneType()){
+    return type === "super" ? SUPER_DEVIL_ZONE_SEVEN_CHANCE : DEVIL_ZONE_SEVEN_CHANCE;
+  }
+
+  function drawZoneChallengeResult(type=currentGoraiZoneType()){
+    return Math.random() < zoneSevenChance(type) ? "SUPER_DEVIL_ZONE" : "MISS";
+  }
+
+  function reversePushMissSignalRate(hitRate, hitSignalRate, targetExpectation){
+    const p = clamp(Number(hitRate) || 0, 0, 1);
+    const h = clamp(Number(hitSignalRate) || 0, 0, 1);
+    const t = clamp(Number(targetExpectation) || 0, 0.01, 0.99);
+    if(p <= 0 || h <= 0 || p >= 1) return 0;
+    return clamp((p * h * (1 - t)) / (t * (1 - p)), 0, 1);
+  }
+
+  function decideReversePushGuide(result, type=currentGoraiZoneType()){
+    const hitRate = zoneSevenChance(type);
+    const redHitRate = REVERSE_PUSH_HIT_RED_RATE;
+    const blueHitRate = 1 - redHitRate;
+    if(result === "SUPER_DEVIL_ZONE"){
+      return Math.random() < redHitRate ? "red" : "blue";
+    }
+
+    let redMissRate = reversePushMissSignalRate(hitRate, redHitRate, REVERSE_PUSH_RED_EXPECTATION);
+    let blueMissRate = reversePushMissSignalRate(hitRate, blueHitRate, REVERSE_PUSH_BLUE_EXPECTATION);
+    const totalMissRate = redMissRate + blueMissRate;
+    if(totalMissRate > 1){
+      redMissRate /= totalMissRate;
+      blueMissRate /= totalMissRate;
+    }
+    const roll = Math.random();
+    if(roll < redMissRate) return "red";
+    if(roll < redMissRate + blueMissRate) return "blue";
+    return "";
+  }
+
+  function resolveZoneSevenBonus(result, type=currentGoraiZoneType()){
+    if(result !== "SUPER_DEVIL_ZONE") return {sets:0, games:0, hit:false};
+    if(type === "super") return {sets:Math.random() < 0.50 ? 1 : 2, games:0, hit:true};
+    return {sets:1, games:0, hit:true};
+  }
+
+  function isReversePushGuidedMiss(spin=currentSpin){
+    return !!(spin && spin.zoneActiveAtStart && spin.reversePushGuide && spin.result === "MISS");
+  }
+
+  function buildReversePushMissGrid(){
+    const miss = RESULT.MISS.reel[0];
+    const bell = RESULT.BELL.reel[0];
+    const suika = RESULT.SUICA.reel[0];
+    return [
+      [bell, suika, "BAR"],
+      [miss, "7", "7"],
+      ["BAR", bell, suika]
+    ];
+  }
+
+  function goraiZoneName(type=currentGoraiZoneType()){
+    return type === "super" ? "超デビルゾーン" : "デビルゾーン";
+  }
+
+  function startZoneForResult(result, activeType=currentGoraiZoneType()){
+    if(result === "SUPER_DEVIL_ZONE" || result === "BIG") return {games:SUPER_DEVIL_ZONE_GAMES, type:"super"};
+    if((result === "DEVIL_ZONE" || result === "MID") && activeType !== "super") return {games:BIG_STOCK_ZONE_GAMES, type:"devil"};
+    return {games:0, type:""};
+  }
+
+  function isContinuationBattleActive(){
+    return !!(session.active && session.phase === "battle" && session.battleRemain > 0);
+  }
+
+  function battleRemainText(){
+    return `継続バトル残り${Math.max(0, session.battleRemain || 0)}ゲーム`;
+  }
+
+  function battleRoundNumber(){
+    return clamp(Math.round(Number(session.setNo) || 1), 1, 9);
+  }
+
+  function hideBattleIntro(){
+    if(battleIntroHideTimer){
+      clearTimeout(battleIntroHideTimer);
+      battleIntroHideTimer = null;
+    }
+    if(battleIntroLayer) battleIntroLayer.classList.remove("show");
+    setBattleIntroContinueConfirmed(false);
+    if(battleIntroLayer) battleIntroLayer.setAttribute("aria-hidden", "true");
+  }
+
+  function setSessionResultSignal(signal){
+    const activeSignal = signal && signal.src ? signal : null;
+    if(sessionResultLayer) sessionResultLayer.classList.toggle("hasSignal", !!activeSignal);
+    if(sessionResultSignal){
+      sessionResultSignal.hidden = !activeSignal;
+      sessionResultSignal.setAttribute("aria-hidden", activeSignal ? "false" : "true");
+      if(activeSignal) sessionResultSignal.setAttribute("aria-label", `${activeSignal.label} ${activeSignal.name}`);
+      else sessionResultSignal.removeAttribute("aria-label");
+    }
+    if(sessionResultSignalImage){
+      sessionResultSignalImage.src = activeSignal ? activeSignal.src : "";
+      sessionResultSignalImage.alt = activeSignal ? `${activeSignal.label} ${activeSignal.name}` : "";
+    }
+  }
+
+  function hideSessionResultScreen(){
+    setSessionResultSignal(null);
+    if(session) session.endSignal = null;
+    if(sessionResultLayer){
+      sessionResultLayer.classList.remove("show");
+      sessionResultLayer.setAttribute("aria-hidden", "true");
+    }
+  }
+
+  function setBattleIntroContinueConfirmed(confirmed){
+    if(battleIntroLayer) battleIntroLayer.classList.toggle("continueConfirmed", !!confirmed);
+  }
+
+  function showBattleIntro(roundNumber, continueConfirmed=false){
+    if(!battleIntroLayer || !battleIntroLogo || !battleIntroCharacter || !battleIntroRound) return;
+    const round = clamp(Math.round(Number(roundNumber) || 1), 1, 9);
+    const characterSrc = BATTLE_CHARACTER_SRCS[randomInt(0, BATTLE_CHARACTER_SRCS.length - 1)];
+    battleIntroLogo.src = BATTLE_INTRO_LOGO_SRC;
+    battleIntroRound.src = BATTLE_ROUND_IMAGE_SRCS[round] || BATTLE_ROUND_IMAGE_SRCS[1];
+    battleIntroRound.alt = `${round}ラウンド`;
+    battleIntroCharacter.src = characterSrc;
+    battleIntroCharacter.classList.toggle("right", Math.random() < 0.5);
+    setBattleIntroContinueConfirmed(continueConfirmed);
+    battleIntroLayer.classList.add("show");
+    battleIntroLayer.setAttribute("aria-hidden", "false");
+    if(battleIntroHideTimer) clearTimeout(battleIntroHideTimer);
+    battleIntroHideTimer = null;
+  }
+
+  function ensurePendingBattleOutcome(spin){
+    if(!spin || !willEnterBattleAfterCurrentSpin(spin)) return null;
+    if(!spin.pendingBattleOutcome){
+      spin.pendingBattleOutcome = decideContinuationBattleOutcome(spin);
+    }
+    return spin.pendingBattleOutcome;
+  }
+
+  function willEnterBattleAfterCurrentSpin(spin){
+    if(!spin || !session.active || session.phase === "battle") return false;
+    if(spin.aTypeBonusActiveAtStart || isATypeBonusActive()) return false;
+    if(spin.zoneActiveAtStart || spin.battleActiveAtStart) return false;
+    const resolved = spin.resolved || {};
+    const nextRemain = (Number(session.remain) || 0) + (Number(resolved.add) || 0) + (Number(resolved.zoneStGames) || 0);
+    const nextBigZone = Math.max(0, Number(session.bigZone) || 0, Number(resolved.bigZone) || 0) + (Number(resolved.zoneGameAdd) || 0);
+    return nextRemain <= 0 && nextBigZone <= 0;
+  }
+
+  function decideContinuationBattleOutcome(spin){
+    if(!willEnterBattleAfterCurrentSpin(spin)) return null;
+    const resolved = spin.resolved || {};
+    const incomingStock = (Number(resolved.sets) || 0) + (Number(resolved.zoneSets) || 0);
+    const availableStock = (Number(session.stockSets) || 0) + incomingStock;
+    if(availableStock > 0) return {win:true, source:"stock"};
+    if(Math.random() < (Number(session.continuationRate) || 0)) return {win:true, source:"rate"};
+    return {win:false, source:""};
+  }
+
+  function goraiZoneRemainText(count, type=currentGoraiZoneType()){
+    return `${goraiZoneName(type)}残り${Math.max(0, count)}ゲーム`;
+  }
+
+  function updateGoraiZoneGlow(){
+    if(!reelArea) return;
+    reelArea.classList.toggle("goraiZoneGlow", isGoraiZoneActive());
+    updateDevilZoneFireVideos();
+  }
+
+  function ensureDevilZoneFireLayer(index){
+    const reel = reels[index];
+    if(!reel) return null;
+    let layer = reel.querySelector(".devilZoneFireLayer");
+    if(!layer){
+      layer = document.createElement("div");
+      layer.className = "devilZoneFireLayer";
+      layer.setAttribute("aria-hidden", "true");
+      const video = document.createElement("video");
+      video.muted = true;
+      video.loop = true;
+      video.playsInline = true;
+      video.preload = "auto";
+      layer.appendChild(video);
+      reel.insertBefore(layer, reel.firstChild);
+    }
+    return { layer, video: layer.querySelector("video") };
+  }
+
+  function showDevilZoneFireVideos(){
+    reels.forEach((_, index)=>{
+      const found = ensureDevilZoneFireLayer(index);
+      if(!found) return;
+      const { layer, video } = found;
+      const wasShown = layer.classList.contains("show");
+      video.muted = true;
+      video.loop = true;
+      video.playsInline = true;
+      if(video.getAttribute("src") !== DEVIL_ZONE_FIRE_VIDEO_SRC){
+        video.setAttribute("src", DEVIL_ZONE_FIRE_VIDEO_SRC);
+        video.load();
+      }
+      if(!wasShown){
+        try{ video.currentTime = 0; }catch(e){}
+      }
+      layer.classList.add("show");
+      layer.setAttribute("aria-hidden", "false");
+      if(video.paused || video.ended){
+        try{
+          const p = video.play();
+          if(p && typeof p.catch === "function") p.catch(()=>{});
+        }catch(e){}
+      }
+    });
+  }
+
+  function hideDevilZoneFireVideos(){
+    reels.forEach(reel=>{
+      const layer = reel.querySelector(".devilZoneFireLayer");
+      if(!layer) return;
+      const video = layer.querySelector("video");
+      layer.classList.remove("show");
+      layer.setAttribute("aria-hidden", "true");
+      if(video){
+        try{ video.pause(); }catch(e){}
+      }
+    });
+  }
+
+  function shouldShowDevilZoneFireVideos(){
+    const highNormal = !session.active && isHighMode();
+    return !debugFastSpinActive && (isGoraiZoneActive() || highNormal);
+  }
+
+  function updateDevilZoneFireVideos(){
+    if(shouldShowDevilZoneFireVideos()){
+      showDevilZoneFireVideos();
+    }else{
+      hideDevilZoneFireVideos();
+    }
+  }
+
+  function ensureReelVideo(index){
+    const reel = reels[index];
+    if(!reel) return null;
+    let layer = reel.querySelector(".reelVideoLayer");
+    if(!layer){
+      layer = document.createElement("div");
+      layer.className = "reelVideoLayer";
+      layer.setAttribute("aria-hidden", "true");
+      const video = document.createElement("video");
+      video.muted = true;
+      video.playsInline = true;
+      video.preload = "auto";
+      layer.appendChild(video);
+      reel.appendChild(layer);
+    }
+    return {layer, video:layer.querySelector("video")};
+  }
+
+  const reelVideoTimers = [null, null, null];
+
+  function hideReelVideo(index){
+    const found = ensureReelVideo(index);
+    if(!found) return;
+    const {layer, video} = found;
+    if(reelVideoTimers[index]){
+      clearTimeout(reelVideoTimers[index]);
+      reelVideoTimers[index] = null;
+    }
+    video.onended = null;
+    try{ video.pause(); }catch(e){}
+    layer.classList.remove("show", "stopVideo");
+  }
+
+  function ensureBellZakoLayer(){
+    if(!reelArea) return null;
+    if(bellZakoLayer) return bellZakoLayer;
+    bellZakoLayer = document.createElement("div");
+    bellZakoLayer.className = "bellZakoLayer";
+    bellZakoLayer.setAttribute("aria-hidden", "true");
+    for(let i=0;i<3;i++){
+      const panel = document.createElement("div");
+      panel.className = "bellZakoPanel";
+      panel.dataset.index = String(i);
+      const video = document.createElement("video");
+      video.muted = true;
+      video.playsInline = true;
+      video.preload = "auto";
+      panel.appendChild(video);
+      bellZakoLayer.appendChild(panel);
+    }
+    reelArea.appendChild(bellZakoLayer);
+    return bellZakoLayer;
+  }
+
+  function bellZakoPanel(index){
+    const layer = ensureBellZakoLayer();
+    if(!layer) return null;
+    return layer.querySelector(`.bellZakoPanel[data-index="${index}"]`);
+  }
+
+  function hideBellZakoPanel(index){
+    const panel = bellZakoPanel(index);
+    if(!panel) return;
+    if(bellZakoTimers[index]){
+      clearTimeout(bellZakoTimers[index]);
+      bellZakoTimers[index] = null;
+    }
+    const video = panel.querySelector("video");
+    if(video){
+      video.onended = null;
+      try{ video.pause(); }catch(e){}
+    }
+    panel.classList.remove("show", "stopVideo");
+    if(bellZakoLayer && !bellZakoLayer.querySelector(".bellZakoPanel.show")){
+      bellZakoLayer.classList.remove("show");
+    }
+  }
+
+  function clearBellZakoVideos(){
+    stopBellReadyVideoKeepAlive();
+    [0,1,2].forEach(hideBellZakoPanel);
+    if(bellZakoLayer) bellZakoLayer.classList.remove("show");
+  }
+
+  function shouldKeepReversePushGuide(){
+    return !!(session.active && isGoraiZoneActive());
+  }
+
+  function clearReelVideos(options={}){
+    const forceReversePush = !!(options && options.forceReversePush);
+    clearBellZakoVideos();
+    [0,1,2].forEach(hideReelVideo);
+    if(forceReversePush || !shouldKeepReversePushGuide()){
+      hideReversePushGuide();
+    }
+  }
+
+  function playBellZakoVideo(index, src, loop=true){
+    if(speedModeVisualsSuppressed()) return false;
+    const panel = bellZakoPanel(index);
+    if(!panel || !src) return false;
+    const video = panel.querySelector("video");
+    if(!video) return false;
+    const srcChanged = video.getAttribute("src") !== src;
+    const alreadyPlayingReady = !srcChanged && loop && panel.classList.contains("show") && !video.paused && !video.ended;
+    if(srcChanged){
+      video.setAttribute("src", src);
+      video.load();
+    }
+    video.loop = !!loop;
+    video.muted = true;
+    video.playsInline = true;
+    video.onended = null;
+    panel.classList.toggle("stopVideo", !loop);
+    panel.classList.add("show");
+    if(bellZakoLayer) bellZakoLayer.classList.add("show");
+    if(alreadyPlayingReady) return true;
+    try{
+      if(srcChanged || !loop || video.ended){
+        video.currentTime = 0;
+      }
+      const p = video.play();
+      if(p && typeof p.catch === "function"){
+        p.catch(()=>{});
+      }
+    }catch(e){}
+    return true;
+  }
+
+  function stopBellReadyVideoKeepAlive(){
+    if(bellReadyVideoKeepAliveTimer){
+      clearInterval(bellReadyVideoKeepAliveTimer);
+      bellReadyVideoKeepAliveTimer = null;
+    }
+  }
+
+  function shouldKeepBellReadyVideo(index){
+    return isSpinning && currentSpin && currentSpin.zakoEffectActive && !currentSpin.effectsSkipped && !currentSpin.stopped[index];
+  }
+
+  function keepBellReadyVideoVisible(index){
+    if(!shouldKeepBellReadyVideo(index)) return false;
+    return playBellZakoVideo(index, BELL_REEL_READY_VIDEO_SRC, true);
+  }
+
+  function startBellReelReadyVideos(){
+    stopBellReadyVideoKeepAlive();
+    ensureBellZakoLayer();
+    [0,1,2].forEach(index=>keepBellReadyVideoVisible(index));
+    bellReadyVideoKeepAliveTimer = setInterval(()=>{
+      if(!currentSpin || !currentSpin.zakoEffectActive || !isSpinning){
+        stopBellReadyVideoKeepAlive();
+        return;
+      }
+      [0,1,2].forEach(index=>keepBellReadyVideoVisible(index));
+    }, 650);
+  }
+
+  function playBellReelStopVideo(index){
+    if(!currentSpin || !currentSpin.zakoEffectActive || currentSpin.effectsSkipped) return;
+    if(bellZakoTimers[index]){
+      clearTimeout(bellZakoTimers[index]);
+      bellZakoTimers[index] = null;
+    }
+    playBellZakoVideo(index, BELL_REEL_STOP_VIDEO_SRC, false);
+    const panel = bellZakoPanel(index);
+    const video = panel ? panel.querySelector("video") : null;
+    if(video) video.onended = ()=>hideBellZakoPanel(index);
+    bellZakoTimers[index] = setTimeout(()=>hideBellZakoPanel(index), 1800);
+  }
+
+  function decideZakoEffect(result, resolved, normalActiveAtStart){
+    if(A_TYPE_MODE) return {active:false, bell:false, add:false};
+  }
+
+  function isRogiHighZoneSpin(spin=currentSpin){
+    return !!(
+      spin &&
+      spin.normalActiveAtStart &&
+      !spin.speedModeAtStart &&
+      spin.resolved &&
+      spin.resolved.highAtStart &&
+      !spin.resolved.bonusPendingAtStart &&
+      !spin.effectsSkipped &&
+      !spin.gekiatsu &&
+      !spin.bar3LeverEffect
+    );
+  }
+
+  function shouldPlaySpeedModeBonusRogi(result, resolved){
+    if(A_TYPE_MODE) return false;
+  }
+
+  function isBigPremiumEffectEligible(result, resolved){
+    if(result === "BIG" || result === "SUPER_DEVIL_ZONE") return true;
+    if(!resolved) return false;
+    if(resolved.bonusReady) return true;
+    return !!(
+      resolved.bonusHit &&
+      (resolved.bonusKind || "BIG") !== "MID"
+    );
+  }
+
+  function decideBigPremiumEffect(result, resolved, premiumForced=false){
+    if(resolved?.zoneSpin)return false;
+    // The Super NOVA branch has already drawn its exclusive 1:1 outcome.
+    if(resolved?.superNovaOutcome) return ['PREMIUM_BIG','FREEZE'].includes(resolved.superNovaOutcome); // FREEZE: resume old awarded saves.
+    if(!isBigPremiumEffectEligible(result, resolved)) return false;
+    if(A_TYPE_MODE && resolved && resolved.bonusPendingAtStart) return !!resolved.premiumBonus;
+    return !!premiumForced || (!A_TYPE_MODE && Math.random() < GEKIATSU_CHANCE_ON_BIG);
+  }
+
+  function isAtFirstHitForAuto(resolved){
+    if(A_TYPE_MODE) return false;
+  }
+
+  function decideRogiStopEffectMax(spin=currentSpin){
+    if(A_TYPE_MODE) return 0;
+  }
+
+  function shouldPlayRogiStopEffect(stopOrder, spin=currentSpin){
+    if(!isRogiHighZoneSpin(spin)) return false;
+    const maxStopOrder = Number(spin.rogiStopEffectMax) || 0;
+    if(stopOrder > maxStopOrder) return false;
+    const src = ROGI_STOP_VIDEO_SRCS[stopOrder];
+    return !!src;
+  }
+
+  function shouldBlackoutRogiContinuationStop(stopOrder, spin=currentSpin){
+    if(!isRogiHighZoneSpin(spin)) return false;
+    if(!spin.rogiStopEffectStarted || spin.rogiBlackoutShown || stopOrder <= 1) return false;
+    const maxStopOrder = Number(spin.rogiStopEffectMax) || 0;
+    const hasStopVideo = !!ROGI_STOP_VIDEO_SRCS[stopOrder];
+    return stopOrder > maxStopOrder || (stopOrder <= maxStopOrder && !hasStopVideo);
+  }
+
+  function shouldBlackoutReversePushMissStop(stopOrder, spin=currentSpin){
+    return !!(isReversePushGuidedMiss(spin) && stopOrder === 3 && !spin.reversePushMissBlackoutShown);
+  }
+
+  function hideRogiContinuationBlackout(){
+    if(rogiBlackoutTimer){
+      clearTimeout(rogiBlackoutTimer);
+      rogiBlackoutTimer = null;
+    }
+    if(rogiBlackoutLayer){
+      rogiBlackoutLayer.classList.remove("show");
+      rogiBlackoutLayer.setAttribute("aria-hidden", "true");
+    }
+  }
+
+  function flashRogiContinuationBlackout(){
+    if(!rogiBlackoutLayer) return;
+    if(rogiBlackoutTimer){
+      clearTimeout(rogiBlackoutTimer);
+      rogiBlackoutTimer = null;
+    }
+    rogiBlackoutLayer.classList.remove("show");
+    void rogiBlackoutLayer.offsetWidth;
+    rogiBlackoutLayer.classList.add("show");
+    rogiBlackoutLayer.setAttribute("aria-hidden", "false");
+    rogiBlackoutTimer = setTimeout(()=>hideRogiContinuationBlackout(), 620);
+  }
+
+  function stopRogiStopEffect(immediate=true){
+    restoreBgmAfterRogiStopEffect();
+    if(immediate) stopGekiatsuEffect(true);
+    else fadeOutGekiatsuEffect();
+  }
+
+  function playRogiStopEffect(stopOrder){
+    if(!shouldPlayRogiStopEffect(stopOrder)) return false;
+    const src = ROGI_STOP_VIDEO_SRCS[stopOrder];
+    muteBgmForRogiStopEffect();
+    const holdThirdStop = stopOrder === 3;
+    startGekiatsuEffect(false, src, `ROGI ${stopOrder}`, {
+      muted:false,
+      solid:holdThirdStop,
+      volumeScale:ROGI_MOVIE_OUTPUT_SCALE,
+      volumeGroup:"rogi",
+      holdUntilBet:holdThirdStop
+    });
+    if(holdThirdStop) startRogiThirdStopHold();
+    if(currentSpin){
+      currentSpin.rogiStopEffectStarted = true;
+      currentSpin.rogiLastStopEffectOrder = stopOrder;
+    }
+    return true;
+  }
+
+  function clamp(n,min,max){ return Math.max(min, Math.min(max,n)); }
+
+  function volumePercentFromValue(value){
+    const raw = Number(value);
+    const normalized = Number.isFinite(raw) ? clamp(raw, 0, 1) : 0;
+    return Math.round(normalized * 100);
+  }
+
+  function syncVolumeNumberInput(rangeId, numberId){
+    const range = $(rangeId);
+    const number = $(numberId);
+    if(!range || !number) return;
+    number.value = String(volumePercentFromValue(range.value));
+  }
+
+  function syncAllVolumeNumberInputs(){
+    AUDIO_VOLUME_FIELDS.forEach(({rangeId, numberId})=>syncVolumeNumberInput(rangeId, numberId));
+  }
+
+  function syncVolumeRangeFromNumber(numberId){
+    const field = AUDIO_VOLUME_FIELDS.find(item=>item.numberId === numberId);
+    if(!field) return false;
+    const number = $(field.numberId);
+    const range = $(field.rangeId);
+    if(!number || !range) return false;
+    const raw = String(number.value || "").trim();
+    if(raw === "") return false;
+    const percent = Math.round(clamp(Number(raw) || 0, 0, 100));
+    number.value = String(percent);
+    range.value = (percent / 100).toFixed(2);
+    return true;
+  }
+
+  function targetRtpText(settingNo = settings.setting){
+    if(!A_TYPE_MODE)return;
+    // The reference trial is uncapped even when live play uses COMPLETE.
+    if(!NovaBalance.usesStandardSettings({...settings,completeEnabled:false,completeBasis:'none',completeLimitPt:0,completeMyLimitPt:0}))return "未試算（独自設定）";
+    const data=globalThis.NovaRtpCurrent;
+    const row=data?.status==='ready'&&data.gamesPerSetting===1_000_000_000&&data.settings?.find(r=>r.setting===Number(settingNo));
+    if(!row||!globalThis.NovaRtpClient?.verified(data)||!Number.isFinite(row.rtpPct))return "未取得";
+    const conditions=String(data.conditions||'10億G・MY／差枚停止なし');
+    return `${row.rtpPct.toFixed(2)}%（${conditions}）`;
+  }
+
+  function refreshRtpViews(){
+    for(const id of ['targetRtpView','targetRtpViewLegacy','adminTargetRtpView']){
+      if($(id))$(id).textContent=targetRtpText();
+    }
+    for(const n of [1,2,3,4,5,6]){
+      const option=document.querySelector(`#settingSelect option[value="${n}"]`);
+      if(option)option.textContent=`設定${n} / ${targetRtpText(n)}`;
+    }
+  }
+
+  function rewardFor(result){
+    return ROLE_PAYOUTS[result] || 0;
+  }
+
+  function isCherryResult(result){
+    return result === "CHERRY_ANY" || result === "CHERRY_DOUBLE" || result === "CHERRY_TRIPLE" || result === "MID_CHERRY";
+  }
+
+  function isCollectibleCherryResult(result){
+    return result === "CHERRY_ANY" || result === "CHERRY_DOUBLE" || result === "CHERRY_TRIPLE";
+  }
+
+  function aTypeCherryPayoutForLine(lineRow=1){
+    return lineRow === 1 ? 1 : 2;
+  }
+
+  function normalRewardFor(result, lineRow=1){
+    if(A_TYPE_MODE && result==="REPLAY")return NovaArt.replayRefund(result);
+    if(result === "SUPER_NOVA" || result === "CZ" || result === "STRONG_CZ") return 0;
+    if(A_TYPE_MODE && NovaNormal.rare[result]) return NovaNormal.pay(result);
+    if(A_TYPE_MODE && (result === "BIG" || result === "MID")) return 0;
+    if(A_TYPE_MODE && isCherryResult(result)) return aTypeCherryPayoutForLine(lineRow);
+    if(A_TYPE_MODE && A_TYPE_PAYOUTS[result]) return A_TYPE_PAYOUTS[result];
+    return NORMAL_ROLE_PAYOUTS[result] || 0;
+  }
+
+  function normalizeATypeResult(result){
+    if(A_TYPE_MODE && ['MID','MID_CHERRY','REG','RB'].includes(result))return 'BIG';
+    if(isNovaResult(result) || result === "CZ" || result === "STRONG_CZ") return result;
+    if(result === "NEBULA" || NovaNormal.rare[result])return result;
+    if(result === "GRAPE") return "BELL";
+    return ["MISS","BIG","MID","ONE_COIN","BELL","BELL15","REPLAY","BAR3"].includes(result) ? result : "MISS";
+  }
+
+  function normalizeForceResult(result){
+    if(result==='STRONG_SUICA')return 'WEAK_SUICA';
+    if(result==='CHANCE_A'||result==='CHANCE_B')return 'MISS';
+    if(result === "BONUS_SPECIAL")return "NEBULA";
+    if(result === "NAVI_BELL")return result;
+    if(result==='BURST')return '';
+    if(globalThis.NovaStockEntry?.debugCue(result))return result;
+    if(result==='FREEZE'||result==='ART'||result==='COMEBACK'||result==='URA_CHALLENGE'||result==='SORTIE'||result==='RARE'||result.startsWith('ZONE_'))return result;
+    if(result === "REACH_ME") return "REACH_ME";
+    return A_TYPE_MODE && result ? normalizeATypeResult(result) : result;
+  }
+
+  function forceResultName(result){
+    const cue=globalThis.NovaStockEntry?.debugCue(result);
+    if(cue)return '出陣NOVA狙え / '+({blue:'青',red:'赤',rainbow:'虹'}[cue.color])+' / '+(cue.fake?'失敗':'成功');
+
+    if(result === "SORTIE")return "出陣チャレンジ（10G・1回予約）";
+    if(result === "URA_CHALLENGE")return "スーパーノヴァチャレンジ（10G・HOLDあり）";
+    if(result === "COMEBACK")return "引き戻しゾーン（5G）";
+    if(result === "NAVI_BELL")return "押し順ベル（8pt）";
+    if(result === "FREEZE")return "出陣チャレンジ（旧フリーズ指定）";
+    if(result === "REACH_ME") return "リーチ目";
+    return RESULT[result]?.name || "";
+  }
+
+  function takeForcedResult(){
+    // Keep the one-shot challenge queued until a pending/active BIG has finished.
+    if(forceResult==='URA_CHALLENGE' && A_TYPE_MODE && (isATypeBonusActive() || normalState.bonusPending))return '';
+    const result=forceResult;
+    forceResult='';
+    const cue=globalThis.NovaStockEntry?.debugCue(result);
+    if(A_TYPE_MODE&&cue){
+      normalState.sortieDebugCue=cue;
+      if(cue.fake)normalState.pendingFakeSortie=(Number(normalState.pendingFakeSortie)||0)+1;
+      else{syncNovaProgress();NovaProgress.queueSortie();}
+      log('強制指定：'+forceResultName(result)+'（突入可能なタイミングで1回）');
+      return '';
+    }
+    if(A_TYPE_MODE && ['SORTIE','FREEZE'].includes(result)){
+      // Use the existing persistent queue and safe entry timing, without forcing a reel role.
+      syncNovaProgress();
+      NovaProgress.queueSortie();
+      log('強制指定：出陣チャレンジを1回予約（ボーナス・特化中は終了後）');
+      return '';
+    }
+    return result;
+  }
+
+  function forcedBurstStep(flow){
+    const base=flow?.phase==='art'?NovaArt.normalize(flow):NovaArt.enter({...settings.novaArt,setting:settings.setting});
+    const waiting=!!(base.zone || base.entryStage),name=NovaArt.challengeName();
+    return {result:'MISS',zoneSpin:true,
+      flow:{...base,comebackLeft:0,comebackLamp:'',burstVersion:NovaArt.burstRules.version,burstType:'ura',burstUsed:true,burstPending:true,burstLeft:0,burstWon:false,researchChallengeActive:false,researchChallengeSource:'rare',researchAim:''},
+      message:waiting?name+'予約！ 特化ゾーン終了後に開始':name+'突入！ 残り10G / 成功期待度65%'};
+  }
+
+  function normalizeATypeBonusKind(kind){
+    if(A_TYPE_MODE)return 'BIG';
+  }
+
+  function aTypeBonusLabel(kind=session.bonusKind, premium=(session.premiumBonus || session.oneGameRenBonus)){
+    if(A_TYPE_MODE)return isATypeBonusActive()?NovaArt.bonusLabel(session.bonusTier):'BIG';
+  }
+
+  function aTypeBonusTarget(kind=session.bonusKind, premium=(session.premiumBonus || session.oneGameRenBonus)){
+    if(A_TYPE_MODE)return NovaArt.bonusTarget(normalizeATypeBonusKind(kind));
+  }
+
+  function isATypeBonusActive(){
+    return !!(A_TYPE_MODE && session.active && session.phase === "a_type_bonus");
+  }
+
+  function aTypeBonusNet(){
+    return Math.max(0, Number(session.paid) || 0);
+  }
+
+  function aTypeBonusRemainingNet(){
+    return Math.max(0, (Number(session.bonusTarget) || aTypeBonusTarget()) - NovaArt.bonusProgress(session));
+  }
+
+  function isATypeBonusComplete(){
+    return isATypeBonusActive() && NovaArt.bonusProgress(session)>=aTypeBonusTarget();
+  }
+
+  function drawATypeBonusResult(){
+    session.bonusExtraStockOffered=false;
+    if(pendingForceResult === "NEBULA")return "NEBULA";
+    if(isNovaResult(pendingForceResult)) return pendingForceResult;
+    if(NovaNormal.rare[pendingForceResult]||['BELL','REPLAY','MISS'].includes(pendingForceResult))return pendingForceResult;
+    const securedBefore=NovaArt.bonusStockEligible(session,normalState.flow);
+    const draw=NovaArt.drawBonusWithPlan(session,normalState.flow,Math.random,settings.setting,session.bonusTier);
+    Object.assign(session,draw.state);session.bonusExtraStockOffered=!!draw.extraOffer;
+    if(!securedBefore&&draw.role==='NEBULA'&&!session.bonusExtraStockReady)Object.assign(session,NovaArt.ensureBonusExtraStockPlan(session,Math.random));
+    return draw.role;
+  }
+
+  function resolveATypeBonusOutcome(result){
+    const special=result === "NEBULA";
+    const stockEligible=NovaArt.bonusStockEligible(session,normalState.flow);
+    const reward = !isATypeBonusComplete() ? NovaArt.bonusPayout(session,result) : 0;
+    return {
+      aim:NovaArt.bonusAim(result,Math.random,settings.setting,stockEligible),
+      reward,
+      add:0,
+      sets:0,
+      bigZone:0,
+      bigZoneType:"",
+      zoneGame:false,
+      zoneType:"",
+      zoneSets:0,
+      zoneStGames:0,
+      zoneGameAdd:0,
+      zoneSevenHit:false,
+      artSetWon:special && !isATypeBonusComplete()?1:0,
+      novaRushConfirmed:special&&!isATypeBonusComplete()&&!stockEligible,
+      bonusExtraStockOffered:special&&!isATypeBonusComplete()&&!!session.bonusExtraStockOffered,
+      aTypeBonusGame:true,
+      initialBonusGame:normalState.flow?.phase!=='art'
+    };
+  }
+
+  function randomInt(min, max){
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  function stAddFor(result){
+    return 0;
+  }
+
+  function setGameCount(){
+    return clamp(Number(settings.stSpins) || 10, 1, 100);
+  }
+
+  function formatRate(rate){
+    return Math.round((Number(rate) || 0) * 100) + "%";
+  }
+
+  function stGameAddTextFor(result, amount){
+    const value = Math.max(0, Number(amount) || 0);
+    if(value <= 0) return "";
+    return `${result === "SMALL" ? "AT" : "AT"}+${value}G`;
+  }
+
+  function atSetStockRateFor(result, settingNo = settings.setting){
+    const table = AT_SET_STOCK_RATES_BY_SETTING[result];
+    return table ? Number(table[settingNo] ?? table[1]) || 0 : 0;
+  }
+
+  function stockSetsForResult(result, settingNo = settings.setting){
+    if(result === "BAR3") return 5;
+    return Math.random() < atSetStockRateFor(result, settingNo) ? 1 : 0;
+  }
+
+  function revivalRateForResult(result){
+    if(result === "BAR3" || result === "CHERRY_TRIPLE") return 1.0;
+    if(result === "CHERRY_DOUBLE") return 0.50;
+    if(result === "SUICA") return 0.33;
+    if(result === "CHERRY_ANY") return 0.25;
+    return 0;
+  }
+
+  function eventWeights(settingNo = settings.setting){
+    return (SETTING_PROFILE[settingNo] || SETTING_PROFILE[1]).weights;
+  }
+
+  function hitProbability(settingNo = settings.setting){
+    const baseP = GORAI_HIT_RATE[settingNo] ?? GORAI_HIT_RATE[1];
+    return clamp(baseP * settings.oddsMultiplier, 0, 0.98);
+  }
+
+  function isHighMode(){
+    return (Number(normalState.highRemain) || 0) > 0;
+  }
+
+  function normalizeNovaRisingRemain(value){
+    return clamp(Math.floor(Number(value) || 0), 0, NOVA_RISING_GAMES);
+  }
+
+  function isNovaRisingMode(){
+    return false; // Replaced by CZ -> bonus -> RT flow.
+  }
+
+  function pickNovaRisingRemainAfterBonus(){
+    return 0;
+  }
+
+  function normalModeLabel(){
+    const checkpoint=atCheckpointStatus(normalState.flow,NovaProgress.snapshot(),currentGameProfit(),true);
+    if(checkpoint?.gold)return checkpoint.text;
+    if(normalState.bonusPending){
+      if(replayGatedBonusPreparation())return normalState.prepReady?"7を狙え":"ボーナス準備中";
+      return normalState.prepLeft>0?"ボーナス準備中 残り"+normalState.prepLeft+"G":"7を狙え";
+    }
+    if(normalState.internal?.prelude?.presentation==='reel'&&['normal','cz','strong_cz'].includes(normalState.flow?.phase)&&!(isSpinning&&currentSpin?.resolved?.czPrelude?.announce))return 'CZ前兆';
+    const shown=NovaRemainingCounters.leverFlow(normalState.flow,isSpinning?currentSpin:null);
+    if(['cz','strong_cz'].includes(shown?.phase))return (shown.phase==='strong_cz'?'強CZ':'CZ')+' 残り'+shown.remaining+'G';
+    return normalState.flow?.phase==='normal'?NovaNormal.normalLabel(normalState.internal):NovaSortie.label(NovaFlow.label(shown));
+  }
+
+  function atCheckpointStatus(flow,progress,net,keepAwardCountdown=false){
+    // Gold means the cumulative-net checkpoint is earned, never projected from remaining payout.
+    if(flow?.phase!=='art'||flow.zone||flow.entryStage||flow.initialStage||(!keepAwardCountdown&&flow.atPrelude)||flow.researchSortieLeft||flow.comebackLeft||flow.comebackConfirmed||flow.researchChallengeActive||flow.burstLeft)return null;
+    const pending=Number(progress?.pending)>0 || (flow.burstPending&&flow.researchChallengeSource==='threshold');
+    if(flow.burstPending&&flow.researchChallengeSource!=='threshold')return null;
+    const next=Number(progress?.next),profit=Number(net);
+    if(!Number.isFinite(next)||next<=0||!Number.isFinite(profit))return null;
+    const left=pending?0:Math.ceil(Math.max(0,next-profit));
+    // Display eligibility includes pending rare-role awards; gameplay/BGM keep their existing gates.
+    const guaranteed=keepAwardCountdown?profit+Number(flow.remaining||0)>=next:NovaArt.checkpointGuaranteed(flow,profit,next);
+    if(left>0&&!guaranteed)return null;
+    return {text:`スーパーノヴァチャレンジまで${left.toLocaleString('ja-JP')}pt`,gold:true,left};
+  }
+
+  function checkpointResultCard(flow,progress,lastShown,net){
+    // Wait for the same safe boundary as the engine; do not skip an active zone/challenge.
+    if(!['normal','art'].includes(flow?.phase)||flow.zone||flow.entryStage||flow.initialStage||flow.atPrelude||flow.researchSortieLeft||flow.researchChallengeActive||flow.burstLeft)return null;
+    if(flow.burstPending&&flow.researchChallengeSource!=='threshold')return null;
+    const waiting=Math.max(0,Math.floor(Number(progress?.pending)||0))+Number(!!(flow.burstPending&&flow.researchChallengeSource==='threshold'));
+    const line=Number(progress?.next)-2400*waiting,profit=Number(net);
+    if(!waiting||!Number.isFinite(line)||line<=0||line<=(Number(lastShown)||0)||!Number.isFinite(profit))return null;
+    return {kind:'checkpoint',character:'all',color:'gold',pt:String(profit),checkpoint:line};
+  }
+
+  function showCheckpointResultIfReady(replaceResult=false){
+    if(!A_TYPE_MODE||debugFastSpinActive||session.active||normalState.bonusPending||isCompleteTrialLocked()||isSpinning)return false;
+    if(normalState.flow?.phase==='normal'&&normalState.internal?.prelude)return false;
+    if((normalState.resultCard&&!replaceResult)||normalState.pendingZoneResult||normalState.pendingSortieResult||normalState.ladderAwardPresentation||NovaAim.busy||NovaDirectAward.busy)return false;
+    const card=checkpointResultCard(normalState.flow,NovaProgress.snapshot(),normalState.checkpointResultShown,currentProfit());
+    if(!card)return false;
+    normalState.checkpointResultShown=card.checkpoint;
+    displayNovaResult(card);
+    return true;
+  }
+
+  function pendingBonusLabel(){
+    if(normalState.bonusKind === "MID") return "REG";
+    if(normalState.bonusKind === "BAR3") return "BAR";
+
+    return "777";
+  }
+
+  function pendingBonusWaitDone(){
+    return (Number(normalState.bonusWaitGames) || 0) >= 1;
+  }
+
+  function isChanceLampLit(){
+    const lamp = $("stLamp");
+    return !!(jagChanceHold || bonusConfirmBgmHold || (lamp && lamp.classList.contains("on")));
+  }
+
+  function isPendingSevenBonusBet(){
+    return !!(
+      !session.active &&
+      normalState.bonusPending &&
+      pendingBonusWaitDone() &&
+      normalState.bonusKind !== "MID" &&
+      normalState.bonusKind !== "BAR3" &&
+      !normalState.premiumBonus &&
+      !normalState.oneGameRenBonus
+    );
+  }
+
+  function triggerBonusConfirmBetSoundIfNeeded(){
+    if(A_TYPE_MODE && normalState.bonusPending){
+      if(!normalState.prepConfirmed){normalState.prepConfirmed=true;playOneShotSound('assets/media/nova/bonus_confirm.wav',voiceOutputVolume(),{allowDuringPremiumConfirm:true});}
+      else if(replayGatedBonusPreparation()?normalState.prepReady:!(normalState.prepLeft>0))playRandomAimVoice('seven');
+      return true;
+    }
+    if(!isPendingSevenBonusBet()) return false;
+    bonusConfirmBgmHold = true;
+    pauseNormalBgm();
+    return true;
+  }
+
+  function decideBonusAnnouncementTiming(){
+    if(Math.random() < BONUS_ANNOUNCE_THIRD_STOP_RATE) return "stop3";
+    return BONUS_ANNOUNCE_EARLY_TIMINGS[Math.floor(Math.random() * BONUS_ANNOUNCE_EARLY_TIMINGS.length)];
+  }
+
+  function shouldScheduleBonusAnnouncement(normalActiveAtSpinStart, resolved){
+    if(!normalActiveAtSpinStart || !resolved || resolved.bonusPendingAtStart) return false;
+    return !!(
+      resolved.aTypeBonusReady ||
+      resolved.bonusHit ||
+      resolved.bonusReady ||
+      resolved.regReady ||
+      resolved.bar3PremiumReady
+    );
+  }
+
+  function bonusAnnouncementTimingLabel(timing){
+    return timing === "lever" ? "レバーオン"
+      : timing === "stop1" ? "第1停止"
+      : timing === "stop2" ? "第2停止"
+      : timing === "stop3" ? "第3停止"
+      : timing || "";
+  }
+
+  function lightBonusAnnouncement(spin=currentSpin, timing=""){
+    if(spin?.resolved?.czLamp&&!spin.resolved.czPushConfirmed)return false;
+    if(!spin || spin.bonusAnnouncementLit) return false;
+    spin.bonusAnnouncementLit = true;
+    jagChanceHold = true;
+    const lamp = $("stLamp");
+    if(lamp) lamp.classList.add("on");
+    playPekaSound(isBigLampAnnouncement(spin));
+    updateDisplay();
+    if(timing){
+      log(`BONUS告知：${bonusAnnouncementTimingLabel(timing)}`);
+    }
+    return true;
+  }
+
+  function maybeLightBonusAnnouncementForStop(stopOrder, spin=currentSpin){
+    if(spin?.resolved?.czLamp&&!spin.resolved.czPushConfirmed)return false;
+    if(!spin || !spin.bonusAnnouncementTiming) return false;
+    const timing = `stop${stopOrder}`;
+    if(spin.bonusAnnouncementTiming !== timing) return false;
+    return lightBonusAnnouncement(spin, timing);
+  }
+
+  function isBigLampAnnouncement(spin=currentSpin){
+    const resolved = spin && spin.resolved ? spin.resolved : null;
+    if(resolved){
+      if(resolved.bonusKind === "MID" || resolved.regReady) return false;
+      if(resolved.bonusKind === "BIG" || resolved.bonusReady || resolved.bar3PremiumReady) return true;
+      if(resolved.bonusHit && (resolved.bonusKind || "BIG") !== "MID") return true;
+      if(resolved.aTypeBonusReady && (resolved.bonusKind || "BIG") !== "MID") return true;
+    }
+    if(normalState.bonusPending) return normalState.bonusKind !== "MID";
+    return false;
+  }
+
+  function showBonusConfirmScreen(mode="solid"){
+    if(!bonusConfirmLayer) return;
+    bonusConfirmLayer.classList.toggle("translucent", mode === "translucent");
+    bonusConfirmLayer.classList.add("show");
+    bonusConfirmLayer.setAttribute("aria-hidden", "false");
+  }
+
+  function hideBonusConfirmScreen(){
+    if(!bonusConfirmLayer) return;
+    bonusConfirmLayer.classList.remove("show", "translucent");
+    bonusConfirmLayer.setAttribute("aria-hidden", "true");
+  }
+
+  function devilZoneConfirmImageFor(type=currentGoraiZoneType()){
+    return type === "super" ? SUPER_DEVIL_ZONE_CONFIRM_IMAGE_SRC : DEVIL_ZONE_CONFIRM_IMAGE_SRC;
+  }
+
+  function devilZoneConfirmTypeForResult(result){
+    if(result === "SUPER_DEVIL_ZONE" || result === "BIG") return "super";
+    if(result === "DEVIL_ZONE" || result === "MID") return "devil";
+    return "";
+  }
+
+  function showDevilZoneConfirmScreen(mode="translucent", type=currentGoraiZoneType()){
+    if(!devilZoneConfirmLayer) return;
+    const image = devilZoneConfirmLayer.querySelector("img");
+    const src = devilZoneConfirmImageFor(type);
+    if(image && image.getAttribute("src") !== src){
+      image.setAttribute("src", src);
+    }
+    devilZoneConfirmLayer.classList.toggle("translucent", mode === "translucent");
+    devilZoneConfirmLayer.classList.remove("fading");
+    devilZoneConfirmLayer.classList.add("show");
+    devilZoneConfirmLayer.setAttribute("aria-hidden", "false");
+  }
+
+  function hideDevilZoneConfirmScreen(){
+    if(!devilZoneConfirmLayer) return;
+    devilZoneConfirmLayer.classList.remove("show", "translucent", "fading");
+    devilZoneConfirmLayer.setAttribute("aria-hidden", "true");
+  }
+
+  function fadeOutDevilZoneConfirmScreen(){
+    if(!devilZoneConfirmLayer || !devilZoneConfirmLayer.classList.contains("show")) return;
+    devilZoneConfirmLayer.classList.add("fading");
+    devilZoneConfirmLayer.setAttribute("aria-hidden", "true");
+    setTimeout(()=>{
+      if(devilZoneConfirmLayer && devilZoneConfirmLayer.classList.contains("fading")){
+        hideDevilZoneConfirmScreen();
+      }
+    }, 620);
+  }
+
+  function showReversePushGuide(color){
+    if(!reversePushGuideLayer || !REVERSE_PUSH_GUIDE_IMAGE_SRCS[color]) return;
+    const image = reversePushGuideLayer.querySelector("img");
+    const src = REVERSE_PUSH_GUIDE_IMAGE_SRCS[color];
+    if(image && image.getAttribute("src") !== src){
+      image.setAttribute("src", src);
+    }
+    reversePushGuideLayer.classList.remove("fading", "translucent");
+    reversePushGuideLayer.classList.add("show");
+    reversePushGuideLayer.setAttribute("aria-hidden", "false");
+  }
+
+  function hideReversePushGuide(){
+    if(!reversePushGuideLayer) return;
+    reversePushGuideLayer.classList.remove("show", "fading", "translucent");
+    reversePushGuideLayer.setAttribute("aria-hidden", "true");
+  }
+
+  function setReversePushGuideTranslucent(){
+    if(!reversePushGuideLayer || !reversePushGuideLayer.classList.contains("show")) return;
+    reversePushGuideLayer.classList.add("translucent");
+  }
+
+  function fadeOutReversePushGuide(){
+    if(!reversePushGuideLayer || !reversePushGuideLayer.classList.contains("show")) return;
+    reversePushGuideLayer.classList.add("fading");
+    reversePushGuideLayer.setAttribute("aria-hidden", "true");
+    setTimeout(()=>{
+      if(reversePushGuideLayer && reversePushGuideLayer.classList.contains("fading")){
+        hideReversePushGuide();
+      }
+    }, 420);
+  }
+
+  function queueDevilRushEntryEffect(type){
+    if(DEVIL_RUSH_ENTRY_IMAGE_SRCS[type]) pendingDevilRushEntryEffect = type;
+  }
+
+  function consumeDevilRushEntryEffect(){
+    const type = pendingDevilRushEntryEffect;
+    pendingDevilRushEntryEffect = "";
+    return DEVIL_RUSH_ENTRY_IMAGE_SRCS[type] ? type : "";
+  }
+
+  function clearDevilRushEntryEffect(){
+    pendingDevilRushEntryEffect = "";
+    hideDevilRushEntryEffect();
+  }
+
+  function showDevilRushEntryEffect(type){
+    if(!devilRushEntryLayer || !devilRushEntryImage || !DEVIL_RUSH_ENTRY_IMAGE_SRCS[type]) return;
+    const src = DEVIL_RUSH_ENTRY_IMAGE_SRCS[type];
+    if(devilRushEntryImage.getAttribute("src") !== src){
+      devilRushEntryImage.setAttribute("src", src);
+    }
+    devilRushEntryLayer.classList.remove("translucent");
+    devilRushEntryLayer.classList.add("show");
+    devilRushEntryLayer.setAttribute("aria-hidden", "false");
+  }
+
+  function hideDevilRushEntryEffect(){
+    if(!devilRushEntryLayer) return;
+    devilRushEntryLayer.classList.remove("show", "translucent");
+    devilRushEntryLayer.setAttribute("aria-hidden", "true");
+  }
+
+  function setDevilRushEntryEffectTranslucent(){
+    if(!devilRushEntryLayer || !devilRushEntryLayer.classList.contains("show")) return;
+    devilRushEntryLayer.classList.add("translucent");
+  }
+
+  function shouldFadeReversePushAtZoneEnd(spin=currentSpin){
+    if(!spin || !spin.zoneActiveAtStart || !spin.resolved) return false;
+    const currentZoneRemain = Math.max(0, Number(session.bigZone) || 0);
+    const zoneGameAdd = Math.max(0, Number(spin.resolved.zoneGameAdd) || 0);
+    const restartZone = Math.max(0, Number(spin.resolved.bigZone) || 0);
+    const nextZoneRemain = Math.max(0, currentZoneRemain - 1, restartZone) + zoneGameAdd;
+    return nextZoneRemain <= 0;
+  }
+
+  function shouldStartDevilZoneConfirmIntro(result, resolved){
+    const entryType = devilZoneConfirmTypeForResult(result);
+    return !!(
+      entryType &&
+      session.active &&
+      resolved &&
+      !resolved.zoneGame &&
+      Number(resolved.bigZone) > 0
+    );
+  }
+
+  function syncDevilZoneConfirmScreen(){
+    if(!session.active || session.phase === "battle" || !isGoraiZoneActive()){
+      devilZoneConfirmIntroPending = false;
+      hideDevilZoneConfirmScreen();
+      return;
+    }
+    showDevilZoneConfirmScreen(devilZoneConfirmIntroPending ? "solid" : "translucent");
+  }
+
+  function currentNormalCeilingGames(){
+    return NovaNormal.ceiling(normalState.internal);
+  }
+
+  function normalizeBonusAfterGames(value){
+    return Math.max(0, Math.floor(Number(value) || 0));
+  }
+
+  function nextBonusAfterGames(value=normalState.sinceBonus){
+    return normalizeBonusAfterGames(value) + 1;
+  }
+
+  function ceilingRemain(){
+    return Math.max(0, currentNormalCeilingGames() - normalizeBonusAfterGames(normalState.sinceBonus));
+  }
+
+  function recordAtFirstEntry(before,after){
+    if(before?.phase!=='art' && after?.phase==='art'){
+      stats.atFirstCount=(Number(stats.atFirstCount)||0)+1;
+      if(stats.firstHitEligibleGames>0)stats.firstHitAtCount=(Number(stats.firstHitAtCount)||0)+1;
+      NovaDataCounter.hit(stats,'AT');
+    }
+  }
+
+  function resetNormalCountersAfterArt(before,after){
+    recordAtFirstEntry(before,after);
+    NovaDataCounter.transition(stats,after);
+    if(before?.phase!=='art'||after?.phase!=='normal')return;
+    normalState.internal=NovaNormal.afterArt(normalState.internal,before,after,{...settings.novaNormal,setting:settings.setting});
+    if(after.dryAtEnd===true)NovaImpurityHint.queue(normalState,'at-dry');
+    normalState.sinceBonus=0;
+  }
+
+  function resetNormalModeAfterBonus(){
+    pendingATypeInternalBonus = null;
+    bonusConfirmBgmHold = false;
+    normalState.mode = "normal";
+    normalState.highRemain = 0;
+    normalState.sinceBonus = 0;
+    normalState.bonusPending = false;
+    normalState.bonusKind = "";
+    normalState.bonusSource = "";
+    normalState.premiumBonus = false;
+    normalState.oneGameRenBonus = false;
+    normalState.bonusWaitGames = 0;
+    normalState.bonusHitGamesSince = 0;
+    clearBonusPreparationState();
+    normalState.reachMePending = false;
+    normalState.reachMeBonusKind = "";
+    normalState.reachMeBonusSource = "";
+    normalState.reachMeHitGamesSince = 0;
+    normalState.reachMePrepSets = 0;
+    normalState.reachMePrepZones = [];
+    normalState.morningCeilingActive = false;
+    hideBonusConfirmScreen();
+  }
+
+  function chargeSpinCost(){
+    clearCzReelBlackout();
+    if(session.active)jagChainBonusHandoff=false;
+    // Capture both ledgers before BET, also when FAST does not render every game.
+    jagChainCount=chainCountStep(jagChainCount,!!(jagChainCount||session.active||jagChainBonusHandoff||normalState.bonusPending||normalState.flow?.phase==='art'),Number(stats.totalPaid)||0,Number(stats.totalFee)||0).state;
+    if(!session.active && normalState.flow?.phase==='art' && normalState.flow.zero)return;
+    autoLastBetAt=performance.now();
+    autoPacingBudget=autoPlay?NovaSuperSpeed.recordBet(autoPacingBudget,autoLastBetAt,autoPacingProfile()):null;
+    if(autoPlay&&superFullAuto&&VERTEX_CONTROLLER_ENABLED&&PLAY_SESSION_ID&&ADMIN_SERVER){
+      // The entry page authenticates and deduplicates this daily usage record.
+      try{window.parent.postMessage({type:'nova-super-speed-used',sessionId:PLAY_SESSION_ID},new URL(ADMIN_SERVER,location.href).origin);}catch(e){}
+    }
+    // Only a pre-update save can still own a free-BET entitlement.
+    if(A_TYPE_MODE && normalState.replayFree){normalState.replayFree=false;return;}
+    stats.totalFee = (Number(stats.totalFee) || 0) + SPIN_COST;
+    if(session.active){
+      session.cost = (Number(session.cost) || 0) + SPIN_COST;
+    }
+    if(A_TYPE_MODE&&!session.active&&!normalState.bonusPending)normalState.flow=NovaArt.restoreBetCost(normalState.flow,SPIN_COST);
+    recordSlumpPoint(false);
+    updateCompleteTrialState("BET");
+  }
+
+  function countRoleStat(result, includeBonus=false){
+    if(A_TYPE_MODE && NovaNormal.rare[result]){
+      stats.novaRareCounts=stats.novaRareCounts||{};
+      stats.novaRareCounts[result]=(Number(stats.novaRareCounts[result])||0)+1;
+    }
+    if(includeBonus && (result === "BIG" || result === "BAR3")){
+      stats.bigCount++;
+      NovaDataCounter.hit(stats,'BIG');
+      if(result === "BAR3"){
+        stats.premiumBigCount = (Number(stats.premiumBigCount) || 0) + 1;
+      }
+    }else if(includeBonus && (result === "MID" || result === "MID_CHERRY")){
+      stats.midCount++;
+    }else if(result === "GRAPE"){
+      stats.grapeCount = (Number(stats.grapeCount) || 0) + 1;
+    }else if(result === "SMALL"){
+      stats.smallCount++;
+    }else if(result === "BELL" || result === "BELL15"){
+      stats.bellCount++;
+      stats.grapeCount = (Number(stats.grapeCount) || 0) + 1;
+    }else if(result === "BELL3"){
+      stats.diagonalBellCount = (Number(stats.diagonalBellCount) || 0) + 1;
+    }else if(result === "REPLAY"){
+      stats.replayCount = (Number(stats.replayCount) || 0) + 1;
+    }else if(result === "SUICA"){
+      stats.suikaCount++;
+    }else if(result === "CHERRY_ANY" || result === "CHERRY_DOUBLE" || result === "CHERRY_TRIPLE"){
+      stats.cherryCount++;
+    }
+  }
+
+  function syncNovaProgress(){
+    normalState.novaDecrement=NovaDecrement.bind(normalState.novaDecrement,settings.setting);
+    normalState.novaProgress=NovaProgress.bind(normalState.novaProgress,stats.slumpHigh);
+    return normalState.novaProgress;
+  }
+  function countTotalSpinIfNeeded(aTypeBonusActiveAtSpinStart=false){
+    if(A_TYPE_MODE){
+      syncNovaProgress();
+      NovaDecrement.observe(currentGameProfit());
+      const previous=NovaFlow.normalize(normalState.flow);
+      normalState.flow=NovaProgress.beforeBet(previous,{...settings.novaArt,setting:settings.setting},currentGameProfit(),session.active||normalState.bonusPending||previous.phase==='normal'&&!!normalState.internal?.prelude);
+      recordAtFirstEntry(previous,normalState.flow);
+    }
+    if(A_TYPE_MODE&&!session.active&&normalState.flow?.phase==='art'){
+      normalState.flow=NovaArt.prepareBet(normalState.flow,{...settings.novaArt,setting:settings.setting});
+    }
+    if(!session.active)NovaDataCounter.zone(stats,normalState.flow);
+    if(!session.active && normalState.flow?.zero)return false;
+    if(A_TYPE_MODE){
+      NovaDecrement.beforeBet(aTypeBonusActiveAtSpinStart?'bonus':normalState.bonusPending?'prep':normalState.flow?.zone?'zone':normalState.flow?.phase==='art'?'at':normalState.flow?.phase==='normal'?'normal':'cz');
+    }
+    if(A_TYPE_MODE && aTypeBonusActiveAtSpinStart) return false;
+    NovaDataCounter.spin(stats,normalState.flow);
+    stats.totalSpins = (Number(stats.totalSpins) || 0) + 1;
+    return true;
+  }
+
+  function currentRtp(){
+    return stats.totalFee > 0 ? stats.totalPaid / stats.totalFee : 0;
+  }
+
+  function drawRareSortie(result,resolved){
+    if(!A_TYPE_MODE)return;
+    // Draw once at BET after the real role. Saved spins never draw again on resume.
+    const internalResult=resolved.internalResult??result;
+    resolved.sortieWon=NovaProgress.drawSortie(settings.setting,internalResult,resolved,Math.random,currentGameProfit());
+    if(!(typeof debugFastSpinActive!=='undefined'&&debugFastSpinActive)&&globalThis.NovaStockEntry?.drawFake&&NovaProgress.sortieEligible(internalResult,resolved)){
+      resolved.sortieFakeWon=NovaStockEntry.drawFake(NovaProgress.sortieChance(settings.setting,internalResult,currentGameProfit()),resolved.sortieWon);
+    }
+  }
+
+  function currentProfit(){
+    return (Number(stats.totalPaid) || 0) - (Number(stats.totalFee) || 0);
+  }
+
+  function currentGameProfit(){
+    // Navigation losses stay out of cash/graphs/settlement, but still advance the game.
+    return currentProfit()+Math.max(0,Number(normalState.novaProgress?.bellNaviForfeitedPt)||0);
+  }
+
+  function settleBellNavigationPenalty(resolved){
+    if(!A_TYPE_MODE||!resolved?.bellNaviPenaltyApplied||resolved.bellNaviPenaltySettled)return;
+    const forfeited=Math.max(0,Number(resolved.internalBellReward)||0);
+    syncNovaProgress().bellNaviForfeitedPt+=forfeited;
+    if(resolved.aTypeBonusGame)session.bellNaviForfeitedPt=(Number(session.bellNaviForfeitedPt)||0)+forfeited;
+    resolved.bellNaviPenaltySettled=true;
+    NovaProgress.observeNet(currentGameProfit());
+  }
+
+  function completeTrialProfit(){
+    return currentProfit();
+  }
+
+  function completeLimitPt(){
+    return Math.max(0, Math.round(Number(settings.completeLimitPt) || 0));
+  }
+
+  function isCompleteLockEnabled(){
+    return COMPLETE_TRIAL_ENABLED;
+  }
+
+  function isCompleteTrialLocked(){
+    return isCompleteLockEnabled() && !!completeTrialState.locked;
+  }
+
+  function isPlayLimitLocked(){
+    return A_TYPE_MODE && !!normalState.playLimit?.locked;
+  }
+
+  function updatePlayLimitState(){
+    if(!A_TYPE_MODE || !globalThis.NovaPlayLimit)return false;
+    const previous=normalState.playLimit;
+    const next=NovaPlayLimit.observe(previous,{
+      totalSpins:machineDisplayStats().totalSpins,
+      continuingAt:NovaPlayLimit.continuingAt(normalState),
+      unsettled:!!(isSpinning || currentSpin || sessionStartGuard || bonusEndBgmPlaying)
+    });
+    if(!next.reached&&!previous)return false;
+    normalState.playLimit=next;
+    const changed=JSON.stringify(previous)!==JSON.stringify(next);
+    if(next.locked&&!previous?.locked){
+      stopAutoPlay('10,000G上限到達のためAUTO停止');
+      stopSpeedToBonus('10,000G上限到達のためSPEED停止');
+      stopDebugFastSpin('10,000G上限到達');
+      pauseNormalBgm();stopBarBgm();stopBattleBgm(false);
+      showMessage('遊技終了','累計10,000Gに到達 / 管理リセットまたは設定変更まで遊技できません');
+      log(`[GAME LIMIT] ${next.stoppedAt.toLocaleString()}Gで打ち止め`);
+    }
+    if(changed){persistState();updateDisplay();}
+    return next.locked;
+  }
+
+  function syncPlayLimitUi(){
+    const locked=isPlayLimitLocked();
+    globalThis.NovaPlayLimitPresentation?.sync(normalState.playLimit);
+    for(const id of ['spinBtn','quickAutoBtn','topAutoBtn','autoStartBtn','speedAutoBtn','speedModeToggleBtn']){
+      const button=$(id);if(!button)continue;
+      if(locked){button.dataset.playLimitLocked='true';button.disabled=true;}
+      else if(button.dataset.playLimitLocked==='true'){delete button.dataset.playLimitLocked;button.disabled=false;}
+    }
+    if(locked&&$('spinBtn'))$('spinBtn').textContent='遊技終了';
+  }
+
+  function bar3PremiumDenominator(){
+    return BAR3_PREMIUM_DENOM;
+  }
+
+  function updateCompleteTrialState(reason=""){
+    if(!COMPLETE_TRIAL_ENABLED) return false;
+    const profit = completeTrialProfit();
+
+    const limit = completeLimitPt(), wasLocked=!!completeTrialState.locked;
+    NovaComplete.observe(completeTrialState,profit,limit,NovaComplete.myLimit(settings));
+    if(isCompleteLockEnabled() && !wasLocked && completeTrialState.locked){
+      completeTrialState.lockedSetting = Number(settings.setting) || 1;
+      completeTrialState.completeProfit = profit;
+      stopAutoPlay("COMPLETE到達のためAUTO停止");
+      stopSpeedToBonus("COMPLETE到達のためSPEED停止");
+      stopDebugFastSpin("COMPLETE到達");
+      syncCompletePresentation(true);
+      showMessage("コンプリートしました。", `${NovaComplete.label(settings,completeTrialState.reason)}到達 / 管理リセットまたは設定変更まで遊技できません`);
+      log(`[COMPLETE] ${NovaComplete.label(settings,completeTrialState.reason)}到達：${formatSigned(profit)}pt / 設定${completeTrialState.lockedSetting}`);
+      persistState();
+      updateDisplay();
+    }
+
+    return isCompleteTrialLocked();
+  }
+
+  function canPlayCompleteTrial({allowOumaPresentation=false}={}){
+    if(globalThis.NovaPlayLimit&&updatePlayLimitState())return false;
+    if(!allowOumaPresentation&&typeof oumaPresentation!=='undefined'&&oumaPresentation)return false;
+    if(bonusConfirmSoundPlaying || bonusEndBgmPlaying)return false;
+    if(!isCompleteTrialLocked()) return true;
+    stopAutoPlay("COMPLETE中のためAUTO停止");
+    stopSpeedToBonus("COMPLETE中のためSPEED停止");
+    stopDebugFastSpin("COMPLETE中");
+    showMessage("コンプリートしました。", `${NovaComplete.label(settings,completeTrialState.reason)}到達 / 管理リセットまたは設定変更まで遊技できません`);
+    showOverlay("コンプリートしました。");
+    return false;
+  }
+
+  function syncCompletePresentation(announce=false){
+    const locked=isCompleteTrialLocked(),wasVisible=NovaCompletePresentation.active;
+    NovaCompletePresentation.sync(locked);
+    if(!locked||(!announce&&wasVisible))return;
+    pauseNormalBgm();stopBarBgm();stopBattleBgm(false);
+    if(!announce)return; // Restored COMPLETE screens stay visible without repeating the voice.
+    bonusConfirmSoundAudio?.pause();clearBonusConfirmSoundLock();
+    clearCzIntroVoiceHold(true);clearComebackIntroVoiceHold();
+    globalThis.NovaRushConfirm?.reset();
+    for(const sound of oneShotSoundCache.values())sound.pause();
+    for(const sound of aimWinAudios)sound.pause();
+    oumaIntroAudio?.pause();oumaReverseAudio?.pause();
+    NovaCompletePresentation.setAudio(null); // Release cached audio before replay, not after playback starts.
+    const playback=playOneShotSound(MODE_EVENT_VOICE_SRCS.complete,voiceOutputVolume(),{allowDuringPremiumConfirm:true});
+    NovaCompletePresentation.setAudio(playback?.audio);
+  }
+
+  function normalizeSlumpHistory(){
+    NovaHistory.normalize(stats, reduceSlumpPoints, SLUMP_MAX_HISTORY_POINTS);
+  }
+
+  function recordSlumpPoint(settled=true){
+    // Include charged BET lows; no detailed history is required for MY.
+    completeTrialState.lowestNet=Math.min(0,Number(completeTrialState.lowestNet)||0,currentProfit());
+    if(A_TYPE_MODE){
+      syncNovaProgress();NovaProgress.observeNet(currentGameProfit());
+      // Match the simulator: the regime sees settled net, not the transient BET debit.
+      if(settled)NovaDecrement.observe(currentGameProfit());
+    }
+    if(NovaHistory.record(stats, Number(stats.totalSpins)||0, currentProfit(), reduceSlumpPoints, SLUMP_MAX_HISTORY_POINTS)){
+      scheduleSlumpGraphRender();
+    }
+  }
+
+  function setSlumpValue(view, value){
+    if(!view) return;
+    view.textContent = `${formatSigned(Math.round(value))}pt`;
+    view.style.color = value > 0 ? "var(--green)" : value < 0 ? "var(--red)" : "var(--gold)";
+  }
+
+  function formatSlumpNumber(value){
+    return Math.round(Number(value) || 0).toLocaleString("ja-JP");
+  }
+
+  function getProfitBounds(points){
+    let maxProfit = 0;
+    let minProfit = 0;
+    for(const point of points){
+      const profit = Number(point && point.profit) || 0;
+      if(profit > maxProfit) maxProfit = profit;
+      if(profit < minProfit) minProfit = profit;
+    }
+    return {maxProfit, minProfit};
+  }
+
+  function scheduleSlumpGraphRender(){
+    if(document.querySelector('.slumpPublic')?.hidden) return;
+    if(slumpRenderRequest) return;
+    slumpRenderRequest = requestAnimationFrame(()=>{
+      slumpRenderRequest = 0;
+      renderSlumpGraph();
+    });
+  }
+
+  function getSlumpWindow(points){
+    const total = points.length;
+    const xZoom = Math.max(1, Math.min(50, Number(slumpView.xZoom) || 1));
+    slumpView.xZoom = xZoom;
+    const visibleCount = xZoom <= 1 ? total : Math.max(2, Math.ceil(total / xZoom));
+    const maxStart = Math.max(0, total - visibleCount);
+    if(slumpView.followEnd || slumpView.seekStart > maxStart){
+      slumpView.seekStart = maxStart;
+    }
+    const start = clamp(Math.round(Number(slumpView.seekStart) || 0), 0, maxStart);
+    const end = Math.min(total, start + visibleCount);
+    return {
+      start,
+      end,
+      maxStart,
+      visibleCount,
+      points:start === 0 && end === total ? points : points.slice(start, end)
+    };
+  }
+
+  function updateSlumpControls(windowInfo, points){
+    const firstPoint = windowInfo.points[0] || points[0] || {spin:0};
+    const lastPoint = windowInfo.points[windowInfo.points.length - 1] || points[points.length - 1] || {spin:0};
+    if(slumpSeekRange){
+      slumpSeekRange.max = String(windowInfo.maxStart);
+      slumpSeekRange.disabled = windowInfo.maxStart <= 0;
+      if(document.activeElement !== slumpSeekRange || slumpView.followEnd){
+        slumpSeekRange.value = String(windowInfo.start);
+      }
+    }
+    if(slumpZoomInput && document.activeElement !== slumpZoomInput){
+      slumpZoomInput.value = String(slumpView.xZoom);
+    }
+    if(slumpYZoomInput && document.activeElement !== slumpYZoomInput){
+      slumpYZoomInput.value = String(slumpView.yZoom);
+    }
+    if(slumpRangeView){
+      const total = Math.max(0, points.length - 1);
+      const visible = Math.max(0, windowInfo.points.length - 1);
+      slumpRangeView.textContent = `${formatSlumpNumber(firstPoint.spin)}-${formatSlumpNumber(lastPoint.spin)}G / ${formatSlumpNumber(visible)}点`;
+      slumpRangeView.title = `全${formatSlumpNumber(total)}点`;
+    }
+    if(slumpZoomView) slumpZoomView.textContent = `${slumpView.xZoom}x`;
+    if(slumpYZoomView) slumpYZoomView.textContent = `${Number(slumpView.yZoom).toFixed(slumpView.yZoom % 1 ? 1 : 0)}x`;
+  }
+
+  function reduceSlumpPoints(points, maxPoints){
+    if(points.length <= maxPoints) return points;
+    const first = points[0];
+    const last = points[points.length - 1];
+    const firstSpin = Number(first.spin) || 0;
+    const lastSpin = Number(last.spin) || firstSpin;
+    const spinRange = lastSpin - firstSpin;
+    if(spinRange <= 0) return points.slice(-maxPoints);
+
+    const bucketCount = Math.max(1, Math.floor((maxPoints - 2) / 2));
+    const buckets = Array.from({length:bucketCount}, ()=>({min:null, max:null}));
+    for(let index=1; index<points.length - 1; index+=1){
+      const point = points[index];
+      const spin = Number(point.spin) || firstSpin;
+      const bucketIndex = Math.min(bucketCount - 1, Math.max(0,
+        Math.floor(((spin - firstSpin) / spinRange) * bucketCount)
+      ));
+      const entry = {index, point};
+      const bucket = buckets[bucketIndex];
+      if(!bucket.min || point.profit < bucket.min.point.profit) bucket.min = entry;
+      if(!bucket.max || point.profit > bucket.max.point.profit) bucket.max = entry;
+    }
+
+    const reduced = [first];
+    for(const bucket of buckets){
+      const candidates = [bucket.min, bucket.max]
+        .filter(Boolean)
+        .sort((a,b)=>a.index - b.index);
+      for(const candidate of candidates){
+        const previous = reduced[reduced.length - 1];
+        if(previous !== candidate.point) reduced.push(candidate.point);
+      }
+    }
+    if(reduced[reduced.length - 1] !== last) reduced.push(last);
+    return reduced.slice(0, maxPoints);
+  }
+
+  function renderSlumpGraph(){
+    if(!slumpGraph || document.querySelector('.slumpPublic')?.hidden) return;
+    const ctx = slumpGraph.getContext("2d");
+    if(!ctx) return;
+
+    const cssWidth = Math.max(280, Math.round(slumpGraph.clientWidth || 720));
+    const cssHeight = Math.max(160, Math.round(slumpGraph.clientHeight || 190));
+    const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+    const canvasWidth = Math.round(cssWidth * dpr);
+    const canvasHeight = Math.round(cssHeight * dpr);
+    if(slumpGraph.width !== canvasWidth || slumpGraph.height !== canvasHeight){
+      slumpGraph.width = canvasWidth;
+      slumpGraph.height = canvasHeight;
+    }
+
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    ctx.clearRect(0,0,cssWidth,cssHeight);
+    ctx.fillStyle = "rgba(2,6,18,.92)";
+    ctx.fillRect(0,0,cssWidth,cssHeight);
+
+    const pad = {left:44, right:14, top:16, bottom:28};
+    const plotW = Math.max(1, cssWidth - pad.left - pad.right);
+    const plotH = Math.max(1, cssHeight - pad.top - pad.bottom);
+    const allPoints = NovaDataCounter.graph(stats,machineDisplayBase,playSessionStartStats);
+    const windowInfo = getSlumpWindow(allPoints);
+    updateSlumpControls(windowInfo, allPoints);
+    const points = windowInfo.points.length ? windowInfo.points : allPoints;
+    const drawPoints = reduceSlumpPoints(points, Math.min(SLUMP_MAX_DRAW_POINTS, Math.max(160, Math.round(plotW * 2))));
+    const bounds = getProfitBounds(points);
+    let maxProfit = bounds.maxProfit;
+    let minProfit = bounds.minProfit;
+    let range = Math.max(100, maxProfit - minProfit);
+    const yZoom = Math.max(1, Math.min(6, Number(slumpView.yZoom) || 1));
+    slumpView.yZoom = yZoom;
+    if(yZoom > 1){
+      const latestVisible = points[points.length - 1] || {profit:0};
+      const center = Number(latestVisible.profit) || 0;
+      range = Math.max(40, range / yZoom);
+      maxProfit = center + range / 2;
+      minProfit = center - range / 2;
+    }
+    const firstSpin = Number(points[0] && points[0].spin) || 0;
+    const lastVisibleSpin = Number(points[points.length - 1] && points[points.length - 1].spin) || firstSpin;
+    const spinRange = Math.max(1, lastVisibleSpin - firstSpin);
+    const xFor = point => pad.left + (((Number(point.spin) || 0) - firstSpin) / spinRange) * plotW;
+    const yFor = profit => pad.top + ((maxProfit - profit) / range) * plotH;
+    const fullLastPoint = allPoints[allPoints.length - 1] || {profit:0};
+    const current = Number(fullLastPoint.profit) || 0;
+    const lineColor = current > 0 ? "#62ff9a" : current < 0 ? "#ff365d" : "#ffd36a";
+
+    ctx.strokeStyle = "rgba(255,255,255,.10)";
+    ctx.lineWidth = 1;
+    ctx.font = "700 11px system-ui, sans-serif";
+    ctx.textAlign = "right";
+    ctx.textBaseline = "middle";
+    for(let i=0;i<=4;i++){
+      const value = maxProfit - (range * i / 4);
+      const y = yFor(value);
+      ctx.beginPath();
+      ctx.moveTo(pad.left, y);
+      ctx.lineTo(cssWidth - pad.right, y);
+      ctx.stroke();
+      ctx.fillStyle = "rgba(255,255,255,.58)";
+      ctx.fillText(formatSigned(Math.round(value)), pad.left - 7, y);
+    }
+
+    const zeroY = yFor(0);
+    if(zeroY >= pad.top && zeroY <= pad.top + plotH){
+      ctx.strokeStyle = "rgba(255,211,106,.58)";
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(pad.left, zeroY);
+      ctx.lineTo(cssWidth - pad.right, zeroY);
+      ctx.stroke();
+    }
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(pad.left, pad.top, plotW, plotH);
+    ctx.clip();
+
+    if(drawPoints.length > 1){
+      const gradient = ctx.createLinearGradient(0, pad.top, 0, cssHeight - pad.bottom);
+      gradient.addColorStop(0, current >= 0 ? "rgba(98,255,154,.22)" : "rgba(255,54,93,.18)");
+      gradient.addColorStop(1, "rgba(255,255,255,0)");
+      const baseY = clamp(zeroY, pad.top, pad.top + plotH);
+
+      ctx.beginPath();
+      ctx.moveTo(xFor(drawPoints[0]), baseY);
+      drawPoints.forEach(point=>ctx.lineTo(xFor(point), yFor(point.profit)));
+      ctx.lineTo(xFor(drawPoints[drawPoints.length - 1]), baseY);
+      ctx.closePath();
+      ctx.fillStyle = gradient;
+      ctx.fill();
+    }
+
+    ctx.strokeStyle = lineColor;
+    ctx.lineWidth = 3;
+    ctx.lineJoin = "round";
+    ctx.lineCap = "round";
+    ctx.shadowColor = lineColor;
+    ctx.shadowBlur = 10;
+    ctx.beginPath();
+    drawPoints.forEach((point, index)=>{
+      const x = xFor(point);
+      const y = yFor(point.profit);
+      if(index === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+
+    const lastPoint = points[points.length - 1] || {profit:0};
+    const lastX = xFor(lastPoint);
+    const lastY = yFor(lastPoint.profit);
+    ctx.fillStyle = lineColor;
+    ctx.beginPath();
+    ctx.arc(lastX, lastY, 4.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = "rgba(255,255,255,.82)";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.restore();
+
+    ctx.fillStyle = "rgba(255,255,255,.62)";
+    ctx.textAlign = "left";
+    ctx.textBaseline = "bottom";
+    ctx.font = "800 11px system-ui, sans-serif";
+    ctx.fillText(`${formatSlumpNumber(firstSpin)}G → 最新 ${formatSlumpNumber(lastPoint.spin)}G`, pad.left, cssHeight - 7);
+    ctx.textAlign = "right";
+    ctx.fillText("差pt", cssWidth - pad.right, cssHeight - 7);
+
+    setSlumpValue(slumpCurrentView, current);
+    const allBounds=getProfitBounds(allPoints);
+    setSlumpValue(slumpHighView, allBounds.maxProfit);
+    setSlumpValue(slumpLowView, allBounds.minProfit);
+  }
+
+  function weightedPick(items){
+    const available = items.filter(item => item && item.w > 0 && RESULT[item.result]);
+    const total = available.reduce((sum,item)=>sum+item.w,0);
+    if(total <= 0) return "MISS";
+    let r = Math.random() * total;
+    for(const item of available){
+      r -= item.w;
+      if(r <= 0) return item.result;
+    }
+    return available[available.length - 1].result;
+  }
+
+  function drawResult(){
+    if(isATypeBonusActive()){
+      return drawATypeBonusResult();
+    }
+    if(pendingForceResult && RESULT[pendingForceResult]){
+      return atInternalResult(pendingForceResult);
+    }
+    if(isGoraiZoneActive()){
+      return drawZoneChallengeResult();
+    }
+
+    // BAR揃いは通常抽選とは別の全設定共通プレミアフラグ
+    if(Math.random() < (1 / bar3PremiumDenominator())){
+      return "BAR3";
+    }
+
+    if(Math.random() < hitProbability()){
+      return atInternalResult(weightedPick(eventWeights(settings.setting)));
+    }
+    return "MISS";
+  }
+
+  function drawIndependentATypeOutcome(){
+    const flow=NovaFlow.normalize(normalState.flow);
+    if(flow.phase==='art'){
+      pendingArtStep=NovaArt.step(flow,{...settings.novaArt,setting:settings.setting,netPt:currentGameProfit(),checkpointQuiet:NovaArt.checkpointQuietRules.enabled,checkpointNext:NovaProgress.snapshot().next},Math.random,pendingForceResult);
+      return {result:NovaArt.preparationDisplayRole?NovaArt.preparationDisplayRole(pendingArtStep.result):pendingArtStep.result,internalBonus:pendingArtStep.internalBonus};
+    }
+    const token=NovaNormal.spin(normalState.internal,flow,Number(settings.setting)||1,{normal:settings.novaNormal,art:settings.novaArt,cz:settings.novaFlow,scale:NovaBalance.profile(settings.setting).scale},Math.random,pendingForceResult);
+    const inCz=['cz','strong_cz'].includes(token.czFlow.phase);
+    if(inCz){token.czFlow.lampRoll??=Math.random();token.czFlow.rainbowRoll??=Math.random();}
+    const ceilingHit=token.internalBonus?.source?.includes('天井');
+    pendingArtStep={
+      result:token.result,internalResult:token.internalResult,normalBellNavi:token.normalBellNavi,normalInternal:token.state,czEntry:token.entry,czEntrySource:token.entrySource,czPrelude:token.czPrelude,czChance:token.czChance,
+      czDirect:!!(token.internalBonus&&token.direct),czDirectZone:token.internalBonus&&token.direct?token.directZone:'',
+      flow:token.entry?NovaFlow.enterCZ(token.entry==='STRONG_CZ',token.czOptions ?? settings.novaFlow,Math.random,token.entrySource):token.internalBonus?NovaFlow.normalize(null):NovaFlow.advance(token.czFlow),
+      czLamp:token.czLamp || (inCz?{...NovaFlow.drawLamp({...token.czFlow,
+        success:token.czFlow.success||!!token.internalBonus||token.direct,
+        winProbability:ceilingHit?1:token.czFlow.winProbability}),
+        totalGames:token.czFlow.totalGames,remaining:token.czFlow.remaining}:null),
+      message:token.czPrelude?.enter?'':token.entry?(token.entry==='STRONG_CZ'?'強CZ突入':'CZ突入'):token.message||''
+    };
+    return {result:token.result,internalBonus:token.internalBonus};
+  }
+
+  function drawNormalResult(){
+    if(A_TYPE_MODE){
+      if(pendingForceResult==='STRONG_BELL')pendingForceResult='BELL';
+      pendingArtStep=null;
+      pendingATypeInternalBonus = null;
+      pendingPreparationRole = "";
+      if(!normalState.bonusPending&&pendingForceResult==='URA_CHALLENGE'){
+        pendingArtStep=forcedBurstStep(normalState.flow);
+        return pendingArtStep.result;
+      }
+      if(!normalState.bonusPending&&pendingForceResult==='COMEBACK'){
+        const base=normalState.flow?.phase==='art'?normalState.flow:NovaArt.enter({...settings.novaArt,setting:settings.setting});
+        pendingArtStep={result:'MISS',flow:NovaArt.beginComeback({...base,zone:'',entryStage:'',pendingZone:'',queuedZones:[],sets:'0',stock:'0',burstPending:false,burstLeft:0}),comebackEvent:'entry',message:'引き戻しゾーン突入 / 残り5G'};
+        return pendingArtStep.result;
+      }
+      if(!normalState.bonusPending && (pendingForceResult==='ART'||pendingForceResult.startsWith('ZONE_'))){
+        const base=normalState.flow?.phase==='art'?normalState.flow:pendingForceResult==='ART'?null:NovaArt.enter({...settings.novaArt,setting:settings.setting});
+        pendingArtStep=pendingForceResult==='ART'?{result:'MISS',flow:NovaArt.enterInitial({...settings.novaArt,setting:settings.setting}),message:'AT準備開始'}:NovaArt.step(base,{...settings.novaArt,setting:settings.setting,netPt:currentGameProfit(),checkpointQuiet:NovaArt.checkpointQuietRules.enabled,checkpointNext:NovaProgress.snapshot().next},Math.random,pendingForceResult);
+        return pendingArtStep.result;
+      }
+      if(!normalState.bonusPending && normalState.flow?.phase==='art' && !['MID','BAR3'].includes(pendingForceResult)){
+        const token=drawIndependentATypeOutcome();pendingATypeInternalBonus=token.internalBonus;return token.result;
+      }
+      if(!normalState.bonusPending && (NovaNormal.rare[pendingForceResult]||['ONE_COIN','NAVI_BELL','BELL','REPLAY','MISS','FREEZE'].includes(pendingForceResult))){
+        const token=drawIndependentATypeOutcome();pendingATypeInternalBonus=token.internalBonus;return token.result;
+      }
+      if(isNovaResult(pendingForceResult)) return pendingForceResult;
+      if(normalState.bonusPending){
+        const preparing=replayGatedBonusPreparation()?!normalState.prepReady:normalState.prepLeft>0;
+        if(preparing){
+          const forced=NovaArt.rareRoles[pendingForceResult]||['BELL','REPLAY','MISS'].includes(pendingForceResult)?pendingForceResult:'';
+          pendingPreparationRole=forced||NovaArt.drawPreparationRole(settings.setting);
+          return NovaArt.preparationDisplayRole?NovaArt.preparationDisplayRole(pendingPreparationRole):NovaArt.isPreparationStartReplay?.(pendingPreparationRole)?'REPLAY':pendingPreparationRole;
+        }
+        if(!isChanceLampLit()) return "MISS";
+
+        return normalState.bonusKind === "MID" ? "MID" : "BIG";
+      }
+
+      if(pendingForceResult === "REACH_ME"){
+        const gamesSinceLastBonusAtStart = normalizeBonusAfterGames(normalState.sinceBonus);
+        pendingATypeInternalBonus = {kind:"BIG", source:"リーチ目強制", internalResult:"REACH_ME", gamesSinceLastBonusAtStart};
+        return "MISS";
+      }
+
+      if(pendingForceResult && RESULT[pendingForceResult]){
+        return normalizeATypeResult(pendingForceResult);
+      }
+
+      const token = drawIndependentATypeOutcome();
+      pendingATypeInternalBonus = token.internalBonus
+        ? {...token.internalBonus, gamesSinceLastBonusAtStart:normalizeBonusAfterGames(normalState.sinceBonus)}
+        : null;
+      return token.result;
+    }
+  }
+
+  function resolveNormalOutcome(result, lineRow=1){
+    if(A_TYPE_MODE){
+      const flowBefore = NovaFlow.normalize(normalState.flow);
+      const artStep=pendingArtStep;pendingArtStep=null;
+      const czEntry = !!artStep?.czEntry || result === "CZ" || result === "STRONG_CZ";
+      const zoneSpin=!!artStep?.zoneSpin;
+      const superNovaBonus = result === "SUPER_NOVA" && flowBefore.phase!=='art' && !normalState.bonusPending && !zoneSpin ? drawSuperNovaBonus() : null;
+      const internalBonus = superNovaBonus || pendingATypeInternalBonus;
+      pendingATypeInternalBonus = null;
+      const preparationRole=pendingPreparationRole;
+      pendingPreparationRole="";
+      const bonusPendingAtStart = !superNovaBonus && !!normalState.bonusPending;
+      const risingAtStart = !bonusPendingAtStart && isNovaRisingMode();
+      const risingRemainAfter = risingAtStart
+        ? Math.max(0, normalizeNovaRisingRemain(normalState.risingRemain) - 1)
+        : normalizeNovaRisingRemain(normalState.risingRemain);
+      const pendingReady = bonusPendingAtStart && (
+        result === "MID" ||
+        (result === "BIG")
+      );
+      const directReady = !zoneSpin && !bonusPendingAtStart && !internalBonus && (result === "BIG" || result === "MID" || result === "MID_CHERRY" || result === "BAR3");
+      const isNewBonusHit = !!internalBonus;
+      const isReadyBonus = pendingReady || directReady;
+      const bonusPreparationSpin=bonusPendingAtStart&&!isReadyBonus&&!!preparationRole;
+      const bonusPreparationReward=bonusPreparationSpin?NovaArt.drawBonusPreparationReward(preparationRole,settings.setting):null;
+      const bonusKind = internalBonus
+        ? internalBonus.kind
+        : bonusPendingAtStart
+          ? (normalState.bonusKind || "BIG")
+          : (result === "MID" || result === "MID_CHERRY") ? "MID" : (result === "BIG" || result === "BAR3") ? "BIG" : "";
+      const isBig = bonusKind === "BIG" && (isNewBonusHit || isReadyBonus);
+      const isReg = bonusKind === "MID" && (isNewBonusHit || isReadyBonus);
+      const gamesSinceLastBonusAtStart = internalBonus
+        ? normalizeBonusAfterGames(internalBonus.gamesSinceLastBonusAtStart)
+        : bonusPendingAtStart
+          ? normalizeBonusAfterGames(normalState.bonusHitGamesSince)
+          : normalizeBonusAfterGames(normalState.sinceBonus);
+      const bonusSource = internalBonus
+        ? internalBonus.source
+        : bonusPendingAtStart
+          ? (normalState.bonusSource || "BONUS確定")
+          : result === "MID_CHERRY"
+            ? "チェリー同時当選"
+            : isReadyBonus
+              ? "単独当選"
+              : "";
+      return {
+        internalResult:artStep?.internalResult,
+        normalInternal:artStep?.normalInternal,
+        normalBellNavi:!!artStep?.normalBellNavi&&result==='BELL',
+        preparationRole,
+        bonusPreparationSpin,
+        bonusPreparationReward,
+        prepStartOrder:bonusPreparationSpin&&NovaArt.isPreparationStartReplay?.(preparationRole)?NovaArt.preparationStartOrder(preparationRole):'',
+        prepStartOrderStops:bonusPreparationSpin&&NovaArt.isPreparationStartReplay?.(preparationRole)?preparationStopOrder(NovaArt.preparationStartOrder(preparationRole)):[],
+        initialPreparationSpin:!!artStep?.initialPreparationSpin,
+        initialPreparationStarted:!!artStep?.initialPreparationStarted,
+        initialPreparationReward:artStep?.preparationReward||null,
+        prepInitialStartOrder:artStep?.prepStartOrder||'',
+        prepInitialStartOrderStops:artStep?.prepStartOrder?preparationStopOrder(artStep.prepStartOrder):[],
+        czPrelude:artStep?.czPrelude,
+        atPrelude:artStep?.atPrelude,
+        czChance:artStep?.czChance,
+        czLamp:artStep?.czLamp,
+        aim:artStep?.aim,
+        zoneStartFlow:artStep?.zoneStartFlow,
+        researchSortie:artStep?.researchSortie,
+        researchChallenge:artStep?.researchChallenge,
+        burstEvent:artStep?.burstEvent,
+        burstReward:artStep?.burstReward,
+        atOutcome:artStep?.atOutcome,
+        atShortfallRefund:artStep?.atShortfallRefund||0,
+        zoneAward:artStep?.zoneAward||0,
+        comebackEvent:artStep?.comebackEvent,
+        flowBefore,
+        flowAfter:artStep?.flow || (czEntry ? NovaFlow.enterCZ(result === "STRONG_CZ",NovaFlow.forSetting(settings.novaFlow,settings.setting),Math.random,artStep?.czEntrySource||'debug') : flowBefore.phase==='art' ? flowBefore : (isNewBonusHit || isReadyBonus) ? NovaFlow.normalize(null) : bonusPendingAtStart ? flowBefore : NovaFlow.advance(flowBefore)),
+        artMessage:artStep?.burstReward?.type==='ura' ? NovaArt.zoneName(artStep.burstReward.zone)+'ゾーン獲得！' : artStep?.message || '',
+        artReverse:!!(artStep?.reverse||artStep?.oumaFreeze),oumaFreeze:!!artStep?.oumaFreeze,
+        zoneSpin,
+        czEntry,
+        czCompleted:(flowBefore.phase === "cz" || flowBefore.phase === "strong_cz") && flowBefore.remaining === 1,
+        rtCompleted:flowBefore.phase === "rt" && flowBefore.remaining === 1,
+        normalGame:true,
+        reward:normalRewardFor(result, lineRow),
+        add:0,
+        sets:0,
+        bigZone:0,
+        zoneGame:false,
+        zoneSets:0,
+        zoneStGames:0,
+        zoneGameAdd:0,
+        highAtStart:risingAtStart,
+        risingAtStart,
+        risingRemainAfter,
+        bonusPendingAtStart,
+        bonusWaitSpin:bonusPendingAtStart && !isReadyBonus,
+        bonusWaitGamesAtStart:0,
+        highAdd:0,
+        ceilingAfter:(isNewBonusHit || isReadyBonus) ? 0 : flowBefore.zero ? gamesSinceLastBonusAtStart : nextBonusAfterGames(gamesSinceLastBonusAtStart),
+        gamesSinceLastBonusAtStart,
+        bonusHit:isNewBonusHit,
+        czDirect:!!(artStep?.czDirect||internalBonus?.direct),
+        czDirectZone:artStep?.czDirectZone||internalBonus?.directZone||'',
+        bonusReady:isReadyBonus && isBig,
+        regReady:isReadyBonus && isReg,
+        bar3PremiumReady:false,
+        bonusKind:isReg ? "MID" : isBig ? "BIG" : "",
+        bonusSource,
+        premiumBonus:isBig && (internalBonus ? !!internalBonus.premiumBonus : bonusPendingAtStart ? !!normalState.premiumBonus : result === "BAR3"),
+        superNovaOutcome:superNovaBonus?.superNovaOutcome || (internalBonus?.premiumBonus?"PREMIUM_BIG":""),
+        oneGameRenBonus:isBig && bonusPendingAtStart ? !!normalState.oneGameRenBonus : false,
+        aTypeBonusReady:isReadyBonus
+      };
+    }
+  }
+
+  function load(){
+    const read=(key,kind)=>{
+      const raw=safeStorageGet(key);
+      if(raw===null || raw===undefined)return {data:null,present:false};
+      try{
+        const data=JSON.parse(raw);
+        const object=value=>!!value && typeof value==='object' && !Array.isArray(value);
+        if(!object(data) || !object(data.settings) || (kind==='game' && !object(data.stats)))throw new Error('Invalid saved record');
+        return {data,present:true};
+      }catch(error){console.warn('Failed to read NOVA saved record',key,error);return {data:null,present:true};}
+    };
+    const preferences=read(PREFERENCES_STORAGE_KEY,'preferences');
+    const full=read(STORAGE_KEY,'game'),resume=read(STORAGE_RESUME_KEY,'game');
+    storageRestoreBlocked=!!((full.present || resume.present) && !full.data && !resume.data && !storeResumeState?.state);
+    if(storageRestoreBlocked)return false;
+    try{
+      const preferenceData = preferences.data;
+      const fullData = full.data;
+      const resumeData = resume.data;
+      let data = fullData;
+      if(resumeData && (!data || Number(resumeData.savedAt || 0) > Number(data.savedAt || 0))){
+        data = {
+          ...(data || {}),
+          ...resumeData,
+          settings:{...((data && data.settings) || {}), ...(resumeData.settings || {})},
+          stats:{...((data && data.stats) || {}), ...(resumeData.stats || {})},
+          normalState:{...((data && data.normalState) || {}), ...(resumeData.normalState || {})},
+          completeTrialState:{...((data && data.completeTrialState) || {}), ...(resumeData.completeTrialState || {})},
+          runtimeState:{...((data && data.runtimeState) || {}), ...(resumeData.runtimeState || {})}
+        };
+      }
+      if(storeResumeState?.state && (!data || Number(storeResumeState.state.savedAt)>Number(data.savedAt||0)))data=storeResumeState.state;
+      displaySinceBonusOffset=Number.isFinite(data?.displaySinceBonusOffset)?data.displaySinceBonusOffset:null;
+      if(preferenceData && preferenceData.settings){
+        data = {
+          ...(data || {}),
+          settings:{...preferenceData.settings, ...((data && data.settings) || {})}
+        };
+      }
+      if(data?.settings){
+        const previousAudioBalance = data.settings.audioBalanceVersion || 0;
+        settings = {...settings, ...data.settings};
+        settings.autoStopOrderMode=["normal","middle","scissors"].includes(settings.autoStopOrderMode)?settings.autoStopOrderMode:"normal";
+        autoStopOrderMode=settings.autoStopOrderMode;
+        if(previousAudioBalance < AUDIO_BALANCE_VERSION){
+          const savedBgmVolume = Number(settings.bgmVolume);
+          const savedSfxVolume = Number(settings.sfxVolume);
+          const savedVoiceVolume = Number(settings.voiceVolume);
+          const savedPayoutVolume = Number(settings.payoutVolume);
+          const savedMovieVolume = Number(settings.movieVolume);
+          const savedRogiMovieVolume = Number(settings.rogiMovieVolume);
+          const oldDefaultBgm = 0.22;
+          const oldDefaultSfx = 0.32;
+          settings.bgmVolume = (!Number.isFinite(savedBgmVolume) || Math.abs(savedBgmVolume - oldDefaultBgm) < 0.005) ? DEFAULT_BGM_VOLUME : clamp(savedBgmVolume, 0, 1);
+          settings.sfxVolume = (!Number.isFinite(savedSfxVolume) || Math.abs(savedSfxVolume - oldDefaultSfx) < 0.005) ? DEFAULT_SFX_VOLUME : clamp(savedSfxVolume, 0, 1);
+          const inheritedSfxVolume = Number.isFinite(Number(settings.sfxVolume)) ? clamp(Number(settings.sfxVolume), 0, 1) : DEFAULT_SFX_VOLUME;
+          settings.voiceVolume = Object.prototype.hasOwnProperty.call(data.settings, "voiceVolume") && Number.isFinite(savedVoiceVolume) ? clamp(savedVoiceVolume, 0, 1) : inheritedSfxVolume;
+          settings.payoutVolume = Object.prototype.hasOwnProperty.call(data.settings, "payoutVolume") && Number.isFinite(savedPayoutVolume) ? clamp(savedPayoutVolume, 0, 1) : inheritedSfxVolume;
+          if(previousAudioBalance < 9 && Number.isFinite(savedPayoutVolume) && Math.abs(savedPayoutVolume - 0.33) < 0.015){
+            settings.payoutVolume = DEFAULT_PAYOUT_VOLUME;
+          }
+          settings.movieVolume = Object.prototype.hasOwnProperty.call(data.settings, "movieVolume") && Number.isFinite(savedMovieVolume) ? clamp(savedMovieVolume, 0, 1) : inheritedSfxVolume;
+          settings.rogiMovieVolume = Object.prototype.hasOwnProperty.call(data.settings, "rogiMovieVolume") && Number.isFinite(savedRogiMovieVolume) ? clamp(savedRogiMovieVolume, 0, 1) : inheritedSfxVolume;
+        }
+        const savedMasterVolume = Number(settings.masterVolume);
+        settings.masterVolume = Object.prototype.hasOwnProperty.call(data.settings, "masterVolume") && Number.isFinite(savedMasterVolume) ? clamp(savedMasterVolume, 0, 1) : DEFAULT_MASTER_VOLUME;
+        settings.audioBalanceVersion = AUDIO_BALANCE_VERSION;
+        migrateAudioCalibration(settings,data.settings.audioCalibrationVersion);
+      }
+      // Fresh and saved browsers must finish the same migrations before persisting settings.
+      if(settings.balanceVersion!=='cz-lamps10'){settings.novaArt={...settings.novaArt,...Object.fromEntries([1,2,3,4,5,6].map(i=>['direct'+i,NovaArt.defaults['direct'+i]])),soraHit:NovaArt.defaults.soraHit,oumaHit:NovaArt.defaults.oumaHit};settings.balanceVersion='cz-lamps10';}
+      if(settings.bellBalanceVersion!==23){settings.novaArt={...NovaArt.defaults};settings.bellBalanceVersion=23;}
+      if(settings.lotteryVersion!==33){settings.novaArt={...NovaArt.defaults};settings.novaNormal={...NovaNormal.defaults};settings.novaFlow={...NovaFlow.defaults};settings.lotteryVersion=33;}
+      if(settings.zoneVersion!==2){settings.novaArt={...NovaArt.defaults,initial:settings.novaArt?.initial||275};settings.zoneVersion=2;}
+      if(settings.zoneLotteryVersion!==3){settings.novaArt={...settings.novaArt,soraUraReset:NovaArt.defaults.soraUraReset};delete settings.novaArt.uraChance;settings.zoneLotteryVersion=3;}
+      if(settings.at150Version!==45){settings.novaArt={...settings.novaArt,...{"initial":150,"ladderSosuke":0.7,"ladderGiru":0.95,"ladderUraGiru":0.98,"totoHit":0.35,"soraHit":0.63,"soraUraHit":0.75,"urapiSuper":0.49,"oumaSuper":0.77,"oumaUraSuper":0.98,"payoutVersion":1}};settings.at150Version=45;}
+      if(settings.ladderGuaranteeVersion!==57){settings.novaArt={...settings.novaArt,ladderSosuke:.4,ladderGiru:.5,ladderUraGiru:2/3};settings.ladderGuaranteeVersion=57;}
+      if(settings.zoneBalanceVersion!==105){settings.novaArt={...settings.novaArt,oumaUraSuper:.75,oumaUraFreeze:.35,soraUraHit:.75,soraUraReset:.25,soraUraRed:.715};settings.zoneBalanceVersion=105;}
+      if(settings.challengeBalanceVersion!==120){settings.novaArt={...settings.novaArt,initial:NovaArt.defaults.initial};settings.challengeBalanceVersion=120;}
+      if(settings.commonAtVersion!==125){settings.novaArt=NovaArt.config(settings.novaArt);settings.commonAtVersion=125;}
+      if(settings.entryQuotaVersion!==128){
+        const savedFlow=data?.normalState?.flow;
+        if(savedFlow?.phase==='art'&&savedFlow.setQuota==null)savedFlow.setQuota=String(data.settings?.novaArt?.initial||300);
+        settings.novaArt={...settings.novaArt,initial:NovaArt.defaults.initial};settings.entryQuotaVersion=128;
+      }
+      if(settings.initialSevenVersion!==148){
+        settings.novaArt={...settings.novaArt,...Object.fromEntries(['initial','totoHit','totoReset','soraHit','soraReset','soraUraHit','soraUraReset'].map(k=>[k,NovaArt.defaults[k]]))};
+        settings.initialSevenVersion=148;
+      }
+      if(settings.rescueVersion!==107){settings.novaNormal={...settings.novaNormal,czFailureGain:1,bonusFailureGain:2,atDryGain:2,ceilingGain:10,regChainGain:2};settings.rescueVersion=107;}
+      if(settings.smartslotBalanceVersion!==20261013){
+        settings.novaArt={...NovaArt.defaults};settings.novaNormal={...NovaNormal.defaults};settings.novaFlow={...NovaFlow.defaults};settings.smartslotBalanceVersion=20261013;
+      }
+      settings=NovaComplete.configure(settings,VERTEX_CONTROLLER_ENABLED,COMPLETE_TRIAL_ENABLED);
+      settings.title = normalizeMachineTitle(settings.title);
+      if(!SETTING[settings.setting]) settings.setting = 1;
+      if(data?.stats) stats = {...stats, ...data.stats};
+      if(data?.stats && data.stats.atFirstCount == null && Number(data.stats.totalSpins)>0)stats.atFirstCountPartial=true;
+      stats.premiumBigCount = Math.max(0, Number(stats.premiumBigCount) || 0);
+      if((Number(stats.roleStatVersion) || 0) < ROLE_STAT_COUNTER_VERSION){
+        stats.normalSpins = 0;
+        stats.highSpins = 0;
+        stats.grapeCount = 0;
+        stats.smallCount = 0;
+        stats.bellCount = 0;
+        stats.premiumBigCount = 0;
+        stats.diagonalBellCount = 0;
+        stats.replayCount = 0;
+        stats.suikaCount = 0;
+        stats.cherryCount = 0;
+        stats.roleStatVersion = ROLE_STAT_COUNTER_VERSION;
+      }
+      // Normal/high role counters exclude some phases (including BIG). They are
+      // only a fallback for old saves without a total, never a replacement for it.
+      if(A_TYPE_MODE && !Number.isFinite(Number(data?.stats?.totalSpins))){
+        stats.totalSpins = (Number(stats.normalSpins) || 0) + (Number(stats.highSpins) || 0);
+      }
+      if(data?.normalState){
+        normalState = {
+          ...normalState,
+          ...data.normalState,
+          internal:NovaNormal.normalize(data.normalState.internal),
+          highRemain:Math.max(0, Number(data.normalState.highRemain) || 0),
+          risingRemain:0,
+          flow:NovaFlow.normalize(data.normalState.flow),
+          risingBonusOrigin:!!data.normalState.risingBonusOrigin,
+          sinceBonus:normalizeBonusAfterGames(data.normalState.sinceBonus),
+          bonusPending:!!data.normalState.bonusPending,
+          bonusKind:A_TYPE_MODE&&data.normalState.bonusPending?"BIG":String(data.normalState.bonusKind || ""),
+          bonusSource:String(data.normalState.bonusSource || ""),
+          premiumBonus:!!data.normalState.premiumBonus,
+          oneGameRenBonus:false,
+          bonusWaitGames:Math.max(0, Number(data.normalState.bonusWaitGames) || 0),
+          bonusHitGamesSince:normalizeBonusAfterGames(data.normalState.bonusHitGamesSince),
+          prepVersion:Math.max(0,Math.floor(Number(data.normalState.prepVersion)||0)),
+          prepReady:!!data.normalState.prepReady,
+          prepGames:Math.max(0,Math.floor(Number(data.normalState.prepGames)||0)),
+          prepLeft:Math.max(0,Math.floor(Number(data.normalState.prepLeft)||0)),
+          prepSets:Math.max(0,Math.floor(Number(data.normalState.prepSets)||0)),
+          prepZones:Array.isArray(data.normalState.prepZones)?data.normalState.prepZones.filter(zone=>NovaArt.zoneIds.includes(zone)&&zone!=='sosuke'):[],
+          prepUpperBonus:!!data.normalState.prepUpperBonus,
+          prepUpperAt:!!data.normalState.prepUpperAt,
+          reachMePending:!!data.normalState.reachMePending,
+          reachMeBonusKind:String(data.normalState.reachMeBonusKind || ""),
+          reachMeBonusSource:String(data.normalState.reachMeBonusSource || ""),
+          reachMeHitGamesSince:normalizeBonusAfterGames(data.normalState.reachMeHitGamesSince),
+          reachMePrepSets:Math.max(0,Math.floor(Number(data.normalState.reachMePrepSets)||0)),
+          reachMePrepZones:Array.isArray(data.normalState.reachMePrepZones)?data.normalState.reachMePrepZones.filter(zone=>NovaArt.zoneIds.includes(zone)&&zone!=='sosuke'):[],
+          pendingSettingVoiceSrc:"",
+          pendingPremiumVoiceSrc:"",
+          morningCeilingActive:!!data.normalState.morningCeilingActive
+        };
+        if(!normalState.bonusPending){
+          normalState.bonusWaitGames = 0;
+          normalState.bonusHitGamesSince = 0;
+          normalState.premiumBonus = false;
+          normalState.oneGameRenBonus = false;
+          clearBonusPreparationState();
+        }
+        normalState.sinceBonus = normalizeBonusAfterGames(normalState.sinceBonus);
+      }
+      if(data?.completeTrialState){
+        completeTrialState = {
+          ...completeTrialState,
+          ...data.completeTrialState,
+          locked:!!data.completeTrialState.locked,
+          lockedSetting:clamp(Number(data.completeTrialState.lockedSetting) || 0, 0, 6),
+          rescueActive:false,
+          completeProfit:Number(data.completeTrialState.completeProfit) || 0
+        };
+        if(!isCompleteLockEnabled()){
+          completeTrialState.locked = false;
+          completeTrialState.lockedSetting = 0;
+          completeTrialState.completeProfit = 0;
+          delete completeTrialState.reason;
+          delete completeTrialState.completeMy;
+        }
+      }
+      completeTrialState.lowestNet=Math.min(0,Number(completeTrialState.lowestNet)||0,Number(stats.slumpLow)||0);
+      if(isCompleteLockEnabled())NovaComplete.restore(completeTrialState,(Number(stats.totalPaid)||0)-(Number(stats.totalFee)||0),settings.completeLimitPt,NovaComplete.myLimit(settings));
+      const runtime = data?.runtimeState || {};
+      if(runtime.session && typeof runtime.session === "object"){
+        session = {
+          ...session,
+          ...runtime.session,
+          active:!!runtime.session.active,
+          remain:Math.max(0, Number(runtime.session.remain) || 0),
+          fee:Number(runtime.session.fee) || 0,
+          cost:Number(runtime.session.cost) || 0,
+          paid:Number(runtime.session.paid) || 0,
+          hits:Number(runtime.session.hits) || 0,
+          bonusPointsRemaining:Math.max(0,NovaArt.bonusTarget(runtime.session.bonusKind)-NovaArt.bonusProgress(runtime.session)),
+          bonusArtSets:Math.max(0,Math.floor(Number(runtime.session.bonusArtSets)||0)),
+          bonusExtraStockOffered:!!runtime.session.bonusExtraStockOffered,
+          added:Number(runtime.session.added) || 0,
+          addedGames:Number(runtime.session.addedGames) || 0,
+          setNo:Number(runtime.session.setNo) || 0,
+          stockSets:Number(runtime.session.stockSets) || 0,
+          barBgmSets:Number(runtime.session.barBgmSets) || 0,
+          nextSetBarBgm:!!runtime.session.nextSetBarBgm,
+          currentSetBarBgm:!!runtime.session.currentSetBarBgm,
+          continuationRate:Number(runtime.session.continuationRate) || 0,
+          bigZone:Math.max(0, Number(runtime.session.bigZone) || 0),
+          bigZoneType:String(runtime.session.bigZoneType || ""),
+          phase:String(runtime.session.phase || "idle"),
+          bonusKind:A_TYPE_MODE&&runtime.session.phase==='a_type_bonus'?'BIG':String(runtime.session.bonusKind || ""),
+          bonusTier:NovaArt.bonusTier(runtime.session.bonusTier),
+          bonusTarget:Number(runtime.session.bonusTarget) || 0,
+          risingResumeRemain:normalizeNovaRisingRemain(runtime.session.risingResumeRemain),
+          risingBonusOrigin:!!runtime.session.risingBonusOrigin,
+          premiumBonus:!!runtime.session.premiumBonus,
+          oneGameRenBonus:false,
+          bonusUpperAt:!!runtime.session.bonusUpperAt,
+          premiumChainEligible:false,
+          bonusBgmSrc:String(runtime.session.bonusBgmSrc || ""),
+          battleRemain:Math.max(0, Number(runtime.session.battleRemain) || 0),
+          battleWin:!!runtime.session.battleWin,
+          battleSource:String(runtime.session.battleSource || ""),
+          resultPayout:runtime.session.resultPayout === null || runtime.session.resultPayout === undefined ? null : Number(runtime.session.resultPayout) || 0,
+          endSignal:runtime.session.endSignal || null
+        };
+      }
+      if(A_TYPE_MODE && session.active && session.phase==='a_type_bonus'){Object.assign(session,NovaArt.restoreBonusExtraStockPlan(session,NovaArt.bonusStockEligible(session,normalState.flow)));session.bonusBgmSrc=pickATypeBonusBgm(session.bonusKind,false,session).src;session.bonusTarget=NovaArt.bonusTarget(session.bonusKind);session.bonusPointsRemaining=Math.max(0,session.bonusTarget-NovaArt.bonusProgress(session));}
+      jagChainCount = runtime.jagChainCount?.payoutVersion===1 && Number.isFinite(runtime.jagChainCount.paid) && Number.isFinite(runtime.jagChainCount.fee) ? {...runtime.jagChainCount} : null;
+      jagLastGamePayout = Number(runtime.jagLastGamePayout) || 0;
+      jagLastBonusPayout = Number(runtime.jagLastBonusPayout) || 0;
+      jagChanceHold = !!runtime.jagChanceHold;
+      forceResult = normalizeForceResult(String(runtime.forceResult || ""));
+      forcePremiumEffect = !!runtime.forcePremiumEffect;
+      pendingForceResult = normalizeForceResult(String(runtime.pendingForceResult || ""));
+      pendingBonusStartOptions = runtime.pendingBonusStartOptions && typeof runtime.pendingBonusStartOptions === "object" ? {...runtime.pendingBonusStartOptions} : null;
+      devilZoneConfirmIntroPending = !!runtime.devilZoneConfirmIntroPending;
+      pendingDevilRushEntryEffect = String(runtime.pendingDevilRushEntryEffect || "");
+      speedFrameOffHold = !!runtime.speedFrameOffHold;
+      barBgmActive = !!runtime.barBgmActive;
+      barBgmMode = String(runtime.barBgmMode || "");
+      battleBgmActive = !!runtime.battleBgmActive;
+      rogiBgmMuted = !!runtime.rogiBgmMuted;
+      autoPlay = false;
+      speedToBonusActive = false;
+      currentSpin = NovaSpinResume.restore(runtime.pendingSpin, RESULT);
+      // Finish an old unpaid replay under the old rule, then consume its free BET once.
+      if(currentSpin && runtime.replayAccountingVersion!==2)currentSpin.resolved.replayAccounting="legacy";
+      isSpinning = !!currentSpin;
+      spinCanStop = false;
+      // The unfinished BET is already counted; normal/high counters settle at the final stop.
+      if(currentSpin)stats.totalSpins=Math.max(0,Number(data?.stats?.totalSpins)||0);
+      return true;
+    }catch(e){storageRestoreBlocked=true;console.warn('Failed to restore NOVA state',e);return false;}
+  }
+
+  function compactStatsForResume(){
+    return NovaHistory.compact(stats, reduceSlumpPoints);
+  }
+
+  function runtimeStateForStorage(){
+    return {
+      replayAccountingVersion:2,
+      pendingSpin:NovaSpinResume.capture(currentSpin),
+      session:{...session},
+      jagChainCount,
+      jagLastGamePayout,
+      jagLastBonusPayout,
+      jagChanceHold,
+      forceResult,
+      forcePremiumEffect,
+      pendingForceResult,
+      pendingBonusStartOptions: pendingBonusStartOptions ? {...pendingBonusStartOptions} : null,
+      devilZoneConfirmIntroPending,
+      pendingDevilRushEntryEffect,
+      speedFrameOffHold,
+      barBgmActive,
+      barBgmMode,
+      battleBgmActive,
+      rogiBgmMuted
+    };
+  }
+
+  function updateStorageStatus(stateSaved, preferencesSaved){
+    const banner=$('storageStatus'),message=$('storageStatusMessage');
+    if(!banner || !message)return;
+    const text=!stateSaved
+      ? '遊技状態を保存できません。この画面を閉じると進行が失われる可能性があります。保存先の空きを確保し、再保存してください。'
+      : !preferencesSaved ? '遊技状態は保存済みですが、共通設定の保存に失敗しました。再保存してください。' : '';
+    if(message.textContent!==text)message.textContent=text;
+    banner.hidden=!text;
+  }
+
+  let stateStorageWriter=null;
+  function persistState(){
+    if(!canUsePlayState())return false;
+    // Commit the result and removal of the pending spin together, after finishSpin returns.
+    if(currentSpin?.finishing)return false;
+    if(A_TYPE_MODE)syncNovaProgress();
+    const savedAt = Date.now();
+    const runtimeState = runtimeStateForStorage();
+    const write=(key,value)=>{
+      if(globalThis.NovaStateStorage){
+        stateStorageWriter ||= NovaStateStorage.create({read:safeStorageGet,write:safeStorageSet,serialize:value=>NovaHistory.stringify(value)});
+        return stateStorageWriter.save(key,value);
+      }
+      try{return safeStorageSet(key,NovaHistory.stringify(value));}
+      catch(e){console.warn('Failed to serialize local state',e);return false;}
+    };
+    const preferencesOk = write(PREFERENCES_STORAGE_KEY, {savedAt, settings});
+    const resumeOk = write(STORAGE_RESUME_KEY, {
+      savedAt,
+      settings,
+      stats:compactStatsForResume(),
+      normalState,
+      completeTrialState,
+      runtimeState,
+      displaySinceBonusOffset
+    });
+    const fullOk = write(STORAGE_KEY, {savedAt, settings, stats, normalState, completeTrialState, runtimeState, displaySinceBonusOffset});
+    const stateSaved=!!(fullOk || resumeOk);
+    updateStorageStatus(stateSaved,preferencesOk);
+    return stateSaved;
+  }
+
+  function save(){
+    readSettings();
+    normalizeSlumpHistory();
+    if(persistState()){
+      log("設定を保存しました");
+    }else{
+      log("保存に失敗しました");
+      showMessage("SAVE ERROR", "遊技状態を保存できません。画面下部の案内を確認してください");
+    }
+  }
+
+  function readMachineDisplayBase(){
+    if(!bootPlaySessionId)return null;
+    try{
+      const value=JSON.parse(bootParams.get("machineDisplay") || "null");
+      return value && typeof value === "object" && !Array.isArray(value) ? value : null;
+    }catch(e){return null;}
+  }
+
+  function machineDisplayStats(){
+    const number=value=>Number.isFinite(Number(value)) ? Math.max(0,Number(value)) : 0;
+    const output={};
+    const start=machineDisplayBase ? playSessionStartStats : null;
+    for(const key of ['totalSpins','bigCount','atFirstCount']){
+      output[key]=number(machineDisplayBase?.[key])+Math.max(0,number(stats[key])-number(start?.[key]));
+    }
+    output.atFirstCountPartial=!!(machineDisplayBase?.atFirstCountPartial || stats.atFirstCountPartial);
+    const newBonus=number(stats.bigCount)>number(start?.bigCount);
+    output.sinceBonus=number(normalState.sinceBonus)+(newBonus ? 0 : number(displaySinceBonusOffset ?? machineDisplayBase?.sinceBonus));
+    return output;
+  }
+
+  function sessionBaselineStats(source=stats){
+    const totalFee = Math.max(0, Number(source && source.totalFee) || 0);
+    const totalPaid = Math.max(0, Number(source && source.totalPaid) || 0);
+    return {
+      ...NovaRoleCounter.snapshot(source),
+      ...NovaDataCounter.snapshot(source),
+      totalFee,
+      totalPaid,
+      profit:totalPaid - totalFee,
+      totalSpins:Math.max(0, Number(source && source.totalSpins) || 0),
+      bigCount:Math.max(0, Number(source && source.bigCount) || 0),
+      atFirstCount:Math.max(0, Number(source && source.atFirstCount) || 0),
+      atFirstCountPartial:!!source?.atFirstCountPartial,
+      midCount:Math.max(0, Number(source && source.midCount) || 0),
+      grapeCount:Math.max(0, Number(source && source.grapeCount) || 0)
+    };
+  }
+
+  function initializePlaySessionBaseline(){
+    if(!SLOT_PLAY_SESSION) return;
+    let saved = null;
+    if(PLAY_SESSION_BASELINE_STORAGE_KEY){
+      try{
+        const parsed = JSON.parse(safeStorageGet(PLAY_SESSION_BASELINE_STORAGE_KEY) || "null");
+        if(parsed && typeof parsed === "object") saved = sessionBaselineStats(parsed);
+      }catch(e){}
+    }
+    playSessionStartStats = saved || (storeResumeState?.baseline ? sessionBaselineStats(storeResumeState.baseline) : sessionBaselineStats(stats));
+    if(PLAY_SESSION_BASELINE_STORAGE_KEY){
+      safeStorageSet(PLAY_SESSION_BASELINE_STORAGE_KEY, JSON.stringify(playSessionStartStats));
+    }
+    reconcilePlaySessionBaseline();
+  }
+
+  function reconcilePlaySessionBaseline(){
+    if(!SLOT_PLAY_SESSION || !playSessionStartStats)return;
+    if(!['totalSpins','totalFee','totalPaid'].some(key=>(Number(stats[key])||0)<(Number(playSessionStartStats[key])||0)))return;
+    // Match the settlement server's counter-reset rule and persist the new epoch.
+    playSessionStartStats=sessionBaselineStats({});
+    displaySinceBonusOffset=0;
+    if(PLAY_SESSION_BASELINE_STORAGE_KEY)safeStorageSet(PLAY_SESSION_BASELINE_STORAGE_KEY,JSON.stringify(playSessionStartStats));
+  }
+
+  function playSessionBaselineProfit(){
+    if(playSessionStartStats) return Number(playSessionStartStats.profit) || 0;
+    return CREDIT_BASELINE_PROFIT;
+  }
+
+  function playSessionCredit(){
+    reconcilePlaySessionBaseline();
+    const profit=(Number(stats.totalPaid)||0)-(Number(stats.totalFee)||0);
+    return SLOT_PLAY_SESSION ? profit-playSessionBaselineProfit()+(Number(storeResumeState?.creditCarry)||0) : profit;
+  }
+
+  function adminSnapshot(){
+    const profit = stats.totalPaid - stats.totalFee;
+    const adminStats = compactStatsForResume();
+    return {
+      machineId,
+      playSessionId:PLAY_SESSION_ID,
+      adminCommandLastId,
+      playSessionStartStats:playSessionStartStats ? {...playSessionStartStats} : null,
+      machineDisplayStats:machineDisplayStats(),
+      name: settings.title || machineId,
+      settings:{
+        title: settings.title,
+        setting: settings.setting,
+        fee: settings.fee,
+        stSpins: settings.stSpins,
+        oddsMultiplier: settings.oddsMultiplier,
+        autoDelay: settings.autoDelay,
+        autoStopOrderMode: settings.autoStopOrderMode,
+        masterVolume: settings.masterVolume,
+        bgmVolume: settings.bgmVolume,
+        sfxVolume: settings.sfxVolume,
+        voiceVolume: settings.voiceVolume,
+        payoutVolume: settings.payoutVolume,
+        movieVolume: settings.movieVolume,
+        rogiMovieVolume: settings.rogiMovieVolume,
+        audioMuted: settings.audioMuted,
+        completeEnabled:true,
+        completeBasis:'my',
+        completeMyLimitPt:NovaComplete.myLimit(settings),
+        completeLimitPt:NovaComplete.myLimit(settings) // Admin transport field; gameplay net cap remains zero.
+      },
+      stats:{...adminStats, profit},
+      normalState:{...normalState},
+      session:{...session},
+      completeTrialState:{...completeTrialState},
+      runtimeState:runtimeStateForStorage(),
+      resumeSettings:{...settings},
+      capturedAt:Date.now(),
+      state:{
+        isSpinning,
+        spinCanStop,
+        autoPlay,
+        superFullAuto,
+        superSpeedMode,
+        superSpeedActive,
+        superSpeedPending,
+        superSpeedAllowed,
+        superSpeedDebugAllowed,
+        forceResult,
+        forcePremiumEffect,
+        resultText: $("resultText") ? $("resultText").textContent : ""
+      },
+      updatedAt: Date.now()
+    };
+  }
+
+  function pushAdminState(snapshot){
+    if(!canUsePlayState())return;
+    if(!ADMIN_SERVER || !window.fetch || !machineId || machineId === "null" || machineId === "undefined") return;
+    return fetch(`${ADMIN_SERVER}/api/machines/${encodeURIComponent(machineId)}/state`, {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify(snapshot || adminSnapshot())
+    }).then(response=>{
+      setAdminConnectionState(response.ok ? "online" : "offline");
+      return response;
+    }).catch(()=>{ setAdminConnectionState("offline"); });
+  }
+
+  function pushAdminStateOnExit(snapshot){
+    if(!canUsePlayState())return;
+    if(!ADMIN_SERVER || !machineId || machineId === "null" || machineId === "undefined") return;
+    const url = `${ADMIN_SERVER}/api/machines/${encodeURIComponent(machineId)}/state`;
+    const body = JSON.stringify(snapshot || adminSnapshot());
+    try{
+      if(window.navigator && typeof navigator.sendBeacon === "function"){
+        const blob = new Blob([body], {type:"application/json"});
+        if(navigator.sendBeacon(url, blob)) return;
+      }
+    }catch(e){}
+    try{
+      fetch(url, {
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body,
+        keepalive:true
+      }).catch(()=>{});
+    }catch(e){}
+  }
+
+  function scheduleAdminStatePush(delay=ADMIN_STATE_PUSH_INTERVAL_MS){
+    const normalizedDelay = Math.max(0, Number(delay) || 0);
+    const nextDueAt = Date.now() + normalizedDelay;
+    if(adminPushTimer && adminPushDueAt <= nextDueAt) return;
+    if(adminPushTimer) clearTimeout(adminPushTimer);
+    adminPushDueAt = nextDueAt;
+    adminPushTimer = setTimeout(()=>{
+      adminPushTimer = null;
+      adminPushDueAt = 0;
+      pushAdminState();
+    }, normalizedDelay);
+  }
+
+  function latestAdminSnapshot(){
+    if(!canUsePlayState())return null;
+    readSettings();
+    normalizeSlumpHistory();
+    persistState();
+    return adminSnapshot();
+  }
+
+  window.__jagAdminSnapshot = latestAdminSnapshot;
+  function prepareStoreEndSnapshot(){
+    if(storeEndSnapshot)return storeEndSnapshot;
+    if(!canUsePlayState())return null;
+    stopAutoPlay();stopSpeedToBonus();stopDebugFastSpin();
+    const snapshot=latestAdminSnapshot();
+    if(!snapshot)return null;
+    snapshot.endPreparedAt=Date.now();
+    // Freeze one immutable checkpoint before any delayed stop/result callbacks run.
+    pushAdminState(snapshot);
+    storeEndSnapshot=JSON.parse(JSON.stringify(snapshot));
+    showPlayBlocked('ending');
+    return storeEndSnapshot;
+  }
+  window.__jagPrepareEndSnapshot = prepareStoreEndSnapshot;
+  window.__jagPushAdminState = ()=>pushAdminState(latestAdminSnapshot());
+  window.__jagClearLocalPlayState = ()=>{
+    if(!canUsePlayState())return;
+    try{
+      if(window.localStorage){
+        localStorage.removeItem(STORAGE_KEY);
+        localStorage.removeItem(STORAGE_RESUME_KEY);
+        if(PLAY_SESSION_BASELINE_STORAGE_KEY) localStorage.removeItem(PLAY_SESSION_BASELINE_STORAGE_KEY);
+      }
+    }catch(e){}
+  };
+
+  function applyAdminSettings(nextSettings){
+    if(!canUsePlayState() || !nextSettings) return;
+    const setValue = (id, value)=>{
+      const el = $(id);
+      if(el && value !== undefined && value !== null) el.value = value;
+    };
+    setValue("titleInput", nextSettings.title);
+    setValue("settingSelect", nextSettings.setting);
+    setValue("feeInput", nextSettings.fee);
+    setValue("stSpinsInput", nextSettings.stSpins);
+    setValue("oddsMultiplierInput", nextSettings.oddsMultiplier);
+    setValue("autoDelayInput", nextSettings.autoDelay);
+    setValue("masterVolume", nextSettings.masterVolume);
+    setValue("bgmVolume", nextSettings.bgmVolume);
+    setValue("sfxVolume", nextSettings.sfxVolume);
+    setValue("voiceVolume", nextSettings.voiceVolume);
+    setValue("payoutVolume", nextSettings.payoutVolume);
+    setValue("movieVolume", nextSettings.movieVolume);
+    setValue("rogiMovieVolume", nextSettings.rogiMovieVolume);
+    if(nextSettings.audioMuted !== undefined) settings.audioMuted = !!nextSettings.audioMuted;
+    readSettings();
+    const requestedLimit=nextSettings.completeMyLimitPt>0?nextSettings.completeMyLimitPt:nextSettings.completeLimitPt;
+    if(Number.isInteger(Number(requestedLimit))&&Number(requestedLimit)>0&&Number(requestedLimit)<=999999){
+      settings.completeMyLimitPt=Number(requestedLimit);
+      settings.completeLimitPt=0;
+    }
+    settings=NovaComplete.configure(settings,VERTEX_CONTROLLER_ENABLED,COMPLETE_TRIAL_ENABLED);
+    // A limit update never clears an already completed machine.
+    updateCompleteTrialState("admin");
+    const saved=persistState();
+    updateDisplay();
+    log(saved ? "管理画面から設定を更新・保存" : "管理画面から設定を更新しましたが、保存できませんでした");
+  }
+
+  function handleAdminCommand(command){
+    if(!canUsePlayState())return;
+    if(!command || !command.type) return;
+    if(command.type === "prepareEnd"){
+      if(String(command.sessionId)===PLAY_SESSION_ID)prepareStoreEndSnapshot();
+    }else if(command.type === "applySettings"){
+      applyAdminSettings(command.settings || {});
+    }else if(command.type === "reset"){
+      morningResetGame(false, "管理リセット");
+    }else if(command.type === "forceEnd"){
+      log("旧方式の強制終了指示を無視");
+    }else if(command.type === "forceResult"){
+      const requested = command.result === "REACH_ME" || RESULT[command.result] ? command.result : "";
+      forceResult = normalizeForceResult(requested);
+      if($("forceResult")) $("forceResult").value = forceResult;
+      log(forceResult ? `管理画面：次回転指定 ${forceResultName(forceResult)}` : "管理画面：次回転指定を解除");
+      updateDisplay();
+    }else if(command.type === "direct" && RESULT[command.result]){
+      direct(command.result);
+    }else if(command.type === "forceHigh"){
+      forceHighModeNow();
+    }else if(command.type === "startAuto"){
+      startAutoPlay();
+    }else if(command.type === "stopAuto"){
+      stopAutoPlay("管理画面：オート停止");
+    }else if(command.type === "startDebugFast"){
+      startDebugFastSpin();
+    }else if(command.type === "stopDebugFast"){
+      stopDebugFastSpin("管理画面停止");
+    }
+    scheduleAdminStatePush(50);
+  }
+
+  async function pollAdminCommands(){
+    if(!canUsePlayState() || !window.fetch || !ADMIN_SERVER || !machineId) return;
+    if(adminCommandPollInFlight){ adminCommandPollRequested = true; return; }
+    if(adminCommandPollTimer) clearTimeout(adminCommandPollTimer);
+    adminCommandPollTimer = null;
+    adminCommandPollInFlight = true;
+    adminCommandPollRequested = false;
+    let nextPollDelay = 5000;
+    try{
+      const res = await fetch(`${ADMIN_SERVER}/api/machines/${encodeURIComponent(machineId)}/commands/poll?since=${encodeURIComponent(adminCommandLastId)}`, {cache:"no-store",signal:AbortSignal.timeout(10000)});
+      if(!canUsePlayState())return;
+      if(res.ok){
+        setAdminConnectionState("online");
+        const data = await res.json();
+        if(!canUsePlayState())return;
+        nextPollDelay = 2000;
+        applySuperSpeedPermission(data.controls?.superSpeedAllowed === true);
+        const commands = Array.isArray(data.commands) ? data.commands : [];
+        for(const row of commands){
+          const command = row.command || row;
+          const commandId = Number(row.id || command.id || row.createdAtMs || 0) || 0;
+          if(commandId && commandId <= adminCommandLastId) continue;
+          // Restored cabinet state already includes commands before this entry.
+          // A fresh browser must not replay an old reset against the new customer.
+          const commandsAfter=Number(storeResumeState?.commandsAfter)||Number(storeResumeState?.state?.savedAt)||0;
+          if(!commandsAfter || Number(row.createdAtMs)>commandsAfter)handleAdminCommand(command);
+          adminCommandLastId = Math.max(adminCommandLastId, commandId);
+          safeStorageSet(ADMIN_COMMAND_LAST_ID_KEY, String(adminCommandLastId));
+        }
+        applyStoreCompleteSettings(data.controls);
+        if(commands.length >= 25) nextPollDelay = 0;
+      }else {setAdminConnectionState("offline");applySuperSpeedPermission(false);}
+    }catch(e){ setAdminConnectionState("offline");applySuperSpeedPermission(false); }
+    finally{
+      adminCommandPollInFlight = false;
+      if(canUsePlayState()) adminCommandPollTimer = setTimeout(pollAdminCommands, adminCommandPollRequested ? 100 : nextPollDelay);
+    }
+  }
+
+  function wakeAdminCommands(){
+    if(!ADMIN_SERVER || !canUsePlayState()) return;
+    if(adminCommandPollInFlight){ adminCommandPollRequested = true; return; }
+    if(adminCommandPollTimer) clearTimeout(adminCommandPollTimer);
+    adminCommandPollTimer = setTimeout(pollAdminCommands, 0);
+  }
+
+  function applyStoreCompleteSettings(controls){
+    const limit=Number(controls?.completeMyLimitPt)>0?Number(controls.completeMyLimitPt):Number(controls?.completeLimitPt);
+    if(!Number.isInteger(limit)||limit<1||limit>999999||limit===NovaComplete.myLimit(settings))return false;
+    applyAdminSettings({completeMyLimitPt:limit});
+    return true;
+  }
+
+  // The host only wakes the authenticated server poll; it cannot supply commands.
+  window.addEventListener("message", event=>{
+    if(!VERTEX_CONTROLLER_ENABLED || !ADMIN_SERVER || event.source !== window.parent) return;
+    if(event.origin !== new URL(ADMIN_SERVER, location.href).origin) return;
+    if(event.data?.type !== "vertex-commands-available" || String(event.data.machineId) !== String(machineId)) return;
+    wakeAdminCommands();
+  });
+  window.addEventListener("focus", wakeAdminCommands);
+
+  function connectAdminCommands(){
+    if(adminCommandPollTimer) clearTimeout(adminCommandPollTimer);
+    adminCommandPollTimer = null;
+    if(ADMIN_SERVER) pushAdminState();
+    pollAdminCommands();
+  }
+
+  function arrangeDebugDrawerTop(){
+    const drawer = document.querySelector(".debugDrawer");
+    const secret = $("secretPanel");
+    const closeBtn = drawer ? drawer.querySelector(".debugCloseBtn") : null;
+    if(!drawer || !secret) return;
+    if(closeBtn && closeBtn.nextSibling !== secret){
+      drawer.insertBefore(secret, closeBtn.nextSibling);
+    }else if(!closeBtn){
+      drawer.insertBefore(secret, drawer.firstChild);
+    }
+  }
+
+  function normalizeMachineTitle(value){
+    const title = String(value || "").trim();
+    if(!title || /^白い悪魔(?:\s*(轟雷|疾風))?$/.test(title) || /^jag$/i.test(title) || /^rising!?$/i.test(title) || /^nova$/i.test(title)) return "NOVA";
+    return title;
+  }
+
+  function readSettings(){
+    settings.title = normalizeMachineTitle($("titleInput").value);
+    settings.autoStopOrderMode=["normal","middle","scissors"].includes(settings.autoStopOrderMode)?settings.autoStopOrderMode:"normal";
+    autoStopOrderMode=settings.autoStopOrderMode;
+    const previousSetting = Number(settings.setting) || 1;
+    settings.setting = clamp(Number($("settingSelect").value) || 1, 1, 6);
+    if(settings.setting !== previousSetting){
+      morningResetGame(false, "設定変更");
+      setMorningBarReels();
+      renderSettingTable();
+    }
+    settings.fee = PAYOUT_BASE;
+    settings.stSpins = clamp(Number($("stSpinsInput").value) || 10, 1, 100);
+    settings.oddsMultiplier = clamp(Number($("oddsMultiplierInput").value) || 1, 0.1, 100);
+    settings.smallMul = (A_TYPE_PAYOUTS.SMALL) / PAYOUT_BASE;
+    settings.midMul = (A_TYPE_PAYOUTS.MID) / PAYOUT_BASE;
+    settings.crownMul = 0.0;
+    settings.cherryMul = (2) / PAYOUT_BASE;
+    settings.bellMul = (A_TYPE_PAYOUTS.BELL) / PAYOUT_BASE;
+    settings.suikaMul = ROLE_PAYOUTS.SUICA / PAYOUT_BASE;
+    settings.bigMul = (A_TYPE_PAYOUTS.BIG) / PAYOUT_BASE;
+    settings.bigAdd = A_TYPE_PAYOUTS.BIG;
+    settings.autoDelay = clamp(Number($("autoDelayInput").value) || 0.5, 0.1, 10);
+    if($("masterVolume")) settings.masterVolume = clamp(Number($("masterVolume").value) || 0, 0, 1);
+    if($("bgmVolume")) settings.bgmVolume = clamp(Number($("bgmVolume").value) || 0, 0, 1);
+    if($("sfxVolume")) settings.sfxVolume = clamp(Number($("sfxVolume").value) || 0, 0, 1);
+    if($("voiceVolume")) settings.voiceVolume = clamp(Number($("voiceVolume").value) || 0, 0, 1);
+    if($("payoutVolume")) settings.payoutVolume = clamp(Number($("payoutVolume").value) || 0, 0, 1);
+    if($("movieVolume")) settings.movieVolume = clamp(Number($("movieVolume").value) || 0, 0, 1);
+    if($("rogiMovieVolume")) settings.rogiMovieVolume = clamp(Number($("rogiMovieVolume").value) || 0, 0, 1);
+    settings.audioMuted = !!settings.audioMuted;
+    settings.audioBalanceVersion = AUDIO_BALANCE_VERSION;
+
+    $("titleView").textContent = settings.title;
+    if($("settingView")) $("settingView").textContent = settings.setting;
+    if($("targetRtpView")) $("targetRtpView").textContent = targetRtpText();
+    if($("targetRtpViewLegacy")) $("targetRtpViewLegacy").textContent = targetRtpText();
+    if($("adminSettingView")) $("adminSettingView").textContent = settings.setting;
+    if($("adminTargetRtpView")) $("adminTargetRtpView").textContent = targetRtpText();
+    for(const settingNo of [1,2,3,4,5,6]){
+      const option = document.querySelector(`#settingSelect option[value="${settingNo}"]`);
+      if(option) option.textContent = `設定${settingNo} / ${targetRtpText(settingNo)}`;
+    }
+    const adminStInfoText = `${normalModeLabel()} / CZ・強CZ経由 / 1G ${SPIN_COST}pt`;
+    if($("stInfoView")) $("stInfoView").textContent = adminStInfoText;
+    if($("adminStInfoView")) $("adminStInfoView").textContent = adminStInfoText;
+
+    if(bgm){
+      if(!barBgmActive && !battleBgmActive) ensureNormalBgmSource();
+      bgm.volume = bgmOutputVolumeForSource(BGM_OUTPUT_SCALE, bgm.getAttribute("src") || normalBgmSrc());
+      if(!barBgmActive && !battleBgmActive) playNormalBgm();
+    }
+    if(koatariSound){
+      koatariSound.src = KOATARI_SOUND_SRC;
+      koatariSound.volume = sfxOutputVolumeForSource(SFX_OUTPUT_SCALE, KOATARI_SOUND_SRC);
+    }
+    if(bigSound){
+      bigSound.src = BIG_SOUND_SRC;
+      bigSound.volume = sfxOutputVolumeForSource(SFX_OUTPUT_SCALE, BIG_SOUND_SRC);
+    }
+    if(payoutSound){
+      const activePayoutSrc = payoutSound.getAttribute("src") || PAYOUT_SOUND_SRC;
+      if(!payoutSound.getAttribute("src")){
+        payoutSound.setAttribute("src", PAYOUT_SOUND_SRC);
+      }
+      payoutSound.volume = payoutOutputVolumeForSource(PAYOUT_SOUND_OUTPUT_SCALE, activePayoutSrc);
+    }
+    if(voiceSound){
+      voiceSound.volume = voiceOutputVolume();
+    }
+    if(barBgm){
+      if(!barBgmActive && barBgm.getAttribute("src") !== AT_BGM_SRC) barBgm.setAttribute("src", AT_BGM_SRC);
+      barBgm.loop = true;
+      barBgm.volume = bgmOutputVolumeForSource(BAR_BGM_OUTPUT_SCALE, activeBarBgmSrc());
+      ensureBarBgmContinuing();
+    }
+    if(battleBgm){
+      if(!battleBgmActive && battleBgm.getAttribute("src") !== BATTLE_BGM_SRC){
+        battleBgm.setAttribute("src", BATTLE_BGM_SRC);
+      }
+      battleBgm.loop = true;
+      battleBgm.volume = bgmOutputVolumeForSource(BATTLE_BGM_OUTPUT_SCALE, BATTLE_BGM_SRC);
+      ensureBattleBgmContinuing();
+    }
+    if(gekiatsuVideo){
+      if(gekiatsuVideo.getAttribute("src") !== GEKIATSU_VIDEO_SRC){
+        gekiatsuVideo.setAttribute("src", GEKIATSU_VIDEO_SRC);
+        gekiatsuVideo.load();
+      }
+      gekiatsuVideo.loop = false;
+      gekiatsuVideo.volume = movieOutputVolumeForSource(MOVIE_OUTPUT_SCALE, GEKIATSU_VIDEO_SRC);
+    }
+    applyCharacterVoiceOutputVolumes();
+    applyOumaAudioOutputVolumes();
+    updateAudioMuteButton();
+    renderSettingTable();
+  }
+
+  function applySettings(){
+    $("titleInput").value = settings.title;
+    $("settingSelect").value = String(settings.setting);
+    $("feeInput").value = SPIN_COST;
+    $("feeInput").readOnly = true;
+    if($("feeInput").previousElementSibling) $("feeInput").previousElementSibling.textContent = "1回転コスト";
+    $("stSpinsInput").value = 1;
+    $("stSpinsInput").readOnly = !!A_TYPE_MODE;
+    $("oddsMultiplierInput").value = settings.oddsMultiplier;
+    if($("smallMulInput")) $("smallMulInput").value = (A_TYPE_PAYOUTS.SMALL) / PAYOUT_BASE;
+    if($("midMulInput")) $("midMulInput").value = NovaArt.bonusTarget();
+    if($("crownMulInput")) $("crownMulInput").value = 0;
+    if($("cherryMulInput")) $("cherryMulInput").value = (2) / PAYOUT_BASE;
+    if($("bellMulInput")) $("bellMulInput").value = (A_TYPE_PAYOUTS.BELL) / PAYOUT_BASE;
+    if($("suikaMulInput")) $("suikaMulInput").value = ROLE_PAYOUTS.SUICA / PAYOUT_BASE;
+    if($("bigMulInput")) $("bigMulInput").value = NovaArt.bonusTarget();
+    if($("bigAddInput")) $("bigAddInput").value = NovaArt.bonusTarget();
+    $("autoDelayInput").value = settings.autoDelay;
+    if($("masterVolume")) $("masterVolume").value = settings.masterVolume;
+    if($("bgmVolume")) $("bgmVolume").value = settings.bgmVolume;
+    if($("sfxVolume")) $("sfxVolume").value = settings.sfxVolume;
+    if($("voiceVolume")) $("voiceVolume").value = settings.voiceVolume;
+    if($("payoutVolume")) $("payoutVolume").value = settings.payoutVolume;
+    if($("movieVolume")) $("movieVolume").value = settings.movieVolume;
+    if($("rogiMovieVolume")) $("rogiMovieVolume").value = settings.rogiMovieVolume;
+    syncAllVolumeNumberInputs();
+    readSettings();
+  }
+
+  function startSession(options={}){
+    if(isSpinning) return false;
+    if(session.active) return false;
+    if(sessionStartGuard) return false;
+    if(session.phase === "ended" && session.resultPayout !== null && session.resultPayout !== undefined){
+      hideSessionResultScreen();
+      session.phase = "idle";
+      session.resultPayout = null;
+      session.endSignal = null;
+
+    }
+
+    sessionStartGuard = true;
+    try{
+      stopBattleBgm(false);
+      stopGuaranteedSetStartLight();
+      devilZoneConfirmIntroPending = false;
+      hideDevilZoneConfirmScreen();
+      readSettings();
+      if(A_TYPE_MODE){
+        normalState.flow = normalState.flow?.phase==='art'?NovaArt.normalize(normalState.flow):NovaFlow.normalize(null);
+        const bonusKind = normalizeATypeBonusKind(options.bonusKind || normalState.bonusKind || "BIG");
+        const preparationUpperBonus=!!normalState.prepUpperBonus;
+        const bonusUpperAt=!!normalState.prepUpperAt;
+        const bonusTier=preparationUpperBonus?'upper':options.bonusTier===undefined?NovaArt.drawBonusTier():NovaArt.bonusTier(options.bonusTier);
+        const oneGameRenBonus = bonusKind === "BIG" && !!(options.oneGameRenBonus || normalState.oneGameRenBonus);
+        const premiumBonus = bonusKind === "BIG" && !oneGameRenBonus && !!(options.premiumBonus || normalState.premiumBonus);
+        const premiumTargetBonus = premiumBonus || oneGameRenBonus;
+        const premiumChainEligible = false;
+        const initialNormalBonus=normalState.flow.phase!=='art';
+        const impurityReleased=NovaNormal.normalize(normalState.internal).impurity>=100;
+        const bonusGuarantee=NovaNormal.claim(normalState.internal,premiumBonus);
+        bonusGuarantee.sets+=Number(normalState.prepSets)||0;
+        bonusGuarantee.zones.push(...(normalState.prepZones||[]));
+        clearBonusPreparationState();normalState.prepConfirmed=false;
+        normalState.internal=initialNormalBonus?NovaNormal.afterBonus(bonusGuarantee.state,Math.random,settings.setting):bonusGuarantee.state;
+        const bonusTarget = aTypeBonusTarget(bonusKind, premiumTargetBonus);
+        const bonusLabel = NovaArt.bonusLabel(bonusTier);
+        const hadPreviousBonus = (Number(stats.totalSessions) || 0) > 0;
+        const gamesSinceLastBonus = normalizeBonusAfterGames(Number.isFinite(Number(options.gamesSinceLastBonus))
+          ? Number(options.gamesSinceLastBonus)
+          : normalState.sinceBonus);
+        const risingResumeRemain = normalizeNovaRisingRemain(Number.isFinite(Number(options.risingResumeRemain))
+          ? Number(options.risingResumeRemain)
+          : normalState.risingRemain);
+        const risingBonusOrigin = options.risingBonusOrigin === undefined
+          ? !!normalState.risingBonusOrigin
+          : !!options.risingBonusOrigin;
+        const within50 = hadPreviousBonus && gamesSinceLastBonus <= 50;
+        const bonusBgm = pickATypeBonusBgm(bonusKind, within50, {premiumBonus, oneGameRenBonus, impurityReleased});
+        resetNormalModeAfterBonus();
+        pauseNormalBgm();
+        session = {
+          active:true,
+          remain:0,
+          fee:0,
+          cost:0,
+          paid:0,
+          hits:0,
+          added:0,
+          addedGames:0,
+          setNo:1,
+          stockSets:0,
+          barBgmSets:0,
+          nextSetBarBgm:false,
+          currentSetBarBgm:false,
+          continuationRate:0,
+          bigZone:0,
+          bigZoneType:"",
+          phase:"a_type_bonus",
+          bonusKind,
+          bonusTier,
+          bonusTarget,
+          bonusPointsRemaining:NovaArt.bonusTarget(bonusKind),
+          bonusArtSets:bonusGuarantee.sets,
+          bonusExtraStockVersion:NovaArt.bonusExtraStockRules.version,
+          bonusExtraStockReady:false,
+          bonusExtraStockTarget:0,
+          bonusExtraStockRemaining:0,
+          bonusExtraStockOffered:false,
+          bonusZones:bonusGuarantee.zones,
+          impurityReleased,
+          bonusStartGames:gamesSinceLastBonus,
+          risingResumeRemain,
+          risingBonusOrigin,
+          premiumBonus,
+          oneGameRenBonus,
+          bonusUpperAt,
+          premiumChainEligible,
+          bonusBgmSrc:bonusBgm.src || "",
+          battleRemain:0,
+          battleWin:false,
+          battleSource:"",
+          resultPayout:null,
+          endSignal:null
+        };
+        if(NovaArt.bonusStockEligible(session,normalState.flow))Object.assign(session,NovaArt.ensureBonusExtraStockPlan(session,Math.random));
+        // Anchor the displayed BB -> AT chain before the first BB BET, including
+        // a forced/debug BB that did not pass through bonusPending.
+        jagChainCount=chainCountStep(jagChainCount,true,Number(stats.totalPaid)||0,Number(stats.totalFee)||0).state;
+        jagLastBonusPayout = 0;
+        jagLastGamePayout = 0;
+        jagChanceHold = true;
+        stats.totalSessions++;
+        if(bonusTier==='upper')stats.upperBigCount=(Number(stats.upperBigCount)||0)+1;
+        recordSlumpPoint();
+        $("spinBtn").textContent = "BET";
+        showMessage(bonusLabel, `${aTypeBonusRemainingNet()}pt / ${impurityReleased?'穢れ解放！ AT＋特化ゾーン確定':premiumBonus?'フリーズ！ AT＋特化ゾーン確定':'ネビュラを狙え！ 図柄揃いでAT確定'}`);
+        if(bonusGuarantee.zones.length)log(`${impurityReleased?'穢れ解放 / ':''}${premiumBonus?'フリーズ / ':''}AT保証 / 特化予約：${bonusGuarantee.zones.map(z=>NovaArt.zoneName(z)).join('・')}`);
+        log(`${bonusLabel} BONUS開始：${aTypeBonusRemainingNet()}pt / 設定${settings.setting}${within50 ? " / 50G以内" : ""}`);
+        updateDisplay();
+        playATypeBonusBgm(bonusBgm);
+        persistState();
+        return true;
+      }
+
+    } finally {
+      sessionStartGuard = false;
+    }
+  }
+
+  function clearPendingAtStart(){
+    if(pendingAtStartTimer){
+      clearTimeout(pendingAtStartTimer);
+      pendingAtStartTimer = null;
+    }
+    pendingBonusStartOptions = null;
+    updateDevilStatusLamp();
+  }
+
+  function startBonusSessionNow(options={}){
+    if(globalThis.NovaPlayLimit&&isPlayLimitLocked())return;
+    const hasExplicitOptions = options && Object.keys(options).length > 0;
+    const startOptions = hasExplicitOptions
+      ? {...options}
+      : pendingBonusStartOptions
+        ? {...pendingBonusStartOptions}
+        : {};
+    setSpeedFrameOffHold(false);
+    stopSpeedToBonus("ボーナス開始のためSPEED停止");
+    clearPendingAtStart();
+
+    const started = startSession(startOptions);
+    if(started) scheduleNextAuto();
+    return started;
+  }
+
+  function queueBonusSessionStart(delayMs=450, options={}){
+    clearPendingAtStart();
+    const startOptions = {...options};
+    pendingBonusStartOptions = {...startOptions};
+    const waitAndStart = ()=>{
+      if(bonusConfirmSoundPlaying){
+        pendingAtStartTimer = setTimeout(waitAndStart, 120);
+        updateDevilStatusLamp();
+        if($("resultText")) $("resultText").textContent = "ボーナス確定音再生中...";
+        return;
+      }
+      if(isRogiThirdStopHoldActive()){
+        pendingAtStartTimer = setTimeout(waitAndStart, 150);
+        updateDevilStatusLamp();
+        return;
+      }
+      pendingAtStartTimer = null;
+      updateDevilStatusLamp();
+      startBonusSessionNow(startOptions);
+    };
+    pendingAtStartTimer = setTimeout(waitAndStart, Math.max(0, delayMs));
+    updateDevilStatusLamp();
+  }
+
+  function finishSession(){
+    const aTypeEnd = isATypeBonusActive();
+    const aTypeNet = aTypeEnd ? aTypeBonusNet() : 0;
+    const resultPayout = aTypeEnd ? aTypeNet : session.paid;
+    const endedBonusKind=session.bonusKind;
+    const wonArtSets=Number(session.bonusArtSets)||0;
+    const endedBonusUpperAt=!!session.bonusUpperAt;
+    const bonusStockSummary=NovaArt.bonusStockLabel(session,normalState.flow);
+    const wonZones=Array.isArray(session.bonusZones)?session.bonusZones:[];
+    const cashPaid=session.paid+(Number(session.replayRefund)||0);
+    const profit = cashPaid - (Number(session.cost) || 0);
+    const endedSets = session.setNo || 0;
+    const bonusLabel = aTypeEnd ? aTypeBonusLabel(session.bonusKind) : "";
+    const premiumOneGameRen = !!(
+      !A_TYPE_MODE && aTypeEnd &&
+      session.premiumChainEligible &&
+      !session.oneGameRenBonus &&
+      normalizeATypeBonusKind(session.bonusKind) === "BIG"
+    );
+    const carriedRisingRemain = normalizeNovaRisingRemain(session.risingResumeRemain);
+    const bonusFromRising = !!session.risingBonusOrigin;
+    const nextRisingRemain = aTypeEnd
+      ? (premiumOneGameRen
+        ? carriedRisingRemain
+        : pickNovaRisingRemainAfterBonus(carriedRisingRemain, bonusFromRising, settings.setting))
+      : 0;
+    const risingStatusText = aTypeEnd && !premiumOneGameRen && nextRisingRemain > 0
+      ? ` / RISING ${nextRisingRemain}G`
+      : "";
+    const settingVoiceAfterBonus = aTypeEnd ? pickSettingBonusEndVoiceSrc(settings.setting) : "";
+
+    if(aTypeEnd){
+      showMessage(`${bonusLabel}終了`, `獲得${resultPayout}pt / 払出${cashPaid}pt / BET${session.cost}pt${risingStatusText}`);
+      log(`${bonusLabel}終了：獲得${resultPayout}pt / 払出${cashPaid}pt / BET${session.cost}pt${risingStatusText}`);
+    }else if(A_TYPE_MODE){
+      showMessage("ボーナス終了", `獲得pt ${session.paid}pt`);
+      log(`ボーナス終了：獲得${session.paid}pt / 損益${formatSigned(profit)}pt`);
+    }
+    stopGekiatsuEffect(true);
+    hideBattleIntro();
+    devilZoneConfirmIntroPending = false;
+    hideDevilZoneConfirmScreen();
+
+    session.resultPayout = aTypeEnd ? null : resultPayout;
+    session.endSignal = null;
+    // UI/audio cleanup can redraw between BB ending and afterBonus(). Preserve
+    // its display baseline across that handoff; the final normal redraw resets it.
+    jagChainBonusHandoff=true;
+    session.active = false;
+    session.remain = 0;
+    session.stockSets = 0;
+    session.barBgmSets = 0;
+    session.nextSetBarBgm = false;
+    session.currentSetBarBgm = false;
+    session.bigZone = 0;
+    session.bigZoneType = "";
+    session.bonusKind = "";
+    session.bonusTarget = 0;
+    session.bonusExtraStockVersion = NovaArt.bonusExtraStockRules.version;
+    session.bonusExtraStockReady = false;
+    session.bonusExtraStockTarget = 0;
+    session.bonusExtraStockRemaining = 0;
+    session.bonusExtraStockOffered = false;
+    session.bonusStartGames = 0;
+    session.risingResumeRemain = 0;
+    session.risingBonusOrigin = false;
+    session.premiumBonus = false;
+    session.oneGameRenBonus = false;
+    session.bonusUpperAt = false;
+    session.premiumChainEligible = false;
+    session.bonusBgmSrc = "";
+    session.phase = (aTypeEnd || A_TYPE_MODE) ? "idle" : "ended";
+    session.battleRemain = 0;
+    session.battleWin = false;
+    session.battleSource = "";
+    jagChanceHold = false;
+    resetBonusEndSpecialEffects(true);
+    setSpeedFrameOffHold(false);
+    if(aTypeEnd){
+      const beforeBonusResume=normalState.flow;
+      normalState.flow = NovaFlow.afterBonus(normalState.flow,{...settings.novaArt,setting:settings.setting},wonArtSets);
+      if(endedBonusUpperAt&&normalState.flow?.phase==='art'){
+        normalState.flow=NovaArt.normalize({...normalState.flow,researchUpper:true,burstWon:true,dryEligible:false});
+      }
+      normalState.internal=NovaNormal.bonusEnd(normalState.internal,endedBonusKind,normalState.flow,{...settings.novaNormal,setting:settings.setting});
+      if(normalState.flow.phase==='normal'&&!premiumOneGameRen)NovaImpurityHint.queue(normalState,'bb-no-at');
+      resetNormalCountersAfterArt(beforeBonusResume,normalState.flow);
+      if(normalState.flow.phase==='art' && wonZones.length){
+        normalState.flow.queuedZones.push(...wonZones);
+        if(!normalState.flow.zone&&!normalState.flow.initialStage){const z=normalState.flow.queuedZones.shift();normalState.flow=NovaArt.startZone(normalState.flow,z,{...settings.novaArt,setting:settings.setting,allowUra:true});}
+      }
+      normalState.risingRemain = 0;
+      normalState.risingBonusOrigin = premiumOneGameRen ? bonusFromRising : false;
+      normalState.mode = nextRisingRemain > 0 ? "rising" : "normal";
+      if(!premiumOneGameRen && nextRisingRemain > 0){
+        log(`RISING開始：残り${nextRisingRemain}G`);
+      }
+    }
+    if(premiumOneGameRen){
+      normalState.bonusPending = true;
+      normalState.bonusKind = "BIG";
+      normalState.bonusSource = "BAR揃い1G連";
+      normalState.premiumBonus = false;
+      normalState.oneGameRenBonus = true;
+      normalState.bonusWaitGames = 1;
+      normalState.bonusHitGamesSince = 0;
+      jagChanceHold = true;
+      $("stLamp").classList.add("on");
+      showMessage("PBB 1G連待機", "次BETでBAR揃い / 2回目PBB");
+      log("PBB 1G連予約：次BETでBAR揃い");
+    }
+    normalState.pendingPremiumVoiceSrc = "";
+    normalState.pendingSettingVoiceSrc = settingVoiceAfterBonus;
+    if(settingVoiceAfterBonus) log("設定示唆ボイス予約：次GレバーON");
+    $("spinBtn").textContent = "BET";
+    jagLastBonusPayout = resultPayout;
+    if(aTypeEnd){
+      hideSessionResultScreen();
+      if($("resultText")) $("resultText").textContent = premiumOneGameRen
+        ? "PBB 1G連待機 / 次BETでBAR揃い"
+        : `${bonusLabel}終了 / 獲得${resultPayout}pt`;
+      showOverlay(premiumOneGameRen ? "PBB 1G連" : (nextRisingRemain > 0 ? `RISING ${nextRisingRemain}G` : "ボーナス終了"));
+    }else if(A_TYPE_MODE){
+      hideSessionResultScreen();
+      if($("resultText")) $("resultText").textContent = `ボーナス終了 / 獲得${resultPayout}pt`;
+      showOverlay("ボーナス終了");
+    }
+    if(resultPayout > 0 && !aTypeEnd){
+      confetti(70);
+      playWinSound(true);
+    }else if(!aTypeEnd){
+      playLoseSound();
+    }
+    if(aTypeEnd && !premiumOneGameRen){
+      showMessage(normalState.flow.phase === "art" ? (normalState.flow.initialStage?"AT準備開始":"AT復帰") : "通常へ", "今回 "+bonusStockSummary+" / "+NovaFlow.label(normalState.flow));
+      log("ボーナス終了："+bonusStockSummary+" / "+NovaFlow.label(normalState.flow));
+      showOverlay(normalState.flow.phase === "art" ? (normalState.flow.initialStage?"AT準備中":"AT") : "ボーナス終了");
+    }
+    if(aTypeEnd && !premiumOneGameRen && normalizeATypeBonusKind(endedBonusKind)==='BIG'){
+      displayNovaResult(NovaResults.bonus(resultPayout,normalState.flow,normalState.internal?.mode));
+    }
+    // A BB that returns to normal never became (or has just left) an AT chain.
+    // All AT continuations, including an upper-AT checkpoint and comeback, keep
+    // the original first-hit baseline until the real ART -> normal transition.
+    if(aTypeEnd && !premiumOneGameRen && normalState.flow?.phase!=='art')jagChainCount=null;
+    jagChainBonusHandoff=false;
+    if(globalThis.NovaPlayLimit)updatePlayLimitState();
+    updateDisplay();
+    persistState();
+  }
+
+  function consumeContinuationStockForBattle(){
+    if(!session.active || (session.stockSets || 0) <= 0) return false;
+    session.stockSets--;
+    if((Number(session.barBgmSets) || 0) > 0){
+      session.barBgmSets--;
+      session.nextSetBarBgm = true;
+    }else{
+      session.nextSetBarBgm = false;
+    }
+    return true;
+  }
+
+  function beginNextSet(label, overlayText, useGuaranteedLight=false){
+    const useBarBgmForSet = !!session.nextSetBarBgm;
+    session.nextSetBarBgm = false;
+    stopBattleBgm(false);
+    session.setNo = (session.setNo || 1) + 1;
+    session.remain = setGameCount();
+    session.phase = "st";
+    session.battleRemain = 0;
+    session.battleWin = false;
+    session.battleSource = "";
+    showMessage(label, `${session.setNo}SET / 残り${session.remain}G / STOCK${session.stockSets || 0} / 継続${formatRate(session.continuationRate)}`);
+    log(`${label}：${session.setNo}SET目 / 残りSTOCK${session.stockSets || 0}`);
+    showOverlay(overlayText || label);
+    queueDevilRushEntryEffect("continue");
+    if(useGuaranteedLight) flashGuaranteedSetStart();
+    else flashReelLight("rainbow", 1800);
+    session.currentSetBarBgm = useBarBgmForSet;
+    if(useBarBgmForSet) playBarBgm();
+    else playAtBgm();
+    playWinSound(false);
+    updateDisplay();
+    return true;
+  }
+
+  function startContinuationBattlePart(predecidedOutcome=null){
+    if(isATypeBonusActive()) return false;
+    if(!session.active || session.phase === "battle" || session.remain > 0 || isGoraiZoneActive()) return false;
+    session.phase = "battle";
+    session.battleRemain = CONTINUATION_BATTLE_GAMES;
+    session.battleSource = "";
+    session.nextSetBarBgm = false;
+    if(predecidedOutcome && typeof predecidedOutcome.win === "boolean"){
+      session.battleWin = !!predecidedOutcome.win;
+      session.battleSource = predecidedOutcome.source || "";
+      if(session.battleSource === "stock"){
+        consumeContinuationStockForBattle();
+      }
+    }else if(consumeContinuationStockForBattle()){
+      session.battleWin = true;
+      session.battleSource = "stock";
+    }else if(Math.random() < (session.continuationRate || 0)){
+      session.battleWin = true;
+      session.battleSource = "rate";
+    }else{
+      session.battleWin = false;
+    }
+    setBattleIntroContinueConfirmed(session.battleWin);
+    playBattleBgm();
+    showMessage("継続バトル", `${CONTINUATION_BATTLE_GAMES}G / 最終Gレア子役で復活抽選 / 継続${formatRate(session.continuationRate)}`);
+    log(`継続バトル開始：${session.setNo || 1}SET目 / ${session.battleSource || "継続未確定"} / 残りSTOCK${session.stockSets || 0}`);
+    updateDisplay();
+    return true;
+  }
+
+  function completeContinuationBattle(finalResult){
+    if(!session.active || session.phase !== "battle" || session.battleRemain > 0) return false;
+
+    if(!session.battleWin){
+      const revivalRate = revivalRateForResult(finalResult);
+      if(revivalRate > 0 && Math.random() < revivalRate){
+        session.battleWin = true;
+        session.battleSource = "revival";
+      }
+    }
+
+    if(!session.battleWin && consumeContinuationStockForBattle()){
+      session.battleWin = true;
+      session.battleSource = "stock";
+    }
+
+    if(session.battleWin){
+      if(session.battleSource === "stock") return beginNextSet("STOCK継続", "NEXT SET", true);
+      if(session.battleSource === "revival") return beginNextSet("復活ッッ！", "復活ッッ！", false);
+      return beginNextSet("継続ッッ！", "継続ッッ！", false);
+    }
+
+    $("resultText").textContent = "継続バトル敗北 / 終了";
+    finishSession();
+    return false;
+  }
+
+  function advanceBattleSetIfNeeded(finalResult="MISS"){
+    if(!session.active) return false;
+    if(session.phase === "battle") return completeContinuationBattle(finalResult);
+    if(session.remain > 0 || isGoraiZoneActive()) return false;
+    return startContinuationBattlePart();
+  }
+
+  function resolveOutcome(result){
+    if(isATypeBonusActive()){
+      return resolveATypeBonusOutcome(result);
+    }
+    const inGoraiZone = session.active && session.bigZone > 0;
+    const zoneType = inGoraiZone ? currentGoraiZoneType() : "";
+    const startZone = inGoraiZone ? {games:0, type:""} : startZoneForResult(result, zoneType);
+    const zoneSeven = inGoraiZone ? resolveZoneSevenBonus(result) : {sets:0, games:0, hit:false};
+    return {
+      reward: inGoraiZone ? ZONE_CHALLENGE_PAYOUT : rewardFor(result),
+      add: inGoraiZone ? 0 : stAddFor(result),
+      sets: inGoraiZone ? 0 : stockSetsForResult(result),
+      bigZone:startZone.games,
+      bigZoneType:startZone.type,
+      zoneGame: inGoraiZone,
+      zoneType,
+      zoneSets: inGoraiZone ? zoneSeven.sets : 0,
+      zoneStGames: inGoraiZone ? zoneSeven.games : 0,
+      zoneGameAdd:0,
+      zoneSevenHit:zoneSeven.hit
+    };
+  }
+
+  function stopGekiatsuEffect(immediate=true){
+    restoreBgmAfterRogiStopEffect();
+    if(gekiatsuHideTimer){
+      clearTimeout(gekiatsuHideTimer);
+      gekiatsuHideTimer = null;
+    }
+    const exec = ()=>{
+      gekiatsuActive = false;
+      speedBonusRogiHoldActive = false;
+      if(gekiatsuLayer) gekiatsuLayer.classList.remove("show", "solidMovie");
+      if(gekiatsuVideo){
+        try{
+          gekiatsuVideo.onended = null;
+          gekiatsuVideo.pause();
+          gekiatsuVideo.currentTime = 0;
+        }catch(e){}
+      }
+    };
+    if(immediate){
+      exec();
+    }else{
+      gekiatsuHideTimer = setTimeout(exec, 900);
+    }
+  }
+
+  function fadeOutGekiatsuEffect(){
+    restoreBgmAfterRogiStopEffect();
+    if(gekiatsuHideTimer){
+      clearTimeout(gekiatsuHideTimer);
+      gekiatsuHideTimer = null;
+    }
+    gekiatsuActive = false;
+    speedBonusRogiHoldActive = false;
+    if(gekiatsuVideo) gekiatsuVideo.onended = null;
+    if(gekiatsuLayer) gekiatsuLayer.classList.remove("show");
+    gekiatsuHideTimer = setTimeout(()=>{
+      if(gekiatsuLayer) gekiatsuLayer.classList.remove("solidMovie");
+      if(gekiatsuVideo){
+        try{
+          gekiatsuVideo.pause();
+          gekiatsuVideo.currentTime = 0;
+        }catch(e){}
+      }
+      gekiatsuHideTimer = null;
+    }, 260);
+  }
+
+  function startGekiatsuEffect(forced=false, videoSrc=GEKIATSU_VIDEO_SRC, logLabel="PREMIUM MOVIE", options={}){
+    if(!gekiatsuLayer || !gekiatsuVideo) return;
+    if(speedModeVisualsSuppressed() && !options.allowDuringSpeed) return;
+    if(gekiatsuHideTimer){
+      clearTimeout(gekiatsuHideTimer);
+      gekiatsuHideTimer = null;
+    }
+    if(options.muteBgm){
+      muteBgmForRogiStopEffect();
+    }
+    gekiatsuActive = true;
+    speedBonusRogiHoldActive = !!options.holdUntilEndOrBet;
+    gekiatsuLayer.classList.toggle("solidMovie", !!options.solid);
+    gekiatsuVideo.onended = null;
+    if(gekiatsuVideo.getAttribute("src") !== videoSrc){
+      gekiatsuVideo.setAttribute("src", videoSrc);
+      gekiatsuVideo.load();
+    }
+    gekiatsuVideo.loop = false;
+    gekiatsuVideo.muted = !!options.muted;
+    gekiatsuVideo.playsInline = true;
+    const videoVolumeScale = Number.isFinite(Number(options.volumeScale)) ? Number(options.volumeScale) : MOVIE_OUTPUT_SCALE;
+    gekiatsuVideo.volume = options.volumeGroup === "rogi"
+      ? rogiMovieOutputVolumeForSource(videoVolumeScale, videoSrc)
+      : movieOutputVolumeForSource(videoVolumeScale, videoSrc);
+    if(options.fadeOnEnd){
+      gekiatsuVideo.onended = fadeOutGekiatsuEffect;
+    }else if(options.holdUntilBet){
+      gekiatsuVideo.onended = ()=>restoreBgmAfterRogiStopEffect();
+    }
+    try{
+      gekiatsuVideo.currentTime = 0;
+      const p = gekiatsuVideo.play();
+      if(p && typeof p.catch === "function") p.catch(()=>{});
+    }catch(e){}
+    gekiatsuLayer.classList.add("show");
+    log(forced ? `強制${logLabel}` : logLabel);
+  }
+
+  function skipActiveEffects(){
+    if(currentSpin) currentSpin.effectsSkipped = true;
+    stopGekiatsuEffect(true);
+    hideBonusConfirmScreen();
+    clearReelVideos({forceReversePush:true});
+    hideBattleIntro();
+    log("演出をスキップ");
+  }
+
+  function presentedArtFlow(){return isSpinning&&currentSpin?.resolved?.zoneStartFlow||normalState.flow;}
+  function normalBgmSrc(){
+    if(session.active||!["cz","strong_cz"].includes(normalState.flow?.phase))normalState.czBgmFinished=false;
+    if(!session.active && normalState.flow?.phase==='art'){
+      const flow=presentedArtFlow();
+      if(flow.researchSortieLeft>0 || isSpinning&&currentSpin?.resolved?.researchSortie)return SORTIE_ZONE_BGM_SRC;
+      // Both challenges use the supplied track; pending upper entries keep the preceding music until BET.
+      if(flow.researchChallengeActive || isSpinning&&currentSpin?.resolved?.researchChallenge)return SORTIE_ZONE_BGM_SRC;
+      if(flow.initialStage==='zone'&&['kushuri_nito','kushuri','nito'].includes(flow.zone))return INITIAL_DUO_ZONE_BGM_SRC;
+      const zoneTracks = {sosuke:SOSUKE_ZONE_BGM_SRC,toto:TOTO_ZONE_BGM_SRC,urapi:URAPI_ZONE_BGM_SRC,sora:SORA_ZONE_BGM_SRC,giru:GIRU_ZONE_BGM_SRC,ouma:OUMA_ZONE_BGM_SRC};
+      if(atCheckpointStatus(flow,NovaProgress.snapshot(),currentGameProfit())?.gold)return NOVA_CHECKPOINT_BGM_SRC;
+      return zoneTracks[flow.zone] || (flow.researchUpper ? NOVA_UPPER_ART_BGM_SRC : NOVA_ART_BGM_SRC);
+    }
+    if(!session.active && ["cz","strong_cz"].includes(normalState.flow?.phase)){
+      const flow=normalState.flow;
+      // CZ is entered on the previous stop; start its BGM with the intro on BET.
+      const awaitingFirstBet=Number(flow.remaining)>0 && Number(flow.remaining)===Number(flow.totalGames) && !currentSpin?.resolved?.czIntro;
+      if(!awaitingFirstBet&&!normalState.czBgmFinished)return CZ_BGM_SRC;
+    }
+    if(speedToBonusActive && SPEED_BGM_SRC) return SPEED_BGM_SRC;
+    if(!session.active && isHighMode() && HIGH_MODE_BGM_SRC) return HIGH_MODE_BGM_SRC;
+    return DEFAULT_NORMAL_BGM_SRC;
+  }
+
+  function ensureNormalBgmSource(){
+    if(!bgm) return "";
+    // AUTO can request BGM after playback ends but before its ended event is handled.
+    if(bgm.getAttribute('src')===CZ_BGM_SRC&&bgm.ended)normalState.czBgmFinished=true;
+    const src = normalBgmSrc();
+    if(src && bgm.getAttribute("src") !== src){
+      bgm.setAttribute("src", src);
+      try{ bgm.load(); }catch(e){}
+    }
+    bgm.loop=src!==CZ_BGM_SRC;
+    bgm.onended=finishCzIntroBgm;
+    return src;
+  }
+
+  function finishCzIntroBgm(){
+    if(!bgm||bgm.getAttribute('src')!==CZ_BGM_SRC||session.active||!['cz','strong_cz'].includes(normalState.flow?.phase))return;
+    normalState.czBgmFinished=true;
+    persistState();
+    playNormalBgm();
+  }
+
+  function playNormalBgm(){
+    if(globalThis.NovaCzPresentation?.failureActive){pauseNormalBgm();return;}
+    if(globalThis.NovaPlayLimit&&isPlayLimitLocked())return;
+    if(globalThis.NovaCompletePresentation?.active)return;
+    if(globalThis.NovaRushConfirm?.active)return;
+    const initialDuoZone=NovaInitialDuo.eligible(presentedArtFlow());
+    if(normalState.resultCard || normalState.pendingZoneResult || normalState.ladderAwardPresentation || (NovaDirectAward.busy&&!initialDuoZone)){pauseNormalBgm();return;}
+    if(debugFastSpinActive) return;
+    if(session.active) return;
+    if(bonusConfirmBgmHold && !session.active) return;
+    // ブラウザの自動再生制限により、初回クリック/操作後に再生される
+    if(!bgm || barBgmActive || battleBgmActive) return;
+    try{
+      const src = ensureNormalBgmSource();
+      if(!src) return;
+      globalThis.NovaBeatLamps?.attach(bgm,getAudio());
+      bgm.volume = bgmOutputVolumeForSource(BGM_OUTPUT_SCALE, src);
+      if(bgm.paused){
+        bgm.play().catch(()=>{});
+      }
+    }catch(e){}
+  }
+
+  function pauseNormalBgm(){
+    if(!bgm) return;
+    try{
+      bgm.pause();
+    }catch(e){}
+  }
+
+  function playBarAudioSource(src, mode, logLabel){
+    if(globalThis.NovaCompletePresentation?.active)return;
+    if(globalThis.NovaRushConfirm?.active)return;
+    if(debugFastSpinActive) return;
+    if(!barBgm) return;
+    if(!src) return;
+    if(isContinuationBattleActive() || battleBgmActive) return;
+    try{
+      pauseNormalBgm();
+      barBgmActive = true;
+      barBgmMode = mode || "";
+      if(barBgm.getAttribute("src") !== src){
+        barBgm.setAttribute("src", src);
+        try{ barBgm.load(); }catch(e){}
+      }
+      globalThis.NovaBeatLamps?.attach(barBgm,getAudio());
+      barBgm.loop = true;
+      barBgm.volume = bgmOutputVolumeForSource(BAR_BGM_OUTPUT_SCALE, src);
+      if(barBgm.paused){
+        barBgm.play().catch(()=>{});
+        if(logLabel) log(logLabel);
+      }
+    }catch(e){}
+    updateDevilStatusLamp();
+  }
+
+  function playAtBgm(){
+    playBarAudioSource(AT_BGM_SRC, "at", "AT BGM再生");
+  }
+
+  function playBarBgm(){
+    playBarAudioSource(BAR_BGM_SRC, "bar", "BAR揃いBGM再生");
+  }
+
+  function pickATypeBonusBgm(kind="BIG", within50=false, options={}){
+    const normalized = normalizeATypeBonusKind(kind);
+    if(A_TYPE_MODE)return options.impurityReleased?{src:NOVA_IMPURITY_BGM_SRC,label:'穢れ解放BB BGM'}:{src:NOVA_BIG_BGM_SRC,label:'BIG BGM'};
+  }
+
+  function playATypeBonusBgm(bgmInfo){
+    if(!bgmInfo || !bgmInfo.src) return;
+    playBarAudioSource(bgmInfo.src, "a_type_bonus", `${bgmInfo.label}再生`);
+  }
+
+  function resumeSessionBgm(){
+    if(!session.active) return;
+    if(session.phase === "a_type_bonus"){
+      playATypeBonusBgm({src:session.bonusBgmSrc, label:"BONUS BGM"});
+      return;
+    }
+    if(session.currentSetBarBgm) playBarBgm();
+    else playAtBgm();
+  }
+
+  function activeBarBgmSrc(){
+    if(barBgmMode === "a_type_bonus") return session.bonusBgmSrc || "";
+    return barBgmMode === "bar" ? BAR_BGM_SRC : AT_BGM_SRC;
+  }
+
+  function playBattleBgm(){
+    if(globalThis.NovaCompletePresentation?.active)return;
+    if(debugFastSpinActive) return;
+    if(!battleBgm) return;
+    if(!BATTLE_BGM_SRC) return;
+    try{
+      pauseNormalBgm();
+      if(barBgmActive && barBgm){
+        barBgmActive = false;
+        barBgmMode = "";
+        barBgm.pause();
+        barBgm.currentTime = 0;
+        updateDevilStatusLamp();
+      }
+      battleBgmActive = true;
+      if(battleBgm.getAttribute("src") !== BATTLE_BGM_SRC){
+        battleBgm.setAttribute("src", BATTLE_BGM_SRC);
+      }
+      battleBgm.loop = true;
+      battleBgm.volume = bgmOutputVolumeForSource(BATTLE_BGM_OUTPUT_SCALE, BATTLE_BGM_SRC);
+      if(battleBgm.paused){
+        battleBgm.play().catch(()=>{});
+        log("継続バトルBGM再生");
+      }
+    }catch(e){}
+  }
+
+  function stopBattleBgm(resumeNormal=false){
+    battleBgmActive = false;
+    if(battleBgm){
+      try{
+        battleBgm.pause();
+        battleBgm.currentTime = 0;
+      }catch(e){}
+    }
+    if(resumeNormal){
+      if(session.active) resumeSessionBgm();
+      else playNormalBgm();
+    }
+    updateDevilStatusLamp();
+  }
+
+  function ensureBattleBgmContinuing(){
+    if(!battleBgmActive || !battleBgm) return;
+    if(!BATTLE_BGM_SRC) return;
+    try{
+      if(battleBgm.getAttribute("src") !== BATTLE_BGM_SRC){
+        battleBgm.setAttribute("src", BATTLE_BGM_SRC);
+      }
+      battleBgm.loop = true;
+      battleBgm.volume = bgmOutputVolumeForSource(BATTLE_BGM_OUTPUT_SCALE, BATTLE_BGM_SRC);
+      if(battleBgm.paused){
+        battleBgm.play().catch(()=>{});
+      }
+    }catch(e){}
+  }
+
+  function stopBarBgm(resumeNormal=false){
+    barBgmActive = false;
+    barBgmMode = "";
+    stopBarRainbowHold();
+    if(barBgm){
+      try{
+        barBgm.pause();
+        barBgm.currentTime = 0;
+      }catch(e){}
+    }
+    if(resumeNormal) playNormalBgm();
+    updateDevilStatusLamp();
+  }
+
+  function resetBonusEndSpecialEffects(resumeNormal=true){
+    restoreBgmAfterRogiStopEffect();
+    barBgmActive = false;
+    barBgmMode = "";
+    battleBgmActive = false;
+    barRainbowHold = false;
+    devilZoneConfirmIntroPending = false;
+    hideDevilZoneConfirmScreen();
+    stopGuaranteedSetStartLight();
+    clearReelLight(false);
+    if(barBgm){
+      try{
+        barBgm.pause();
+        barBgm.currentTime = 0;
+      }catch(e){}
+    }
+    if(battleBgm){
+      try{
+        battleBgm.pause();
+        battleBgm.currentTime = 0;
+      }catch(e){}
+    }
+    updateDevilStatusLamp();
+    if(resumeNormal) playNormalBgm();
+  }
+
+  function ensureBarBgmContinuing(){
+    if(!barBgmActive || !barBgm || battleBgmActive || isContinuationBattleActive()) return;
+    try{
+      const src = activeBarBgmSrc();
+      if(barBgm.getAttribute("src") !== src){
+        barBgm.setAttribute("src", src);
+        try{ barBgm.load(); }catch(e){}
+      }
+      globalThis.NovaBeatLamps?.attach(barBgm,getAudio());
+      barBgm.loop = true;
+      barBgm.volume = bgmOutputVolumeForSource(BAR_BGM_OUTPUT_SCALE, src);
+      if(barBgm.paused){
+        barBgm.play().catch(()=>{});
+      }
+    }catch(e){}
+  }
+
+  function fastAtAuditMessage(result, resolved){
+    if(!resolved?.artMessage || !/ゾーン終了|特化ゾーン確定|次のATセット|AT終了|直乗せ|ゾーン獲得|チャレンジ/.test(resolved.artMessage))return '';
+    const f=resolved.flowAfter;
+    return `[FAST][AT] ${result} / ${resolved.artMessage} / 残り${f?.remaining ?? 0}pt / 特化ストック${BigInt(f?.sets||0)+BigInt(f?.queuedZones?.length||0)}個`;
+  }
+
+  function displayNovaResult(card){
+    if(debugFastSpinActive)return;
+    if(NovaAim.busy){pauseNormalBgm();NovaAim.afterWin(()=>displayNovaResult(card));return;}
+    if(NovaDirectAward.deferResult(()=>displayNovaResult(card))){pauseNormalBgm();return;}
+    NovaDirectAward.clear();
+    NovaLadder.hide();
+    NovaAim.hide();
+    NovaInitialDuo.clear();
+    globalThis.NovaResultRecall?.remember(normalState,card);
+    normalState.resultCard=card;NovaResults.show(card);
+    if(card.kind==='bonus'||card.color==='mode')persistState(); // Also save a character revealed after a deferred win animation.
+    $('overlay')?.classList.remove('show');
+    pauseNormalBgm();
+    // Keep AUTO selected; its audio gate waits for the complete eyecatch before BET.
+    stopSpeedToBonus('リザルト表示');
+    playLockedBonusConfirmSound('assets/media/nova/result-eyecatch.wav',bgmOutputVolume(BGM_OUTPUT_SCALE));
+  }
+  function showSortieResultIfReady(){
+    const card=normalState.pendingSortieResult;
+    if(!card||debugFastSpinActive||isSpinning||NovaSortie.busy||bonusConfirmSoundPlaying)return false;
+    delete normalState.pendingSortieResult;
+    NovaSortie.clear();
+    displayNovaResult(card);
+    persistState();
+    return true;
+  }
+  function trackZoneResult(card,before,after){
+    const tracked=NovaResults.chain(normalState.zoneResultChain,before,after,card);
+    if(tracked.state)normalState.zoneResultChain=tracked.state;else delete normalState.zoneResultChain;
+    return tracked.card;
+  }
+  function applyNormalResult(result, resolved, lineRow=1){
+    try{
+    settleBellNavigationPenalty(resolved);
+    delete normalState.stockEntry; // An actual engine game invalidates any prior presentation ticket.
+    if(typeof debugFastSpinActive!=='undefined' && debugFastSpinActive){const audit=fastAtAuditMessage(result,resolved);if(audit)log(`${audit} / ${stats.totalSpins}G`);}
+    const completedLadderPresentation=normalState.ladderAwardPresentation?.started?normalState.ladderAwardPresentation:null;
+    playStrongNovaSound(result,resolved);
+    playWeakNovaSound(result,resolved);
+    playChanceSound(result,resolved);
+    if(A_TYPE_MODE && result==="REPLAY" && resolved.replayAccounting==="legacy")normalState.replayFree=true;
+    if(A_TYPE_MODE && resolved.aTypeBonusReady)jagChainBonusHandoff=true;
+    if(A_TYPE_MODE && resolved.normalInternal)normalState.internal=NovaNormal.normalize(resolved.normalInternal);
+    showCzPrelude(3,resolved);
+    const info = RESULT[result] || RESULT.MISS;
+    const modeAtStart = NovaFlow.label(resolved.flowBefore);
+    const lineText = result !== "MISS" ? `${lineName(lineRow)}ライン` : "";
+    const normalReward = Number(resolved.reward) || 0;
+    const normalRewardText = normalReward > 0 ? ` / +${normalReward}pt` : "";
+    jagLastGamePayout = normalReward;
+
+    if(resolved.flowBefore?.zero){
+      // 0G連は回転数に含めない。
+    }else if(resolved.highAtStart){
+      stats.highSpins = (Number(stats.highSpins) || 0) + 1;
+    }else{
+      stats.normalSpins = (Number(stats.normalSpins) || 0) + 1;
+    }
+
+    countRoleStat(result, !!(resolved.bonusReady || resolved.regReady));
+    NovaRoleCounter.record(stats,result,resolved);
+    NovaDataCounter.zone(stats,resolved.zoneStartFlow||resolved.flowBefore);
+    if(normalReward > 0){
+      stats.totalPaid = (Number(stats.totalPaid) || 0) + normalReward;
+      playPayoutSound(result, normalReward);
+      recordSlumpPoint();
+      updateCompleteTrialState("通常払い出し");
+    }
+    normalState.sinceBonus = normalizeBonusAfterGames(resolved.ceilingAfter);
+    if(A_TYPE_MODE){
+      normalState.flow = NovaFlow.normalize(resolved.flowAfter);
+      // Payout (including the internal navigation ledger) is settled above.
+      // Interrupt only at this completed-spin boundary, never during a stop.
+      if(!resolved.bonusHit&&!resolved.aTypeBonusReady)normalState.flow=NovaProgress.prepareCountdown(normalState.flow,currentGameProfit());
+      if(typeof resetOrdinaryAutoPacingAfterNormalReturn==='function')resetOrdinaryAutoPacingAfterNormalReturn(resolved.flowBefore,normalState.flow);
+      if(resolved.czCompleted&&!resolved.bonusHit&&!resolved.aTypeBonusReady&&normalState.flow.phase==='normal')NovaImpurityHint.queue(normalState,'cz-failed');
+      if(resolved.sortieFakeWon&&!debugFastSpinActive)normalState.pendingFakeSortie=(Number(normalState.pendingFakeSortie)||0)+1;
+      if(!debugFastSpinActive){const sortieCard=NovaResults.sortie(resolved.researchSortie,normalState.flow);if(sortieCard)normalState.pendingSortieResult=sortieCard;}
+      const zoneBefore=resolved.zoneStartFlow||resolved.flowBefore;
+      const zoneCard=trackZoneResult(resolved.comebackEvent==='entry'?null:NovaResults.transition(zoneBefore,normalState.flow,settings.setting),zoneBefore,normalState.flow);
+      if(zoneCard){
+        if(!debugFastSpinActive&&!normalState.flow.checkpointCountdown&&NovaLadder.eligible(resolved.flowBefore)){
+          normalState.ladderAwardPresentation={card:zoneCard,flow:resolved.flowBefore,started:false,promoted:result!=="MISS"};
+        }else displayNovaResult(zoneCard);
+      }
+      if(completedLadderPresentation){delete normalState.ladderAwardPresentation;displayNovaResult(completedLadderPresentation.card);}
+      let atResultCard=null;
+      if(resolved.flowBefore?.phase==='art'&&normalState.flow.phase==='normal'&&!resolved.bonusHit&&!resolved.aTypeBonusReady){
+        const acquired=chainCountStep(jagChainCount,true,Number(stats.totalPaid)||0,Number(stats.totalFee)||0).count;
+        // Keep the historical result draw so a visual change cannot shift the gameplay RNG stream.
+        NovaResults.pick('at','',settings.setting);
+        atResultCard={kind:'at',pt:String(acquired),accounting:'net'};
+        jagChainCount=null;
+        delete normalState.resultAtStartPaid;
+      }
+      resetNormalCountersAfterArt(resolved.flowBefore,normalState.flow);
+      if(atResultCard){
+        // Draw the mode first, preserving the existing game RNG order. The portrait uses separate visual randomness.
+        const hint=NovaResults.bonus(atResultCard.pt,normalState.flow,normalState.internal?.mode);
+        displayNovaResult({...atResultCard,character:hint.character,color:'mode',next:'通常'});
+      }
+      NovaDataCounter.zone(stats,normalState.flow);
+      normalState.risingRemain = 0;
+      normalState.mode = normalState.flow.phase;
+      if(!resolved.bonusPendingAtStart && (resolved.bonusHit || resolved.aTypeBonusReady)){
+        normalState.risingBonusOrigin = !!resolved.risingAtStart;
+      }
+    }
+
+    if(resolved.comebackEvent){
+      showMessage(resolved.artMessage,normalModeLabel());log(resolved.artMessage);
+      if(resolved.comebackEvent==='entry')showOverlay('引き戻しゾーン');
+      if(resolved.comebackEvent==='success')showOverlay('AT復活！');
+      return;
+    }
+    if(resolved.czPrelude?.enter){showMessage('CZ前兆','リール全消灯');log('CZ前兆：リール全消灯 / 次BETでCZ告知');return;}
+    if(A_TYPE_MODE && (resolved.czEntry || resolved.rtCompleted || (resolved.czCompleted && !resolved.bonusHit))){
+      if(resolved.artMessage){showMessage(resolved.artMessage,normalModeLabel());if(!resolved.czAnnounced)showOverlay(resolved.artMessage);log(resolved.artMessage);return;}
+      const message=resolved.czEntry ? (result === "STRONG_CZ" ? "強CZ突入" : "CZ突入") : resolved.rtCompleted ? "RT終了" : "CZ失敗";
+      showMessage(message, normalModeLabel()+normalRewardText);
+      log(message+" / "+normalModeLabel());
+      showOverlay(message);
+      return;
+    }
+    if(resolved.artMessage && !resolved.bonusHit && !resolved.aTypeBonusReady){
+      showMessage(resolved.artMessage,normalModeLabel());log(resolved.artMessage);
+      const ladderGain=Number(resolved.zoneAward)>0&&(NovaLadder.eligible(resolved.flowBefore)||NovaLadder.eligible(resolved.flowAfter));
+      if(!resolved.researchSortie&&!NovaDirectAward.amount(resolved)&&!ladderGain){
+        const e=resolved.researchChallenge;
+        showOverlay(e?(e.finished?(e.won?'上位AT確定！':'通常ATへ'):e.nextAim?'HOLD':e.priorAim?'継続':'残り'+e.left+'G'):resolved.artMessage);
+      }
+      return;
+    }
+    if(resolved.manualLineupMiss){
+      jagChanceHold = true;
+      normalState.bonusPending = true;
+      normalState.bonusKind = resolved.bonusKind || normalState.bonusKind || "BIG";
+      normalState.bonusSource = resolved.bonusSource || normalState.bonusSource || "BONUS確定";
+      normalState.premiumBonus = !!(resolved.premiumBonus || normalState.premiumBonus);
+      normalState.oneGameRenBonus = !!(resolved.oneGameRenBonus || normalState.oneGameRenBonus);
+      normalState.bonusWaitGames = Math.max(1, Number(normalState.bonusWaitGames) || 1);
+      $("stLamp").classList.add("on");
+      showMessage("目押し失敗", `${pendingBonusLabel()}を狙ってください / BONUS確定は持ち越し`);
+      log(`目押し失敗：${pendingBonusLabel()}揃い持ち越し`);
+      return;
+    }
+
+    if(resolved.bonusPreparationSpin && A_TYPE_MODE){
+      const role=resolved.preparationRole||result;
+      const won=resolved.bonusPreparationReward||NovaArt.drawBonusPreparationReward(role,settings.setting);
+      normalState.prepGames=Math.max(0,Math.floor(Number(normalState.prepGames)||0))+1;
+      normalState.prepSets=Math.max(0,Math.floor(Number(normalState.prepSets)||0))+Math.max(0,Math.floor(Number(won.sets)||0));
+      normalState.prepUpperBonus=!!(normalState.prepUpperBonus||won.upperBonus);
+      normalState.prepUpperAt=!!(normalState.prepUpperAt||won.upperAt);
+      if(replayGatedBonusPreparation()){
+        if(NovaArt.isPreparationStartReplay(role))normalState.prepReady=true;
+      }else normalState.prepLeft=Math.max(0,(normalState.prepLeft||0)-1);
+      if(won.upperBonus)log('ボーナス準備中：上位BIG昇格');
+      if(won.upperAt)log('ボーナス準備中：上位AT確定');
+      else if(won.atConfirmed)log('ボーナス準備中：AT確定／'+won.stockCount+'ストック');
+      showMessage('ボーナス準備中','');
+      return;
+    }
+    if(resolved.bonusWaitSpin){
+      jagChanceHold = true;
+      normalState.bonusWaitGames = Math.max(1, (Number(normalState.bonusWaitGames) || 0) + 1);
+      $("stLamp").classList.add("on");
+      showBonusConfirmScreen();
+      showMessage("BONUS確定", `${resolved.bonusSource} / 1G演出 / ハズレ / 次BETで${pendingBonusLabel()}揃い`);
+      log(`BONUS確定演出：${resolved.bonusSource} / 1Gハズレ / 次ゲーム${pendingBonusLabel()}揃い`);
+      flashReelLight("rainbow", 1800);
+      showOverlay("BONUS確定");
+      return;
+    }
+
+    if(resolved.aTypeBonusReady){
+      jagChanceHold = true;
+      jagLastBonusPayout = 0;
+      resetNormalModeAfterBonus();
+      $("stLamp").classList.add("on");
+      const isRegBonus = resolved.bonusKind === "MID" || result === "MID" || result === "MID_CHERRY";
+      const premiumBonus = !isRegBonus && !!(resolved.premiumBonus || resolved.oneGameRenBonus);
+      const bonusLabel = isRegBonus ? "RB" : aTypeBonusLabel("BIG", premiumBonus);
+      const bonusTarget = aTypeBonusTarget(isRegBonus ? "MID" : "BIG", premiumBonus);
+      const sourceText = resolved.bonusSource || "単独当選";
+      showMessage(`${bonusLabel}確定`, `${sourceText} / ${isRegBonus?75:150}pt / 特殊図柄揃いでATセット獲得`);
+      log(`${bonusLabel}確定：${sourceText} / ${isRegBonus?75:150}pt`);
+      flashReelLight("rainbow", result === "BIG" ? 2200 : 1800);
+      showOverlay(`${bonusLabel} BONUS`);
+      if(isRegBonus){
+        playRegConfirmSound();
+        confetti(45);
+
+      }else{
+        playSevenConfirmSound();
+        confetti(90);
+      }
+      return;
+    }
+
+    if(resolved.bar3PremiumReady){
+      jagChanceHold = true;
+      resetNormalModeAfterBonus();
+      $("stLamp").classList.add("on");
+      showMessage("BAR揃い", `${resolved.bonusSource} / BAR確定${lineText ? " / " + lineText : ""}`);
+      log(`BAR揃い：${resolved.bonusSource} / BAR確定`);
+      flashReelLight("rainbow", 2600);
+      showOverlay("BAR BONUS");
+      confetti(110);
+      playBarBgm();
+      startBarRainbowHold();
+      playWinSound(true);
+      return;
+    }
+
+    if(resolved.bonusReady){
+      jagChanceHold = true;
+      normalState.bonusPending = false;
+      normalState.bonusKind = "";
+      normalState.bonusSource = "";
+      normalState.premiumBonus = false;
+      normalState.bonusWaitGames = 0;
+      hideBonusConfirmScreen();
+      normalState.sinceBonus = 0;
+      $("stLamp").classList.add("on");
+      showMessage("7揃い", `${resolved.bonusSource} / BB確定${lineText ? " / " + lineText : ""}`);
+      log(`7揃い：${resolved.bonusSource} / BB確定`);
+      flashReelLight("rainbow", 2200);
+      showOverlay("BB BONUS");
+      confetti(90);
+      playSevenConfirmSound();
+      return;
+    }
+
+    if(resolved.regReady){
+      jagChanceHold = true;
+      jagLastBonusPayout = normalReward;
+      resetNormalModeAfterBonus();
+      $("stLamp").classList.add("on");
+      showMessage("REG", `${resolved.bonusSource} / +${normalReward}pt / 天井リセット / 天井まで${ceilingRemain()}G${lineText ? " / " + lineText : ""}`);
+      log(`REG揃い：${resolved.bonusSource} / +${normalReward}pt / 天井リセット`);
+      flashReelLight("rainbow", 1800);
+      showOverlay(`REG +${normalReward}pt`);
+      confetti(35);
+      playRegConfirmSound();
+      return;
+    }
+
+    if(applyReachMeBonusIfNeeded(result, resolved)){
+      return;
+    }
+
+    if(resolved.bonusHit){
+      if(A_TYPE_MODE){
+        const announced = !!(currentSpin && currentSpin.bonusAnnouncementLit);
+        jagChanceHold = announced || jagChanceHold || resolved.bonusSource === 'CZ全員点灯';
+        normalState.bonusPending = true;
+        normalState.bonusKind = resolved.bonusKind || "BIG";
+        normalState.bonusSource = resolved.bonusSource;
+        normalState.premiumBonus = (normalState.bonusKind === "BIG") && !!resolved.premiumBonus;
+        normalState.oneGameRenBonus = false;
+        normalState.bonusWaitGames = 1;
+        beginBonusPreparation({sets:resolved.czDirect?1:0,zones:resolved.czDirectZone?[resolved.czDirectZone]:[]});normalState.prepConfirmed=false;
+        normalState.bonusHitGamesSince = normalizeBonusAfterGames(resolved.gamesSinceLastBonusAtStart);
+        hideBonusConfirmScreen();
+        if(isChanceLampLit()) $("stLamp").classList.add("on");
+        const bonusLabel = pendingBonusLabel();
+        showMessage("BONUS確定", `${resolved.bonusSource} / ${lineText || "成立役なし"}${normalRewardText} / ボーナス準備開始`);
+        log(`BONUS確定：${resolved.bonusSource} / イラストランプ告知後にボーナス準備開始`);
+        if(isChanceLampLit()){
+          flashReelLight("rainbow", 2200);
+          showOverlay("BONUS確定");
+        }
+        return;
+      }
+
+    }
+
+    $("stLamp").classList.remove("on");
+    if(resolved.highAdd > 0){
+      showMessage("高確移行", `${modeAtStart} / ${info.name}${lineText ? " / " + lineText : ""}${normalRewardText} / 高確${normalState.highRemain}G / 天井まで${ceilingRemain()}G`);
+      log(`高確移行：${HIGH_MODE_GAMES}G / 契機 ${info.name}`);
+      flashReelLight("green", 1700);
+      showOverlay("高確");
+      playWinSound(false);
+      return;
+    }
+
+    if(result === "REPLAY"){
+      flashReelLight("blue", 1200);
+      showMessage(info.name, `${normalModeLabel()} / 天井まで${ceilingRemain()}G${lineText ? " / " + lineText : ""}${normalRewardText || " / 次回BET無料"}`);
+      showOverlay("REPLAY");
+      return;
+    }
+
+    if(result === "BELL3"){
+      flashReelLight("blue", 1200);
+      showMessage(info.name, `${normalModeLabel()} / 天井まで${ceilingRemain()}G${lineText ? " / " + lineText : ""}${normalRewardText || " / 次回BET無料"}`);
+      return;
+    }
+
+    const main = result === "MISS" ? modeAtStart : info.name;
+    showMessage(main, `${normalModeLabel()} / 天井まで${ceilingRemain()}G${lineText ? " / " + lineText : ""}${normalRewardText}`);
+    if(result === "MISS"){
+      playLoseSound();
+    }
+    }finally{if(A_TYPE_MODE){syncNovaProgress();NovaDecrement.observe(currentGameProfit());}}
+  }
+
+  function applyResult(result, resolved, lineRow=1){
+    try{
+    settleBellNavigationPenalty(resolved);
+    playStrongNovaSound(result,resolved);
+    playWeakNovaSound(result,resolved);
+    playChanceSound(result,resolved);
+    if(A_TYPE_MODE && result==="REPLAY" && resolved.replayAccounting==="legacy")normalState.replayFree=true;
+    const info = RESULT[result];
+    showCzLamp(3,resolved);
+    const reward = resolved.reward;
+    const replayRefund=A_TYPE_MODE && resolved.replayAccounting!=="legacy"?NovaArt.replayRefund(result,{zero:resolved.flowBefore?.zero}):0;
+    jagLastGamePayout = (Number(reward) || 0)+replayRefund;
+    const baseSets = resolved.sets || 0;
+    const zoneSets = resolved.zoneSets || 0;
+    const stGameAdd = (resolved.add || 0) + (resolved.zoneStGames || 0);
+    const zoneGameAdd = resolved.zoneGameAdd || 0;
+    const zoneWasActive = !!resolved.zoneGame;
+    const aTypeBonusSpin = currentSpin && currentSpin.aTypeBonusActiveAtStart;
+    if(resolved.aTypeBonusGame){
+      const firstAtWin=normalState.flow?.phase!=="art"&&!(Number(session.bonusArtSets)>0);
+      Object.assign(session,NovaArt.advanceBonus(session,!!resolved.artSetWon,reward,!!resolved.bonusExtraStockOffered));
+      session.bonusExtraStockOffered=false;
+      if(resolved.artSetWon){showOverlay(firstAtWin?"ネビュラ揃い AT確定":"上乗せ特化ゾーン獲得");log("ネビュラ揃い："+NovaArt.bonusStockLabel(session,normalState.flow));}
+    }
+
+    if(replayRefund){
+      session.replayRefund=(Number(session.replayRefund)||0)+replayRefund;
+      stats.totalPaid+=replayRefund;
+      updateCompleteTrialState("リプレイ3pt戻し");
+    }
+    if(reward > 0){
+      session.paid += reward;
+      jagLastBonusPayout = Math.max(0, Number(session.paid) || 0);
+      stats.totalPaid += reward;
+      playPayoutSound(result, reward, currentSpin);
+      updateCompleteTrialState("AT払い出し");
+    }
+
+    if(zoneWasActive && session.bigZone > 0){
+      session.bigZone = Math.max(0, session.bigZone - 1);
+    }
+
+    if(resolved.bigZone > 0){
+      const beforeZone = Number(session.bigZone) || 0;
+      session.bigZone = Math.max(beforeZone, resolved.bigZone);
+      if(resolved.bigZoneType && resolved.bigZone >= beforeZone){
+        session.bigZoneType = resolved.bigZoneType;
+      }
+    }
+
+    if(zoneGameAdd > 0){
+      session.bigZone = (session.bigZone || 0) + zoneGameAdd;
+    }
+
+    if((Number(session.bigZone) || 0) <= 0){
+      session.bigZoneType = "";
+    }
+
+    if(shouldStartDevilZoneConfirmIntro(result, resolved)){
+      devilZoneConfirmIntroPending = true;
+      showDevilZoneConfirmScreen("solid", devilZoneConfirmTypeForResult(result));
+    }else{
+      syncDevilZoneConfirmScreen();
+    }
+
+    if(stGameAdd > 0){
+      session.remain = (session.remain || 0) + stGameAdd;
+      session.addedGames = (session.addedGames || 0) + stGameAdd;
+    }
+
+    const stockAdd = baseSets + zoneSets;
+    if(stockAdd > 0){
+      session.stockSets = (session.stockSets || 0) + stockAdd;
+      session.added = (session.added || 0) + stockAdd;
+      if(result === "BAR3"){
+        session.barBgmSets = (session.barBgmSets || 0) + stockAdd;
+        session.currentSetBarBgm = true;
+      }
+    }
+    let continuationBoostText = "";
+    if(result === "BAR3"){
+      const boostedRate = Math.max(Number(session.continuationRate) || 0, BAR3_CONTINUATION_RATE);
+      session.continuationRate = boostedRate;
+      continuationBoostText = `継続${formatRate(boostedRate)}`;
+    }
+
+    const isHit = result !== "MISS" || reward > 0 || stockAdd > 0 || stGameAdd > 0 || zoneGameAdd > 0 || resolved.bigZone > 0;
+    if(isHit){
+      session.hits++;
+    }
+
+    if(!(A_TYPE_MODE && aTypeBonusSpin)){
+      countRoleStat(result, true);
+    }
+
+    recordSlumpPoint();
+
+    if(isHit){
+      $("stLamp").classList.add("on");
+      const rewardText = reward > 0 ? `+${reward}pt` : "";
+      const stockText = stockAdd > 0 ? `SET+${stockAdd}` : "";
+      const stGameText = stGameAddTextFor(result, stGameAdd);
+      const zoneGameAddText = zoneGameAdd > 0 ? `デビルゾーン+${zoneGameAdd}G` : "";
+      const zoneStartText = resolved.bigZone > 0 ? goraiZoneRemainText(resolved.bigZone, resolved.bigZoneType) : "";
+      const zoneRollText = zoneWasActive && resolved.bigZone <= 0 ? goraiZoneRemainText(session.bigZone, session.bigZoneType) : "";
+      const joinText = [rewardText, stockText, continuationBoostText, stGameText, zoneGameAddText, zoneStartText, zoneRollText].filter(Boolean).join(" / ");
+      const lineText = result !== "MISS" ? `${lineName(lineRow)}ライン` : "";
+      const phaseText = session.phase === "battle" ? battleRemainText() : `残り${session.remain}G`;
+      const battleText = aTypeBonusSpin
+        ? `${aTypeBonusLabel(session.bonusKind)} 残り${aTypeBonusRemainingNet()}pt / ${NovaArt.bonusStockLabel(session,normalState.flow)}`
+        : `${session.setNo || 1}SET / ${phaseText} / STOCK${session.stockSets || 0} / 継続${formatRate(session.continuationRate)}`;
+      const subText = [joinText, lineText, battleText].filter(Boolean).join(" / ");
+      const bonusOverlayText = [stockText, continuationBoostText, stGameText, zoneGameAddText].filter(Boolean).join(" ");
+      showMessage(info.name, subText);
+      log(`${info.name}：${subText}`);
+
+      if(resolved.zoneSevenHit){
+        flashReelLight("rainbow", 2200);
+        showOverlay(bonusOverlayText || "777");
+        confetti(95);
+        playSevenConfirmSound();
+      }else if(result === "BIG" || result === "MID" || isZoneEntryResult(result) || result === "SMALL"){
+        flashReelLight("rainbow", 2200);
+        if(result === "BIG" || result === "SUPER_DEVIL_ZONE"){
+          showOverlay("SUPER DEVIL ZONE");
+          confetti(95);
+          playSevenConfirmSound();
+        }else if(result === "MID" || result === "DEVIL_ZONE"){
+          showOverlay("DEVIL ZONE");
+          confetti(70);
+          playRegConfirmSound();
+        }else{
+          showOverlay(stockText || rewardText || "砂時計");
+          confetti(45);
+        }
+      }else if(result === "BAR3"){
+        showOverlay(bonusOverlayText || "+5SET 継続80%");
+        confetti(80);
+        playBarBgm();
+        startBarRainbowHold();
+      }else if(result === "BELL"){
+        flashReelLight("yellow", 1600);
+        showOverlay(bonusOverlayText || "BELL");
+        confetti(20);
+        if(reward <= 0) playWinSound(false);
+      }else if(result === "BELL3"){
+        flashReelLight("blue", 1200);
+        if(bonusOverlayText) showOverlay(bonusOverlayText);
+      }else if(result === "REPLAY"){
+        flashReelLight("blue", 1200);
+        showOverlay(bonusOverlayText || "REPLAY");
+      }else if(result === "SUICA"){
+        flashReelLight("green", 1600);
+        showOverlay(bonusOverlayText || "SUICA");
+        confetti(20);
+        playWinSound(false);
+      }else if(result === "CHERRY_ANY" || result === "CHERRY_DOUBLE" || result === "CHERRY_TRIPLE"){
+        flashReelLight("red", 1600);
+        if(bonusOverlayText){
+          showOverlay(bonusOverlayText);
+        }else if(reward > 0){
+          showOverlay("CHERRY");
+        }
+        confetti(35);
+        playWinSound(false);
+      }else{
+        if(stockAdd > 0) showOverlay("+" + stockAdd + "SET");
+        confetti(30);
+        if(!resolved.chanceSoundPlayed)playWinSound(false);
+      }
+      return;
+    }
+
+    $("stLamp").classList.remove("on");
+    const zoneRollText = zoneWasActive ? goraiZoneRemainText(session.bigZone, session.bigZoneType || resolved.zoneType) : "";
+    const phaseText = session.phase === "battle" ? battleRemainText() : `残り${session.remain}G`;
+    const battleText = aTypeBonusSpin
+      ? `${aTypeBonusLabel(session.bonusKind)} 残り${aTypeBonusRemainingNet()}pt / ${NovaArt.bonusStockLabel(session,normalState.flow)}`
+      : `${session.setNo || 1}SET / ${phaseText} / STOCK${session.stockSets || 0} / 継続${formatRate(session.continuationRate)}`;
+    showMessage("ハズレ", [zoneRollText, battleText].filter(Boolean).join(" / "));
+    playLoseSound();
+    }finally{if(A_TYPE_MODE){syncNovaProgress();NovaDecrement.observe(currentGameProfit());}}
+  }
+
+  // Presentation only: reflect existing audio gates without changing input locks.
+  function syncAudioWaitUi(){
+    const complete=isCompleteTrialLocked();
+    const waiting=!complete && !!(bonusEndBgmPlaying || bonusConfirmSoundPlaying || comebackIntroVoiceHold || !isSpinning && isCzIntroVoiceHolding());
+    const badge=$("novaAudioWait"),button=$("spinBtn");
+    if(badge)badge.hidden=!waiting;
+    if(!button)return;
+    const wasWaiting=button.dataset.audioWait==='true';
+    button.dataset.audioWait=String(waiting);
+    if(!waiting&&!wasWaiting)return;
+    const canStopNow=isSpinning&&spinCanStop&&!globalThis.NovaSortieAudioGate?.locked(currentSpin);
+    const wait=waiting||NovaSortie.busy||isSpinning&&!canStopNow;
+    button.textContent=complete&&!isSpinning?"COMPLETE":wait?"WAIT":canStopNow?"STOP":"BET";
+    button.classList.toggle("waiting",wait);
+    button.classList.toggle("stopReady",!wait&&canStopNow);
+    if(waiting)button.setAttribute('aria-label','WAIT 音声再生中');
+    else button.removeAttribute('aria-label');
+  }
+
+  function syncCabinetControlState(){
+    syncAudioWaitUi();
+    const canStopNow = !!(isSpinning && spinCanStop && !globalThis.NovaSortieAudioGate?.locked(currentSpin));
+    stopBtns.forEach((btn, i)=>{
+      if(!btn) return;
+      const reelStopped = !!(currentSpin && Array.isArray(currentSpin.stopped) && currentSpin.stopped[i]);
+      const reelLive = !!(canStopNow && !reelStopped && !currentSpin?.visualStopping?.[i] && globalThis.NovaStockEntry?.canStop?.(currentSpin,i)!==false);
+      btn.disabled = !reelLive;
+      btn.classList.toggle("is-reel-live", reelLive);
+      btn.classList.toggle("is-reel-stopped", !reelLive);
+      const part = document.querySelector(`[data-stop-part="${i}"]`);
+      if(part){
+        part.classList.toggle("is-reel-live", reelLive);
+        part.classList.toggle("is-reel-stopped", !reelLive);
+      }
+    });
+  }
+
+  function chainCountStep(previous,continuing,paid,fee){
+    if(!continuing)return {state:null,count:0};
+    const state=previous && Number.isFinite(previous.paid) && Number.isFinite(previous.fee) && paid>=previous.paid && fee>=previous.fee ? previous : {paid,fee,payoutVersion:1};
+    // Saved v1 baselines already include both ledgers; no history or estimate is needed.
+    return {state,count:Math.max(0,Math.floor((paid-state.paid)-(fee-state.fee)))};
+  }
+
+  function renderRemainingCounters(){
+    const spin=isSpinning?currentSpin:null;
+    NovaRemainingCounters.render(normalState.flow,{spin,checkpointStatus:atCheckpointStatus(normalState.flow,NovaProgress.snapshot(),currentGameProfit(),true),bonus:session.active,bonusRemaining:isATypeBonusActive()?aTypeBonusRemainingNet():undefined,bonusPending:normalState.bonusPending,
+      zoneResult:normalState.ladderAwardPresentation?.card||normalState.pendingZoneResult||normalState.resultCard,
+      czPrelude:normalState.internal?.prelude?.presentation==='reel'&&!spin?.resolved?.czPrelude?.announce});
+    if(spin&&!session.active){const node=$('novaFlowStatus');if(node)node.textContent=normalModeLabel();}
+  }
+
+  function syncUpperAtBackground(){
+    const resolved=isSpinning?currentSpin?.resolved:null;
+    const checkpoint=atCheckpointStatus(normalState.flow,NovaProgress.snapshot(),currentGameProfit());
+    globalThis.NovaCheckpointHint?.sync(!!checkpoint?.gold);
+    const atPrelude=!!(resolved?.atPrelude||normalState.flow?.atPrelude)&&!session.active&&!normalState.bonusPending&&!debugFastSpinActive;
+    const specialSpin=resolved&&!atPrelude&&!NovaUpperAtBackground.eligible(resolved.flowAfter,!!checkpoint?.gold);
+    NovaUpperAtBackground.sync(specialSpin||debugFastSpinActive||session.active||normalState.bonusPending||normalState.resultCard||normalState.pendingZoneResult||normalState.pendingSortieResult||normalState.ladderAwardPresentation||normalState.stockEntry||isCompleteTrialLocked()?null:presentedArtFlow(),!!checkpoint?.gold,atPrelude);
+  }
+
+  function syncSuperSpeedReelDisplay(){
+    globalThis.NovaSuperSpeedReels?.sync({active:superSpeedActive&&autoPlay,flow:normalState.flow,
+      bonus:session.active||normalState.bonusPending,spin:isSpinning?currentSpin:null,
+      blocked:!!(normalState.resultCard||normalState.pendingZoneResult||normalState.pendingSortieResult||
+        normalState.ladderAwardPresentation||['seven','ready'].includes(normalState.stockEntry?.stage)||
+        normalState.internal?.prelude?.presentation==='reel'||NovaCzPresentation.failureActive||isCompleteTrialLocked())});
+  }
+
+  function updateDisplay(){
+    globalThis.NovaSuperSpeedReels && syncSuperSpeedReelDisplay();
+    globalThis.NovaResultRecall?.sync({state:normalState,
+      eligible:canUsePlayState()&&!isSpinning&&!autoPlay&&!speedToBonusActive&&!debugFastSpinActive&&!isCompleteTrialLocked()&&!(globalThis.NovaPlayLimit&&isPlayLimitLocked())&&!bonusConfirmSoundPlaying&&!bonusEndBgmPlaying&&!pendingAtStartTimer&&!NovaSortie.busy&&!NovaAim.busy&&!NovaLadder.busy&&!NovaDirectAward.busy&&!NovaResults.editing&&!oumaPresentation&&!NovaCzPresentation.failureActive&&!document.getElementById('novaCzPush')?.matches(':not([hidden])'),
+      makeInitial:()=>NovaResults.bonus('0',{phase:'normal'},normalState.internal?.mode),
+      save:()=>persistState(),sound:()=>playOneShotSound('assets/media/nova/result-recall-push.mp3',sfxOutputVolume())});
+    NovaImpurityHint.syncRelease(session);
+    reconcilePlaySessionBaseline();
+    syncCompletePresentation();
+    showSortieResultIfReady();
+    renderRemainingCounters();
+    NovaStockEntry.show(!session.active&&!normalState.resultCard&&NovaStockEntry.matches(normalState.stockEntry,normalState.flow,NovaProgress.snapshot(),normalState.pendingFakeSortie)?normalState.stockEntry:null);
+    if(!debugFastSpinActive){
+      const pending=normalState.ladderAwardPresentation;
+      NovaLadder.sync(normalState.resultCard||session.active?null:pending?.flow||normalState.flow,isSpinning);
+      if(pending)NovaLadder.award(pending.card.pt,pending.started,pending.promoted);
+    }
+    if(normalState.resultCard&&!NovaResults.visible&&!NovaResults.editing)NovaResults.show(normalState.resultCard);
+    if(!isSpinning)showZoneRoulette(session.active?null:normalState.flow);
+    NovaComeback.sync(session.active||normalState.resultCard?null:normalState.flow,isSpinning);
+    if(!debugFastSpinActive)NovaInitialDuo.sync(session.active||normalState.resultCard?null:normalState.flow,isSpinning);
+    if(!isSpinning && $("spinBtn"))$("spinBtn").title=normalState.replayFree?"リプレイ：次回BET消費なし":"";
+    const active = session.active;
+    const profit = stats.totalPaid - stats.totalFee;
+
+    updateGoraiZoneGlow();
+    updateDevilStatusLamp();
+    updateReelFrameMode();
+    syncDevilZoneConfirmScreen();
+
+    const machineClass = "machine " + (active ? "active" : "normal") + (session.paid > 0 ? " win" : "");
+    if(machine.className!==machineClass)machine.className=machineClass;
+    if(reelArea){
+    }
+    const internal=NovaNormal.normalize(normalState.internal);
+    if($('novaImpurityCurrent'))$('novaImpurityCurrent').textContent='現在：'+Number(internal.impurity.toFixed(2))+'pt';
+    syncCzPreludeGlow(isSpinning?currentSpin?.resolved:null);
+    // Per-spin blackout is cleared by BET, never restored from a previous game's progress.
+    if($('novaInternalStatus'))$('novaInternalStatus').textContent='モード '+internal.mode+' / '+internal.games+'G（天井'+NovaNormal.ceiling(internal)+'G） / '+(internal.level==='high'?'高確（保証'+internal.highLeft+'G）':'低確')+ (normalState.flow?.phase==='art'?' / '+'AT '+(normalState.flow.atHigh?'高確（保証'+normalState.flow.atHighLeft+'G）':'低確'):'')+' / 穢れ'+internal.impurity+'pt / 特化予約 '+(session.active?(session.bonusZones||[]):(normalState.flow?.queuedZones||[])).map(z=>NovaArt.zoneName(z)).join('・');
+    const flowStatus=$("novaFlowStatus");
+    if(flowStatus){
+      const checkpointStatus=normalState.resultCard?.kind==='checkpoint'?{text:'スーパーノヴァチャレンジまで0pt',gold:true}:!session.active&&!normalState.bonusPending&&!normalState.resultCard&&!normalState.pendingZoneResult&&!normalState.ladderAwardPresentation&&!isCompleteTrialLocked()?atCheckpointStatus(normalState.flow,NovaProgress.snapshot(),currentGameProfit(),true):null;
+      flowStatus.textContent=session.active ? aTypeBonusLabel(session.bonusKind)+" 残り"+aTypeBonusRemainingNet()+"pt / "+NovaArt.bonusStockLabel(session,normalState.flow) : checkpointStatus?.text||normalModeLabel();
+      flowStatus.dataset.atCheckpoint=String(!!checkpointStatus?.gold);
+      flowStatus.dataset.phase=session.active?"bonus":NovaFlow.normalize(normalState.flow).phase;
+      document.body.dataset.gamePhase=flowStatus.dataset.phase;
+      document.body.dataset.burst=session.active?'':normalState.flow?.burstWon?'won':normalState.flow?.burstLeft?'challenge':normalState.flow?.burstPending?'pending':'';
+
+      document.body.dataset.bonusTier=session.active?NovaArt.bonusTier(session.bonusTier):'';
+      document.body.dataset.bonusAtConfirmed=String(!!(session.active&&(Number(session.bonusArtSets)>0||normalState.flow?.phase==='art')));
+      document.body.dataset.artZone=session.active?'':presentedArtFlow()?.zone||'';
+      document.body.dataset.artUra=String(!session.active&&!!presentedArtFlow()?.zone&&!!presentedArtFlow()?.ura);
+      document.body.dataset.totoColor=document.body.dataset.artZone==='toto'?(normalState.flow?.color||'white'):'white';
+    }
+    if(!isSpinning)NovaAim.syncAtWait(debugFastSpinActive||session.active||normalState.bonusPending||normalState.resultCard?null:normalState.flow);
+    syncUpperAtBackground();
+    $("modeTag").className = "modeTag " + ((active || isNovaRisingMode()) ? "active" : "");
+    $("modeTag").textContent = (active ? `${aTypeBonusLabel(session.bonusKind)} BONUS` : normalModeLabel());
+
+    if($("settingView")) $("settingView").textContent = settings.setting;
+    if($("settingViewLegacy")) $("settingViewLegacy").textContent = settings.setting;
+    if($("targetRtpView")) $("targetRtpView").textContent = targetRtpText();
+    if($("targetRtpViewLegacy")) $("targetRtpViewLegacy").textContent = targetRtpText();
+    if($("adminSettingView")) $("adminSettingView").textContent = settings.setting;
+    if($("adminTargetRtpView")) $("adminTargetRtpView").textContent = targetRtpText();
+    const stInfoText = (active
+        ? `${aTypeBonusLabel(session.bonusKind)} 残り${aTypeBonusRemainingNet()}pt / ${NovaArt.bonusStockLabel(session,normalState.flow)}`
+        : `${normalModeLabel()} / CZ・強CZ経由 / 1G ${SPIN_COST}pt`);
+    if($("stInfoView")) $("stInfoView").textContent = stInfoText;
+    if($("stInfoViewLegacy")) $("stInfoViewLegacy").textContent = stInfoText;
+    if($("adminStInfoView")) $("adminStInfoView").textContent = stInfoText;
+    const normalRoleMix = NovaNormal.normalRoleProbabilities(settings.setting);
+    const payoutScaleText = `通常BIG・上位BIGとも50pt / ネビュラ揃いでAT確定 / スイカ3pt / 弱チェリー・強チェリー2pt / 押し順ベル ${(normalRoleMix.NAVI_BELL*100).toFixed(2)}%（8pt） / 1枚役 ${(normalRoleMix.ONE_COIN*100).toFixed(1)}%（1pt） / リプレイ ${(normalRoleMix.REPLAY*100).toFixed(2)}%（3pt戻し・次回3pt BET） / 通常ベース30G`;
+    if($("payoutScaleView")) $("payoutScaleView").textContent = payoutScaleText;
+    if($("payoutScaleViewLegacy")) $("payoutScaleViewLegacy").textContent = payoutScaleText;
+    if($("adminPayoutScaleView")) $("adminPayoutScaleView").textContent = payoutScaleText;
+
+    const machineDisplay = machineDisplayStats();
+    if($("totalSpinsView")) $("totalSpinsView").textContent = machineDisplay.totalSpins || 0;
+    if($("totalSessionsView")) $("totalSessionsView").textContent = stats.totalSessions || 0;
+    if($("bigCountView")) $("bigCountView").textContent = machineDisplay.bigCount || 0;
+    if($("midCountView")) $("midCountView").textContent = (stats.upperBigCount) || 0;
+    const normalRoleDenominator = normalRoleStatDenominator();
+    if($("grapeCountView")) $("grapeCountView").textContent = countOddsText(stats.grapeCount, normalRoleDenominator);
+    if($("smallCountView")) $("smallCountView").textContent = countOddsText(stats.smallCount, normalRoleDenominator);
+    if($("bellCountView")) $("bellCountView").textContent = countOddsText(stats.bellCount, normalRoleDenominator);
+    if($("diagonalBellCountView")) $("diagonalBellCountView").textContent = countOddsText(stats.diagonalBellCount, normalRoleDenominator);
+    if($("replayCountView")) $("replayCountView").textContent = countOddsText(stats.replayCount, normalRoleDenominator);
+    if($("suikaCountView")) $("suikaCountView").textContent = countOddsText(stats.suikaCount, normalRoleDenominator);
+    if($("cherryCountView")) $("cherryCountView").textContent = countOddsText(stats.cherryCount, normalRoleDenominator);
+    if($("totalFeeView")) $("totalFeeView").textContent = stats.totalFee || 0;
+    if($("totalPaidView")) $("totalPaidView").textContent = stats.totalPaid || 0;
+    if($("totalProfitView")){
+      $("totalProfitView").textContent = formatSigned(profit);
+      $("totalProfitView").style.color = profit > 0 ? "var(--green)" : profit < 0 ? "var(--red)" : "var(--gold)";
+    }
+    if($("wdBigOdds")) $("wdBigOdds").textContent = machineDisplay.bigCount > 0 && machineDisplay.totalSpins > 0
+      ? `1/${(machineDisplay.totalSpins / machineDisplay.bigCount).toFixed(1)}`
+      : "-";
+    if($("wdRegOdds")) $("wdRegOdds").textContent = (stats.upperBigCount) > 0 && stats.totalSpins > 0
+      ? `1/${(stats.totalSpins / (stats.upperBigCount)).toFixed(1)}`
+      : "-";
+
+    const setText = (id, value)=>{
+      const el = $(id);
+      if(el && el.textContent!==String(value)) el.textContent = value;
+    };
+    const formatMeterDigits = (value, digits=3, max=(10 ** digits) - 1)=>{
+      const n = Math.max(0, Math.min(max, Math.round(Math.abs(Number(value) || 0))));
+      return String(n).padStart(digits, "0");
+    };
+    const formatCreditDifference = value=>{
+      const raw = Math.round(Number(value) || 0);
+      return `${raw < 0 ? "-" : ""}${formatMeterDigits(raw, 5, 99999)}`;
+    };
+    const displayCredit = playSessionCredit();
+    if(active)jagChainBonusHandoff=false;
+    // Once the first-hit baseline exists, presentation-only state changes must
+    // never re-anchor it. Actual AT exit and administrative resets clear it.
+    const chain=chainCountStep(jagChainCount,!!(jagChainCount||active||jagChainBonusHandoff||normalState.bonusPending||normalState.flow?.phase==='art'),Number(stats.totalPaid)||0,Number(stats.totalFee)||0);
+    jagChainCount=chain.state;
+    const displayCount=normalState.resultCard?.kind==='at'?Number(normalState.resultCard.pt)||0:chain.count;
+    const creditText = formatCreditDifference(displayCredit);
+    setText("jagCreditMeter", creditText);
+    $("jagCreditMeter").style.setProperty('font-size',`min(60cqh, ${90/creditText.length}cqw)`,'important');
+    const countText=String(displayCount).padStart(3,'0');
+    setText("jagCountMeter",countText);
+    $("jagCountMeter").style.setProperty('font-size',`min(60cqh, ${63/Math.max(3,countText.length)}cqw)`,'important');
+    $("jagCountMeter").setAttribute('aria-label',`初当たりからの手取り獲得 ${displayCount}pt`);
+    setText("jagGamePayoutMeter", formatMeterDigits(jagLastGamePayout, 3, 999));
+    const atCountText = stats.totalSessions || 0;
+    const stEmblem = $("wdStEmblem");
+    if(stEmblem){
+      stEmblem.classList.toggle("is-ceiling", !active && !normalState.bonusPending);
+      stEmblem.classList.toggle("is-bonus-pending", !active && normalState.bonusPending);
+      stEmblem.classList.toggle("is-profit", active && profit > 0);
+      if(A_TYPE_MODE){
+        if(stEmblem.innerHTML!=="A-TYPE<br>BONUS")stEmblem.innerHTML = "A-TYPE<br>BONUS";
+      }
+      updateDevilStatusLamp();
+    }
+    setText("wdCounterSt", "A");
+    setText("wdCounterBig", stats.bigCount || 0);
+    setText("wdCounterReg", (stats.upperBigCount) || 0);
+    setText("wdCounterGrape", stats.grapeCount || 0);
+    setText("wdCounterSmall", stats.smallCount || 0);
+    setText("wdCounterBell", stats.bellCount || 0);
+    setText("wdCounterDiagonalBell", stats.diagonalBellCount || 0);
+    setText("wdCounterSuika", stats.suikaCount || 0);
+    setText("wdCounterCherry", stats.cherryCount || 0);
+    setText("wdCounterReplay", stats.replayCount || 0);
+    updateRoleCounter(machineDisplay);
+    updateDataCounter(machineDisplay);
+    const setMirrorCell = (valueId, label, value)=>{
+      const valueEl = $(valueId);
+      if(!valueEl) return;
+      const labelEl = valueEl.parentElement ? valueEl.parentElement.querySelector("span") : null;
+      if(labelEl) labelEl.textContent = label;
+      valueEl.textContent = value;
+    };
+    if(A_TYPE_MODE){
+      setMirrorCell("wdMirrorSt", "TYPE", "A");
+      setMirrorCell("wdMirrorBig", "BB", stats.bigCount || 0);
+      setMirrorCell("wdMirrorReg", "上位BIG", (stats.upperBigCount) || 0);
+    }
+    const mirrorStCell = $("wdMirrorSt") ? $("wdMirrorSt").parentElement : null;
+    if(mirrorStCell) mirrorStCell.classList.toggle("zoneHold", active && isGoraiZoneActive());
+    setText("wdMirrorSpin", `${stats.totalSpins || 0}G`);
+    setText("wdMirrorProfit", formatSigned(profit));
+
+    const remainBig = $("stRemainBigView");
+    if(remainBig){
+      const sevenSegPanel = remainBig.closest(".sevenSegPanel");
+      if(sevenSegPanel) sevenSegPanel.classList.toggle("zoneHold", active && isGoraiZoneActive());
+      const label = document.querySelector(".sevenSegLabel");
+      if(A_TYPE_MODE){
+        if(active){
+          if(label) label.textContent = "残り";
+          remainBig.textContent = String(Math.max(0, Math.min(999, Math.round(aTypeBonusRemainingNet()))));
+        }else{
+          if(label) label.textContent = "BONUS";
+          remainBig.textContent = "A";
+        }
+        remainBig.classList.remove("idle");
+      }
+    }
+
+    const spinButton = $("spinBtn");
+    if(spinButton){
+      const sortieHold=NovaSortie.busy;
+      if(sortieHold||spinButton.dataset.sortieHold==='true')spinButton.disabled=sortieHold;
+      spinButton.dataset.sortieHold=String(sortieHold);
+      const canStopNow = spinCanStop && !globalThis.NovaSortieAudioGate?.locked(currentSpin);
+      spinButton.textContent = sortieHold ? "WAIT" : isSpinning ? (canStopNow ? "STOP" : "WAIT") : "BET";
+      spinButton.classList.toggle("waiting", sortieHold || isSpinning && !canStopNow);
+      spinButton.classList.toggle("stopReady", !sortieHold && isSpinning && canStopNow);
+      if(isCompleteTrialLocked() && !isSpinning){
+        spinButton.textContent = "COMPLETE";
+        spinButton.disabled = false; // Manual voice replay only; spin() still blocks gameplay.
+        stopBtns.forEach(b=>b.disabled=true);
+      }
+    }
+    syncCabinetControlState();
+
+    if($("quickAutoBtn")){
+      $("quickAutoBtn").textContent = autoPlay ? "STOP" : "AUTO";
+      $("quickAutoBtn").classList.toggle("on", autoPlay);
+      $("quickAutoBtn").disabled = (bonusEndBgmPlaying || bonusConfirmSoundPlaying) && !autoPlay;
+    }
+    if($("topAutoBtn")){
+      $("topAutoBtn").textContent = autoPlay ? "STOP" : "AUTO";
+      $("topAutoBtn").classList.toggle("on", autoPlay);
+      $("topAutoBtn").setAttribute("aria-pressed", autoPlay ? "true" : "false");
+      $("topAutoBtn").disabled = (isCompleteTrialLocked() || bonusEndBgmPlaying || bonusConfirmSoundPlaying) && !autoPlay;
+    }
+    updateSpeedToBonusUi();
+    if(globalThis.NovaPlayLimit)syncPlayLimitUi();
+    scheduleAdminStatePush();
+  }
+
+  function formatSigned(n){
+    return n >= 0 ? "+" + n : String(n);
+  }
+
+  function showMessage(main, sub){
+    $("message").textContent = NovaSortie.label(main);
+    $("subMessage").textContent = NovaSortie.label(sub);
+  }
+
+  function normalRoleStatDenominator(){
+
+    return (Number(stats.normalSpins) || 0) + (Number(stats.highSpins) || 0);
+  }
+
+  function updateDataCounter(machineDisplay){
+    if(!$('slumpPanel')?.classList.contains('novaCabinetData'))return;
+    NovaDataCounter.render($('novaDataCounter'),NovaDataCounter.display(stats,machineDisplayBase,playSessionStartStats),machineDisplay||machineDisplayStats());
+  }
+
+  function setDataGraphView(open){
+    const graph=document.querySelector('.slumpPublic'),history=$('novaHitHistory'),button=$('novaDataGraphToggle');
+    if(graph)graph.hidden=!open;
+    if(history)history.hidden=!!open;
+    if(button){button.setAttribute('aria-expanded',String(!!open));button.querySelector('span').textContent=open?'履歴':'グラフ';}
+    if(open)requestAnimationFrame(renderSlumpGraph);
+  }
+
+  function updateRoleCounter(machineDisplay=machineDisplayStats()){
+    const set=(id,value)=>{const el=$(id);if(el&&el.textContent!==String(value))el.textContent=value;};
+    const format=value=>(Number(value)||0).toLocaleString('ja-JP');
+    set('roleCounterTotalGames',format(machineDisplay.totalSpins));
+    const counted=NovaRoleCounter.display(stats,machineDisplayBase,playSessionStartStats);
+    set('roleCounterEligibleGames',format(counted.firstHitEligibleGames));
+    set('roleCounterAtCount',format(counted.firstHitAtCount));
+    set('roleCounterAtOdds',NovaRoleCounter.odds(counted.firstHitAtCount,counted.firstHitEligibleGames));
+    set('roleCounterBigCount',format(counted.firstHitBigCount));
+    set('roleCounterBigOdds',NovaRoleCounter.odds(counted.firstHitBigCount,counted.firstHitEligibleGames));
+    set('roleCounterNormalGames',format(counted.normalRoleGames));
+    const body=$('roleCounterSmallRows');
+    if(!body)return;
+    if(!body.children.length)body.innerHTML=NovaRoleCounter.roles.map(role=>`<tr><td>${role.label}</td><td id="roleCounter${role.id}Count">0</td><td id="roleCounter${role.id}Odds">—</td></tr>`).join('');
+    for(const role of NovaRoleCounter.roles){
+      set(`roleCounter${role.id}Count`,format(counted[role.key]));
+      set(`roleCounter${role.id}Odds`,NovaRoleCounter.odds(counted[role.key],counted.normalRoleGames));
+    }
+  }
+
+  function countOddsText(count, denominator=Number(stats.totalSpins) || 0){
+    const n = Number(count) || 0;
+    const total = Number(denominator) || 0;
+    if(n <= 0 || total <= 0) return `${n} / -`;
+    return `${n} / 1/${(total / n).toFixed(1)}`;
+  }
+
+  function renderRegDetailTable(){
+    const table = $("regDetailTable");
+    if(!table) return;
+
+    let html = '<tr><td>種類</td><td>選択率</td><td>獲得pt</td><td>AT期待度</td><td>ランプ</td></tr>';
+    for(const tier of ['normal','upper'])html += '<tr><td>'+NovaArt.bonusLabel(tier)+'</td><td>'+((tier==='upper'?NovaArt.bonusRules.upperRate:1-NovaArt.bonusRules.upperRate)*100)+'%</td><td>'+NovaArt.bonusTarget()+'pt</td><td>'+NovaArt.bonusRules[tier].atChance*100+'%</td><td>'+(tier==='upper'?'赤点滅':'白点滅')+'</td></tr>';
+    table.innerHTML = html;
+  }
+
+  function renderSettingTable(){
+    const table = $("settingTable");
+    if(!table) return;
+
+    if(A_TYPE_MODE){
+      let html = '<tr><td>状態</td><td>継続</td><td>契機</td><td>突入時期待度</td></tr>';
+      html += '<tr><td>CZ</td><td>15G固定</td><td>スイカ・弱チェリーなどから設定別抽選</td><td>設定ごとに変化（奇数は荒波、偶数は安定傾向）</td></tr>';
+      html += '<tr><td>強CZ</td><td>15G固定</td><td>強チェリー</td><td>設定ごとに変化・高確はBB保証</td></tr>';
+      html += '<tr><td>AT</td><td>初期300pt＋レア役加算</td><td>ボーナス中nebula・穢れ・フリーズ・CZ直撃等</td><td>通常／上位とも純増4pt/G</td></tr>';
+      table.innerHTML = html;
+      renderRegDetailTable();
+      return;
+    }
+  }
+
+  function resetGame(confirmFirst=true){
+    stopDebugFastSpin("初期化のため高速停止");
+    stopSpeedToBonus("初期化のためSPEED停止");
+    if(!confirm("統計と現在の状態を初期化しますか？")) return;
+    autoLastBetAt=null;autoPacingBudget=null;
+    clearCzIntroVoiceHold(true);
+    NovaAim.reset();
+    clearComebackIntroVoiceHold();
+    globalThis.NovaRushConfirm?.reset();
+    NovaCzPresentation.reset();
+    NovaImpurityHint.arm('');
+    NovaImpurityHint.hide();
+    NovaImpurityHint.syncRelease(null);
+    hideOverlay();
+    NovaInitialDuo.clear();
+    NovaBellNavi.clear();
+    NovaSortie.clear();
+    NovaStockEntry.hide();
+    NovaDirectAward.clear();
+    stopAutoPlay("初期化のためオート停止");
+    pauseNormalBgm();
+    stopBattleBgm(false);
+    stopBarBgm();
+    stopTransientPresentationAudio();
+    stopGekiatsuEffect(true);
+
+    hideBonusConfirmScreen();
+    devilZoneConfirmIntroPending = false;
+    hideDevilZoneConfirmScreen();
+    hideBattleIntro();
+    hideRogiContinuationBlackout();
+    hideSessionResultScreen();
+    clearReelVideos({forceReversePush:true});
+    stopGuaranteedSetStartLight();
+    spinIntervals.forEach(id=>clearInterval(id));
+    NovaReelMotion.clearAll();
+    clearOumaReverseAudio();
+    if(spinWaitTimer){
+      clearTimeout(spinWaitTimer);
+      spinWaitTimer = null;
+    }
+    clearPendingAtStart();
+    clearDevilRushEntryEffect();
+    spinCanStop = false;
+    resetReelSpinOffsets();
+    reels.forEach(r=>r.classList.remove("spinning"));
+    isSpinning = false;
+    currentSpin = null;
+    jagChainCount = null;
+    jagChainBonusHandoff = false;
+    NovaResults.hide();
+    stats = {totalSessions:0,atFirstCount:0,atFirstCountPartial:false,totalFee:0,totalPaid:0,totalSpins:0,normalSpins:0,highSpins:0,roleStatVersion:ROLE_STAT_COUNTER_VERSION,bigCount:0,midCount:0,upperBigCount:0,premiumBigCount:0,grapeCount:0,smallCount:0,bellCount:0,diagonalBellCount:0,replayCount:0,suikaCount:0,cherryCount:0,slumpHigh:0,slumpLow:0,slumpHistory:[{spin:0, profit:0}]};
+    slumpView = {xZoom:1,yZoom:1,seekStart:0,followEnd:true};
+    bonusConfirmBgmHold = false;
+    normalState = {internal:NovaNormal.reset(Math.random,settings.setting),mode:"normal",highRemain:0,risingRemain:0,risingBonusOrigin:false,sinceBonus:0,bonusPending:false,bonusKind:"",bonusSource:"",premiumBonus:false,oneGameRenBonus:false,bonusWaitGames:0,bonusHitGamesSince:0,reachMePending:false,reachMeBonusKind:"",reachMeBonusSource:"",reachMeHitGamesSince:0,reachMePrepSets:0,reachMePrepZones:[],pendingSettingVoiceSrc:"",pendingPremiumVoiceSrc:"",morningCeilingActive:false};
+    clearBonusPreparationState();
+    session = {active:false,remain:0,fee:0,cost:0,paid:0,hits:0,added:0,addedGames:0,setNo:0,stockSets:0,barBgmSets:0,nextSetBarBgm:false,currentSetBarBgm:false,continuationRate:0,bigZone:0,bigZoneType:"",phase:"idle",bonusKind:"",bonusTarget:0,bonusExtraStockVersion:NovaArt.bonusExtraStockRules.version,bonusExtraStockReady:false,bonusExtraStockTarget:0,bonusExtraStockRemaining:0,bonusExtraStockOffered:false,bonusStartGames:0,risingResumeRemain:0,risingBonusOrigin:false,premiumBonus:false,oneGameRenBonus:false,bonusUpperAt:false,premiumChainEligible:false,bonusBgmSrc:"",battleRemain:0,battleWin:false,battleSource:"",resultPayout:null,endSignal:null};
+    jagLastGamePayout = 0;
+    jagLastBonusPayout = 0;
+    jagChanceHold = false;
+    clearOumaPresentation();
+    showCzLamp(0,null);
+    completeTrialState = {locked:false,lockedSetting:0,rescueActive:false,completeProfit:0};
+    setSpeedFrameOffHold(false);
+    forceResult = "";
+    forcePremiumEffect = false;
+    pendingForceResult = "";
+    pendingATypeInternalBonus = null;
+    pendingPreparationRole = "";
+    resetControlInput();
+    $("forceResult").value = "";
+    if($("premiumForceStatus")) $("premiumForceStatus").value = "OFF";
+    $("stLamp").classList.remove("on");
+    setMorningBarReels();
+    showMessage("READY",`1回転${SPIN_COST}pt / BB・RB完全告知 / 設定${settings.setting}`);
+    $("resultText").textContent = "-";
+    machineDisplayBase=null;displaySinceBonusOffset=0;
+    updateDisplay();
+    persistState();
+    log("統計を初期化しました");
+    return true;
+  }
+
+  function resetRuntimeForMorning(reason="朝一リセット"){
+    autoLastBetAt=null;autoPacingBudget=null;
+    clearCzIntroVoiceHold(true);
+    NovaAim.reset();
+    clearComebackIntroVoiceHold();
+    globalThis.NovaRushConfirm?.reset();
+    NovaCzPresentation.reset();
+    NovaImpurityHint.arm('');
+    NovaImpurityHint.hide();
+    NovaImpurityHint.syncRelease(null);
+    hideOverlay();
+    NovaInitialDuo.clear();
+    NovaBellNavi.clear();
+    NovaSortie.clear();
+    NovaStockEntry.hide();
+    NovaDirectAward.clear();
+    NovaResults.hide();
+    stopDebugFastSpin(`${reason}のため高速停止`);
+    stopSpeedToBonus(`${reason}のためSPEED停止`);
+    stopAutoPlay(`${reason}のためAUTO停止`);
+    pauseNormalBgm();
+    stopBattleBgm(false);
+    stopBarBgm();
+    stopTransientPresentationAudio();
+    stopGekiatsuEffect(true);
+
+    hideBonusConfirmScreen();
+    devilZoneConfirmIntroPending = false;
+    hideDevilZoneConfirmScreen();
+    hideBattleIntro();
+    hideRogiContinuationBlackout();
+    hideSessionResultScreen();
+    clearReelVideos({forceReversePush:true});
+    stopGuaranteedSetStartLight();
+    spinIntervals.forEach(id=>clearInterval(id));
+    NovaReelMotion.clearAll();
+    clearOumaReverseAudio();
+    if(spinWaitTimer){
+      clearTimeout(spinWaitTimer);
+      spinWaitTimer = null;
+    }
+    clearPendingAtStart();
+    clearDevilRushEntryEffect();
+    spinCanStop = false;
+    resetReelSpinOffsets();
+    reels.forEach(r=>r.classList.remove("spinning"));
+    isSpinning = false;
+    currentSpin = null;
+    jagChainCount = null;
+    jagChainBonusHandoff = false;
+    stats = {totalSessions:0,atFirstCount:0,atFirstCountPartial:false,totalFee:0,totalPaid:0,totalSpins:0,normalSpins:0,highSpins:0,roleStatVersion:ROLE_STAT_COUNTER_VERSION,bigCount:0,midCount:0,upperBigCount:0,premiumBigCount:0,grapeCount:0,smallCount:0,bellCount:0,diagonalBellCount:0,replayCount:0,suikaCount:0,cherryCount:0,slumpHigh:0,slumpLow:0,slumpHistory:[{spin:0, profit:0}]};
+    slumpView = {xZoom:1,yZoom:1,seekStart:0,followEnd:true};
+    bonusConfirmBgmHold = false;
+    normalState = {internal:NovaNormal.reset(Math.random,settings.setting),mode:"normal",highRemain:0,risingRemain:0,risingBonusOrigin:false,sinceBonus:0,bonusPending:false,bonusKind:"",bonusSource:"",premiumBonus:false,oneGameRenBonus:false,bonusWaitGames:0,bonusHitGamesSince:0,reachMePending:false,reachMeBonusKind:"",reachMeBonusSource:"",reachMeHitGamesSince:0,reachMePrepSets:0,reachMePrepZones:[],pendingSettingVoiceSrc:"",pendingPremiumVoiceSrc:"",morningCeilingActive:!A_TYPE_MODE};
+    clearBonusPreparationState();
+    session = {active:false,remain:0,fee:0,cost:0,paid:0,hits:0,added:0,addedGames:0,setNo:0,stockSets:0,barBgmSets:0,nextSetBarBgm:false,currentSetBarBgm:false,continuationRate:0,bigZone:0,bigZoneType:"",phase:"idle",bonusKind:"",bonusTarget:0,bonusExtraStockVersion:NovaArt.bonusExtraStockRules.version,bonusExtraStockReady:false,bonusExtraStockTarget:0,bonusExtraStockRemaining:0,bonusExtraStockOffered:false,bonusStartGames:0,risingResumeRemain:0,risingBonusOrigin:false,premiumBonus:false,oneGameRenBonus:false,bonusUpperAt:false,premiumChainEligible:false,bonusBgmSrc:"",battleRemain:0,battleWin:false,battleSource:"",resultPayout:null,endSignal:null};
+    jagLastGamePayout = 0;
+    jagLastBonusPayout = 0;
+    jagChanceHold = false;
+    clearOumaPresentation();
+    showCzLamp(0,null);
+    completeTrialState = {locked:false,lockedSetting:0,rescueActive:false,completeProfit:0};
+    setSpeedFrameOffHold(false);
+    forceResult = "";
+    forcePremiumEffect = false;
+    pendingForceResult = "";
+    pendingATypeInternalBonus = null;
+    pendingPreparationRole = "";
+    resetControlInput();
+    if($("forceResult")) $("forceResult").value = "";
+    if($("premiumForceStatus")) $("premiumForceStatus").value = "OFF";
+    $("stLamp").classList.remove("on");
+    setMorningBarReels();
+    showMessage(reason, `設定${settings.setting}据え置き / 朝一リセット / 初回BBまで最大600G（C：400G／天国系：200G）`);
+    $("resultText").textContent = `朝一 / 初回BBまで最大600G（C：400G／天国系：200G）`;
+    machineDisplayBase=null;displaySinceBonusOffset=0;
+    persistState();
+    updateDisplay();
+    log(`[RESET] ${reason} / 設定${settings.setting} / Aタイプ通常`);
+    return true;
+  }
+
+  function morningResetGame(confirmFirst=true, reason="朝一リセット"){
+    const message = `設定はそのままで、朝一状態（初回BBまで最大600G。Cは400G、天国系は200G）に戻しますか？`;
+    if(confirmFirst && !confirm(message)) return false;
+    return resetRuntimeForMorning(reason);
+  }
+
+  function ensureMorningResetControl(){
+    if($("morningResetBtn") && $("tenKSimBtn") && $("fiftyKSimBtn")) return;
+    const anchor = $("debugFastStatus");
+    if(!anchor || !anchor.parentNode) return;
+    const row = document.createElement("div");
+    row.className = "row";
+    row.style.marginBottom = "8px";
+    row.innerHTML = `<button class="subBtn" id="morningResetBtn" type="button">朝一リセット</button>`;
+    const simBtn = document.createElement("button");
+    simBtn.className = "subBtn";
+    simBtn.id = "tenKSimBtn";
+    simBtn.type = "button";
+    simBtn.textContent = "1万回転試算";
+    row.appendChild(simBtn);
+    const fiftyKBtn = document.createElement("button");
+    fiftyKBtn.className = "subBtn";
+    fiftyKBtn.id = "fiftyKSimBtn";
+    fiftyKBtn.type = "button";
+    fiftyKBtn.textContent = "5万回転試算";
+    row.appendChild(fiftyKBtn);
+    const help = document.createElement("div");
+    help.className = "help";
+    help.style.margin = "-2px 0 10px";
+    help.textContent = `朝一リセット：設定はそのまま、モードを再抽選。初回BBまで最大600G（C：400G／天国系：200G）。BB後は通常のモード別天井。`;
+    anchor.insertAdjacentElement("afterend", help);
+    anchor.insertAdjacentElement("afterend", row);
+  }
+
+  function runTenKSimulation(){
+    return runCountSimulation(DEBUG_ONE_CLICK_SIM_SPINS);
+  }
+
+  async function runCountSimulation(targetSpins){
+    if(![10000,50000].includes(targetSpins)) return;
+    if(debugOneClickSimActive) return;
+    const label = `${targetSpins/10000}万回転試算`;
+    const tag = `[SIM${targetSpins}]`;
+    if(isSpinning){
+      showMessage(`${label}待機`, "現在の回転停止後に実行してください。");
+      return;
+    }
+
+    readSettings();
+    resetRuntimeForMorning(`${label}リセット`);
+    debugOneClickSimActive = true;
+    debugFastSpinActive = true;
+    debugFastSpinCount = 0;
+    updateDebugFastUi();
+
+    let spun = 0;
+    let safety = 0;
+    const safetyLimit = targetSpins * 12;
+    let failed = false;
+
+    try{
+      // Yield without drawing randomness so long trials remain stoppable.
+      await new Promise(resolve=>setTimeout(resolve,0));
+      while(debugFastSpinActive && spun < targetSpins && safety < safetyLimit && !isCompleteTrialLocked()){
+        safety++;
+        if(runDebugFastStep()){
+          spun++;
+          debugFastSpinCount = spun;
+        }
+        if(safety%250===0){
+          updateDebugFastUi();
+          showMessage(`${label}中`, `${spun.toLocaleString()} / ${targetSpins.toLocaleString()}G`);
+          await new Promise(resolve=>setTimeout(resolve,0));
+        }
+      }
+      if(safety>=safetyLimit && spun<targetSpins && !isCompleteTrialLocked()) throw new Error("ゲーム進行が停止したため試算を中断しました。");
+    }catch(e){
+      failed = true;
+      showMessage(`${label}エラー`, e && e.message ? e.message : String(e));
+      log(`${tag} ERROR ${e && e.message ? e.message : e}`);
+    }finally{
+      debugOneClickSimActive = false;
+      debugFastSpinActive = false;
+      updateDebugFastUi();
+      updateDisplay();
+      persistState();
+    }
+    if(failed) return;
+
+    const profit = currentProfit();
+    const rtpText = stats.totalFee > 0 ? `${(currentRtp() * 100).toFixed(2)}%` : "-";
+    if(isCompleteTrialLocked()){
+      showMessage(`${label} COMPLETE`, `${debugFastSpinCount}Gで打ち止め / 損益${formatSigned(profit)}pt / 機械割${rtpText}`);
+      $("resultText").textContent = `COMPLETE / ${debugFastSpinCount}G / ${formatSigned(profit)}pt`;
+      log(`${tag} COMPLETE / ${debugFastSpinCount}G / 損益${formatSigned(profit)}pt / 機械割${rtpText}`);
+    }else{
+      const status = spun===targetSpins ? "完了" : "中断";
+      showMessage(`${label}${status}`, `${debugFastSpinCount}G / 損益${formatSigned(profit)}pt / 機械割${rtpText}`);
+      $("resultText").textContent = `試算${status} / ${debugFastSpinCount}G / ${formatSigned(profit)}pt`;
+      log(`${tag} ${status} / ${debugFastSpinCount}G / 損益${formatSigned(profit)}pt / 機械割${rtpText}`);
+    }
+  }
+
+  const NOVA_LOGO_SRC = "assets/design/nova-cabinet-v1/lower-panel-original.webp";
+  const NOVA_SHEET_DATA = globalThis.NovaReelSheetData || null;
+  // NOVA aim wins use the approved horizontal BAR (NOVA artwork) layout.
+  // Keep the imported workbook snapshot intact and retain SUPER_NOVA semantics.
+  const NOVA_SHEET_STOPS = NOVA_SHEET_DATA?.stops
+    ? Object.freeze({...NOVA_SHEET_DATA.stops,SUPER_NOVA:NOVA_SHEET_DATA.stops.BAR3}) : null;
+  const NOVA_SHEET_ROLE_PROPERTY = "novaSheetRole";
+  const novaSheetFingerprint = grid => Array.isArray(grid) ? grid.map(row=>Array.isArray(row)?row.join("\u001f"):"").join("\u001e") : "";
+  const novaSheetRoleByFingerprint = new Map();
+  if(NOVA_SHEET_STOPS){
+    for(const [role,patterns] of Object.entries(NOVA_SHEET_STOPS)){
+      for(const pattern of patterns){
+        const fingerprint=novaSheetFingerprint(pattern),previous=novaSheetRoleByFingerprint.get(fingerprint);
+        // One documented replay layout is also listed under misses. Prefer the
+        // named winning role and never select that ambiguous layout as a miss.
+        if(!previous||previous==='MISS')novaSheetRoleByFingerprint.set(fingerprint,role);
+      }
+    }
+  }
+  function novaSheetRoleFromGrid(grid){
+    return grid?.[NOVA_SHEET_ROLE_PROPERTY] || novaSheetRoleByFingerprint.get(novaSheetFingerprint(grid)) || "";
+  }
+  function tagNovaSheetGrid(grid,role){
+    if(!Array.isArray(grid))return grid;
+    Object.defineProperty(grid,NOVA_SHEET_ROLE_PROPERTY,{value:role,configurable:true});
+    return grid;
+  }
+  function copyNovaSheetGrid(grid,role){
+    return tagNovaSheetGrid(grid.map(row=>row.slice()),role);
+  }
+  function novaSheetStopRole(result){
+    if(result==='STRONG_SUICA')return 'WEAK_SUICA';
+    if(['ONE_COIN','CHANCE_A','CHANCE_B'].includes(result))return 'MISS';
+    return NOVA_SHEET_STOPS?.[result]?.length?result:'';
+  }
+  function novaSheetStopChoices(result){
+    const role=novaSheetStopRole(result),patterns=role&&NOVA_SHEET_STOPS?.[role];
+    if(!patterns?.length)return null;
+    const choices=role==='MISS'
+      ? patterns.filter(grid=>novaSheetRoleByFingerprint.get(novaSheetFingerprint(grid))==='MISS')
+      : patterns;
+    // ONE_COIN deliberately borrows an approved miss layout. Keep only raw
+    // miss layouts whose five paylines contain no unrelated winning role;
+    // tagging still preserves the internal 1pt result without another draw.
+    return result==='ONE_COIN'
+      ? choices.filter(grid=>gridHasOnlyAllowedPaylines(copyNovaSheetGrid(grid,result),result))
+      : choices;
+  }
+  function novaSymbol(column, row){ return "NOVA_" + column + "_" + row; }
+  function novaGrid(){
+    const pattern=NOVA_SHEET_STOPS?.SUPER_NOVA?.[0];
+    if(pattern)return copyNovaSheetGrid(pattern,'SUPER_NOVA');
+    return [0,1,2].map(row => REEL_STRIPS.map(strip => strip[(strip.indexOf("BAR") + row - 1 + strip.length)%strip.length]));
+  }
+  function isNovaGrid(grid){ return !!(grid?.[1]?.length===3 && (grid[1].every(symbol=>symbol==='BAR') || grid[1][0]==='BAR'&&grid[1][2]==='BAR'&&grid?.[0]?.[1]==='BAR'&&grid?.[2]?.[1]==='BAR') || [0,1,2].every(row=>[0,1,2].every(column=>grid?.[row]?.[column]===novaSymbol(column,row)))); }
+  function novaPatternFromGrid(grid){
+    const sheetRole=novaSheetRoleFromGrid(grid);
+    if(['WEAK_NOVA','STRONG_NOVA','SUPER_NOVA'].includes(sheetRole))return sheetRole;
+    if(grid?.[1]?.length===3 && (grid[1].every(symbol=>symbol==='BAR') || grid[1][0]==='BAR'&&grid[1][2]==='BAR'&&grid?.[0]?.[1]==='BAR'&&grid?.[2]?.[1]==='BAR'))return 'SUPER_NOVA';
+    const leftRows=[0,2].filter(row=>grid?.[row]?.[0]===CHERRY_SYMBOL);
+    if(!leftRows.length)return '';
+    const strong=leftRows.some(row=>grid?.[1]?.[1]===CHERRY_SYMBOL&&grid?.[2-row]?.[2]===CHERRY_SYMBOL);
+    return strong?'STRONG_NOVA':'WEAK_NOVA';
+  }
+  function isNovaResult(result){
+    return ["WEAK_NOVA","STRONG_NOVA","SUPER_NOVA"].includes(result);
+  }
+  function drawSuperNovaBonus(){
+    const premium = Math.random() < 0.5;
+    return {kind:"BIG",premiumBonus:premium,superNovaOutcome:premium?"PREMIUM_BIG":"BIG",
+      source:premium?"スーパーノヴァ目 → BIG（AT確定）":"スーパーノヴァ目 → BIG",
+      internalResult:"SUPER_NOVA",gamesSinceLastBonusAtStart:normalizeBonusAfterGames(normalState.sinceBonus)};
+  }
+  function buildForcedNovaGrid(result,options={}){
+    // Preserve the former presentation draw count: weak/strong two, super zero.
+    const allSheetChoices=novaSheetStopChoices(result),left=options.autoMissBarBottom?autoReferenceLeftColumn(result):null;
+    const sheetChoices=left?allSheetChoices?.filter(grid=>left.every((symbol,row)=>grid?.[row]?.[0]===symbol)):allSheetChoices;
+    if(result==='SUPER_NOVA')return sheetChoices?.length?copyNovaSheetGrid(sheetChoices[0],result):novaGrid();
+    const first=Math.random(),second=Math.random(),key='cherry:'+result;
+    if(sheetChoices?.length)return copyNovaSheetGrid(sheetChoices[Math.floor(((first+second)%1)*sheetChoices.length)],result);
+    let choices=novaStopGridCache.get(key);
+    if(!choices){
+      choices=[];
+      const windows=REEL_STRIPS.map((strip,c)=>strip.map((_,top)=>reelWindowFromTopIndex(c,top)));
+      for(const l of windows[0])for(const m of windows[1])for(const r of windows[2]){
+        const grid=[0,1,2].map(row=>[l[row],m[row],r[row]]);
+        if(novaPatternFromGrid(grid)===result&&gridHasOnlyAllowedPaylines(grid,result))choices.push(grid);
+      }
+      if(!choices.length)throw new Error('No valid cherry stop for '+result);
+      novaStopGridCache.set(key,choices);
+    }
+    return choices[Math.floor(((first+second)%1)*choices.length)].map(row=>row.slice());
+  }
+  const NOVA_PATTERN_NAMES = {WEAK_NOVA:"弱チェリー",STRONG_NOVA:"強チェリー",SUPER_NOVA:"スーパーノヴァ目"};
+
+// Presentation only: crop transparent margins using an SVG viewport, preserving source art.
+function fullReelSymbolMarkup(src, className, label, x, y, width, height, sourceWidth, sourceHeight){
+  return `<svg class="symImg ${className} novaFullSymbol" viewBox="${x} ${y} ${width} ${height}" preserveAspectRatio="none" role="img" aria-label="${label}"><image href="${src}" width="${sourceWidth}" height="${sourceHeight}"/></svg>`;
+}
+
+  function cellHtml(symbol, label, cls){
+    if(symbol===NEBULA_SYMBOL)return fullReelSymbolMarkup(NEBULA_IMAGE_SRC,'nebulaSymImg','ネビュラ',19,0,1633,941,1672,941);
+    if(symbol==='BAR')return fullReelSymbolMarkup(BAR_IMAGE_SRC,'barSymImg','NOVA',0,27,2046,741,2046,768);
+    if(symbol==='7')return fullReelSymbolMarkup(SEVEN_IMAGE_SRC,'sevenSymImg','7',15,62,1643,865,1672,941);
+    const [src,className,alt]=REEL_SYMBOL_IMAGES[symbol]||REEL_SYMBOL_IMAGES[BLANK_SYMBOL];
+    return `<img class="symImg ${className}" src="${src}" alt="${alt}" loading="eager" decoding="sync" draggable="false">`;
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    if(SLOT_DEBUG_ENABLED){
+    const forceSelect=document.getElementById('forceResult');
+    for(const [size,label] of [['large','大・赤'],['medium','中・緑'],['small','小・青']]){
+      const option=document.createElement('option');option.value='IMPURITY_HINT_'+size;option.textContent='穢れ示唆 '+label+'（表示のみ）';forceSelect.append(option);
+    }
+    for(const [value,label] of [...['WIN_BLUE','WIN_RED','WIN_RAINBOW','MISS_BLUE','MISS_RED'].map(key=>['SORTIE_AIM_'+key,forceResultName('SORTIE_AIM_'+key)]),['ART','AT突入'],['SORTIE','出陣チャレンジ（10G・1回予約）'],['URA_CHALLENGE','スーパーノヴァチャレンジ（10G・HOLDあり）'],['COMEBACK','引き戻しゾーン（5G）'],...['ONE_COIN'].map(k=>[k,RESULT[k].name+'（外れ目停止形）']),...Object.keys(NovaNormal.rare).filter(k=>!isNovaResult(k)).map(k=>[k,RESULT[k].name]),['RARE','ATレア役'],...NovaArt.zoneIds.map(k=>['ZONE_'+k,NovaArt.zoneName(k)+'ゾーン'])]){const option=document.createElement('option');option.value=value;option.textContent=label;forceSelect.append(option);}
+    const impurityPanel=document.createElement('fieldset');impurityPanel.id='novaImpurityDebug';
+    impurityPanel.innerHTML='<legend>穢れポイント指定</legend><output id="novaImpurityCurrent"></output><label>穢れpt（0～100）<input id="novaImpurity" type="number" min="0" max="100" step="0.1" value="0"></label><div class="row"><button type="button" id="novaApplyImpurity">穢れポイントだけ適用</button></div><p id="novaImpurityFeedback" aria-live="polite">モード・回転数・AT状態は維持。100ptで次回BB解放。</p>';
+    forceSelect.closest('.field').before(impurityPanel);
+    $('novaImpurity').value=NovaNormal.normalize(normalState.internal).impurity;
+    $('novaImpurityCurrent').textContent='現在：'+$('novaImpurity').value+'pt';
+    $('novaApplyImpurity').onclick=()=>{
+      if(!SLOT_DEBUG_ENABLED)return;
+      const feedback=$('novaImpurityFeedback'),input=$('novaImpurity');
+      if(isSpinning){feedback.textContent='回転終了後に適用してください。';return;}
+      if(input.value.trim()===''||!Number.isFinite(input.valueAsNumber)||input.valueAsNumber<0||input.valueAsNumber>100){feedback.textContent='0～100の数値を入力してください。';return;}
+      normalState.internal={...normalState.internal,impurity:input.valueAsNumber};
+      const saved=persistState();updateDisplay();
+      feedback.textContent='穢れを'+input.valueAsNumber+'ptに変更しました。'+(saved?'保存済み。':'保存に失敗しました。');
+      log('デバッグ：穢れポイント指定 '+input.valueAsNumber+'pt');
+    };
+    const normalPanel=document.createElement('details');normalPanel.id='novaNormalConfig';
+    normalPanel.innerHTML='<summary>モード・規定GのCZ抽選・穢れ</summary><output id="novaInternalStatus"></output><label>モード<select id="novaNormalMode">'+NovaNormal.modes.map(mode=>'<option>'+mode+'</option>').join('')+'</select></label><label>天井カウンター<input id="novaNormalGames" type="number" min="0" max="800" value="0"></label><label>内部状態<select id="novaLevel"><option value="low">低確</option><option value="high">高確</option></select></label><button id="novaApplyInternal" type="button">内部状態を適用</button><p>通常はA800G、B700G、C400G、天国・天国ループ200GでBIG確定。リセット・設定変更後の初回BBまではA・Bを600Gに短縮し、C・天国系は通常の天井を維持します。通常＋CZのG数を数え、ボーナスごとにリセットしてモード昇格を抽選します。AT初当たりまでは降格なし。AT終了時にモードを再抽選します。50Gは天国系でガセCZ、天国系以外でも10%。全モード100GでCZに入り、ボーナス抽選は101Gから再開します。ガセCZはレア役でも成功しません。通常の弱レア役CZ抽選は従来の10%、強チェリーは101G以降に強CZ前兆へ。レア役からの出陣抽選は別に行います。穢れ100ptは次のボーナスで消費し、AT＋特化ゾーンを予約します。</p>';
+    NovaImpurityHint.mountDebug(normalPanel);
+    const diagnosis=document.createElement('details');diagnosis.id='novaRuntimeDiagnostics';
+    const diagnosisTitle=document.createElement('summary');diagnosisTitle.textContent='動作診断（読取専用）';
+    const diagnosisRefresh=document.createElement('button');diagnosisRefresh.type='button';diagnosisRefresh.textContent='待機理由と保存状態を確認';
+    const diagnosisOutput=document.createElement('pre');diagnosisOutput.style.whiteSpace='pre-wrap';
+    diagnosisRefresh.onclick=()=>{
+      const waits=globalThis.NovaRuntimeGates?.inspect()||[];
+      diagnosisOutput.textContent=(waits.length?waits.map(w=>w.label+'：観測開始から'+(w.elapsedMs/1000).toFixed(1)+'秒').join('\n'):'演出待ちなし')+'\nAUTO：'+(autoPlay?'ON':'OFF')+'\n'+(stateStorageWriter?JSON.stringify(stateStorageWriter.metrics()):'保存診断：未記録');
+    };
+    diagnosis.append(diagnosisTitle,diagnosisRefresh,diagnosisOutput);forceSelect.closest('.field').before(diagnosis);
+    const impurityRulesNote=document.createElement('p');impurityRulesNote.textContent='穢れ加算：CZ連続失敗1～2回目1pt／3～4回目5pt／5回目以降10pt。BB連続AT非突入1～2回目3pt／3～4回目8pt／5回目以降15pt。400Gで2pt、600Gで3pt、天井5pt、AT駆け抜け5pt。設定4のみ各加算70%。CZ連敗はBB、BB非突入連続回数はAT突入でリセット。';normalPanel.append(impurityRulesNote);
+    const resetTable=document.createElement('div');resetTable.innerHTML='<table><tr><th>設定</th>'+NovaNormal.resetImpurityPoints.map(pt=>'<th>'+pt+'pt</th>').join('')+'</tr>'+NovaNormal.resetImpurityWeights.map((row,i)=>'<tr><td>'+(i+1)+'</td>'+row.map(w=>'<td>'+w+'%</td>').join('')+'</tr>').join('')+'</table>';normalPanel.append(resetTable);
+    const nc=NovaNormal.config(settings.novaNormal);for(const [k,v]of Object.entries(nc).filter(([k])=>!['bandMultiplier','regChainGain','czFailureGain','bonusFailureGain','atDryGain','ceilingGain'].includes(k))){const label=document.createElement('label');label.textContent=({highMultiplier:'高確CZ倍率',downMiss:'ハズレ降格率',downReplay:'リプレイ降格率',czFailureGain:'CZ失敗の穢れpt',bonusFailureGain:'ボーナスAT非突入の穢れpt',atDryGain:'AT駆け抜けの穢れpt',ceilingGain:'天井到達の穢れpt',superDenom:'通常スーパーノヴァ目分母'})[k];const input=document.createElement('input');input.type='number';input.step='any';input.value=v;input.dataset.normalConfig=k;label.append(input);normalPanel.append(label);}
+    const roleCzTable=document.createElement('div');roleCzTable.id='novaRoleCzTable';
+    const renderRoleCzTable=()=>{roleCzTable.innerHTML='<p>各小役成立時のCZ当選率（低確／高確）</p><table><tr><th>設定</th>'+Object.keys(NovaNormal.rare).map(role=>'<th>'+RESULT[role].name+'</th>').join('')+'</tr>'+[1,2,3,4,5,6].map(setting=>'<tr><td>'+setting+'</td>'+Object.keys(NovaNormal.rare).map(role=>'<td>'+['low','high'].map(level=>(NovaNormal.roleCzRate({level},role,setting,settings.novaNormal)*100).toFixed(2)+'%').join('／')+'</td>').join('')+'</tr>').join('')+'</table>';};renderRoleCzTable();normalPanel.append(roleCzTable);
+    const balanceCzTable=document.createElement('div');balanceCzTable.id='novaBalanceCzTable';
+    balanceCzTable.innerHTML='<p>偶奇バランス詳細（管理・デバッグのみ）。入口は共通の基礎抽選へ掛ける補正、突破率は15G固定CZの基本成功率です。</p><table><tr><th>設定</th><th>タイプ</th><th>規定G入口補正</th><th>レア役入口補正</th><th>規定G CZ</th><th>レア役 CZ</th><th>強CZ（基本）</th><th>強CZ（レア役）</th></tr>'+[1,2,3,4,5,6].map(setting=>{const profile=NovaTuning.balanceProfile(setting),style=profile.style==='rough'?'荒波':'安定';return '<tr><td>'+setting+'</td><td>'+style+'</td><td>×'+profile.gameCzEntry.toFixed(2)+'</td><td>×'+profile.rareCzEntry.toFixed(2)+'</td><td>'+(profile.gameCzSuccess*100).toFixed(2)+'%</td><td>'+(profile.rareCzSuccess*100).toFixed(2)+'%</td><td>'+(profile.strongCzSuccess*100).toFixed(2)+'%</td><td>'+(profile.strongRareSuccess*100).toFixed(2)+'%</td></tr>';}).join('')+'</table>';
+    normalPanel.append(balanceCzTable);
+    const saveNormal=document.createElement('button');saveNormal.textContent='通常設定を保存';saveNormal.onclick=()=>{const c={};normalPanel.querySelectorAll('[data-normal-config]').forEach(x=>c[x.dataset.normalConfig]=x.valueAsNumber);settings.novaNormal=NovaNormal.config(c);renderRoleCzTable();refreshRtpViews();saveNormal.textContent=persistState()?'通常設定を保存しました':'保存に失敗しました';};normalPanel.append(saveNormal);
+    document.getElementById('saveFlowConfig').closest('details').after(normalPanel);
+    document.getElementById('novaApplyInternal').onclick=()=>{if(isSpinning||session.active)return;normalState.internal=NovaNormal.normalize({mode:$('novaNormalMode').value,games:$('novaNormalGames').value,modeChecked:Math.floor(Number($('novaNormalGames').value)/100),fiftyChecked:Number($('novaNormalGames').value)>=50,level:$('novaLevel').value,highLeft:$('novaLevel').value==='high'?10:0,impurity:NovaNormal.normalize(normalState.internal).impurity});persistState();updateDisplay();};
+    const artPanel=document.createElement('details');artPanel.id='novaArtConfig';
+    artPanel.innerHTML='<summary>AT・特化ゾーン設定</summary><p>初当たりは開始リプレイ成立まで準備（平均3.00G）→赤7→ルーレット→くしゅり＆にと3G。準備中の純増は平均＋1.2pt/Gです。新規ATの初期ptは全設定共通で300pt＋レア役加算です。ATレベルはありません。通常ATは8pt／15ptベルで純増4pt/G、上位AT中は15ptベルで純増4pt/G。上位の直乗せ当選時ptは通常の1.5倍。スイカ・弱チェリーは共通の上乗せ抽選と15%の高確移行、強チェリーは直乗せのみ20%／特化のみ20%／両方20%です。</p><p>出陣はスイカ・弱チェリー・強チェリー成立時の低確率抽選。当選で特化ゾーン確定、突入時はネビュラを狙え（追加BETなし）。フリーズ告知はありません。出陣は10G、ストック率10／25／40／60／80%を抽選し、最低2個を獲得。初当たりの5%はスーパーノヴァチャレンジ（突破50%）。レア役契機・累計差枚＋2,400ptごとのチャレンジは突破65%。10Gでベル・リプレイ・レア役はHOLD、次Gでノヴァを狙え。レア役は突破確定。差枚契機では残りpt・未消化ストックをリセットし、成否とも特化1個で再開します。到達点はAT終了後も引き継ぎます。</p>';
+    const commonTable=document.createElement('div');
+    commonTable.innerHTML='<p>スイカ・弱チェリーの反応率は全設定共通。反応後の報酬品質と、2個目以降の特化ゾーン倍率に偶奇の性格差を付けます。品質の並びは「10pt相当／50pt相当／弱特化相当／強特化相当／超特化相当」です。</p><table><tr><th>設定</th><th>タイプ</th><th>ベース G/50pt</th><th>弱役反応率</th><th>弱役報酬品質</th><th>2個目以降の特化倍率（選択率）</th><th>出陣：差枚0以下<br>弱／強</th></tr>'+[1,2,3,4,5,6].map(n=>{const profile=NovaTuning.balanceProfile(n),style=profile.style==='rough'?'荒波':'安定',base=(50/(3*(1-NovaNormal.normalRoleProbabilities(n).REPLAY)-Object.entries(NovaNormal.normalRoleProbabilities(n)).reduce((sum,[role,p])=>sum+p*NovaNormal.pay(role==='NAVI_BELL'?'BELL':role),0))).toFixed(2),quality=profile.weakQuality.map(value=>value.toFixed(1)+'%').join('／'),repeat=profile.repeatZone.values.map((value,index)=>'×'+value.toFixed(2)+' ('+(profile.repeatZone.weights[index]*100).toFixed(1)+'%)').join('／');return '<tr><td>'+n+'</td><td>'+style+'</td><td>'+base+'</td><td>'+(profile.weakResponse*100).toFixed(2)+'%</td><td>'+quality+'</td><td>'+repeat+'</td><td>'+['WEAK_NOVA','STRONG_NOVA'].map(role=>(100*NovaProgress.sortieChance(n,role,0)).toFixed(3)+'%').join('／')+'</td></tr>';}).join('')+'</table>';artPanel.append(commonTable);
+    const entryTable=document.createElement('div');entryTable.id='novaEntryQuotaTable';
+    entryTable.innerHTML='<p>初当たりの初期3Gは全設定共通で毎G100ptを下限とし、スイカ／弱チェリーはそのGを150pt、強チェリーは200ptにします。合計は300〜600pt、平均約306.02ptです。成立役は開始時に3G分を一度だけ抽選し、保存後も引き直しません。5%の初当たり上位チャレンジ経由はこの3Gを経由しません。出陣・引き戻し・後からのストックは従来の配分です。変更前の保存データは、保存時に確定した初期ptのまま再開します。</p><table><tr><th>設定</th><th>通常役</th><th>スイカ／弱チェリー</th><th>強チェリー</th><th>3G合計</th></tr>'+[1,2,3,4,5,6].map(n=>'<tr><td>'+n+'</td><td>100pt</td><td>150pt</td><td>200pt</td><td>300〜600pt</td></tr>').join('')+'</table>';artPanel.append(entryTable);
+    const artLabels={ladderSosuke:'宗介 小役合算率',ladderGiru:'ギル 小役合算率',ladderUraGiru:'裏ギル 小役合算率',totoHit:'とと 7揃い率',totoReset:'とと nebula率',soraHit:'空 7揃い率',soraReset:'空 nebula率',soraUraHit:'裏空 7揃い率（保証前）',soraUraReset:'裏空 nebula率',urapiSuper:'うらぴ スーパーノヴァ率',oumaSuper:'逢魔 スーパーノヴァ率',oumaUraSuper:'裏逢魔 スーパーノヴァ率',urapiFreeze:'うらぴフリーズ継続率',oumaFreeze:'逢魔フリーズ継続率',oumaUraFreeze:'裏逢魔フリーズ継続率'};
+    const zoneTable=document.createElement('div');zoneTable.innerHTML='<p>宗介・ギルは通常テーブル①〜⑤を設定別に抽選、裏ギルはテーブル⑥固定・300pt通過確定。同額の段階も突破で次へ進みます。<br>7揃い：全3ゾーン共通＋100pt。nebulaは＋10ptと残り5Gリセット（毎G：とと2%／空15%／裏空30%）。とと7揃い1回、空2回、裏空500pt以上を保証。<br>スーパーノヴァ：通常50・100pt、裏逢魔100・200pt（フリーズ中も共通）。逢魔と裏逢魔はBETでフリーズ抽選、当選時は無料の自動0G連。</p><table><tr><th>設定（AT準備中抽選）</th>'+['弱上乗せ','強上乗せ','超上乗せ'].map(x=>'<th>'+x+'</th>').join('')+'</tr>'+[1,2,3,4,5,6].map(setting=>NovaArt.zoneGroupWeights(setting,false,true)).map((row,i)=>'<tr><td>'+(i+1)+'</td>'+row.map(p=>'<td>'+p.toFixed(2)+'%</td>').join('')+'</tr>').join('')+'</table><p>弱＝宗介・とと・うらぴ、強＝ギル・空・逢魔、超＝裏3種。強当選後の3%で超へ昇格（従来どおり）。各区分内は3種均等。キャラルーレット中のレア役でテーブル⑥⑦への昇格抽選あり。通常ATの抽選は上記の共通ATを参照。AT準備中はレア役で特化ゾーンを抽選します。</p>';artPanel.append(zoneTable);
+    const bonusTable=document.createElement('p');bonusTable.textContent='BIGは50pt。通常52%／上位80%のAT期待度（保証契機は別枠）。上位選択率10%の仮設定、全設定共通。白点滅＝通常、赤点滅＝上位。ネビュラを狙えは逆押し。REGは廃止。AT確定後の追加特化ストックはBB単位で、追加なし87%／1個10%／2個3%（全設定・通常／上位BIG共通）。';artPanel.append(bonusTable);
+    const ladderTable=document.createElement('div');ladderTable.innerHTML=Object.entries(NovaArt.ladderTables).map(([id,rows])=>{const flow={zone:NovaArt.baseZone(id),ura:id.startsWith('ura_')};return '<p>'+NovaArt.zoneName(id)+'</p><table><tr><th>番号</th><th>段階（pt）</th>'+[1,2,3,4,5,6].map(n=>'<th>設定'+n+'</th>').join('')+'</tr>'+rows.map((row,i)=>'<tr><td>'+(i+1)+'</td><td>'+row.join(' → ')+'</td>'+[1,2,3,4,5,6].map(n=>'<td>'+NovaArt.ladderWeightsFor(flow,n)[i].toFixed(1)+'%</td>').join('')+'</tr>').join('')+'</table>';}).join('');artPanel.append(ladderTable);const ladderNote=document.createElement('p');ladderNote.textContent='上表は通常選択率。⑥はギルではレア役昇格時のみ、裏ギルは常に⑥。⑦はレア役昇格時のみ宗介。';artPanel.append(ladderNote);
+    const artCfg=NovaArt.config(settings.novaArt);
+    for(const [key,label]of Object.entries(artLabels)){const row=document.createElement('label');row.className='field';row.textContent=label;const input=document.createElement('input');input.type='number';input.dataset.artConfig=key;input.setAttribute('aria-label',label);input.min=key.startsWith('direct')?'2':key==='initial'||key.endsWith('Games')?'1':'0';input.max=key.startsWith('direct')?'100000':key==='initial'?String(Number.MAX_SAFE_INTEGER):key.endsWith('Games')?'1000':'1';input.step=key.startsWith('direct')?'1':key==='initial'||key.endsWith('Games')?'1':'0.01';input.value=artCfg[key];row.append(input);artPanel.append(row);}
+    const artSave=document.createElement('button');artSave.type='button';artSave.textContent='AT設定を保存';artSave.onclick=()=>{const value={payoutVersion:1};artPanel.querySelectorAll('input').forEach(x=>value[x.dataset.artConfig]=x.valueAsNumber);settings.novaArt=NovaArt.config(value);refreshRtpViews();artSave.textContent=persistState()?'AT設定を保存しました':'保存に失敗しました';};artPanel.append(artSave);
+    const atStateButton=document.createElement('button');atStateButton.type='button';atStateButton.textContent='AT低確／高確を切替（高確保証10G）';atStateButton.onclick=()=>{if(isSpinning||session.active||normalState.flow?.phase!=='art')return;normalState.flow.atHigh=!normalState.flow.atHigh;normalState.flow.atHighLeft=normalState.flow.atHigh?10:0;persistState();updateDisplay();};artPanel.append(atStateButton);
+    document.getElementById('saveFlowConfig').closest('details').after(artPanel);
+    }
+    const status=document.createElement("div");status.id="novaFlowStatus";
+    document.querySelector(".reelArea").append(status);
+    const cfg=NovaFlow.config(settings.novaFlow);
+    for(const key of Object.keys(cfg)){
+      const input=document.querySelector('[data-flow-config="'+key+'"]');
+      if(input)input.value=['czGames','strongGames','czMaxGames','strongMaxGames'].includes(key)?15:key.endsWith("Chance")?cfg[key]*100:cfg[key];
+    }
+    document.getElementById("saveFlowConfig").onclick=()=>{
+      if(!SLOT_DEBUG_ENABLED)return;
+      const value={};
+      document.querySelectorAll('[data-flow-config]').forEach(input=>{
+        const key=input.dataset.flowConfig;value[key]=input.valueAsNumber/(key.endsWith("Chance")?100:1);
+      });
+      settings.novaFlow=NovaFlow.config(value);const saved=persistState();renderSettingTable();refreshRtpViews();
+      document.getElementById("flowConfigStatus").textContent=saved?"CZ設定を保存しました（次回突入から適用）":"保存に失敗しました（変更はこの画面内でのみ有効）";
+    };
+    updateDisplay();
+    if(!SLOT_DEBUG_ENABLED)return;
+    const preview = document.getElementById("novaSymbolPreview");
+    const patternSelect = document.getElementById("novaPatternSelect");
+    const renderNovaPreview = () => {
+      const variant = patternSelect.value;
+      const strong=variant.startsWith('STRONG');
+      const grid=variant==='SUPER_NOVA'?novaGrid():[[CHERRY_SYMBOL,'ANY','ANY'],['ANY',strong?CHERRY_SYMBOL:'ANY','ANY'],['ANY','ANY',strong?CHERRY_SYMBOL:'ANY']];
+      if(variant==='STRONG_RIGHT')grid.reverse();
+      document.getElementById("novaSymbolPreviewGrid").innerHTML = grid.flatMap(row => row.map(symbol => '<div>'+ (symbol === "ANY" ? '<span class="novaAnyCell">ANY</span>' : cellHtml(symbol)) + '</div>')).join('');
+      document.getElementById("novaPatternDescription").textContent = variant==='SUPER_NOVA'?'ノヴァ（BAR）揃い':strong?'強チェリー：左上段または下段からチェリー揃い':'弱チェリー：左上段・下段チェリー／他リール不問（強チェリーを除く）';
+    };
+    patternSelect.addEventListener("change",renderNovaPreview);
+    document.getElementById("novaSymbolPreviewOpen").onclick = () => {
+      const cell = document.querySelector('.reel .cell') || document.querySelector('.cell');
+      if(cell){
+        const rect = cell.getBoundingClientRect();
+        if(rect.height > 0) document.getElementById("novaSymbolPreviewGrid").style.aspectRatio = String(rect.width / rect.height);
+      }
+      renderNovaPreview();
+      preview.showModal();
+    };
+    document.getElementById("novaSymbolPreviewClose").onclick = () => preview.close();
+    document.getElementById("debugNovaPatternsBtn").onclick = () => document.getElementById("novaSymbolPreviewOpen").click();
+  });
+
+  function ensureReelCells(index){
+    const win = reels[index] ? reels[index].querySelector(".window") : null;
+    if(!win) return [];
+    while(win.children.length < 3){
+      const div = document.createElement("div");
+      div.className = "cell";
+      win.appendChild(div);
+    }
+    while(win.children.length > 3){
+      win.removeChild(win.lastElementChild);
+    }
+    return Array.from(win.children);
+  }
+
+  function updateReelCell(div, symbol, label="", cls="", isWin=false, isCenter=false){
+    if(!div) return;
+    const aimClass = symbol === "7"
+      ? " isAimSymbol isSevenAim"
+      : symbol === "BAR"
+        ? " isAimSymbol isBarAim"
+        : "";
+    const className = "cell" + (isCenter ? " center" : "") + (isWin ? " winline" : "") + aimClass;
+    if(div.className !== className) div.className = className;
+    const key = [symbol, label || "", cls || "", isWin ? "1" : "0"].join("|");
+    if(div.dataset.cellKey === key) return;
+    div.dataset.cellKey = key;
+    div.innerHTML = cellHtml(symbol, label, cls);
+  }
+
+  // The approved sheet is the sole current reel layout; never fall back to retired strips.
+  const REEL_STRIPS = globalThis.NovaReelSheetData.strips.map(strip=>strip.slice());
+  const REEL_LAYOUT_VERSION=3;
+
+  function migratePendingReelLayout(spin){
+    if(Number(spin.reelLayoutVersion)>=REEL_LAYOUT_VERSION)return;
+    // Preserve the drawn result/ledger/order. Only obsolete visual windows are rebased.
+    const choices=novaSheetStopChoices(spin.result)||novaSheetStopChoices('MISS');
+    const distance=grid=>grid.reduce((sum,row,r)=>sum+row.reduce((n,symbol,c)=>n+Number(symbol!==spin.grid[r][c]),0),0);
+    const grid=choices.reduce((best,next)=>distance(next)<distance(best)?next:best);
+    spin.grid=copyNovaSheetGrid(grid,spin.result);
+    if(spin.auditGrid)spin.auditGrid=grid.map((row,r)=>row.map((symbol,c)=>spin.auditGrid[r]?.[c]?symbol:null));
+    for(const field of ['pendingStopColumns','commonStopColumns','pressStopColumns']){
+      if(Array.isArray(spin[field]))spin[field]=spin[field].map((column,c)=>column?grid.map(row=>row[c]):null);
+    }
+    spin.reelLayoutVersion=REEL_LAYOUT_VERSION;
+  }
+
+  function mod(n, m){
+    return ((n % m) + m) % m;
+  }
+
+  function getReelWindowFromStrip(reelIndex, centerSymbol, row=1){
+    const strip = REEL_STRIPS[reelIndex] || REEL_STRIPS[0];
+    let candidates = [];
+    strip.forEach((symbol, idx)=>{
+      if(symbol === centerSymbol) candidates.push(idx);
+    });
+
+    let baseIndex;
+    if(candidates.length){
+      baseIndex = candidates[Math.floor(Math.random() * candidates.length)];
+    }else{
+      baseIndex = Math.floor(Math.random() * strip.length);
+    }
+
+    // row=0なら上段にcenterSymbol、row=1なら中段、row=2なら下段にcenterSymbol
+    const topIndex = mod(baseIndex - row, strip.length);
+    return [
+      strip[topIndex],
+      strip[mod(topIndex + 1, strip.length)],
+      strip[mod(topIndex + 2, strip.length)]
+    ];
+  }
+
+  function currentReelTopIndex(reelIndex){
+    if(NovaReelMotion.has(reelIndex))return NovaReelMotion.top(reelIndex);
+    const strip = REEL_STRIPS[reelIndex] || REEL_STRIPS[0];
+    return mod((Number(reelSpinOffsets[reelIndex]) || 0) + (currentSpin?.artReverse?-1:1), strip.length);
+  }
+
+  function reelWindowFromTopIndex(reelIndex, topIndex){
+    const strip = REEL_STRIPS[reelIndex] || REEL_STRIPS[0];
+    const start = mod(topIndex, strip.length);
+    return [
+      strip[start],
+      strip[mod(start + 1, strip.length)],
+      strip[mod(start + 2, strip.length)]
+    ];
+  }
+
+  function manualStopColumnForReel(reelIndex, spin=currentSpin){
+    const strip = REEL_STRIPS[reelIndex] || REEL_STRIPS[0];
+    const baseTop = currentReelTopIndex(reelIndex);
+    const targetResult = displayResultFor(spin?.result || "MISS");
+    const targetSpec = RESULT[targetResult] || RESULT.MISS;
+    const targetSymbol = targetSpec.reel ? targetSpec.reel[reelIndex] : "";
+    const targetRow = Array.isArray(spin?.lineRow) ? spin.lineRow[reelIndex] : Number(spin?.lineRow ?? 1);
+    const slipFrames = 5;
+
+    if(targetResult !== "MISS" && targetSymbol && Number.isFinite(targetRow)){
+      let bestTop = null;
+      let bestDistance = Infinity;
+      strip.forEach((symbol, idx)=>{
+        if(symbol !== targetSymbol) return;
+        const candidateTop = mod(idx - targetRow, strip.length);
+        const distance = mod(baseTop - candidateTop, strip.length);
+        if(distance <= slipFrames && distance < bestDistance){
+          bestDistance = distance;
+          bestTop = candidateTop;
+        }
+      });
+      if(bestTop !== null){
+        return reelWindowFromTopIndex(reelIndex, bestTop);
+      }
+    }
+
+    return reelWindowFromTopIndex(reelIndex, baseTop);
+  }
+
+  function cloneGrid(grid){
+    if(!Array.isArray(grid))return [];
+    const clone=grid.map(row => Array.isArray(row) ? row.slice() : []);
+    return grid[NOVA_SHEET_ROLE_PROPERTY]?tagNovaSheetGrid(clone,grid[NOVA_SHEET_ROLE_PROPERTY]):clone;
+  }
+
+  function setGridColumn(grid, reelIndex, columnSymbols){
+    if(!Array.isArray(grid) || !Array.isArray(columnSymbols)) return;
+    const changed=[0,1,2].some(row=>grid?.[row]?.[reelIndex]!==columnSymbols[row]);
+    if(changed&&grid[NOVA_SHEET_ROLE_PROPERTY])delete grid[NOVA_SHEET_ROLE_PROPERTY];
+    for(let row=0; row<3; row++){
+      if(!Array.isArray(grid[row])) grid[row] = [];
+      grid[row][reelIndex] = columnSymbols[row];
+    }
+  }
+
+  function normalizeNebulaMiddleFirstColumn(spin,index,column=null){
+    const aim=spin?.resolved?.aim,order=spin?.aimStopOrder?.length?spin.aimStopOrder:spin?.auditPressOrder||[];
+    if(index!==1||aim?.symbol!=='nebula'||!NovaAim.hasGuide(aim)||order[0]!==1)return column;
+    const nebulaIndex=REEL_STRIPS[1].indexOf(NEBULA_SYMBOL);
+    if(nebulaIndex<0)return column;
+    const hit=spin.result==='NEBULA';
+    // Middle-first is decisive: an internal hit stops NEBULA on the middle
+    // line, while a miss uses the adjacent same-strip top-NEBULA window.
+    // Rebuild this deterministically so an old pending visual column cannot
+    // display a confirmed lineup without the already drawn award.
+    const normalized=reelWindowFromTopIndex(1,nebulaIndex-(hit?1:0));
+    spin.aimAligned=hit;
+    if(spin.grid)setGridColumn(spin.grid,1,normalized);
+    return normalized;
+  }
+
+  function gridPaylineRows(grid){
+    const rows = Array.isArray(grid) ? grid : [];
+    return [
+      [rows[0]?.[0], rows[0]?.[1], rows[0]?.[2]],
+      [rows[1]?.[0], rows[1]?.[1], rows[1]?.[2]],
+      [rows[2]?.[0], rows[2]?.[1], rows[2]?.[2]],
+      [rows[0]?.[0], rows[1]?.[1], rows[2]?.[2]],
+      [rows[2]?.[0], rows[1]?.[1], rows[0]?.[2]]
+    ];
+  }
+
+  function gridHasOnlyAllowedPaylines(grid, allowedResult="MISS"){
+    if(A_TYPE_MODE){
+      const target=displayResultFor(allowedResult);
+      // Left upper/middle watermelon is a confirmed watermelon cue. Filter
+      // only the visual candidates; never promote a miss or redraw the role.
+      if(!['WEAK_SUICA','STRONG_SUICA'].includes(target)&&
+        [grid?.[0]?.[0],grid?.[1]?.[0]].includes(SUICA_SYMBOL))return false;
+      if(displayedResultFromGrid(grid)!==target)return false;
+      return gridPaylineRows(grid).every(row=>{const r=displayedResultFromRow(row);return r==='MISS'||r===target||r==='BELL'&&['BELL','BELL15'].includes(target)||r==='SUICA'&&['WEAK_SUICA','STRONG_SUICA'].includes(target)||r==='CHERRY_TRIPLE'&&target==='STRONG_NOVA';});
+    }
+  }
+
+  function manualBonusFinalColumnForReel(reelIndex, spin=currentSpin, initialColumn=null){
+    if(!spin || !spin.grid) return initialColumn || manualStopColumnForReel(reelIndex, spin);
+    const targetResult = displayResultFor(spin.result);
+    const baseTop = currentReelTopIndex(reelIndex);
+    const strip = REEL_STRIPS[reelIndex] || REEL_STRIPS[0];
+    const firstColumn = initialColumn || reelWindowFromTopIndex(reelIndex, baseTop);
+    const firstGrid = cloneGrid(spin.grid);
+    setGridColumn(firstGrid, reelIndex, firstColumn);
+    const firstResult = displayedResultFromGrid(firstGrid);
+    if((firstResult === targetResult || firstResult === "MISS") && gridHasOnlyAllowedPaylines(firstGrid, targetResult)){
+      return firstColumn;
+    }
+
+    const findSafeColumn = limit=>{
+      for(let distance=0; distance<=limit; distance++){
+        const column = reelWindowFromTopIndex(reelIndex, baseTop - distance);
+        const testGrid = cloneGrid(spin.grid);
+        setGridColumn(testGrid, reelIndex, column);
+        const result = displayedResultFromGrid(testGrid);
+        if((result === "MISS" || result === targetResult) && gridHasOnlyAllowedPaylines(testGrid, targetResult)){
+          return column;
+        }
+      }
+      return null;
+    };
+
+    return findSafeColumn(5) || findSafeColumn(strip.length - 1) || firstColumn;
+  }
+
+  function refreshStoppedGrid(grid, result="MISS", lineRow=null){
+    const spec = RESULT[result] || RESULT.MISS;
+    for(let i=0;i<3;i++){
+      const col = [grid?.[0]?.[i], grid?.[1]?.[i], grid?.[2]?.[i]];
+      setReelColumn(i, col, i === 1 ? spec.label : "", spec.cls, result === "MISS" ? null : lineRow);
+    }
+  }
+
+  function prepareManualBonusOutcome(spin=currentSpin){
+    if(!spin || spin.manualOutcomeApplied) return;
+    // A guided BIG NEBULA uses aim stop control, not manualBonusStop. Settle
+    // a completed wrong-order stop as a miss before the result is displayed.
+    // Fast simulation has no visual alignment and keeps the drawn outcome.
+    if(spin.resolved?.aTypeBonusGame && spin.result==='NEBULA' && spin.aimAligned===false && spin.stopped?.length===3 && spin.stopped.every(Boolean)){
+      spin.manualOutcomeApplied=true;
+      spin.result='MISS';spin.spec=RESULT.MISS;spin.lineRow=1;
+      spin.resolved={...spin.resolved,reward:0,artSetWon:0,novaRushConfirmed:false,manualLineupMiss:true};
+      return;
+    }
+    if(!spin.manualBonusStop) return;
+    const targetResult = displayResultFor(spin.result);
+    const stoppedResult = displayedResultFromGrid(spin.grid);
+    spin.manualOutcomeApplied = true;
+
+    if(stoppedResult === targetResult){
+      refreshStoppedGrid(spin.grid, spin.result, spin.lineRow);
+      return;
+    }
+
+    const nextCeiling = nextBonusAfterGames(normalState.sinceBonus);
+    spin.result = "MISS";
+    spin.spec = RESULT.MISS;
+    spin.lineRow = 1;
+    spin.resolved = {
+      ...spin.resolved,
+      reward:0,
+      bonusReady:false,
+      regReady:false,
+      aTypeBonusReady:false,
+      bonusWaitSpin:false,
+      manualLineupMiss:true,
+      ceilingAfter:nextCeiling
+    };
+  }
+
+  function lineName(row){
+    if(Array.isArray(row)) return row[0] === 0 ? "右下がり斜め" : "右上がり斜め";
+    return row === 0 ? "上段" : row === 2 ? "下段" : "中段";
+  }
+
+  function randomLineRow(){
+    return Math.floor(Math.random() * 3);
+  }
+
+  function aTypeCherryLineRow(result){
+    const internalResult = String(pendingATypeInternalBonus && pendingATypeInternalBonus.internalResult || "");
+    // 中段チェリーはBIG同時当選専用。単独・REG同時チェリーは上下段へ振り分ける。
+    if(internalResult === "BIG_CHERRY") return 1;
+    return Math.random() < 0.5 ? 0 : 2;
+  }
+
+  function resultLineRow(result){
+    if(isNovaResult(result)||result==='BELL15') return 1;
+    if(isMiddleLineOnlyResult(result)) return 1;
+    if(result === "CHERRY_ANY" || result === "MID_CHERRY") return aTypeCherryLineRow(result);
+    if(result === "BELL3") return Math.random() < 0.5 ? [0,1,2] : [2,1,0];
+    return randomLineRow();
+  }
+
+  function randomSymbol(options={}){
+    const {excludeCherry=false, reelIndex=null} = options;
+    const basePool = reelIndex !== null && REEL_STRIPS[reelIndex] ? REEL_STRIPS[reelIndex] : symbols;
+    const pool = excludeCherry ? basePool.filter(s => s !== CHERRY_SYMBOL) : basePool;
+    return pool[Math.floor(Math.random()*pool.length)];
+  }
+
+  const MISS_GRID_PATTERNS = [
+    [[REPLAY_SYMBOL,BELL_SYMBOL,"BAR"],["7",REPLAY_SYMBOL,BELL_SYMBOL],["BAR",BELL_SYMBOL,CHERRY_SYMBOL]],
+    [[BELL_SYMBOL,REPLAY_SYMBOL,"BAR"],[REPLAY_SYMBOL,"7",BELL_SYMBOL],[BELL_SYMBOL,"BAR",CHERRY_SYMBOL]],
+    [["BAR",BELL_SYMBOL,REPLAY_SYMBOL],[CHERRY_SYMBOL,BELL_SYMBOL,"7"],[BELL_SYMBOL,REPLAY_SYMBOL,"BAR"]],
+    [[BELL_SYMBOL,"BAR",BELL_SYMBOL],[REPLAY_SYMBOL,"7",REPLAY_SYMBOL],["BAR",BELL_SYMBOL,CHERRY_SYMBOL]],
+    [[BELL_SYMBOL,"BAR",REPLAY_SYMBOL],["7",REPLAY_SYMBOL,BELL_SYMBOL],[CHERRY_SYMBOL,"BAR",BELL_SYMBOL]],
+    [["BAR",REPLAY_SYMBOL,BELL_SYMBOL],[BELL_SYMBOL,REPLAY_SYMBOL,"7"],[REPLAY_SYMBOL,BELL_SYMBOL,"BAR"]],
+    [["7","7",BELL_SYMBOL],[REPLAY_SYMBOL,"BAR",REPLAY_SYMBOL],[BELL_SYMBOL,BELL_SYMBOL,CHERRY_SYMBOL]],
+    [[BELL_SYMBOL,"7","7"],["BAR",REPLAY_SYMBOL,BELL_SYMBOL],[REPLAY_SYMBOL,CHERRY_SYMBOL,BELL_SYMBOL]],
+    [[REPLAY_SYMBOL,"BAR",BELL_SYMBOL],["7","7",REPLAY_SYMBOL],[REPLAY_SYMBOL,BELL_SYMBOL,CHERRY_SYMBOL]],
+    [["BAR",BELL_SYMBOL,BELL_SYMBOL],[REPLAY_SYMBOL,"7","7"],[BELL_SYMBOL,REPLAY_SYMBOL,"BAR"]],
+    [[REPLAY_SYMBOL,BELL_SYMBOL,"7"],["BAR",BELL_SYMBOL,REPLAY_SYMBOL],["7",CHERRY_SYMBOL,"BAR"]],
+    [["BAR",REPLAY_SYMBOL,"7"],[BELL_SYMBOL,"BAR",REPLAY_SYMBOL],["7",BELL_SYMBOL,CHERRY_SYMBOL]],
+    [[BELL_SYMBOL,REPLAY_SYMBOL,"BAR"],[CHERRY_SYMBOL,"7",REPLAY_SYMBOL],["BAR",BELL_SYMBOL,BELL_SYMBOL]],
+    [["BAR","7",BELL_SYMBOL],[BELL_SYMBOL,REPLAY_SYMBOL,REPLAY_SYMBOL],[BELL_SYMBOL,CHERRY_SYMBOL,"7"]],
+    [["BAR",BELL_SYMBOL,BELL_SYMBOL],[REPLAY_SYMBOL,CHERRY_SYMBOL,REPLAY_SYMBOL],["7","BAR","7"]],
+    [[BELL_SYMBOL,"BAR",REPLAY_SYMBOL],["7",BELL_SYMBOL,CHERRY_SYMBOL],[REPLAY_SYMBOL,"7","BAR"]]
+  ];
+
+  const REACH_ME_GRID_PATTERNS = [
+    [[BELL_SYMBOL,REPLAY_SYMBOL,REPLAY_SYMBOL],["BAR","BAR","7"],[REPLAY_SYMBOL,BELL_SYMBOL,REPLAY_SYMBOL]],
+    [[BELL_SYMBOL,REPLAY_SYMBOL,REPLAY_SYMBOL],["7","BAR","7"],[REPLAY_SYMBOL,BELL_SYMBOL,REPLAY_SYMBOL]],
+    [[BELL_SYMBOL,REPLAY_SYMBOL,REPLAY_SYMBOL],["7","BAR","BAR"],[REPLAY_SYMBOL,BELL_SYMBOL,REPLAY_SYMBOL]],
+    [[BELL_SYMBOL,REPLAY_SYMBOL,REPLAY_SYMBOL],["BAR","7","7"],[REPLAY_SYMBOL,BELL_SYMBOL,REPLAY_SYMBOL]],
+    [[BELL_SYMBOL,REPLAY_SYMBOL,REPLAY_SYMBOL],["BAR","7","BAR"],[REPLAY_SYMBOL,BELL_SYMBOL,REPLAY_SYMBOL]],
+    [[BELL_SYMBOL,REPLAY_SYMBOL,CHERRY_SYMBOL],[REPLAY_SYMBOL,"7",REPLAY_SYMBOL],[REPLAY_SYMBOL,BELL_SYMBOL,"BAR"]],
+    [[BELL_SYMBOL,REPLAY_SYMBOL,CHERRY_SYMBOL],[REPLAY_SYMBOL,"BAR",REPLAY_SYMBOL],[REPLAY_SYMBOL,BELL_SYMBOL,"7"]],
+    [[BELL_SYMBOL,REPLAY_SYMBOL,REPLAY_SYMBOL],[CHERRY_SYMBOL,BELL_SYMBOL,"7"],[REPLAY_SYMBOL,REPLAY_SYMBOL,BELL_SYMBOL]],
+    [[CHERRY_SYMBOL,BELL_SYMBOL,"7"],[REPLAY_SYMBOL,REPLAY_SYMBOL,BELL_SYMBOL],[BELL_SYMBOL,REPLAY_SYMBOL,REPLAY_SYMBOL]],
+    [[BELL_SYMBOL,REPLAY_SYMBOL,REPLAY_SYMBOL],[REPLAY_SYMBOL,REPLAY_SYMBOL,BELL_SYMBOL],[CHERRY_SYMBOL,BELL_SYMBOL,"BAR"]]
+  ];
+
+  function buildReachMeGrid(){
+    return REACH_ME_GRID_PATTERNS[randomInt(0, REACH_ME_GRID_PATTERNS.length - 1)].map(row => row.slice());
+  }
+
+  function hasBarDiagonal(grid){
+    return (
+      grid[0]?.[0] === "BAR" && grid[1]?.[1] === "BAR" && grid[2]?.[2] === "BAR"
+    ) || (
+      grid[2]?.[0] === "BAR" && grid[1]?.[1] === "BAR" && grid[0]?.[2] === "BAR"
+    );
+  }
+
+  function hasBellDiagonal(grid){
+    const bell = RESULT.BELL.reel[0];
+    return (
+      grid[0]?.[0] === bell && grid[1]?.[1] === bell && grid[2]?.[2] === bell
+    ) || (
+      grid[2]?.[0] === bell && grid[1]?.[1] === bell && grid[0]?.[2] === bell
+    );
+  }
+
+  function hasCrownVisible(grid){
+    return grid.some(row => row.includes("👑"));
+  }
+
+  function displayedResultFromGrid(grid){
+    if(A_TYPE_MODE){
+      const sheetRole=novaSheetRoleFromGrid(grid);
+      if(sheetRole)return sheetRole==='SUPER_NOVA'?'BAR3':sheetRole;
+      if(grid?.[1]?.every(x=>x===NEBULA_SYMBOL))return "NEBULA";
+      if(grid?.[1]?.[1]==='7'&&[0,2].every(r=>[0,2].every(c=>grid?.[r]?.[c]==='7')))return 'BIG';
+      const novaPattern=novaPatternFromGrid(grid);if(novaPattern)return novaPattern==='SUPER_NOVA'?'BAR3':novaPattern;
+      const m=grid?.[1]||[],d=[grid?.[0]?.[0],m[1],grid?.[2]?.[2]],same=(a,s)=>a.length===3&&a.every(x=>x===s),nova=x=>String(x).startsWith('NOVA_');
+      if(m[0]===BELL_SYMBOL&&m[1]===BLANK_SYMBOL&&m[2]===REPLAY_SYMBOL)return 'ONE_COIN';
+      if(same(m,SUICA_SYMBOL))return 'STRONG_SUICA';
+      if(same(d,SUICA_SYMBOL))return 'WEAK_SUICA';
+      if(same(m,BELL_SYMBOL))return 'BELL15';
+      if(same(d,BELL_SYMBOL))return 'BELL';
+      if(m.filter(x=>x==='7').length===1&&m.filter(x=>x===BELL_SYMBOL).length===2)return 'BELL15';
+
+      if(m[0]==='7'&&m[2]==='BAR'&&m[1]==='BAR')return 'CHANCE_A';
+      if(m[0]==='7'&&m[2]==='BAR'&&m[1]===NEBULA_SYMBOL)return 'CHANCE_B';
+      if(m[0]==='7'&&nova(m[2]))return nova(m[1])?'CHANCE_A':'CHANCE_B';
+    }
+    const rows = Array.isArray(grid) ? grid : [];
+    const middle = rows[1] || [];
+    const rowMatches = (reel)=>rows.some(row => row[0] === reel[0] && row[1] === reel[1] && row[2] === reel[2]);
+
+    // 7揃い・77BAR・BAR揃いは中段だけを成立ラインとして扱う。
+    if(middle[0] === "7" && middle[1] === "7" && middle[2] === "7") return "BIG";
+    if(middle[0] === "7" && middle[1] === "7" && middle[2] === "BAR") return "MID";
+    if(middle[0] === "BAR" && middle[1] === "BAR" && middle[2] === "BAR") return "BAR3";
+    if(!A_TYPE_MODE&&rowMatches(RESULT.SMALL.reel)) return "SMALL";
+
+    if(rowMatches(RESULT.REPLAY.reel)) return "REPLAY";
+    if(!A_TYPE_MODE&&rowMatches(RESULT.GRAPE.reel)) return "GRAPE";
+
+    if(A_TYPE_MODE)return "MISS";
+    const cherryResult = cherryResultFromRows(rows);
+    if(cherryResult) return cherryResult;
+    return "MISS";
+  }
+
+  function cherryResultFromRow(row){
+    if(!Array.isArray(row)) return "";
+    if(row[2] === CHERRY_SYMBOL && row[0] !== CHERRY_SYMBOL) return "CHERRY_ANY";
+    if(row[0] !== CHERRY_SYMBOL) return "";
+    if(row[1] === CHERRY_SYMBOL && row[2] === CHERRY_SYMBOL) return "CHERRY_TRIPLE";
+    if(row[1] === CHERRY_SYMBOL) return "CHERRY_DOUBLE";
+    return "CHERRY_ANY";
+  }
+
+  function cherryResultFromRows(rows){
+    let best = "";
+    for(const row of rows){
+      const result = cherryResultFromRow(row);
+      if(result === "CHERRY_TRIPLE") return result;
+      if(result === "CHERRY_DOUBLE") best = "CHERRY_DOUBLE";
+      else if(result === "CHERRY_ANY" && !best) best = "CHERRY_ANY";
+    }
+    return best;
+  }
+
+  function displayedResultFromRow(row){
+    if(!Array.isArray(row) || row.length < 3) return "MISS";
+
+    if(row.filter(x=>x==='7').length===1&&row.filter(x=>x===BELL_SYMBOL).length===2)return 'BELL15';
+    const exactResults = A_TYPE_MODE
+      ? ["NEBULA","BIG","MID","BAR3","ONE_COIN","BELL","REPLAY","SUICA","CHERRY_TRIPLE"]
+      : ["NEBULA","BIG","MID","BAR3","SMALL","ONE_COIN","BELL","REPLAY","GRAPE","SUICA","CHERRY_TRIPLE"];
+
+    for(const result of exactResults){
+      const reel = RESULT[result].reel;
+      if(row[0] === reel[0] && row[1] === reel[1] && row[2] === reel[2]) return result;
+    }
+    if(A_TYPE_MODE)return "MISS";
+    const cherryResult = cherryResultFromRow(row);
+    if(cherryResult) return cherryResult;
+    return "MISS";
+  }
+
+  const REACH_ME_LINE_PATTERNS = [
+    ["BAR","BAR","7"],
+    ["7","BAR","7"],
+    ["7","BAR","BAR"],
+    ["BAR","7","7"],
+    ["BAR","7","BAR"],
+    [REPLAY_SYMBOL,"7",REPLAY_SYMBOL],
+    [REPLAY_SYMBOL,"BAR",REPLAY_SYMBOL]
+  ];
+
+  function reachMeLabelForRow(row){
+    if(!Array.isArray(row) || row.length < 3) return "";
+    const pattern = REACH_ME_LINE_PATTERNS.find(line => line[0] === row[0] && line[1] === row[1] && line[2] === row[2]);
+    return pattern ? pattern.join("") : "";
+  }
+
+  function reachMeLabelFromGrid(grid){
+    const rows = Array.isArray(grid) ? grid : [];
+    for(const row of gridPaylineRows(rows)){
+      const label = reachMeLabelForRow(row);
+      if(label) return label;
+    }
+    if(rows[1]?.[0] === CHERRY_SYMBOL) return "中段チェリー";
+    if(rows[0]?.[0] === CHERRY_SYMBOL && rows[0]?.[1] !== CHERRY_SYMBOL) return "上段チェリー・中チェリーなし";
+    if(rows[2]?.[0] === CHERRY_SYMBOL && rows[2]?.[1] !== CHERRY_SYMBOL) return "下段チェリー・中チェリーなし";
+    return "";
+  }
+
+  function hasReachMeShape(grid){
+    return !!reachMeLabelFromGrid(grid);
+  }
+
+  function applyReachMeBonusIfNeeded(result, resolved){
+    if(!A_TYPE_MODE || !currentSpin || !currentSpin.normalActiveAtStart) return false;
+    if(session.active || normalState.bonusPending || normalState.reachMePending) return false;
+    if(result !== "MISS") return false;
+    if(!resolved || !resolved.bonusHit || resolved.aTypeBonusReady || resolved.bonusReady || resolved.regReady) return false;
+
+    const reachLine = currentSpin.reachMeLine || reachMeLabelFromGrid(currentSpin.grid);
+    if(!reachLine) return false;
+
+    jagChanceHold = false;
+    normalState.reachMePending = true;
+    normalState.reachMeBonusKind = resolved.bonusKind || "BIG";
+    normalState.reachMeBonusSource = `${resolved.bonusSource || "単独当選"} / リーチ目 ${reachLine}`;
+    normalState.reachMeHitGamesSince = normalizeBonusAfterGames(resolved.gamesSinceLastBonusAtStart || normalState.sinceBonus);
+    normalState.reachMePrepSets = resolved.czDirect ? 1 : 0;
+    normalState.reachMePrepZones = resolved.czDirectZone ? [resolved.czDirectZone] : [];
+    normalState.bonusPending = false;
+    normalState.bonusKind = "";
+    normalState.bonusSource = "";
+    normalState.premiumBonus = false;
+    normalState.oneGameRenBonus = false;
+    normalState.bonusWaitGames = 0;
+    normalState.bonusHitGamesSince = 0;
+    const lamp = $("stLamp");
+    if(lamp) lamp.classList.remove("on");
+    showMessage("リーチ目", `${reachLine} / ランプ非点灯 / 次ゲーム告知`);
+    log(`リーチ目：${reachLine} / ランプ非点灯 / 次ゲーム告知`);
+    flashReelLight("rainbow", 1600);
+    showOverlay("リーチ目");
+    return true;
+  }
+
+  function activateReachMeBonusAnnouncementIfNeeded(normalActiveAtSpinStart){
+    if(!A_TYPE_MODE || !normalActiveAtSpinStart || session.active) return false;
+    if(!normalState.reachMePending || normalState.bonusPending) return false;
+    const source = normalState.reachMeBonusSource || "リーチ目";
+    const bonusKind = normalState.reachMeBonusKind || "BIG";
+    const prepAward={sets:normalState.reachMePrepSets,zones:normalState.reachMePrepZones};
+    normalState.reachMePending = false;
+    normalState.reachMeBonusKind = "";
+    normalState.reachMeBonusSource = "";
+    normalState.reachMePrepSets = 0;
+    normalState.reachMePrepZones = [];
+    normalState.bonusPending = true;
+    normalState.bonusKind = bonusKind;
+    normalState.bonusSource = source;
+    normalState.premiumBonus = false;
+    normalState.oneGameRenBonus = false;
+    normalState.bonusWaitGames = 1;
+    normalState.bonusHitGamesSince = normalizeBonusAfterGames(normalState.reachMeHitGamesSince || normalState.sinceBonus);
+    beginBonusPreparation(prepAward);
+    normalState.reachMeHitGamesSince = 0;
+    jagChanceHold = true;
+    const lamp = $("stLamp");
+    if(lamp) lamp.classList.add("on");
+    playPekaSound(bonusKind !== "MID");
+    showMessage("BONUS確定", `${source} / イラストランプ告知 / ボーナス準備開始`);
+    log(`リーチ目告知：${source} / ボーナス準備開始`);
+    return true;
+  }
+
+  function isMiddleLineOnlyResult(result){
+    const display = displayResultFor(result);
+    return display === "NEBULA" || display === "BIG" || display === "MID" || display === "BAR3" || display === "ONE_COIN";
+  }
+
+  function hasOnlyTargetPayline(grid, result, winRow=1){
+    if(result === "BELL3"){
+      return hasBellDiagonal(grid) && grid.every(line => displayedResultFromRow(line) === "MISS");
+    }
+    const targetResult = displayResultFor(result);
+    const row = clamp(winRow, 0, 2);
+    return grid.every((line, index)=>{
+      const lineResult = displayedResultFromRow(line);
+      return index === row ? lineResult === targetResult : lineResult === "MISS";
+    });
+  }
+
+  function safeGridForResult(result, winRow=1){
+    const grid = [
+      [BELL_SYMBOL,REPLAY_SYMBOL,REPLAY_SYMBOL],
+      [REPLAY_SYMBOL,BELL_SYMBOL,REPLAY_SYMBOL],
+      [REPLAY_SYMBOL,REPLAY_SYMBOL,BELL_SYMBOL]
+    ];
+    const row = clamp(winRow, 0, 2);
+    grid[row] = (RESULT[result] || RESULT.MISS).reel.slice();
+    return grid;
+  }
+
+  function buildLeftCherryGrid(winRow=1){
+    const row = clamp(winRow, 0, 2);
+    const grid = [
+      [BELL_SYMBOL,REPLAY_SYMBOL,REPLAY_SYMBOL],
+      [REPLAY_SYMBOL,BELL_SYMBOL,REPLAY_SYMBOL],
+      [REPLAY_SYMBOL,REPLAY_SYMBOL,BELL_SYMBOL]
+    ];
+    grid[row][0] = CHERRY_SYMBOL;
+    grid[row][1] = randomSymbol({excludeCherry:true, reelIndex:1});
+    grid[row][2] = randomSymbol({excludeCherry:true, reelIndex:2});
+    return gridMatchesResult(grid, "CHERRY_ANY", row) ? grid : safeGridForResult("CHERRY_ANY", row);
+  }
+
+  function gridMatchesResult(grid, result, winRow=1){
+    if(result === "BELL3") return !hasCrownVisible(grid) && !hasBarDiagonal(grid) && displayedResultFromGrid(grid) === "BELL3" && hasOnlyTargetPayline(grid, result, winRow);
+    if(hasCrownVisible(grid)) return false;
+    if(hasBarDiagonal(grid)) return false;
+    return displayedResultFromGrid(grid) === displayResultFor(result) && hasOnlyTargetPayline(grid, result, winRow);
+  }
+
+  const novaStopGridCache = new Map();
+  function buildNovaReelGrid(result, winRow=1, firstReel=0, options={}){
+    result = normalizeATypeResult(result);
+    if(isNovaResult(result)) return buildForcedNovaGrid(result,options);
+    if(result === "CZ" || result === "STRONG_CZ") result = "MISS";
+    const spec = RESULT[result] || RESULT.MISS;
+    if(isMiddleLineOnlyResult(result)||NovaNormal.rare[result]||result==='BELL15') winRow = 1;
+    const autoReferenceLeft=options.autoMissBarBottom?autoReferenceLeftColumn(result):null;
+    const cacheKey = result + ":" + winRow + (result==='BELL15'?':'+firstReel:'') + (autoReferenceLeft?':auto-reference-'+autoReferenceLeft.join('-'):'');
+    const cached = novaStopGridCache.get(cacheKey);
+    if(cached){
+      const selected=cached[Math.floor(Math.random()*cached.length)];
+      return selected?.novaSheetRole?copyNovaSheetGrid(selected,selected.novaSheetRole):selected.map(row=>row.slice());
+    }
+    const allSheetChoices=novaSheetStopChoices(result);
+    const sheetChoices=autoReferenceLeft?allSheetChoices?.filter(grid=>autoReferenceLeft.every((symbol,row)=>grid?.[row]?.[0]===symbol)):allSheetChoices;
+    if(sheetChoices?.length){
+      const grids=sheetChoices.map(grid=>copyNovaSheetGrid(grid,result));
+      novaStopGridCache.set(cacheKey,grids);
+      return copyNovaSheetGrid(grids[Math.floor(Math.random()*grids.length)],result);
+    }
+    const choices = REEL_STRIPS.map((strip,column) => strip.map((_,top) => reelWindowFromTopIndex(column,top))
+      .filter(items => result==='BIG'||result==='BAR3'||result==='MISS'||result==='CHANCE_A'||result==='CHANCE_B'||items[(result==='BELL'||result==='WEAK_SUICA')?column:winRow]===spec.reel[column]));
+    const grids = [];
+    for(const left of choices[0]) for(const middle of choices[1]) for(const right of choices[2]){
+      const grid = [0,1,2].map(row => [left[row],middle[row],right[row]]);
+      if(displayedResultFromGrid(grid) === result && gridHasOnlyAllowedPaylines(grid,result)) grids.push(grid);
+    }
+    if(!grids.length) throw new Error("No valid NOVA reel stop for " + result);
+    novaStopGridCache.set(cacheKey,grids);
+    return grids[Math.floor(Math.random()*grids.length)].map(row=>row.slice());
+  }
+
+  function nearestCommonStopColumn(index,spin,distance){
+    if(!['BELL','REPLAY'].includes(spin.result))return null;
+    const committed=committedAutoReferenceColumn(index,spin);
+    if(committed){
+      spin.commonStopColumns ||= [];
+      spin.commonStopColumns[index]=committed.slice();
+      return committed;
+    }
+    buildNovaReelGrid(spin.result,spin.lineRow);
+    const candidates=novaStopGridCache.get(spin.result+':'+spin.lineRow)||[];
+    const held=spin.commonStopColumns||[];
+    let best=null,bestDistance=Infinity;
+    for(const candidate of candidates){
+      if(!held.every((column,c)=>!column||column.every((v,r)=>candidate[r][c]===v)))continue;
+      const column=candidate.map(row=>row[index]),d=distance(column);
+      if(d<bestDistance){bestDistance=d;best=column;}
+    }
+    if(!best)throw new Error('No compatible common-role stop');
+    spin.commonStopColumns ||= [];
+    spin.commonStopColumns[index]=best;
+    setGridColumn(spin.grid,index,best);
+    return best;
+  }
+
+  // Physical pull-in candidates are deterministic; never consume lottery RNG here.
+  const pressedStopCache = new Map();
+  function pressedStopCandidates(result){
+    const key=JSON.stringify(REEL_STRIPS)+':'+result;
+    if(pressedStopCache.has(key))return pressedStopCache.get(key);
+    const wins=(novaSheetStopChoices(result)||[]).map(grid=>grid.map(row=>row.slice()));
+    const misses=(novaSheetStopChoices('MISS')||[]).map(grid=>grid.map(row=>row.slice()));
+    const value={wins,misses};pressedStopCache.set(key,value);return value;
+  }
+
+  // AUTO presses the left reel at the same BAR / cherry / watermelon timing on
+  // every ordinary spin. The visible result must therefore be one of the
+  // approved sheet windows reachable from that single timing, regardless of
+  // which reel the selected AUTO order stops first.
+  const AUTO_REFERENCE_LEFT_COLUMNS=Object.freeze({
+    MISS:Object.freeze([REPLAY_SYMBOL,BELL_SYMBOL,'BAR']),
+    ONE_COIN:Object.freeze([REPLAY_SYMBOL,BELL_SYMBOL,'BAR']),
+    CZ:Object.freeze([REPLAY_SYMBOL,BELL_SYMBOL,'BAR']),
+    STRONG_CZ:Object.freeze([REPLAY_SYMBOL,BELL_SYMBOL,'BAR']),
+    REPLAY:Object.freeze([REPLAY_SYMBOL,BELL_SYMBOL,'BAR']),
+    BELL15:Object.freeze([REPLAY_SYMBOL,BELL_SYMBOL,'BAR']),
+    BELL:Object.freeze([SUICA_SYMBOL,REPLAY_SYMBOL,BELL_SYMBOL]),
+    WEAK_SUICA:Object.freeze([SUICA_SYMBOL,REPLAY_SYMBOL,BELL_SYMBOL]),
+    WEAK_NOVA:Object.freeze([BELL_SYMBOL,'BAR',CHERRY_SYMBOL]),
+    STRONG_NOVA:Object.freeze([BELL_SYMBOL,'BAR',CHERRY_SYMBOL])
+  });
+  function autoReferenceLeftColumn(result){
+    return AUTO_REFERENCE_LEFT_COLUMNS[result]||null;
+  }
+  function autoReferenceStopChoices(result){
+    const left=autoReferenceLeftColumn(result);if(!left)return [];
+    const source=['CZ','STRONG_CZ'].includes(result)?'MISS':result;
+    return (novaSheetStopChoices(source)||[]).filter(grid=>left.every((symbol,row)=>grid?.[row]?.[0]===symbol));
+  }
+  function committedAutoReferenceColumn(index,spin){
+    if(!spin?.autoMissBarBottom||!autoReferenceLeftColumn(spin.result))return null;
+    const choices=autoReferenceStopChoices(spin.result);
+    const valid=choices.some(candidate=>[0,1,2].every(column=>candidate.every((row,r)=>row[column]===spin.grid?.[r]?.[column])));
+    return valid?spin.grid.map(row=>row[index]):null;
+  }
+
+  function standardAutoMissBarBottomEligible(spin){
+    const resolved=spin?.resolved;
+    return !!autoReferenceLeftColumn(spin?.result)&&!spin?.zoneActiveAtStart&&!spin?.reversePushGuide&&!spin?.reachMeLine&&
+      !resolved?.aim&&!resolved?.researchSortie&&!resolved?.stockEntry&&!resolved?.sortieEntry&&!resolved?.researchChallenge?.priorAim&&
+      !resolved?.zoneSpin&&!(resolved?.bonusPendingAtStart&&resolved?.bonusReady&&!resolved?.bonusWaitSpin);
+  }
+
+  function commitAutoMissBarBottom(spin){
+    if(!standardAutoMissBarBottomEligible(spin)){if(spin)spin.autoMissBarBottom=false;return false;}
+    const held=[0,1,2].map(c=>spin.pendingStopColumns?.[c]||(spin.stopped?.[c]?spin.grid.map(row=>row[c]):null));
+    const compatible=autoReferenceStopChoices(spin.result).find(grid=>
+      held.every((column,c)=>!column||column.every((value,row)=>grid[row][c]===value)));
+    spin.autoMissBarBottom=!!compatible;
+    if(!compatible)return false;
+    for(let c=0;c<3;c++)if(!held[c])setGridColumn(spin.grid,c,compatible.map(row=>row[c]));
+    if(spin.result==='ONE_COIN')tagNovaSheetGrid(spin.grid,'ONE_COIN');
+    return true;
+  }
+
+  function nearestPressedStopColumn(index,spin,distance,automatic=false){
+    const rare=['WEAK_SUICA','WEAK_NOVA','STRONG_NOVA'].includes(spin.result);
+    const ordinary=['MISS','ONE_COIN','CZ','STRONG_CZ'].includes(spin.result);
+    if(!rare&&!ordinary&&spin.result!=='BELL15')return null;
+    const held=spin.pressStopColumns||[0,1,2].map(c=>spin.pendingStopColumns?.[c]||
+      (spin.stopped[c]?spin.grid.map(row=>row[c]):null));
+    const candidates=rare||ordinary?pressedStopCandidates(ordinary?'MISS':spin.result):{wins:novaSheetStopChoices('BELL15')||[],misses:[]};
+    const ordinaryMisses=ordinary&&spin.autoMissBarBottom?candidates.misses.filter(grid=>grid?.[2]?.[0]==='BAR'):candidates.misses;
+    const committed=automatic?committedAutoReferenceColumn(index,spin):null;
+    if(committed){
+      const held=spin.pressStopColumns||[0,1,2].map(c=>spin.pendingStopColumns?.[c]||(spin.stopped[c]?spin.grid.map(row=>row[c]):null));
+      spin.pressStopColumns=held;spin.pressStopColumns[index]=committed.slice();
+      (spin.pressStopDistances||=[null,null,null])[index]=distance(committed);
+      return committed;
+    }
+    const choose=(grids,limit)=>{
+      let best=null,bestDistance=Infinity;const seen=new Set();
+      for(const grid of grids){
+        if(!held.every((col,c)=>!col||col.every((v,r)=>grid[r][c]===v)))continue;
+        const column=grid.map(row=>row[index]),key=column.join('\u001f');
+        if(seen.has(key))continue;seen.add(key);
+        const d=distance(column);
+        if(d<=limit+1e-9&&d<bestDistance){best={column,grid,distance:d};bestDistance=d;}
+      }
+      return best;
+    };
+    let pick=null;
+    const firstManualMiddle=ordinary&&!automatic&&index===1&&spin.auditPressOrder?.length===1&&spin.auditPressOrder[0]===1&&
+      !spin.zoneActiveAtStart&&!spin.reversePushGuide&&!spin.resolved?.researchSortie&&!spin.resolved?.stockEntry&&!spin.resolved?.sortieEntry;
+    if(firstManualMiddle){
+      const nebulaIndex=REEL_STRIPS[1].indexOf(NEBULA_SYMBOL);
+      const nebulaColumn=nebulaIndex<0?null:reelWindowFromTopIndex(1,nebulaIndex);
+      const nebulaDistance=nebulaColumn?distance(nebulaColumn):Infinity;
+      if(nebulaDistance<4-1e-9){
+        const compatible=ordinaryMisses.find(grid=>held.every((col,c)=>!col||col.every((v,r)=>grid[r][c]===v))&&
+          nebulaColumn.every((v,r)=>grid[r][1]===v));
+        if(compatible)pick={column:nebulaColumn,grid:compatible,distance:nebulaDistance};
+      }
+    }
+    if(!pick&&!spin.rareRoleMissed)pick=choose(ordinary?ordinaryMisses:candidates.wins,ordinary||rare&&!automatic?4:Infinity);
+    if(!pick&&rare){
+      pick=choose(candidates.misses,Infinity);
+      if(pick)spin.rareRoleMissed=true;
+      if(!pick){
+        // Earlier reels can lock an approved win; never invent a missing layout.
+        pick=choose(candidates.wins,Infinity);
+      }
+      if(!pick)throw new Error('No approved compatible stop');
+    }
+    if(!pick&&ordinary)pick=choose(ordinaryMisses,Infinity);
+    if(!pick)return null;
+    spin.pressStopColumns=held;spin.pressStopColumns[index]=pick.column.slice();
+    (spin.pressStopDistances||=[null,null,null])[index]=pick.distance;
+    setGridColumn(spin.grid,index,pick.column);
+    if(spin.result==='ONE_COIN')tagNovaSheetGrid(spin.grid,'ONE_COIN');
+    return pick.column;
+  }
+
+  function bellNavigationMiss(spin){
+    return !spin?.resolved?.researchSortie&&['BELL','BELL15'].includes(spin?.result)&&spin.bellNaviOrder?.length===3&&
+      (spin.auditPressOrder||spin.auditStopOrder||[]).some((reel,n)=>reel!==spin.bellNaviOrder[n]);
+  }
+
+  function handleBellNavigationFailure(spin){
+    if(!NovaBellNavi.presentationMissed(spin)||spin.bellNaviFailed)return false;
+    spin.bellNaviFailed=true;
+    for(const audio of spin.bellNaviVoiceAudios||[]){
+      try{audio.pause();audio.currentTime=0;}catch(e){}
+    }
+    spin.bellNaviVoiceAudios=[];
+    NovaBellNavi.stop(spin);
+    if(!spin.bellNaviFailurePlayed){
+      spin.bellNaviFailurePlayed=true;
+      playOneShotSound(BELL_NAVI_FAILURE_VOICE_SRC,voiceOutputVolume(),{allowDuringPremiumConfirm:true});
+    }
+    return true;
+  }
+
+  function nearestNavigatedBellStop(index,spin,distance){
+    // Sortie owns the stops. Its hidden, RNG-compatible bell order is not a guide.
+    if(spin?.resolved?.researchSortie)return null;
+    if(!['BELL','BELL15'].includes(spin?.result)||spin.bellNaviOrder?.length!==3)return null;
+    const held=[0,1,2].map(c=>c===index?null:spin.pendingStopColumns?.[c]||
+      (spin.stopped[c]?spin.grid.map(row=>row[c]):null));
+    const matches=(grid,columns)=>columns.every((col,c)=>!col||col.every((v,r)=>grid[r][c]===v));
+    const misses=novaSheetStopChoices('MISS')||[],wrong=bellNavigationMiss(spin);
+    const committed=!wrong?committedAutoReferenceColumn(index,spin):null;
+    if(committed)return committed;
+    const choices=wrong?misses:novaSheetStopChoices(spin.result)||[];
+    let best=null,bestDistance=Infinity;
+    for(const grid of choices){
+      if(!matches(grid,held))continue;
+      const column=grid.map(row=>row[index]),next=held.slice();next[index]=column;
+      // After the correct first press, a wrong second press must still be able
+      // to finish a listed miss without moving an already stopped reel.
+      if(!wrong&&(spin.auditPressOrder||[]).length===1&&!misses.some(g=>matches(g,next)))continue;
+      const d=distance(column);if(d<bestDistance){best=column;bestDistance=d;}
+    }
+    if(!best)throw new Error('No approved bell-navigation stop');
+    setGridColumn(spin.grid,index,best);return best;
+  }
+
+  function prepareManualRareOutcome(spin){
+    // Keep the engine decrement. Settlement records the forfeited cash for internal progress.
+    if(!spin?.resolved?.researchSortie&&spin?.stopped?.every(Boolean)&&['BELL','BELL15'].includes(spin.result)&&spin.bellNaviOrder?.length===3&&!spin.resolved.bellNaviPenaltyApplied){
+      const pressed=spin.auditPressOrder||spin.auditStopOrder;
+      if(pressed?.length===3&&pressed.some((reel,index)=>reel!==spin.bellNaviOrder[index])){
+        spin.resolved.bellNaviPenaltyApplied=true;
+        spin.resolved.internalBellReward=Number(spin.resolved.reward)||0;
+        spin.resolved.reward=0;
+      }
+    }
+    if(!spin?.rareRoleMissed||spin.rareMissPaidApplied||!spin.stopped?.every(Boolean))return;
+    spin.rareMissPaidApplied=true;
+    spin.resolved.rareMissPayout=Number(spin.resolved.reward)||0;
+    spin.resolved.reward=0;
+    // result, flowAfter, bonusHit, stocks, and all already-drawn outcomes stay intact.
+  }
+
+  function buildGrid(result, winRow=1, options={}){
+    if(A_TYPE_MODE) return buildNovaReelGrid(result,winRow,0,options);
+  function buildDiagonalBellGrid(winRows){
+    const bell = RESULT.BELL.reel[0];
+    const down = Array.isArray(winRows) ? winRows[0] === 0 : Math.random() < 0.5;
+    return down
+      ? [[bell,"7",REPLAY_SYMBOL],["7",bell,"BAR"],[REPLAY_SYMBOL,"BAR",bell]]
+      : [[REPLAY_SYMBOL,"BAR",bell],["7",bell,"BAR"],[bell,"7",REPLAY_SYMBOL]];
+  }
+
+    if(result === "BELL3") return buildDiagonalBellGrid(winRow);
+    if(isMiddleLineOnlyResult(result)) winRow = 1;
+    if(result === "CHERRY_ANY" || result === "MID_CHERRY") return buildLeftCherryGrid(winRow);
+    if(result === "MISS"){
+      let picked = MISS_GRID_PATTERNS[randomInt(0, MISS_GRID_PATTERNS.length - 1)].map(row => row.slice());
+
+      // ハズレでは、ボーナス揃い・BARナナメ揃い・王冠表示・リーチ目を絶対に出さない
+      let guard = 0;
+      while((displayedResultFromGrid(picked) !== "MISS" || hasBarDiagonal(picked) || hasCrownVisible(picked) || hasReachMeShape(picked)) && guard < 50){
+        picked = MISS_GRID_PATTERNS[randomInt(0, MISS_GRID_PATTERNS.length - 1)].map(row => row.slice());
+        guard++;
+      }
+      if(displayedResultFromGrid(picked) !== "MISS" || hasBarDiagonal(picked) || hasCrownVisible(picked) || hasReachMeShape(picked)){
+        picked = [[BELL_SYMBOL,REPLAY_SYMBOL,REPLAY_SYMBOL],[REPLAY_SYMBOL,BELL_SYMBOL,REPLAY_SYMBOL],[REPLAY_SYMBOL,REPLAY_SYMBOL,BELL_SYMBOL]];
+      }
+      return picked;
+    }
+
+    const spec = RESULT[result] || RESULT.MISS;
+    const resultLine = spec.reel.slice();
+    let grid = null;
+
+    for(let guard=0; guard<80; guard++){
+      const columns = resultLine.map((symbol, reelIndex)=>getReelWindowFromStrip(reelIndex, symbol, winRow));
+      grid = [
+        [columns[0][0], columns[1][0], columns[2][0]],
+        [columns[0][1], columns[1][1], columns[2][1]],
+        [columns[0][2], columns[1][2], columns[2][2]]
+      ];
+      if(gridMatchesResult(grid, result, winRow)) return grid;
+    }
+
+    return safeGridForResult(result, winRow);
+  }
+
+  function setReelColumn(index, columnSymbols, label, cls, winRow=null){
+    if(typeof oumaStoppedTops!=='undefined')oumaStoppedTops[index]=REEL_STRIPS[index].findIndex((_,n)=>columnSymbols.every((v,j)=>REEL_STRIPS[index][(n+j)%REEL_STRIPS[index].length]===v));
+    const cells = ensureReelCells(index);
+    columnSymbols.forEach((symbol,i)=>{
+      const isWin = Array.isArray(winRow) ? i === winRow[index] : winRow !== null && i === winRow;
+      updateReelCell(cells[i], symbol, (isWin ? (label || "") : ""), (isWin ? (cls || "") : ""), isWin, i === 1);
+    });
+  }
+
+  function resetReelSpinOffsets(){
+    reelSpinOffsets = reels.map((_, index)=>{
+      const strip = REEL_STRIPS[index] || REEL_STRIPS[0];
+      return Math.floor(Math.random() * strip.length);
+    });
+  }
+
+  function setRandomReel(index){
+    const strip = REEL_STRIPS[index] || REEL_STRIPS[0];
+    if(!Number.isFinite(reelSpinOffsets[index])){
+      reelSpinOffsets[index] = Math.floor(Math.random() * strip.length);
+    }
+    const start = mod(reelSpinOffsets[index], strip.length);
+    reelSpinOffsets[index] = mod(reelSpinOffsets[index] + (currentSpin?.artReverse ? 1 : -1), strip.length);
+    const symbols = [
+      strip[start],
+      strip[mod(start + 1, strip.length)],
+      strip[mod(start + 2, strip.length)]
+    ];
+    // Advance the same offsets/RNG above, but retain the previous stop result
+    // until each real stop replaces it during ordinary super-speed play.
+    if(globalThis.NovaSuperSpeedReels?.eligible({active:superSpeedActive&&autoPlay,flow:normalState.flow,
+      bonus:session.active,spin:currentSpin}))return;
+    const cells = ensureReelCells(index);
+    symbols.forEach((symbol,i)=>updateReelCell(cells[i], symbol, "", "", false, i === 1));
+    if(reels[index].classList.contains('spinning')){
+      const reverse=!!currentSpin?.artReverse;
+      const duration=Math.max(16,REEL_FULL_ROTATION_MS/strip.length)*.8;
+      cells.forEach(cell=>{
+        cell.getAnimations().filter(a=>a.id==='nova-reel-step').forEach(a=>a.cancel());
+        const motion=cell.animate([{transform:'translateY('+(reverse?'18%':'-18%')+')'},{transform:'translateY(0)'}],{duration,easing:'linear'});
+        motion.id='nova-reel-step';
+      });
+    }
+  }
+
+  function setMorningBarReels(){
+    if(!reels || reels.length < 3) return;
+    const grid = NOVA_SHEET_STOPS.BAR3[0];
+    for(let i=0;i<3;i++){
+      setReelColumn(i, [grid[0][i], grid[1][i], grid[2][i]], "", "", null);
+    }
+  }
+
+  function escapeHtml(str){
+    return String(str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function resetControlInput(){
+    controlInputIndex = 0;
+    controlInputHash = CONTROL_SIGNATURE_SEED;
+    controlInputCommand = "";
+    controlInputReady = "";
+    controlInputLastAt = 0;
+  }
+
+  function canCaptureControlInput(){
+    return !!(
+      A_TYPE_MODE &&
+      !isSpinning &&
+      !session.active &&
+      !normalState.bonusPending &&
+      !autoPlay &&
+      !speedToBonusActive &&
+      !debugFastSpinActive &&
+      !bonusEndBgmPlaying &&
+      !bonusConfirmSoundPlaying
+    );
+  }
+
+  function nextControlSignature(hash, code){
+    return Math.imul((hash ^ code) >>> 0, 0x01000193) >>> 0;
+  }
+
+  function captureControlInput(event){
+    if(controlInputReady) return false;
+    if(!canCaptureControlInput()){
+      resetControlInput();
+      return false;
+    }
+
+    const now = Date.now();
+    if(controlInputLastAt && now - controlInputLastAt > CONTROL_INPUT_TIMEOUT_MS){
+      controlInputIndex = 0;
+      controlInputHash = CONTROL_SIGNATURE_SEED;
+      controlInputCommand = "";
+    }
+    if(event.repeat) return controlInputIndex > 0;
+
+    const code = Number(event.keyCode || event.which || 0);
+    const signatures = CONTROL_SIGNATURES[controlInputCommand];
+    const candidate = nextControlSignature(controlInputHash, code);
+    if(signatures && candidate === signatures[controlInputIndex]){
+      controlInputHash = candidate;
+      controlInputIndex++;
+      controlInputLastAt = now;
+      if(controlInputIndex >= signatures.length){
+        const completedCommand = controlInputCommand;
+        controlInputIndex = 0;
+        controlInputHash = CONTROL_SIGNATURE_SEED;
+        controlInputCommand = "";
+        controlInputReady = completedCommand;
+        controlInputLastAt = 0;
+      }
+      return true;
+    }
+
+    const restartHash = nextControlSignature(CONTROL_SIGNATURE_SEED, code);
+    const restartCommand = Object.keys(CONTROL_SIGNATURES)
+      .find(command=>restartHash === CONTROL_SIGNATURES[command][0]) || "";
+    const startsNewSequence = !!restartCommand;
+    controlInputIndex = startsNewSequence ? 1 : 0;
+    controlInputHash = startsNewSequence ? restartHash : CONTROL_SIGNATURE_SEED;
+    controlInputCommand = restartCommand;
+    controlInputLastAt = startsNewSequence ? now : 0;
+    return startsNewSequence;
+  }
+
+  function applyQueuedControlInput(){
+    const command = controlInputReady;
+    resetControlInput();
+    const control = CONTROL_RESULTS[command];
+    if(!control || !canCaptureControlInput()) return false;
+    forceResult = control.result;
+    forcePremiumEffect = control.premium;
+    if($("forceResult")) $("forceResult").value = control.result;
+    if($("premiumForceStatus")) $("premiumForceStatus").value = control.premium ? "ON" : "OFF";
+    return true;
+  }
+
+  function stopSortieSandwichAimSound(spin){
+    const audio=spin?.sortieSandwichAimAudio;
+    if(audio){
+      try{audio.pause();audio.currentTime=0;}catch(e){}
+    }
+    if(spin)spin.sortieSandwichAimAudio=null;
+  }
+
+  function playSortieSandwichAimSound(spin){
+    if(!spin?.resolved?.sortieEntry||spin.sortieSandwichAimSoundPlayed)return false;
+    // Saves created before this cue existed have no one-shot flag. Do not restart
+    // the instruction after the mandatory middle reel has already resolved it.
+    if(spin.stopped?.[1]||spin.stopOutcomeRevealed?.kind==='sortie'||spin.sortieConfirmSoundPlayed){
+      spin.sortieSandwichAimSoundPlayed=true;
+      return false;
+    }
+    spin.sortieSandwichAimSoundPlayed=true;
+    const playback=playOneShotSound(SORTIE_SANDWICH_AIM_SOUND_SRC,sfxOutputVolume(),{allowDuringPremiumConfirm:true});
+    if(playback?.audio)spin.sortieSandwichAimAudio=playback.audio;
+    globalThis.NovaSortieAudioGate?.begin(spin,playback,()=>{if(currentSpin===spin){syncCabinetControlState();updateDisplay();scheduleNextAuto();}});
+    return true;
+  }
+
+  function playSortieSandwichHitSound(spin){
+    if(!spin?.resolved?.sortieEntry||spin.resolved.sortieFake||spin.sortieConfirmSoundPlayed)return false;
+    stopSortieSandwichAimSound(spin);
+    globalThis.NovaSortieAim?.win?.();
+    spin.sortieConfirmSoundPlayed=true;
+    playOneShotSound(SORTIE_SANDWICH_HIT_SOUND_SRC,sfxOutputVolume(),{allowDuringPremiumConfirm:true});
+    return true;
+  }
+
+  function restorePendingSpin(){
+    const spin=currentSpin;
+    if(!spin)return false;
+    migratePendingReelLayout(spin);
+    delete spin.resolved.sortieFreezeUntil; // Resume the paid spin; never repeat its opening hold.
+    isSpinning=true;spinCanStop=true;
+    globalThis.NovaSuperSpeedReels && syncSuperSpeedReelDisplay();
+    NovaBellNavi.restore(spin);
+    NovaSortie.begin(spin);
+    globalThis.NovaCheckpointHint?.begin(spin,settings.setting);
+    playSortieAwardVoice(spin);
+    globalThis.NovaAimConfidence?.prepare(spin.resolved,{...settings.novaArt,setting:settings.setting});
+    NovaAim.bet(spin.resolved.aim,spin.resolved);
+    if(spin.resolved.sortieEntry&&!spin.resolved.sortieFake&&spin.stopped?.[1])globalThis.NovaSortieAim?.win?.();
+    playSortieSandwichAimSound(spin);
+    NovaInitialDuo.begin(spin.resolved);
+    NovaInitialDuo.stop(spin.stopped.filter(Boolean).length);
+    NovaLadder.bet(spin.resolved.zoneStartFlow||spin.resolved.flowBefore);
+    NovaLadder.stop(spin.stopped.filter(Boolean).length);
+    if(spin.resolved.flowBefore?.entryStage==='roulette')showZoneRoulette(spin.stopped.every(Boolean)?spin.resolved.flowAfter:spin.resolved.flowBefore);
+    renderCzPrelude(spin.resolved.blackoutReels||[]);
+    syncCzPreludeGlow(spin.resolved);
+    restoreCzLampPresentation(spin.resolved);
+    if(spin.resolved.czLamp)document.getElementById('machine').dataset.czOrder=(spin.resolved.czLampPresentation?.order||NovaFlow.lampOrder(spin.resolved.czLamp,settings.setting)).join(',');
+    reels.forEach((reel,i)=>{
+      const column=spin.stopped[i]&&spin.auditGrid?.every(row=>row?.[i])?spin.auditGrid.map(row=>row[i]):spin.grid.map(row=>row[i]);
+      const ladder=spin.ladderResultPresentation?null:globalThis.NovaLadder?.outcome?.(spin.resolved);
+      const displaySpec=ladder?RESULT[ladder.result]:spin.spec;
+      setReelColumn(i,column,NovaSortie.eligible(spin)||NovaAim.isNovaZoneSpin?.(spin)?'':i===1?displaySpec.label:'',displaySpec.cls,spin.stopped[i]&&!NovaSortie.eligible(spin)?(ladder?(ladder.won?1:null):spin.lineRow):null);
+      reel.classList.toggle('spinning',!spin.stopped[i]);
+      stopBtns[i].disabled=spin.stopped[i]||!!spin.pendingStopColumns[i];
+      if(!spin.stopped[i])NovaReelMotion.start(i,reel,REEL_STRIPS[i],currentReelTopIndex(i),!!spin.artReverse,cellHtml);
+    });
+    $('spinBtn').disabled=false;$('spinBtn').textContent='ストップ';
+    $('resultText').textContent='中断した回転を再開 / BET済み・残りリールを停止してください';
+    if(spin.stopped.every(Boolean)){
+      NovaAim.stop(spin.resolved);
+      prepareManualBonusOutcome(spin);
+      finishSpin(spin.result,spin.resolved,spin.lineRow);
+    }else if(spin.resolved.oumaFreeze){
+      startOumaReverseAudio(spin);
+    }else{
+      // Pressed reels retain their target even if reloaded before the landing animation ends.
+      const order=spin.auditPressOrder||[0,1,2];
+      for(const i of order){
+        const column=spin.pendingStopColumns[i];
+        if(column)setTimeout(()=>{
+          if(currentSpin===spin)stopSingleReel(i,{visualReady:true,visualColumn:column});
+        },0);
+      }
+    }
+    updateDisplay();syncCabinetControlState();
+    return true;
+  }
+
+  function tryStockEntry(){
+    const progress=NovaProgress.snapshot();
+    if(!normalState.flow)normalState.flow=NovaFlow.normalize(null);
+    if(progress.sorties>0&&normalState.flow?.phase==='normal'&&normalState.internal?.prelude)return false;
+    if(session.active||normalState.bonusPending||normalState.pendingZoneResult||normalState.pendingSortieResult||progress.pending>0||!NovaStockEntry.eligible(normalState.flow,progress,normalState.pendingFakeSortie))return false;
+    if(normalState.ladderAwardPresentation){
+      const card=normalState.ladderAwardPresentation.card;delete normalState.ladderAwardPresentation;
+      displayNovaResult(card);persistState();updateDisplay();scheduleNextAuto();return true;
+    }
+    let entry=normalState.stockEntry;
+    if(!NovaStockEntry.matches(entry,normalState.flow,progress,normalState.pendingFakeSortie))entry=null;
+    const restoredSortiePreparation=entry?.stage==='prepare'&&['sortie','sortieFake'].includes(entry.kind);
+    if(entry&&!restoredSortiePreparation&&Date.now()<Number(entry.notBefore||0)){scheduleNextAuto();return true;}
+    if(entry?.stage==='ready'){
+      NovaStockEntry.hide();delete normalState.stockEntry;
+      const src=ZONE_START_VOICE_SRCS[entry.zone];
+      if(src)playOneShotSound(src,voiceOutputVolume(),{allowDuringPremiumConfirm:true});
+      return false;
+    }
+    NovaSortie.clear();NovaBellNavi.clear();NovaDirectAward.clear();NovaAim.hide();NovaLadder.hide();showZoneRoulette(null);
+    normalState.resultCard=null;NovaResults.hide();pauseNormalBgm();
+    if(!entry){
+      normalState.stockEntry=NovaStockEntry.prepare(normalState.flow,progress,normalState.pendingFakeSortie);
+      normalState.stockEntry.color=NovaStockEntry.cueColor?.(normalState.stockEntry.kind==='sortieFake')||'rainbow';
+      const cue=normalState.sortieDebugCue;
+      if(cue&&normalState.stockEntry.kind===(cue.fake?'sortieFake':'sortie')){
+        normalState.stockEntry.color=cue.color;delete normalState.sortieDebugCue;
+      }
+      entry=normalState.stockEntry;
+      // The sortie cue starts on this BET, without advertising the next BET first.
+      if(!['sortie','sortieFake'].includes(entry.kind)){
+        entry.notBefore=Date.now()+700;
+        $('resultText').textContent=NovaStockEntry.message(entry);
+        persistState();updateDisplay();scheduleNextAuto();return true;
+      }
+    }
+    entry.stage='seven';
+    // Preserve the previous three presentation RNG draws; replace only the stop windows.
+    const entryColumns=[0,1,2].map(i=>getReelWindowFromStrip(i,['sortie','sortieFake'].includes(entry.kind)?NEBULA_SYMBOL:'7',entry.kind==='sortieFake'&&i===0?0:1));
+    currentSpin=NovaStockEntry.spin(entry,normalState.flow,['sortie','sortieFake'].includes(entry.kind)?NovaStockEntry.sortieColumns(entry,REEL_STRIPS):entryColumns);
+    currentSpin.spec=RESULT[currentSpin.result];
+    isSpinning=true;spinCanStop=false;
+    globalThis.NovaSuperSpeedReels && syncSuperSpeedReelDisplay();
+    reels.forEach((reel,i)=>{reel.classList.add('spinning');NovaReelMotion.start(i,reel,REEL_STRIPS[i],currentReelTopIndex(i),false,cellHtml);});
+    NovaAim.bet(null,currentSpin.resolved);
+    playSortieSandwichAimSound(currentSpin);
+    // A separate visual draw must not advance the game lottery.
+    const visualRng=()=>crypto.getRandomValues(new Uint32Array(1))[0]/4294967296;
+    if(['sortie','sortieFake'].includes(entry.kind)){
+      // Middle-first NOVA cue has no matching voice asset; do not announce nebula/reverse.
+    }else playSevenAimVoice(currentSpin.resolved,visualRng);
+    $('resultText').textContent=['sortie','sortieFake'].includes(entry.kind)?'中リールにNOVAを狙え！':'7を狙え / 特化ストックの突入演出';
+    const spin=currentSpin;
+    spinWaitTimer=setTimeout(()=>{spinWaitTimer=null;if(currentSpin!==spin)return;spinCanStop=true;syncCabinetControlState();},spinWaitMsForMode(false));
+    persistState();updateDisplay();syncCabinetControlState();scheduleNextAuto();return true;
+  }
+  function showFixedSosukeResultIfReady(){
+    const pending=normalState.ladderAwardPresentation;
+    if(!pending?.flow?.fixed50Zone||debugFastSpinActive||isSpinning)return false;
+    // The fixed zone has already credited its 50pt. Reveal it without borrowing
+    // the next AT game's BET/role; that game starts after the result closes.
+    if(!pending.started){
+      pending.started=true;pending.revealUntil=Date.now()+1000;
+      NovaLadder.sync(pending.flow);NovaLadder.award(pending.card.pt,true);
+      playLockedBonusConfirmSound('assets/media/nova/ladder-final-award-under1000.wav',sfxOutputVolume());
+    }else if(Date.now()>=Number(pending.revealUntil||0)){
+      delete normalState.ladderAwardPresentation;displayNovaResult(pending.card);
+    }
+    persistState();updateDisplay();scheduleNextAuto();return true;
+  }
+  function finishStockEntry(){
+    const spin=currentSpin;if(!spin?.resolved?.stockEntry)return;
+    if(spinWaitTimer){clearTimeout(spinWaitTimer);spinWaitTimer=null;}
+    stopSortieSandwichAimSound(spin);
+    spin.finishing=true;isSpinning=false;spinCanStop=false;currentSpin=null;
+    if(spin.resolved.sortieFake){
+      normalState.pendingFakeSortie=Math.max(0,(Number(normalState.pendingFakeSortie)||0)-1);delete normalState.stockEntry;
+      NovaAim.stop(spin.resolved);$('resultText').textContent='NOVAはさみ目停止せず';
+      persistState();updateDisplay();syncCabinetControlState();scheduleNextAuto();return;
+    }
+    normalState.stockEntry={...NovaStockEntry.prepare(normalState.flow,NovaProgress.snapshot()),stage:'ready',notBefore:Date.now()+500};
+    NovaAim.stop(spin.resolved);NovaSortie.flash(normalState.stockEntry.zone);
+    $('resultText').textContent=NovaStockEntry.message(normalState.stockEntry);
+    // Announce the free entry reveal once; retain its stock until the next real BET.
+    if(spin.resolved.sortieEntry){
+      playSortieSandwichHitSound(spin);
+      playLockedBonusConfirmSound(MODE_EVENT_VOICE_SRCS.sortie,voiceOutputVolume(),()=>{updateDisplay();scheduleNextAuto();},{naturalSpeed:true});
+    }
+    persistState();updateDisplay();syncCabinetControlState();scheduleNextAuto();
+  }
+  async function stopStockEntryReel(i,options={}){
+    const spin=currentSpin;
+    if(!spin?.resolved?.stockEntry||!spinCanStop||globalThis.NovaSortieAudioGate?.locked(spin)||!NovaStockEntry.canStop(spin,i)||spin.stopped[i]||(!options.visualReady&&spin.visualStopping?.[i]))return;
+    const col=spin.grid.map(row=>row[i]);
+    if(!options.visualReady){
+      (spin.auditPressOrder ||= []).push(i);spin.visualStopping ||= [false,false,false];spin.visualStopping[i]=true;
+      spin.pendingStopColumns[i]=col;persistState();stopBtns[i].disabled=true;
+      if(!await NovaReelMotion.stop(i,col)||currentSpin!==spin)return;
+    }
+    stopReel(i,col,'',spin.spec.cls,1,(spin.auditStopOrder||[]).length+1);
+    spin.stopped[i]=true;spin.pendingStopColumns[i]=null;(spin.auditStopOrder ||= []).push(i);
+    spin.auditGrid ||= [[],[],[]];col.forEach((s,r)=>spin.auditGrid[r][i]=s);
+    revealStoppedOutcome(spin);
+    if(spin.stopped.every(Boolean))finishStockEntry();
+    else{persistState();syncCabinetControlState();}
+  }
+  async function spin(options={}){
+    if(!canUsePlayState())return;
+    if(isCompleteTrialLocked()){
+      if(!autoPlay&&!speedToBonusActive&&!debugFastSpinActive)syncCompletePresentation(true);
+      return; // Audio only: no BET, RNG, or game progression.
+    }
+    if(globalThis.NovaRuntimeGates?.busy('bet') ?? (NovaSortie.busy||NovaLadder.busy||NovaAim.busy||NovaDirectAward.busy))return;
+    if(NovaResults.editing)return;
+    if(!oumaPresentation&&!isSpinning&&!debugFastSpinActive&&['ouma','urapi'].includes(normalState.flow?.zone)&&normalState.flow.oumaPending){scheduleOumaZeroChain();return;}
+    if(oumaPresentation){if(oumaPresentation.stage==='bet')resolveOumaChallenge();return;}
+    if(debugFastSpinActive) return;
+    if(speedToBonusActive && !speedModeSpinRequest) return;
+    if(bonusEndBgmPlaying){
+      if($("resultText")) $("resultText").textContent = "ボーナス終了BGM中...";
+      return;
+    }
+    if(bonusConfirmSoundPlaying){
+      if($("resultText")) $("resultText").textContent = "ボーナス確定音再生中...";
+      return;
+    }
+    if(!canPlayCompleteTrial()) return;
+    // 回転中にメインボタンを押したら、残りリールを停止する
+    if(isSpinning){
+      stopAllReels();
+      return;
+    }
+    if(isCzIntroVoiceHolding())return;
+    // A queued ending (including after a zone result/reload) consumes no BET or RNG.
+    if(showSortieResultIfReady()){updateDisplay();scheduleNextAuto();return;}
+    if(normalState.ladderAwardPresentation?.flow?.fixed50Zone&&showFixedSosukeResultIfReady())return;
+    if(showCheckpointResultIfReady(true)){persistState();updateDisplay();scheduleNextAuto();return;}
+    if(autoPlay){
+      const wait=autoPacingWaitMs();
+      if(wait>0){queueAutoStep(wait);return;}
+    }
+    if(A_TYPE_MODE&&(['SORTIE','FREEZE'].includes(forceResult)||NovaStockEntry.debugCue(forceResult)))takeForcedResult();
+    globalThis.NovaResultRecall?.bet();
+    if(tryStockEntry())return;
+    applyQueuedControlInput();
+
+    if(isRogiThirdStopHoldActive()){
+      clearRogiThirdStopHold();
+      stopGekiatsuEffect(true);
+    }
+    if(sessionStartGuard) return;
+    if(pendingAtStartTimer){
+      if(speedBonusRogiHoldActive) stopGekiatsuEffect(true);
+      startBonusSessionNow();
+      return;
+    }
+    const normalActiveAtSpinStart = !session.active;
+    if(normalActiveAtSpinStart) playPendingSettingVoiceOnLever();
+    triggerBonusConfirmBetSoundIfNeeded();
+    hideBattleIntro();
+    hideRogiContinuationBlackout();
+    hideBonusConfirmScreen();
+    clearReelVideos();
+
+    if(normalActiveAtSpinStart && normalState.bonusPending){
+      setSpeedFrameOffHold(false);
+    }
+    if(normalActiveAtSpinStart && session.phase === "ended" && session.resultPayout !== null && session.resultPayout !== undefined){
+      hideSessionResultScreen();
+      session.phase = "idle";
+      session.resultPayout = null;
+      session.endSignal = null;
+
+    }
+
+    const zoneActiveAtSpinStart = session.active && isGoraiZoneActive();
+    const aTypeBonusActiveAtSpinStart = isATypeBonusActive();
+    if(aTypeBonusActiveAtSpinStart && isATypeBonusComplete()){
+      playBonusEndBgmThen(()=>{
+        finishSession();
+        scheduleNextAuto();
+      });
+      return;
+    }
+    if(zoneActiveAtSpinStart){
+      devilZoneConfirmIntroPending = false;
+      showDevilZoneConfirmScreen("translucent");
+    }else{
+      syncDevilZoneConfirmScreen();
+    }
+    if(session.active && !aTypeBonusActiveAtSpinStart && session.remain <= 0 && session.phase !== "battle" && !zoneActiveAtSpinStart){
+      startContinuationBattlePart();
+      scheduleNextAuto();
+      return;
+    }
+    if(session.active && !aTypeBonusActiveAtSpinStart && session.phase === "battle" && session.battleRemain <= 0 && !zoneActiveAtSpinStart){
+      advanceBattleSetIfNeeded();
+      return;
+    }
+    const battleActiveAtSpinStart = isContinuationBattleActive() && !zoneActiveAtSpinStart;
+    const battleRoundAtSpinStart = battleActiveAtSpinStart ? battleRoundNumber() : 0;
+    const speedModeSpinAtStart = speedToBonusActive && speedModeSpinRequest && normalActiveAtSpinStart;
+    const spinWaitMs = spinWaitMsForMode(speedModeSpinAtStart);
+    let superSpeedStartedAt = superSpeedActive ? performance.now() : null;
+    if(superSpeedActive)superSpeedNextBetAt=superSpeedStartedAt+autoStopDelayMs(2)+autoScaledDelayMs(RESULT_WAIT_MS)+autoDelayMs();
+
+    const resumeAfterCzFailure=NovaCzPresentation.failureActive;
+    NovaCzPresentation.reset();
+    if(resumeAfterCzFailure)playNormalBgm();
+    if(!session.active)NovaImpurityHint.normalBet(normalState);
+    if(SLOT_DEBUG_ENABLED)NovaImpurityHint.onBet();
+    fadeAimWinSoundsOnBet();
+    NovaDirectAward.clear();
+    NovaSortie.clear();
+    isSpinning = true;
+    if(normalState.resultCard){normalState.resultCard=null;NovaResults.hide();}
+    jagLastGamePayout = 0;
+    if(!normalState.bonusPending && !session.active) jagChanceHold = false;
+    clearReelLight(true);
+    spinCanStop = false;
+    $("spinBtn").disabled = false;
+    $("spinBtn").textContent = "WAIT";
+    stopBtns.forEach(b=>b.disabled=true);
+
+    if(spinWaitTimer) clearTimeout(spinWaitTimer);
+    const unlockSpin=()=>{
+      spinCanStop = true;
+      if(isSpinning){
+        $("spinBtn").textContent = "ストップ";
+        stopBtns.forEach(b=>b.disabled=false);
+        syncCabinetControlState();
+        $("resultText").textContent = zoneActiveAtSpinStart
+          ? `${goraiZoneRemainText(session.bigZone, session.bigZoneType)} / 停止できます`
+          : battleActiveAtSpinStart
+            ? `${battleRemainText()} / 停止できます`
+            : "停止できます";
+      }
+    };
+    spinWaitTimer=setTimeout(unlockSpin,spinWaitMs);
+
+    pendingForceResult = takeForcedResult();
+    const premiumForced = forcePremiumEffect;
+    forcePremiumEffect = false;
+    $("forceResult").value = forceResult;
+    if($("premiumForceStatus")) $("premiumForceStatus").value = "OFF";
+    if(!A_TYPE_MODE && premiumForced && !pendingForceResult) pendingForceResult = "BIG";
+
+    const atSpinAtStart = session.active && !aTypeBonusActiveAtSpinStart && !zoneActiveAtSpinStart && !battleActiveAtSpinStart;
+    if(normalActiveAtSpinStart){
+      // 通常・高確中は天井ゲーム数だけ進める。AT残りは減算しない。
+    }else if(zoneActiveAtSpinStart){
+      // デビルゾーン中はATも継続バトルも減算しない。
+    }else if(aTypeBonusActiveAtSpinStart){
+      // A-type bonus consumes a BET but has no fixed game counter.
+    }else if(battleActiveAtSpinStart){
+      session.battleRemain = Math.max(0, (session.battleRemain || 0) - 1);
+    }else{
+      session.remain--;
+    }
+    if(!options?.oumaFailed){
+      const flowBeforeBet=normalState.flow;
+      countTotalSpinIfNeeded(aTypeBonusActiveAtSpinStart);
+      chargeSpinCost();
+      if(normalActiveAtSpinStart)playZoneStartVoice(flowBeforeBet,normalState.flow);
+    }
+    if(!debugFastSpinActive){
+      if(normalState.ladderAwardPresentation){normalState.ladderAwardPresentation.started=true;NovaLadder.award(normalState.ladderAwardPresentation.card.pt,true);}
+      else NovaLadder.bet(normalState.flow);
+    }
+    $("stLamp").classList.remove("on");
+    const reachMeAnnouncementLit = activateReachMeBonusAnnouncementIfNeeded(normalActiveAtSpinStart);
+    if(reachMeAnnouncementLit) triggerBonusConfirmBetSoundIfNeeded();
+    updateDisplay();
+    $("spinBtn").textContent = "ストップ";
+
+    stopGekiatsuEffect(true);
+    hideReversePushGuide();
+    hideDevilRushEntryEffect();
+    const devilRushEntryEffect = atSpinAtStart ? consumeDevilRushEntryEffect() : "";
+    if(devilRushEntryEffect) showDevilRushEntryEffect(devilRushEntryEffect);
+    // 大当たりを含む成立役はBET/レバーON時点で確定させる。停止時はこの結果を表示するだけ。
+    const result = options?.oumaFailed ? "MISS" : normalActiveAtSpinStart ? drawNormalResult() : drawResult();
+    const spec = RESULT[result];
+    const lineRow = resultLineRow(result);
+    const resolved = options?.oumaFailed ? {oumaFailed:true,reward:0,flowBefore:normalState.flow,flowAfter:normalState.flow} : normalActiveAtSpinStart ? resolveNormalOutcome(result, lineRow) : resolveOutcome(result);
+    drawRareSortie(result,resolved);
+    if(resolved.zoneStartFlow&&!debugFastSpinActive)NovaLadder.bet(resolved.zoneStartFlow);
+    const reversePushGuide = zoneActiveAtSpinStart ? decideReversePushGuide(result, zoneActiveAtSpinStart ? currentGoraiZoneType() : "") : "";
+    const automaticStopAtStart=autoPlay||speedModeSpinAtStart||superSpeedActive;
+    let autoMissBarBottom = automaticStopAtStart&&standardAutoMissBarBottomEligible({result,resolved,reversePushGuide,zoneActiveAtStart:zoneActiveAtSpinStart});
+    let grid = zoneActiveAtSpinStart && reversePushGuide && result === "MISS"
+      ? buildReversePushMissGrid()
+      : (A_TYPE_MODE && normalActiveAtSpinStart && isCollectibleCherryResult(result))
+        ? safeGridForResult(result, lineRow)
+        : buildGrid(result, lineRow, {autoMissBarBottom});
+    let reachMeLine = "";
+    const forceReachMeDisplay = A_TYPE_MODE && pendingForceResult === "REACH_ME";
+    if(A_TYPE_MODE && normalActiveAtSpinStart && result === "MISS" && resolved && resolved.bonusHit && (forceReachMeDisplay || Math.random() < A_TYPE_REACH_ME_ANNOUNCE_RATE)){
+      grid = buildReachMeGrid();
+      reachMeLine = reachMeLabelFromGrid(grid);
+      autoMissBarBottom = false;
+    }
+    const bar3LeverEffect = !A_TYPE_MODE && !speedModeSpinAtStart && result === "BAR3";
+    const bigPremiumEffect = !bar3LeverEffect && decideBigPremiumEffect(result, resolved, premiumForced);
+    if(A_TYPE_MODE && normalActiveAtSpinStart && resolved && (resolved.bonusHit || resolved.bonusReady) && resolved.bonusKind === "BIG"){
+      resolved.premiumBonus = !!(resolved.premiumBonus || bigPremiumEffect);
+    }
+    const premiumMovieEffect = !A_TYPE_MODE && bigPremiumEffect;
+    const speedModeBonusRogiEffect = speedModeSpinAtStart && !premiumMovieEffect && shouldPlaySpeedModeBonusRogi(result, resolved);
+    const gekiatsuChance = premiumMovieEffect;
+    const zakoEffect = decideZakoEffect(result, resolved, normalActiveAtSpinStart);
+    const bonusAnnouncementTiming = !reachMeLine && shouldScheduleBonusAnnouncement(normalActiveAtSpinStart, resolved)
+      ? (resolved.czLamp ? "stop3" : A_TYPE_MODE && resolved.premiumBonus
+        ? "lever"
+        : (A_TYPE_MODE && resolved.bonusHit && resolved.bonusSource === "チェリー同時当選")
+          ? "stop3"
+          : decideBonusAnnouncementTiming())
+      : "";
+
+    showCzLamp(0,resolved);
+    if(normalState.flow?.entryStage!=='roulette')showZoneRoulette(null);
+    currentSpin = {
+      reelLayoutVersion:REEL_LAYOUT_VERSION,
+      stopControlVersion:1,
+      artReverse:!!resolved.artReverse,
+      result,
+      spec,
+      lineRow,
+      resolved,
+      grid,
+      gekiatsu:speedModeBonusRogiEffect || gekiatsuChance || bar3LeverEffect,
+      bonusConfirmWaitSpin:normalActiveAtSpinStart && !!resolved.bonusWaitSpin,
+      bonusConfirmPrizeSpin:normalActiveAtSpinStart && !!resolved.bonusPendingAtStart && !resolved.bonusWaitSpin && !!(resolved.bonusReady || resolved.regReady),
+      bar3LeverEffect,
+      speedModeBonusRogiEffect,
+      zoneActiveAtStart:zoneActiveAtSpinStart,
+      aTypeBonusActiveAtStart:aTypeBonusActiveAtSpinStart,
+      zoneType:zoneActiveAtSpinStart ? currentGoraiZoneType() : "",
+      battleActiveAtStart:battleActiveAtSpinStart,
+      normalActiveAtStart:normalActiveAtSpinStart,
+      speedModeAtStart:speedModeSpinAtStart,
+      autoStopAtStart:autoPlay,
+      autoStopOrderMode:automaticStopAtStart?autoStopOrderMode:"",
+      autoStopOrder:automaticStopAtStart?autoStopOrderForMode(autoStopOrderMode):null,
+      autoMissBarBottom,
+      autoPacingAtStart:autoPacingProfile(),
+      superSpeedAtStart:superSpeedActive,
+      superSpeedStartedAt,
+      bonusAnnouncementTiming,
+      bonusAnnouncementLit:false,
+      reachMeLine,
+      devilRushEntryEffect,
+      battleRound:battleRoundAtSpinStart,
+      stopped:[false,false,false],
+      ladderResultPresentation:normalState.ladderAwardPresentation?.started?{zone:normalState.ladderAwardPresentation.flow?.zone,pt:normalState.ladderAwardPresentation.card?.pt}:null,
+      effectsSkipped:false,
+      finishing:false,
+      finishScheduled:false,
+      rogiStopEffectMax:0,
+      rogiStopEffectStarted:false,
+      rogiLastStopEffectOrder:0,
+      rogiBlackoutShown:false,
+      reversePushMissBlackoutShown:false,
+      zakoEffectActive:zakoEffect.active,
+      zakoBellEffect:zakoEffect.bell,
+      zakoAddEffect:zakoEffect.add,
+      zakoThirdStopVoicesPlayed:false,
+      reversePushGuide,
+      pendingBattleOutcome:null
+    };
+    globalThis.NovaSuperSpeedReels && syncSuperSpeedReelDisplay();
+    showCzPrelude(0,resolved);
+    playCzCountdownOnLever(resolved);
+    currentSpin.manualBonusStop = false; // Fixed-G prototype: bonus starts on the next confirmed spin.
+    if(!debugFastSpinActive&&NovaBellNavi.begin(currentSpin)){
+      if(result==='BELL15')currentSpin.grid=buildNovaReelGrid(result,1,currentSpin.bellNaviOrder[0],{autoMissBarBottom:currentSpin.autoMissBarBottom});
+      if(!resolved.researchSortie)playOneShotSound('assets/media/nova/bell-navi.wav',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
+      playBellNaviVoice(currentSpin);
+    }
+    playZoneRouletteBetVoice(resolved);
+    playAimBetPresentation(resolved);
+    playCzIntroBetVoice(resolved);
+    playRareNaviSound(currentSpin);
+    playRareCueVoice(currentSpin);
+    const comebackIntroPlayback=playModeEntryBetVoice(resolved);
+    playGiruLadderBetVoice(currentSpin);
+    playSosukeLadderBetVoice(currentSpin);
+    NovaSortie.begin(currentSpin);
+    globalThis.NovaCheckpointHint?.begin(currentSpin,settings.setting);
+    renderRemainingCounters();
+    syncUpperAtBackground();
+    const checkpointCue=atCheckpointStatus(normalState.flow,NovaProgress.snapshot(),currentGameProfit());
+    const checkpointCueNext=NovaProgress.snapshot().next;
+    if(checkpointCue?.gold&&normalState.checkpointSoundNext!==checkpointCueNext){
+      normalState.checkpointSoundNext=checkpointCueNext;
+      playOneShotSound('assets/media/nova/at-prelude-start-20261013.mp3',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
+    }
+    if(resolved.zoneStartFlow)updateDisplay();
+    if(resolved.oumaFreeze)showOverlay(NovaArt.zoneName(normalState.flow)+'フリーズ！ 0G連');
+    else if(resolved.artReverse)showOverlay('逆回転！ '+resolved.flowAfter.award+'pt');
+    else if(resolved.researchChallenge?.priorAim)$('overlay').classList.remove('show');
+    else if(resolved.researchChallenge)showOverlay(resolved.researchChallenge.nextAim?'HOLD':'残り'+resolved.researchChallenge.left+'G');
+    else if(resolved.researchSortie)$("overlay").classList.remove("show");
+    else if(!resolved.oumaFailed&&['urapi','ouma'].includes(normalState.flow?.zone))$('overlay').classList.remove('show');
+    if(currentSpin.bonusConfirmWaitSpin){
+      showBonusConfirmScreen("solid");
+    }else if(currentSpin.bonusConfirmPrizeSpin){
+      showBonusConfirmScreen("translucent");
+    }
+    currentSpin.rogiStopEffectMax = decideRogiStopEffectMax(currentSpin);
+    if(speedModeBonusRogiEffect){
+      startGekiatsuEffect(false, ROGI_STOP_VIDEO_SRCS[3], "SPEED BONUS ROGI", {
+        muted:false,
+        solid:true,
+        fadeOnEnd:true,
+        holdUntilEndOrBet:true,
+        muteBgm:true,
+        volumeScale:ROGI_MOVIE_OUTPUT_SCALE,
+        volumeGroup:"rogi",
+        allowDuringSpeed:true
+      });
+
+    }else if(gekiatsuChance){
+      startGekiatsuEffect(premiumForced);
+    }
+    if(zakoEffect.active){
+      startBellReelReadyVideos();
+    }
+    if(reversePushGuide){
+      showReversePushGuide(reversePushGuide);
+    }
+    if(currentSpin.bonusAnnouncementTiming === "lever"){
+      lightBonusAnnouncement(currentSpin, "lever");
+    }
+
+    const waitSeconds = spinWaitSecondsText();
+    const waitText = speedModeSpinAtStart
+      ? "SPEED中 / 停止できます"
+      : bar3LeverEffect
+        ? `BAR揃い演出発生！ ${waitSeconds}後に停止可能`
+        : gekiatsuChance
+          ? `プレミア演出発生！ ${waitSeconds}後に停止可能`
+          : `ウェイト中... ${waitSeconds}後に停止可能`;
+    $("resultText").textContent = zoneActiveAtSpinStart
+      ? `${goraiZoneRemainText(session.bigZone, session.bigZoneType)} / ${waitText}`
+      : battleActiveAtSpinStart
+        ? `${battleRemainText()} / ${waitText}`
+        : waitText;
+    if(!speedModeSpinAtStart) playNormalBgm();
+    if(comebackIntroPlayback){
+      // BET and the outcome are already recorded. Keep these same reels/prize
+      // while loading and playing the announcement, then start motion once.
+      const waitingSpin=currentSpin;
+      clearTimeout(spinWaitTimer);spinWaitTimer=null;spinCanStop=false;
+      $('spinBtn').disabled=true;$('spinBtn').textContent='WAIT';
+      $('resultText').textContent='引き戻しチャレンジ 音声再生中...';
+      syncCabinetControlState();persistState();
+      if(!await waitForComebackIntroVoice(comebackIntroPlayback)||currentSpin!==waitingSpin||!isSpinning)return;
+      $('spinBtn').disabled=false;
+      $('resultText').textContent=waitText;
+      if(superSpeedStartedAt!==null){
+        superSpeedStartedAt=performance.now();currentSpin.superSpeedStartedAt=superSpeedStartedAt;
+        superSpeedNextBetAt=superSpeedStartedAt+autoStopDelayMs(2)+autoScaledDelayMs(RESULT_WAIT_MS)+autoDelayMs();
+      }
+      spinWaitTimer=setTimeout(unlockSpin,spinWaitMs);
+    }
+    if(options?.oumaFailed){
+      playOneShotSound('assets/media/nova/ouma-fail.wav');
+      const machine=document.getElementById('machine');machine.dataset.oumaFailDim='true';
+      clearTimeout(oumaFailDimTimer);
+      oumaFailDimTimer=setTimeout(()=>{machine.dataset.oumaFailDim='';oumaFailDimTimer=null;},900);
+    }else if(!resolved.oumaFreeze)playSpinSound(resolved);
+    if(!debugFastSpinActive&&!speedModeSpinAtStart)NovaInitialDuo.begin(resolved);else NovaInitialDuo.clear();
+    ensureBattleBgmContinuing();
+    ensureBarBgmContinuing();
+
+    if(!resolved.oumaFreeze&&!options?.oumaFailed)resetReelSpinOffsets();
+    reels.forEach((reel,i)=>{
+      reel.classList.add("spinning");
+      if(!resolved.oumaFreeze&&!options?.oumaFailed)setRandomReel(i);
+      const strip = REEL_STRIPS[i] || REEL_STRIPS[0];
+      if(A_TYPE_MODE&&!resolved.oumaFreeze){
+        // Keep the already drawn symbols and stop order; omit only the costly
+        // continuous-strip animation while consuming games at sixfold speed.
+        if(!currentSpin.superSpeedAtStart)NovaReelMotion.start(i,reel,strip,options?.oumaFailed?Math.max(0,oumaStoppedTops[i]):currentReelTopIndex(i),!!currentSpin?.artReverse,cellHtml);
+      }
+      else if(!resolved.oumaFreeze){const reelStepMs=Math.max(16,REEL_FULL_ROTATION_MS/strip.length);spinIntervals[i]=setInterval(()=>setRandomReel(i),reelStepMs);}
+    });
+
+    // オート/SPEED中だけ自動停止。手動時はストップ/左中右を押すまで止まらない。
+    if(resolved.oumaFreeze){startOumaReverseAudio(currentSpin);}
+    if(!resolved.oumaFreeze&&(autoPlay || speedModeSpinAtStart)){
+      const scheduledSpin=currentSpin;
+      const stopOrder = NovaBellNavi.stopOrder(currentSpin);
+      stopOrder.forEach((i,idx)=>{
+        const normalAutoStopDelay = autoStopDelayMs(idx);
+        const delay = resolved.oumaFreeze ? spinWaitMs + 150 + idx * 300 : speedModeSpinAtStart ? speedModeStopDelay(i)
+          : superSpeedStartedAt!==null ? Math.max(0,normalAutoStopDelay-(performance.now()-superSpeedStartedAt)) : normalAutoStopDelay;
+        setTimeout(()=>stopAutoReelInOrder(scheduledSpin,i,{oumaAuto:!!resolved.oumaFreeze}), delay);
+      });
+    }
+    persistState();
+  }
+
+  function willCompleteATypeBonusWithSpin(spin=currentSpin){
+    if(!spin || !spin.aTypeBonusActiveAtStart || !spin.resolved) return false;
+    const reward = Number(spin.resolved.bellNaviPenaltyApplied&&!spin.resolved.bellNaviPenaltySettled?spin.resolved.internalBellReward:spin.resolved.reward) || 0;
+    const target = Number(session.bonusTarget) || aTypeBonusTarget();
+    const netAfter = Math.max(0, NovaArt.bonusProgress(session) + reward);
+    return target > 0 && netAfter >= target;
+  }
+
+  function isPremiumBigFinalBonusSpin(spin=currentSpin){
+    return !!(
+      spin &&
+      spin.aTypeBonusActiveAtStart &&
+      normalizeATypeBonusKind(session.bonusKind) === "BIG" &&
+      (session.premiumBonus || session.oneGameRenBonus) &&
+      willCompleteATypeBonusWithSpin(spin)
+    );
+  }
+
+  function stopAutoReelInOrder(spin,i,options={}){
+    if(currentSpin!==spin||!isSpinning||spin.stopped[i]||spin.visualStopping?.[i])return;
+    // A reel is not finished until its landing animation has completed. Keeping
+    // an in-flight reel at the head prevents a later reel from visibly landing
+    // first when the animation distances differ.
+    const next=NovaBellNavi.stopOrder(spin).find(index=>!spin.stopped[index]);
+    // Worker/native deadlines can arrive before the stop unlock or out of order.
+    // Retry the same drawn spin; never let a later reel become the first press.
+    if(!spinCanStop||globalThis.NovaSortieAudioGate?.locked(spin)||next!==i){
+      spin.autoStopRetryTimers ||= [];
+      if(!spin.autoStopRetryTimers[i])spin.autoStopRetryTimers[i]=setTimeout(()=>{
+        spin.autoStopRetryTimers[i]=null;stopAutoReelInOrder(spin,i,options);
+      },autoPollDelayMs());
+      return;
+    }
+    if(spin.autoStopRetryTimers?.[i]){clearTimeout(spin.autoStopRetryTimers[i]);spin.autoStopRetryTimers[i]=null;}
+    stopSingleReel(i,{...options,automatic:options.automatic!==false});
+  }
+
+  function revealStoppedOutcome(spin){
+    if(!spin||spin.stopOutcomeRevealed||(spin.auditStopOrder||[]).length>=3||debugFastSpinActive||speedToBonusActive)return;
+    const verdict=NovaAim.stopVerdict(spin);if(!verdict)return;
+    spin.stopOutcomeRevealed=verdict;
+    const sound=src=>playOneShotSound(src,sfxOutputVolume(),{allowDuringPremiumConfirm:true});
+    if(verdict.kind==='aim'){
+      if(verdict.won){
+        spin.earlyAimSoundPlayed=true;spin.aimWinPlayed=true;
+        const resolved=spin.resolved,symbol=resolved.aim.symbol;
+        playAimSevenWinSound(symbol,resolved);
+        NovaAim.win(()=>{},symbol,resolved,()=>playZoneContinueVoice(symbol,resolved));
+      }
+      else {spin.earlyAimFailurePlayed=true;NovaAim.fail(()=>sound('assets/media/nova/ouma-fail.wav'));}
+    }else if(verdict.kind==='nova'){
+      if(verdict.won){if(!spin.superNovaStopSoundPlayed)sound('assets/media/nova/super-nova-stop.wav');spin.superNovaStopSoundPlayed=true;NovaAim.confirmNova?.();}
+      else NovaAim.fail(()=>sound('assets/media/nova/ouma-fail.wav'));
+    }else if(verdict.kind==='ladder'){
+      if(!spin.ladderOutcomeSoundPlayed)sound(verdict.won?'assets/media/nova/shutter-close.wav':'assets/media/nova/ouma-fail.wav');
+      spin.ladderOutcomeSoundPlayed=true;
+      if(verdict.won)NovaLadder.confirm?.(spin.resolved);else NovaLadder.fail?.();
+    }else if(verdict.kind==='sortie'){
+      if(verdict.won)playSortieSandwichHitSound(spin);
+      else {stopSortieSandwichAimSound(spin);NovaSortieAim.fail?.();sound('assets/media/nova/ouma-fail.wav');}
+    }
+  }
+
+  function stopSingleReel(i, options={}){
+    if(!canUsePlayState())return;
+    if(globalThis.NovaSortieAudioGate?.locked(currentSpin))return;
+    if(currentSpin?.resolved?.stockEntry){void stopStockEntryReel(i,options);return;}
+    if(currentSpin?.resolved?.oumaFreeze&&!options.oumaAuto)return;
+    if(!isSpinning || !currentSpin || currentSpin.stopped[i]) return;
+    if(options.keyboardTurbo){
+      currentSpin.keyboardTurboStop = true;
+    }
+    if(!spinCanStop){
+      const waitSeconds = spinWaitSecondsText();
+      $("resultText").textContent = options.keyboardTurbo ? `十字キー高速停止待機... ${waitSeconds}後に停止可能` : `ウェイト中... ${waitSeconds}後に停止可能`;
+      return;
+    }
+    const motionAt=!options.visualReady?NovaReelMotion.capture(i,{aimSnap:currentSpin.resolved?.aim?.symbol==='seven'&&NovaAim.hasGuide(currentSpin.resolved.aim)}):null;
+    hideBattleIntro();
+    if(isRogiHighZoneSpin(currentSpin)) stopRogiStopEffect(true);
+
+    if(!options.visualReady&&currentSpin.visualStopping?.[i])return;
+    if(!options.visualReady){
+      (currentSpin.auditPressOrder ||= []).push(i);
+      handleBellNavigationFailure(currentSpin);
+      playInitialDuoStop(currentSpin,currentSpin.auditPressOrder.length);
+    }
+    if(NovaAim.hasGuide(currentSpin.resolved?.aim)&&!options.visualReady){
+      currentSpin.aimStopOrder ||= [];
+      if(!currentSpin.aimStopOrder.includes(i))currentSpin.aimStopOrder.push(i);
+      const target=NovaAim.stopTarget(currentSpin.resolved.aim,currentSpin.result,currentSpin.aimStopOrder,i);
+      const symbol=currentSpin.resolved.aim.symbol==='seven'?'7':NEBULA_SYMBOL;
+      let column=normalizeNebulaMiddleFirstColumn(currentSpin,i)||getReelWindowFromStrip(i,symbol,target.onLine?1:0);
+      // Retain the existing random draw, then choose only compatible approved
+      // seven windows by physical distance. Outcome/stop-order rules are unchanged.
+      if(symbol==='7'&&target.onLine&&motionAt){
+        const held=currentSpin.pendingStopColumns||[];
+        let bestDistance=Infinity;
+        for(const candidate of novaSheetStopChoices('BIG')||[]){
+          if(candidate[1][i]!=='7')continue;
+          if(![0,1,2].every(c=>c===i||!(held[c]||currentSpin.stopped[c])||
+            (held[c]||currentSpin.grid.map(row=>row[c])).every((v,r)=>candidate[r][c]===v)))continue;
+          const next=candidate.map(row=>row[i]),distance=NovaReelMotion.distance(i,next,motionAt);
+          if(distance<bestDistance){bestDistance=distance;column=next;}
+        }
+      }
+      setGridColumn(currentSpin.grid,i,column);
+      currentSpin.lineRow=1;currentSpin.aimAligned=target.aligned;
+    }
+    const {grid, spec, result, lineRow} = currentSpin;
+    const stopOrder = NovaAim.hasGuide(currentSpin.resolved?.aim) ? currentSpin.aimStopOrder.indexOf(i)+1 : currentSpin.stopped.filter(Boolean).length + 1;
+    const reversePushWrongFirst = isReversePushGuidedMiss(currentSpin) && stopOrder === 1 && i !== 2;
+    let col = options.visualColumn || (currentSpin.manualBonusStop
+      ? manualStopColumnForReel(i, currentSpin)
+      : [grid[0][i], grid[1][i], grid[2][i]]);
+    if(!options.visualReady&&NovaReelMotion.has(i)){col=nearestCommonStopColumn(i,currentSpin,column=>NovaReelMotion.distance(i,column,motionAt))||col;}
+    const sortieTarget=NovaSortie.target(currentSpin,i,REEL_STRIPS);
+    if(sortieTarget){col=options.visualColumn||sortieTarget.column;setGridColumn(grid,i,col);}
+    // Keep the original common-stop RNG calls above; only the visible target
+    // changes. auditPressOrder already persists the middle-first fail pattern.
+    const ladderTarget=globalThis.NovaLadder?.target?.(currentSpin,i,REEL_STRIPS,RESULT,gridHasOnlyAllowedPaylines);
+    if(ladderTarget){col=options.visualColumn||ladderTarget.column;setGridColumn(grid,i,col);}
+    const novaZoneTarget=NovaAim.novaZoneStopTarget?.(currentSpin,i,REEL_STRIPS,RESULT);
+    if(novaZoneTarget){col=options.visualColumn||novaZoneTarget.column;setGridColumn(grid,i,col);}
+    col=normalizeNebulaMiddleFirstColumn(currentSpin,i,col)||col;
+    if(currentSpin.stopControlVersion===1&&!options.visualReady&&motionAt&&!sortieTarget&&!ladderTarget&&!novaZoneTarget&&!NovaAim.hasGuide(currentSpin.resolved?.aim)&&!currentSpin.resolved?.artReverse){
+      col=nearestPressedStopColumn(i,currentSpin,column=>NovaReelMotion.distance(i,column,motionAt),!!(options.automatic||autoPlay||currentSpin.speedModeAtStart||debugFastSpinActive))||col;
+    }
+    if(currentSpin.manualBonusStop && stopOrder === 3 && !options.visualColumn){
+      col = manualBonusFinalColumnForReel(i, currentSpin, col);
+    }
+    if(currentSpin.manualBonusStop){
+      setGridColumn(grid, i, col);
+    }
+    if(!options.visualReady)col=nearestNavigatedBellStop(i,currentSpin,column=>motionAt?NovaReelMotion.distance(i,column,motionAt):0)||col;
+    if(!options.visualReady&&NovaReelMotion.has(i)){
+      const spin=currentSpin;
+      spin.visualStopping ||= [false,false,false];
+      if(spin.visualStopping[i])return;
+      spin.visualStopping[i]=true;stopBtns[i].disabled=true;
+      (spin.pendingStopColumns ||= [null,null,null])[i]=col.slice();
+      persistState();
+      Promise.resolve().then(async()=>{
+        if(currentSpin!==spin||!isSpinning)return;
+        const landed=await NovaReelMotion.stop(i,col,{at:motionAt,immediate:!!options.automatic&&!sortieTarget&&['BELL','BELL15','REPLAY'].includes(spin.result)&&!spin.manualBonusStop});
+        if(landed&&currentSpin===spin&&isSpinning)stopSingleReel(i,{...options,visualReady:true,visualColumn:col});
+      }).catch(error=>{console.error(error);spin.visualStopping[i]=false;spin.pendingStopColumns[i]=null;stopBtns[i].disabled=false;persistState();});
+      return;
+    }
+    const displaySpec = bellNavigationMiss(currentSpin) ? RESULT.MISS : ladderTarget ? RESULT[ladderTarget.result] : spec;
+    const label = sortieTarget || novaZoneTarget ? "" : i === 1 ? displaySpec.label : "";
+
+    stopReel(i, col, label, displaySpec.cls, ladderTarget ? (ladderTarget.won?1:null) : bellNavigationMiss(currentSpin) || sortieTarget || currentSpin.manualBonusStop || result === "MISS" ? null : lineRow, stopOrder);
+    (currentSpin.auditStopOrder ||= []).push(i);
+    currentSpin.auditGrid ||= [[],[],[]];
+    for(let row=0;row<3;row++)currentSpin.auditGrid[row][i]=col[row];
+    currentSpin.stopped[i] = true;
+    revealStoppedOutcome(currentSpin);
+    NovaSortie.stop(currentSpin);
+    playSortieAwardVoice(currentSpin);
+    if(NovaSortie.busy)updateDisplay();
+    if(currentSpin.pendingStopColumns)currentSpin.pendingStopColumns[i]=null;
+    NovaBellNavi.stop(currentSpin);
+    playBellNaviVoice(currentSpin);
+    if(currentSpin.stopped.every(Boolean)){
+      playZoneInternalConfirmedSound(currentSpin.resolved);
+      playOumaNovaWinVoice(currentSpin);
+      if(!debugFastSpinActive&&!speedToBonusActive&&NovaDirectAward.show(currentSpin.resolved)){
+        $("overlay").classList.remove("show");
+        if(NovaDirectAward.directAmount(currentSpin.resolved))playOneShotSound('assets/media/nova/direct-award.wav',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
+      }
+      if(NovaAim.hasGuide(currentSpin.resolved?.aim)&&!currentSpin.aimAligned&&!currentSpin.earlyAimFailurePlayed&&!debugFastSpinActive){
+        NovaAim.fail(()=>playOneShotSound('assets/media/nova/ouma-fail.wav',sfxOutputVolume(),{allowDuringPremiumConfirm:true}));
+      }else NovaAim.stop(currentSpin.resolved);
+    }
+    syncCabinetControlState();
+    showCzLamp(stopOrder,currentSpin.resolved);
+    showCzPrelude(stopOrder,currentSpin.resolved,i);
+    NovaLadder.stop(stopOrder);
+    playGiruLadderResultVoice(currentSpin,stopOrder);
+    if(currentSpin.stopped.every(Boolean)&&NovaAim.hasGuide(currentSpin.resolved?.aim)&&['BIG','NEBULA'].includes(currentSpin.result)&&currentSpin.aimAligned&&!currentSpin.aimWinPlayed&&!debugFastSpinActive){
+      currentSpin.aimWinPlayed=true;
+      const resolved=currentSpin.resolved;
+      const symbol=resolved.aim.symbol;
+      const earlyAimSoundPlayed=currentSpin.earlyAimSoundPlayed;
+      NovaAim.win(()=>{if(!earlyAimSoundPlayed)playAimSevenWinSound(symbol,resolved);},symbol,resolved,()=>playZoneContinueVoice(symbol,resolved));
+    }
+    if(stopOrder===3 && currentSpin.resolved?.czLamp)playCzConfirmedSound(currentSpin.resolved);
+    if(stopOrder===3)showZoneRoulette(currentSpin.resolved?.flowAfter);
+    maybeLightBonusAnnouncementForStop(stopOrder, currentSpin);
+    if(stopOrder === 1 && currentSpin.reversePushGuide){
+      setReversePushGuideTranslucent();
+    }
+    if(stopOrder === 1 && currentSpin.devilRushEntryEffect){
+      setDevilRushEntryEffectTranslucent();
+    }
+    if(reversePushWrongFirst){
+      currentSpin.reversePushWrongOrder = true;
+      $("resultText").textContent = "押し順ミス / 77ハズレ";
+      const guidedSpin=currentSpin;
+      [2,1,0].forEach((next,idx)=>{
+        if(next !== i && !currentSpin.stopped[next]){
+          setTimeout(()=>{if(currentSpin===guidedSpin)stopSingleReel(next);}, 80 + idx * 120);
+        }
+      });
+    }
+    playBellReelStopVideo(i);
+    if(stopOrder === 3){
+      if(shouldFadeReversePushAtZoneEnd(currentSpin)){
+        fadeOutDevilZoneConfirmScreen();
+        fadeOutReversePushGuide();
+      }
+    }
+    const reversePushMissBlackout = shouldBlackoutReversePushMissStop(stopOrder, currentSpin);
+    if(reversePushMissBlackout){
+      currentSpin.reversePushMissBlackoutShown = true;
+      flashRogiContinuationBlackout();
+    }
+    const rogiPlayed = playRogiStopEffect(stopOrder);
+    if(!reversePushMissBlackout && !rogiPlayed && shouldBlackoutRogiContinuationStop(stopOrder, currentSpin)){
+      currentSpin.rogiBlackoutShown = true;
+      flashRogiContinuationBlackout();
+    }
+
+    if(currentSpin.stopped.every(Boolean) && !currentSpin.finishScheduled){
+      currentSpin.finishScheduled = true;
+      prepareManualBonusOutcome(currentSpin);
+
+      if(willEnterBattleAfterCurrentSpin(currentSpin)){
+        ensurePendingBattleOutcome(currentSpin);
+        showBattleIntro(battleRoundNumber(), !!(currentSpin.pendingBattleOutcome && currentSpin.pendingBattleOutcome.win));
+      }
+      $("resultText").textContent = currentSpin.speedModeAtStart ? "全リール停止 / 結果反映中..." : "全リール停止 / 結果確定待ち...";
+      const keyboardResultWaitMs = currentSpin.keyboardTurboStop
+        ? Math.round(RESULT_WAIT_MS / KEYBOARD_STOP_TURBO_MULTIPLIER)
+        : RESULT_WAIT_MS;
+      const autoResultWaitMs = currentSpin.autoStopAtStart ? NovaSuperSpeed.resultDelay(keyboardResultWaitMs,currentSpin.autoPacingAtStart) : keyboardResultWaitMs;
+      const r=currentSpin.resolved;
+      const resultEnding=!!normalState.pendingZoneResult ||
+        (!!r?.flowBefore?.zone&&!r?.flowAfter?.zone) ||
+        (r?.flowBefore?.phase==='art'&&r?.flowAfter?.phase==='normal'&&!r.bonusHit&&!r.aTypeBonusReady);
+      const czPushReady=!!r?.czLamp&&!r.czPushConfirmed&&!!(r.czCompleted||r.bonusHit||r.aTypeBonusReady);
+      const resultWaitMs = (czPushReady || resultEnding || NovaLadder.eligible(r?.flowBefore) || currentSpin.speedModeAtStart || isPremiumBigFinalBonusSpin(currentSpin)) ? 0
+        : currentSpin.superSpeedAtStart && superSpeedActive ? Math.max(0,currentSpin.superSpeedStartedAt+autoStopDelayMs(2)+autoResultWaitMs-performance.now()) : autoResultWaitMs;
+      const finishedSpin=currentSpin;
+      setTimeout(()=>{
+        if(currentSpin===finishedSpin && isSpinning && finishedSpin.stopped.every(Boolean)){
+          prepareManualBonusOutcome(finishedSpin);
+          finishSpin(finishedSpin.result, finishedSpin.resolved, finishedSpin.lineRow);
+        }
+      }, resultWaitMs);
+    }
+    persistState();
+  }
+
+  function stopAllReels(){
+    if(globalThis.NovaSortieAudioGate?.locked(currentSpin))return;
+    if(currentSpin?.resolved?.oumaFreeze)return;
+    if(!isSpinning || !currentSpin) return;
+    if(!spinCanStop){
+      $("resultText").textContent = `ウェイト中... ${spinWaitSecondsText()}後に停止可能`;
+      return;
+    }
+
+    // Follow the current bell guide, including AUTO enabled after BET.
+    const scheduledSpin=currentSpin;
+    const stopOrder = NovaBellNavi.stopOrder(currentSpin);
+    stopOrder.forEach((i,idx)=>{
+      if(!currentSpin.stopped[i]){
+        setTimeout(()=>stopAutoReelInOrder(scheduledSpin,i,{automatic:!!(autoPlay||speedToBonusActive||debugFastSpinActive)}), NovaSuperSpeed.delay(idx * 180,!!scheduledSpin.superSpeedAtStart));
+      }
+    });
+  }
+
+  function stopReel(i, columnSymbols, label, cls, lineRow=null, stopOrder=null){
+    NovaReelMotion.clear(i);
+    clearInterval(spinIntervals[i]);
+    reels[i].querySelectorAll('.cell').forEach(cell=>cell.getAnimations().filter(a=>a.id==='nova-reel-step').forEach(a=>a.cancel()));
+    reels[i].classList.remove("spinning");
+    setReelColumn(i, columnSymbols, label, cls, lineRow);
+    stopBtns[i].disabled = true;
+    playStopSound(i, stopOrder);
+  }
+
+  function isComebackChanceSpin(resolved){
+    return !!(resolved?.flowBefore?.comebackLeft||['continue','success','failure'].includes(resolved?.comebackEvent));
+  }
+
+  function playRareNaviSound(spin){
+    if(debugFastSpinActive||speedToBonusActive||!spin?.rareNavi||spin.rareNaviSoundPlayed||spin.resolved?.researchSortie||isComebackChanceSpin(spin.resolved)||globalThis.NovaLadder?.outcome?.(spin.resolved))return;
+    spin.rareNaviSoundPlayed=true;
+    playOneShotSound('assets/media/nova/rare-navi.mp3',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
+  }
+
+  function rareCueGrade(spin){
+    const role=spin?.result;
+    if(spin?.resolved?.atOutcome?.checkpointQuiet)return '';
+    if(!['WEAK_SUICA','STRONG_SUICA','CHANCE_A','CHANCE_B','WEAK_NOVA','STRONG_NOVA','SUPER_NOVA'].includes(role))return '';
+    const resolved=spin.resolved,before=resolved?.flowBefore;
+    if(before?.zone||before?.initialStage||before?.entryStage||resolved?.aTypeBonusGame)return '';
+    // A rare role, CZ win, direct award or challenge entry alone is not a zone guarantee.
+    const zone=resolved?.atOutcome?.zone;
+    const after=resolved?.flowAfter;
+    if(after?.phase==='art'&&((zone&&(after.atPrelude?.zones?.some(z=>z===zone||(z==='fixed50_sosuke'&&zone==='sosuke'))||zone===after.pendingZone))||resolved?.comebackEvent==='success'))return 'hot';
+    if(before?.phase==='art')return Number(resolved?.atOutcome?.direct)>0?'bigChance':'chance';
+    if((before?.phase||'normal')==='normal'&&Number(resolved?.czChance)>=.6)return 'bigChance';
+    return 'chance';
+  }
+
+  function playRareCueVoice(spin,rng=Math.random,cueRng=()=>crypto.getRandomValues(new Uint32Array(1))[0]/4294967296){
+    if(debugFastSpinActive||speedToBonusActive||!spin||spin.rareCueVoicePlayed)return;
+    let grade=rareCueGrade(spin);if(!grade)return;
+    const characters=Object.keys(RARE_CUE_VOICE_SRCS);
+    const character=characters[Math.min(characters.length-1,Math.max(0,Math.floor(rng()*characters.length)))];
+    spin.rareCueVoicePlayed=true;spin.rareCueVoice={character,grade};
+    // Keep the character draw so hiding a cue cannot shift later game lotteries.
+    if(spin.resolved?.researchSortie||isComebackChanceSpin(spin.resolved))return;
+    // Queued zones can start after flowBefore was captured on their first BET.
+    const zone=String((spin.resolved?.zoneStartFlow||spin.resolved?.flowAfter)?.zone||'').replace(/^ura_/,'');
+    if(['urapi','ouma'].includes(zone)||globalThis.NovaLadder?.outcome?.(spin.resolved))return;
+    // Cue rarity is visual-only: retain the existing single game-RNG character draw.
+    if(spin.resolved?.flowBefore?.phase==='art'&&['bigChance','hot'].includes(grade)&&cueRng()>=.2)grade='chance';
+    spin.rareCueVoice.grade=grade;
+    playOneShotSound(RARE_CUE_VOICE_SRCS[character][grade],voiceOutputVolume(),{allowDuringPremiumConfirm:true});
+  }
+
+  function playBellNaviVoice(spin,rng=Math.random){
+    if(debugFastSpinActive||speedToBonusActive||!spin?.bellNaviOrder||spin.bellNaviFailed||NovaBellNavi.presentationMissed(spin))return;
+    const stopped=spin.stopped||[],stage=stopped.filter(Boolean).length;
+    if(stage>3||spin.bellNaviVoiceStage===stage)return;
+    if(!BELL_NAVI_VOICE_SRCS[spin.bellNaviVoiceCharacter]){
+      const characters=Object.keys(BELL_NAVI_VOICE_SRCS);
+      spin.bellNaviVoiceCharacter=characters[Math.min(characters.length-1,Math.max(0,Math.floor(rng()*characters.length)))];
+    }
+    const reel=spin.bellNaviOrder.find(i=>!stopped[i]);
+    const src=stage===3?(BELL_NAVI_COMPLETE_VOICE_SRCS[spin.bellNaviVoiceCharacter]||BELL_NAVI_COMPLETE_VOICE_SRCS.sosuke):BELL_NAVI_VOICE_SRCS[spin.bellNaviVoiceCharacter][reel];
+    if(!src)return;
+    spin.bellNaviVoiceStage=stage;
+    if(spin.resolved?.researchSortie)return; // Preserve the selection draw without an unrelated bell voice.
+    const playback=playOneShotSound(src,voiceOutputVolume(),{allowDuringPremiumConfirm:true});
+    if(playback?.audio){
+      spin.bellNaviVoiceAudios ||= [];
+      if(!spin.bellNaviVoiceAudios.includes(playback.audio))spin.bellNaviVoiceAudios.push(playback.audio);
+    }
+  }
+
+  function playRandomAimVoice(symbol,rng=Math.random,overrideSrc){
+    if(debugFastSpinActive||speedToBonusActive)return;
+    const voices=AIM_VOICE_SRCS[symbol];
+    if(!voices?.length)return;
+    const src=voices[Math.min(voices.length-1,Math.max(0,Math.floor(rng()*voices.length)))];
+    playOneShotSound(overrideSrc||src,voiceOutputVolume(),{allowDuringPremiumConfirm:true});
+  }
+
+  function playSevenAimVoice(resolved,rng=Math.random){
+    if(debugFastSpinActive||speedToBonusActive)return;
+    const before=resolved?.flowBefore,flow=resolved?.zoneStartFlow||before;
+    const priorZone=!resolved?.aTypeBonusGame&&before?.phase==='art'&&!before.entryStage?String(before.zone||'').replace(/^ura_/,''):'';
+    const zone=resolved?.stockEntry?String(before?.pendingZone||'').replace(/^(normal_|ura_)/,''):!resolved?.aTypeBonusGame&&flow?.phase==='art'&&!flow.entryStage?String(flow.zone||'').replace(/^ura_/,''):'';
+    if(!zone){playRandomAimVoice('seven',rng);return;}
+    const src=SEVEN_ZONE_VOICE_SRCS[zone];
+    if(resolved?.stockEntry&&!src){playRandomAimVoice('seven',rng);return;}
+    // The first queued-zone game previously drew a random voice. Keep that
+    // draw so fixing the character cannot shift subsequent game lotteries.
+    if(!resolved?.stockEntry&&!priorZone)rng();
+    if(src)playOneShotSound(src,voiceOutputVolume(),{allowDuringPremiumConfirm:true});
+  }
+
+  function playNebulaAimVoice(resolved,rng=Math.random){
+    if(debugFastSpinActive||speedToBonusActive)return;
+    if(resolved?.aTypeBonusGame){
+      // Preserve the existing character draw when using the supplied BB voice.
+      if(resolved.initialBonusGame)playRandomAimVoice('nebula',rng,session.impurityReleased?MODE_EVENT_VOICE_SRCS.impurityNebulaAim:undefined);
+      else if(session.impurityReleased)playOneShotSound(MODE_EVENT_VOICE_SRCS.impurityNebulaAim,voiceOutputVolume(),{allowDuringPremiumConfirm:true});
+      return;
+    }
+    const flow=resolved?.zoneStartFlow||resolved?.flowBefore;
+    if(flow?.phase!=='art'||!flow.zone||flow.entryStage)return;
+    const src=NEBULA_ZONE_VOICE_SRCS[String(flow.zone).replace(/^ura_/,'')];
+    if(src)playOneShotSound(src,voiceOutputVolume(),{allowDuringPremiumConfirm:true});
+    else playRandomAimVoice('nebula',rng);
+  }
+
+  function playZoneRouletteBetVoice(resolved){
+    if(debugFastSpinActive||speedToBonusActive||!resolved||resolved.zoneRouletteVoicePlayed)return;
+    const flow=resolved.flowBefore;
+    // The initial duo is fixed; only the AT character roulette needs this voice.
+    if(flow?.phase!=='art'||flow.entryStage!=='roulette'||flow.initialStage)return;
+    resolved.zoneRouletteVoicePlayed=true;
+    playOneShotSound('assets/media/nova/aim/zone-roulette-confirm.wav?v=20260919-roulette-voice',voiceOutputVolume(),{allowDuringPremiumConfirm:true});
+  }
+
+  function playCzIntroBetVoice(resolved){
+    if(debugFastSpinActive||speedToBonusActive||!NovaAim.isCzIntro(resolved)||resolved.czIntroVoicePlayed)return;
+    resolved.czIntroVoicePlayed=true;
+    clearCzIntroVoiceHold(true);
+    holdCzIntroVoice(playOneShotSound('assets/media/nova/cz-entry-voice.wav',voiceOutputVolume(),{allowDuringPremiumConfirm:true}));
+  }
+
+  function playModeEntryBetVoice(resolved){
+    if(debugFastSpinActive||speedToBonusActive||!resolved||resolved.modeEntryVoicePlayed)return;
+    const comeback=resolved.flowBefore?.phase==='art'&&resolved.flowBefore.comebackLeft===NovaArt.comebackRules.games&&['continue','success','failure'].includes(resolved.comebackEvent);
+    const src=resolved.researchChallenge?.started?MODE_EVENT_VOICE_SRCS.upperChallenge:comeback?MODE_EVENT_VOICE_SRCS.comeback:'';
+    if(!src)return;
+    resolved.modeEntryVoicePlayed=true;
+    const playback=playOneShotSound(src,voiceOutputVolume(),{allowDuringPremiumConfirm:true});
+    return comeback?playback:null;
+  }
+
+  function clearComebackIntroVoiceHold(){
+    comebackIntroVoiceHold?.finish(false);
+  }
+
+  function waitForComebackIntroVoice(playback){
+    clearComebackIntroVoiceHold();
+    return new Promise(resolve=>{
+      const {audio,promise}=playback,hold={audio,timer:null};
+      comebackIntroVoiceHold=hold;
+      syncAudioWaitUi();
+      hold.finish=proceed=>{
+        if(comebackIntroVoiceHold!==hold)return;
+        comebackIntroVoiceHold=null;clearTimeout(hold.timer);
+        syncAudioWaitUi();
+        audio.removeEventListener('ended',ended);audio.removeEventListener('error',failed);
+        audio.removeEventListener('playing',progress);audio.removeEventListener('timeupdate',progress);
+        if(!audio.ended)audio.pause();
+        resolve(proceed);
+      };
+      const ended=()=>hold.finish(true),failed=()=>hold.finish(true);
+      let lastTime=-1;
+      const progress=()=>{
+        if(comebackIntroVoiceHold!==hold)return;
+        if(audio.ended)return; // The final timeupdate may precede the ended event.
+        if(audio.currentTime===lastTime)return;
+        lastTime=audio.currentTime;clearTimeout(hold.timer);
+        // Loading/buffering counts as waiting. Release only a stalled/erroring
+        // player, so missing audio cannot leave an already-paid spin stranded.
+        hold.timer=setTimeout(failed,10000);
+      };
+      audio.addEventListener('ended',ended);audio.addEventListener('error',failed);
+      audio.addEventListener('playing',progress);audio.addEventListener('timeupdate',progress);
+      if(audio.ended)ended();else progress();
+      promise?.then(progress,failed);
+    });
+  }
+
+  function playUpperAtEntryVoice(resolved){
+    if(debugFastSpinActive||speedToBonusActive||!resolved?.researchChallenge?.finished||!resolved.researchChallenge.won||resolved.upperAtEntryVoicePlayed)return;
+    resolved.upperAtEntryVoicePlayed=true;
+    playOneShotSound(MODE_EVENT_VOICE_SRCS.upperAt,voiceOutputVolume(),{allowDuringPremiumConfirm:true});
+  }
+
+  function isCzIntroVoiceHolding(){
+    return !!czIntroVoiceHold&&!superSpeedActive;
+  }
+
+  function clearCzIntroVoiceHold(stopAudio=false){
+    const hold=czIntroVoiceHold;
+    if(!hold)return;
+    czIntroVoiceHold=null;
+    clearTimeout(hold.timer);
+    hold.audio.removeEventListener('ended',hold.finish);
+    hold.audio.removeEventListener('error',hold.fail);
+    hold.audio.removeEventListener('playing',hold.progress);
+    hold.audio.removeEventListener('timeupdate',hold.progress);
+    if(stopAudio)hold.audio.pause();
+    syncAudioWaitUi();
+  }
+
+  function holdCzIntroVoice(playback){
+    if(!playback)return;
+    const {audio,promise}=playback,hold={audio,timer:null};
+    czIntroVoiceHold=hold;
+    syncAudioWaitUi();
+    hold.finish=()=>{if(czIntroVoiceHold===hold)clearCzIntroVoiceHold();};
+    hold.fail=()=>{if(czIntroVoiceHold===hold)clearCzIntroVoiceHold(true);};
+    let lastTime=-1;
+    hold.progress=()=>{
+      if(czIntroVoiceHold!==hold)return;
+      if(audio.ended){hold.finish();return;}
+      if(audio.currentTime===lastTime)return;
+      lastTime=audio.currentTime;
+      clearTimeout(hold.timer);
+      // Wait for ended, allowing loading/buffering; abandon only stalled playback.
+      hold.timer=setTimeout(hold.fail,10000);
+    };
+    audio.addEventListener('ended',hold.finish);
+    audio.addEventListener('error',hold.fail);
+    audio.addEventListener('playing',hold.progress);
+    audio.addEventListener('timeupdate',hold.progress);
+    hold.progress();
+    if(promise&&typeof promise.then==='function')promise.then(hold.progress,hold.fail);
+  }
+
+  function playAimBetPresentation(resolved,rng=Math.random){
+    if(debugFastSpinActive)return;
+    if(resolved.aim)resolved.aim.guide ??= NovaAim.drawGuide(resolved.aim);
+    globalThis.NovaAimConfidence?.prepare(resolved,{...settings.novaArt,setting:settings.setting});
+    const entryCue=NovaAim.bet(resolved.aim,resolved);
+    if(entryCue)playRandomAimVoice('seven',rng);
+    else if(NovaAim.hasGuide(resolved.aim)){
+      playOneShotSound('assets/media/nova/aim/cue-'+(resolved.aimDisplay?.color||resolved.aim.color)+'.wav',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
+      if(resolved.aim.symbol==='seven')playSevenAimVoice(resolved,rng);
+      else if(resolved.aim.symbol==='nebula')playNebulaAimVoice(resolved,rng);
+    }else if(!resolved.aim){
+      if(resolved.aimDisplay?.guide)playOneShotSound('assets/media/nova/aim/cue-'+resolved.aimDisplay.color+'.wav',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
+      playOumaNovaAimVoice(resolved);
+    }
+  }
+
+  function playOumaNovaAimVoice(resolved){
+    if(debugFastSpinActive||speedToBonusActive||resolved?.aTypeBonusGame||resolved?.oumaFailed||resolved?.oumaFreeze||resolved?.artReverse)return;
+    const flow=resolved?.flowBefore;
+    if(flow?.phase!=='art'||flow.entryStage||String(flow.zone||'').replace(/^ura_/,'')!=='ouma')return;
+    playOneShotSound(OUMA_NOVA_VOICE_SRCS.aim,voiceOutputVolume(),{allowDuringPremiumConfirm:true});
+  }
+
+  function playSortieAwardVoice(spin){
+    if(debugFastSpinActive||speedToBonusActive||!spin||spin.sortieAwardVoicePlayed)return;
+    const event=spin.resolved?.researchSortie;
+    if(!event?.won||!NovaSortie.stopVerdict(spin)?.won)return;
+    // Follow the awarded character, including wrong-order wins; never the teaser.
+    const src=SORTIE_AWARD_VOICE_SRCS[String(event.zone||'').replace(/^(ura_|normal_)/,'')];
+    if(!src)return;
+    spin.sortieAwardVoicePlayed=true;
+    playLockedBonusConfirmSound(src,voiceOutputVolume(),()=>{updateDisplay();scheduleNextAuto();});
+  }
+
+  function playOumaNovaWinVoice(spin,rng=Math.random){
+    if(debugFastSpinActive||speedToBonusActive||!spin||spin.oumaNovaVoicePlayed||spin.result!=='SUPER_NOVA'||spin.stopped?.length!==3||!spin.stopped.every(Boolean))return;
+    const resolved=spin.resolved,flow=resolved?.flowBefore;
+    if(resolved?.aTypeBonusGame||resolved?.oumaFailed||flow?.phase!=='art'||flow.entryStage||String(flow.zone||'').replace(/^ura_/,'')!=='ouma'||!isNovaGrid(spin.auditGrid||spin.grid))return;
+    spin.oumaNovaVoicePlayed=true;
+    const voices=OUMA_NOVA_VOICE_SRCS.wins;
+    const src=voices[Math.min(voices.length-1,Math.max(0,Math.floor(rng()*voices.length)))];
+    playOneShotSound(src,voiceOutputVolume(),{allowDuringPremiumConfirm:true});
+  }
+
+  function playSosukeLadderBetVoice(spin,rng=()=>globalThis.crypto.getRandomValues(new Uint32Array(1))[0]/4294967296){
+    if(debugFastSpinActive||speedToBonusActive||!spin||spin.ladderResultPresentation)return;
+    const resolved=spin.resolved,flow=resolved?.flowBefore;
+    if(!resolved||resolved.sosukeLadderVoicePlayed||resolved.aTypeBonusGame||flow?.phase!=='art'||flow.zone!=='sosuke'||flow.entryStage||flow.initialStage||!flow.ladderRevealed)return;
+    // A repeated point amount can still be a successful stage; use the settled
+    // ladder index. Voice selection must not consume the game lottery's RNG.
+    const passed=Number(resolved.flowAfter?.ladderIndex)>Number(flow.ladderIndex),roll=rng();
+    const index=passed&&roll<.3?(roll<.15?0:1):2+Math.min(2,Math.floor((passed?(roll-.3)/.7:roll)*3));
+    resolved.sosukeLadderVoicePlayed=true;
+    playOneShotSound(SOSUKE_LADDER_VOICE_SRCS[index],voiceOutputVolume(),{allowDuringPremiumConfirm:true});
+  }
+
+  function playGiruLadderBetVoice(spin,rng=Math.random){
+    if(debugFastSpinActive||speedToBonusActive||!spin||spin.giruLadderBetVoicePlayed||spin.ladderResultPresentation)return;
+    const flow=spin.resolved?.flowBefore;
+    if(spin.resolved?.aTypeBonusGame||flow?.phase!=='art'||flow.entryStage||String(flow.zone||'').replace(/^ura_/,'')!=='giru'||!flow.ladderRevealed)return;
+    const passed=Number(spin.resolved.flowAfter?.award)>Number(flow.award);
+    const goodFlowRate=passed?.7:.1,roll=rng();
+    const index=roll<goodFlowRate?2:roll<goodFlowRate+(1-goodFlowRate)/2?0:1;
+    spin.giruLadderBetVoicePlayed=true;
+    playOneShotSound(GIRU_LADDER_VOICE_SRCS.bet[index],voiceOutputVolume(),{allowDuringPremiumConfirm:true});
+  }
+
+  function playGiruLadderResultVoice(spin,stopOrder){
+    if(debugFastSpinActive||speedToBonusActive||stopOrder!==1||!spin||spin.giruLadderResultVoicePlayed)return;
+    const result=spin.ladderResultPresentation,pt=Number(result?.pt);
+    if(String(result?.zone||'').replace(/^ura_/,'')!=='giru'||!Number.isFinite(pt)||pt<0)return;
+    spin.giruLadderResultVoicePlayed=true;
+    const index=pt>=1000?2:pt>=500?1:0;
+    playOneShotSound(GIRU_LADDER_VOICE_SRCS.result[index],voiceOutputVolume(),{allowDuringPremiumConfirm:true});
+  }
+
+  function playZoneStartVoice(before,after){
+    if(debugFastSpinActive||speedToBonusActive||before?.phase!=='art'||before.entryStage!=='confirmed'||after?.phase!=='art'||after.entryStage)return;
+    const zone=after.ura&&!after.zone?.startsWith('ura_')?'ura_'+after.zone:after.zone;
+    const src=ZONE_START_VOICE_SRCS[zone];
+    if(src)playOneShotSound(src,voiceOutputVolume(),{allowDuringPremiumConfirm:true});
+  }
+
+  function playZoneContinueVoice(symbol,resolved){
+    if(debugFastSpinActive||speedToBonusActive||symbol!=='nebula'||resolved?.aTypeBonusGame||resolved?.flowBefore?.phase!=='art')return;
+    const src=ZONE_CONTINUE_VOICE_SRCS[String((resolved.zoneStartFlow||resolved.flowBefore).zone||'').replace(/^ura_/,'')];
+    if(src)playOneShotSound(src,voiceOutputVolume(),{allowDuringPremiumConfirm:true});
+  }
+
+  function playZoneInternalConfirmedSound(resolved){
+    if(debugFastSpinActive||speedToBonusActive||!resolved||resolved.zonePatrolPlayed)return;
+    if(resolved.flowBefore?.phase!=='art'||resolved.flowBefore?.entryStage||resolved.flowAfter?.entryStage!=='seven')return;
+    resolved.zonePatrolPlayed=true;
+    if(resolved.atPrelude?.confirmed)globalThis.NovaAtPatrol?.confirm();
+    const afterPatrol=resolved.flowBefore.initialStage?null:()=>playLockedBonusConfirmSound(MODE_EVENT_VOICE_SRCS.zoneGet,voiceOutputVolume());
+    playLockedBonusConfirmSound('assets/media/jag/cz_patrol_confirm.wav?v=19',sfxOutputVolume(),afterPatrol);
+  }
+
+  function playCzPushPromptVoice(cue){
+    const src=CZ_PUSH_PROMPT_VOICE_SRCS[cue?.voice];
+    if(src)playOneShotSound(src,voiceOutputVolume(),{allowDuringPremiumConfirm:true});
+  }
+
+  function playCzConfirmedSound(resolved){
+    if(resolved?.czLamp&&!resolved.czPushConfirmed)return;
+    if(!(resolved?.bonusHit || resolved?.aTypeBonusReady || resolved?.flowAfter?.phase==='art') || resolved.czPatrolPlayed)return;
+    resolved.czPatrolPlayed=true;
+    playLockedBonusConfirmSound('assets/media/nova/cz-success-push-20261027.mp3',sfxOutputVolume());
+  }
+
+  function playCzFailureSound(resolved){
+    if(!resolved||resolved.czFailurePushPlayed)return;
+    resolved.czFailurePushPlayed=true;
+    pauseNormalBgm();
+    playOneShotSound('assets/media/nova/cz-failure-blackout-20261027.mp3',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
+  }
+
+  var zoneRouletteTimer=null;
+  function showZoneRoulette(flow){
+    let panel=document.getElementById('zoneRoulette');
+    if(!panel){panel=document.createElement('div');panel.id='zoneRoulette';panel.setAttribute('role','status');document.querySelector('.reelArea').append(panel);}
+    clearInterval(zoneRouletteTimer);zoneRouletteTimer=null;
+    document.body.dataset.zoneRouletteLamp='';
+    panel.hidden=!['roulette','confirmed'].includes(flow?.entryStage);
+    document.body.dataset.zoneRouletteState=panel.hidden?'':flow.entryStage;
+    const lamps=Array.from(document.querySelectorAll('.novaArtItem'));
+    const light=id=>{
+      document.body.dataset.zoneRouletteLamp=id;
+      for(const lamp of lamps){
+        const active=lamp.dataset.artwork===id||(id==='kushuri_nito'&&['kushuri','nito'].includes(lamp.dataset.artwork));
+        if(lamp.dataset.rouletteLit!==String(active))lamp.dataset.rouletteLit=String(active);
+      }
+    };
+    light('');
+    if(panel.hidden)return;
+    const artwork={sosuke:'sosuke',toto:'toto',urapi:'urapi',giru:'giru1',sora:'sora1',ouma:'ouma1',kushuri:'kushuri',nito:'nito',kushuri_nito:'kushuri_nito'};
+    const show=(zone,text)=>{panel.textContent=text;light(artwork[NovaArt.baseZone(zone)]||'');};
+    if(flow.entryStage==='confirmed'){show(flow.pendingZone,NovaArt.zoneName(flow.pendingZone)+'ゾーン確定！');return;}
+    // Animation owns a separate seed; never consume or change the game lottery.
+    let seed=(globalThis.crypto?.getRandomValues(new Uint32Array(1))[0]??Date.now())>>>0;
+    if(!seed)seed=0x6d2b79f5;
+    const next=()=>{seed^=seed<<13;seed^=seed>>>17;seed^=seed<<5;return seed>>>0;};
+    let index=-1;const zones=NovaArt.rouletteZones(flow);
+    const tick=()=>{
+      index=index<0?next()%zones.length:zones.length>1?(index+1+next()%(zones.length-1))%zones.length:0;
+      const zone=zones[index];show(zone,'特化ゾーン抽選中… '+NovaArt.names[zone]);
+    };
+    tick();zoneRouletteTimer=setInterval(tick,55);
+  }
+  function renderCzPrelude(indices=[]){
+    const dark=Array.isArray(indices)?indices:[];
+    document.getElementById('machine').dataset.czPreludeStage=String(dark.length);
+    document.querySelectorAll('.reel[data-reel]').forEach(reel=>reel.classList.toggle('cz-prelude-blackout',dark.includes(Number(reel.dataset.reel))));
+  }
+  function syncCzPreludeGlow(resolved=null){
+    const cue=resolved?.czPrelude;
+    const pending=normalState.internal?.prelude?.presentation==='reel';
+    const active=!session.active&&!normalState.bonusPending&&(cue?!cue.announce:pending);
+    const machine=document.getElementById('machine');
+    machine.dataset.czPreludeActive=String(active);
+    // Use the current spin's cue so hit and fake preludes also glow on their
+    // trigger/final game; between spins use the saved, unfinished prelude.
+    machine.dataset.atPreludeActive=String(!session.active&&!normalState.bonusPending&&normalState.flow?.phase==='art'&&!!(resolved?.atPrelude||normalState.flow.atPrelude));
+    globalThis.NovaAtPatrol?.sync(session.active||normalState.bonusPending||debugFastSpinActive||speedToBonusActive||normalState.resultCard||normalState.stockEntry||isCompleteTrialLocked()?null:normalState.flow,resolved);
+  }
+  function showCzPrelude(stopOrder,resolved,reelIndex=null){
+    const prelude=resolved?.czPrelude||resolved?.atPrelude;
+    if(stopOrder===0){renderCzPrelude([]);if(resolved)resolved.blackoutReels=[];syncCzPreludeGlow(resolved);}
+    if(!prelude)return;
+    if(prelude.announce){
+      renderCzPrelude([]);
+      if(stopOrder===0&&!resolved.czAnnounced){
+        resolved.czAnnounced=true;
+        updateDisplay();
+        const message=resolved.flowAfter?.phase==='strong_cz'?'強CZ突入':'CZ突入';
+        showMessage(message,'リール全消灯からCZへ');if(!resolved.czIntro)showOverlay(message);
+      }
+      return;
+    }
+    if(stopOrder>0&&Number.isInteger(reelIndex)&&stopOrder<=prelude.after){
+      const dark=resolved.blackoutReels ||= [];
+      if(!dark.includes(reelIndex))dark.push(reelIndex);
+      renderCzPrelude(dark);
+    }
+  }
+  function showCzLamp(stopOrder,resolved){
+    const host=document.getElementById('machine');
+    host.dataset.czBlink='';
+    const lamp=resolved?.czLamp,machine=document.getElementById('machine');
+    const czSpin=!!lamp||['cz','strong_cz'].includes(resolved?.flowBefore?.phase);
+    const czState=lamp||(czSpin?resolved?.flowBefore:null);
+    let order='';
+    if(czSpin){
+      const key=String(NovaFlow.lampSeed(czState));
+      let presentation=resolved.czLampPresentation||normalState.czLampPresentation;
+      if(!presentation||presentation.key!==key){
+        presentation={key,setting:settings.setting,...NovaFlow.lampPresentation(czState,settings.setting)};
+      }
+      normalState.czLampPresentation=presentation;
+      resolved.czLampPresentation=presentation;
+      order=presentation.order.join(',');
+    }else normalState.czLampPresentation=null;
+    if(machine.dataset.czOrder!==order)machine.dataset.czOrder=order;
+    machine.dataset.czIntro='false';
+    if(!czSpin){machine.dataset.czLamp='0';machine.dataset.czRainbow='false';machine.dataset.czColor='';return;}
+    const terminal=!!(resolved.czCompleted||resolved.bonusHit||resolved.aTypeBonusReady||resolved.flowAfter?.phase==='art');
+    // The CZ draw may be fixed internally at entry; reveal the all-rainbow
+    // confirmation only when this spin reaches its actual result boundary.
+    const won=!!(lamp?.success||resolved.bonusHit||resolved.aTypeBonusReady||resolved.flowAfter?.phase==='art');
+    if(stopOrder===0&&!won){
+      if(!machine.dataset.czLamp)machine.dataset.czLamp='0';
+      resolved.czLampAtBet=Number(machine.dataset.czLamp)||0;
+      return;
+    }
+    const display=NovaCzPresentation.display(lamp,stopOrder,won,settings.setting,terminal,!!resolved.czPushConfirmed);
+    if(!display)return;
+    const previous=Number(machine.dataset.czLamp)||0;
+    const target=resolved.czPushConfirmed?Math.max(previous,display.stage):Math.min(7,Math.max(previous,display.stage));
+    machine.dataset.czLamp=String(target);
+    machine.dataset.czColor=target>=8?'rainbow':target>=7?'red':target>=6?'green':target>=4?'yellow':target>=2?'blue':'white';
+    machine.dataset.czRainbow=String(target>=8);
+    if(stopOrder===0)resolved.czLampAtBet=target;
+    if(target>previous){(resolved.czLitStops ||= {})[stopOrder]=true;playOneShotSound('assets/media/jag/cz_third_success.wav',sfxOutputVolume());}
+
+  }
+
+  function restoreCzLampPresentation(resolved){
+    if(resolved?.czLampAtBet==null)return false;
+    const machine=document.getElementById('machine');
+    const stage=Math.max(0,Math.min(resolved.czPushConfirmed?8:7,Number(resolved.czLampAtBet)||0));
+    machine.dataset.czLamp=String(stage);
+    machine.dataset.czColor=stage>=8?'rainbow':stage>=7?'red':stage>=6?'green':stage>=4?'yellow':stage>=2?'blue':stage>0?'white':'';
+    machine.dataset.czRainbow=String(stage>=8);
+    return true;
+  }
+
+  var oumaReverseAudio=null,oumaReverseLoadTimer=null,oumaIntroAudio=null,oumaStoppedTops=[0,0,0];
+  function clearOumaReverseAudio(){
+    clearTimeout(oumaReverseLoadTimer);oumaReverseLoadTimer=null;
+    if(oumaReverseAudio){const audio=oumaReverseAudio;oumaReverseAudio=null;audio.novaCancelPlaybackWatch?.();audio.onerror=null;audio.onended=null;audio.onplaying=null;audio.pause();try{audio.removeAttribute("src");audio.load();}catch(e){}}
+  }
+  function startOumaReverseAudio(spin){
+    if(!spin?.resolved?.oumaFreeze)return;
+    clearOumaReverseAudio();
+    const audio=new Audio('assets/media/nova/ouma-reverse-v2.wav');oumaReverseAudio=audio;
+    audio.preload='auto';audio.volume=sfxOutputVolumeForSource(SFX_OUTPUT_SCALE,'assets/media/nova/ouma-reverse-v2.wav');
+    let started=false,fallback=null;
+    const useFallback=()=>{audio.novaCancelPlaybackWatch?.();audio.pause();if(fallback===null)fallback={time:performance.now(),offset:audio.currentTime||0};};
+    const clock=()=>fallback?(performance.now()-fallback.time)/1000+fallback.offset:audio.currentTime;
+    const begin=()=>{
+      if(started||currentSpin!==spin||oumaReverseAudio!==audio)return;
+      started=true;clearTimeout(oumaReverseLoadTimer);let landed=0;
+      reels.forEach((reel,i)=>NovaReelMotion.startSynced(i,reel,REEL_STRIPS[i],spin.grid.map(row=>row[i]),true,cellHtml,clock,4400,()=>{
+        if(currentSpin!==spin||oumaReverseAudio!==audio)return;
+        if(++landed===3){document.getElementById('machine').dataset.oumaNovaShake='true';spinCanStop=true;[0,1,2].forEach(index=>stopSingleReel(index,{oumaAuto:true,visualReady:true,visualColumn:spin.grid.map(row=>row[index])}));}
+      },Math.max(0,oumaStoppedTops[i])));
+    };
+    audio.onerror=()=>{useFallback();begin();};
+    audio.novaCancelPlaybackWatch=watchPlaybackProgress(audio,()=>{
+      if(oumaReverseAudio!==audio)return;
+      useFallback();begin();audio.onended?.();
+    });
+    oumaReverseLoadTimer=setTimeout(()=>{if(!started){audio.pause();useFallback();begin();}},3000);
+    const play=audio.play();
+    if(play?.then)play.then(()=>{if(oumaReverseAudio!==audio||currentSpin!==spin){audio.pause();return;}if(fallback)audio.pause();begin();}).catch(()=>{if(oumaReverseAudio!==audio||currentSpin!==spin)return;useFallback();begin();});else begin();
+  }
+
+  let oumaChainTimer=null;
+  var oumaFailDimTimer=null;
+  var oumaPresentation=null;
+  function clearOumaPresentation(keepNovaShake=false,keepReelMotion=false){
+    NovaOumaPush.reset();
+    if(!keepNovaShake)document.getElementById('machine').dataset.oumaNovaShake='';
+    clearTimeout(oumaFailDimTimer);oumaFailDimTimer=null;
+    document.getElementById('machine').dataset.oumaFailDim='';
+    clearTimeout(oumaChainTimer);oumaChainTimer=null;
+    if(!keepReelMotion&&['lift','push','fail'].includes(oumaPresentation?.stage))NovaReelMotion.clearAll();
+    if(oumaIntroAudio){oumaIntroAudio.pause();oumaIntroAudio=null;}
+    if(oumaReverseAudio)oumaReverseAudio.onended=null;
+    oumaPresentation=null;
+    document.getElementById('machine').dataset.oumaFreeze='';
+  }
+  function scheduleOumaZeroChain(){
+    const previous=normalState.flow;
+    if(!['ouma','urapi'].includes(previous?.zone)||!previous.oumaPending||debugFastSpinActive||isCompleteTrialLocked())return false;
+    clearOumaPresentation(true);stopSpeedToBonus('逢魔フリーズ操作待ち');
+    const presentation=oumaPresentation={stage:'hold',previous};
+    reels.forEach((reel,i)=>{reel.style.setProperty('--ouma-rattle-speed',[35,41.5,30.5][i]+'ms');reel.style.setProperty('--ouma-rattle-delay',[0,-15.5,-8.5][i]+'ms');});
+    const machine=document.getElementById('machine');machine.dataset.oumaFreeze='hold';
+    $('spinBtn').disabled=true;stopBtns.forEach(b=>b.disabled=true);
+    const ready=()=>{
+      if(oumaPresentation!==presentation||normalState.flow!==previous)return;
+      clearOumaReverseAudio();presentation.stage='bet';machine.dataset.oumaFreeze='bet';
+      $('spinBtn').disabled=false;$('spinBtn').textContent='BET';$('resultText').textContent='BETで'+NovaArt.zoneName(previous)+'フリーズ継続チャレンジ';
+      if(autoPlay)queueAutoStep(autoDelayMs());
+    };
+    if(oumaReverseAudio&&!oumaReverseAudio.ended&&!oumaReverseAudio.paused){oumaReverseAudio.onended=ready;oumaReverseAudio.onerror=ready;}
+    else ready();
+    return true;
+  }
+  function resolveOumaChallenge(){
+    if(oumaPresentation?.stage!=='bet')return;
+    const presentation=oumaPresentation,previous=presentation.previous;
+    if(normalState.flow!==previous){clearOumaPresentation();return;}
+    NovaDirectAward.clear();
+    globalThis.NovaResultRecall?.bet();
+    document.getElementById('machine').dataset.oumaNovaShake='';
+    presentation.stage='lift';$('spinBtn').disabled=true;
+    const machine=document.getElementById('machine');machine.dataset.oumaFreeze='lift';
+    normalState.flow=NovaArt.prepareBet(previous,{...settings.novaArt,setting:settings.setting},Math.random);
+    const oumaFailed=!normalState.flow.zero;
+    normalState.pendingZoneResult=trackZoneResult(NovaResults.transition(previous,normalState.flow,settings.setting),previous,normalState.flow);
+    persistState();
+
+    const audio=new Audio('assets/media/nova/uuufa.wav');oumaIntroAudio=audio;
+    audio.volume=sfxOutputVolumeForSource(SFX_OUTPUT_SCALE,'assets/media/nova/uuufa.wav');
+    audio.play()?.then(()=>{if(oumaIntroAudio!==audio)audio.pause();}).catch(()=>{});
+    const started=performance.now(),tops=oumaStoppedTops.map(top=>Math.max(0,top));
+    const preparedFlow=normalState.flow;
+    // Both outcomes lift one cell identically. Reveal only after a PUSH, with
+    // no new draw, BET or payout while waiting for the player's input.
+    const valid=()=>oumaPresentation===presentation&&normalState.flow===preparedFlow&&canUsePlayState();
+    const reveal=()=>{
+      if(!valid()){clearOumaPresentation();return;}
+      if(oumaFailed)reels.forEach((_,i)=>{NovaReelMotion.clear(i);setReelColumn(i,reelWindowFromTopIndex(i,tops[i]+1),'','',null);});
+      else oumaStoppedTops=tops.map((top,i)=>mod(top+1,REEL_STRIPS[i].length));
+      clearOumaPresentation(false,!oumaFailed);spin({oumaFailed});
+      if(!oumaFailed&&!isSpinning)NovaReelMotion.clearAll();
+    };
+    let landed=0;
+    const ready=()=>{
+      if(oumaPresentation!==presentation||presentation.stage!=='lift')return;
+      if(++landed!==3)return;
+      if(!valid()){clearOumaPresentation();return;}
+      if(oumaIntroAudio){oumaIntroAudio.pause();oumaIntroAudio=null;}
+      presentation.stage='push';machine.dataset.oumaFreeze='push';
+      NovaOumaPush.show({valid,auto:()=>!!autoPlay,onOffer:playCzPushPromptVoice,reveal,
+        won:!oumaFailed,probability:NovaArt.oumaFreezeRate(NovaArt.normalize(previous),NovaArt.config({...settings.novaArt,setting:settings.setting}))});
+    };
+    reels.forEach((reel,i)=>NovaReelMotion.start(i,reel,REEL_STRIPS[i],tops[i],true,cellHtml,{
+       clock:()=>Math.min(500,Math.max(0,performance.now()-started-[0,65,120][i]))/1000,
+       duration:500,steps:1,done:ready
+     }));
+  }
+
+  function finishSpin(result, resolved, lineRow=1){
+    if(typeof storeEndSnapshot!=='undefined'&&storeEndSnapshot)return;
+    if(!canUsePlayState())return;
+    if(resolved?.stockEntry){finishStockEntry();return;}
+    if(!isSpinning || !currentSpin || currentSpin.finishing || currentSpin.resolved!==resolved || !currentSpin.stopped.every(Boolean)) return;
+    prepareManualRareOutcome(currentSpin);
+    if(NovaCzPresentation.wait(resolved,{setting:settings.setting,auto:()=>!!(autoPlay||currentSpin?.speedModeAtStart||debugFastSpinActive),valid:()=>currentSpin?.resolved===resolved&&isSpinning&&canUsePlayState(),onOffer:cue=>playCzPushPromptVoice(cue),onFailure:()=>playCzFailureSound(resolved),reveal:()=>{playCzConfirmedSound(resolved);maybeLightBonusAnnouncementForStop(3,currentSpin);finishSpin(result,resolved,lineRow);}}))return;
+    if(typeof playZoneInternalConfirmedSound==='function'&&currentSpin?.stopped?.every(Boolean))playZoneInternalConfirmedSound(resolved);
+    try{
+    NovaBellNavi.clear();
+    if(resolved.researchChallenge?.finished)showOverlay(resolved.researchChallenge.won?'上位AT確定！':'通常ATへ');
+    playUpperAtEntryVoice(resolved);
+    if(resolved.sortieWon)showOverlay('特化ゾーン確定！ / 出陣チャレンジ');
+    if(spinWaitTimer){
+      clearTimeout(spinWaitTimer);
+      spinWaitTimer = null;
+    }
+    spinCanStop = false;
+    if(currentSpin) currentSpin.finishing = true;
+
+    isSpinning = false;
+    $("spinBtn").disabled = false;
+    stopBtns.forEach(b=>b.disabled=true);
+    syncCabinetControlState();
+
+    if(resolved.oumaFailed){
+      currentSpin=null;
+      $('resultText').textContent='逢魔フリーズ 継続失敗 / ハズレ（0G）';
+      if(normalState.pendingZoneResult){displayNovaResult(normalState.pendingZoneResult);normalState.pendingZoneResult=null;}
+      persistState();updateDisplay();playNormalBgm();
+      scheduleNextAuto();
+      return;
+    }
+
+    showCzLamp(3,resolved);
+    const reward = resolved.reward;
+    const stGameAdd = (resolved.add || 0) + (resolved.zoneStGames || 0);
+    const stockAdd = (resolved.sets || 0) + (resolved.zoneSets || 0);
+    const zoneGameAdd = resolved.zoneGameAdd || 0;
+    const ladderDisplay=currentSpin.ladderResultPresentation?null:globalThis.NovaLadder?.outcome?.(resolved);
+    const displayResult=ladderDisplay?.result||result;
+    const lineText = displayResult !== "MISS" ? ` / ${lineName(ladderDisplay?1:lineRow)}ライン` : "";
+    const zoneRemainAfterSpin = resolved.zoneGame ? Math.max(0, session.bigZone - 1, resolved.bigZone || 0) + zoneGameAdd : null;
+    const zoneText = resolved.zoneGame
+      ? goraiZoneRemainText(zoneRemainAfterSpin, currentSpin?.zoneType || session.bigZoneType)
+      : resolved.bigZone > 0
+        ? goraiZoneRemainText(resolved.bigZone, resolved.bigZoneType)
+        : "";
+    const isNormalSpinResult = currentSpin && currentSpin.normalActiveAtStart;
+    const resultParts = [];
+    if(resolved.artSetWon)resultParts.push("ネビュラ揃い / "+NovaArt.bonusStockLabel({...session,...NovaArt.advanceBonus(session,true,reward,!!resolved.bonusExtraStockOffered)},normalState.flow));
+    if(resolved.artMessage)resultParts.push(NovaSortie.label(resolved.artMessage));
+    // A two-reel tease in these zones is a failed SUPER NOVA, not a rare-role hit.
+    const novaPattern = NovaAim.isNovaZoneSpin?.(currentSpin)&&result==='MISS'?'':novaPatternFromGrid(currentSpin?.grid);
+    if(currentSpin) currentSpin.novaPattern = novaPattern;
+    if(novaPattern) resultParts.push(NOVA_PATTERN_NAMES[novaPattern]);
+    if(reward > 0) resultParts.push("+" + reward + "pt");
+    if(stockAdd > 0) resultParts.push("SET+" + stockAdd);
+    if(stGameAdd > 0) resultParts.push("AT+" + stGameAdd + "G");
+    if(zoneGameAdd > 0) resultParts.push(goraiZoneName(resolved.zoneType) + "+" + zoneGameAdd + "G");
+    if(resolved.bigZone > 0 && zoneText) resultParts.push(zoneText);
+    if(resultParts.length === 0) resultParts.push(isNormalSpinResult ? "払い出しなし" : "0pt");
+    if(resolved.zoneGame && zoneText) resultParts.push(zoneText);
+    $("resultText").textContent = `${RESULT[displayResult].name}${lineText} / ${resultParts.join(" / ")}`;
+    const holdRogiThirdStopEffect = shouldHoldRogiThirdStopEffect(currentSpin);
+    const holdSpeedBonusRogiEffect = currentSpin && currentSpin.speedModeBonusRogiEffect;
+    const stopAutoAtFirstHit = currentSpin && currentSpin.normalActiveAtStart && isAtFirstHitForAuto(resolved);
+    if(currentSpin && currentSpin.normalActiveAtStart){
+      applyNormalResult(result, resolved, lineRow);
+      playArtEndSound(resolved);
+      if((resolved.flowBefore?.phase!==normalState.flow?.phase && (['cz','strong_cz','art'].includes(resolved.flowBefore?.phase)||['cz','strong_cz','art'].includes(normalState.flow?.phase)))||resolved.flowBefore?.zone!==normalState.flow?.zone||resolved.researchChallenge?.finished){
+        pauseNormalBgm();
+        playNormalBgm();
+      }
+      if(stopAutoAtFirstHit && autoPlay){
+        stopAutoPlay(resolved.bonusWaitSpin ? "BONUS確定画面のためAUTO停止" : "AT初当たり確定のためAUTO停止");
+      }
+      if(currentSpin && currentSpin.bar3LeverEffect){
+        // BAR動画は動画側の終了イベントで透過させる。
+      }else if(holdRogiThirdStopEffect){
+        startRogiThirdStopHold();
+      }else if(holdSpeedBonusRogiEffect){
+        // SPEED確定のろぎ3は、動画終了または次BETまで表示を保持する。
+      }else if(currentSpin && currentSpin.gekiatsu){
+        stopGekiatsuEffect(false);
+      }else{
+        stopGekiatsuEffect(true);
+      }
+      hideDevilRushEntryEffect();
+      pendingForceResult = "";
+      const finishedSpin = currentSpin;
+      currentSpin = null;
+      showCheckpointResultIfReady();
+      updateDisplay();
+      setTimeout(()=>clearReelVideos(), 900);
+      if(A_TYPE_MODE && resolved.aTypeBonusReady){
+        const bonusStartOptions = {
+          bonusKind:resolved.bonusKind || (resolved.regReady ? "MID" : "BIG"),
+          bonusSource:resolved.bonusSource || "",
+          premiumBonus:!!resolved.premiumBonus,
+          oneGameRenBonus:!!resolved.oneGameRenBonus,
+          gamesSinceLastBonus:resolved.gamesSinceLastBonusAtStart
+        };
+        if(isPremiumBigLineupSpin(finishedSpin)){
+          queueBonusSessionStart(0, bonusStartOptions);
+        }else{
+          startBonusSessionNow(bonusStartOptions);
+        }
+      }else if(!(scheduleOumaZeroChain())){
+        scheduleNextSpeedToBonus();
+        scheduleNextAuto();
+      }
+      return;
+    }
+    applyResult(result, resolved, lineRow);
+    if(currentSpin && currentSpin.bar3LeverEffect){
+      // BAR揃い動画は動画側の終了イベントで透過させる。
+    }else if(holdRogiThirdStopEffect){
+      startRogiThirdStopHold();
+    }else if(currentSpin && currentSpin.gekiatsu){
+      stopGekiatsuEffect(false);
+    }else{
+      stopGekiatsuEffect(true);
+    }
+    const finishedBattleFinalGame = currentSpin && currentSpin.battleActiveAtStart && session.battleRemain <= 0;
+    const shouldFinishATypeBonus = currentSpin && currentSpin.aTypeBonusActiveAtStart && isATypeBonusComplete();
+    const shouldEnterBattle = session.active && !shouldFinishATypeBonus && session.phase !== "battle" && session.remain <= 0 && !isGoraiZoneActive();
+    const pendingBattleOutcome = currentSpin ? currentSpin.pendingBattleOutcome : null;
+    if(!shouldEnterBattle){
+      hideBattleIntro();
+    }
+    hideDevilRushEntryEffect();
+    pendingForceResult = "";
+    currentSpin = null;
+    updateDisplay();
+    ensureBarBgmContinuing();
+    setTimeout(()=>clearReelVideos(), 900);
+
+    if(shouldFinishATypeBonus){
+      playBonusEndBgmThen(()=>{
+        finishSession();
+        scheduleNextAuto();
+      });
+    }else if(finishedBattleFinalGame){
+      setTimeout(()=>{
+        const continued = completeContinuationBattle(result);
+        if(continued) scheduleNextAuto();
+      }, 700);
+    }else if(shouldEnterBattle){
+      setTimeout(()=>{
+        const continued = startContinuationBattlePart(pendingBattleOutcome);
+        if(continued) scheduleNextAuto();
+      }, 700);
+    }else{
+      scheduleNextAuto();
+    }
+    }finally{if(globalThis.NovaPlayLimit)updatePlayLimitState();persistState();}
+  }
+
+  function direct(result){
+    if(isSpinning) return;
+    if(!canPlayCompleteTrial()) return;
+    if(A_TYPE_MODE) result = normalizeATypeResult(result);
+    readSettings();
+    const normalDirect = !session.active;
+    if(normalDirect){countTotalSpinIfNeeded(false);chargeSpinCost();}
+    const spec = RESULT[result];
+    const lineRow = resultLineRow(result);
+    const resolved = normalDirect ? resolveNormalOutcome(result, lineRow) : resolveOutcome(result);
+    const grid = buildGrid(result, lineRow);
+    const premiumForced = forcePremiumEffect;
+    const bigPremiumEffect = normalDirect && decideBigPremiumEffect(result, resolved, premiumForced);
+    if(A_TYPE_MODE && normalDirect && resolved && (resolved.bonusHit || resolved.bonusReady) && resolved.bonusKind === "BIG"){
+      resolved.premiumBonus = !!(resolved.premiumBonus || bigPremiumEffect);
+    }
+    if(premiumForced){
+      forcePremiumEffect = false;
+      if($("premiumForceStatus")) $("premiumForceStatus").value = "OFF";
+      if(bigPremiumEffect) startGekiatsuEffect(true);
+    }
+
+    for(let i=0;i<3;i++){
+      const col = [grid[0][i], grid[1][i], grid[2][i]];
+      setReelColumn(i, col, i === 1 ? spec.label : "", spec.cls, result === "MISS" ? null : lineRow);
+    }
+
+    if(normalDirect){
+      applyNormalResult(result, resolved, lineRow);
+      if(A_TYPE_MODE && resolved.aTypeBonusReady){
+        setTimeout(()=>startBonusSessionNow({
+          bonusKind:resolved.bonusKind || (resolved.regReady ? "MID" : "BIG"),
+          bonusSource:resolved.bonusSource || "",
+          premiumBonus:!!resolved.premiumBonus,
+          oneGameRenBonus:!!resolved.oneGameRenBonus,
+          gamesSinceLastBonus:resolved.gamesSinceLastBonusAtStart
+        }), 700);
+      }
+    }else{
+      applyResult(result, resolved, lineRow);
+    }
+    $("resultText").textContent = `DEBUG：${spec.name} / ${result !== "MISS" ? lineName(lineRow)+"ライン" : ""}`;
+    if(globalThis.NovaPlayLimit)updatePlayLimitState();
+    updateDisplay();
+  }
+
+  function forceHighModeNow(){
+    if(A_TYPE_MODE){
+      showMessage("Aタイプ固定", "高確は使用しません");
+      log("高確強制：Aタイプでは未使用");
+      return;
+    }
+  }
+
+  function updateAutoUi(){
+    globalThis.NovaSuperSpeedReels && syncSuperSpeedReelDisplay();
+    syncAudioWaitUi();
+    const startBtn = $("autoStartBtn");
+    const stopBtn = $("autoStopBtn");
+    const status = $("autoStatus");
+    if(!startBtn || !stopBtn || !status) return;
+
+    startBtn.disabled = autoPlay;
+    stopBtn.disabled = !autoPlay;
+    if(isCompleteTrialLocked()){
+      startBtn.disabled = true;
+      stopBtn.disabled = !autoPlay;
+    }
+
+    if(autoPlay){
+      const orderLabel=AUTO_STOP_ORDER_LABELS[autoStopOrderMode]||AUTO_STOP_ORDER_LABELS.normal;
+      status.textContent = (superSpeedPending ? `超ハイスピード予約：次のゲームから / ${NovaSuperSpeed.modes[superSpeedMode]}` : superSpeedActive ? `超ハイスピード中：8時間で約4万G / ${NovaSuperSpeed.modes[superSpeedMode]}` : superFullAuto ? "超AUTO継続中：8時間で約4万G / AT終了後に超ハイスピードへ復帰" : "通常AUTO中：8時間で約2万G（演出待ち込みの目安）")+` / ${orderLabel}`;
+      status.style.color = "var(--green)";
+    }else{
+      status.textContent = "オート停止中";
+      status.style.color = "rgba(255,255,255,.65)";
+    }
+
+    if($("quickAutoBtn")){
+      $("quickAutoBtn").textContent = autoPlay ? "STOP" : "AUTO";
+      $("quickAutoBtn").classList.toggle("on", autoPlay);
+      $("quickAutoBtn").disabled = bonusEndBgmPlaying && !autoPlay;
+    }
+    if($("topAutoBtn")){
+      $("topAutoBtn").textContent = autoPlay ? "STOP" : "AUTO";
+      $("topAutoBtn").classList.toggle("on", autoPlay);
+      $("topAutoBtn").setAttribute("aria-pressed", autoPlay ? "true" : "false");
+      $("topAutoBtn").disabled = (isCompleteTrialLocked() || bonusEndBgmPlaying) && !autoPlay;
+    }
+    updateSpeedToBonusUi();
+    if(globalThis.NovaPlayLimit)syncPlayLimitUi();
+  }
+
+  function closeAutoStopOrderDialog(){
+    const dialog=$("autoStopOrderDialog");
+    if(!dialog)return;
+    if(dialog.open&&typeof dialog.close==='function')dialog.close();else dialog.removeAttribute('open');
+  }
+
+  function openAutoStopOrderDialog(superMode=""){
+    const dialog=$("autoStopOrderDialog");
+    if(!dialog)return false;
+    pendingAutoSuperSpeedMode=Object.hasOwn(NovaSuperSpeed.modes,superMode)?superMode:"";
+    dialog.querySelectorAll('[data-auto-stop-order]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.autoStopOrder===autoStopOrderMode)));
+    if(!dialog.open){if(typeof dialog.showModal==='function')dialog.showModal();else dialog.setAttribute('open','');}
+    dialog.querySelector(`[data-auto-stop-order="${autoStopOrderMode}"]`)?.focus({preventScroll:true});
+    return true;
+  }
+
+  function chooseAutoStopOrder(mode){
+    autoStopOrderMode=normalizeAutoStopOrderMode(mode);
+    settings.autoStopOrderMode=autoStopOrderMode;
+    const superMode=pendingAutoSuperSpeedMode;
+    pendingAutoSuperSpeedMode="";
+    closeAutoStopOrderDialog();
+    persistState();
+    if(superMode)startSuperSpeed(superMode);else startAutoPlay();
+  }
+
+  function startAutoPlay(){
+    if(autoPlay) return;
+    if(bonusEndBgmPlaying){
+      if($("resultText")) $("resultText").textContent = "ボーナス終了BGM中...";
+      return;
+    }
+    if(!canPlayCompleteTrial({allowOumaPresentation:true})) return;
+    stopSpeedToBonus("AUTO開始のためSPEED停止");
+    readSettings();
+    autoPlay = true;
+    autoPacingBudget=null;
+    NovaClock.setBackgroundEnabled(true);
+    startAutoWatchdog();
+    updateAutoUi();
+    log(`オート開始 / ${AUTO_STOP_ORDER_LABELS[autoStopOrderMode]}`);
+    runAutoStep();
+  }
+
+  function autoScaledDelayMs(ms, minMs=50){
+    return Math.max(minMs, Math.round((Number(ms) || 0) / AUTO_SPEED_MULTIPLIER))*NovaSuperSpeed.pacing[autoPacingProfile()].delayScale;
+  }
+
+  function autoPacingProfile(){
+    if(autoPlay && superFullAuto && !superSpeedPending)return superSpeedActive ? 'fast' : 'at';
+    return autoPlay && NovaSuperSpeed.atConfirmed(normalState.flow,session,normalState) ? 'normalAt' : 'normal';
+  }
+
+  function autoPacingWaitMs(){
+    const now=performance.now(),profile=autoPacingProfile();
+    return Math.max(NovaSuperSpeed.remainingWait(autoLastBetAt,now,profile),NovaSuperSpeed.budgetWait(autoPacingBudget,now,profile));
+  }
+
+  function resetOrdinaryAutoPacingAfterNormalReturn(before,after){
+    if(!autoPlay||superFullAuto||!['cz','strong_cz','art'].includes(before?.phase)||after?.phase!=='normal')return false;
+    // CZ/AT presentation holds are intentional. Do not repay that elapsed time
+    // by accelerating the first few ordinary AUTO games after normal resumes.
+    autoLastBetAt=performance.now();
+    autoPacingBudget=null;
+    return true;
+  }
+
+  function autoDelayMs(){
+    return NovaSuperSpeed.pacing[autoPacingProfile()].nextMs;
+  }
+
+  function autoPollDelayMs(){
+    return autoScaledDelayMs(150);
+  }
+
+  function autoStopDelayMs(index=0){
+    return autoScaledDelayMs(MIN_SPIN_WAIT_MS + Math.round((120 + index * 360) / 2));
+  }
+
+  function spinWaitMsForMode(speedModeSpinAtStart=false){
+    if(speedModeSpinAtStart) return speedModeWaitMs();
+    return autoPlay ? autoScaledDelayMs(MIN_SPIN_WAIT_MS) : MIN_SPIN_WAIT_MS;
+  }
+
+  function spinWaitSecondsText(){
+    return autoPlay ? `${(autoScaledDelayMs(MIN_SPIN_WAIT_MS) / 1000).toFixed(2)}秒` : "0.5秒";
+  }
+
+  function queueAutoStep(delayMs=150){
+    if(!autoPlay) return;
+    if(autoTimer){
+      clearTimeout(autoTimer);
+      autoTimer = null;
+    }
+    autoTimer = setTimeout(()=>{
+      autoTimer = null;
+      runAutoStep();
+    }, Math.max(superSpeedActive ? 8 : 50, delayMs));
+  }
+
+  function startAutoWatchdog(){
+    if(autoWatchdogTimer) return;
+    autoWatchdogTimer = setInterval(()=>{
+      if(!autoPlay) return;
+      if(autoTimer || bonusEndBgmPlaying || bonusConfirmSoundPlaying || pendingAtStartTimer) return;
+      if(!canPlayCompleteTrial({allowOumaPresentation:true})) return;
+      queueAutoStep(autoScaledDelayMs(100));
+    }, 500);
+  }
+
+  function stopAutoWatchdog(){
+    if(autoWatchdogTimer){
+      clearInterval(autoWatchdogTimer);
+      autoWatchdogTimer = null;
+    }
+  }
+
+  function stopAutoPlay(reason){
+    if(!autoPlay && !autoTimer && !superFullAuto) return;
+    autoPlay = false;
+    autoPacingBudget=null;
+    superFullAuto = false;
+    setSuperSpeedActive(false);
+    superSpeedPending = false;
+    if(autoTimer){
+      clearTimeout(autoTimer);
+      autoTimer = null;
+    }
+    stopAutoWatchdog();
+    NovaClock.setBackgroundEnabled(false);
+    updateAutoUi();
+    if(reason) log(reason);
+  }
+
+  function requestAutoStopCurrentSpin(){
+    if(!isSpinning || !currentSpin) return false;
+    if(currentSpin.resolved?.oumaFreeze)return false; // Reverse reels stop together on the audio cue.
+    if(!spinCanStop||globalThis.NovaSortieAudioGate?.locked(currentSpin)) return false;
+    if(currentSpin.autoStopTakeoverScheduled) return true;
+    currentSpin.autoStopTakeoverScheduled = true;
+    currentSpin.autoStopAtStart = true;
+    currentSpin.autoStopOrderMode = autoStopOrderMode;
+    currentSpin.autoStopOrder = autoStopOrderForMode(autoStopOrderMode);
+    commitAutoMissBarBottom(currentSpin);
+    currentSpin.manualBonusStop = false;
+    stopAllReels();
+    // A stop can be rejected by a transient lock. Retry only after this whole
+    // sequence has had time to land, without replaying stopped reels or BETs.
+    const spin=currentSpin;
+    setTimeout(()=>{if(currentSpin===spin)spin.autoStopTakeoverScheduled=false;},1500);
+    return true;
+  }
+
+  function runAutoStep(){
+    if(!autoPlay) return;
+    if(globalThis.NovaRuntimeGates?.busy('sortie') ?? !!globalThis.NovaSortie?.busy){queueAutoStep(NovaSortie.waitMs);return;}
+    if(stopSuperSpeedIfNeeded()) return;
+    if(bonusEndBgmPlaying || bonusConfirmSoundPlaying){
+      queueAutoStep(autoPollDelayMs());
+      return;
+    }
+    if(!canPlayCompleteTrial({allowOumaPresentation:true})) return;
+    if(oumaPresentation){
+      if(oumaPresentation.stage==='bet')resolveOumaChallenge();
+      else if(oumaPresentation.stage==='push')NovaOumaPush.autoPress();
+      queueAutoStep(autoPollDelayMs());
+      return;
+    }
+    if(isRogiThirdStopHoldActive()){
+      if(isRogiThirdStopMoviePlaying()){
+        queueAutoStep(autoPollDelayMs());
+        return;
+      }
+      clearRogiThirdStopHoldForNextGame();
+    }
+    if(isSpinning){
+      if(NovaCzPresentation.autoPress()){queueAutoStep(autoPollDelayMs());return;}
+      requestAutoStopCurrentSpin();
+      queueAutoStep(autoPollDelayMs());
+      return;
+    }
+
+    // A watchdog or a retry must respect the same BET deadline. Never catch up
+    // by running extra draws after a stalled or backgrounded browser resumes.
+    const paceWait=autoPacingWaitMs();
+    if(paceWait>0){queueAutoStep(paceWait);return;}
+
+    if(!session.active){
+      if(!A_TYPE_MODE && normalState.bonusPending && pendingBonusWaitDone()){
+        stopAutoPlay("BONUS確定画面のためAUTO停止");
+        return;
+      }
+      spin();
+      queueAutoStep(autoDelayMs());
+      return;
+    }
+
+    spin();
+    if(!isSpinning && autoPlay){
+      queueAutoStep(autoDelayMs());
+    }
+  }
+
+  function scheduleNextAuto(){
+    if(globalThis.NovaPlayLimit&&updatePlayLimitState())return;
+    if(!autoPlay) return;
+    if(globalThis.NovaRuntimeGates?.busy('sortie') ?? !!globalThis.NovaSortie?.busy){queueAutoStep(NovaSortie.waitMs);return;}
+    if(stopSuperSpeedIfNeeded()) return;
+    if(bonusEndBgmPlaying || bonusConfirmSoundPlaying){
+      queueAutoStep(autoPollDelayMs());
+      return;
+    }
+    if(!canPlayCompleteTrial({allowOumaPresentation:true})) return;
+    if(isRogiThirdStopHoldActive()){
+      queueAutoStep(autoPollDelayMs());
+      return;
+    }
+    readSettings();
+    // Anchor all deadlines to BET so DOM/rendering time does not compound the
+    // sixfold interval. Never catch up by resolving more than one spin at once.
+    queueAutoStep(Math.max(autoPacingWaitMs(),superSpeedActive?Math.max(0,superSpeedNextBetAt-performance.now()):autoDelayMs()));
+  }
+
+  function speedToBonusUnavailableReason(){
+    if(isCompleteTrialLocked()) return "COMPLETE到達のため設定変更まで遊戯不可";
+    if(session.active) return "ボーナス中はSPEEDを使用できません";
+    if(normalState.bonusPending) return "ボーナス確定中のためSPEED停止";
+    if(bonusConfirmSoundPlaying) return "ボーナス確定音再生中のためSPEED停止";
+    if(pendingAtStartTimer) return "AT開始待機中のためSPEEDを使用できません";
+    if(isSpinning) return "現在の回転停止後にSPEEDを開始してください";
+    if(debugFastSpinActive) return "高速回転中のためSPEEDを使用できません";
+    return "";
+  }
+
+  function speedModeDelayMs(){
+    const autoMs = autoDelayMs();
+    const maxRateMs = Math.round(1000 / SPEED_MODE_MAX_SPINS_PER_SECOND);
+    return Math.max(maxRateMs, Math.round(autoMs / SPEED_MODE_MULTIPLIER));
+  }
+
+  function speedModeWaitMs(){
+    return 0;
+  }
+
+  function speedModeStopDelay(index){
+    return Math.max(40, Math.round((120 + index * 360) / SPEED_MODE_MULTIPLIER));
+  }
+
+  function setSpeedModeMenuOpen(open){
+    speedModeMenuOpen = !!open;
+    updateSpeedToBonusUi();
+  }
+
+  function scheduleNextSpeedToBonus(delayMs=null){
+    if(!speedToBonusActive) return;
+    if(speedToBonusTimer){
+      clearTimeout(speedToBonusTimer);
+      speedToBonusTimer = null;
+    }
+    speedToBonusTimer = setTimeout(runSpeedToBonusStep, delayMs === null ? speedModeDelayMs() : delayMs);
+  }
+
+  function updateSpeedToBonusUi(){
+    updateSuperSpeedUi();
+    const btn = $("speedAutoBtn");
+    const menu = $("speedModeMenu");
+    const state = $("speedModeState");
+    const toggle = $("speedModeToggleBtn");
+    const count = $("speedModeCount");
+    const unavailable = speedToBonusUnavailableReason();
+    if(btn){
+      btn.textContent = "SPEED";
+      btn.classList.toggle("on", speedToBonusActive || speedModeMenuOpen);
+      btn.disabled = false;
+      btn.title = speedToBonusActive
+        ? `SPEED ON / 今回${speedToBonusCount}G`
+        : (unavailable || "SPEEDメニューを開く");
+    }
+    if(menu) menu.hidden = !speedModeMenuOpen;
+    if(state) state.textContent = speedToBonusActive ? "ON" : "OFF";
+    if(toggle){
+      toggle.textContent = speedToBonusActive ? "OFF" : "ON";
+      toggle.classList.toggle("off", speedToBonusActive);
+      toggle.disabled = !speedToBonusActive && !!unavailable;
+      toggle.title = unavailable || "通常時のみAUTOの3倍速で遊技 / BGMあり・演出なし";
+    }
+    if(count){
+      count.textContent = speedToBonusActive
+        ? `ON / 今回${speedToBonusCount}G / ${Math.round(1000 / speedModeDelayMs())}G/s目安`
+        : (unavailable ? `OFF / ${unavailable}` : "OFF / 通常時のみ");
+    }
+  }
+
+  function startSpeedToBonus(){
+    if(speedToBonusActive) return;
+    const reason = speedToBonusUnavailableReason();
+    if(reason){
+      showMessage("SPEED待機", reason);
+      log(`[SPEED] ${reason}`);
+      updateSpeedToBonusUi();
+      return;
+    }
+    stopAutoPlay("SPEED開始のためAUTO停止");
+    readSettings();
+    speedToBonusCount = 0;
+    speedToBonusActive = true;
+    NovaDirectAward.clear();
+    NovaInitialDuo.clear();
+    setSpeedFrameOffHold(true);
+    updateSpeedToBonusUi();
+    playNormalBgm();
+    showMessage("SPEED MODE", `通常時のみ / AUTOの${SPEED_MODE_MULTIPLIER}倍速 / 上限${SPEED_MODE_MAX_SPINS_PER_SECOND}G/s / BGMあり・演出なし`);
+    log(`[SPEED] 通常時SPEED開始 AUTOx${SPEED_MODE_MULTIPLIER} / max ${SPEED_MODE_MAX_SPINS_PER_SECOND}G/s / BGMあり・演出なし`);
+    scheduleNextSpeedToBonus(0);
+  }
+
+  function canDebugSuperSpeed(){
+    return SLOT_DEBUG_ENABLED && !VERTEX_CONTROLLER_ENABLED && !SLOT_PLAY_SESSION;
+  }
+
+  function hasSuperSpeedPermission(){
+    return superSpeedAllowed || (canDebugSuperSpeed() && superSpeedDebugAllowed);
+  }
+
+  function setSuperSpeedDebugPermission(allowed){
+    superSpeedDebugAllowed = canDebugSuperSpeed() && allowed === true;
+    stopSuperSpeedIfNeeded();
+    updateSuperSpeedUi();
+  }
+
+  function superSpeedUnavailableReason(){
+    if(!hasSuperSpeedPermission()) return canDebugSuperSpeed() ? "デバッグで超ハイスピード使用許可をONにしてください" : "管理画面で使用許可をONにしてください";
+    if(!canUsePlayState()) return "台の起動確認中です";
+    if(isCompleteTrialLocked()) return "COMPLETE到達のため使用できません";
+    if(debugFastSpinActive) return "デバッグ試走中です";
+    if(bonusEndBgmPlaying || bonusConfirmSoundPlaying) return "告知の終了後に開始できます";
+    return "";
+  }
+
+  function updateSuperSpeedUi(){
+    const reason=superSpeedUnavailableReason();
+    const running=superFullAuto || superSpeedActive || superSpeedPending;
+    const debugBtn=$("debugSuperSpeedBtn");
+    if(debugBtn){
+      debugBtn.disabled=!canDebugSuperSpeed();
+      debugBtn.textContent=`超ハイスピード使用許可：${superSpeedDebugAllowed ? 'ON' : 'OFF'}`;
+      debugBtn.setAttribute('aria-pressed',String(superSpeedDebugAllowed));
+    }
+    const debugStatus=$("debugSuperSpeedStatus");
+    if(debugStatus)debugStatus.textContent=canDebugSuperSpeed()
+      ? (superSpeedDebugAllowed ? `使用許可ON：${superSpeedPending ? '次のゲームから開始します。' : reason || '金色の「超」ボタンで終了条件を選んで開始。'} 再読み込みで許可OFF。` : '単独試打用。ONにすると金色の「超」ボタンが使えます。再読み込みで許可OFF。')
+      : '管理画面から起動した台は、管理画面で使用許可を切り替えてください。';
+    const btn=$("superSpeedBtn");
+    if(!btn)return;
+    btn.disabled=!running && !!reason;
+    btn.classList.toggle('on',running);
+    btn.setAttribute('aria-pressed',String(running));
+    btn.title=running ? `${superSpeedPending ? '次のゲームから' : superSpeedActive ? '超ハイスピードで消化中' : 'ATを超AUTOで消化中'} / ${NovaSuperSpeed.modes[superSpeedMode]} / 押すと選択・停止` : reason || '超ハイスピードの終了条件を選択';
+    superSpeedMenu?.update({running,mode:superSpeedMode,disabled:Object.fromEntries(Object.keys(NovaSuperSpeed.modes).map(mode=>[mode,reason || (NovaSuperSpeed.reached(mode,normalState.flow,session,normalState) ? 'すでに到達しています' : '')]))});
+  }
+
+  function applySuperSpeedPermission(allowed){
+    clearTimeout(superSpeedPermissionTimer);
+    superSpeedAllowed=allowed===true;
+    // Fail closed if a hung request/background tab prevents fresh permission checks.
+    if(superSpeedAllowed)superSpeedPermissionTimer=setTimeout(()=>applySuperSpeedPermission(false),15000);
+    if(!hasSuperSpeedPermission() && (superFullAuto || superSpeedActive || superSpeedPending))stopAutoPlay('管理画面の使用許可OFF、または接続切れのため超ハイスピード停止');
+    updateSuperSpeedUi();
+    // Restoring daily access only unlocks the button. Starting AUTO requires an explicit start action.
+  }
+
+  function stopSuperSpeedIfNeeded(){
+    if(!superFullAuto && !superSpeedActive && !superSpeedPending)return false;
+    const confirmed=NovaSuperSpeed.atConfirmed(normalState.flow,session,normalState);
+    if(!hasSuperSpeedPermission()){
+      stopAutoPlay('超ハイスピード使用許可OFF');
+      return true;
+    }
+    // Wait for the in-flight third stop to settle, then stop before the next BET.
+    if(!isSpinning && NovaSuperSpeed.reached(superSpeedMode,normalState.flow,session,normalState)){
+      stopAutoPlay(`超ハイスピード終了：${NovaSuperSpeed.modes[superSpeedMode]}に到達`);
+      return true;
+    }
+    if(confirmed){
+      // Keep the AUTO loop; subsequent games use the paid AT presentation pace.
+      if(superSpeedActive || superSpeedPending){
+        setSuperSpeedActive(false);
+        superSpeedPending=false;
+        superSpeedNextBetAt=0;
+        updateAutoUi();
+        log('AT確定のため超AUTOでAT消化 / AT終了後に超ハイスピードへ自動復帰');
+      }
+      return false;
+    }
+    // Comeback and special zones are still AT. Resume only after returning to
+    // normal play, and let the existing result-audio gate finish at normal speed.
+    if(superFullAuto && autoPlay && !superSpeedActive && !superSpeedPending && normalState.flow?.phase==='normal' && !session.active && !normalState.bonusPending){
+      superSpeedPending=true;
+      updateAutoUi();
+    }
+    if(superSpeedPending && !isSpinning && !bonusEndBgmPlaying && !bonusConfirmSoundPlaying){
+      superSpeedPending=false;
+      setSuperSpeedActive(true);
+      superSpeedNextBetAt=0;
+      updateAutoUi();
+    }
+    return false;
+  }
+
+  function setSuperSpeedActive(active){
+    if(superSpeedActive === active) return;
+    superSpeedActive = active;
+    globalThis.NovaSuperSpeedReels && syncSuperSpeedReelDisplay();
+  }
+
+  function startSuperSpeed(mode){
+    if(!mode && (superFullAuto || superSpeedActive || superSpeedPending)){stopAutoPlay('超ハイスピード停止');return;}
+    mode=mode || 'nonstop';
+    if(!Object.hasOwn(NovaSuperSpeed.modes,mode))return;
+    if(superSpeedUnavailableReason()){updateSuperSpeedUi();return;}
+    if(NovaSuperSpeed.reached(mode,normalState.flow,session,normalState)){updateSuperSpeedUi();return;}
+    superSpeedMode=mode;
+    stopSpeedToBonus('超ハイスピード開始');
+    superFullAuto=true;
+    const confirmed=NovaSuperSpeed.atConfirmed(normalState.flow,session,normalState);
+    superSpeedPending=!confirmed && isSpinning;
+    setSuperSpeedActive(!confirmed && !isSpinning);
+    if(autoPlay){updateAutoUi();queueAutoStep(0);}
+    else startAutoPlay();
+    if(!autoPlay){superFullAuto=false;setSuperSpeedActive(false);superSpeedPending=false;}
+    updateSuperSpeedUi();
+  }
+
+  function stopSpeedToBonus(reason="SPEED停止"){
+    if(!speedToBonusActive && !speedToBonusTimer) return;
+    speedToBonusActive = false;
+    if(speedToBonusTimer){
+      clearTimeout(speedToBonusTimer);
+      speedToBonusTimer = null;
+    }
+    speedModeSpinRequest = false;
+    const keepSpeedFrameOff = speedFrameOffHold && !session.active && (normalState.bonusPending || pendingAtStartTimer || speedBonusRogiHoldActive);
+    if(keepSpeedFrameOff) updateReelFrameMode();
+    else setSpeedFrameOffHold(false);
+    updateSpeedToBonusUi();
+    updateDisplay();
+    if(!session.active && !barBgmActive && !battleBgmActive) playNormalBgm();
+    log(`[SPEED] ${reason} / 今回${speedToBonusCount}G`);
+  }
+
+  function runSpeedToBonusStep(){
+    if(!speedToBonusActive) return;
+    try{
+      const reason = speedToBonusUnavailableReason();
+      if(session.active || normalState.bonusPending || pendingAtStartTimer || isSpinning || debugFastSpinActive){
+        if(isSpinning){
+          scheduleNextSpeedToBonus();
+          return;
+        }
+        stopSpeedToBonus(reason || "通常時以外のためSPEED停止");
+        return;
+      }
+      if(!session.active && session.phase === "ended" && session.resultPayout !== null && session.resultPayout !== undefined){
+        hideSessionResultScreen();
+        session.phase = "idle";
+        session.resultPayout = null;
+        session.endSignal = null;
+      }
+
+      speedToBonusCount++;
+      speedModeSpinRequest = true;
+      spin();
+      speedModeSpinRequest = false;
+      updateSpeedToBonusUi();
+      persistState();
+    }catch(e){
+      speedModeSpinRequest = false;
+      stopSpeedToBonus("SPEEDエラー停止");
+      showMessage("SPEEDエラー", e && e.message ? e.message : String(e));
+      log(`[SPEED] ERROR ${e && e.message ? e.message : e}`);
+    }
+  }
+
+  function updateDebugFastUi(){
+    const startBtn = $("debugFastStartBtn");
+    const stopBtn = $("debugFastStopBtn");
+    const status = $("debugFastStatus");
+    const simBtn = $("tenKSimBtn");
+    const fiftyKBtn = $("fiftyKSimBtn");
+    if(!startBtn || !stopBtn || !status) return;
+
+    startBtn.textContent = isCompleteTrialLocked() ? "朝一リセットして高速回転" : `高速回転 ${DEBUG_FAST_SPINS_PER_SECOND}G/s`;
+
+    startBtn.disabled = debugFastSpinActive;
+    stopBtn.disabled = !debugFastSpinActive;
+    if(simBtn) simBtn.disabled = debugFastSpinActive || debugOneClickSimActive || isSpinning;
+    if(fiftyKBtn) fiftyKBtn.disabled = debugFastSpinActive || debugOneClickSimActive || isSpinning;
+
+    if(isCompleteTrialLocked()){
+      status.textContent = "COMPLETE / 朝一リセットで高速回転を再開できます";
+      status.style.color = "rgba(255,255,255,.65)";
+    }else if(debugFastSpinActive){
+      status.textContent = `高速回転中 ${DEBUG_FAST_SPINS_PER_SECOND}G/s / 今回${debugFastSpinCount}G`;
+      status.style.color = "var(--green)";
+    }else{
+      status.textContent = `高速回転停止中 / 前回${debugFastSpinCount}G`;
+      status.style.color = "rgba(255,255,255,.65)";
+    }
+  }
+
+  function startDebugFastSpin(){
+    if(NovaAim.busy)return;
+    if(bonusConfirmSoundPlaying || bonusEndBgmPlaying)return;
+    NovaLadder.hide();
+    NovaAim.hide();
+    if(debugFastSpinActive) return;
+    if(isCompleteTrialLocked() && !morningResetGame(true, "高速回転再開の朝一リセット")) return;
+    if(!canPlayCompleteTrial()) return;
+    if(isSpinning){
+      showMessage("高速回転待機", "現在の回転停止後に開始してください");
+      log("[FAST] 回転中のため高速回転を開始できません");
+      return;
+    }
+    stopAutoPlay("高速回転開始のためオート停止");
+    stopSpeedToBonus("高速回転開始のためSPEED停止");
+    readSettings();
+    debugFastSpinCount = 0;
+    debugFastSpinActive = true;
+    NovaDirectAward.clear();
+    NovaInitialDuo.clear();
+    updateDebugFastUi();
+    log(`[FAST] 高速回転開始 ${DEBUG_FAST_SPINS_PER_SECOND}G/s`);
+    debugFastTimer = setInterval(runDebugFastBatch, DEBUG_FAST_INTERVAL_MS);
+    runDebugFastBatch();
+  }
+
+  function stopDebugFastSpin(reason="高速回転停止"){
+    if(!debugFastSpinActive && !debugFastTimer) return;
+    debugFastSpinActive = false;
+    if(debugFastTimer){
+      clearInterval(debugFastTimer);
+      debugFastTimer = null;
+    }
+    updateDisplay();
+    updateDebugFastUi();
+    log(`[FAST] ${reason} / 今回${debugFastSpinCount}G`);
+  }
+
+  function runDebugFastBatch(){
+    if(!debugFastSpinActive) return;
+    try{
+      let spun = 0;
+      let safety = 0;
+      const safetyLimit = DEBUG_FAST_BATCH_SIZE * 6;
+      while(debugFastSpinActive && spun < DEBUG_FAST_BATCH_SIZE && safety < safetyLimit){
+        safety++;
+        if(runDebugFastStep()){
+          spun++;
+          debugFastSpinCount++;
+        }
+      }
+      updateDisplay();
+      updateDebugFastUi();
+    }catch(e){
+      stopDebugFastSpin("エラー停止");
+      showMessage("高速回転エラー", e && e.message ? e.message : String(e));
+      log(`[FAST] ERROR ${e && e.message ? e.message : e}`);
+    }
+  }
+
+  function runDebugFastStep(){
+    if(!canUsePlayState())return false;
+    if(!canPlayCompleteTrial()) return false;
+    if(isSpinning) return false;
+    if(sessionStartGuard) return false;
+    if(pendingAtStartTimer){
+      startBonusSessionNow();
+      return false;
+    }
+
+    if(!session.active && session.phase === "ended" && session.resultPayout !== null && session.resultPayout !== undefined){
+      hideSessionResultScreen();
+      session.phase = "idle";
+      session.resultPayout = null;
+      session.endSignal = null;
+      return false;
+    }
+
+    const zoneActiveAtSpinStart = session.active && isGoraiZoneActive();
+    const aTypeBonusActiveAtSpinStart = isATypeBonusActive();
+    if(aTypeBonusActiveAtSpinStart && isATypeBonusComplete()){
+      finishSession();
+      return false;
+    }
+    if(session.active && !aTypeBonusActiveAtSpinStart && session.remain <= 0 && session.phase !== "battle" && !zoneActiveAtSpinStart){
+      startContinuationBattlePart();
+      return false;
+    }
+    if(session.active && !aTypeBonusActiveAtSpinStart && session.phase === "battle" && session.battleRemain <= 0 && !zoneActiveAtSpinStart){
+      advanceBattleSetIfNeeded();
+      return false;
+    }
+
+    const normalActiveAtSpinStart = !session.active;
+    const battleActiveAtSpinStart = isContinuationBattleActive() && !zoneActiveAtSpinStart;
+    const atSpinAtStart = session.active && !aTypeBonusActiveAtSpinStart && !zoneActiveAtSpinStart && !battleActiveAtSpinStart;
+
+    pendingForceResult = takeForcedResult();
+    const premiumForced = forcePremiumEffect;
+    forcePremiumEffect = false;
+    if($("forceResult")) $("forceResult").value = forceResult;
+    if($("premiumForceStatus")) $("premiumForceStatus").value = "OFF";
+    if(!A_TYPE_MODE && premiumForced && !pendingForceResult) pendingForceResult = "BIG";
+
+    if(battleActiveAtSpinStart){
+      session.battleRemain = Math.max(0, (session.battleRemain || 0) - 1);
+    }else if(aTypeBonusActiveAtSpinStart){
+      // A-type bonus has no fixed remaining-game counter.
+    }else if(session.active && !zoneActiveAtSpinStart){
+      session.remain = Math.max(0, (session.remain || 0) - 1);
+    }
+    countTotalSpinIfNeeded(aTypeBonusActiveAtSpinStart);
+    // The trial horizon includes bonus games, but never the free 0G chain.
+    const countedSimulationGame = session.active || !normalState.flow?.zero;
+    chargeSpinCost();
+    jagLastGamePayout = 0;
+    if(!normalState.bonusPending && !session.active) jagChanceHold = false;
+    const reachMeAnnouncementLit = activateReachMeBonusAnnouncementIfNeeded(normalActiveAtSpinStart);
+    if(reachMeAnnouncementLit) triggerBonusConfirmBetSoundIfNeeded();
+
+    const result = normalActiveAtSpinStart ? drawNormalResult() : drawResult();
+    const lineRow = resultLineRow(result);
+    const resolved = normalActiveAtSpinStart ? resolveNormalOutcome(result, lineRow) : resolveOutcome(result);
+    drawRareSortie(result,resolved);
+    const bigPremiumEffect = normalActiveAtSpinStart && decideBigPremiumEffect(result, resolved, premiumForced);
+    if(A_TYPE_MODE && normalActiveAtSpinStart && resolved && (resolved.bonusHit || resolved.bonusReady) && resolved.bonusKind === "BIG"){
+      resolved.premiumBonus = !!(resolved.premiumBonus || bigPremiumEffect);
+    }
+    if(A_TYPE_MODE && normalActiveAtSpinStart && shouldScheduleBonusAnnouncement(normalActiveAtSpinStart, resolved)){
+      jagChanceHold = true;
+      const lamp = $("stLamp");
+      if(lamp) lamp.classList.add("on");
+    }
+
+    if(normalActiveAtSpinStart){
+      applyNormalResult(result, resolved, lineRow);
+      pendingForceResult = "";
+      if(A_TYPE_MODE && resolved.aTypeBonusReady){
+        startBonusSessionNow({
+          bonusKind:resolved.bonusKind || (resolved.regReady ? "MID" : "BIG"),
+          bonusSource:resolved.bonusSource || "",
+          premiumBonus:!!resolved.premiumBonus,
+          oneGameRenBonus:!!resolved.oneGameRenBonus,
+          gamesSinceLastBonus:resolved.gamesSinceLastBonusAtStart
+        });
+      }
+      return countedSimulationGame;
+    }
+
+    applyResult(result, resolved, lineRow);
+    const shouldResolveBattle = battleActiveAtSpinStart && session.active && session.battleRemain <= 0;
+    const shouldFinishATypeBonus = aTypeBonusActiveAtSpinStart && isATypeBonusComplete();
+    const shouldEnterBattle = session.active && !shouldFinishATypeBonus && session.phase !== "battle" && session.remain <= 0 && !isGoraiZoneActive();
+    pendingForceResult = "";
+
+    if(shouldFinishATypeBonus){
+      finishSession();
+    }else if(shouldResolveBattle){
+      completeContinuationBattle(result);
+    }else if(shouldEnterBattle){
+      startContinuationBattlePart();
+    }
+
+    if(globalThis.NovaPlayLimit)updatePlayLimitState();
+    return true;
+  }
+
+  function getAudio(){
+    if(globalThis.NovaAudio?.enabled)return globalThis.NovaAudio.context();
+    if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    return audioCtx;
+  }
+
+  function beep(freq=440,dur=.12,type="sine",gain=.18,delay=0){
+    const vol = sfxOutputVolume();
+    if(vol <= 0) return;
+    const ctx = getAudio();
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.type = type;
+    o.frequency.setValueAtTime(freq, ctx.currentTime + delay);
+    g.gain.setValueAtTime(.0001, ctx.currentTime + delay);
+    g.gain.exponentialRampToValueAtTime(Math.max(.0001,gain*vol), ctx.currentTime+delay+.02);
+    g.gain.exponentialRampToValueAtTime(.0001, ctx.currentTime+delay+dur);
+    o.connect(g);
+    g.connect(ctx.destination);
+    o.start(ctx.currentTime+delay);
+    o.stop(ctx.currentTime+delay+dur+.04);
+  }
+
+  function fadeAimWinSoundsOnBet(){
+    globalThis.NovaRushConfirm?.fadeOnBet();
+    for(const audio of aimWinAudios){
+      if(audio.paused||audio.ended||audio.aimFadeTimer!==undefined)continue;
+      const started=performance.now();audio.aimFadeGain=1;
+      audio.aimFadeTimer=setInterval(()=>{
+        audio.aimFadeGain=Math.max(0,1-(performance.now()-started)/3000);
+        audio.volume=aimWinOutputVolume(audio);
+        if(audio.aimFadeGain===0){audio.pause();clearInterval(audio.aimFadeTimer);aimWinAudios.delete(audio);releaseCharacterVoiceAudio(audio);}
+      },50);
+    }
+  }
+  function playAimSevenWinSound(symbol='seven',resolved={}){
+    if(debugFastSpinActive)return;
+    if(symbol==='nebula'&&resolved.novaRushConfirmed){
+      pauseNormalBgm();barBgm?.pause();
+      NovaRushConfirm.play(bgmOutputVolume(BGM_OUTPUT_SCALE),sfxOutputVolume());
+      return;
+    }
+    const name=symbol==='nebula'?(resolved.aTypeBonusGame?'bonus-nebula':'nebula'):'seven';
+    const src=symbol==='nebula'&&resolved.aTypeBonusGame&&resolved.artSetWon?MODE_EVENT_VOICE_SRCS.bonusStock:'assets/media/nova/aim/'+name+'-win.wav';
+    const audio=oneShotSoundCache.get(src).cloneNode(true);
+    audio.aimSoundSrc=src;audio.loop=false;audio.volume=aimWinOutputVolume(audio);aimWinAudios.add(audio);
+    prepareCharacterVoiceAudio(audio,src);
+    audio.onended=audio.onerror=()=>{clearInterval(audio.aimFadeTimer);aimWinAudios.delete(audio);releaseCharacterVoiceAudio(audio);};
+    audio.play().catch(()=>{aimWinAudios.delete(audio);releaseCharacterVoiceAudio(audio);});
+  }
+  window.addEventListener('nova-aim-unlocked',()=>{updateDisplay();if(autoPlay)queueAutoStep(50);});
+  window.addEventListener('nova-sortie-unlocked',()=>{updateDisplay();if(autoPlay)queueAutoStep(50);});
+  window.addEventListener('nova-rush-confirm-ended',()=>{if(session.active)resumeSessionBgm();else playNormalBgm();});
+  // Cached effects and voices share setup; BGM players have their own lifecycle.
+  function preloadOneShotSound(src){
+    const audio=new Audio(src);
+    audio.preload=globalThis.NovaMedia?.compact?'none':'auto';audio.loop=false;
+    oneShotSoundCache.set(src,audio);
+    if(!globalThis.NovaMedia?.compact)audio.load();
+    return audio;
+  }
+
+  function playOneShotSound(src, volume=sfxOutputVolume(), options={}){
+    if(globalThis.NovaCompletePresentation?.active&&src!==MODE_EVENT_VOICE_SRCS.complete)return;
+    if(debugFastSpinActive || speedToBonusActive) return;
+    if(!src) return;
+    try{
+      let audio = oneShotSoundCache.get(src);
+      if(!audio){
+        audio = new Audio(src);
+        audio.preload = "auto";
+        oneShotSoundCache.set(src, audio);
+      }
+      // At 6x speed the next stop can arrive before this clip has finished.
+      // Preserve the playing clip instead of repeatedly cutting it back to zero.
+      if(superSpeedActive && !audio.paused && !audio.ended){
+        audio.volume = soundOutputVolume(src, volume);
+        return {audio,promise:Promise.resolve()};
+      }
+      audio.pause();
+      if(audio.getAttribute("src") !== src){
+        audio.setAttribute("src", src);
+        try{ audio.load(); }catch(e){}
+      }
+      audio.currentTime = 0;
+      audio.volume = soundOutputVolume(src, volume);
+      prepareCharacterVoiceAudio(audio,src);
+      const p = audio.play();
+      if(p && typeof p.catch === "function") p.catch(()=>{});
+      return {audio,promise:p};
+    }catch(e){}
+  }
+
+  function watchPlaybackProgress(audio,onStall){
+    let cancelled=false,timer=null,lastTime=Number(audio.currentTime)||0,lastProgress=performance.now();
+    const cancel=()=>{cancelled=true;clearTimeout(timer);};
+    const check=()=>{
+      if(cancelled)return;
+      const time=Number(audio.currentTime)||0,now=performance.now();
+      if(time!==lastTime){lastTime=time;lastProgress=now;}
+      // Healthy playback always waits for its real end, regardless of length.
+      // Only loading/interruption with no progress gets a bounded recovery.
+      if(audio.ended || now-lastProgress>=10000){cancel();audio.pause();onStall();return;}
+      timer=setTimeout(check,1000);
+    };
+    timer=setTimeout(check,1000);
+    return cancel;
+  }
+
+  function clearBonusConfirmSoundLock(){
+    bonusConfirmSoundPlaying = false;
+    if(bonusConfirmSoundTimer){
+      clearTimeout(bonusConfirmSoundTimer);
+      bonusConfirmSoundTimer = null;
+    }
+    if(bonusConfirmSoundAudio){
+      bonusConfirmSoundAudio.novaCancelPlaybackWatch?.();
+      bonusConfirmSoundAudio.onended = null;
+      bonusConfirmSoundAudio.onerror = null;
+      bonusConfirmSoundAudio.playbackRate = 1;
+      bonusConfirmSoundAudio = null;
+    }
+    updateAutoUi();
+  }
+
+  function stopTransientPresentationAudio(){
+    const lockedAudio=bonusConfirmSoundAudio;
+    if(lockedAudio){
+      lockedAudio.pause();
+      try{lockedAudio.currentTime=0;}catch(e){}
+      releaseCharacterVoiceAudio(lockedAudio);
+    }
+    clearBonusConfirmSoundLock();
+    for(const audio of [...aimWinAudios]){
+      if(audio.aimFadeTimer!==undefined){clearInterval(audio.aimFadeTimer);delete audio.aimFadeTimer;}
+      audio.onended=null;audio.onerror=null;
+      audio.pause();
+      try{audio.currentTime=0;}catch(e){}
+      aimWinAudios.delete(audio);
+      releaseCharacterVoiceAudio(audio);
+    }
+  }
+
+  function stopSingleReelByKeyboard(i){
+    stopSingleReel(i, {keyboardTurbo:true});
+  }
+
+  function isPremiumBigLineupSpin(spin=currentSpin){
+    return !!(
+      A_TYPE_MODE &&
+      spin &&
+      spin.normalActiveAtStart &&
+      spin.result === "BAR3" &&
+      spin.resolved &&
+      spin.resolved.aTypeBonusReady &&
+      (spin.resolved.premiumBonus || spin.resolved.oneGameRenBonus)
+    );
+  }
+
+  function playLockedBonusConfirmSound(src, volume=sfxOutputVolume(CONFIRM_SOUND_OUTPUT_SCALE), onEnded=null, options={}){
+    if(globalThis.NovaCompletePresentation?.active&&src!==MODE_EVENT_VOICE_SRCS.complete)return;
+    if(debugFastSpinActive || speedToBonusActive) return;
+    if(!src) return;
+    try{
+      clearBonusConfirmSoundLock();
+      let audio = oneShotSoundCache.get(src);
+      if(!audio){
+        audio = new Audio(src);
+        audio.preload = "auto";
+        oneShotSoundCache.set(src, audio);
+      }
+      bonusConfirmSoundPlaying = true;
+      bonusConfirmSoundAudio = audio;
+      updateAutoUi();
+      const ended = ()=>finish(true);
+      const finish = (completed=false)=>{
+        if(!bonusConfirmSoundPlaying || bonusConfirmSoundAudio !== audio || audio.onended !== ended) return;
+        clearBonusConfirmSoundLock();
+        if(completed)onEnded?.();
+      };
+      audio.pause();
+      if(audio.getAttribute("src") !== src){
+        audio.setAttribute("src", src);
+        try{ audio.load(); }catch(e){}
+      }
+      audio.currentTime = 0;
+      audio.volume = soundOutputVolume(src, volume);
+      prepareCharacterVoiceAudio(audio,src);
+      audio.loop = false;
+      audio.onended = ended;
+      audio.onerror = ()=>finish();
+      audio.playbackRate=options.naturalSpeed?1:superSpeedActive?6:1;
+      audio.novaCancelPlaybackWatch = watchPlaybackProgress(audio,finish);
+
+      const p = audio.play();
+      if(p && typeof p.catch === "function") p.catch(()=>setTimeout(finish, 250));
+    }catch(e){
+      clearBonusConfirmSoundLock();
+    }
+  }
+
+  function playSevenConfirmSound(){
+    playLockedBonusConfirmSound(SEVEN_CONFIRM_SOUND_SRC, voiceOutputVolume(LINEUP_CONFIRM_SOUND_OUTPUT_SCALE));
+  }
+  function playRegConfirmSound(){ playLockedBonusConfirmSound(REG_CONFIRM_SOUND_SRC, voiceOutputVolume(LINEUP_CONFIRM_SOUND_OUTPUT_SCALE)); }
+
+  function playPekaSound(isBig=false){
+    const roll = Math.random();
+    const primaryThreshold = PEKA_PRIMARY_RATE + (isBig ? PEKA_BIG_ATSU_RATE : 0);
+    const src = isBig && roll < PEKA_BIG_ATSU_RATE
+      ? PEKA_BIG_ATSU_SOUND_SRC
+      : roll < primaryThreshold
+        ? PEKA_SOUND_SRC
+        : PEKA_SOUND_SRCS[randomInt(1, PEKA_SOUND_SRCS.length - 1)];
+    playOneShotSound(src, voiceOutputVolume(CONFIRM_SOUND_OUTPUT_SCALE));
+  }
+
+  function payoutSoundSrcFor(result, reward=0, spin=currentSpin){
+    if(globalThis.NovaLadder?.outcome?.(spin?.resolved)?.won)return REPLAY_SOUND_SRC;
+    if(A_TYPE_MODE && ["BELL","BELL15","GRAPE","BELL3"].includes(result))return PAYOUT_3PT_BELL_SOUND_SRC;
+    if(result === "REPLAY") return REPLAY_SOUND_SRC;
+    if(result === "CHERRY_ANY" || result === "CHERRY_DOUBLE" || result === "CHERRY_TRIPLE" || result === "MID_CHERRY") return CHERRY_SOUND_SRC;
+    if(result === "MID" || result === "BAR3" || result === "SMALL" || result === "DEVIL_ZONE" || result === "SUPER_DEVIL_ZONE") return SPECIAL_SYMBOL_SOUND_SRC;
+    if(result === "GRAPE" || result === "BELL" || result === "BELL3") return PAYOUT_3PT_BELL_SOUND_SRC;
+    return PAYOUT_SOUND_SRC;
+  }
+
+  function payoutSoundScaleFor(result="", reward=0, spin=currentSpin){
+    return ["BELL","BELL15"].includes(result) ? BELL_PAYOUT_SOUND_OUTPUT_SCALE : PAYOUT_SOUND_OUTPUT_SCALE;
+  }
+
+  function shouldSuppressPayoutSound(result="", reward=0, spin=currentSpin){
+    if(result === "ONE_COIN")return true;
+    if(globalThis.NovaLadder?.outcome?.(spin?.resolved)&&['WEAK_SUICA','STRONG_SUICA','CHANCE_A','CHANCE_B','WEAK_NOVA','STRONG_NOVA','SUPER_NOVA'].includes(result))return true;
+    if(spin && spin.zoneActiveAtStart && result === "MISS" && Number(reward) > 0) return true;
+    return false;
+  }
+
+  function playPayoutSound(result="", reward=0, spin=currentSpin){
+    if(debugFastSpinActive || speedToBonusActive) return;
+    if(shouldSuppressPayoutSound(result, reward, spin)) return;
+    if(!payoutSound) return;
+    try{
+      const src = payoutSoundSrcFor(result, reward, spin);
+      if(superSpeedActive && payoutSound.getAttribute("src") === src && !payoutSound.paused && !payoutSound.ended)return;
+      payoutSound.pause();
+      if(payoutSound.getAttribute("src") !== src){
+        payoutSound.setAttribute("src", src);
+        try{ payoutSound.load(); }catch(e){}
+      }
+      payoutSound.currentTime = 0;
+      payoutSound.volume = payoutOutputVolumeForSource(payoutSoundScaleFor(result, reward, spin), src);
+      const p = payoutSound.play();
+      if(p && typeof p.catch === "function") p.catch(()=>{});
+    }catch(e){}
+  }
+
+  function isLadderShutterSpin(){const flow=currentSpin?.resolved?.flowBefore;return NovaLadder.eligible(flow)&&flow.ladderRevealed;}
+  function playSpinSound(resolved){
+    if(resolved?.zoneRouletteVoicePlayed)return;
+    const src=normalState.ladderAwardPresentation?.started?(Number(normalState.ladderAwardPresentation.card?.pt)>=1000?'assets/media/nova/ladder-final-award.wav':'assets/media/nova/ladder-final-award-under1000.wav'):isLadderShutterSpin()?'assets/media/nova/shutter.wav':SPIN_SOUND_SRC;
+    playOneShotSound(src,sfxOutputVolume(),{allowDuringPremiumConfirm:true});
+  }
+  function playWeakNovaSound(result,resolved){
+    if(result!=='WEAK_NOVA' || resolved?.weakNovaSoundPlayed || isComebackChanceSpin(resolved)||globalThis.NovaLadder?.outcome?.(resolved))return;
+    if(resolved)resolved.weakNovaSoundPlayed=true;
+    playOneShotSound('assets/media/nova/weak-nova.wav',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
+  }
+  function playStrongNovaSound(result,resolved){
+    if(result!=='STRONG_NOVA' || resolved?.strongNovaSoundPlayed || isComebackChanceSpin(resolved)||globalThis.NovaLadder?.outcome?.(resolved))return;
+    if(resolved)resolved.strongNovaSoundPlayed=true;
+    playOneShotSound('assets/media/nova/strong_nova.wav',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
+  }
+  function playChanceSound(result,resolved){
+    if(!['CHANCE_A','CHANCE_B'].includes(result)||resolved?.chanceSoundPlayed||isComebackChanceSpin(resolved)||globalThis.NovaLadder?.outcome?.(resolved))return;
+    if(resolved)resolved.chanceSoundPlayed=true;
+    playWinSound(false);
+  }
+  function czThirdStopSound(resolved,previousStage){
+    if(!resolved?.czLamp)return '';
+    if((resolved.czCompleted||resolved.bonusHit||resolved.aTypeBonusReady)&&!resolved.czPushConfirmed)return 'assets/media/nova/cz_stop_12.wav';
+    if(resolved.czIntro)return 'assets/media/nova/cz_stop_12.wav';
+    const failed=resolved.czCompleted&&!resolved.bonusHit&&resolved.flowAfter?.phase==='normal';
+    if(failed)return 'assets/media/jag/cz_third_failure.wav';
+    if(resolved.czLitStops?.[3])return ''; // Already played with the light itself.
+    const display=NovaFlow.lampDisplayAtStop(resolved.czLamp,3);
+    previousStage=resolved.czLampAtBet??previousStage;
+    const success=!failed&&(display.rainbow||display.stage>previousStage||resolved.bonusHit||resolved.flowAfter?.phase==='art');
+    return success?'assets/media/nova/cz_stop_12.wav':'assets/media/jag/cz_third_failure.wav';
+  }
+  function clearCzReelBlackout(){
+    document.querySelectorAll('.reel.cz-stop-blackout').forEach(reel=>reel.classList.remove('cz-stop-blackout'));
+    renderCzPrelude([]);
+    document.getElementById('machine').dataset.czPreludeActive='false';
+    document.getElementById('machine').dataset.atPreludeActive='false';
+  }
+  function playInitialDuoStop(spin,order){
+    if(debugFastSpinActive||speedToBonusActive||!NovaInitialDuo.eligible(spin?.resolved?.zoneStartFlow||spin?.resolved?.flowBefore))return;
+    if(!NovaInitialDuo.stop(order))return;
+    playOneShotSound(order===3?'assets/media/nova/initial-duo-final-stop.mp3':'assets/media/nova/initial-duo-stop.mp3',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
+  }
+  function playStopSound(i, stopOrder=null){
+    if(currentSpin?.resolved?.researchSortie&&(stopOrder===1||stopOrder===2)){
+      const bit=1<<(stopOrder-1);
+      if((currentSpin.sortieStopSoundMask||0)&bit)return;
+      currentSpin.sortieStopSoundMask=(currentSpin.sortieStopSoundMask||0)|bit;
+      playOneShotSound(`assets/media/nova/sortie-stop-${stopOrder}.mp3`,sfxOutputVolume(),{allowDuringPremiumConfirm:true});
+      return;
+    }
+    if(globalThis.NovaInitialDuo?.eligible(currentSpin?.resolved?.zoneStartFlow||currentSpin?.resolved?.flowBefore))return;
+    const prelude=currentSpin?.resolved?.czPrelude||currentSpin?.resolved?.atPrelude;
+    if(prelude&&!prelude.announce&&stopOrder>0&&stopOrder<=prelude.after){
+      playOneShotSound('assets/media/jag/cz_third_failure.wav',sfxOutputVolume());
+      return;
+    }
+    if(isLadderShutterSpin()&&stopOrder>=1&&stopOrder<=3){
+      if(stopOrder===3)oneShotSoundCache.get('assets/media/nova/shutter.wav')?.pause();
+      if(stopOrder===3&&currentSpin?.ladderOutcomeSoundPlayed)return;
+      if(stopOrder===3)currentSpin.ladderOutcomeSoundPlayed=true;
+      playOneShotSound(stopOrder===3?(currentSpin?.result==='MISS'?'assets/media/nova/ouma-fail.wav':'assets/media/nova/shutter-close.wav'):'assets/media/nova/shutter.wav',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
+      return;
+    }
+    if(stopOrder===3&&currentSpin?.result==='SUPER_NOVA'&&!isComebackChanceSpin(currentSpin.resolved)&&!globalThis.NovaLadder?.outcome?.(currentSpin.resolved)){
+      if(currentSpin.superNovaStopSoundPlayed)return;
+      currentSpin.superNovaStopSoundPlayed=true;
+      if(currentSpin.resolved?.oumaFreeze)return;
+      playOneShotSound('assets/media/nova/super-nova-stop.wav',sfxOutputVolume(),{allowDuringPremiumConfirm:true});
+      return;
+    }
+    const resolved=currentSpin?.resolved;
+    if(stopOrder===3&&resolved?.czLamp){
+      if(resolved.czThirdSoundPlayed)return;
+      resolved.czThirdSoundPlayed=true;
+      const previous=Number(document.getElementById('machine').dataset.czLamp)||0;
+      const sound=czThirdStopSound(resolved,previous);
+      if(!sound)return;
+      if(sound.endsWith('cz_third_failure.wav'))document.querySelector('.reel[data-reel="'+i+'"]').classList.add('cz-stop-blackout');
+      playOneShotSound(sound,sfxOutputVolume());
+      return;
+    }
+    if(resolved?.czLamp&&resolved.czLitStops?.[stopOrder])return;
+    playOneShotSound(resolved?.czLamp && (stopOrder===1 || stopOrder===2)?"assets/media/nova/cz_stop_12.wav":STOP_SOUND_SRC);
+  }
+  function playWinSound(big){
+    if(debugFastSpinActive || speedToBonusActive) return;
+    const notes = big ? [523,659,784,1046,1318] : [440,554,659,880];
+    notes.forEach((n,i)=>beep(n,.16,"triangle",.17,i*.11));
+  }
+
+  function playLoseSound(){ if(debugFastSpinActive || speedToBonusActive) return; beep(190,.13,"sawtooth",.055); }
+
+  function hideOverlay(){
+    overlayEpoch++;
+    if(overlayHideTimer!==null){clearTimeout(overlayHideTimer);overlayHideTimer=null;}
+    $("overlay")?.classList.remove("show");
+  }
+
+  function showOverlay(text){
+    if(globalThis.NovaCompletePresentation?.active)return;
+    if(debugFastSpinActive || speedToBonusActive) return;
+    text=NovaSortie.label(text);
+    const o = $("overlay");
+    if(normalState.resultCard||isRogiThirdStopHoldActive()){
+      hideOverlay();
+      return;
+    }
+    if(!o)return;
+    hideOverlay();
+    const epoch=overlayEpoch;
+    const target = document.querySelector(".reelArea") || document.querySelector(".reels");
+    if(target){
+      const rect = target.getBoundingClientRect();
+      const textLength = Math.max(String(text).length, 1);
+      const maxFont = Math.min(160, window.innerWidth * 0.10);
+      const fitFont = (rect.width * 0.86) / (textLength * 0.68);
+      o.style.setProperty("--wd-overlay-left", `${rect.left + rect.width / 2}px`);
+      o.style.setProperty("--wd-overlay-top", `${rect.top + rect.height / 2}px`);
+      o.style.setProperty("--wd-overlay-width", `${rect.width}px`);
+      o.style.setProperty("--wd-overlay-height", `${rect.height}px`);
+      o.style.setProperty("--wd-overlay-font-size", `${Math.max(42, Math.min(maxFont, fitFont))}px`);
+    }
+    $("overlayText").textContent = text;
+    o.classList.remove("show");
+    void o.offsetWidth;
+    o.classList.add("show");
+    const ownTimer=setTimeout(()=>{
+      if(overlayHideTimer===ownTimer)overlayHideTimer=null;
+      if(overlayEpoch===epoch)o.classList.remove("show");
+    },2200);
+    overlayHideTimer=ownTimer;
+  }
+
+  function confetti(n){
+    if(debugFastSpinActive || speedToBonusActive) return;
+    if(isRogiThirdStopHoldActive()) return;
+    const box = $("confetti");
+    const colors = ["#ffd36a","#ff365d","#4de7ff","#62ff9a","#bd71ff","#ffffff"];
+    for(let i=0;i<n;i++){
+      const p = document.createElement("div");
+      p.className = "piece";
+      p.style.left = Math.random()*100 + "vw";
+      p.style.background = colors[Math.floor(Math.random()*colors.length)];
+      p.style.animationDuration = (1.5+Math.random()*2.6)+"s";
+      p.style.animationDelay = Math.random()*.32+"s";
+      p.style.transform = `rotate(${Math.random()*360}deg)`;
+      box.appendChild(p);
+      setTimeout(()=>p.remove(),4300);
+    }
+  }
+
+  function log(text){
+    const textString = String(text || "");
+    if(debugFastSpinActive && !textString.startsWith("[FAST]")) return;
+    if(speedToBonusActive && !textString.startsWith("[SPEED]")) return;
+    const box = $("logList");
+    const div = document.createElement("div");
+    div.className = "logItem";
+    div.textContent = NovaSortie.label(text);
+    // Keep only the current status; do not accumulate a play log.
+    box.replaceChildren(div);
+  }
+
+  function setup(){
+    const loadedModelHash=globalThis.NovaRtpCurrent?.modelHash;
+    if(loadedModelHash)globalThis.NovaRtpClient?.start({url:'nova-rtp-current.json',expectedModelHash:loadedModelHash,onUpdate:report=>{
+      globalThis.NovaRtpCurrent=report;
+      refreshRtpViews();
+    }});
+    window.NovaReelReference?.mount({strips:REEL_STRIPS, renderSymbol:cellHtml});
+    // 公開情報は右上ドックへ移動し、残りの設定カードは非公開デバッグメニューへ移動。
+    const cabinetData = $("slumpPanel");
+    if(cabinetData){cabinetData.classList.add("novaCabinetData");($("novaCabinetStage")||$("machine")).appendChild(cabinetData);}
+    const slumpPanelBody = $("slumpPanelBody");
+    const slumpPublicCard = document.querySelector(".slumpPublic");
+    if(slumpPanelBody && slumpPublicCard){
+      slumpPanelBody.appendChild(slumpPublicCard);
+      slumpPublicCard.hidden=true;
+    }
+    $('novaDataGraphToggle')?.addEventListener('click',()=>setDataGraphView(!!slumpPublicCard?.hidden));
+    const drawer = $("debugDrawer");
+    if(drawer){
+      [...document.querySelectorAll(".side > .card:not(.oddsPublic):not(.slumpPublic)")].forEach(card => drawer.appendChild(card));
+      if(drawer.parentElement !== document.body) document.body.appendChild(drawer);
+    }
+    ["titleInput","settingSelect","feeInput","stSpinsInput","oddsMultiplierInput","smallMulInput","midMulInput","crownMulInput","cherryMulInput","bigMulInput","bigAddInput","autoDelayInput","masterVolume","bgmVolume","sfxVolume","voiceVolume","payoutVolume"].forEach(id=>{
+      const el = $(id);
+      if(el && globalThis.NovaUiAccess?.canUse(el)) el.addEventListener("input", ()=>{
+        const volumeField = AUDIO_VOLUME_FIELDS.find(item=>item.rangeId === id);
+        if(volumeField) syncVolumeNumberInput(volumeField.rangeId, volumeField.numberId);
+        readSettings();
+        updateDisplay();
+      });
+    });
+    AUDIO_VOLUME_FIELDS.forEach(({numberId})=>{
+      const el = $(numberId);
+      if(!el) return;
+      const handler = ()=>{
+        if(!syncVolumeRangeFromNumber(numberId)) return;
+        readSettings();
+        updateDisplay();
+      };
+      el.addEventListener("input", handler);
+      el.addEventListener("change", handler);
+    });
+
+    const onClick = (id, handler)=>{
+      const el = $(id);
+      if(el && globalThis.NovaUiAccess?.canUse(el)) el.addEventListener("click", handler);
+    };
+
+    const bindUtilityPress = (el, handler)=>{
+      if(!el) return;
+      el.addEventListener("pointerdown", e=>{
+        e.preventDefault();
+        e.stopPropagation();
+        handler(e);
+      });
+      el.addEventListener("click", e=>{
+        e.stopPropagation();
+      });
+      el.addEventListener("keydown", e=>{
+        if(e.code !== "Enter" && e.code !== "Space") return;
+        e.preventDefault();
+        e.stopPropagation();
+        handler(e);
+      });
+    };
+
+    bindUtilityPress(audioToggleBtn, ()=>{
+        setAudioPanelOpen(!audioDock.classList.contains("open"));
+    });
+    bindUtilityPress(slumpToggleBtn, ()=>{
+        setInfoPanelOpen("slump", !audioDock.classList.contains("slumpOpen"));
+    });
+    bindUtilityPress(oddsToggleBtn, ()=>{
+        setInfoPanelOpen("odds", !audioDock.classList.contains("oddsOpen"));
+    });
+    bindUtilityPress(roleCounterToggleBtn, ()=>{
+        setInfoPanelOpen("counter", !audioDock.classList.contains("counterOpen"));
+    });
+    bindUtilityPress(reelSlumpToggleBtn, ()=>{
+        setInfoPanelOpen("slump", !audioDock.classList.contains("slumpOpen"));
+    });
+    bindUtilityPress(reelOddsToggleBtn, ()=>{
+        setInfoPanelOpen("odds", !audioDock.classList.contains("oddsOpen"));
+    });
+    bindUtilityPress(reelDataToggleBtn, ()=>{
+        setReelDataCounterOpen(!isReelDataCounterOpen());
+    });
+    updateReelDataCounterMenu();
+    if(audioCloseBtn){
+      audioCloseBtn.addEventListener("click", e=>{
+        e.stopPropagation();
+        setAudioPanelOpen(false);
+        if(audioToggleBtn) audioToggleBtn.focus();
+      });
+    }
+    if(slumpCloseBtn){
+      slumpCloseBtn.addEventListener("click", e=>{
+        e.stopPropagation();
+        setInfoPanelOpen("slump", false);
+        if(reelSlumpToggleBtn) reelSlumpToggleBtn.focus();
+        else if(slumpToggleBtn) slumpToggleBtn.focus();
+      });
+    }
+    if(oddsCloseBtn){
+      oddsCloseBtn.addEventListener("click", e=>{
+        e.stopPropagation();
+        setInfoPanelOpen("odds", false);
+        if(reelOddsToggleBtn) reelOddsToggleBtn.focus();
+        else if(oddsToggleBtn) oddsToggleBtn.focus();
+      });
+    }
+    if(roleCounterCloseBtn){
+      roleCounterCloseBtn.addEventListener("click", e=>{
+        e.stopPropagation();
+        setInfoPanelOpen("counter", false);
+        if(roleCounterToggleBtn) roleCounterToggleBtn.focus();
+      });
+    }
+    if(pageZoomOutBtn){
+      pageZoomOutBtn.addEventListener("click", e=>{
+        e.stopPropagation();
+        changePageZoom(-PAGE_ZOOM_STEP);
+      });
+    }
+    $('pageZoomRange')?.addEventListener('input',event=>{
+      syncZoomAnchorToSlotTop();pageZoom=Number(event.target.value)/100;applyPageZoom(true);
+    });
+    if(pageZoomInBtn){
+      pageZoomInBtn.addEventListener("click", e=>{
+        e.stopPropagation();
+        changePageZoom(PAGE_ZOOM_STEP);
+      });
+    }
+    if(pageZoomResetBtn){
+      pageZoomResetBtn.addEventListener("click", e=>{
+        e.stopPropagation();
+        syncZoomAnchorToSlotTop();
+        pageZoom = PAGE_ZOOM_DEFAULT;
+        applyPageZoom(true);
+      });
+    }
+    // Cabinet panning is a player display preference, like page zoom.
+    if(pagePanRange){
+      pagePanRange.addEventListener("input", e=>{
+        e.stopPropagation();
+        pagePanX = Number(pagePanRange.value) || 0;
+        applyPagePan(false);
+      });
+      pagePanRange.addEventListener("change", e=>{
+        e.stopPropagation();
+        pagePanX = Number(pagePanRange.value) || 0;
+        applyPagePan(true);
+      });
+    }
+    if(pagePanResetBtn){
+      pagePanResetBtn.addEventListener("click", e=>{
+        e.stopPropagation();
+        pagePanX = PAGE_PAN_DEFAULT;
+        applyPagePan(true);
+      });
+    }
+    if(LAYOUT_EDITOR_ENABLED){
+    const bellNaviAdjustBtn=document.createElement('button');
+    bellNaviAdjustBtn.id='bellNaviAdjustBtn';bellNaviAdjustBtn.type='button';bellNaviAdjustBtn.textContent='ナビ調整';
+    bellNaviAdjustBtn.addEventListener('click',()=>{setLayoutEditorOpen(!layoutEditOpen);if(layoutEditOpen)layoutEditorPanel.scrollTop=0;});
+    document.body.append(bellNaviAdjustBtn);
+    if(layoutEditToggleBtn){
+      layoutEditToggleBtn.addEventListener("click", e=>{
+        e.stopPropagation();
+        setLayoutEditorOpen(!layoutEditOpen);
+      });
+    }
+    if(layoutEditCloseBtn){
+      layoutEditCloseBtn.addEventListener("click", e=>{
+        e.stopPropagation();
+        setLayoutEditorOpen(false);
+      });
+    }
+    if(layoutEditSaveDefaultBtn){
+      layoutEditSaveDefaultBtn.addEventListener("click", e=>{
+        e.stopPropagation();
+        saveLayoutAsDefault();
+      });
+    }
+    if(layoutEditResetBtn){
+      layoutEditResetBtn.addEventListener("click", e=>{
+        e.stopPropagation();
+        resetLayoutEdit();
+      });
+    }
+    if(layoutEditorPanel){
+      layoutEditorPanel.addEventListener("click", e=>e.stopPropagation());
+    }
+    layoutEditInputs.forEach(input=>{
+      input.addEventListener("input", e=>{
+        e.stopPropagation();
+        const target = input.dataset.layoutTarget;
+        const prop = input.dataset.layoutProp;
+        if(!layoutEditState[target]) return;
+        layoutEditState[target][prop] = Number(input.value) || 0;
+        applyLayoutEdit(false);
+      });
+      input.addEventListener("change", e=>{
+        e.stopPropagation();
+        const target = input.dataset.layoutTarget;
+        const prop = input.dataset.layoutProp;
+        if(!layoutEditState[target]) return;
+        layoutEditState[target][prop] = Number(input.value) || 0;
+        applyLayoutEdit(true);
+      });
+    });
+    }
+    if(audioDock){
+      audioDock.addEventListener("click", e=>e.stopPropagation());
+    }
+    window.addEventListener("resize", ()=>{
+      syncZoomAnchorToSlotTop();
+      requestPageScrollBoundsUpdate();
+      requestBackgroundLogoSync();
+      syncInfoPanelPositionIfOpen();
+    }, {passive:true});
+    window.addEventListener("load", ()=>{
+      requestPageScrollBoundsUpdate();
+      requestBackgroundLogoSync();
+    }, {once:true});
+    window.addEventListener("scroll", ()=>{
+      syncInfoPanelPositionIfOpen();
+    }, {passive:true});
+    document.addEventListener("click", closeUtilityPanels);
+    document.addEventListener("click", ()=>setSpeedModeMenuOpen(false));
+
+    onClick("saveBtn", save);
+    ensureMorningResetControl();
+    onClick("morningResetBtn", ()=>morningResetGame(true));
+    onClick("tenKSimBtn", runTenKSimulation);
+    onClick("fiftyKSimBtn", ()=>runCountSimulation(50000));
+    onClick("resetBtn", resetGame);
+    if(SLOT_DEBUG_ENABLED && $("settingSelect")){
+      $("settingSelect").addEventListener("change", ()=>{
+        readSettings();
+        persistState();
+        updateDisplay();
+        setMorningBarReels();
+      });
+    }
+    onClick("spinBtn", spin);
+    const betHitArea = document.querySelector(".betArea");
+    if(betHitArea){
+      const playControls = document.querySelector(".playControls");
+      const setLeverDown = down=>{
+        betHitArea.classList.toggle("leverDown", !!down);
+        if(playControls) playControls.classList.toggle("leverDown", !!down);
+      };
+      betHitArea.addEventListener("pointerdown", ()=>setLeverDown(true));
+      window.addEventListener("pointerup", ()=>setLeverDown(false));
+      window.addEventListener("pointercancel", ()=>setLeverDown(false));
+      betHitArea.addEventListener("mouseleave", ()=>setLeverDown(false));
+      betHitArea.addEventListener("click", e=>{
+        const target = e.target;
+        if(target && target.closest && target.closest("button, input, select, textarea, a, label")) return;
+        $("spinBtn").click();
+      });
+    }
+    onClick("autoStartBtn", ()=>openAutoStopOrderDialog());
+    onClick("autoStopBtn", ()=>stopAutoPlay("オート停止"));
+    bindUtilityPress($("topAutoBtn"), ()=>{
+        if(autoPlay) stopAutoPlay("オート停止");
+        else openAutoStopOrderDialog();
+    });
+    onClick("debugFastStartBtn", startDebugFastSpin);
+    onClick("debugFastStopBtn", ()=>stopDebugFastSpin());
+    onClick("debugSuperSpeedBtn", ()=>setSuperSpeedDebugPermission(!superSpeedDebugAllowed));
+    if(slumpSeekRange){
+      slumpSeekRange.addEventListener("input", ()=>{
+        const max = Number(slumpSeekRange.max) || 0;
+        const value = clamp(Number(slumpSeekRange.value) || 0, 0, max);
+        slumpView.seekStart = value;
+        slumpView.followEnd = max <= 0 || value >= max;
+        renderSlumpGraph();
+      });
+    }
+    if(slumpZoomInput){
+      slumpZoomInput.addEventListener("input", ()=>{
+        slumpView.xZoom = Math.max(1, Math.min(50, Number(slumpZoomInput.value) || 1));
+        if(slumpSeekRange && !slumpView.followEnd){
+          slumpView.seekStart = Number(slumpSeekRange.value) || 0;
+        }
+        renderSlumpGraph();
+      });
+    }
+    if(slumpYZoomInput){
+      slumpYZoomInput.addEventListener("input", ()=>{
+        slumpView.yZoom = Math.max(1, Math.min(6, Number(slumpYZoomInput.value) || 1));
+        renderSlumpGraph();
+      });
+    }
+    if($("quickAutoBtn")){
+      $("quickAutoBtn").addEventListener("click", e=>{
+        e.stopPropagation();
+        e.preventDefault();
+        if(autoPlay) stopAutoPlay("オート停止");
+        else openAutoStopOrderDialog();
+      });
+    }
+    if($("speedAutoBtn")){
+      $("speedAutoBtn").addEventListener("click", e=>{
+        e.stopPropagation();
+        setSpeedModeMenuOpen(!speedModeMenuOpen);
+      });
+    }
+    if($("superSpeedBtn")){
+      superSpeedMenu=NovaSuperSpeedMenu.create({button:$("superSpeedBtn"),onSelect:mode=>autoPlay?startSuperSpeed(mode):openAutoStopOrderDialog(mode),onStop:()=>stopAutoPlay('超ハイスピード停止')});
+      $("superSpeedBtn").addEventListener('click',e=>{e.stopPropagation();e.preventDefault();updateSuperSpeedUi();superSpeedMenu.toggle();});
+    }
+    if($("speedModeMenu")){
+      $("speedModeMenu").addEventListener("click", e=>e.stopPropagation());
+    }
+    document.querySelectorAll('[data-auto-stop-order]').forEach(button=>button.addEventListener('click',()=>chooseAutoStopOrder(button.dataset.autoStopOrder)));
+    onClick("autoStopOrderCancel", ()=>{pendingAutoSuperSpeedMode="";closeAutoStopOrderDialog();});
+    $("autoStopOrderDialog")?.addEventListener('cancel',()=>{pendingAutoSuperSpeedMode="";});
+    if($("speedModeToggleBtn")){
+      $("speedModeToggleBtn").addEventListener("click", e=>{
+        e.stopPropagation();
+        if(speedToBonusActive) stopSpeedToBonus("手動停止");
+        else startSpeedToBonus();
+      });
+    }
+    if(effectSkipBtn){
+      effectSkipBtn.addEventListener("click", skipActiveEffects);
+    }
+    const autoHitArea = document.querySelector(".autoArea");
+    if(autoHitArea){
+      autoHitArea.addEventListener("click", e=>{
+        if(e.target.closest("button")) return;
+        if(e.target.closest(".autoStack")) return;
+        if($("quickAutoBtn")) $("quickAutoBtn").click();
+      });
+    }
+
+    stopBtns.forEach((btn,i)=>{
+      if(!btn) return;
+      const stopPart = document.querySelector(`[data-stop-part="${i}"]`);
+      const setStopPressed = down=>{ if(stopPart) stopPart.classList.toggle("is-pressed", !!down); };
+      btn.addEventListener("pointerdown", ()=>setStopPressed(true));
+      window.addEventListener("pointerup", ()=>setStopPressed(false));
+      window.addEventListener("pointercancel", ()=>setStopPressed(false));
+      btn.addEventListener("mouseleave", ()=>setStopPressed(false));
+      btn.addEventListener("click", ()=>{
+        stopSingleReel(i);
+      });
+    });
+
+    if($("audioMuteBtn")){
+      $("audioMuteBtn").addEventListener("click", toggleAudioMute);
+    }
+
+    onClick("applyForceBtn", ()=>{
+      const requested = $("forceResult").value;
+      if(SLOT_DEBUG_ENABLED&&requested.startsWith('IMPURITY_HINT_')){
+        NovaImpurityHint.arm(requested.slice('IMPURITY_HINT_'.length));
+        forceResult='';
+        log('穢れ示唆を次回BETで表示（表示のみ）');
+        return;
+      }
+      NovaImpurityHint.arm('');
+      forceResult = normalizeForceResult(requested);
+      log(forceResult ? `次回転指定：${forceResultName(forceResult)}` : "次回転指定なし");
+    });
+    onClick("forceBarBtn", ()=>{
+      forceResult = "BAR3";
+      if($("forceResult")) $("forceResult").value = "BAR3";
+      log("次回転指定：BAR揃い");
+    });
+    onClick("clearForceBtn", ()=>{
+      NovaImpurityHint.arm('');
+      NovaImpurityHint.hide();
+      forceResult = "";
+      $("forceResult").value = "";
+      log("次回転指定を解除");
+    });
+
+    arrangeDebugDrawerTop();
+
+    onClick("debugHighBtn", forceHighModeNow);
+    onClick("debugSmallBtn", ()=>direct("SMALL"));
+    onClick("debugMidBtn", ()=>{if(A_TYPE_MODE){if(!isSpinning&&!session.active&&canPlayCompleteTrial()){stats.bigCount++;startBonusSessionNow({bonusKind:"BIG",bonusTier:"upper"});}}});
+    onClick("debugBar3Btn", ()=>direct("BAR3"));
+    onClick("debugBigBtn", ()=>{if(A_TYPE_MODE){if(!isSpinning&&!session.active&&canPlayCompleteTrial()){stats.bigCount++;startBonusSessionNow({bonusKind:"BIG",bonusTier:"normal"});}}});
+    onClick("debugGrapeBtn", ()=>direct("BELL"));
+    onClick("debugBellPayBtn", ()=>direct("BELL"));
+    onClick("debugBell3Btn", ()=>direct("BELL3"));
+    onClick("debugReplayBtn", ()=>direct("REPLAY"));
+    onClick("debugSuikaBtn", ()=>direct("SUICA"));
+    onClick("debugCherryBtn", ()=>direct("CHERRY_DOUBLE"));
+    onClick("debugCherryDoubleBtn", ()=>direct("CHERRY_DOUBLE"));
+    onClick("debugBellBtn", ()=>direct("CHERRY_TRIPLE"));
+    onClick("debugMissBtn", ()=>direct("MISS"));
+
+    if(SLOT_DEBUG_ENABLED){
+      $("lcd").addEventListener("click", ()=>{
+        clickCount++;
+        clearTimeout(clickTimer);
+        clickTimer = setTimeout(()=>clickCount=0, 1600);
+        if(clickCount >= 5){
+          clickCount = 0;
+          document.body.classList.toggle("debugOpen");
+          if($("secretPanel")) $("secretPanel").classList.toggle("show", document.body.classList.contains("debugOpen"));
+          log(document.body.classList.contains("debugOpen") ? "デバッグメニューを表示" : "デバッグメニューを非表示");
+        }
+      });
+    }
+
+    if($("debugCloseBtn")){
+      $("debugCloseBtn").addEventListener("click", ()=>{
+        document.body.classList.remove("debugOpen");
+        if($("secretPanel")) $("secretPanel").classList.remove("show");
+        log("デバッグメニューを非表示");
+      });
+    }
+
+    if(SLOT_DEBUG_ENABLED && $("debugToggleBtn")){
+      $("debugToggleBtn").addEventListener("click", ()=>{
+        document.body.classList.toggle("debugOpen");
+        if($("secretPanel")) $("secretPanel").classList.toggle("show", document.body.classList.contains("debugOpen"));
+        log(document.body.classList.contains("debugOpen") ? "管理メニューを表示" : "管理メニューを非表示");
+      });
+    }
+
+    document.addEventListener("keydown", e=>{
+      if(["INPUT","SELECT","TEXTAREA"].includes(document.activeElement.tagName)) return;
+      if(captureControlInput(e)){
+        e.preventDefault();
+        return;
+      }
+      const handlers = {
+        Space:()=>spin(),
+        ArrowUp:()=>spin(),
+        ArrowLeft:()=>stopSingleReelByKeyboard(0),
+        ArrowDown:()=>stopSingleReelByKeyboard(1),
+        ArrowRight:()=>stopSingleReelByKeyboard(2)
+      };
+      if(handlers[e.code]){
+        e.preventDefault();
+        handlers[e.code]();
+      }
+    });
+
+    let exitStatePushed = false;
+    const persistAndPushExitState = ()=>{
+      if(exitStatePushed || !canUsePlayState()) return;
+      exitStatePushed = true;
+      readSettings();
+      persistState();
+      pushAdminStateOnExit(adminSnapshot());
+    };
+    window.addEventListener("pagehide", persistAndPushExitState);
+    window.addEventListener("pageshow", ()=>{ exitStatePushed = false; });
+    window.addEventListener("beforeunload", ()=>{
+      if(autoTimer) clearTimeout(autoTimer);
+      if(autoWatchdogTimer) clearInterval(autoWatchdogTimer);
+      if(debugFastTimer) clearInterval(debugFastTimer);
+      persistAndPushExitState();
+    });
+  }
+
+  globalThis.NovaRuntimeGates?.configure(scope=>{
+    if(scope==='sortie')return {sortie:NovaSortie.busy};
+    const waits={sortie:NovaSortie.busy,ladder:NovaLadder.busy,aim:NovaAim.busy,award:NovaDirectAward.busy};
+    if(scope==='bet')return waits;
+    return {...waits,
+    bonusAudio:bonusEndBgmPlaying||bonusConfirmSoundPlaying,reverse:!!oumaPresentation,
+    audioGate:!!globalThis.NovaSortieAudioGate?.locked(currentSpin),
+    czPush:!!document.getElementById('novaCzPush')?.matches(':not([hidden])'),
+    ending:!!storeEndSnapshot,access:!canUsePlayState(),reels:isSpinning
+  };});
+  function bootGame(){
+    if(!load()){showPlayBlocked('restore');return;}
+    NovaDataCounter.adopt(stats,normalState.flow,normalState.sinceBonus);
+    if(!normalState.internal) normalState.internal=NovaNormal.reset(Math.random,settings.setting);
+    persistState();
+    initializePlaySessionBaseline();
+    loadPageZoom();
+    loadPagePan();
+    loadLayoutDefaultState();
+    loadLayoutEdit();
+    applySettings();
+    setup();
+    $("retryStateSave")?.addEventListener("click",()=>persistState());
+    persistState();
+    connectAdminCommands();
+    if(!restorePendingSpin()){
+      reels.forEach((_,i)=>setRandomReel(i));
+      showMessage("READY",`BIG ${NovaArt.bonusTarget()}pt / AT初期300pt＋α / 設定${settings.setting}`);
+    }
+    if($("forceResult")) $("forceResult").value = forceResult;
+    if($("premiumForceStatus")) $("premiumForceStatus").value = forcePremiumEffect ? "ON" : "OFF";
+    updateDisplay();
+    updateCompleteTrialState("再開");
+    if(globalThis.NovaPlayLimit)updatePlayLimitState();
+    updateAutoUi();
+    updateDebugFastUi();
+    requestBackgroundLogoSync();
+  }
+
+  playAccess=NovaPlayAccess.create(STORAGE_KEY,{blocked:showPlayBlocked});
+  window.addEventListener('pagehide',()=>{if(!playAccess.owned())playAccess.close();});
+  playAccess.start(async()=>{
+    try{
+      storeResumeState=await NovaStoreResume.connect({
+        enabled:bootParams.get('resumeFromStore')==='1'&&!!bootPlaySessionId&&parent!==window,
+        origin:ADMIN_SERVER ? new URL(ADMIN_SERVER).origin : location.origin,
+        sessionId:bootPlaySessionId,prepare:prepareStoreEndSnapshot,ready:()=>storeBootReady,
+        display:base=>{if(base&&typeof base==='object'&&!Array.isArray(base))machineDisplayBase=base;}
+      });
+    }catch(error){storageRestoreBlocked=true;showPlayBlocked('restore');return;}
+    adminCommandLastId=Math.max(adminCommandLastId,Number(storeResumeState?.lastCommandId)||0);
+    bootGame();
+    storeBootReady=!storageRestoreBlocked;
+    // Register after setup's final save, so pagehide commits before releasing ownership.
+    window.addEventListener('pagehide',()=>{
+      playAccess.close();
+      stopAutoPlay();stopSpeedToBonus();stopDebugFastSpin();
+      if(adminPushTimer)clearTimeout(adminPushTimer);
+      if(adminCommandPollTimer)clearTimeout(adminCommandPollTimer);
+    });
+  });
+  window.addEventListener('pageshow',event=>{if(event.persisted)location.reload();});
+})();

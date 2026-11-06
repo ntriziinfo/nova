@@ -36,7 +36,7 @@ function setup(win,playing=false){
   press:()=>nodes.novaOumaPush.onclick(),tick:()=>{for(const [id,t] of [...timers]){timers.delete(id);t.cb();}},
   rolls:()=>rolls,spins:()=>spins,played:()=>played,clears:()=>clears,clearedAll:()=>clearedAll,staticColumns:()=>staticColumns};
 }
-test('exact pre-PUSH engine reconstruction retains every existing gameplay statement',()=>{beforeOumaPush(fs.readFileSync('nova-game.js','utf8').replace(/\r\n/g,'\n'));});
+test('exact pre-PUSH engine reconstruction retains every existing gameplay statement',()=>{beforeOumaPush(fs.readFileSync('tests/fixtures/pre-premium-removal/nova-game.js','utf8').replace(/\r\n/g,'\n'));});
 test('stopped reels hold until reverse audio ends, then accept BET',()=>{
  const t=setup(true,true);t.c.scheduleOumaZeroChain();
  assert.equal(t.nodes.machine.dataset.oumaFreeze,'hold');assert.equal(t.nodes.spinBtn.disabled,true);

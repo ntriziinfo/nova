@@ -17,6 +17,6 @@ test('impurity release overrides only the BB audio and survives saved-session se
   assert.equal(JSON.stringify(options),before);
  }
  assert.equal(ctx.pickATypeBonusBgm('BIG',false,{impurityReleased:false}).src,ctx.NOVA_BIG_BGM_SRC);
- assert.match(html,/pickATypeBonusBgm\(bonusKind, within50, \{premiumBonus, oneGameRenBonus, impurityReleased\}\)/);
+ assert.match(html,/pickATypeBonusBgm\(bonusKind, within50, \{oneGameRenBonus, impurityReleased\}\)/);
  assert.match(html,/pickATypeBonusBgm\(session.bonusKind,false,session\)/);
 });

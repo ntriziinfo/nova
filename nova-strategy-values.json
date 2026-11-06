@@ -4,7 +4,7 @@
   "scope": "Standard source rules; not per-machine overrides",
   "sources": {
     "nova-tuning.js": "d6ad9330f96569998db5217490d581f40347ff537861d164cdbbd235d69426a6",
-    "nova-normal.js": "56664e51b69c766aee4237b41807b0242caeaba27503d658c8b5d8ea52b3b63a",
+    "nova-normal.js": "d52620b9a54090c52cce204e2e622fc77fd2764f324cde060c4b7439d81369d2",
     "nova-flow.js": "67793f64fec69bb7e0a577356f6b2d0f727a5a6be6cdcc5d5f89ae23ac9d8379",
     "nova-art.js": "bc76a0979f148299bbf289abd15fe8bce0cd9a5a467a0dd040375ac23a3b438d",
     "nova-progress.js": "f638a11af2a5545c60ad2350b55485a0cea9641099df3166823fb3b2fc2545da",

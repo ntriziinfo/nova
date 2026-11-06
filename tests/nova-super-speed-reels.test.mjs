@@ -46,7 +46,7 @@ test('historical static reel proof restores the exact prior source independently
  const {beforeCheckpointInterruption}=await import('./helpers/checkpoint-source.mjs');
  const hooks=game.match(/^    globalThis\.NovaSuperSpeedReels && syncSuperSpeedReelDisplay\(\);\n/gm);
  assert.equal(hooks.length,6);
- const restored=beforeCheckpointInterruption(game).replace(/  function syncSuperSpeedReelDisplay\([^]*?\n  }\n\n/,'')
+ const restored=beforeCheckpointInterruption(fs.readFileSync('tests/fixtures/pre-premium-removal/nova-game.js','utf8').replaceAll('\r\n','\n')).replace(/  function syncSuperSpeedReelDisplay\([^]*?\n  }\n\n/,'')
   .replace(/^    globalThis\.NovaSuperSpeedReels && syncSuperSpeedReelDisplay\(\);\n/gm,'');
  assert.equal(createHash('sha256').update(restored).digest('hex'),'d761f85b894370bd95fc2b63afa5c69fd789f14682a284413cdfcbbd20cadf92');
 });

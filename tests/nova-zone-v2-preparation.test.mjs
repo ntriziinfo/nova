@@ -26,7 +26,7 @@ test('production simulator uses replay-gated preparation and reports its economi
 test('simulator keeps CZ direct additive to the terminal BIG instead of entering AT early',()=>{
   const source=fs.readFileSync('scripts/zone-v2-model.mjs','utf8');
   assert.doesNotMatch(source,/else if\(t\.direct\)/);
-  assert.match(source,/bonus\(t\.internalBonus\.kind,false,t\.internalBonus\)/);
+  assert.match(source,/bonus\(t\.internalBonus\.kind,t\.internalBonus\)/);
 });
 
 test('production simulator settles normal watermelon and cherries at 3pt and 2pt',()=>{
