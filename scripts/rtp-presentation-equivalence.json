@@ -500,6 +500,21 @@
         "tests/nova-customer-stats.test.mjs",
         "tests/nova-audio-defaults-equivalence.test.mjs"
       ]
+    },
+    {
+      "file": "nova-game.js",
+      "sourceHash": "41a0f6b15fd446d03f8473efff069d56bbec0a45725fbc4d1b1c317866c67a0c",
+      "presentationHash": "0196b8b17b2fb77337842d510ff82d0aa523c7b97fe3dcfe7ab7b1cc9c57c8c8",
+      "sourceCommit": "a06bd60b84f2011c48c6a622660e0957267ce6b7",
+      "presentationCommit": "cbdad04b7db26b45e5dbb6c1cb851727fdb4cfc0",
+      "scope": "unreserved-play",
+      "reason": "管理予約なし・完走停止なしの既存試算条件に限定した同等性。現行公開版c6ab76bcとの差分はセッション限定予約のみ。予約を使わない場合は抽選・払い出し・乱数消費・進行を維持。既存の完走制御差分はuncapped検証を併用。予約使用中は掲載機械割の対象外。",
+      "tests": [
+        "tests/nova-debug-scenario.test.mjs",
+        "tests/nova-uncapped-completion.test.mjs",
+        "tests/nova-sortie-rare.test.mjs",
+        "tests/nova-state-nova.test.mjs"
+      ]
     }
   ]
 }

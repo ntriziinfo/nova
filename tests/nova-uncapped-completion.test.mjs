@@ -7,8 +7,8 @@ test('completion correction preserves the exact uncapped RTP algorithm and its o
  const old=vm.createContext({}),current=vm.createContext({});
  vm.runInContext(execFileSync('git',['show','791c8b30fc10306ddc147266a41c5ed091b8888b:nova-complete.js'],{encoding:'utf8'}),old);
  vm.runInContext(fs.readFileSync('nova-complete.js','utf8'),current);
- assert.equal(old.NovaComplete.observe.toString(),current.NovaComplete.observe.toString());
- assert.equal(old.NovaComplete.restore.toString(),current.NovaComplete.restore.toString());
+ assert.equal(old.NovaComplete.observe.toString().replaceAll('\r\n','\n'),current.NovaComplete.observe.toString().replaceAll('\r\n','\n'));
+ assert.equal(old.NovaComplete.restore.toString().replaceAll('\r\n','\n'),current.NovaComplete.restore.toString().replaceAll('\r\n','\n'));
  for(const context of [old,current]){
   const settings=context.NovaComplete.configure({completeLimitPt:10000,completeMyLimitPt:19000},true,false);
   assert.equal(settings.completeLimitPt,0);assert.equal(context.NovaComplete.myLimit(settings),0);

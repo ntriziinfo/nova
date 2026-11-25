@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 import {execFileSync} from 'node:child_process';
 const source=fs.readFileSync('nova-game.js','utf8');
-const original=execFileSync('git',['show','a06bd60b84f2011c48c6a622660e0957267ce6b7:nova-game.js'],{encoding:'utf8',maxBuffer:5e6});
+const original=execFileSync('git',['show','c6ab76bc22cee21b518702df916c6c1f3b1428be:nova-game.js'],{encoding:'utf8',maxBuffer:5e6});
 const moduleSource=fs.readFileSync('nova-debug-scenario.js','utf8');
 const ctx=vm.createContext({});vm.runInContext(moduleSource,ctx);const d=ctx.NovaDebugScenario;
 const command={type:'reserveDebugScenario',id:'one',machineId:'nova-01',sessionId:'a',zoneG:300,at:true,upper:true,sortie:true,sortieG:15};

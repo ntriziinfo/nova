@@ -29,7 +29,9 @@ export function presentationAliases(registry){
  for(const change of registry.changes)if(aliases.has(change.file+':'+change.sourceHash))throw Error('Chained presentation equivalence is not permitted');
  return aliases;
 }
-const aliases=presentationAliases(JSON.parse(fs.readFileSync(new URL('./rtp-presentation-equivalence.json',import.meta.url),'utf8')));
+const equivalenceRegistry=JSON.parse(fs.readFileSync(new URL('./rtp-presentation-equivalence.json',import.meta.url),'utf8'));
+const aliases=presentationAliases(equivalenceRegistry);
+const debugOnlyHashes=new Set(equivalenceRegistry.changes.filter(c=>c.scope==='unreserved-play').map(c=>c.file+':'+c.presentationHash));
 // These aliases apply only to this report's mandatory uncapped simulation options.
 const completionRegistry=JSON.parse(fs.readFileSync(new URL('./rtp-uncapped-completion-equivalence.json',import.meta.url),'utf8'));
 if(completionRegistry.schema!=='nova-rtp-uncapped-completion-equivalence/v1'||Object.entries(completionRegistry.requiredOptions).some(([key,value])=>REQUIRED_OPTIONS[key]!==value))throw Error('Invalid uncapped completion review');
@@ -102,7 +104,7 @@ export function currentReport(report,current,commit){
  const games=ready?(report.gamesPerSetting??report.totalGamesPerSetting):GAMES_PER_SETTING;
  const rows=evidence.toSorted((a,b)=>a.setting-b.setting);
  const presentationChanges=ready?INPUTS.filter(file=>report.sourceHashes[file]!==current[file]).map(file=>({file,simulationHash:report.sourceHashes[file],currentHash:current[file]})):[];
- return {schema:'nova-current-rtp/v1',status:ready?'ready':'pending',modelHash:modelHash(current),commit,sourceCommit:ready?report.sourceCommit:null,generatedAt:ready?report.generatedAt:null,sourceVerification:ready?{kind:presentationChanges.some(change=>completionAliases.has(change.file+':'+change.currentHash))?'reviewed-uncapped-completion':presentationChanges.length?'reviewed-presentation-only':'identical',presentationChanges}:null,gamesPerSetting:games,conditions:pooled?'2.5億G×4系列合算・MY／差枚停止なし':`${games/100_000_000}億G連続・MY／差枚停止なし`,settings:rows.map(r=>({setting:r.setting,rtp:r.totalPaid/r.totalBet,rtpPct:r.totalPaid/r.totalBet*100,ci95:r.ci95}))};
+ return {schema:'nova-current-rtp/v1',status:ready?'ready':'pending',modelHash:modelHash(current),commit,sourceCommit:ready?report.sourceCommit:null,generatedAt:ready?report.generatedAt:null,sourceVerification:ready?{kind:presentationChanges.some(change=>debugOnlyHashes.has(change.file+':'+change.currentHash))?'reviewed-debug-only':presentationChanges.some(change=>completionAliases.has(change.file+':'+change.currentHash))?'reviewed-uncapped-completion':presentationChanges.length?'reviewed-presentation-only':'identical',presentationChanges}:null,gamesPerSetting:games,conditions:pooled?'2.5億G×4系列合算・MY／差枚停止なし':`${games/100_000_000}億G連続・MY／差枚停止なし`,settings:rows.map(r=>({setting:r.setting,rtp:r.totalPaid/r.totalBet,rtpPct:r.totalPaid/r.totalBet*100,ci95:r.ci95}))};
 }
 function main(){
  const command=process.argv[2]||'build';
