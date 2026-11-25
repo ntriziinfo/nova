@@ -530,6 +530,21 @@
         "tests/nova-sortie-rare.test.mjs",
         "tests/nova-state-nova.test.mjs"
       ]
+    },
+    {
+      "file": "nova-game.js",
+      "sourceHash": "41a0f6b15fd446d03f8473efff069d56bbec0a45725fbc4d1b1c317866c67a0c",
+      "presentationHash": "db0ab477dabdaa718a792cd288b3382b1fd5a2d3ee209dfe95a567470e769d3c",
+      "sourceCommit": "a06bd60b84f2011c48c6a622660e0957267ce6b7",
+      "presentationCommit": "43b70e2c58c8405f3929d757183ebb8c0412e270",
+      "scope": "unreserved-play",
+      "reason": "管理予約なし・完走停止なしの既存試算条件に限定した同等性。現行公開版c6ab76bcとの差分はセッション限定予約のみ。予約を使わない場合は抽選・払い出し・乱数消費・進行を維持。既存の完走制御差分はuncapped検証を併用。予約使用中は掲載機械割の対象外。 AT強制フラグも現行セッションの明示的予約時だけ既存の強制処理へ渡す。予約なしは追加関数冒頭で戻り、抽選と乱数消費を変更しない。 呼出側も予約待機時だけ実行。既存の強制フラグ関連23テストを再確認。",
+      "tests": [
+        "tests/nova-debug-scenario.test.mjs",
+        "tests/nova-uncapped-completion.test.mjs",
+        "tests/nova-sortie-rare.test.mjs",
+        "tests/nova-state-nova.test.mjs"
+      ]
     }
   ]
 }
