@@ -53,3 +53,28 @@ test('reservation forces BB at target G and retains earlier natural BB',()=>{
  const early=load(source,d.accept({...command,zoneG:800},context));early.NovaNormal.spin=()=>({state:{games:10},result:'MISS',czFlow:{phase:'normal'},internalBonus:{kind:'BIG',source:'natural'}});
  assert.equal(early.drawIndependentATypeOutcome().internalBonus.source,'natural');
 });
+
+test('AT remote force validates roles and sessions, waits safely and consumes once',()=>{
+ for(const result of d.atResults){
+  const cmd={...command,type:'reserveDebugAtForce',result};
+  let s=d.acceptAt(cmd,context,null,{phase:'art'});
+  assert.equal(s.stage,'waiting');
+  assert.equal(d.acceptAt(cmd,context,s,{phase:'art'}),s);
+  for(const f of [{phase:'art',zone:'sora'},{phase:'art',burstLeft:10},{phase:'art',atPrelude:{}},{phase:'art',checkpointCountdown:true}])assert.equal(d.takeAt(s,'a',f),'');
+  assert.equal(d.takeAt(s,'a',{phase:'art'},true),'');
+  s=JSON.parse(JSON.stringify(s));assert.equal(d.takeAt(s,'b',{phase:'art'}),'');
+  assert.equal(d.takeAt(s,'a',{phase:'art'}),result);assert.equal(d.takeAt(s,'a',{phase:'art'}),'');
+ }
+ assert.equal(d.acceptAt({...command,type:'reserveDebugAtForce',result:'BIG'},context,null,{phase:'art'}),null);
+ const cmd={...command,type:'reserveDebugAtForce',result:'BELL'};
+ assert.equal(d.acceptAt(cmd,context,null,{phase:'normal'}).stage,'done');
+ let s=d.acceptAt(cmd,context,null,{phase:'art'});assert.equal(d.takeAt(s,'a',{phase:'normal'}),'');assert.equal(s.stage,'done');
+ s=d.acceptAt({...cmd,id:'two'},context,s,{phase:'art'});s=d.acceptAt({...cmd,type:'cancelDebugAtForce',id:'cancel'},context,s,{phase:'art'});assert.equal(d.takeAt(s,'a',{phase:'art'}),'');
+});
+test('remote flag stages through existing one-shot control without changing unreserved behavior',()=>{
+ const c=vm.createContext({A_TYPE_MODE:true,forceResult:'',PLAY_SESSION_ID:'a',normalState:{flow:{phase:'art'}},isATypeBonusActive:()=>false,currentGameProfit:()=>0,NovaProgress:{snapshot:()=>({next:2400})},NovaArt:{checkpointGuaranteed:()=>false},forceResultName:r=>r,log(){}});
+ vm.runInContext(moduleSource,c);vm.runInContext(extract(source,'stageRemoteAtForce'),c);
+ c.stageRemoteAtForce();assert.equal(c.forceResult,'');
+ c.normalState.debugAtForce=d.acceptAt({...command,type:'reserveDebugAtForce',result:'WEAK_NOVA'},context,null,{phase:'art'});
+ c.stageRemoteAtForce();assert.equal(c.forceResult,'WEAK_NOVA');c.forceResult='';c.stageRemoteAtForce();assert.equal(c.forceResult,'');
+});

@@ -26,5 +26,21 @@ globalThis.NovaDebugScenario=(()=>{
   if(s.atGames>=s.sortieG){s.stage='sortie-role';return true;}
   return false;
  }
- return Object.freeze({accept,active,guarantee,bonus,upper,afterBonus,finishBonus,atGame});
+ const atResults=Object.freeze(["MISS","ONE_COIN","REPLAY","BELL","BELL15","WEAK_SUICA","WEAK_NOVA","STRONG_NOVA","SUPER_NOVA","URA_CHALLENGE","SORTIE_AIM_WIN_RED","ZONE_sosuke","ZONE_toto","ZONE_urapi","ZONE_giru","ZONE_sora","ZONE_ouma","ZONE_ura_giru","ZONE_ura_sora","ZONE_ura_ouma"]);
+ function acceptAt(command,context,previous,flow){
+  if(!context.enabled||!context.sessionId||command.sessionId!==context.sessionId||command.machineId!==context.machineId)return previous;
+  if(typeof command.id!=='string'||!command.id||command.id===previous?.id||previous?.seen?.includes(command.id))return previous;
+  if(!['reserveDebugAtForce','cancelDebugAtForce'].includes(command.type))return previous;
+  if(command.type==='reserveDebugAtForce'&&!atResults.includes(command.result))return previous;
+  const seen=[...(previous?.seen||[]),previous?.id].filter(Boolean).slice(-64);
+  return {id:command.id,seen,sessionId:command.sessionId,machineId:command.machineId,result:command.result,stage:command.type==='cancelDebugAtForce'||flow?.phase!=='art'?'done':'waiting'};
+ }
+ function takeAt(s,sessionId,flow,held=false){
+  if(!active(s,sessionId)||s.stage!=='waiting')return '';
+  if(held)return '';
+  if(flow?.phase!=='art'){s.stage='done';return '';}
+  if(flow.initialStage||flow.zone||flow.entryStage||flow.atPrelude||flow.burstPending||flow.burstLeft||flow.researchSortieLeft||flow.comebackLeft||flow.comebackConfirmed||flow.checkpointCountdown||flow.researchThresholdPending||flow.researchChallengeActive||flow.queuedZones?.length||Number(flow.sets)||Number(flow.stock))return '';
+  s.stage='done';return s.result;
+ }
+ return Object.freeze({atResults,acceptAt,takeAt,accept,active,guarantee,bonus,upper,afterBonus,finishBonus,atGame});
 })();
