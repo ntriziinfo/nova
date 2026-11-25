@@ -2589,7 +2589,7 @@
     if(result){forceResult=result;log('管理画面：AT強制 '+forceResultName(result));}
   }
   function takeForcedResult(){
-    stageRemoteAtForce();
+    if(normalState.debugAtForce?.stage==='waiting')stageRemoteAtForce();
     // Keep the one-shot challenge queued until a pending/active BIG has finished.
     if(forceResult==='URA_CHALLENGE' && A_TYPE_MODE && (isATypeBonusActive() || normalState.bonusPending))return '';
     const result=forceResult;
@@ -8004,7 +8004,7 @@ function fullReelSymbolMarkup(src, className, label, x, y, width, height, source
       const wait=autoPacingWaitMs();
       if(wait>0){queueAutoStep(wait);return;}
     }
-    stageRemoteAtForce();
+    if(normalState.debugAtForce?.stage==='waiting')stageRemoteAtForce();
     if(A_TYPE_MODE&&(['SORTIE','FREEZE'].includes(forceResult)||NovaStockEntry.debugCue(forceResult)))takeForcedResult();
     globalThis.NovaResultRecall?.bet();
     if(tryStockEntry())return;
