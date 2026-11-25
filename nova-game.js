@@ -3186,6 +3186,10 @@
     if(!A_TYPE_MODE)return;
     // Draw once at BET after the real role. Saved spins never draw again on resume.
     const internalResult=resolved.internalResult??result;
+    const reservation=globalThis.NovaDebugScenario?activeDebugScenario():null;
+    if(reservation?.stage==='sortie-role'&&internalResult==='STRONG_NOVA'){
+      NovaProgress.queueSortie();resolved.sortieWon=true;reservation.stage='done';return;
+    }
     resolved.sortieWon=NovaProgress.drawSortie(settings.setting,internalResult,resolved,Math.random,currentGameProfit());
     if(!(typeof debugFastSpinActive!=='undefined'&&debugFastSpinActive)&&globalThis.NovaStockEntry?.drawFake&&NovaProgress.sortieEligible(internalResult,resolved)){
       resolved.sortieFakeWon=NovaStockEntry.drawFake(NovaProgress.sortieChance(settings.setting,internalResult,currentGameProfit()),resolved.sortieWon);
@@ -3622,13 +3626,22 @@
     return "MISS";
   }
 
+  function activeDebugScenario(){
+    const s=normalState.debugScenario;
+    return globalThis.NovaDebugScenario?.active(s,PLAY_SESSION_ID)?s:null;
+  }
   function drawIndependentATypeOutcome(){
     const flow=NovaFlow.normalize(normalState.flow);
     if(flow.phase==='art'){
+      if(globalThis.NovaDebugScenario?.atGame(activeDebugScenario(),flow))pendingForceResult='STRONG_NOVA';
       pendingArtStep=NovaArt.step(flow,{...settings.novaArt,setting:settings.setting,netPt:currentGameProfit(),checkpointQuiet:NovaArt.checkpointQuietRules.enabled,checkpointNext:NovaProgress.snapshot().next},Math.random,pendingForceResult);
       return {result:NovaArt.preparationDisplayRole?NovaArt.preparationDisplayRole(pendingArtStep.result):pendingArtStep.result,internalBonus:pendingArtStep.internalBonus};
     }
     const token=NovaNormal.spin(normalState.internal,flow,Number(settings.setting)||1,{normal:settings.novaNormal,art:settings.novaArt,cz:settings.novaFlow,scale:NovaBalance.profile(settings.setting).scale},Math.random,pendingForceResult);
+    const reservation=globalThis.NovaDebugScenario?activeDebugScenario():null;
+    if(reservation?.stage==='waiting'&&!token.internalBonus&&Number(token.state.games)>=reservation.zoneG){
+      token.internalBonus={kind:'BIG',source:'管理予約BB',internalResult:'BIG'};token.entry='';token.state.prelude=null;
+    }
     const inCz=['cz','strong_cz'].includes(token.czFlow.phase);
     if(inCz){token.czFlow.lampRoll??=Math.random();token.czFlow.rainbowRoll??=Math.random();}
     const ceilingHit=token.internalBonus?.source?.includes('天井');
@@ -4402,6 +4415,10 @@
   function handleAdminCommand(command){
     if(!canUsePlayState())return;
     if(!command || !command.type) return;
+    if(['reserveDebugScenario','cancelDebugScenario'].includes(command.type)){
+      normalState.debugScenario=globalThis.NovaDebugScenario?.accept(command,{enabled:VERTEX_CONTROLLER_ENABLED,machineId,sessionId:PLAY_SESSION_ID},normalState.debugScenario);
+      persistState();scheduleAdminStatePush(50);return;
+    }
     if(command.type === "prepareEnd"){
       if(String(command.sessionId)===PLAY_SESSION_ID)prepareStoreEndSnapshot();
     }else if(command.type === "applySettings"){
@@ -4677,6 +4694,9 @@
         const initialNormalBonus=normalState.flow.phase!=='art';
         const impurityReleased=NovaNormal.normalize(normalState.internal).impurity>=100;
         const bonusGuarantee=NovaNormal.claim(normalState.internal);
+        const reservation=globalThis.NovaDebugScenario?activeDebugScenario():null;
+        if(initialNormalBonus&&globalThis.NovaDebugScenario?.guarantee(reservation))bonusGuarantee.sets=Math.max(1,bonusGuarantee.sets);
+        if(initialNormalBonus)globalThis.NovaDebugScenario?.bonus(reservation);
         bonusGuarantee.sets+=Number(normalState.prepSets)||0;
         bonusGuarantee.zones.push(...(normalState.prepZones||[]));
         clearBonusPreparationState();normalState.prepConfirmed=false;
@@ -4895,6 +4915,8 @@
     if(aTypeEnd){
       const beforeBonusResume=normalState.flow;
       normalState.flow = NovaFlow.afterBonus(normalState.flow,{...settings.novaArt,setting:settings.setting},wonArtSets);
+      const reservation=globalThis.NovaDebugScenario?activeDebugScenario():null;
+      globalThis.NovaDebugScenario?.finishBonus(reservation,normalState.flow);
       if(endedBonusUpperAt&&normalState.flow?.phase==='art'){
         normalState.flow=NovaArt.normalize({...normalState.flow,researchUpper:true,burstWon:true,dryEligible:false});
       }
